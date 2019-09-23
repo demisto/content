@@ -72,7 +72,6 @@ class APIClient(object):
 
         if method is not None:
             api_request.get_method = lambda: method  # type: ignore
-
         try:
             result = urllib2.urlopen(
                 api_request,
@@ -86,9 +85,9 @@ class APIClient(object):
             result.close()
 
         except urllib2.HTTPError, e:
-            demisto.debug(json.dumps(e))
+            demisto.debug(e.reason)
             if e.code != 400:
-                raise
+                return_error('{0}: {1} \nCheck you Minmeld instance.'.format(e.reason, e.code))
             content = '{ "result":[] }'
 
         return content

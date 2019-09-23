@@ -11,6 +11,7 @@ for that task.
 """
 from __future__ import print_function
 import os
+import re
 import sys
 import glob
 import logging
@@ -349,8 +350,9 @@ class FilesValidator(object):
             if 'toversion' not in yaml_data:  # we only fail on old format if no toversion (meaning it is latest)
                 invalid_files.append(f)
         if invalid_files:
-            print_error('You must update the following files to the new package format. The files are:\n{}'.format(
-                '\n'.join(list(invalid_files))))
+            print_error('You should update the following files to the package format, for further details please visit '
+                        'https://github.com/demisto/content/tree/master/docs/package_directory_structure. '
+                        'The files are:\n{}'.format('\n'.join(list(invalid_files))))
             self._is_valid = False
 
     def validate_committed_files(self, branch_name, is_backward_check=True):

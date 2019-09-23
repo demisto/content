@@ -1,11 +1,9 @@
+"""Common functions script
+This script will be appended to each server script before being executed.
+Please notice that to add custom common code, add it to the CommonServerUserPython script.
+Note that adding code to CommonServerUserPython can override functions in CommonServerPython
+"""
 import socket
-
-import demistomock as demisto
-# Common functions script
-# =======================
-# This script will be appended to each server script before being executed.
-# Please notice that to add custom common code, add it to the CommonServerUserPython script
-from datetime import datetime, timedelta
 import time
 import json
 import sys
@@ -13,14 +11,22 @@ import os
 import re
 import base64
 from collections import OrderedDict
-
 import xml.etree.cElementTree as ET
+from datetime import datetime, timedelta
+
+import demistomock as demisto
+
+# imports something that can be missed from docker image
+try:
+    import requests
+except Exception:
+    pass
 
 IS_PY3 = sys.version_info[0] == 3
 # pylint: disable=undefined-variable
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
-    STRING_OBJ_TYPES = (str, )
+    STRING_OBJ_TYPES = (str,)
 else:
     STRING_TYPES = (str, unicode)  # type: ignore
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
@@ -77,7 +83,20 @@ dbotscores = {
     'Informational': 0.5
 }
 
-
+INDICATOR_TYPE_TO_CONTEXT_KEY = {
+    'ip': 'Address',
+    'email': 'Address',
+    'url': 'Data',
+    'domain': 'Name',
+    'cve': 'ID',
+    'md5': 'file',
+    'sha1': 'file',
+    'sha256': 'file',
+    'crc32': 'file',
+    'sha512': 'file',
+    'ctph': 'file',
+    'ssdeep': 'file'
+}
 # ===== Fix fetching credentials from vault instances =====
 # ====================================================================================
 try:
@@ -91,6 +110,7 @@ try:
 
 except Exception:
     pass
+
 
 # ====================================================================================
 
@@ -280,7 +300,7 @@ def shortCrowdStrike(entry):
                 csRes += '\nName|Created|Last Valid'
                 csRes += '\n----|-------|----------'
                 for label in labels:
-                    csRes += '\n' + demisto.gets(label, 'name') + '|' +\
+                    csRes += '\n' + demisto.gets(label, 'name') + '|' + \
                              formatEpochDate(demisto.get(label, 'created_on')) + '|' + \
                              formatEpochDate(demisto.get(label, 'last_valid_on'))
 
@@ -482,7 +502,7 @@ def FormatADTimestamp(ts):
        :return: A string represeting the time
        :rtype: ``str``
     """
-    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10**7)).ctime()
+    return (datetime(year=1601, month=1, day=1) + timedelta(seconds=int(ts) / 10 ** 7)).ctime()
 
 
 def PrettifyCompactedTimestamp(x):
@@ -558,11 +578,11 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self, ):
+    def __init__(self):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
-        # if for some reason you don't want to auto add credentails.password to replace strings
+        # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
                 and isinstance(demisto.getParam('credentials'), dict)
@@ -576,7 +596,7 @@ class IntegrationLogger(object):
     def encode(self, message):
         try:
             res = str(message)
-        except UnicodeEncodeError as ex:
+        except UnicodeEncodeError as exception:
             # could not decode the message
             # if message is an Exception, try encode the exception's message
             if isinstance(message, Exception) and message.args and isinstance(message.args[0], STRING_OBJ_TYPES):
@@ -585,7 +605,7 @@ class IntegrationLogger(object):
                 # try encode the message itself
                 res = message.encode('utf-8', 'replace')  # type: ignore
             else:
-                res = "Failed encoding message with error: {}".format(ex)
+                res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
             res = res.replace(s, '<XX_REPLACED>')
         return res
@@ -661,6 +681,7 @@ def logger(func):
     :return: returns the func return value.
     :rtype: ``any``
     """
+
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
         return func(*args, **kwargs)
@@ -810,7 +831,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :keyword headerTransform: A function that formats the original data headers (optional)
 
        :type removeNull: ``bool``
-       :keyword removeNull: Remove empty columns from the table. Deafult is False
+       :keyword removeNull: Remove empty columns from the table. Default is False
 
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
@@ -873,13 +894,14 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         for entry in t:
             vals = [stringEscapeMD((formatCell(entry.get(h, ''), False) if entry.get(h) is not None else ''),
                                    True, True) for h in headers]
-            mdResult += '|'
+            # this pipe is optional
+            mdResult += '| '
             try:
-                mdResult += '|'.join(vals)
+                mdResult += ' | '.join(vals)
             except UnicodeDecodeError:
                 vals = [str(v) for v in vals]
-                mdResult += '|'.join(vals)
-            mdResult += '|\n'
+                mdResult += ' | '.join(vals)
+            mdResult += ' |\n'
 
     else:
         mdResult += '**No entries.**\n'
@@ -891,23 +913,22 @@ tblToMd = tableToMarkdown
 
 
 def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
-    """
-        Recieves a dict with flattened key values, and converts them into nested dicts
+    """Receives a dict with flattened key values, and converts them into nested dicts
 
-        :type data: ``dict`` or ``list``
-        :param data: The data to be added to the context (required)
+    :type obj: ``dict`` or ``list``
+    :param obj: The data to be added to the context (required)
 
-        :type id: ``str``
-        :keyword id: The ID of the context entry
+    :type id: ``str``
+    :keyword id: The ID of the context entry
 
-        :type keyTransform: ``function``
-        :keyword keyTransform: A formatting function for the markdown table headers
+    :type keyTransform: ``function``
+    :keyword keyTransform: A formatting function for the markdown table headers
 
-        :type removeNull: ``bool``
-        :keyword removeNull: True if empty columns should be removed, false otherwise
+    :type removeNull: ``bool``
+    :keyword removeNull: True if empty columns should be removed, false otherwise
 
-        :return: The converted context list
-        :rtype: ``list``
+    :return: The converted context list
+    :rtype: ``list``
     """
     res = {}  # type: dict
     if keyTransform is None:
@@ -930,8 +951,7 @@ def createContextSingle(obj, id=None, keyTransform=None, removeNull=False):
 
 
 def createContext(data, id=None, keyTransform=None, removeNull=False):
-    """
-        Recieves a dict with flattened key values, and converts them into nested dicts
+    """Receives a dict with flattened key values, and converts them into nested dicts
 
         :type data: ``dict`` or ``list``
         :param data: The data to be added to the context (required)
@@ -1017,11 +1037,11 @@ def hash_djb2(s, seed=5381):
      :return: The hashed value
      :rtype: ``int``
     """
-    hash = seed
+    hash_name = seed
     for x in s:
-        hash = ((hash << 5) + hash) + ord(x)
+        hash_name = ((hash_name << 5) + hash_name) + ord(x)
 
-    return hash & 0xFFFFFFFF
+    return hash_name & 0xFFFFFFFF
 
 
 def file_result_existing_file(filename, saveFilename=None):
@@ -1213,7 +1233,6 @@ def elem_to_internal(elem, strip_ns=1, strip=1):
 
 
 def internal_to_elem(pfsh, factory=ET.Element):
-
     """Convert an internal dictionary (not JSON!) into an Element.
     Whatever Element implementation we could import will be
     used by default; if you want to use something else, pass the
@@ -1253,7 +1272,6 @@ def internal_to_elem(pfsh, factory=ET.Element):
 
 
 def elem2json(elem, options, strip_ns=1, strip=1):
-
     """Convert an ElementTree or Element into a JSON string."""
 
     if hasattr(elem, 'getroot'):
@@ -1266,7 +1284,6 @@ def elem2json(elem, options, strip_ns=1, strip=1):
 
 
 def json2elem(json_data, factory=ET.Element):
-
     """Convert a JSON string into an Element.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1291,7 +1308,6 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
 
 
 def json2xml(json_data, factory=ET.Element):
-
     """Convert a JSON string into an XML string.
     Whatever Element implementation we could import will be used by
     default; if you want to use something else, pass the Element class
@@ -1509,22 +1525,23 @@ def camelize(src, delim=' '):
         :rtype: ``dict`` or ``list``
     """
 
-    def camelize_str(src_str, delim):
+    def camelize_str(src_str):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
         components = src_str.split(delim)
         return ''.join(map(lambda x: x.title(), components))
 
     if isinstance(src, list):
-        return [camelize(x, delim) for x in src]
-    return {camelize_str(k, delim): v for k, v in src.items()}
+        return [camelize(phrase, delim) for phrase in src]
+    return {camelize_str(key): value for key, value in src.items()}
 
 
 # Constants for common merge paths
 outputPaths = {
     'file': 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || '
             'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || '
-            'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH)',
+            'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || '
+            'val.SSDeep && val.SSDeep == obj.SSDeep)',
     'ip': 'IP(val.Address && val.Address == obj.Address)',
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
@@ -1550,6 +1567,7 @@ def replace_in_keys(src, existing='.', new='_'):
         :return: The dictionary (or list of dictionaries) with keys after substring replacement.
         :rtype: ``dict`` or ``list``
     """
+
     def replace_str(src_str):
         if callable(getattr(src_str, "decode", None)):
             src_str = src_str.decode('utf-8')
@@ -1577,6 +1595,7 @@ sha256Regex = re.compile(r'\b[0-9a-fA-F]{64}\b', regexFlags)
 
 pascalRegex = re.compile('([A-Z]?[a-z]+)')
 
+
 # ############################## REGEX FORMATTING end ###############################
 
 
@@ -1598,28 +1617,26 @@ def underscoreToCamelCase(s):
 
 
 def camel_case_to_underscore(s):
-    """
-       Converts a camelCase string to snake_case
+    """Converts a camelCase string to snake_case
 
-       :type s: ``str``
-       :param s: The string to convert (e.g. helloWorld) (required)
+   :type s: ``str``
+   :param s: The string to convert (e.g. helloWorld) (required)
 
-       :return: The converted string (e.g. hello_world)
-       :rtype: ``str``
+   :return: The converted string (e.g. hello_world)
+   :rtype: ``str``
     """
     s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', s)
     return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
 
 
 def snakify(src):
-    """
-        Convert all keys of a dictionary to snake_case (underscored separated)
+    """Convert all keys of a dictionary to snake_case (underscored separated)
 
-        :type src: ``dict``
-        :param src: The dictionary to convert the keys for. (required)
+    :type src: ``dict``
+    :param src: The dictionary to convert the keys for. (required)
 
-        :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
-        :rtype: ``dict``
+    :return: The dictionary (or list of dictionaries) with the keys in CamelCase.
+    :rtype: ``dict``
     """
     return {camel_case_to_underscore(k): v for k, v in src.items()}
 
@@ -1700,6 +1717,9 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
       :type timezone: ``int``
       :param timezone: timezone should be passed in hours (e.g if +0300 then pass 3, if -0200 then pass -2).
 
+      :type utc: ``bool``
+      :param utc: If set to True, utc time will be used, otherwise local time.
+
       :return: The parsed date range.
       :rtype: ``(datetime.datetime, datetime.datetime)`` or ``(int, int)`` or ``(str, str)``
     """
@@ -1716,11 +1736,11 @@ def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=
         return_error('Invalid timezone "{}" - must be a number (of type int or float).'.format(timezone))
 
     if utc:
-        end_time = datetime.now() + timedelta(hours=timezone)
-        start_time = datetime.now() + timedelta(hours=timezone)
-    else:
         end_time = datetime.utcnow() + timedelta(hours=timezone)
         start_time = datetime.utcnow() + timedelta(hours=timezone)
+    else:
+        end_time = datetime.now() + timedelta(hours=timezone)
+        start_time = datetime.now() + timedelta(hours=timezone)
 
     unit = range_split[1]
     if 'minute' in unit:
@@ -1762,7 +1782,7 @@ def timestamp_to_datestring(timestamp, date_format="%Y-%m-%dT%H:%M:%S.000Z"):
 
 def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     """
-      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to miliseconds
+      Parses date_str_or_dt in the given format (default: %Y-%m-%dT%H:%M:%S) to milliseconds
       Examples: ('2018-11-06T08:56:41', '2018-11-06T08:56:41', etc.)
 
       :type date_str_or_dt: ``str`` or ``datetime.datetime``
@@ -1782,7 +1802,7 @@ def date_to_timestamp(date_str_or_dt, date_format='%Y-%m-%dT%H:%M:%S'):
     return int(time.mktime(date_str_or_dt.timetuple()) * 1000)
 
 
-def remove_nulls_from_dictionary(dict):
+def remove_nulls_from_dictionary(data):
     """
         Remove Null values from a dictionary. (updating the given dictionary)
 
@@ -1792,18 +1812,55 @@ def remove_nulls_from_dictionary(dict):
         :return: No data returned
         :rtype: ``None``
     """
-    list_of_keys = list(dict.keys())[:]
+    list_of_keys = list(data.keys())[:]
     for key in list_of_keys:
-        if dict[key] in ('', None, [], {}, ()):
-            del dict[key]
+        if data[key] in ('', None, [], {}, ()):
+            del data[key]
+
+
+def assign_params(keys_to_ignore=None, values_to_ignore=None, **kwargs):
+    """Creates a dictionary from given kwargs without empty values.
+    empty values are: None, '', [], {}, ()
+`   Examples:
+        >>> assign_params(a='1', b=True, c=None, d='')
+        {'a': '1', 'b': True}
+
+        >>> since_time = 'timestamp'
+        >>> assign_params(values_to_ignore=(15, ), sinceTime=since_time, b=15)
+        {'sinceTime': 'timestamp'}
+
+        >>> item_id = '1236654'
+        >>> assign_params(keys_to_ignore=['rnd'], ID=item_id, rnd=15)
+        {'ID': '1236654'}
+
+    :type keys_to_ignore: ``tuple`` or ``list``
+    :param keys_to_ignore: Keys to ignore if exists
+
+    :type values_to_ignore: ``tuple`` or ``list``
+    :param values_to_ignore: Values to ignore if exists
+
+    :type kwargs: ``kwargs``
+    :param kwargs: kwargs to filter
+
+    :return: dict without empty values
+    :rtype: ``dict``
+
+    """
+    if values_to_ignore is None:
+        values_to_ignore = (None, '', [], {}, ())
+    if keys_to_ignore is None:
+        keys_to_ignore = tuple()
+    return {
+        key: value for key, value in kwargs.items()
+        if value not in values_to_ignore and key not in keys_to_ignore
+    }
 
 
 def get_demisto_version():
-    """
-        Returns the Demisto version and build number.
+    """Returns the Demisto version and build number.
 
-        :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
-        :rtype: ``dict``
+    :return: Demisto version object if Demisto class has attribute demistoVersion, else raises AttributeError
+    :rtype: ``dict``
     """
     if hasattr(demisto, 'demistoVersion'):
         return demisto.demistoVersion()
@@ -1819,17 +1876,18 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
 
         Examples:
         >>> parse_date_string('2019-09-17T06:16:39Z')
-        datetime(2019, 9, 17, 6, 16, 39)
+        datetime.datetime(2019, 9, 17, 6, 16, 39)
         >>> parse_date_string('2019-09-17T06:16:39.22Z')
-        datetime(2019, 9, 17, 6, 16, 39, 220000)
+        datetime.datetime(2019, 9, 17, 6, 16, 39, 220000)
         >>> parse_date_string('2019-09-17T06:16:39.4040+05:00', '%Y-%m-%dT%H:%M:%S+02:00')
-        datetime(2019, 9, 17, 6, 16, 39, 404000)
+        datetime.datetime(2019, 9, 17, 6, 16, 39, 404000)
 
         :type date_string: ``str``
         :param date_string: The date string to parse. (required)
 
         :type date_format: ``str``
-        :param date_format: The date format of the date string. If the date format is known, it should be provided. (optional)
+        :param date_format:
+            The date format of the date string. If the date format is known, it should be provided. (optional)
 
         :return: The parsed datetime.
         :rtype: ``(datetime.datetime, datetime.datetime)``
@@ -1878,3 +1936,309 @@ def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
             date_format += time_zone[0]
 
         return datetime.strptime(date_string, date_format)
+
+
+def build_dbot_entry(indicator, indicator_type, vendor, score, description=None, build_malicious=True):
+    """Build a dbot entry. if score is 3 adds malicious
+    Examples:
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+        >>> build_dbot_entry('user@example.com', 'Email', 'Vendor', 3,  build_malicious=False)
+        {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+        >>> build_dbot_entry('user@example.com', 'email', 'Vendor', 3, 'Malicious email')
+        {'DBotScore': {'Vendor': 'Vendor', 'Indicator': 'user@example.com', 'Score': 3, 'Type': 'email'}, \
+'Account.Email(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': \
+'Malicious email'}, 'Address': 'user@example.com'}}
+
+        >>> build_dbot_entry('md5hash', 'md5', 'Vendor', 1)
+        {'DBotScore': {'Indicator': 'md5hash', 'Type': 'file', 'Vendor': 'Vendor', 'Score': 1}}
+
+    :type indicator: ``str``
+    :param indicator: indicator field. if using file hashes, can be dict
+
+    :type indicator_type: ``str``
+    :param indicator_type:
+        type of indicator ('url, 'domain', 'ip', 'cve', 'email', 'md5', 'sha1', 'sha256', 'crc32', 'sha512', 'ctph')
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type score: ``int``
+    :param score: DBot score (0-3)
+
+    :type description: ``str`` or ``None``
+    :param description: description (will be added to malicious if dbot_score is 3). can be None
+
+    :type build_malicious: ``bool``
+    :param build_malicious: if True, will add a malicious entry
+
+    :return: dbot entry
+    :rtype: ``dict``
+    """
+    if not 0 <= score <= 3:
+        raise DemistoException('illegal DBot score, expected 0-3, got `{}`'.format(score))
+    indicator_type_lower = indicator_type.lower()
+    if indicator_type_lower not in INDICATOR_TYPE_TO_CONTEXT_KEY:
+        raise DemistoException('illegal indicator type, expected one of {}, got `{}`'.format(
+            INDICATOR_TYPE_TO_CONTEXT_KEY.keys(), indicator_type_lower
+        ))
+    # handle files
+    if INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type_lower] == 'file':
+        indicator_type_lower = 'file'
+    dbot_entry = {
+        outputPaths['dbotscore']: {
+            'Indicator': indicator,
+            'Type': indicator_type_lower,
+            'Vendor': vendor,
+            'Score': score
+        }
+    }
+    if score == 3 and build_malicious:
+        dbot_entry.update(build_malicious_dbot_entry(indicator, indicator_type, vendor, description))
+    return dbot_entry
+
+
+def build_malicious_dbot_entry(indicator, indicator_type, vendor, description=None):
+    """ Build Malicious dbot entry
+    Examples:
+        >>> build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        {'IP(val.Address && val.Address == obj.Address)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS\
+'}, 'Address': '8.8.8.8'}}
+
+        >>> build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Malicious File')
+        {'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA\
+256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTP\
+H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor', 'Description': 'Malicious File'}\
+, 'MD5': 'md5hash'}}
+
+    :type indicator: ``str``
+    :param indicator: Value (e.g. 8.8.8.8)
+
+    :type indicator_type: ``str``
+    :param indicator_type: e.g. 'IP'
+
+    :type vendor: ``str``
+    :param vendor: Integration ID
+
+    :type description: ``str``
+    :param description: Why it's malicious
+
+    :return: A malicious DBot entry
+    :rtype: ``dict``
+    """
+    indicator_type_lower = indicator_type.lower()
+    if indicator_type_lower in INDICATOR_TYPE_TO_CONTEXT_KEY:
+        key = INDICATOR_TYPE_TO_CONTEXT_KEY[indicator_type_lower]
+        # `file` indicator works a little different
+        if key == 'file':
+            entry = {
+                indicator_type.upper(): indicator,
+                'Malicious': {
+                    'Vendor': vendor,
+                    'Description': description
+                }
+            }
+            return {outputPaths[key]: entry}
+        else:
+            entry = {
+                key: indicator,
+                'Malicious': {
+                    'Vendor': vendor,
+                    'Description': description
+                }
+            }
+            return {outputPaths[indicator_type_lower]: entry}
+    else:
+        raise DemistoException('Wrong indicator type supplied: {}, expected {}'
+                               .format(indicator_type, INDICATOR_TYPE_TO_CONTEXT_KEY.keys()))
+
+
+# Will add only if 'requests' module imported
+if 'requests' in sys.modules:
+    class BaseClient(object):
+        """Client to use in integrations with powerful _http_request
+        :type base_url: ``str``
+        :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
+
+        :type verify: ``bool``
+        :param verify: Whether the request should verify the SSL certificate.
+
+        :type proxy: ``bool``
+        :param proxy: Whether to run the integration using the system proxy.
+
+        :type ok_codes: ``tuple``
+        :param ok_codes:
+            The request codes to accept as OK, for example: (200, 201, 204).
+            If you specify "None", will use requests.Response.ok
+
+        :type headers: ``dict``
+        :param headers:
+            The request headers, for example: {'Accept`: `application/json`}.
+            Can be None.
+
+        :type auth: ``dict`` or ``tuple``
+        :param auth:
+            The request authorization, for example: (username, password).
+            Can be None.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+            self._base_url = base_url
+            self._verify = verify
+            self._ok_codes = ok_codes
+            self._headers = headers
+            self._auth = auth
+            if proxy:
+                self._proxies = handle_proxy()
+            else:
+                self._proxies = None
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                          auth=None, json_data=None, params=None, data=None, files=None,
+                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+            """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+            :type auth: ``tuple``
+            :param auth:
+                The authorization tuple (usually username/password) to enable Basic/Digest/Custom HTTP Auth.
+                if None, will use self._auth.
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+            :type json_data: ``dict``
+            :param json_data: The dictionary to send in a 'POST' request.
+
+            :type files: ``dict``
+            :param files: The file data to send in a 'POST' request.
+
+            :type timeout: ``float``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use self._ok_codes.
+
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``requests.Response``
+            """
+            try:
+                # Replace params if supplied
+                address = full_url if full_url else self._base_url + url_suffix
+                headers = headers if headers else self._headers
+                auth = auth if auth else self._auth
+                # Execute
+                res = requests.request(
+                    method,
+                    address,
+                    verify=self._verify,
+                    params=params,
+                    data=data,
+                    json=json_data,
+                    files=files,
+                    headers=headers,
+                    auth=auth,
+                    timeout=timeout,
+                    proxies=self._proxies,
+                    **kwargs
+                )
+                # Handle error responses gracefully
+                if not self._is_status_code_valid(res, ok_codes):
+                    err_msg = 'Error in API call [{}] - {}' \
+                        .format(res.status_code, res.reason)
+                    try:
+                        # Try to parse json error response
+                        error_entry = res.json()
+                        err_msg += '\n{}'.format(error_entry)
+                        raise DemistoException(err_msg)
+                    except ValueError as exception:
+                        raise DemistoException(err_msg, exception)
+
+                resp_type = resp_type.lower()
+                try:
+                    if resp_type == 'json':
+                        return res.json()
+                    if resp_type == 'text':
+                        return res.text
+                    if resp_type == 'content':
+                        return res.content
+                    return res
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+            except requests.exceptions.ConnectTimeout as exception:
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.SSLError as exception:
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ProxyError as exception:
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ConnectionError as exception:
+                # Get originating Exception in Exception chain
+                error_class = str(exception.__class__)
+                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                          'Verify that the server URL parameter' \
+                          ' is correct and that you have access to the server from your host.' \
+                    .format(err_type, exception.errno, exception.strerror)
+                raise DemistoException(err_msg, exception)
+
+        def _is_status_code_valid(self, response, ok_codes=None):
+            """If the status code is OK, return 'True'.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the status.
+
+            :type ok_codes: ``tuple`` or ``list``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use response.ok.
+
+            :return: Whether the status of the response is valid.
+            :rtype: ``bool``
+            """
+            # Get wanted ok codes
+            status_codes = ok_codes if ok_codes else self._ok_codes
+            if status_codes:
+                return response.status_code in status_codes
+            return response.ok
+
+
+class DemistoException(Exception):
+    pass
