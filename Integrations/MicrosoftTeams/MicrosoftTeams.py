@@ -1432,7 +1432,7 @@ def long_running_loop():
         port: int
         if port_mapping:
             if ':' in port_mapping:
-                port = int(port_mapping.split(':')[0])
+                port = int(port_mapping.split(':')[1])
             else:
                 port = int(port_mapping)
         else:
