@@ -8,6 +8,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "AWS - SQS Test Playbook"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "fromversion": "5.0.0"
@@ -1862,7 +1866,8 @@
         "IntSights Mssp Test": "Account Expired (issue #16351)",
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
-        "CheckPhish-Test": "Test is unstable, requires redesign #19188"
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "AWS - SQS Test Playbook": "Old test - need to check if relevant"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
