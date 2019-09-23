@@ -5,12 +5,12 @@ from CommonServerUserPython import *
 
 import json
 import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+
 
 class Client:
     def __init__(self, username, password, domain, url, use_ssl):
@@ -37,7 +37,7 @@ class Client:
 
         return res.json()
 
-    def http_request(self, method, url_suffix, data=None,headers={}):
+    def http_request(self, method, url_suffix, data=None, headers={}):
         if self.session:
             headers['session'] = self.session
         # A wrapper for requests lib to send our requests and handle requests and responses better
@@ -53,7 +53,7 @@ class Client:
             return_error(res.json().get('text'))
 
         # Handle error responses gracefully
-        if res.status_code not in {200,403}:
+        if res.status_code not in {200, 403}:
             return_error('Error in API call to Integration [%d] - %s' % (res.status_code, res.reason))
 
         return res
@@ -334,7 +334,7 @@ class Client:
         return item
 
     def get_host_item(self, client):
-        item ={}
+        item = {}
         item['ComputerId'] = client['computer_id']
         item['FullVersion'] = client['full_version']
         item['HostName'] = client['host_name']
@@ -506,7 +506,7 @@ def get_question_result(client, data_args):
     rows = client.parse_question_results(res)
 
     if rows is None:
-        context = {'QuestionID': id, 'Status': 'Completed'}
+        context = {'QuestionID': id, 'Status': 'Pending'}
         return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
                               outputs={'Tanium.QuestionResult(val.QuestionID === id)': context}, raw_response=res)
 
@@ -520,7 +520,7 @@ def get_question_result(client, data_args):
 def create_saved_question(client, data_args):
     id = data_args.get('question-id')
     name = data_args.get('name')
-    body ={'name':name,'question':{'id':id}}
+    body = {'name': name, 'question': {'id': id}}
     raw_response = client.do_request('POST', 'saved_questions', body)
 
     response = raw_response.get('data')
@@ -572,7 +572,7 @@ def get_saved_questions(client, data_args):
     count = int(data_args.get('count'))
     raw_response = client.do_request('GET', 'saved_questions')
 
-    questions=[]
+    questions = []
     for question in raw_response.get('data')[:-1][:count]:
         question = client.get_saved_question_item(question)
         questions.append(question)
@@ -687,7 +687,7 @@ def get_saved_actions(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
-def get_saved_actions_pending(client,data_args):
+def get_saved_actions_pending(client, data_args):
     count = int(data_args.get('count'))
     raw_response = client.do_request('GET', 'saved_action_approvals')
 
