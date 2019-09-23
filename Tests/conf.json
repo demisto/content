@@ -1906,7 +1906,8 @@
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
-        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235",
+        "ShodanTest": "Test is failing. #19311"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
