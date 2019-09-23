@@ -1,6 +1,6 @@
-id: Traps Retrieve And Download FIles
+id: Traps Retrieve And Download Files
 version: -1
-name: Traps Retrieve And Download FIles
+name: Traps Retrieve And Download Files
 description: Use this playbook To initiate an endpoint scan and retrieve results.
 fromversion: ""
 starttaskid: "0"
