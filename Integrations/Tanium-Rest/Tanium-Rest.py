@@ -116,7 +116,7 @@ class Client:
         return question_response
 
     def parse_question(self, text, parameters):
-        parameters_condition = []
+        parameters_condition = []  # type: ignore
 
         if parameters:
             try:
@@ -162,7 +162,7 @@ class Client:
         return obj
 
     def get_package_item(self, package):
-        item = {}
+        item = {}  # type: ignore
         item['ContentSet'] = {}
         item['ModUser'] = {}
         item['Command'] = package['command']
@@ -586,7 +586,7 @@ def get_saved_questions(client, data_args):
 def create_action(client, data_args):
     package_id = data_args.get('package-id')
     parameters = data_args.get('parameters')
-    parameters_condition = []
+    parameters_condition = []  # type: ignore
 
     if parameters:
         try:
