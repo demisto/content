@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added check for AutoFocus v2 in 'Is AutoFocus Enabled?'
+The ***Is AutoFocus Enabled?*** task now checks for the **AutoFocus v2** integration.
 
 ## [19.9.1] - 2019-09-18
 #### New Playbook
