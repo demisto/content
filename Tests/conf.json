@@ -1864,6 +1864,8 @@
         "Forescout-Test": "Should be skipped (issue 17016)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
+        "Phishing v2 Test - Attachment": "Rasterize running on URL that does not exist anymore. Need to change testdata",
+        "Phishing v2 Test - Inline": "Rasterize running on URL that does not exist anymore. Need to change testdata",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
         "ArcSight Logger test": "Possibly outdated API calls",
