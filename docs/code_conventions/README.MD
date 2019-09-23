@@ -24,7 +24,6 @@ requests.packages.urllib3.disable_warnings()
 
 ```python
 ''' CONSTANTS '''
-API_SUFFIX = "/api/v1/suffix"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 ```
 
@@ -49,7 +48,7 @@ def main():
     password = demisto.params().get('credentials').get('password')
 
     # Remove trailing slash to prevent wrong URL path to service
-    server_url = demisto.params().get('url').rstrip('/')
+    base_url = urljoin(demisto.params().get('url'), '/api/v1/suffix')
 
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', True)
@@ -61,7 +60,7 @@ def main():
 
     try:
         client = Client(
-            base_url=server_url, 
+            base_url=base_url, 
             verify=verify_certificate, 
             auth=(username, password),
             proxy=proxy)
