@@ -1504,7 +1504,6 @@
             "integrations": "Traps",
             "playbookID": "Traps test",
             "timeout": 600
-
         },
         {
             "playbookID": "TestShowScheduledEntries"
