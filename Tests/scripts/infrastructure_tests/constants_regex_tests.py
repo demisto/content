@@ -54,7 +54,7 @@ def test_integration_code_files():
     verify(
         acceptable_integration_code_files,
         unacceptable_integration_code_files,
-        [INTEGRATION_PY_REGEX, INTEGRATION_JS_REGEX]
+        (INTEGRATION_PY_REGEX, INTEGRATION_JS_REGEX)
     )
 
 
@@ -66,19 +66,20 @@ def test_script_code_files():
     verify(
         acceptable_script_code_files,
         unacceptable_script_code_files,
-        [SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
+        (SCRIPT_PY_REGEX, SCRIPT_JS_REGEX)
     )
 
 
-def get_test_yml_file_paths(folder, prefix):
-    acceptable_yml_files = {
+def get_test_yml_file_paths(folder, prefix, legacy_only=False):
+    acceptable_yml_files_package = {
         # package
         os.path.join(folder, 'A', 'A.yml'),
         os.path.join(folder, 'Gmail_v2', 'Gmail_v2.yml'),
         os.path.join(folder, 'Z_as_as-ds', 'Z_as_as-ds.yml'),
         os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.yml'),
+    }
 
-
+    acceptable_yml_files_legacy = {
         # legacy
         os.path.join(folder, '{}-A.yml'.format(prefix)),
         os.path.join(folder, '{}-Gmail_v2.yml'.format(prefix)),
@@ -86,7 +87,7 @@ def get_test_yml_file_paths(folder, prefix):
         os.path.join(folder, '{}-RSA-v11.1.yml'.format(prefix)),
     }
 
-    unacceptable_yml_files = {
+    unacceptable_yml_files_package = {
         # package
         os.path.join(folder, 'A\\A', 'A\\A.yml'),
         os.path.join(folder, 'A/A', 'A/A.yml'),
@@ -94,7 +95,9 @@ def get_test_yml_file_paths(folder, prefix):
         os.path.join(folder, 'hello', 'hello_test.yml'),
         os.path.join(folder, 'hello', 'test_data', 'hello.yml'),
         os.path.join(folder, 'RSA-v11.1', 'RSA-v11.1.ymlsomeextrachars'),
+    }
 
+    unacceptable_yml_files_legacy = {
         # legacy
         os.path.join(folder, 'A\\A', 'A\\A.yml'),
         os.path.join(folder, 'A/A', 'A/A.yml'),
@@ -103,7 +106,11 @@ def get_test_yml_file_paths(folder, prefix):
         os.path.join(folder, '{}-RSA-v11.1.ymlsomeextrachars'.format(prefix)),
     }
 
-    return acceptable_yml_files, unacceptable_yml_files
+    if legacy_only:
+        return acceptable_yml_files_legacy, unacceptable_yml_files_legacy
+
+    return (acceptable_yml_files_package.union(acceptable_yml_files_legacy),
+            unacceptable_yml_files_package.union(unacceptable_yml_files_legacy))
 
 
 def test_integration_yml_files():
@@ -114,5 +121,48 @@ def test_integration_yml_files():
     verify(
         acceptable_integration_yml,
         unacceptable_integration_yml,
-        [INTEGRATION_YML_REGEX, INTEGRATION_REGEX],
+        (INTEGRATION_YML_REGEX, INTEGRATION_REGEX),
+    )
+
+
+def test_script_yml_files():
+    from Tests.scripts.constants import SCRIPTS_DIR, SCRIPT_YML_REGEX, SCRIPT_REGEX
+
+    acceptable_integration_yml, unacceptable_integration_yml = get_test_yml_file_paths(SCRIPTS_DIR, 'script')
+
+    verify(
+        acceptable_integration_yml,
+        unacceptable_integration_yml,
+        (SCRIPT_YML_REGEX, SCRIPT_REGEX),
+    )
+
+
+def test_beta_script_yml_files():
+    from Tests.scripts.constants import BETA_INTEGRATIONS_DIR, BETA_SCRIPT_REGEX
+
+    acceptable_integration_yml, unacceptable_integration_yml = get_test_yml_file_paths(
+        BETA_INTEGRATIONS_DIR,
+        'script',
+        legacy_only=True
+    )
+
+    verify(
+        acceptable_integration_yml,
+        unacceptable_integration_yml,
+        (BETA_SCRIPT_REGEX,),
+    )
+
+
+def test_beta_integration_yml_files():
+    from Tests.scripts.constants import BETA_INTEGRATIONS_DIR, BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX
+
+    acceptable_integration_yml, unacceptable_integration_yml = get_test_yml_file_paths(
+        BETA_INTEGRATIONS_DIR,
+        'integration',
+    )
+
+    verify(
+        acceptable_integration_yml,
+        unacceptable_integration_yml,
+        (BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX),
     )
