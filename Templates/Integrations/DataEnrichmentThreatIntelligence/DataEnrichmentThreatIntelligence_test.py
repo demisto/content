@@ -84,7 +84,7 @@ class TestDeTi:
         human_readable, context, raw_response = search_ip(CLIENT, {'ip': '8.8.8.8'})
         assert not context
         assert 'No results found' in human_readable
-        assert raw_response == raw
+        assert raw_response == EMPTY_RESPONSE
 
     def test_url_positive(self, requests_mock):
         from DataEnrichmentThreatIntelligence import search_url

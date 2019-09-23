@@ -168,7 +168,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(ip, 'ip', INTEGRATION_NAME, score, result.get('description'))
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
         human_readable: str = tableToMarkdown(title, context_entry, removeNull=True)
@@ -191,7 +191,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(url, 'url', INTEGRATION_NAME, score, result.get('description'))
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry, removeNull=True)
@@ -231,7 +231,7 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         ]
         context = {
             outputPaths['dbotscore']: dbot_score,
-            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
         }
 
         if score == 3:  # If file is malicious, adds a malicious entry
@@ -262,7 +262,7 @@ def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(url, 'domain', INTEGRATION_NAME, score, result.get('description'))
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Analysis(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
         }
         context.update(dbot_entry)
         human_readable = tableToMarkdown(title, context_entry, removeNull=True)
