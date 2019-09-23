@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.1] - 2019-09-18
  - Added the *permissions* argument with the following options:
     - **per-command** - the permissions entry will be displayed in every command section.
     - ***global*** - the permissions entry will be displayed once, in its own section.
