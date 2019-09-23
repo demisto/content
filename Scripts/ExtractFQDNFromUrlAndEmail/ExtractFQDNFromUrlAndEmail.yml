@@ -1,27 +1,23 @@
+args:
+- default: true
+  description: The URL(s) or Email(s) to process
+  isArray: true
+  name: input
+  required: false
+  secret: false
+comment: Extract FQDN(s) from URL(s) and/or Email(s)
 commonfields:
   id: a05f8ec1-d7e7-451d-8e4c-77597d3ef976
   version: -1
+enabled: true
 name: ExtractFQDNFromUrlAndEmail
-script: |2
-
-  FQDNs = []
-  the_input = demisto.args().get('input')
-  demisto.executeCommand(ExtractDomainFromUrlAndEmail, the_input)
-
-  demisto.results(res)
-type: python
+script: '-'
+system: false
 tags:
 - indicator-format
-comment: Extract FQDN(s) from URL(s) and/or Email(s)
-enabled: true
-args:
-- name: input
-  description: The URL(s) or Email(s) to process
-  isArray: true
-scripttarget: 0
-subtype: python3
-runonce: false
+timeout: '0'
+type: python
 dockerimage: demisto/python3:3.7.4.977
 runas: DBotWeakRole
-
-
+runonce: false
+subtype: python3
