@@ -1508,19 +1508,19 @@ script:
       description: The last update date of the adversary.
       type: date
     - contextPath: ThreatQ.File.CreatedAt
-      description: Date of the file upload.
+      description: The date that the file was uploaded.
       type: Date
     - contextPath: ThreatQ.File.Size
-      description: Size (in bytes) of the file.
+      description: The size of the file (in bytes).
       type: Number
     - contextPath: ThreatQ.File.MD5
-      description: The MD5 of the file.
+      description: The MD5 hash of the file.
       type: String
     - contextPath: ThreatQ.File.ID
-      description: The File ID in ThreatQ.
+      description: The file ID in ThreatQ.
       type: Number
     - contextPath: ThreatQ.File.Name
-      description: The name of the File.
+      description: The name of the file.
       type: String
     - contextPath: ThreatQ.File.Title
       description: The title of the file.
@@ -1535,7 +1535,7 @@ script:
       description: The content type of the file.
       type: String
     - contextPath: ThreatQ.File.Type
-      description: The type of the file.
+      description: The file type.
       type: String
     - contextPath: ThreatQ.File.Source.ID
       description: The source of the file.
