@@ -1,2 +1,2 @@
 ## [Unreleased]
-- added function to handle chart operation in logger search
+Added a function to handle chart operations in the logger search.
