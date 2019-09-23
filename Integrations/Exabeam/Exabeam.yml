@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam-new
+  id: Exabeam
   version: -1
 configuration:
 - display: Server URL
@@ -11,8 +11,7 @@ configuration:
   name: credentials
   required: true
   type: 9
-- defaultvalue: 'true'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -22,8 +21,8 @@ configuration:
   type: 8
 description: The Exabeam Security Management Platform provides end-to-end detection,
   User Event Behavioral Analytics, and SOAR
-display: Exabeam-new
-name: Exabeam-new
+display: Exabeam
+name: Exabeam
 script:
   commands:
   - arguments:
@@ -36,7 +35,7 @@ script:
       - h
       - d
       - M
-      - Y
+      - y
       required: true
       secret: false
     - default: false
@@ -72,7 +71,7 @@ script:
       type: Boolean
     - contextPath: Exabeam.NotableUser.FirstSeen
       description: Date of the user first seen
-      type: String
+      type: Date
     - contextPath: Exabeam.NotableUser.NotableSessionIds
       description: Notable session ID.
       type: String
@@ -81,7 +80,7 @@ script:
       type: Number
     - contextPath: Exabeam.NotableUser.LastSeen
       description: When the user last seen.
-      type: Unknown
+      type: Date
     - contextPath: Exabeam.NotableUser.Location
       description: User's location.
       type: String
@@ -97,7 +96,7 @@ script:
   - deprecated: false
     description: Get all watchlist ids and titles.
     execution: false
-    name: get-watchlist
+    name: get-watchlists
     outputs:
     - contextPath: Exabeam.Watchlist.Category
       description: The watchlist category.
@@ -171,6 +170,46 @@ script:
     description: Returns user info data for the given username
     execution: false
     name: get-user-info
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: User risk score.
+      type: Number
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: Average risk score.
+      type: Number
+    - contextPath: Exabeam.User.PeerGroupFieldName
+      description: Peer group field name.
+      type: String
+    - contextPath: Exabeam.User.FirstSeen
+      description: When the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupDisplayName
+      description: Peer group display name.
+      type: String
+    - contextPath: Exabeam.User.LastSeen
+      description: When the user last seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupFieldValue
+      description: Peer group field value.
+      type: String
+    - contextPath: Exabeam.User.Label
+      description: User's labels
+      type: String
+    - contextPath: Exabeam.User.Username
+      description: User name.
+      type: String
+    - contextPath: Exabeam.User.PeerGroupType
+      description: Peer group type.
+      type: String
+    - contextPath: Exabeam.User.LastSessionID
+      description: User last session ID.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: User last activity type.
+      type: String
+    - contextPath: Exabeam.User.AccountNames
+      description: User account name.
+      type: String
   - arguments:
     - default: false
       description: User ID.
@@ -179,7 +218,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The watchlist ID.
+      description: The watchlist ID (get the ID from "get-watchlists" command).
       isArray: false
       name: watchlist_id
       required: true
@@ -207,13 +246,89 @@ script:
     description: Given a list of user label names, return a list of user ids matching
       those user labels.
     execution: false
-    name: get-users-ids
-  dockerimage: demisto/python3:3.7.4.1502
+    name: get-users
+  - arguments:
+    - default: false
+      description: Asset ID (hostanme or IP address)
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Asset data for given asset ID (hostname or IP address)
+    execution: false
+    name: get-asset-data
+    outputs:
+    - contextPath: Exabeam.Asset.FirstSeen
+      description: When the asset was first seen
+      type: Date
+    - contextPath: Exabeam.Asset.HostName
+      description: Asset host name.
+      type: String
+    - contextPath: Exabeam.Asset.IPAddress
+      description: Asset IP address.
+      type: String
+    - contextPath: Exabeam.Asset.Labels
+      description: The asset's lables
+      type: String
+    - contextPath: Exabeam.Asset.LastSeen
+      description: Asset last seen.
+      type: Date
+    - contextPath: Exabeam.Asset.AssetType
+      description: Asset type.
+      type: String
+  - arguments:
+    - default: false
+      description: Username to fetch data for.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: Start time of the time range (in UNIX epoch time, e.g 1533124216000)
+      isArray: false
+      name: start_time
+      required: true
+      secret: false
+    - default: false
+      description: End time of the time range (in UNIX epoch time e.g 1533124216000)
+      isArray: false
+      name: end_time
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns sessions for the given username and time range.
+    execution: false
+    name: get-user-sequences
+    outputs:
+    - contextPath: Exabeam.User.EndTime
+      description: Session end time.
+      type: Date
+    - contextPath: Exabeam.User.InitialRiskScore
+      description: Session initial risk score.
+      type: Number
+    - contextPath: Exabeam.User.Label
+      description: Session's label
+      type: String
+    - contextPath: Exabeam.User.LoginHost
+      description: Login host.
+      type: String
+    - contextPath: Exabeam.User.RiskScore
+      description: Session risk score.
+      type: Number
+    - contextPath: Exabeam.User.SessionID
+      description: Session ID.
+      type: String
+    - contextPath: Exabeam.User.StartTime
+      description: Session start time.
+      type: Date
+  dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - no tests
