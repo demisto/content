@@ -20,18 +20,18 @@ args:
   secret: false
 - default: false
   defaultValue: Yes#green
-  description: First reply option. Default is "yes". To change the button color, add
-    a semicolon with the desired color - green, red or black (green by default). for
-    example - "yes#green".
+  description: The first reply option. The default is "Yes" with a green button. To change the color of the button, add
+    the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "green". For
+    example, "Yes#green".
   isArray: false
   name: option1
   required: false
   secret: false
 - default: false
   defaultValue: No#red
-  description: Second reply option. Default is "no". To change the button color, add
-    a semicolon with the desired color - green, red or black (red by default). for
-    example - "no#red".
+  description: The second reply option. The default is "No" with a red button. To change the button color, add
+    the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "red". For
+    example, "No#red".
   isArray: false
   name: option2
   required: false
@@ -72,8 +72,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: A CSV list of more options to add in the format of "option#color",
-    e.g., "maybe#red" (black by default).
+  description: A comma-separated list of additional options in the format of "option#color",
+    for example, "maybe#red". The default color is "black".
   isArray: false
   name: additionalOptions
   required: false
