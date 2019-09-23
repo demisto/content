@@ -1,0 +1,722 @@
+commonfields:
+  id: PolySwarm
+  version: -1
+name: PolySwarm
+display: PolySwarm
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Real-time threat intelligence from a crowdsourced network of security
+  experts and antivirus companies.
+configuration:
+- display: PolySwarm API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: The Base URL to connect to
+  name: base_url
+  defaultvalue: https://api.polyswarm.network/v1
+  type: 0
+  required: true
+- display: PolySwarm Community
+  name: polyswarm_community
+  defaultvalue: lima
+  type: 0
+  required: true
+script:
+  script: |-
+    import sys
+    import requests
+    import socket
+
+
+
+
+
+    import logging
+
+    # CONST
+    POLYSWARM_DEMISTO_VERSION = '0.1.0'
+    POLYSWARM_URL_RESULTS = 'https://polyswarm.network/scan/results'
+    ERROR_ENDPOINT = 'Error with endpoint: '
+
+    # Set Debug level
+    logging.basicConfig(level=logging.ERROR)
+
+    class PolyswarmAPI:
+        # internal version
+        POLYSWARM_API_VERSION = '0.1.0'
+
+        def __init__(self, config):
+            """
+            __init__
+            :param config: config with api key for connection
+
+            :return:
+            """
+            self.config = config
+            self.headers = {'Authorization': self.config['polyswarm_api_key']}
+
+        def _http_request(self, method, path_url, data=None, files=None):
+            """
+            Send HTTP Request
+
+            :param method: [get|post]
+            :param path_url: URL for request
+            :param data: data for 'post' or 'get' request
+            :param files: for uploading files with 'post'
+
+            :return: tuple (status_code, content)
+            """
+            r = None
+
+            # set full URL for request
+            full_url = '{base_url}{path_url}'.format(base_url=self.config['base_url'],
+                                                      path_url=path_url)
+
+            logging.debug('[{method}] URL: {full_url} - params/data: {data} - files: {files} - headers: {headers}'.
+                           format(method=method.upper(),
+                                  full_url=full_url,
+                                  data=data,
+                                  files=files,
+                                  headers=self.headers))
+
+            if method.lower() == "get":
+                r = requests.get(full_url,
+                                 params=data,
+                                 headers=self.headers)
+            elif method.lower() == "post":
+                r = requests.post(full_url,
+                                  data=data,
+                                  files=files,
+                                  headers=self.headers)
+            r.raise_for_status()
+
+            logging.debug('[Response] Status code: {status_code} - Content: {response}'.
+                           format(status_code=r.status_code,
+                                  response=r.content))
+
+            return (r.status_code, r.content)
+
+        def search_hash(self, hash):
+            """
+            Search Hash
+
+            :param hash: hash
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            params = {'type': hash_type,
+                      'with_instances': 'true',
+                      'hash': hash}
+
+            return self._http_request('get', '/search', params)
+
+        def rescan_hash(self, hash):
+            """
+            Start a rescan for a single hash
+
+            :param hash: hash
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            path_url = '/consumer/{polyswarm_community}/rescan/{hash_type}/{hash}'.\
+                       format(polyswarm_community=self.config['polyswarm_community'],
+                              hash_type=hash_type, hash=hash)
+
+            return self._http_request('post', path_url)
+
+        def scan_url(self, url):
+            """
+            Upload URL for scan
+
+            :param url: string
+
+            :return: tuple (status_code, response)
+            """
+            path_url = '/consumer/{polyswarm_community}'.format(polyswarm_community=self.config['polyswarm_community'])
+
+            params = {'url': url,
+                      'artifact-type': 'url'}
+
+            return self._http_request('post', path_url, params)
+
+        def lookup(self, uuid):
+            """
+            UUID Lookup
+
+            :param uuid: string
+
+            :return: tuple (status_code, response)
+            """
+            path_url = '/consumer/{polyswarm_community}/uuid/{uuid}'.\
+                        format(polyswarm_community=self.config['polyswarm_community'],
+                               uuid=uuid)
+
+            status_code, response = self._http_request('get', path_url)
+            window_closed = json.loads(response)['result']['files'][0]['window_closed']
+
+            # we got the results at first shot
+            if window_closed:
+                return (status_code, response)
+
+            # we dont have any results already - wait for the bounty to complete
+            # and try again
+            time.sleep(30)
+
+            while not window_closed:
+                status_code, response = self._http_request('get', path_url)
+                window_closed = json.loads(response)['result']['files'][0]['window_closed']
+                time.sleep(1)
+
+            return (status_code, response)
+
+        def search_url(self, url):
+            """
+            Scan URL and return scan results
+
+            :param url: string
+
+            :return: (status_code, response, uuid)
+            """
+            status_code, response = self.scan_url(url)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+        def get_file(self, hash):
+            """
+            Download file by hash
+
+            :param hash: File Hash for Download
+
+            :return: tuple (status_code, response)
+            """
+            hash_type = get_hash_type(hash)
+
+            return self._http_request('get', '/download/{hash_type}/{hash}'.
+                                      format(hash_type=hash_type, hash=hash))
+
+        def detonate_file(self, file_name, file_path):
+            """
+            Upload File to Polyswarm and get the scan results
+
+            :param file_name: file name
+            :param file_path: complete path from the file to upload
+
+            :return: (status_code, response, uuid)
+            """
+            path_url = '/consumer/{polyswarm_community}'.format(polyswarm_community=self.config['polyswarm_community'])
+
+            files = { 'file': (file_name, open(file_path, 'rb')) }
+            # Force re-scans if file was already submitted
+            # params = { 'force': 'true' }
+            params = {}
+
+            status_code, response = self._http_request('post', path_url, params, files)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+        def rescan_file(self, hash):
+            """
+            Rescan Hash and return scan results
+
+            :param hash: string
+
+            :return: (status_code, response, uuid)
+            """
+            status_code, response = self.rescan_hash(hash)
+            uuid = json.loads(response)['result']
+            status_code, response = self.lookup(uuid)
+
+            return (status_code, response, uuid)
+
+
+    # Allows nested keys to be accesible
+    def makehash():
+        import collections
+        return collections.defaultdict(makehash)
+
+
+    # Polyswarm-Demisto Interface
+    class PolyswarmConnector():
+        def __init__(self):
+            self.config = {}
+            self.config['polyswarm_api_key'] = demisto.params().get('api_key')
+            self.config['base_url'] = demisto.params().get('base_url')
+            self.config['polyswarm_community'] = demisto.params().get('polyswarm_community')
+
+            self.polyswarm_api = PolyswarmAPI(self.config)
+
+        def _get_results(self, title, total_scans, positives, uuid):
+            contxt = makehash()
+
+            permalink = '{url_results}/{uuid}'.\
+                         format(url_results=POLYSWARM_URL_RESULTS,
+                                uuid=uuid)
+
+            contxt['UUID'] = uuid
+            contxt['Total Scans'] = str(total_scans)
+            contxt['Positives'] = str(positives)
+            contxt['Permalink'] = permalink
+
+            data = {'total': contxt['Total Scans'],
+                    'permalink': contxt['Permalink'],
+                    'positives': contxt['Positives'],
+                    'scan_uuid': contxt['UUID']}
+
+            ec = {'PolySwarm.Message(val.UUID && val.UUID == obj.UUID)': contxt}
+
+            return {'Type': entryTypes['note'],
+                    'ContentsFormat': formats['markdown'],
+                    'Contents': data,
+                    'HumanReadable': tableToMarkdown(title, contxt),
+                    'EntryContext': ec}
+
+        def test_connectivity(self):
+            EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.search_hash(EICAR_HASH)
+            except requests.exceptions.HTTPError as err:
+                return False
+
+            return True
+
+        def file_reputation(self, param):
+            title = 'PolySwarm File Reputation for Hash: %s' % param['hash']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = 'null'
+
+            try:
+                status_code, response = self.polyswarm_api.search_hash(param['hash'])
+
+                # load json response for iteration
+                try:
+                    artifact_instances = json.loads(response)['result'][0]['artifact_instances']
+                except:
+                    return_error('Error in response. Details: {response}'.
+                                  format(response=str(response)))
+
+                # TODO: implement rescan logic
+                if not artifact_instances[0]['bounty_result']:
+                   return_error('Run Rescan for this hash')
+
+                uuid = artifact_instances[0]['bounty_result']['uuid']
+                assertions = artifact_instances[0]['bounty_result']['files'][0]['assertions']
+
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+                demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
+                               format(positives=positives, total_scans=total_scans))
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    # sample not found
+                    # returning default values == 0
+                    pass
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                  format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                         err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid)
+
+        def get_file(self, param):
+            # Polywarm API Response
+            #  HTTP Response
+            #   status code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.get_file(param['hash'])
+
+                return fileResult(param['hash'], response)
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    return_error('File not found.')
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                  format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                         err=err))
+
+        def detonate_file(self, param):
+            title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            file_info = None
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #  Result
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            try:
+                file_info = demisto.getFilePath(param['entryID'])
+            except:
+                return_error('File not found - EntryID: {entryID}'.
+                              format(entryID=param['entryID']))
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.detonate_file(file_info['name'],
+                                                                               file_info['path'])
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except:
+                    return_error('Error in response. Details: {response}'.
+                                  format(response=str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                  format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                         err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid)
+
+        def rescan_file(self, param):
+            title = 'PolySwarm Rescan for Hash: %s' % param['hash']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #   uuid
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.rescan_file(param['hash'])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except:
+                   return_error('Error in response. Details: {response}'.
+                                 format(response=str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    # sample not found
+                    # returning default values == 0
+                    pass
+                else:
+                    # we got another err - report it
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                  format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                         err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid)
+
+        def url_reputation(self, param, artifact):
+            title = 'PolySwarm %s Reputation for: %s' % (artifact.upper(),
+                                                         param[artifact])
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            #  Result
+            #   uuid = uuid from Polyswarm
+            status_code = 0
+            response = ''
+            uuid = ''
+
+            # IP validation
+            if artifact == 'ip':
+                try:
+                    socket.inet_aton(param[artifact])
+                except socket.error:
+                    return_error('Invalid IP Address: {ip}'.
+                                  format(ip=param[artifact]))
+
+            try:
+                status_code, response, uuid = self.polyswarm_api.search_url(param[artifact])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except:
+                   return demisto.results('Error in response. Details: {response}'.
+                                           format(str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                return_error('{ERROR_ENDPOINT}{err}'.
+                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                     err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives, uuid)
+
+        def get_report(self, param):
+            title = 'PolySwarm Report for UUID: %s' % param['scan_uuid']
+
+            # default values
+            total_scans = 0
+            positives = 0
+
+            # Polywarm API Response
+            #  HTTP Response
+            #   status_code
+            #   response
+            status_code = 0
+            response = ''
+
+            try:
+                status_code, response = self.polyswarm_api.lookup(param['scan_uuid'])
+
+                # load json response for iteration
+                try:
+                    assertions = json.loads(response)['result']['files'][0]['assertions']
+                except:
+                    return_error('Error in response. Details: {response}'.
+                                  format(str(response)))
+
+                # iterate for getting positives and total_scan number
+                for assertion in assertions:
+                    for k, v in assertion.items():
+                        if k == 'verdict' and v:
+                            positives += 1
+                    total_scans += 1
+
+            except requests.exceptions.HTTPError as err:
+                if err.response.status_code == 404:
+                    return_error('UUID not found.')
+                else:
+                    return_error('{ERROR_ENDPOINT}{err}'.
+                                  format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                         err=err))
+
+            return self._get_results(title, total_scans,
+                                     positives,
+                                     param['scan_uuid'])
+
+
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        polyswarm = PolyswarmConnector()
+
+        command = demisto.command()
+        param = demisto.args()
+
+        if command == 'test-module':
+            if polyswarm.test_connectivity():
+                demisto.results('ok')
+            else: return_error('Connection Failed')
+        elif command == 'file':
+            demisto.results(polyswarm.file_reputation(param))
+        elif command == 'get-file':
+            demisto.results(polyswarm.get_file(param))
+        elif command == 'file-scan':
+            demisto.results(polyswarm.detonate_file(param))
+        elif command == 'file-rescan':
+            demisto.results(polyswarm.rescan_file(param))
+        elif command == 'url':
+            demisto.results(polyswarm.url_reputation(param, 'url'))
+        elif command == 'url-scan':
+            demisto.results(polyswarm.url_reputation(param, 'url'))
+        elif command == 'ip':
+            demisto.results(polyswarm.url_reputation(param, 'ip'))
+        elif command == 'domain':
+            demisto.results(polyswarm.url_reputation(param, 'domain'))
+        elif command == 'ps-get-report':
+            demisto.results(polyswarm.get_report(param))
+
+    # Log exceptions
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+  type: python
+  commands:
+  - name: ps-get-report
+    arguments:
+    - name: scan_uuid
+      required: true
+      default: true
+      description: UUID string
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Lookup results from UUID
+  - name: file
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: Hash for file reputation info [SHA256|SHA1|MD5]
+    description: Queries Polyswarm for file reputation info
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP Address for reputation info
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Queries Polyswarm for IP reputation info
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL for reputation info
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Queries Polyswarm for url reputation info
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain for reputation info
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Queries Polyswarm for Domain reputation info
+  - name: url-scan
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to scan
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Load a URL to Polyswarm and retrieve analysis results
+  - name: file-rescan
+    arguments:
+    - name: hash
+      required: true
+      description: Hash to rescan [SHA256|SHA1|MD5]
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Run a rescan in uploaded artifact by hash
+  - name: get-file
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: Hash file to download [SHA256|SHA1|MD5]
+    outputs:
+    - contextPath: File.Size
+      description: File Size
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: File.Name
+      description: The sample name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War-Room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: File.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: File MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.Extension
+      description: File Extension
+      type: string
+    - contextPath: PolySwarm.FileID
+      type: Unknown
+    description: Downloads a file from Polyswarm
+  - name: file-scan
+    arguments:
+    - name: entryID
+      required: true
+      default: true
+      description: War-room Entry ID
+    outputs:
+    - contextPath: PolySwarm.Message
+      type: Unknown
+    description: Upload a file to Polyswarm and retrieve analysis results
+  runonce: false
