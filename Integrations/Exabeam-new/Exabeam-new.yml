@@ -123,10 +123,14 @@ script:
       name: title
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The watchlist category.
       isArray: false
       name: category
+      predefined:
+      - PeerGroups
+      - UserLabels
       required: true
       secret: false
     - default: false
@@ -167,6 +171,43 @@ script:
     description: Returns user info data for the given username
     execution: false
     name: get-user-info
+  - arguments:
+    - default: false
+      description: User ID.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add user to a watchlist
+    execution: false
+    name: watchlist-add-user
+  - deprecated: false
+    description: Get all user labels
+    execution: false
+    name: get-user-labels
+    outputs:
+    - contextPath: Exabeam.UserLabel.Label
+      description: User Label.
+      type: String
+  - arguments:
+    - default: false
+      description: User label (get the user label from "get-user-labels" command).
+      isArray: false
+      name: user_label
+      required: true
+      secret: false
+    deprecated: false
+    description: Given a list of user label names, return a list of user ids matching
+      those user labels.
+    execution: false
+    name: get-users-ids
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   longRunning: false

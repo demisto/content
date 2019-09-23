@@ -161,6 +161,35 @@ class Client:
         response = self.http_request('DELETE', suffix_url)
         return response
 
+    def add_user_request(self, user_id=None, watchlist_id=None):
+
+        suffix_url = f'watchlist/user/{user_id}/add'
+
+        params = {
+            'itemId': user_id,
+            'watchListId': watchlist_id
+        }
+
+        response = self.http_request('PUT', suffix_url, params)
+        return response.json()
+
+    def get_user_labels_request(self):
+
+        suffix_url = 'userLabel'
+        response = self.http_request('GET', suffix_url)
+
+        return response.json()
+
+    def get_users_request(self, user_label=None):
+
+        suffix_url = 'userLabel/getUserIds'
+        params = {
+            'userLabels': user_label
+        }
+
+        response = self.http_request('GET', suffix_url, params)
+        return response.json()
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -221,10 +250,10 @@ def get_user_info(client, args):
             'RiskScore': user.get('userInfo').get('riskScore'),
             'AverageRiskScore': user.get('userInfo').get('averageRiskScore'),
             'LastSessionID': user.get('userInfo').get('lastSessionId'),
-            'FirstSeen': user.get('userinfo').get('firstSeen'),
-            # 'LastSeen': user.get('userinfo').get('lastSeen'),
-            # 'LastActivityType': user.get('userinfo').get('lastActivityType'),
-            # 'Label': user.get('userinfo').get('labels'),
+            'FirstSeen': user.get('userInfo').get('firstSeen'),
+            'LastSeen': user.get('userInfo').get('lastSeen'),
+            'LastActivityType': user.get('userInfo').get('lastActivityType'),
+            'Label': user.get('userInfo').get('labels'),
             'AccountNames': user.get('accountNames'),
             'PeerGroupFieldName': user.get('peerGroupFieldName'),
             'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
@@ -237,6 +266,32 @@ def get_user_info(client, args):
     }
 
     return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context, user)
+
+
+def watchlist_add_user(client, args):
+    """
+
+    Args:
+        client: Client
+
+    Add user to a watchlist
+
+    """
+
+    user_id = args.get('user_id')
+    watchlist_id = args.get('watchlist_id')
+
+    response = client.add_user_request(user_id, watchlist_id)
+    if response:
+        contents = {
+            'UserID': response.get('item'),
+            'WatchlistID': response.get('watchlistId')
+        }
+    context = {
+        'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
+    }
+
+    return_outputs(tableToMarkdown('The user was added successfully to the watchlist', contents), context, response)
 
 
 def get_watchlist(client):
@@ -311,6 +366,61 @@ def get_peer_groups(client):
     return_outputs(tableToMarkdown('Exabeam Peer Groups', contents), context, groups)
 
 
+def get_user_labels(client):
+    """
+
+    Args:
+        client: Client
+
+    Returns: All user Labels
+
+    """
+
+    labels = client.get_user_labels_request()
+    user_labels = ', '.join(labels)
+    new_group = user_labels.split(',')
+    contents = []
+    for label in new_group:
+        contents.append({
+            'Label': label
+        })
+
+    context = {
+        'Exabeam.UserLabel(val.UserLabel && val.UserLabel === obj.UserLabel)': contents
+    }
+
+    return_outputs(tableToMarkdown('Exabeam User Labels', contents), context, labels)
+
+
+def get_users(client, args):
+    """
+
+    Args:
+        client: Client
+
+    Returns: A list of user ids matching user labels.
+
+    """
+
+    user_label = args.get('user_label')
+
+    users = client.get_users_request(user_label)
+    print(users)
+    users_ = ', '.join(users)
+    data = users_.split(',')
+    contents = []
+    for user in data:
+        contents.append({
+            'UserID': user
+        })
+
+    context = {
+        'Exabeam.User(val.UserID && val.UserID === obj.UserID)': contents
+    }
+
+    return_outputs(tableToMarkdown('Exabeam Users Ids', contents), context, users)
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -349,6 +459,12 @@ def main():
             delete_watchlist(client, demisto.args())
         elif demisto.command() == 'get-user-info':
             get_user_info(client, demisto.args())
+        elif demisto.command() == 'watchlist-add-user':
+            watchlist_add_user(client, demisto.args())
+        elif demisto.command() == 'get-user-labels':
+            get_user_labels(client)
+        elif demisto.command() == 'get-users-ids':
+            get_users(client, demisto.args())
 
     except Exception as e:
         return_error(str(e))
