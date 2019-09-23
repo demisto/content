@@ -1,7 +1,7 @@
 id: Traps Retrieve And Download Files
 version: -1
 name: Traps Retrieve And Download Files
-description: Use this playbook To retrieve files and download files.
+description: Use this playbook To retrieve and download files.
 fromversion: ""
 starttaskid: "0"
 tasks:
