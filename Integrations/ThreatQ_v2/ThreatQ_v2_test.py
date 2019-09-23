@@ -1,4 +1,3 @@
-import pytest
 import demistomock as demisto
 
 MOCK_URL = "http://123-fake-api.com"
