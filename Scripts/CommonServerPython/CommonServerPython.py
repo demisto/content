@@ -2058,59 +2058,37 @@ H || val.SSDeep && val.SSDeep == obj.SSDeep)': {'Malicious': {'Vendor': 'Vendor'
 # Will add only if 'requests' module imported
 if 'requests' in sys.modules:
     class BaseClient(object):
-        def __init__(self, integration_name, integration_command_name, integration_context_name, server, base_suffix,
-                     verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
-            """Wrapper of BaseClient with added _http_request functionality
+        """Client to use in integrations with powerful _http_request
+        :type base_url: ``str``
+        :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
 
-            :type integration_name: ``str``
-            :param integration_name:
-                Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+        :type verify: ``bool``
+        :param verify: Whether the request should verify the SSL certificate.
 
-            :type integration_command_name: ``str``
-                :param integration_command_name:
-                Command names should be written in all lower-case letters,
-                and each word separated with a hyphen, for example: msgraph-user.
+        :type proxy: ``bool``
+        :param proxy: Whether to run the integration using the system proxy.
 
-            :type integration_context_name: ``str``
-            :param integration_context_name:
+        :type ok_codes: ``tuple``
+        :param ok_codes:
+            The request codes to accept as OK, for example: (200, 201, 204).
+            If you specify "None", will use requests.Response.ok
 
-            Context output names should be written in camel case, for example: MSGraphUser.
-            :type server: ``str``
-            :param server: Base server address, for example: https://example.com.
+        :type headers: ``dict``
+        :param headers:
+            The request headers, for example: {'Accept`: `application/json`}.
+            Can be None.
 
-            :type base_suffix: ``str``
-            :param base_suffix: Suffix appended to the base URI of the API, for example: /api/v2/
+        :type auth: ``dict`` or ``tuple``
+        :param auth:
+            The request authorization, for example: (username, password).
+            Can be None.
 
-            :type verify: ``bool``
-            :param verify: Whether the request should verify the SSL certificate.
-
-            :type proxy: ``bool``
-            :param proxy: Whether to run the integration using the system proxy.
-
-            :type ok_codes: ``tuple``
-            :param ok_codes:
-                The request codes to accept as OK, for example: (200, 201, 204).
-                If you specify "None", will use requests.Response.ok
-
-            :type headers: ``dict``
-            :param headers:
-                The request headers, for example: {'Accept`: `application/json`}.
-                Can be None.
-
-            :type auth: ``dict`` or ``tuple``
-            :param auth:
-                The request authorization, for example: (username, password).
-                Can be None.
-
-            :return: No data returned
-            :rtype: ``None``
-            """
-            self._integration_name = str(integration_name)
-            self._integration_command_name = str(integration_command_name)
-            self._integration_context_name = str(integration_context_name)
-            self._server = server.rstrip('/')
+        :return: No data returned
+        :rtype: ``None``
+        """
+        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
+            self._base_url = base_url
             self._verify = verify
-            self._base_url = '{}{}'.format(self._server, base_suffix)
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
@@ -2119,32 +2097,8 @@ if 'requests' in sys.modules:
             else:
                 self._proxies = None
 
-        @property
-        def integration_name(self):  # pragma: no cover
-            """Property of integration name
-            return: Integration command name.
-            :rtype: ``str``
-            """
-            return self._integration_name
-
-        @property
-        def integration_context_name(self):  # pragma: no cover
-            """Property of integration name context
-            return: Integration command name
-            :rtype: ``str``
-            """
-            return self._integration_context_name
-
-        @property
-        def integration_command_name(self):  # pragma: no cover
-            """Property of integration name command
-            return: Integration command name
-            :rtype: ``str``
-            """
-            return self._integration_command_name
-
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                          auth=None, params=None, data=None, files=None,
+                          auth=None, json_data=None, params=None, data=None, files=None,
                           timeout=10, resp_type='json', ok_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -2173,6 +2127,9 @@ if 'requests' in sys.modules:
 
             :type data: ``dict``
             :param data: The data to send in a 'POST' request.
+
+            :type json_data: ``dict``
+            :param json_data: The dictionary to send in a 'POST' request.
 
             :type files: ``dict``
             :param files: The file data to send in a 'POST' request.
@@ -2208,6 +2165,7 @@ if 'requests' in sys.modules:
                     verify=self._verify,
                     params=params,
                     data=data,
+                    json=json_data,
                     files=files,
                     headers=headers,
                     auth=auth,
@@ -2217,8 +2175,8 @@ if 'requests' in sys.modules:
                 )
                 # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    err_msg = 'Error in {} API call [{}] - {}' \
-                        .format(self._integration_name, res.status_code, res.reason)
+                    err_msg = 'Error in API call [{}] - {}' \
+                        .format(res.status_code, res.reason)
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
