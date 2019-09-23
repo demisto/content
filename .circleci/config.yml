@@ -95,7 +95,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -111,7 +111,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -126,7 +126,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -148,7 +148,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -166,7 +166,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -182,7 +182,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -198,7 +198,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -214,7 +214,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             if ./Tests/scripts/is_ami.sh ;
               then
@@ -229,7 +229,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             ./Tests/scripts/slack_notifier.sh
           when: always
@@ -243,7 +243,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             ./Tests/scripts/instance_test.sh
           when: always
@@ -252,7 +252,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
               echo "Skipping instance tests for forked PRs"
-              exit(0)
+              exit 0
             fi
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
           when: always
