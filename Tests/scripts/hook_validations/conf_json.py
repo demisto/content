@@ -45,7 +45,7 @@ class ConfJsonValidator(object):
 
         if problematic_instances:
             self._is_valid = False
-            print("Those instances don't have description:\n{0}".format('\n'.join(problematic_instances)))
+            print("Those instances don't have description:\n{}".format('\n'.join(problematic_instances)))
 
         return self._is_valid
 
