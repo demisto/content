@@ -7,9 +7,6 @@ from typing import Dict, Tuple, List, Optional, Union, AnyStr
 import urllib3
 
 """Example for Analytics and SIEM integration
-
-Todo:
-    * pass on it with alex
 """
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -207,7 +204,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     raise DemistoException(f'Test module failed, {results}')
 
 
-def fetch_incidents(client: Client, last_run):  # pragma: no cover
+def fetch_incidents(client: Client, last_run):
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
     """
@@ -237,6 +234,15 @@ def fetch_incidents(client: Client, last_run):  # pragma: no cover
 
 
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Lists all events and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
     max_results = args.get('max_results')
     event_created_date_before = args.get('event_created_date_before')
     event_created_date_after = args.get('event_created_date_after')
@@ -248,7 +254,9 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if events:
         title: str = f'{INTEGRATION_NAME} - List events:'
         context_entry = build_context(events)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
@@ -258,7 +266,14 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Gets details about a raw_response using the event ID or other valid filters.
+    """Gets an event by event ID and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     # Get arguments from user
     event_id = args.get('event_id', '')
@@ -270,7 +285,9 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}`:'
         context_entry = build_context(event)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry, headers=[])
         # Return data to Demisto
@@ -280,8 +297,14 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """
-    Gets details about a raw_response using the event ID or other valid filters.
+    """Closes an event and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     # Get arguments from user
     event_id = args.get('event_id', '')
@@ -293,16 +316,27 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been deleted.'
         context_entry = build_context(event)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not delete event `{event_id}`')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not close event `{event_id}`')
 
 
 def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Updates an event and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
     # Get arguments from user
     event_id = args.get('event_id', '')
     description = args.get('description')
@@ -315,7 +349,9 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been updated.'
         context_entry = build_context(event)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
@@ -323,6 +359,15 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Creates a new event and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
     # Get arguments from user
     description = args.get('description', '')
     assignee = argToList(demisto.args().get('assignee', ''))
@@ -335,7 +380,9 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         event_id: str = event.get('eventId', '')
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been created.'
         context_entry = build_context(event)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
@@ -343,6 +390,15 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Search for event by given args
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
     # Get arguments from user
     query_dict = assign_params(
         eventId=argToList(args.get('event_id')),
@@ -358,7 +414,9 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if events:
         title = f'{INTEGRATION_NAME} - Results for given query'
         context_entry = build_context(events)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry}
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+        }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
