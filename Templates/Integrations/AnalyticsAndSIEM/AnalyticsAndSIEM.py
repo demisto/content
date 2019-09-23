@@ -198,6 +198,16 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        'ok' if test successful.
+
+    Raises:
+        DemistoException: If test failed.
     """
     results = client.test_module_request()
     if 'version' in results:
@@ -211,6 +221,18 @@ def fetch_incidents(
         last_run: Optional[datetime] = None) -> Tuple[List, datetime]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
+
+    Args:
+        client: Client object with request
+        fetch_time: From when to fetch if first time, e.g. `3 days`
+        last_run: Last fetch object occurs.
+
+    Returns:
+        incidents, new last_run
+
+    Examples:
+        >>> client = Client('https://example.net/v1')
+        >>> fetch_incidents(client, '3 days', datetime(2010, 1, 1, 0, 0))
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S'
     # Get incidents from API
