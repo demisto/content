@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 0
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -146,6 +146,7 @@ script:
       type: Number
   - arguments:
     - default: false
+      description: The question ID.
       isArray: false
       name: question-id
       required: true
@@ -1257,5 +1258,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - Tanium Rest Test
