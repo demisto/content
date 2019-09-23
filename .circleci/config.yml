@@ -1,30 +1,36 @@
 version: 2
-
 jobs:
   build:
     docker:
       - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+    resource_class: medium+
     environment:
       CONTENT_VERSION: "19.9.1"
       SERVER_VERSION: "5.0.0"
       GIT_SHA1: "117f6b907c87a7a9d1a008285b6643cc1ddd4d18" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
       - run:
           name: Prepare Environment
+          when: always
           command: |
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-            echo "=== sourcing $BASH_ENV ==="
-            source $BASH_ENV
-            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
-            pyenv versions
-            python --version
-            python3 --version
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+              echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+              echo "=== sourcing $BASH_ENV ==="
+              source $BASH_ENV
+              sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+              chmod +x ./Tests/scripts/*
+              chmod +x ./Tests/lastest_server_build_scripts/*
+              pyenv versions
+              python --version
+              python3 --version
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+      - add_ssh_keys:
+          fingerprints:
+              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+              - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
       - run:
           name: Create ID Set
           when: always
@@ -38,32 +44,25 @@ jobs:
             pytest ./Tests/scripts/infrastructure_tests/ -v
             pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
-          name: Spell Checks
-          when: always
-          command: |
-            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
-      - run:
-          name: Common Server Documentation
-          when: always
-          command: ./Documentation/commonServerDocs.sh
-      - run:
           name: Validate Files and Yaml
           when: always
           command: |
-            # Run flake8 on all excluding Integrations and Scripts (they will be handled in linting)
-            ./Tests/scripts/pyflake.sh *.py
-            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
-            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
-            python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+              # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+              ./Tests/scripts/pyflake.sh *.py
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+
+              [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
-          name: Run Unit Testing and Lint
+          name: Configure Test Filter
           when: always
-          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+          command: |
+              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
+              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
-          name: Validate Docker Images
-          shell: /bin/bash
-          command: ./Tests/scripts/validate_docker_images.sh
-          when: always
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
       - run:
           name: Build Content Descriptor
           when: always
@@ -76,66 +75,20 @@ jobs:
                 python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
       - run:
+          name: Common Server Documentation
+          when: always
+          command: ./Documentation/commonServerDocs.sh
+      - run:
           name: Create Content Artifacts
           when: always
           command: python content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
-          when: always
-      # Persist the specified paths (Tests/id_set.json Documentation/doc-CommonServer.json) into the workspace for use in downstream job. 
-      - persist_to_workspace:
-          # Must be an absolute path, or relative path from working_directory. This is a directory on the container which is 
-          # taken to be the root directory of the workspace.
-          root: /home/circleci/project
-          # Must be relative path from root
-          paths:
-            - Tests/id_set.json
-            - Documentation/doc-CommonServer.json
-            - content_new.zip
-            - content_test.zip
-            - content_yml.zip
-            - release-notes.md
-  
-  instance_testing:
-    docker:
-      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
-    environment:
-      CONTENT_VERSION: "19.9.1"
-      SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "117f6b907c87a7a9d1a008285b6643cc1ddd4d18" # guardrails-disable-line disable-secrets-detection
-    resource_class: medium+
-    steps:
-      - checkout
-      - setup_remote_docker
       - run:
-          name: Prepare Environment
-          command: |
-            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-            echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
-            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
-            echo "=== sourcing $BASH_ENV ==="
-            source $BASH_ENV
-            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
-            chmod +x ./Tests/scripts/*
-            chmod +x ./Tests/lastest_server_build_scripts/*
-            pyenv versions
-            python --version
-            python3 --version
-            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
-      - add_ssh_keys:
-          fingerprints:
-              - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
-              - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
-      - attach_workspace:
-          # Must be absolute path or relative path from working_directory
-          at: /home/circleci/project
-      - run:
-          name: Configure Test Filter
+          name: Run Unit Testing and Lint
           when: always
-          command: |
-              [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-              python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
+          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
           name: Download Artifacts
           when: always
@@ -262,16 +215,8 @@ jobs:
           destination: artifacts
           when: always
 
-
 workflows:
   version: 2
   commit:
     jobs:
       - build
-      - instance_testing:
-          requires:
-            - build
-          filters:
-            branches:
-              # Forked pull requests have CIRCLE_BRANCH set to pull/XXX
-              ignore: /pull\/[0-9]+/
