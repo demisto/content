@@ -52,7 +52,7 @@ script:
       description: The ID of the user assigned to the event.
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: The ID of the event to close.
       isArray: false
       name: event_id
