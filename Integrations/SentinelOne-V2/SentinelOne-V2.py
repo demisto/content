@@ -13,8 +13,6 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
     else demisto.params()['url']
@@ -435,9 +433,9 @@ def get_threats_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' +
-                                         'Provides summary information and details for all the threats '
-                                         'that matched your search criteria.',
+        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
+                                                                                   'details for all the threats that '
+                                                                                   'matched your search criteria.',
                                          contents, removeNull=True),
         'EntryContext': context
     })
@@ -738,7 +736,6 @@ def get_white_list_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     item_ids = argToList(demisto.args().get('item_ids', []))
@@ -751,9 +748,6 @@ def get_white_list_command():
 
     # Parse response into context & content entries
     if exclusion_items:
-        title = 'Sentinel One - Listing exclusion items \n' + \
-                'provides summary information and details for ' \
-                'all the exclusion items that matched your search criteria.'
         for exclusion_item in exclusion_items:
             contents.append({
                 'ID': exclusion_item.get('id'),
@@ -787,7 +781,9 @@ def get_white_list_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Listing exclusion items \n'
+                                         + 'provides summary information and details for all the exclusion items that '
+                                           'matched your search criteria.', contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -898,7 +894,6 @@ def get_sites_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     updated_at = demisto.args().get('updated_at')
@@ -920,8 +915,6 @@ def get_sites_command():
 
     # Parse response into context & content entries
     if sites:
-        title = 'Sentinel One - Gettin List of Sites \n' + \
-                'Provides summary information and details for all sites that matched your search criteria.'
         for site in sites:
             contents.append({
                 'ID': site.get('id'),
@@ -961,7 +954,10 @@ def get_sites_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Gettin List of Sites \n' + 'Provides summary information and '
+                                                                                    'details for all sites that matched'
+                                                                                    ' your search criteria.', contents,
+                                         removeNull=True),
         'EntryContext': context
     })
 
@@ -1193,7 +1189,6 @@ def list_agents_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     active_threats = demisto.args().get('min_active_threats')
@@ -1207,8 +1202,6 @@ def list_agents_command():
 
     # Parse response into context & content entries
     if agents:
-        title = 'Sentinel One - List of Agents \n ' \
-                'Provides summary information and details for all the agents that matched your search criteria'
         for agent in agents:
             contents.append({
                 'ID': agent.get('id'),
@@ -1252,7 +1245,9 @@ def list_agents_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - List of Agents \n Provides summary information and details for'
+                                         ' all the agents that matched your search criteria',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
