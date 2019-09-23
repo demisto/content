@@ -62,14 +62,16 @@ def set_proxy():
             proxy_settings_str_args = proxy_settings_str.split(':')
 
             if 'http' in proxy_settings_str:
-                host = ':'.join(proxy_settings_str_args[1:2])[2:]
+                host = ':'.join(proxy_settings_str_args[0:2])
                 port = proxy_settings_str_args[2]
             else:
                 host = proxy_settings_str_args[0]
                 port = proxy_settings_str_args[1]
 
+            # demisto.results(host + ' ' + port)
+
             if USE_PROXY:
-                admin_api.set_proxy(host=host, port=port, proxy_type='CONNECT')
+                admin_api.set_proxy(host=host, port=port)
                 return
 
     # if no proxy settings have been set
