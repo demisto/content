@@ -188,3 +188,5 @@ inputs:
   required: true
   description: Endpoint ID.
 outputs: []
+tests:
+  - No test - Is be tested in Traps test playbook

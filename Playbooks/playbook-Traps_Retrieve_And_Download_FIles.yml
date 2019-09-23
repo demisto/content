@@ -201,3 +201,5 @@ inputs:
   required: true
   description: Event ID.
 outputs: []
+tests:
+  - No test - Is be tested in Traps test playbook
