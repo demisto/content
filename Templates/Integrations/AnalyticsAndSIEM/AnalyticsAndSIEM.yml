@@ -8,8 +8,7 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: 'true'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -23,7 +22,7 @@ name: AnalyticsAndSIEM
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: The ID of event for which to get information.
       isArray: false
       name: event_id
@@ -168,11 +167,15 @@ script:
       name: assignee
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Whether the event is active. Can be "true" or "false". If empty,
         will return active and inactive events.
       isArray: false
       name: is_active
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
