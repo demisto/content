@@ -9,7 +9,7 @@
         },
         {
             "integrations": "AWS - SQS",
-            "playbookID": "AWS - SQS Test Playbook"
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
         {
             "integrations": "SlackV2",
@@ -1867,7 +1867,7 @@
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
-        "AWS - SQS Test Playbook": "Old test - need to check if relevant"
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
