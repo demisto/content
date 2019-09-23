@@ -1,3 +1,4 @@
+PyJWT
 google
 Google-Search-API
 pyping

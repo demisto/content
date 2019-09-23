@@ -109,6 +109,16 @@ script:
     description: Execute a file retrieve action / SAM on specified agent.
     execution: false
     name: traps-endpoint-files-retrieve
+    outputs:
+    - contextPath: Traps.FileRetrieve.EndpointID
+      description: Endpoint ID.
+      type: String
+    - contextPath: Traps.FileRetrieve.OperationID
+      description: Operation ID. Use this to retreive status / results.
+      type: String
+    - contextPath: Traps.FileRetrieve.Type
+      description: Operation type.
+      type: String
   - arguments:
     - default: false
       description: Endpoint ID.
@@ -362,4 +372,4 @@ script:
   script: '-'
   type: python
 tests:
-  - No tests
+- No tests
