@@ -220,7 +220,7 @@ BLOCK_JSON = [{
                 'text': 'yes'
             },
         'style': 'primary',
-        'value': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'value': '{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}',
     }, {
         'type': 'button',
         'text': {
@@ -229,10 +229,10 @@ BLOCK_JSON = [{
             'text': 'no'
         },
         'style': 'danger',
-        'value': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'value': '{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}',
     }]}]
 
-PAYLOAD_JSON = '''
+PAYLOAD_JSON = r'''
  {
      "type":"block_actions",
      "team":{
@@ -281,7 +281,7 @@ PAYLOAD_JSON = '''
                     "text":"Eyy",
                     "emoji":true
                  },
-                 "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+                 "value":"{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}",
                  "action_id":"W9J"
               }
            }
@@ -297,7 +297,7 @@ PAYLOAD_JSON = '''
               "text":"Eyy",
               "emoji":true
            },
-           "value":"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43",
+           "value":"{\"entitlement\": \"e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43\", \"reply\": \"Thanks bro\"}",
            "type":"button",
            "action_ts":"1567949681.728426"
         }
@@ -1540,10 +1540,12 @@ def test_check_for_answers(mocker, requests_mock):
     integration_context = get_integration_context()
     integration_context['questions'] = json.dumps([{
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }])
 
     set_integration_context(integration_context)
@@ -1565,7 +1567,8 @@ def test_check_for_answers(mocker, requests_mock):
     # Should delete the question
     assert demisto.getIntegrationContext()['questions'] == json.dumps([{
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }])
 
 
@@ -1593,13 +1596,16 @@ def test_check_for_answers_continue(mocker, requests_mock):
     integration_context = get_integration_context()
     integration_context['questions'] = json.dumps([{
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'notcool2',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }])
 
     set_integration_context(integration_context)
@@ -1622,10 +1628,12 @@ def test_check_for_answers_continue(mocker, requests_mock):
     # Should delete the question
     assert demisto.getIntegrationContext()['questions'] == json.dumps([{
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'notcool2',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }])
 
 
@@ -1649,10 +1657,12 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     integration_context = get_integration_context()
     integration_context['questions'] = json.dumps([{
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }])
 
     set_integration_context(integration_context)
@@ -1667,10 +1677,12 @@ def test_check_for_answers_no_answer(mocker, requests_mock):
     # Should not delete the question
     assert demisto.getIntegrationContext()['questions'] == json.dumps([{
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }, {
         'thread': 'notcool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'reply': 'Thanks bro'
     }])
 
 
@@ -1757,12 +1769,12 @@ async def test_check_entitlement(mocker):
     result3_args = demisto.handleEntitlementForUser.call_args_list[2][0]
     result4_args = demisto.handleEntitlementForUser.call_args_list[3][0]
 
-    assert result1 is True
-    assert result2 is True
-    assert result3 is True
-    assert result4 is True
-    assert result5 is False
-    assert result6 is False
+    assert result1 == 'Thank you for your response.'
+    assert result2 == 'Thank you for your response.'
+    assert result3 == 'Thank you for your response.'
+    assert result4 == 'Thank you for your response.'
+    assert result5 == ''
+    assert result6 == ''
 
     assert demisto.handleEntitlementForUser.call_count == 4
 
@@ -2035,7 +2047,8 @@ def test_send_request_with_entitlement(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'message': json.dumps({
             'message': 'hi test@demisto.com',
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'}),
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
+            'reply': 'Thanks bro'}),
         'to': 'spengler'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2047,7 +2060,8 @@ def test_send_request_with_entitlement(mocker):
 
     questions = [{
         'thread': 'cool',
-        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43'
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22|43',
+        'reply': 'Thanks bro'
     }]
 
     # Arrange
@@ -2087,7 +2101,8 @@ def test_send_request_with_entitlement_blocks(mocker):
     mocker.patch.object(demisto, 'args', return_value={
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCK_JSON),
-            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'}),
+            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+            'reply': 'Thanks bro'}),
         'to': 'spengler'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2099,7 +2114,8 @@ def test_send_request_with_entitlement_blocks(mocker):
 
     questions = [{
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }]
 
     # Arrange
@@ -2108,8 +2124,8 @@ def test_send_request_with_entitlement_blocks(mocker):
     send_args = Slack.send_message.call_args[0]
 
     results = demisto.results.call_args_list[0][0]
+    
     # Assert
-
     assert slack.WebClient.users_list.call_count == 0
     assert slack.WebClient.conversations_list.call_count == 0
     assert Slack.send_message.call_count == 1
@@ -2140,7 +2156,8 @@ def test_send_request_with_entitlement_blocks_message(mocker):
         'message': 'wat up',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCK_JSON),
-            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'}),
+            'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+            'reply': 'Thanks bro'}),
         'to': 'spengler'})
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
@@ -2152,7 +2169,8 @@ def test_send_request_with_entitlement_blocks_message(mocker):
 
     questions = [{
         'thread': 'cool',
-        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43'
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro'
     }]
 
     # Arrange

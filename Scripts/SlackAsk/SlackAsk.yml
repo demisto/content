@@ -78,6 +78,13 @@ args:
   name: additionalOptions
   required: false
   secret: false
+- default: false
+  defaultValue: Thank you for your response.
+  description: The reply to send back to the user.
+  isArray: false
+  name: reply
+  required: false
+  secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.
   The message includes predefined reply options. The response can also close a task
   (might be conditional) in a playbook.

@@ -9,7 +9,11 @@ STYLES_DICT = {
 }
 
 
-def create_blocks(text: str, entitlement: str, options: list) -> list:
+def create_blocks(text: str, entitlement: str, options: list, reply: str) -> list:
+    value = json.dumps({
+        'entitlement': entitlement,
+        'reply': reply
+    })
     blocks: list = [{
         'type': 'section',
         'text': {
@@ -27,7 +31,7 @@ def create_blocks(text: str, entitlement: str, options: list) -> list:
                 'emoji': True,
                 'text': option['text']
             },
-            'value': entitlement
+            'value': value
         }
         if 'style' in option:
             element['style'] = option['style']
@@ -52,6 +56,7 @@ def main():
     option1 = demisto.get(demisto.args(), 'option1')
     option2 = demisto.get(demisto.args(), 'option2')
     extra_options = argToList(demisto.args().get('additionalOptions', ''))
+    reply = demisto.get(demisto.args(), 'reply')
     entitlement_string = entitlement + '@' + demisto.investigation()['id']
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
@@ -71,7 +76,8 @@ def main():
         message = '{} - Please reply to this thread with {}'.format(demisto.args()['message'], string_options)
         args['message'] = json.dumps({
             'message': message,
-            'entitlement': entitlement_string
+            'entitlement': entitlement_string,
+            'reply': reply
         })
     else:
         for option in user_options:
@@ -84,10 +90,11 @@ def main():
                 if style:
                     button['style'] = style
             options.append(button)
-        blocks = json.dumps(create_blocks(demisto.args()['message'], entitlement_string, options))
+        blocks = json.dumps(create_blocks(demisto.args()['message'], entitlement_string, options, reply))
         args['blocks'] = json.dumps({
             'blocks': blocks,
-            'entitlement': entitlement_string
+            'entitlement': entitlement_string,
+            'reply': reply
         })
         args['message'] = demisto.args()['message']
 

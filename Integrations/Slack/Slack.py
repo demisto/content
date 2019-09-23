@@ -465,7 +465,7 @@ def check_for_answers():
                 users.append(user)
                 set_to_latest_integration_context('users', users)
 
-            content, guid, incident_id, task_id = extract_entitlement(actions[0].get('value'),
+            content, guid, incident_id, task_id = extract_entitlement(question.get('entitlement'),
                                                                       actions[0].get('text', {}).get('text'))
             demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'),
                                              content, task_id)
@@ -710,8 +710,9 @@ async def listen(**payload):
 
         integration_context = demisto.getIntegrationContext()
         user = await get_user_by_id_async(client, integration_context, user_id)
-        if await check_and_handle_entitlement(text, user, thread):
-            await client.chat_postMessage(channel=channel, text='Thank you for your response.', thread_ts=thread)
+        entitlement_reply = await check_and_handle_entitlement(text, user, thread)
+        if entitlement_reply:
+            await client.chat_postMessage(channel=channel, text=entitlement_reply, thread_ts=thread)
         elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
@@ -788,13 +789,13 @@ async def handle_text(client: slack.WebClient, investigation_id: str, text: str,
                          )
 
 
-async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> bool:
+async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) -> str:
     """
     Handles an entitlement message (a reply to a question)
     :param text: The message text
     :param user: The user who sent the reply
     :param thread_id: The thread ID
-    :return: Whether the message is a reply to a question or not
+    :return: If the message contains entitlement, return a reply.
     """
 
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
@@ -803,7 +804,7 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
         demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content, task_id)
 
-        return True
+        return 'Thank you for your response.'
     else:
         integration_context = demisto.getIntegrationContext()
         questions = integration_context.get('questions', [])
@@ -813,15 +814,16 @@ async def check_and_handle_entitlement(text: str, user: dict, thread_id: str) ->
             if question_filter:
                 demisto.info('Slack - handling entitlement in thread.')
                 entitlement = question_filter[0].get('entitlement')
+                reply = question_filter[0].get('reply', 'Thank you for your response.')
                 content, guid, incident_id, task_id = extract_entitlement(entitlement, text)
                 demisto.handleEntitlementForUser(incident_id, guid, user.get('profile', {}).get('email'), content,
                                                  task_id)
                 questions.remove(question_filter[0])
                 set_to_latest_integration_context('questions', questions)
 
-                return True
+                return reply
 
-    return False
+    return ''
 
 
 ''' SEND '''
@@ -899,6 +901,7 @@ def slack_send():
                 parsed_message = json.loads(blocks)
                 entitlement = parsed_message.get('entitlement')
                 blocks = parsed_message.get('blocks')
+                reply = parsed_message.get('reply')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement blocks.')
                 pass
@@ -909,6 +912,7 @@ def slack_send():
                 parsed_message = json.loads(message)
                 entitlement = parsed_message.get('entitlement')
                 message = parsed_message.get('message')
+                reply = parsed_message.get('reply')
             except Exception:
                 demisto.info('Slack - could not parse JSON from entitlement message.')
                 pass
@@ -918,7 +922,7 @@ def slack_send():
     if response:
         thread = response.get('ts')
         if entitlement:
-            save_entitlement(entitlement, thread)
+            save_entitlement(entitlement, thread, reply)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -934,7 +938,7 @@ def slack_send():
         demisto.results('Could not send the message to Slack.')
 
 
-def save_entitlement(entitlement, thread):
+def save_entitlement(entitlement, thread, reply):
     """
     Saves an entitlement with its thread
     :param entitlement: The entitlement
@@ -946,7 +950,8 @@ def save_entitlement(entitlement, thread):
         questions = json.loads(integration_context['questions'])
     questions.append({
         'thread': thread,
-        'entitlement': entitlement
+        'entitlement': entitlement,
+        'reply': reply
     })
 
     set_to_latest_integration_context('questions', questions)

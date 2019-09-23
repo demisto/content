@@ -19,7 +19,7 @@ BLOCKS = [{
             'emoji': True,
             'text': 'yes'
         },
-        'value': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+        'value': '{\"entitlement\": \"4404dae8-2d45-46bd-85fa-64779c12abe8@22\", \"reply\": \"Thank you brother.\"}',
         'style': 'danger'
     }, {
         'type': 'button',
@@ -28,7 +28,7 @@ BLOCKS = [{
             'emoji': True,
             'text': 'no'
         },
-        'value': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+        'value': '{\"entitlement\": \"4404dae8-2d45-46bd-85fa-64779c12abe8@22\", \"reply\": \"Thank you brother.\"}',
         'style': 'danger'
     }]}]
 
@@ -47,7 +47,7 @@ BLOCKS_ADDITIONAL = [{
             'emoji': True,
             'text': 'yes'
         },
-        'value': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+        'value': '{\"entitlement\": \"4404dae8-2d45-46bd-85fa-64779c12abe8@22\", \"reply\": \"Thank you brother.\"}',
         'style': 'danger'
     }, {
         'type': 'button',
@@ -56,7 +56,7 @@ BLOCKS_ADDITIONAL = [{
             'emoji': True,
             'text': 'no'
         },
-        'value': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+        'value': '{\"entitlement\": \"4404dae8-2d45-46bd-85fa-64779c12abe8@22\", \"reply\": \"Thank you brother.\"}',
         'style': 'danger'
     }, {
         'type': 'button',
@@ -65,7 +65,7 @@ BLOCKS_ADDITIONAL = [{
             'emoji': True,
             'text': 'maybe'
         },
-        'value': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+        'value': '{\"entitlement\": \"4404dae8-2d45-46bd-85fa-64779c12abe8@22\", \"reply\": \"Thank you brother.\"}',
     }]}]
 
 
@@ -84,7 +84,8 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red'
+        'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
+        'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -97,7 +98,8 @@ def test_slack_ask_user(mocker):
         'ignoreAddURL': 'true',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'message': 'wat up',
         'to': 'alexios'
@@ -110,7 +112,7 @@ def test_slack_ask_user_additional(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'additionalOptions': 'maybe'
+        'additionalOptions': 'maybe', 'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -123,7 +125,8 @@ def test_slack_ask_user_additional(mocker):
         'ignoreAddURL': 'true',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS_ADDITIONAL),
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'message': 'wat up',
         'to': 'alexios'
@@ -135,7 +138,8 @@ def test_slack_ask_channel(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'channel': 'general', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red'
+        'channel': 'general', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
+        'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -148,7 +152,8 @@ def test_slack_ask_channel(mocker):
         'ignoreAddURL': 'true',
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'message': 'wat up',
         'channel': 'general'
@@ -160,7 +165,8 @@ def test_slack_ask_user_threads(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red'
+        'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
+        'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -172,7 +178,8 @@ def test_slack_ask_user_threads(mocker):
     assert call_args[1] == {
         'message': json.dumps({
             'message': 'wat up - Please reply to this thread with `yes` or `no`',
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'ignoreAddURL': 'true',
         'to': 'alexios',
@@ -185,7 +192,7 @@ def test_slack_ask_user_threads_additional(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'additionalOptions': 'maybe', 'responseType': 'thread'
+        'additionalOptions': 'maybe', 'responseType': 'thread', 'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -197,7 +204,8 @@ def test_slack_ask_user_threads_additional(mocker):
     assert call_args[1] == {
         'message': json.dumps({
             'message': 'wat up - Please reply to this thread with `yes` or `no` or `maybe`',
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'ignoreAddURL': 'true',
         'to': 'alexios',
@@ -209,7 +217,8 @@ def test_slack_ask_channel_threads(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
-        'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red'
+        'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
+        'reply': 'Thank you brother.'
     })
     mocker.patch.object(demisto, 'results')
 
@@ -221,7 +230,8 @@ def test_slack_ask_channel_threads(mocker):
     assert call_args[1] == {
         'message': json.dumps({
             'message': 'wat up - Please reply to this thread with `yes` or `no`',
-            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22'
+            'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
+            'reply': 'Thank you brother.'
         }),
         'ignoreAddURL': 'true',
         'channel': 'general',
