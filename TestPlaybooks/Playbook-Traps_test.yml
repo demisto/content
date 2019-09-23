@@ -460,8 +460,8 @@ tasks:
     task:
       id: ef1f1874-e535-45be-88ce-66a231b02352
       version: -1
-      name: Traps Retrieve And Download FIles
-      playbookName: Traps Retrieve And Download FIles
+      name: Traps Retrieve And Download Files
+      playbookName: Traps Retrieve And Download Files
       type: playbook
       iscommand: false
       brand: ""
