@@ -614,11 +614,12 @@ class IntegrationLogger(object):
                 pswrd = self.encode(demisto.getParam('credentials').get('password'))
                 self.add_replace_strs(pswrd, b64_encode(pswrd))
             sensitive_params = ('api_key', 'apikey', 'password', 'secret')
-            for (k, v) in demisto.params().items():
-                k_lower = k.lower()
-                for p in sensitive_params:
-                    if p in k_lower and v:
-                        self.add_replace_strs(v, b64_encode(v))
+            if demisto.params():
+                for (k, v) in demisto.params().items():
+                    k_lower = k.lower()
+                    for p in sensitive_params:
+                        if p in k_lower and v:
+                            self.add_replace_strs(v, b64_encode(v))
 
     def encode(self, message):
         try:
