@@ -92,7 +92,7 @@ tasks:
       PollingCommandName:
         simple: traps-endpoint-scan-result
       Timeout:
-        simple: "5"
+        simple: "10"
       dt:
         simple: Traps.ScanResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
     separatecontext: true
