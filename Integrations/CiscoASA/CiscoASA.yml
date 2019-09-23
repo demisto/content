@@ -1,0 +1,279 @@
+category: Network Security
+commonfields:
+  id: Cisco ASA
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Manage Cisco ASA
+display: Cisco ASA
+name: Cisco ASA
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The name of the interface to get rules from.
+      isArray: false
+      name: interface_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of interface '
+      isArray: false
+      name: interface_type
+      predefined:
+      - In
+      - Out
+      - Global
+      required: false
+      secret: false
+    deprecated: false
+    description: List all rules
+    execution: false
+    name: cisco-asa-list-rules
+    outputs:
+    - contextPath: CiscoASA.Rules.SourceIP
+      description: The rule's source IP.
+      type: String
+    - contextPath: CiscoASA.Rules.DestIP
+      description: The rule's destination IP.
+      type: String
+    - contextPath: CiscoASA.Rules.InterfaceType
+      description: The Interface's type. Could be In/Out/Global
+      type: String
+    - contextPath: CiscoASA.Rules.IsActive
+      description: Indicates if the rule is active.
+      type: Boolean
+    - contextPath: CiscoASA.Rules.Interface
+      description: The name of the interface.
+      type: String
+    - contextPath: CiscoASA.Rules.Position
+      description: The position of the rule.
+      type: Number
+    - contextPath: CiscoASA.Rules.ID
+      description: The rule's ID
+      type: String
+    - contextPath: CiscoASA.Rules.Remarks
+      description: A list of all rule remarks.
+      type: Unknown
+    - contextPath: CiscoASA.Rules.Permit
+      description: Is the rule permiting the traffic from source to destination.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the backup.
+      isArray: false
+      name: backup_name
+      required: true
+      secret: false
+    - default: false
+      description: Passphrase for backup.
+      isArray: false
+      name: passphrase
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a backup of current settings. (i.e "backup.bkp")
+    execution: false
+    name: cisco-asa-backup
+  - arguments:
+    - default: false
+      description: The rule's ID.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the interface
+      isArray: false
+      name: interface_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of interface
+      isArray: false
+      name: interface_type
+      predefined:
+      - In
+      - Out
+      - Global
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific rule by its ID
+    execution: false
+    name: cisco-asa-get-rule-by-id
+    outputs:
+    - contextPath: CiscoASA.Rule.Interface
+      description: The name of the interface.
+      type: String
+    - contextPath: CiscoASA.Rules.SourceIP
+      description: The rule's source IP.
+      type: String
+    - contextPath: CiscoASA.Rules.DestIP
+      description: The rule's destination IP.
+      type: String
+    - contextPath: CiscoASA.Rules.InterfaceType
+      description: The Interface's type. Could be In/Out/Global
+      type: String
+    - contextPath: CiscoASA.Rules.IsActive
+      description: Indicates if the rule is active.
+      type: Boolean
+    - contextPath: CiscoASA.Rules.Position
+      description: The position of the rule.
+      type: Number
+    - contextPath: CiscoASA.Rules.ID
+      description: "The rule's ID\t"
+      type: String
+    - contextPath: CiscoASA.Rules.Remarks
+      description: A list of all rule remarks.
+      type: Unknown
+    - contextPath: CiscoASA.Rules.Permit
+      description: Is the rule permiting the traffic from source to destination.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The source. Could be IPv4, address block or any
+      isArray: false
+      name: source
+      required: true
+      secret: false
+    - default: false
+      description: The destination. Could be IPv4, address block or any
+      isArray: false
+      name: destination
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: True if the rule is a permit.
+      isArray: false
+      name: permit
+      predefined:
+      - 'True'
+      - ' False'
+      required: true
+      secret: false
+    - default: false
+      description: A list of remarks for the rule.
+      isArray: true
+      name: remarks
+      required: false
+      secret: false
+    - default: false
+      description: 'The position the rule will created in. '
+      isArray: false
+      name: position
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The log level of the rule.
+      isArray: false
+      name: log_level
+      predefined:
+      - Default
+      - Emergencies
+      - Alerts
+      - Critical
+      - Errors
+      - Warnings
+      - Notifications
+      - Informational
+      - Debugging
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Will the rule be active.
+      isArray: false
+      name: active
+      predefined:
+      - True False
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the interface.
+      isArray: false
+      name: interface_type
+      predefined:
+      - In
+      - Out
+      - Global
+      required: true
+      secret: false
+    - default: false
+      description: The interface's name.
+      isArray: false
+      name: interface_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a rule.
+    execution: false
+    name: cisco-asa-create-rule
+  - arguments:
+    - default: false
+      description: The name of the backup file. (i.e "backup.bkp")
+      isArray: false
+      name: backup_name
+      required: false
+      secret: false
+    - default: false
+      description: The passphrase for the backup.
+      isArray: false
+      name: passphrase
+      required: false
+      secret: false
+    deprecated: false
+    description: Restore an existing backup.
+    execution: false
+    name: cisco-asa-restore
+  - arguments:
+    - default: false
+      description: The rule's ID.
+      isArray: false
+      name: rule_id
+      required: false
+      secret: false
+    - default: false
+      description: The name of the interface
+      isArray: false
+      name: interface_name
+      required: false
+      secret: false
+    - default: false
+      description: The type of interface.
+      isArray: false
+      name: interface_type
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete a rule.
+    execution: false
+    name: cisco-asa-delete-rule
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
