@@ -74,6 +74,7 @@ def test_updated_docker_image_on_sane_doc_reports_fail_subtype():
 
     assert validator.is_changed_subtype() is True, \
         "Did not find changed subtype while it was changed"
+    assert validator.is_backward_compatible(), "The script validator passed sane-doc-reports"
 
 
 def test_updated_docker_image_on_sane_doc_reports():
