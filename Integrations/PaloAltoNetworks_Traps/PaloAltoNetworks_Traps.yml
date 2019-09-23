@@ -19,8 +19,7 @@ configuration:
   name: private_key
   required: false
   type: 14
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -65,8 +64,10 @@ script:
       description: Endpoint IP.
       type: String
     - contextPath: Traps.Endpoint.ComputerSid
+      description: Computer SID.
       type: String
     - contextPath: Traps.Endpoint.IsCompromised
+      description: 'Is compremised. '
       type: String
     - contextPath: Traps.Endpoint.OsVersion
       description: Endpoint OS versoin.
