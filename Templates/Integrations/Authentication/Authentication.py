@@ -44,14 +44,15 @@ class Client(BaseClient):
         suffix = 'credential'
         return self._http_request('GET', suffix)
 
-    def list_accounts_request(self) -> Dict:
-        """Uses to fetch incidents into Demisto
+    def list_accounts_request(self, max_results: int = None) -> Dict:
+        """Lists all accounts.
         Documentation:https://github.com/demisto/content/tree/master/docs/fetching_incidents
         Returns:
             Response JSON
         """
         suffix = 'account'
-        return self._http_request('GET', suffix)
+        params = assign_params(limit=max_results)
+        return self._http_request('GET', suffix, params=params)
 
     def lock_account_request(self, account_id: AnyStr) -> Dict:
         """Locks an account by the account ID.
@@ -301,10 +302,11 @@ def reset_account(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
 
 
-def list_accounts(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def list_accounts(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Returns credentials to user without passwords.
     """
-    raw_response = client.list_accounts_request()
+    max_results = int(args.get('max_results')) if args.get('max_results') else None
+    raw_response = client.list_accounts_request(max_results=max_results)
     # Filtering out passwords for list_credentials, so it won't get back to the user
     raw_response['account'] = [
         assign_params(keys_to_ignore=['password'], **account) for account in raw_response.get('account', [])

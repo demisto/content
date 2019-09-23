@@ -47,7 +47,7 @@ class Client(BaseClient):
 
         Args:
             score: Severity from API
-            threshold: Any value above this number is malicious. if None, will use self._threshold
+            threshold: Any value above this number is malicious. if None, will use self._threshold.
 
         Returns:
             Score representation in DBot
@@ -77,7 +77,7 @@ class Client(BaseClient):
         """Gets an analysis from the API for given IP.
 
         Args:
-            ip: IP to get analysis on
+            ip: IP to get analysis on.
 
         Returns:
             Response JSON
@@ -88,10 +88,10 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
     def get_url_request(self, url: str) -> Dict:
-        """Gets an analysis from the API for given url.
+        """Gets an analysis from the API for given URL.
 
         Args:
-            url: URL to get analysis on
+            url: URL to get analysis on.
 
         Returns:
             Response JSON
@@ -127,28 +127,24 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
 
-def build_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
+def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
     """Formatting results from API to Demisto Context
 
     Args:
-        results: raw results from raw_response
-        indicator_type: type of indicator
+        results: raw results from API response.
+        indicator_type: type of indicator.
 
     Returns:
         Results formatted to Demisto Context
     """
-
-    def build_entry_context(entry: Dict):
-        return {
-            'ID': entry.get('id'),
-            'Severity': entry.get('severity'),
-            indicator_type: entry.get('indicator'),
-            'Description': entry.get('description')
-        }
-
     if isinstance(results, list):
-        return [build_entry_context(entry) for entry in results]  # pragma: no cover
-    return build_entry_context(results)
+        return [build_entry_context(entry, indicator_type) for entry in results]  # pragma: no cover
+    return {
+        'ID': results.get('id'),
+        'Severity': results.get('severity'),
+        indicator_type: results.get('indicator'),
+        'Description': results.get('description')
+    }
 
 
 ''' COMMANDS '''
@@ -156,6 +152,13 @@ def build_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict
 
 def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets results for the API.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     ip = args.get('ip', '')
     raw_response = client.get_ip_request(ip)
@@ -163,7 +166,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if results:
         result = results[0]
         title = f'{INTEGRATION_NAME} - Analysis results for IP: {ip}'
-        context_entry = build_context(result, 'IP')
+        context_entry = build_entry_context(result, 'IP')
         # Building a score for DBot
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(ip, 'ip', INTEGRATION_NAME, score, result.get('description'))
@@ -179,6 +182,13 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     url = args.get('url', '')
     raw_response = client.get_url_request(url)
@@ -186,7 +196,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if results:
         result = results[0]
         title = f'{INTEGRATION_NAME} - Analysis results for URL: {url}'
-        context_entry = build_context(result, 'URL')
+        context_entry = build_entry_context(result, 'URL')
         # Building a score for DBot
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(url, 'url', INTEGRATION_NAME, score, result.get('description'))
@@ -257,7 +267,7 @@ def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if results:
         result = results[0]
         title = f'{INTEGRATION_NAME} - Analysis results for domain: {url}'
-        context_entry = build_context(result, 'Domain')
+        context_entry = build_entry_context(result, 'Domain')
         # Building a score for DBot
         score = client.calculate_dbot_score(result.get('severity'))
         dbot_entry = build_dbot_entry(url, 'domain', INTEGRATION_NAME, score, result.get('description'))
@@ -268,10 +278,22 @@ def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         human_readable = tableToMarkdown(title, context_entry, removeNull=True)
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - No results found for Domain: {url}', {}, raw_response
+        return f'{INTEGRATION_NAME} - No results found for domain: {url}', {}, raw_response
 
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+    """
+
+    Args:
+        client: Client object with request
+        *_: arg to ignore, not needed in test_module.
+
+    Returns:
+        Response JSON
+
+    Raises:
+        DemistoException: If unexpected response turn back from API.
+    """
     raw_response = client.test_module_request()
     if raw_response.get('version'):
         return 'ok', {}, raw_response
