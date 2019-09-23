@@ -72,14 +72,14 @@ class TestCredentialsOperations:
     def test_list_accounts_full(self, mocker):
         from Authentication import list_accounts
         mocker.patch.object(self.client, 'list_accounts_request', return_value=get_user_list())
-        _, _, raw_response = list_accounts(self.client)
+        _, _, raw_response = list_accounts(self.client, {})
         assert raw_response == {'account': [{'username': 'User1', 'name': 'DBot Demisto', 'isLocked': False},
                                             {'username': 'User2', 'name': 'Demisto DBot', 'isLocked': True}]}
 
     def test_list_accounts_negative(self, requests_mock):
         from Authentication import list_accounts
         requests_mock.get(BASE_URL + 'account', json={'account': []})
-        human_readable, _, _ = list_accounts(self.client)
+        human_readable, _, _ = list_accounts(self.client, {})
         assert 'Could not find any users' in human_readable
 
 
