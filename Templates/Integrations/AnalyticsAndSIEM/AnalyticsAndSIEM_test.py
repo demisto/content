@@ -4,7 +4,7 @@ from pytest import raises
 from AnalyticsAndSIEM import Client
 
 CONTEXT_PREFIX = 'AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'
-BASE_URL = 'http://api.service.com/v1/'
+BASE_URL = 'http://api.example.com/v1/'
 
 EVENT_LIST_INPUT = {'event': [{'eventId': 'ab123',
                                'description': 'Phishing email',
