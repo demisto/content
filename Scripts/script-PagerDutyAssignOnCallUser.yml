@@ -39,9 +39,9 @@ comment: By default assigns the first on-call user to an investigation (all inci
 enabled: true
 args:
 - name: escalation_policy_ids
-  description: comma separated escalation policy ids to choose the oncall from
+  description: Comma separated escalation policy IDs from which choose the oncall user.
 - name: schedule_ids
-  description: comma separated schedules to choose oncall from
+  description: Comma separated schedule IDs from which to choose the oncall.
 scripttarget: 0
 dependson:
   must:
