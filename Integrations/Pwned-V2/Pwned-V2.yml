@@ -7,6 +7,10 @@ configuration:
   name: api_key
   required: true
   type: 4
+- display: Maximum time per request (In seconds)
+  name: max_retry_time
+  required: false
+  type: 0
 - defaultvalue: SUSPICIOUS
   display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
     or MALICIOUS)'
