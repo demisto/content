@@ -44,6 +44,11 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- defaultvalue: 100
+  display: Maxmimum amount of incidents to ingest in one fetch cycle.
+  name: fetch_limit
+  required: false
+  type: 0
 description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
   visibility for real-time collection, detection, and automated response with the
   Demisto Enterprise platform. Providing full session analysis, customers can extract
