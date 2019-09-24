@@ -55,8 +55,8 @@ class Client:
         # Handle error responses gracefully
         if res.status_code not in {200, 403}:
             reason = res.reason
-            if(res.content):
-                reason = reason + ' ' + res.content
+            if res.content:
+                reason = reason + ' ' + str(res.content)
             return_error('Error in API call to Integration [%d] - %s' % (res.status_code, reason))
 
         return res
