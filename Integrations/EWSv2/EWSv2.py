@@ -1175,7 +1175,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
                     break
 
         new_last_run = {
-            LAST_RUN_TIME: incident.get('occurred', last_run.get(LAST_RUN_TIME).ewsformat())
+            LAST_RUN_TIME: incident.get('occurred', last_run.get(LAST_RUN_TIME).ewsformat()),
             LAST_RUN_FOLDER: folder_name,
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
