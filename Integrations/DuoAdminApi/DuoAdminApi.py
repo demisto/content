@@ -44,7 +44,6 @@ def create_api_call():
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
             host=HOST,
-            ca_certs='HTTP'
         )
 
     return duo_client.Admin(
