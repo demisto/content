@@ -1167,27 +1167,17 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
         ids = deque(last_run.get(LAST_RUN_IDS), maxsize=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
-        max_occurred = 0
-        new_last_run_time = None
-        if last_run.get(LAST_RUN_TIME):
-            new_last_run_time = last_run.get(LAST_RUN_TIME).ewsformat()
-
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
-                incident_occurred = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-                if incident_occurred > max_occurred:
-                    max_occurred = incident_occurred
-                    new_last_run_time = incident['occurred'] # already in ewsformat
-
                 if len(incidents) >= MAX_FETCH:
                     break
 
         new_last_run = {
-            LAST_RUN_TIME: new_last_run_time,
+            LAST_RUN_TIME: incident.get('occurred', last_run.get(LAST_RUN_TIME).ewsformat())
             LAST_RUN_FOLDER: folder_name,
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
