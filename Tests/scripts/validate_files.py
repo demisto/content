@@ -31,7 +31,7 @@ from Tests.scripts.hook_validations.integration import IntegrationValidator
 from Tests.scripts.hook_validations.description import DescriptionValidator
 from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator
 from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
-    get_yaml, filter_packagify_changes
+    get_yaml, filter_packagify_changes, print_warning
 
 
 class FilesValidator(object):
@@ -121,6 +121,9 @@ class FilesValidator(object):
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error(file_path + " file status is an unknown known one, "
                                         "please check. File status was: " + file_status)
+            else:
+                print_warning('Ignored file {}'.format(file_path))
+
         modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
             modified_files_list,
             added_files_list,
