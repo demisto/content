@@ -1,0 +1,122 @@
+category: Authentication
+commonfields:
+  id: Google Docs
+  version: -1
+configuration:
+- display: Service Account Private Key file contents (JSON)
+  name: service_account_credentials
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Create and modify google docs documents.
+display: Google Docs
+name: Google Docs
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Id of the document to fetch
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a document matching the given ID.
+    execution: false
+    name: get_document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: Title of the document
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: Revision of the document to be updated
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: Id of the document to update
+      type: String
+  - arguments:
+    - default: false
+      description: Title of the document
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Text to insert at position 0
+      isArray: false
+      name: text
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a document
+    execution: false
+    name: create_document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: Title of the document
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: Revision of the document to be updated
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: Id of the document to update
+      type: String
+  - arguments:
+    - default: false
+      description: Id of the document to be updated
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    - default: false
+      description: 'updates to the document in the format: action1{param1,param2,...};action2{param1,param2,...}...'
+      isArray: false
+      name: actions
+      required: true
+      secret: false
+    - default: false
+      description: The target revision ID of the document that the write request will
+        be applied to. Will throw an error if a newer revision exists.
+      isArray: false
+      name: required_revision_id
+      required: false
+      secret: false
+    - default: false
+      description: The target revision ID of the document that the write request will
+        be applied to. Will merge revision a newer revision exists.
+      isArray: false
+      name: target_revision_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates a document with a given ID
+    execution: false
+    name: update_document
+    outputs:
+    - contextPath: GoogleDocs.Title
+      description: Title of the document
+      type: String
+    - contextPath: GoogleDocs.RevisionId
+      description: Revision of the document to be updated
+      type: String
+    - contextPath: GoogleDocs.DocumentId
+      description: Id of the document to update
+      type: Unknown
+  dockerimage: devtesting/googleapi_python3:1.0.0.1569314947
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- playbook-GoogleDocs
