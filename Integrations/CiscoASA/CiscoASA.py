@@ -28,14 +28,14 @@ class Client:
                 verify=self.verify,
                 params=params,
                 json=data,
-                auth = (self.username, self.password)
+                auth=(self.username, self.password)
                 )
         if res.status_code not in [200, 204, 201]:
             raise ValueError('Error in API call to url [%s]. Status Code: [%d]. Reason: %s' % (full_url,
                                                                                                res.status_code,
                                                                                                res.text))
 
-        if res.status_code == 201:
+        if res.status_code in [201,204]:
             return res.headers.get('Location')
         try:
             return res.json()
@@ -77,7 +77,6 @@ class Client:
                     item['interface_type'] = "In"
                 rules.extend(items)
 
-
         ## Get out rules
         if rule_type in ['All', 'Out']:
             res = self.http_request('GET', '/api/access/out')
@@ -99,15 +98,16 @@ class Client:
 
         return rules
 
-    def get_rule(self, rule_id, interface_name, interface_type):
+    def rule_action(self, rule_id, interface_name, interface_type, command='GET'):
         if interface_type == "Global":
-            rule =  self.http_request('GET', '/api/access/global/rules/{}'.format(rule_id))
+            rule = self.http_request(command, '/api/access/global/rules/{}'.format(rule_id))
         if interface_type == "In":
-            rule = self.http_request('GET', '/api/access/in/{}/rules/{}'.format(interface_name, rule_id))
+            rule = self.http_request(command, '/api/access/in/{}/rules/{}'.format(interface_name, rule_id))
         if interface_type == 'Out':
-            rule = self.http_request('GET', '/api/access/out/{}/rules/{}'.format(interface_name, rule_id))
-        rule['interface'] = interface_name
-        rule['interface_type'] = interface_type
+            rule = self.http_request(command, '/api/access/out/{}/rules/{}'.format(interface_name, rule_id))
+        if command == 'GET':
+            rule['interface'] = interface_name
+            rule['interface_type'] = interface_type
         return rule
 
 
@@ -115,9 +115,9 @@ class Client:
         if interface_type == "Global":
             loc = self.http_request('POST', '/api/access/global/rules', data=rule_body)
         if interface_type == 'In':
-            loc =  self.http_request('POST', '/api/access/in/{}/rules'.format(interface_name), data=rule_body)
+            loc = self.http_request('POST', '/api/access/in/{}/rules'.format(interface_name), data=rule_body)
         if interface_type == 'Out':
-            loc =  self.http_request('POST', '/api/access/out/{}/rules'.format(interface_name), data=rule_body)
+            loc = self.http_request('POST', '/api/access/out/{}/rules'.format(interface_name), data=rule_body)
         rule = self.http_request('GET', loc[loc.find('/api'):])
         rule['interface'] = interface_name
         rule['interface_type'] = interface_type
@@ -209,7 +209,8 @@ def backup_command(client: Client, args):
     if passphrase:
         data['passphrase'] = passphrase
 
-    client.http_request("POST","/api/backup", data=data)
+    print(data)
+    client.http_request("POST", "/api/backup", data=data)
     return "Created backup successfully in:\nlocation: {}\nPassphrase: {}".format(location, passphrase), {}, ""
 
 
@@ -217,6 +218,13 @@ def backup_command(client: Client, args):
 def restore_command(client: Client, args):
     location = "disk0:/"+args.get("backup_name")
     passphrase = args.get("passphrase")
+    data = {'location': location}
+    if passphrase:
+        data['passphrase'] = passphrase
+
+    print(data)
+    client.http_request("POST", "/api/restore", data=data)
+    return "Restored backup successfully.", {}, ""
 
 
 
@@ -226,7 +234,7 @@ def rule_by_id_command(client: Client, args):
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
 
-    raw_rules = client.get_rule(rule_id,interface,interface_type)
+    raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
     rules = raw_to_rules([raw_rules])
 
     outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
@@ -315,6 +323,64 @@ def delete_rule_command(client: Client, args):
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
 
+    client.rule_action(rule_id, interface, interface_type, 'DELETE')
+
+    return "Rule {} deleted successfully.".format(rule_id), {}, ""
+
+
+@logger
+def edit_rule_command(client: Client, args):
+    source = args.get('source')
+    dest = args.get('destination')
+    permit = args.get('permit')
+    interface = args.get('interface_name')
+    interface_type = args.get('interface_type')
+
+    remarks = argToList(args.get('remarks'), ',')
+    position = args.get('position')
+    log_level = args.get('logging_level')
+    active = args.get('active', 'True')
+
+    rule_body = {}
+    rule_body['sourceService'] = {"kind": "NetworkProtocol",
+                                  "value": "ip"}
+    ## Set up source
+    if is_ipv4(source):
+        rule_body["sourceAddress"] = {"kind": "IPv4Address",
+                                      "value": source}
+    if source == 'any':
+        rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
+                                      "value": "any4"}
+    if '/' in source:
+        rule_body["sourceAddress"] = {"kind": "IPv4Network",
+                                      "value": source}
+
+
+    ## Set up dest
+    rule_body['destinationService'] = {"kind": "NetworkProtocol",
+                                       "value": "ip"}
+
+    if is_ipv4(dest):
+        rule_body["destinationAddress"] = {"kind": "IPv4Address",
+                                           "value": dest}
+    if dest == 'any':
+        rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
+                                           "value": "any4"}
+    if '/' in dest:
+        rule_body["destinationAddress"] = {"kind": "IPv4Network",
+                                           "value": dest}
+
+    ## everything else
+    if permit:
+        rule_body['permit'] = True if permit == 'True' else False
+    if remarks:
+        rule_body['remarks'] = remarks
+    if active:
+        rule_body['active'] = True if active == 'True' else False
+    if position:
+        rule_body['position'] = position
+    if log_level:
+        rule_body['ruleLogging'] = {'logStatus': log_level}
 
 
 '''MAIN'''
@@ -334,7 +400,8 @@ def main():
         'cisco-asa-backup': backup_command,
         'cisco-asa-get-rule-by-id': rule_by_id_command,
         'cisco-asa-create-rule': create_rule_command,
-        'cisco-asa-restore': restore_command
+        'cisco-asa-restore': restore_command,
+        'cisco-asa-delete-rule': delete_rule_command
     }
 
     LOG('Command being called is %s' % (demisto.command()))
