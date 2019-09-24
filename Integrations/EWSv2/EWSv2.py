@@ -895,8 +895,6 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
             qs = qs.filter(datetime_received__gte=last_10_min)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
-    
-    # Sorts ascending
     qs = qs.filter().order_by('datetime_received')
 
     result = qs.all()
