@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-
+from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
@@ -10,45 +10,14 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-API_SUFFIX = "/api/v1/suffix"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-class Client:
+class Client(BaseClient):
     """
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     """
-    def __init__(self, url, verify, username, password, proxies=None):
-        self.base_url = "{}{}".format(url, API_SUFFIX)
-        self.verify = verify
-        self.username = username
-        self.password = password
-        self.proxies = proxies
-
-    def http_request(self, method, url_suffix, params=None, data=None):
-        full_url = self.base_url + url_suffix
-
-        res = requests.request(
-            method,
-            full_url,
-            verify=self.verify,
-            params=params,
-            json=data,
-            auth=(self.username, self.password),
-            proxies=self.proxies
-        )
-
-        if res.status_code not in [200, 204]:
-            raise ValueError('Error in API call to url [%s]. Status Code: [%d]. Reason: %s' % (full_url,
-                                                                                               res.status_code,
-                                                                                               res.text))
-
-        try:
-            return res.json()
-        except Exception:
-            raise ValueError(
-                "Failed to parse http response to JSON format. Original response body: \n{}".format(res.text))
 
     def say_hello(self, name):
         return "Hello {}".format(name)
@@ -57,7 +26,10 @@ class Client:
         """
         initiates a http request to test url
         """
-        data = self.http_request("GET", "/hello/" + name)
+        data = self._http_request(
+            method="GET",
+            url_suffix="/hello/" + name
+        )
         return data["result"]
 
     def list_incidents(self):
@@ -164,26 +136,28 @@ def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
 
-    # Remove trailing slash to prevent wrong URL path to service
-    server_url = demisto.params()['url'][:-1] \
-        if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+    # get the service API url
+    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
 
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How many time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days')
 
-    proxies = handle_proxy()
+    proxy = demisto.params().get('proxy', False)
 
     LOG('Command being called is %s' % (demisto.command()))
-
     try:
-        client = Client(server_url, verify_certificate, username, password, proxies)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            auth=(username, password),
+            proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            return_outputs(result, None)
+            demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -200,9 +174,8 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(), e)
-        raise
+        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

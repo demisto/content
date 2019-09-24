@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-
+from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import json
@@ -52,19 +52,23 @@ def say_hello_command(args):
 
 
 def main():
-    if demisto.command() == "test-module":
-        results = test_module()
-        return_outputs(readable_output=results, outputs=None)
+    try:
+        if demisto.command() == "test-module":
+            result = test_module()
+            demisto.results(result)
 
-    if demisto.command() == "helloworldsimple-say-hello":
-        results = say_hello_command(demisto.args())
-        return_outputs(readable_output=results, outputs=None)
+        if demisto.command() == "helloworldsimple-say-hello":
+            results = say_hello_command(demisto.args())
+            return_outputs(readable_output=results, outputs=None)
 
-    if demisto.command() == "fetch-incidents":
-        next_run, incidents = fetch_incidents(demisto.getLastRun())
-        demisto.setLastRun(next_run)
-        demisto.incidents(incidents)
+        if demisto.command() == "fetch-incidents":
+            next_run, incidents = fetch_incidents(demisto.getLastRun())
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+
+    except Exception as e:
+        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
 
 
-if __name__ in ['__main__', 'builtin', 'builtins']:
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
