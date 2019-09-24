@@ -562,7 +562,7 @@ def get_saved_question_result(client, data_args):
     rows = client.parse_question_results(res)
     if rows is None:
         return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={'Status': 'Pending'}, raw_response=res)
+                              outputs={'Status': 'Pending', 'SavedQuestionID': id}, raw_response=res)
 
     context = {'SavedQuestionID': id, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
