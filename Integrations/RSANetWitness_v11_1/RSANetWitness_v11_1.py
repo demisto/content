@@ -632,7 +632,6 @@ def fetch_incidents():
             continue
 
         # parse timestamp to datetime format to be able to compare with last_incident_datetime
-        # incident_datetime = datetime.strptime(incident_timestamp, iso_format)
         try:
             incident_datetime = datetime.strptime(incident_timestamp, iso_format)
         except ValueError:
