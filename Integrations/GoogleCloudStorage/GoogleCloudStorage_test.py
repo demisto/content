@@ -43,7 +43,7 @@ def test_human_readable_table():
         == '### My Table\n' \
            '|Header One|Header Two|Header Three|\n' \
            '|---|---|---|\n' \
-           '|value one|value two|value three|\n'
+           '| value one | value two | value three |\n'
 
 
 def test_format_error():
