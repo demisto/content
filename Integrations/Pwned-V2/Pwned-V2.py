@@ -13,8 +13,10 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 VENDOR = 'Have I Been Pwned? V2'
+MAX_RETRY_ALLOWED = demisto.params().get('max_retry_time', -1)
 API_KEY = demisto.params().get('api_key')
 USE_SSL = not demisto.params().get('insecure', False)
+
 BASE_URL = 'https://haveibeenpwned.com/api/v3'
 HEADERS = {
     'hibp-api-key': API_KEY,
@@ -32,6 +34,8 @@ PWNED_DOMAIN_SUFFIX = '/breaches?domain='
 PWNED_PASTE_SUFFIX = '/pasteaccount/'
 EMAIL_TRUNCATE_VERIFIED_SUFFIX = '?truncateResponse=false&includeUnverified=true'
 DOMAIN_TRUNCATE_VERIFIED_SUFFIX = '&truncateResponse=false&includeUnverified=true'
+
+retries_end_time = datetime.min
 
 ''' HELPER FUNCTIONS '''
 
@@ -194,6 +198,9 @@ def domain_to_entry_context(domain, api_res):
 
 
 def rate_limit_retry(amount_of_seconds, request_type):
+    if datetime.now() > retries_end_time:
+        return_error('Max retry time has exceeded')
+
     time.sleep(amount_of_seconds)
     if request_type == 'email':
         pwned_email_command()
@@ -202,6 +209,10 @@ def rate_limit_retry(amount_of_seconds, request_type):
 
 
 def retry_needed(api_res, api_paste_res=None):
+    global retries_end_time
+    if retries_end_time == datetime.min and not MAX_RETRY_ALLOWED == -1:
+        retries_end_time = datetime.now() + timedelta(seconds=int(MAX_RETRY_ALLOWED))
+
     if api_res and 'time_to_wait' in api_res:
         return True
     elif api_paste_res and 'time_to_wait' in api_paste_res:
