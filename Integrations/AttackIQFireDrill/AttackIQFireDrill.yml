@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
-display: AttackIQ FireDrill
+display: AttackIQ Platform
 name: AttackIQFireDrill
 script:
   commands:
