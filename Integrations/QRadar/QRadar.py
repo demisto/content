@@ -11,7 +11,6 @@ from copy import deepcopy
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
 CREDENTIALS = demisto.params().get('credentials')
@@ -209,7 +208,8 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         if TOKEN:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
         else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+                                   auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
@@ -379,7 +379,10 @@ def get_offense_types():
 
 # Returns the result of a get note request
 def get_note(offense_id, note_id, fields):
-    url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    if note_id:
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    else:
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
     params = {'fields': fields} if fields else {}
     return send_request('GET', url, AUTH_HEADERS, params=params)
 
@@ -674,7 +677,7 @@ def update_offense_command():
     args = demisto.args()
     if 'closing_reason_name' in args:
         args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-    elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+    elif 'CLOSED' == args.get('status') and not args.get('closing_reason_id'):
         raise ValueError(
             'Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to '
             'get them) to close offense')
@@ -870,10 +873,14 @@ def get_note_command():
         'create_time': 'CreateTime',
         'username': 'CreatedBy'
     }
-    note = replace_keys(raw_note, note_names_map)
-    if 'CreateTime' in note:
-        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-    return get_entry_for_object('QRadar note created successfully', note, raw_note, demisto.args().get('headers'),
+    notes = replace_keys(raw_note, note_names_map)
+    if not isinstance(notes, list):
+        notes = [notes]
+    for note in notes:
+        if 'CreateTime' in note:
+            note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+    return get_entry_for_object('QRadar note for offense: {0}'.format(str(demisto.args().get('offense_id'))), notes,
+                                raw_note, demisto.args().get('headers'),
                                 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
 

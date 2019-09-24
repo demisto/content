@@ -109,7 +109,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "52"
     scriptarguments:
       custom-field-mask: {}
       projection: {}
@@ -275,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "52"
     separatecontext: false
     view: |-
       {
@@ -1006,7 +1006,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 2565
+          "y": 2615
         }
       }
     note: false
@@ -1037,8 +1037,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 2700
+          "x": 850,
+          "y": 2765
         }
       }
     note: false
@@ -1642,7 +1642,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "55"
     scriptarguments:
       debug: {}
       max_digits: {}
@@ -1668,9 +1668,226 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "52":
+    id: "52"
+    taskid: e75ba678-eaf8-432f-8b6a-ed4a5486715f
+    type: regular
+    task:
+      id: e75ba678-eaf8-432f-8b6a-ed4a5486715f
+      version: -1
+      name: Check for user existence
+      description: Gets information for a specified user.
+      script: '|||gmail-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      custom-field-mask: {}
+      projection: {}
+      user-id:
+        simple: JohnS@demistodev.com
+      view-type-public-domain: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "53":
+    id: "53"
+    taskid: 0d3b0145-c73d-4a38-8130-e93dd4b07d07
+    type: condition
+    task:
+      id: 0d3b0145-c73d-4a38-8130-e93dd4b07d07
+      version: -1
+      name: Check that it doesn't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: johns
+    - label: condition-2
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: JohnS
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "54":
+    id: "54"
+    taskid: 35c4081a-0b42-401f-83d6-f86a6b2dc935
+    type: regular
+    task:
+      id: 35c4081a-0b42-401f-83d6-f86a6b2dc935
+      version: -1
+      name: gmail-delete-user
+      description: Deletes a Gmail user.
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      user-id:
+        simple: JohnS@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "55":
+    id: "55"
+    taskid: 32eb325b-0619-4899-87b4-963abd594c66
+    type: regular
+    task:
+      id: 32eb325b-0619-4899-87b4-963abd594c66
+      version: -1
+      name: check for user's existence
+      description: Gets information for a specified user.
+      script: '|||gmail-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      custom-field-mask: {}
+      projection: {}
+      user-id:
+        simple: user_to_delete@demistodev.com
+      view-type-public-domain: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "56":
+    id: "56"
+    taskid: a45f2036-308d-4634-8023-379a36ee822d
+    type: condition
+    task:
+      id: a45f2036-308d-4634-8023-379a36ee822d
+      version: -1
+      name: Check user's existence
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Account.Gmail.Address
+            iscontext: true
+          right:
+            value:
+              simple: user_to_delete@demistodev.com
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "57":
+    id: "57"
+    taskid: 4e2e1574-33bf-4eca-8dde-ef3b0328f4f7
+    type: regular
+    task:
+      id: 4e2e1574-33bf-4eca-8dde-ef3b0328f4f7
+      version: -1
+      name: gmail-delete-user
+      description: Deletes a Gmail user.
+      script: '|||gmail-delete-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      user-id:
+        simple: user_to_delete@demistodev.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "53_2_#default#": 0.28,
+      "56_30_#default#": 0.42
+    },
     "paper": {
       "dimensions": {
         "height": 5735,
