@@ -12,8 +12,8 @@ from datetime import datetime
 from typing import List, Dict, Set
 
 ''' GLOBAL VARS '''
-READER_ENDPOINT = demisto.params()['reader_endpoint']
-READER_OAUTH_TOKEN = demisto.params()['reader_oauth_token']
+READER_ENDPOINT = demisto.params().get('reader_endpoint', None)
+READER_OAUTH_TOKEN = demisto.params().get('reader_oauth_token', None)
 WRITER_RELAY = demisto.params().get('writer_relay', None)
 WRITER_CREDENTIALS = demisto.params().get('writer_credentials', None)
 LINQ_LINK_BASE = demisto.params().get('linq_link_base', "https://us.devo.com/welcome")
@@ -223,6 +223,8 @@ def fetch_incidents():
 
     # this command will create incidents in Demisto
     demisto.incidents(incidents)
+
+    return incidents
 
 
 def run_query_command():
