@@ -60,7 +60,7 @@ COMMON_HEADERS = [
     'SHA256', 'filename'
 ]
 
-PANW_TRAFFIC_FIELDS = [
+TRAFFIC_FIELDS = [
     'all', 'container', 'risk-of-app', 'logset', 'bytes_received', 'natsport', 'sessionid', 'url_denied',
     'type', 'parent_start_time', 'packets', 'characteristic-of-app', 'dg_hier_level_4', 'dg_hier_level_1',
     'dg_hier_level_3', 'dg_hier_level_2', 'parent_session_id', 'repeatcnt', 'app', 'vsys', 'nat',
@@ -76,7 +76,7 @@ PANW_TRAFFIC_FIELDS = [
     'tunnel', 'ui-dstloc', 'transaction', 'is_phishing'
 ]
 
-PANW_THREAT_FIELDS = [
+THREAT_FIELDS = [
     'all', 'sessionid', 'url_idx', 'dg_hier_level_4', 'dg_hier_level_3', 'dg_hier_level_2', 'dg_hier_level_1',
     'action', 'recsize', 'repeatcnt', 'app', 'nat', 'subcategory-of-app', 'pcap_id', 'ppid', 'proxy', 'cloud_hostname',
     'customer-id', 'natdst', 'flags', 'dport', 'pcap', 'threatid', 'natsrc', 'outbound_if', 'category-of-app',
@@ -87,7 +87,7 @@ PANW_THREAT_FIELDS = [
     'category', 'sport', 'packet_capture', 'ui-dstloc', 'is_phishing'
 ]
 
-TMS_THREAT_FIELDS = [
+TRAPS_FIELDS = [
     'all', 'severity', 'agentId', 'endPointHeader.osType','endPointHeader.isVdi', 'endPointHeader.osVersion',
     'endPointHeader.is64', 'endPointHeader.agentIp', 'endPointHeader.deviceName', 'endPointHeader.deviceDomain',
     'endPointHeader.userName', 'endPointHeader.agentTime', 'endPointHeader.tzOffset', 'endPointHeader.agentVersion',
@@ -111,7 +111,7 @@ TMS_THREAT_FIELDS = [
     'messageData.sourceProcess.innerObjectSha256', 'messageData.class', 'messageData.classId'
 ]
 
-TMS_ANALYTICS_FIELDS = [
+ANALYTICS_FIELDS = [
     'all', 'agentId', 'endPointHeader.osType', 'endPointHeader.isVdi', 'endPointHeader.osVersion',
     'endPointHeader.is64', 'endPointHeader.agentIp', 'endPointHeader.deviceName', 'endPointHeader.deviceDomain',
     'endPointHeader.userName', 'endPointHeader.userDomain', 'endPointHeader.agentTime', 'endPointHeader.tzOffset',
@@ -145,95 +145,282 @@ TMS_ARGS_DICT = {
     'query': []
 }
 
-PANW_TRAFFIC_CONTEXT_TRANSFORM_DICT = {
-    'risk-of-app': 'RiskOfApp',
-    'natsport': 'Natsport',
-    'sessionid': 'SessionID',
-    'packets': 'Packets',
-    'characteristic-of-app': 'CharacteristicOfApp',
-    'app': 'App',
-    'vsys': 'Vsys',
-    'nat': 'Nat',
-    'receive_time': 'ReceiveTime',
-    'subcategory-of-app': 'SubcategoryOfApp',
-    'users': 'Users',
-    'proto': 'Proto',
-    'tunneled-app': 'TunneledApp',
-    'natdport': 'Natdport',
-    'dst': 'Dst',
-    'natdst': 'Natdst',
-    'rule': 'Rule',
-    'dport': 'Dport',
-    'elapsed': 'Elapsed',
-    'device_name': 'DeviceName',
-    'subtype': 'Subtype',
-    'time_received': 'TimeReceived',
-    'session_end_reason': 'SessionEndReason',
-    'natsrc': 'Natsrc',
-    'src': 'Src',
-    'start': 'Start',
-    'time_generated': 'TimeGenerated',
-    'category-of-app': 'CategoryOfApp',
-    'srcloc': 'Srcloc',
-    'dstloc': 'Dstloc',
-    'serial': 'Serial',
-    'bytes': 'Bytes',
-    'vsys_id': 'VsysID',
-    'to': 'To',
-    'category': 'Category',
-    'sport': 'Sport',
-    'tunnel': 'Tunnel',
-    'is_phishing': 'IsPhishing',
-}
-
-PANW_THREAT_CONTEXT_TRANSFORMER_DICT = {
-    'sessionid': 'SessionID',
-    'action': 'Action',
-    'app': 'App',
-    'nat': 'Nat',
-    'subcategory-of-app': 'SubcategoryOfApp',
-    'pcap_id': 'PcapID',
-    'natdst': 'Natdst',
-    'flags': 'Flags',
-    'dport': 'Dport',
-    'threatid': 'ThreatID',
-    'natsrc': 'Natsrc',
-    'category-of-app': 'CategoryOfApp',
-    'srcloc': 'Srcloc',
-    'dstloc': 'Dstloc',
-    'to': 'To',
-    'risk-of-app': 'RiskOfApp',
-    'natsport': 'Natsport',
-    'url_denied': 'URLDenied',
-    'characteristic-of-app': 'CharacteristicOfApp',
-    'http_method': 'HTTPMethod',
-    'from': 'From',
-    'vsys': 'Vsys',
-    'receive_time': 'ReceiveTime',
-    'users': 'Users',
-    'proto': 'Proto',
-    'natdport': 'Natdport',
-    'dst': 'Dst',
-    'rule': 'Rule',
-    'category-of-threatid': 'CategoryOfThreatID',
-    'device_name': 'DeviceName',
-    'subtype': 'Subtype',
-    'time_received': 'TimeReceived',
-    'direction': 'Direction',
-    'misc': 'Misc',
-    'severity': 'Severity',
-    'src': 'Src',
-    'time_generated': 'TimeGenerated',
-    'serial': 'Serial',
-    'vsys_id': 'VsysID',
-    'url_domain': 'URLDomain',
-    'category': 'Category',
-    'sport': 'Sport',
-    'is_phishing': 'IsPhishing'
-}
-
-
 ''' HELPER FUNCTIONS '''
+
+
+def parse_processes(processes_list: list):
+    processes_new_list = []
+    for process_object in processes_list:
+        process_new_object = {
+            'PID': process_object.get('pid'),
+            'ParentID': process_object.get('parentId'),
+            'ExeFileIdx': process_object.get('exeFileIdx'),
+            'UserIdx': process_object.get('userIdx'),
+            'CommandLine': process_object.get('commandLine'),
+            'Terminated': process_object.get('terminated')
+        }
+        processes_new_list.append(process_new_object)
+    return processes_new_list
+
+
+def parse_files(files_list: list):
+    files_new_list = []
+    for file_object in files_list:
+        file_new_object = {
+            'RawFullPath': file_object.get('rawFullPath'),
+            'FileName': file_object.get('fileName'),
+            'SHA256': file_object.get('sha256'),
+            'FileSize': file_object.get('fileSize')
+        }
+        files_new_list.append(file_new_object)
+    return files_new_list
+
+
+def parse_users(users_list: list):
+    users_new_list = []
+    for user_object in users_list:
+        user_new_object = {
+            'Username': user_object.get('userName')
+        }
+        users_new_list.append(user_new_object)
+    return users_new_list
+
+
+def traffic_context_transformer(row_content: dict):
+    return {
+        'RiskOfApp': row_content.get('risk-of-app'),
+        'Natsport': row_content.get('natsport'),
+        'SessionID': row_content.get('sessionid'),
+        'Packets': row_content.get('packets'),
+        'CharacteristicOfApp': row_content.get('characteristic-of-app'),
+        'App': row_content.get('app'),
+        'Vsys': row_content.get('vsys'),
+        'Nat': row_content.get('nat'),
+        'ReceiveTime': row_content.get('receive_time'),
+        'SubcategoryOfApp': row_content.get('subcategory-of-app'),
+        'Users': row_content.get('users'),
+        'Proto': row_content.get('proto'),
+        'TunneledApp': row_content.get('tunneled-app'),
+        'Natdport': row_content.get('natdport'),
+        'Dst': row_content.get('dst'),
+        'Natdst': row_content.get('natdst'),
+        'Rule': row_content.get('rule'),
+        'Dport': row_content.get('dport'),
+        'Elapsed': row_content.get('elapsed'),
+        'DeviceName': row_content.get('device_name'),
+        'Subtype': row_content.get('subtype'),
+        'TimeReceived': row_content.get('time_received'),
+        'SessionEndReason': row_content.get('session_end_reason'),
+        'Natsrc': row_content.get('natsrc'),
+        'Src': row_content.get('src'),
+        'Start': row_content.get('start'),
+        'TimeGenerated': row_content.get('time_generated'),
+        'CategoryOfApp': row_content.get('category-of-app'),
+        'Srcloc': row_content.get('srcloc'),
+        'Dstloc': row_content.get('dstloc'),
+        'Serial': row_content.get('serial'),
+        'Bytes': row_content.get('bytes'),
+        'VsysID': row_content.get('vsys_id'),
+        'To': row_content.get('to'),
+        'Category': row_content.get('category'),
+        'Sport': row_content.get('sport'),
+        'Tunnel': row_content.get('tunnel'),
+        'IsPhishing': row_content.get('is_phishing')
+    }
+
+
+def threat_context_transformer(row_content: dict):
+    return {
+        'SessionID': row_content.get('sessionid'),
+        'Action': row_content.get('action'),
+        'App': row_content.get('app'),
+        'Nat': row_content.get('nat'),
+        'SubcategoryOfApp': row_content.get('subcategory-of-app'),
+        'PcapID': row_content.get('pcap_id'),
+        'Natdst': row_content.get('natdst'),
+        'Flags': row_content.get('flags'),
+        'Dport': row_content.get('dport'),
+        'ThreatID': row_content.get('threatid'),
+        'Natsrc': row_content.get('natsrc'),
+        'CategoryOfApp': row_content.get('category-of-app'),
+        'Srcloc': row_content.get('srcloc'),
+        'Dstloc': row_content.get('dstloc'),
+        'To': row_content.get('to'),
+        'RiskOfApp': row_content.get('risk-of-app'),
+        'Natsport': row_content.get('natsport'),
+        'URLDenied': row_content.get('url_denied'),
+        'CharacteristicOfApp': row_content.get('characteristic-of-app'),
+        'HTTPMethod': row_content.get('http_method'),
+        'From': row_content.get('from'),
+        'Vsys': row_content.get('vsys'),
+        'ReceiveTime': row_content.get('receive_time'),
+        'Users': row_content.get('users'),
+        'Proto': row_content.get('proto'),
+        'Natdport': row_content.get('natdport'),
+        'Dst': row_content.get('dst'),
+        'Rule': row_content.get('rule'),
+        'CategoryOfThreatID': row_content.get('category-of-threatid'),
+        'DeviceName': row_content.get('device_name'),
+        'Subtype': row_content.get('subtype'),
+        'TimeReceived': row_content.get('time_received'),
+        'Direction': row_content.get('direction'),
+        'Misc': row_content.get('misc'),
+        'Severity': row_content.get('severity'),
+        'Src': row_content.get('src'),
+        'TimeGenerated': row_content.get('time_generated'),
+        'Serial': row_content.get('serial'),
+        'VsysID': row_content.get('vsys_id'),
+        'URLDomain': row_content.get('url_domain'),
+        'Category': row_content.get('category'),
+        'Sport': row_content.get('sport'),
+        'IsPhishing': row_content.get('is_phishing')
+    }
+
+
+def traps_context_transformer(row_content: dict):
+    return {
+        'Severity': row_content.get('severity'),
+        'AgentID': row_content.get('agentId'),
+        'EndPointHeader.OsType': row_content.get('endPointHeader', {}).get('osType'),
+        'EndPointHeader.IsVdi': row_content.get('endPointHeader', {}).get('isVdi'),
+        'EndPointHeader.OsVersion': row_content.get('endPointHeader', {}).get('osVersion'),
+        'EndPointHeader.Is64': row_content.get('endPointHeader', {}).get('is64'),
+        'EndPointHeader.AgentIP': row_content.get('endPointHeader', {}).get('agentIp'),
+        'EndPointHeader.DeviceName': row_content.get('endPointHeader', {}).get('deviceName'),
+        'EndPointHeader.DeviceDomain': row_content.get('endPointHeader', {}).get('deviceDomain'),
+        'EndPointHeader.Username': row_content.get('endPointHeader', {}).get('userName'),
+        'EndPointHeader.AgentTime': row_content.get('endPointHeader', {}).get('agentTime'),
+        'EndPointHeader.AgentVersion': row_content.get('endPointHeader', {}).get('agentVersion'),
+        'EndPointHeader.ProtectionStatus': row_content.get('endPointHeader', {}).get('protectionStatus'),
+        'RecordType': row_content.get('recordType'),
+        'TrapsID': row_content.get('tarpsId'),
+        'EventType': row_content.get('eventType'),
+        'UuID': row_content.get('uuid'),
+        'ServerHost': row_content.get('serverHost'),
+        'GeneratedTime': row_content.get('generatedTime'),
+        'ServerComponentVersion': row_content.get('serverComponentVersion'),
+        'RegionID': row_content.get('regionId'),
+        'CustomerID': row_content.get('customerId'),
+        'ServerTime': row_content.get('serverTime'),
+        'OriginalAgentTime': row_content.get('originalAgentTime'),
+        'Facility': row_content.get('facility'),
+        'MessageData.EventCategory': row_content.get('messageData', {}).get('eventCategory'),
+        'MessageData.PreventionKey': row_content.get('messageData', {}).get('preventionKey'),
+        'MessageData.Processes': parse_processes(row_content.get('messageData', {}).get('processes', [])),
+        'MessageData.Files': parse_files(row_content.get('messageData', {}).get('files', [])),
+        'MessageData.Users': parse_users(row_content.get('messageData', {}).get('users', [])),
+        'MessageData.PostDetected': row_content.get('messageData', {}).get('postDetected'),
+        'MessageData.Terminate': row_content.get('messageData', {}).get('terminate'),
+        'MessageData.SourceProcessIdx': row_content.get('messageData', {}).get('sourceProcessIdx'),
+        'MessageData.FileIdx': row_content.get('messageData', {}).get('fileIdx'),
+        'MessageData.Verdict': row_content.get('messageData', {}).get('verdict'),
+        'MessageData.TargetProcessIdx': row_content.get('messageData', {}).get('targetProcessIdx'),
+        'MessageData.ModuleCategory': row_content.get('messageData', {}).get('moduleCategory'),
+        'MessageData.PreventionMode': row_content.get('messageData', {}).get('preventionMode'),
+        'MessageData.TrapsSeverity': row_content.get('messageData', {}).get('trapsSeverity'),
+        'MessageData.SourceProcess.User.Username': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('user', {}).get('userName'),
+        'MessageData.SourceProcess.PID': row_content.get('messageData', {}).get('sourceProcess', {}).get('pid'),
+        'MessageData.SourceProcess.ParentID': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('parentId'),
+        'MessageData.SourceProcess.ExeFileIdx': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('exeFileIdx'),
+        'MessageData.SourceProcess.UserIdx': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('userIdx'),
+        'MessageData.SourceProcess.CommandLine': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('commandLine'),
+        'MessageData.SourceProcess.InstanceID': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('instanceId'),
+        'MessageData.SourceProcess.Terminated': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('terminated'),
+        'MessageData.SourceProcess.RawFullPath': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('rawFullPath'),
+        'MessageData.SourceProcess.FileName': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('fileName'),
+        'MessageData.SourceProcess.SHA256': row_content.get('messageData', {}).get('sourceProcess', {}).get('sha256'),
+        'MessageData.SourceProcess.FileSize': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('fileSize'),
+        'MessageData.SourceProcess.InnerObjectSHA256': row_content.get('messageData', {}).get('sourceProcess', {})
+                        .get('innerObjectSha256'),
+    }
+
+
+def analytics_context_transformer(row_content: dict):
+    return {
+        'AgentID': row_content.get('agentId'),
+        'EndPointHeader.OsType': row_content.get('endPointHeader', {}).get('osType'),
+        'EndPointHeader.IsVdi': row_content.get('endPointHeader', {}).get('isVdi'),
+        'EndPointHeader.OsVersion': row_content.get('endPointHeader', {}).get('osVersion'),
+        'EndPointHeader.Is64': row_content.get('endPointHeader', {}).get('is64'),
+        'EndPointHeader.AgentIP': row_content.get('endPointHeader', {}).get('agentIp'),
+        'EndPointHeader.DeviceName': row_content.get('endPointHeader', {}).get('deviceName'),
+        'EndPointHeader.DeviceDomain': row_content.get('endPointHeader', {}).get('deviceDomain'),
+        'EndPointHeader.Username': row_content.get('endPointHeader', {}).get('userName'),
+        'EndPointHeader.UserDomain': row_content.get('endPointHeader', {}).get('userDomain'),
+        'EndPointHeader.AgentTime': row_content.get('endPointHeader', {}).get('agentTime'),
+        'EndPointHeader.AgentVersion': row_content.get('endPointHeader', {}).get('agentVersion'),
+        'EndPointHeader.ProtectionStatus': row_content.get('endPointHeader', {}).get('protectionStatus'),
+        'TrapsID': row_content.get('trapsId'),
+        'EventType': row_content.get('eventType'),
+        'UuID': row_content.get('uuid'),
+        'GeneratedTime': row_content.get('generatedTime'),
+        'RegionID': row_content.get('regionId'),
+        'OriginalAgentTime': row_content.get('originalAgentTime'),
+        'Facility': row_content.get('facility'),
+        'MessageData.@type': row_content.get('MessageData', {}).get('@type'),
+        'MessageData.SHA256': row_content.get('MessageData', {}).get('sha256'),
+        'MessageData.Type': row_content.get('MessageData', {}).get('type'),
+        'MessageData.FileName': row_content.get('MessageData', {}).get('fileName'),
+        'MessageData.FilePath': row_content.get('MessageData', {}).get('filePath'),
+        'MessageData.FileSize': row_content.get('MessageData', {}).get('fileSize'),
+        'MessageData.Reported': row_content.get('MessageData', {}).get('reported'),
+        'MessageData.Blocked': row_content.get('MessageData', {}).get('blocked'),
+        'MessageData.LocalAnalysisResult.Trusted': row_content.get('MessageData', {}).get('localAnalysisResult', {})
+                        .get('trusted'),
+        'MessageData.LocalAnalysisResult.Publishers': row_content.get('MessageData', {}).get('localAnalysisResult', {})
+                        .get('publishers'),
+        'MessageData.LocalAnalysisResult.TrustedID': row_content.get('MessageData', {}).get('localAnalysisResult', {})
+                        .get('trustedId'),
+        'MessageData.ExecutionCount': row_content.get('executionCount'),
+        'MessageData.LastSeen': row_content.get('lastSeen'),
+        'MessageData.TypeID': row_content.get('typeId')
+    }
+
+
+COMMANDS_DATA_DICT = {
+    'cortex-query-traffic-logs': {
+        'table_fields': TRAFFIC_FIELDS,
+        'args_dict': PANW_ARGS_DICT,
+        'table_name': 'panw.traffic',
+        'context_transformer_function': traffic_context_transformer,
+        'human_readable_generator_function': '',
+        'context_root_path': 'Cortex.Logging.Traffic(val.id === obj.id)'
+    },
+    'cortex-query-threat-logs': {
+        'table_fields': THREAT_FIELDS,
+        'args_dict': PANW_ARGS_DICT,
+        'table_name': 'panw.threat',
+        'context_transformer_function': threat_context_transformer,
+        'human_readable_generator_function': '',
+        'context_root_path': 'Cortex.Logging.Threat(val.id === obj.id)'
+    },
+    'cortex-query-traps-logs': {
+        'table_fields': TRAPS_FIELDS,
+        'args_dict': TMS_ARGS_DICT,
+        'table_name': 'tms.threat',
+        'context_transformer_function': '',
+        'human_readable_generator_function': '',
+        'context_root_path': 'Cortex.Logging.Traps(val.id === obj.id)'
+    },
+    'cortex-query-analytics-logs': {
+        'table_fields': ANALYTICS_FIELDS,
+        'args_dict': TMS_ARGS_DICT,
+        'table_name': 'tms.analytics',
+        'context_transformer_function': '',
+        'human_readable_generator_function': '',
+        'context_root_path': 'Cortex.Logging.Analytics(val.id === obj.id)'
+    }
+}
 
 
 def get_fields_and_check_validity(fields: str, table_fields: list):
@@ -253,7 +440,7 @@ def get_fields_and_check_validity(fields: str, table_fields: list):
     return fields
 
 
-def get_where(args: dict, table_args_dict: dict):
+def get_where_part(args: dict, table_args_dict: dict):
     """
     This function transforms the relevant entries of dict into the where part of a SQL query
     :param args: a dict
@@ -284,10 +471,10 @@ def parse_query(query: str):
     :param query: the query string
     :return: the part of the query after the WHERE word
     """
-    if 'WHERE' in query.upper():
-        return query.upper().split('WHERE', 1)[1]
+    if ' WHERE ' in query.upper():
+        return query.upper().split(' WHERE ', 1)[1]
     else:
-        raise Exception('A compound query must include WHERE word')
+        raise Exception('A compound query must include a WHERE part')
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
@@ -898,7 +1085,7 @@ def search_by_file_hash_command():
     return entry
 
 
-def query_traffic_logs_command():
+def query_table_logs_command(command_data_dict: dict):
 
     args = demisto.args()
 
@@ -923,14 +1110,18 @@ def query_traffic_logs_command():
     service_start_date_epoch = int(service_start_date.strftime("%s"))
     service_end_date_epoch = int(service_end_date.strftime("%s"))
 
+    table_fields = command_data_dict['table_fields']
     fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, PANW_TRAFFIC_FIELDS)
-    where = get_where(args, PANW_ARGS_DICT)
+    fields = get_fields_and_check_validity(fields, table_fields)
+    
+    args_dict = command_data_dict['args_dict']
+    where = get_where_part(args, args_dict)
 
+    table_name = command_data_dict['table_name']
     if where:
-        query = f'SELECT {fields} FROM panw.traffic WHERE {where} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {table_name} WHERE {where} LIMIT {limit}'
     else:
-        query = f'SELECT {fields} FROM panw.traffic LIMIT {limit}'
+        query = f'SELECT {fields} FROM {table_name} LIMIT {limit}'
 
     query_data = {
         "query": query,
@@ -948,9 +1139,19 @@ def query_traffic_logs_command():
         raise Exception('Failed to parse the response from Cortex')
 
     outputs: list = []
-
     human_readable: list = []
 
+    for page in pages:
+        row_contents = page.get('_source')
+        row_contents['id'] = page.get('_id')
+        row_contents['score'] = page.get('_score')
+        # CHECK FOR THE ID & SCORE !!
+        transformed_row = command_data_dict['context_transformer_function'](row_contents)
+        outputs.append(transformed_row)
+        
+    # CODE THE HUMAN READABLE
+
+    context_root_path = command_data_dict['context_root_path']
     entry = {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -958,7 +1159,7 @@ def query_traffic_logs_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            'Cortex.Logging(val.id === obj.id)': outputs
+            context_root_path: outputs
         }
     }
     return entry
@@ -1074,8 +1275,9 @@ def main():
             demisto.results(get_social_applications_command())
         elif demisto.command() == 'cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
-        elif demisto.command() == 'cortex-query-traffic-logs':
-            demisto.results(query_traffic_logs_command())
+        elif demisto.command() == 'cortex-query-traffic-logs' or demisto.command() == 'cortex-query-threat-logs'
+               or demisto.command() == 'cortex-query-traps-logs' or demisto.command() == 'cortex-query-analytics-logs':
+            demisto.results(query_table_logs_command(COMMANDS_DATA_DICT.get(demisto.command())))
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
     except Exception as e:
