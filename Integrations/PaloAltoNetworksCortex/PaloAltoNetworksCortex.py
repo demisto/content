@@ -408,7 +408,7 @@ COMMANDS_DATA_DICT = {
         'table_fields': TRAPS_FIELDS,
         'args_dict': TMS_ARGS_DICT,
         'table_name': 'tms.threat',
-        'context_transformer_function': '',
+        'context_transformer_function': traps_context_transformer,
         'human_readable_generator_function': '',
         'context_root_path': 'Cortex.Logging.Traps(val.id === obj.id)'
     },
@@ -416,7 +416,7 @@ COMMANDS_DATA_DICT = {
         'table_fields': ANALYTICS_FIELDS,
         'args_dict': TMS_ARGS_DICT,
         'table_name': 'tms.analytics',
-        'context_transformer_function': '',
+        'context_transformer_function': analytics_context_transformer,
         'human_readable_generator_function': '',
         'context_root_path': 'Cortex.Logging.Analytics(val.id === obj.id)'
     }
@@ -1275,7 +1275,7 @@ def main():
             demisto.results(get_social_applications_command())
         elif demisto.command() == 'cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
-        elif demisto.command() == 'cortex-query-traffic-logs' or demisto.command() == 'cortex-query-threat-logs'
+        elif demisto.command() == 'cortex-query-traffic-logs' or demisto.command() == 'cortex-query-threat-logs' \
                or demisto.command() == 'cortex-query-traps-logs' or demisto.command() == 'cortex-query-analytics-logs':
             demisto.results(query_table_logs_command(COMMANDS_DATA_DICT.get(demisto.command())))
         elif demisto.command() == 'fetch-incidents':
