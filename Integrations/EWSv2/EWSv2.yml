@@ -61,7 +61,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -77,6 +77,11 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
+- display: Max incidents per fetch
+  name: maxFetch
+  defaultvalue: "50"
+  type: 0
+  required: true
 description: Exchange Web Services and Office 365 (mail)
 display: EWS v2
 name: EWS v2
