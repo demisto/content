@@ -141,3 +141,5 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
+tests:
+- No test - no instance
