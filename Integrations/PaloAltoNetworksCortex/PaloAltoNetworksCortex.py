@@ -390,35 +390,35 @@ def analytics_context_transformer(row_content: dict):
 COMMANDS_DATA_DICT = {
     'cortex-query-traffic-logs': {
         'table_fields': TRAFFIC_FIELDS,
-        'args_dict': PANW_ARGS_DICT,
-        'table_name': 'panw.traffic',
+        'table_args_dict': PANW_ARGS_DICT,
+        'query_table_name': 'panw.traffic',
         'context_transformer_function': traffic_context_transformer,
         'human_readable_generator_function': '',
-        'context_root_path': 'Cortex.Logging.Traffic(val.id === obj.id)'
+        'table_context_path': 'Cortex.Logging.Traffic(val.id === obj.id)'
     },
     'cortex-query-threat-logs': {
         'table_fields': THREAT_FIELDS,
-        'args_dict': PANW_ARGS_DICT,
-        'table_name': 'panw.threat',
+        'table_args_dict': PANW_ARGS_DICT,
+        'query_table_name': 'panw.threat',
         'context_transformer_function': threat_context_transformer,
         'human_readable_generator_function': '',
-        'context_root_path': 'Cortex.Logging.Threat(val.id === obj.id)'
+        'table_context_path': 'Cortex.Logging.Threat(val.id === obj.id)'
     },
     'cortex-query-traps-logs': {
         'table_fields': TRAPS_FIELDS,
-        'args_dict': TMS_ARGS_DICT,
-        'table_name': 'tms.threat',
+        'table_args_dict': TMS_ARGS_DICT,
+        'query_table_name': 'tms.threat',
         'context_transformer_function': traps_context_transformer,
         'human_readable_generator_function': '',
-        'context_root_path': 'Cortex.Logging.Traps(val.id === obj.id)'
+        'table_context_path': 'Cortex.Logging.Traps(val.id === obj.id)'
     },
     'cortex-query-analytics-logs': {
         'table_fields': ANALYTICS_FIELDS,
-        'args_dict': TMS_ARGS_DICT,
-        'table_name': 'tms.analytics',
+        'table_args_dict': TMS_ARGS_DICT,
+        'query_table_name': 'tms.analytics',
         'context_transformer_function': analytics_context_transformer,
         'human_readable_generator_function': '',
-        'context_root_path': 'Cortex.Logging.Analytics(val.id === obj.id)'
+        'table_context_path': 'Cortex.Logging.Analytics(val.id === obj.id)'
     }
 }
 
@@ -1113,15 +1113,15 @@ def query_table_logs_command(command_data_dict: dict):
     table_fields = command_data_dict['table_fields']
     fields = args.get('fields', 'all')
     fields = get_fields_and_check_validity(fields, table_fields)
-    
-    args_dict = command_data_dict['args_dict']
-    where = get_where_part(args, args_dict)
 
-    table_name = command_data_dict['table_name']
+    table_args_dict = command_data_dict['table_args_dict']
+    where = get_where_part(args, table_args_dict)
+
+    query_table_name = command_data_dict['query_table_name']
     if where:
-        query = f'SELECT {fields} FROM {table_name} WHERE {where} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {query_table_name} WHERE {where} LIMIT {limit}'
     else:
-        query = f'SELECT {fields} FROM {table_name} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
 
     query_data = {
         "query": query,
@@ -1148,7 +1148,7 @@ def query_table_logs_command(command_data_dict: dict):
         # CHECK FOR THE ID & SCORE !!
         transformed_row = command_data_dict['context_transformer_function'](row_contents)
         outputs.append(transformed_row)
-        
+
     # CODE THE HUMAN READABLE
 
     context_root_path = command_data_dict['context_root_path']
