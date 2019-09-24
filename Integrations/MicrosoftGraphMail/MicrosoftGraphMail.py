@@ -216,7 +216,9 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         error = error_parser(res)
         return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
     try:
-        return res.json()
+        if method.lower() != 'delete':  # the DELETE request returns nothing in response
+            return res.json()
+        return {}
     except ValueError:
         return_error('Could not decode response from API')
         return {}  # return_error will exit
