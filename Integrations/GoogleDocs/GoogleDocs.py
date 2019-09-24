@@ -183,11 +183,11 @@ def delete_named_range_by_name(action_name, name):
     }
 
 
-def delete_content_range_request(action_name, start_index, end_index, segment_id=None):
+def delete_content_range(action_name, start_index, end_index, segment_id=None):
     return {action_name: get_range_object(segment_id, start_index, end_index)}
 
 
-def inset_inline_image_request(action_name, index, uri, width, height, segment_id=None):
+def inset_inline_image(action_name, index, uri, width, height, segment_id=None):
     return {
         action_name: {
             "uri": uri,
