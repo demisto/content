@@ -36,8 +36,9 @@ class Client(BaseClient):
         return self._http_request('GET', 'version')
 
     def list_credentials_request(self) -> Dict:
-        """Uses to fetch incidents into Demisto
-        Documentation:https://github.com/demisto/content/tree/master/docs/fetching_incidents
+        """Uses to fetch credentials into Demisto
+        Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
+
         Returns:
             Response JSON
         """
@@ -46,7 +47,9 @@ class Client(BaseClient):
 
     def list_accounts_request(self, max_results: int = None) -> Dict:
         """Lists all accounts.
-        Documentation:https://github.com/demisto/content/tree/master/docs/fetching_incidents
+        Args:
+            max_results: maximum results to filter.
+
         Returns:
             Response JSON
         """
@@ -163,7 +166,7 @@ def build_account_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
     return {
         'Username': credentials.get('username'),
         'Name': credentials.get('name'),
-        'IsLocked': credentials.get('isLocked'),
+        'IsLocked': credentials.get('isLocked')
     }
 
 
@@ -185,21 +188,17 @@ def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]
     return {
         'user': credentials.get('username'),
         'name': credentials.get('name'),
-        'password': credentials.get('password'),
+        'password': credentials.get('password')
     }
 
 
 def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
-    def vault_builder(vault_entry: Dict):
-        return {
-            'ID': vault_entry.get('vaultId'),
-            'IsLocked': vault_entry.get('isLocked')
-        }
-
     if isinstance(vaults, list):
-        return [vault_builder(vault_entry) for vault_entry in vaults]
-    if isinstance(vaults, dict):
-        return vault_builder(vaults)
+        return [build_vaults_context(vault_entry) for vault_entry in vaults]
+    return {
+        'ID': vaults.get('vaultId'),
+        'IsLocked': vaults.get('isLocked')
+    }
 
 
 ''' COMMANDS '''
@@ -377,7 +376,7 @@ def list_vaults(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = params.get('url', '').rstrip('/') + '/api/v1'
+    base_url = f"{params.get('url', '').rstrip('/')}'/api/v1'"
     verify = not params.get('insecure', False)
     proxy = params.get('proxy') == 'true'
     client = Client(base_url, verify=verify, proxy=proxy)
@@ -408,5 +407,5 @@ def main():  # pragma: no cover
         return_error(err_msg, error=e)
 
 
-if __name__ == '__builtin__':  # pragma: no cover
+if __name__ == 'builtins':  # pragma: no cover
     main()

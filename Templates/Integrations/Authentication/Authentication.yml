@@ -8,17 +8,16 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
   required: false
   type: 8
 - display: Fetches credentials
   name: isFetchCredentials
-  required: false
-  type: 8
-- display: Use system proxy
-  name: proxy
   required: false
   type: 8
 description: Integration Template

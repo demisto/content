@@ -28,17 +28,18 @@ INTEGRATION_COMMAND_NAME = 'data-enrichment-threat-and-intelligence'
 INTEGRATION_CONTEXT_NAME = 'DataEnrichmentAndThreatIntelligence'
 # Setting global params, initiation in main() function
 FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
+DEFAULT_THRESHOLD = 70
 ''' HELPER FUNCTIONS '''
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, threshold: int = 70, *args, **kwarg):
+    def __init__(self, base_url, threshold: int = 70, *args, **kwargs):
         """Wrapper of CommonServerPython.BaseClient
         Params:
             threshold: arg will be used in calculate_dbot_score. if None, will use default value of 70.
         """
         self._threshold = threshold
-        super().__init__(base_url, *args, **kwarg)
+        super().__init__(base_url, *args, **kwargs)
 
     """ HELPER FUNCTIONS """
 
@@ -52,7 +53,7 @@ class Client(BaseClient):
         Returns:
             Score representation in DBot
         """
-        high_score = threshold if threshold else self._threshold
+        high_score = threshold if threshold is not None else self._threshold
         # Malicious
         if score > high_score:
             return 3
@@ -161,6 +162,11 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     ip = args.get('ip', '')
+    threshold = args.get('threshold')
+    try:
+        threshold = int(args.get('threshold'))
+    except TypeError:
+        threshold = None
     raw_response = client.get_ip_request(ip)
     results = raw_response.get('result')
     if results:
@@ -168,7 +174,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         title = f'{INTEGRATION_NAME} - Analysis results for IP: {ip}'
         context_entry = build_entry_context(result, 'IP')
         # Building a score for DBot
-        score = client.calculate_dbot_score(result.get('severity'))
+        score = client.calculate_dbot_score(result.get('severity'), threshold=threshold)
         dbot_entry = build_dbot_entry(ip, 'ip', INTEGRATION_NAME, score, result.get('description'))
         context = {
             f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
@@ -191,6 +197,10 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     url = args.get('url', '')
+    try:
+        threshold = int(args.get('threshold'))
+    except TypeError:
+        threshold = None
     raw_response = client.get_url_request(url)
     results = raw_response.get('result')
     if results:
@@ -198,7 +208,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         title = f'{INTEGRATION_NAME} - Analysis results for URL: {url}'
         context_entry = build_entry_context(result, 'URL')
         # Building a score for DBot
-        score = client.calculate_dbot_score(result.get('severity'))
+        score = client.calculate_dbot_score(result.get('severity'), threshold=threshold)
         dbot_entry = build_dbot_entry(url, 'url', INTEGRATION_NAME, score, result.get('description'))
         context = {
             f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)': context_entry
@@ -214,6 +224,10 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash
     """
     file_hash = args.get('file', '')
+    try:
+        threshold = int(args.get('threshold'))
+    except TypeError:
+        threshold = None
     raw_response = client.search_file_request(file_hash)
     results = raw_response.get('result')
     if results:
@@ -229,7 +243,7 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             'Description': result.get('description')
         }
         # Gets DBot score
-        score = client.calculate_dbot_score(result.get('severity'))
+        score = client.calculate_dbot_score(result.get('severity'), threshold=threshold)
         # Building a score for DBot
         dbot_score = [
             {
@@ -305,10 +319,10 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = params.get('url', '').rstrip('/') + '/api/v2'
+    base_url = f"{params.get('url', '').rstrip('/')}'/api/v2'"
     verify = not params.get('insecure', False)
-    proxy: Optional[bool] = params.get('proxy')
-    threshold = int(params.get('threshold', 70))
+    proxy = params.get('proxy') == 'true'
+    threshold = int(params.get('threshold', DEFAULT_THRESHOLD))
     client = Client(
         base_url,
         verify=verify,
