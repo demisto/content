@@ -468,7 +468,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "17"
+      - "26"
     scriptarguments:
       question-id:
         simple: "20750"
@@ -478,35 +478,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: e594fb72-9255-4f58-80af-e5c34922d86d
-    type: regular
-    task:
-      id: e594fb72-9255-4f58-80af-e5c34922d86d
-      version: -1
-      name: Get question result
-      script: '|||tn-get-question-result'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      question-id:
-        simple: "20750"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2935
         }
       }
     note: false
@@ -536,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 3285
         }
       }
     note: false
@@ -566,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 3460
         }
       }
     note: false
@@ -596,7 +567,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3810
+          "y": 3635
         }
       }
     note: false
@@ -626,7 +597,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3985
+          "y": 3810
         }
       }
     note: false
@@ -655,7 +626,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4160
+          "y": 3985
         }
       }
     note: false
@@ -677,37 +648,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4335
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "24":
-    id: "24"
-    taskid: dad5299d-3deb-43d9-87a7-2fda8ca523e5
-    type: regular
-    task:
-      id: dad5299d-3deb-43d9-87a7-2fda8ca523e5
-      version: -1
-      name: Wait to results
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      seconds:
-        simple: "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3110
+          "y": 4160
         }
       }
     note: false
@@ -715,10 +656,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: a080a956-6659-486e-87e8-0f785ad730e6
+    taskid: e4ad7896-bd80-463a-8904-7cb4b407cdd9
     type: condition
     task:
-      id: a080a956-6659-486e-87e8-0f785ad730e6
+      id: e4ad7896-bd80-463a-8904-7cb4b407cdd9
       version: -1
       name: Validate output
       type: condition
@@ -731,19 +672,49 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
-              simple: Tanium.QuestionResult.Status
+              simple: Tanium.SavedQuestionResult.Results
             iscontext: true
-          right:
-            value:
-              simple: Completed
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3285
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 923e4479-0e72-407b-89b0-0c49415c927f
+    type: playbook
+    task:
+      id: 923e4479-0e72-407b-89b0-0c49415c927f
+      version: -1
+      name: Tanium - Get saved question result
+      playbookName: Tanium - Get saved question result
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      saved-question-id:
+        simple: "313"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2930
         }
       }
     note: false
@@ -754,7 +725,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4350,
+        "height": 4175,
         "width": 380,
         "x": 50,
         "y": 50
