@@ -1163,7 +1163,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = deque(last_run.get(LAST_RUN_IDS), maxsize=LAST_RUN_IDS_QUEUE_SIZE)
+        ids = deque(last_run.get(LAST_RUN_IDS), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
         incident = {}
         for item in last_emails:
