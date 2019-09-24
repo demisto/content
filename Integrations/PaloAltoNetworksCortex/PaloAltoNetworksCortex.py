@@ -1275,8 +1275,10 @@ def main():
             demisto.results(get_social_applications_command())
         elif demisto.command() == 'cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
-        elif demisto.command() == 'cortex-query-traffic-logs' or demisto.command() == 'cortex-query-threat-logs' \
-               or demisto.command() == 'cortex-query-traps-logs' or demisto.command() == 'cortex-query-analytics-logs':
+        elif demisto.command() == 'cortex-query-traffic-logs' \
+                or demisto.command() == 'cortex-query-threat-logs' \
+                or demisto.command() == 'cortex-query-traps-logs' \
+                or demisto.command() == 'cortex-query-analytics-logs':
             demisto.results(query_table_logs_command(COMMANDS_DATA_DICT.get(demisto.command())))
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
