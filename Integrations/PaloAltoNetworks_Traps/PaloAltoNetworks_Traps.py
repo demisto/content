@@ -431,7 +431,7 @@ def hash_blacklist_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = hash_blacklist(hash_id)
-    context = {}    # type: dict
+    context = {}  # type: dict
     if status == 'success':
         md = f'#### Successfully blacklisted: {hash_id}'
         status_obj = {
@@ -451,7 +451,7 @@ def hash_blacklist_remove_command():
     args = demisto.args()
     hash_id = args.get('hash_id')
     status = remove_hash_from_blacklist(hash_id)
-    context = {}    # type: dict
+    context = {}  # type: dict
     if status == 'success':
         md = f'#### Successfully removed {hash_id} from blacklist'
         status_obj = {
@@ -493,47 +493,52 @@ def endpoint_isolate_status_command():
     return_outputs(md, context)
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
+    LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module_command()
-        demisto.results('ok')
-    elif demisto.command() == 'traps-get-endpoint-by-id':
-        get_endpoint_by_id_command()
-    elif demisto.command() == 'traps-endpoint-files-retrieve':
-        endpoint_files_retrieve_command()
-    elif demisto.command() == 'traps-endpoint-files-retrieve-result':
-        endpoint_files_retrieve_result_command()
-    elif demisto.command() == 'traps-endpoint-scan':
-        endpoint_scan_command()
-    elif demisto.command() == 'traps-endpoint-scan-result':
-        endpoint_scan_result_command()
-    elif demisto.command() == 'traps-event-update':
-        event_update_command()
-    elif demisto.command() == 'traps-event-bulk-update-status':
-        event_bulk_update_status_command()
-    elif demisto.command() == 'traps-hash-blacklist':
-        hash_blacklist_command()
-    elif demisto.command() == 'traps-hash-blacklist-remove':
-        hash_blacklist_remove_command()
-    elif demisto.command() == 'traps-hashes-blacklist-status':
-        hashes_blacklist_status_command()
-    elif demisto.command() == 'traps-event-quarantine':
-        event_quarantine_command()
-    elif demisto.command() == 'traps-event-quarantine-result':
-        event_quarantine_result_command()
-    elif demisto.command() == 'traps-endpoint-isolate':
-        endpoint_isolate_command()
-    elif demisto.command() == 'traps-endpoint-isolate-status':
-        endpoint_isolate_status_command()
+    try:
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module_command()
+            demisto.results('ok')
+        elif demisto.command() == 'traps-get-endpoint-by-id':
+            get_endpoint_by_id_command()
+        elif demisto.command() == 'traps-endpoint-files-retrieve':
+            endpoint_files_retrieve_command()
+        elif demisto.command() == 'traps-endpoint-files-retrieve-result':
+            endpoint_files_retrieve_result_command()
+        elif demisto.command() == 'traps-endpoint-scan':
+            endpoint_scan_command()
+        elif demisto.command() == 'traps-endpoint-scan-result':
+            endpoint_scan_result_command()
+        elif demisto.command() == 'traps-event-update':
+            event_update_command()
+        elif demisto.command() == 'traps-event-bulk-update-status':
+            event_bulk_update_status_command()
+        elif demisto.command() == 'traps-hash-blacklist':
+            hash_blacklist_command()
+        elif demisto.command() == 'traps-hash-blacklist-remove':
+            hash_blacklist_remove_command()
+        elif demisto.command() == 'traps-hashes-blacklist-status':
+            hashes_blacklist_status_command()
+        elif demisto.command() == 'traps-event-quarantine':
+            event_quarantine_command()
+        elif demisto.command() == 'traps-event-quarantine-result':
+            event_quarantine_result_command()
+        elif demisto.command() == 'traps-endpoint-isolate':
+            endpoint_isolate_command()
+        elif demisto.command() == 'traps-endpoint-isolate-status':
+            endpoint_isolate_status_command()
 
 
-# Log exceptions
-except Exception as e:
-    LOG(e)
-    LOG.print_log()
-    demisto.results(e)
+    # Log exceptions
+    except Exception as e:
+        LOG(e)
+        LOG.print_log()
+        demisto.results(e)
+
+
+if __name__ in ["__builtin__", "builtins", "__main__"]:
+    main()
