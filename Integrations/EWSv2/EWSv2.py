@@ -878,7 +878,7 @@ def get_last_run():
         last_run = {
             LAST_RUN_TIME: None,
             LAST_RUN_FOLDER: FOLDER_NAME,
-            LAST_RUN_IDS: None
+            LAST_RUN_IDS: []
         }
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
