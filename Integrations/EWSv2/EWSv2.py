@@ -13,6 +13,7 @@ import warnings
 import subprocess
 import email
 from requests.exceptions import ConnectionError
+from collections import deque
 
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
@@ -106,6 +107,7 @@ MARK_AS_READ = demisto.params().get('markAsRead', False)
 MAX_FETCH = int(demisto.params().get('maxFetch', 50))
 if MAX_FETCH > 50:
     MAX_FETCH = 50
+LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
 [CmdletBinding()]
@@ -1163,7 +1165,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
+        ids = deque(last_run.get(LAST_RUN_IDS), maxsize=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
         max_occurred = 0
         new_last_run_time = None
@@ -1187,7 +1189,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         new_last_run = {
             LAST_RUN_TIME: new_last_run_time,
             LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids,
+            LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
         }
 
