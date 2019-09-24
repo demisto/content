@@ -1175,8 +1175,12 @@ def fetch_emails_as_incidents(account_email, folder_name):
                 if len(incidents) >= MAX_FETCH:
                     break
 
+        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
+        if isinstance(last_run_time, EWSDateTime):
+            last_run_time = last_run_time.ewsformat()
+
         new_last_run = {
-            LAST_RUN_TIME: incident.get('occurred', last_run.get(LAST_RUN_TIME).ewsformat()),
+            LAST_RUN_TIME: last_run_time,
             LAST_RUN_FOLDER: folder_name,
             LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
