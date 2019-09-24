@@ -1,0 +1,228 @@
+id: playbook-GoogleDocs
+version: -1
+name: playbook-GoogleDocs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4acf014d-a5fc-4a0f-8e02-6f9da387ab39
+    type: start
+    task:
+      id: 4acf014d-a5fc-4a0f-8e02-6f9da387ab39
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 21dff142-8aa2-4b83-8248-f8194965841e
+    type: regular
+    task:
+      id: 21dff142-8aa2-4b83-8248-f8194965841e
+      version: -1
+      name: Create Test Doucment
+      description: Creates a document
+      script: Google Docs|||create_document
+      type: regular
+      iscommand: true
+      brand: Google Docs
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      text:
+        simple: This is a test file
+      title:
+        simple: test_file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 57460b81-fa39-4d66-8a03-f6f2ec6356e5
+    type: regular
+    task:
+      id: 57460b81-fa39-4d66-8a03-f6f2ec6356e5
+      version: -1
+      name: 'Get Document after creation '
+      description: Returns a document matching the given ID.
+      script: Google Docs|||get_document
+      type: regular
+      iscommand: true
+      brand: Google Docs
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      document_id:
+        complex:
+          root: GoogleDocs
+          accessor: DocumentId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: b6c6e732-7732-434b-8e0f-4cbc49ffe924
+    type: regular
+    task:
+      id: b6c6e732-7732-434b-8e0f-4cbc49ffe924
+      version: -1
+      name: Update document
+      description: Updates a document with a given ID
+      script: Google Docs|||update_document
+      type: regular
+      iscommand: true
+      brand: Google Docs
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      actions:
+        simple: insertTable{1,7,9}
+      document_id:
+        simple: ${GoogleDocs.DocumentId}
+      required_revision_id:
+        simple: ${GoogleDocs.RevisionId}
+      target_revision_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: aeeadabf-c2f9-42b3-8190-a0ad3b927f1c
+    type: regular
+    task:
+      id: aeeadabf-c2f9-42b3-8190-a0ad3b927f1c
+      version: -1
+      name: Get document after update
+      description: Returns a document matching the given ID.
+      script: Google Docs|||get_document
+      type: regular
+      iscommand: true
+      brand: Google Docs
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      document_id:
+        simple: ${GoogleDocs.DocumentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 07fe34d2-b010-4913-8ad3-582d8557bbc8
+    type: regular
+    task:
+      id: 07fe34d2-b010-4913-8ad3-582d8557bbc8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 8abc948e-be02-4c10-8999-966263b00c2c
+    type: regular
+    task:
+      id: 8abc948e-be02-4c10-8999-966263b00c2c
+      version: -1
+      name: Untitled Task
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

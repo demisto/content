@@ -370,6 +370,12 @@ def main():
     proxy = demisto.params().get('proxy')
     disable_ssl = demisto.params().get('insecure', False)
     service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
+    if demisto.command() == 'test-module':
+        try:
+            get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
+            demisto.results('ok')
+        except Exception as e:
+            return_error("Failed to execute test. Error: {}".format(str(e)), e)
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
