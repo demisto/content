@@ -50,12 +50,6 @@ script:
       name: title
       required: true
       secret: false
-    - default: false
-      description: Text to insert at position 0
-      isArray: false
-      name: text
-      required: false
-      secret: false
     deprecated: false
     description: Creates a document
     execution: false

@@ -282,26 +282,6 @@ def delete_positioned_object(action_name, object_id):
     }
 
 
-def create_body(text):
-    return {
-            'content': {
-                'startIndex': 0,
-                'endIndex': len(text),
-                'paragraph': {
-                    'elements': [
-                        {
-                            'startIndex': 0,
-                            'endIndex': len(text),
-                            'textRun': {
-                                "content": text
-                            }
-                        }
-                    ]
-                }
-            }
-        }
-
-
 def batch_update_document_command(service):
     args = demisto.args()
     document_id = args.get('document_id')
@@ -340,14 +320,10 @@ def batch_update_document_command(service):
 def create_document_command(service):
     args = demisto.args()
     title = args.get('title')
-    text = args.get('text')
 
     payload = {
         "title": title,
     }
-
-    if text:
-        payload['body'] = create_body(text)
 
     document = service.documents().create(body=payload).execute()
     return document
