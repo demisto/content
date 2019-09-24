@@ -65,9 +65,9 @@ class ScriptValidator(object):
 
         # Add sane-doc-report exception
         # Sane-doc-report uses docker and every fix/change
-        # requiers a docker tag change, thus it won't be
+        # requires a docker tag change, thus it won't be
         # backwards compatible.
-        # All other tests should be False (no problems)
+        # All other tests should be False (i.e. no problems)
         sane_doc_checks = all([not c for c in backwards_checks[1:]])
         if sane_doc_checks and \
                 self.file_path == 'Scripts/SaneDocReport/SaneDocReport.yml':
