@@ -1159,7 +1159,7 @@ def parse_incident_from_item(item, is_fetch):
 
 
 def fetch_emails_as_incidents(account_email, folder_name):
-    last_run = get_last_run() # LAST_RUN_TIME instance of EWSDateTime
+    last_run = get_last_run()
 
     try:
         account = get_account(account_email)
