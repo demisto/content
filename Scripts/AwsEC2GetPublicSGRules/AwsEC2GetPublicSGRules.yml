@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   description: JSON string of the ipPermissions
-  isArray: false
+  isArray: true
   name: ipPermissions
   required: true
   secret: false
