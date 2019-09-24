@@ -1,5 +1,6 @@
 ## [Unreleased]
-Added handling for cases where the rate limit is exceeded.
+    - Added handling for cases where the rate limit is exceeded.
+    - Added the max retry time integration parameter.
 
 
 ## [19.8.2] - 2019-08-22
