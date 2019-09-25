@@ -43,7 +43,7 @@ def override_make_request(self, method, uri, body, headers):
     This function is an override function to the original
     duo_client.client.Client._make_request function in API version 4.1.0
 
-    The reason for it is: the API creates a bad uri address for the GET requests.
+    The reason for it is that the API creates a bad uri address for the GET requests.
 
     """
 
@@ -71,38 +71,31 @@ def override_make_request(self, method, uri, body, headers):
 # Utility Methods
 
 def create_api_call():
-    if USE_SSL:
+    if USE_SSL and not USE_PROXY:
+        # Use of both is not working with the API
+        client = duo_client.Admin(
+            ikey=INTEGRATION_KEY,
+            skey=SECRET_KEY,
+            host=HOST,
+        )
+    else:
         client = duo_client.Admin(
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
             host=HOST,
             ca_certs='DISABLE'
         )
-        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
-                                                                                        headers)
-        return client
 
-    return duo_client.Admin(
-        ikey=INTEGRATION_KEY,
-        skey=SECRET_KEY,
-        host=HOST,
-        ca_certs='DISABLE'
-    )
+    client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
+
+    return client
 
 
 def set_proxy():
     try:
         proxy_settings = os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')
         if proxy_settings:
-            proxy_settings_str = str(proxy_settings)
-            proxy_settings_str_args = proxy_settings_str.split(':')
-
-            if 'http' in proxy_settings_str:
-                host = ':'.join(proxy_settings_str_args[0:2])
-                port = proxy_settings_str_args[2]
-            else:
-                host = proxy_settings_str_args[0]
-                port = proxy_settings_str_args[1]
+            host, port = get_host_port_from_proxy_settings(proxy_settings)
 
             if USE_PROXY:
                 admin_api.set_proxy(host=host, port=port)
@@ -111,6 +104,26 @@ def set_proxy():
     # if no proxy settings have been set
     except ValueError:
         admin_api.set_proxy(proxy_type=None)
+
+
+def get_host_port_from_proxy_settings(proxy_settings):
+    proxy_settings_str = str(proxy_settings)
+
+    port = proxy_settings_str.split(':')[-1]
+
+    host = re.search(ipv4Regex, proxy_settings_str)
+
+    if host:
+        host = host.group()
+    else:
+        proxy_settings_str_args = proxy_settings_str.split(':')
+
+        if 'http' in proxy_settings_str:
+            host = ':'.join(proxy_settings_str_args[1:-1])[2:]
+        else:
+            host = proxy_settings_str_args[0:-1]
+
+    return host, port
 
 
 def time_to_timestamp_milliseconds(time):
