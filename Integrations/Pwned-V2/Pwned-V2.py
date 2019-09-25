@@ -61,6 +61,10 @@ def http_request(method, url_suffix, params=None, data=None):
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
             wait_amount = wait_regex.group()
+
+            if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
+                return_error('Max retry time has exceeded.')
+
             time.sleep(int(wait_amount))
 
     if res.status_code == 404:

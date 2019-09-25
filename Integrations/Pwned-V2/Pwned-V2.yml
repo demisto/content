@@ -7,7 +7,8 @@ configuration:
   name: api_key
   required: true
   type: 4
-- display: Maximum time per request (In seconds)
+- defaultvalue: '30'
+  display: Maximum time per request (In seconds)
   name: max_retry_time
   required: false
   type: 0
