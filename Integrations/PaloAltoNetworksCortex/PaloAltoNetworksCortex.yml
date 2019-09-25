@@ -626,9 +626,21 @@ script:
       description: Threat Severity.
       type: Unknown
   - deprecated: false
-    description: TO BE DEFINED!
+    description: 'TBD'
     execution: false
     name: cortex-query-traffic-logs
+  - deprecated: false
+    description: 'TBD'
+    execution: false
+    name: cortex-query-threat-logs
+  - deprecated: false
+    description: 'TBD'
+    execution: false
+    name: cortex-query-traps-logs
+  - deprecated: false
+    description: 'TBD'
+    execution: false
+    name: cortex-query-analytics-logs
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   longRunning: false

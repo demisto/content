@@ -156,6 +156,7 @@ def human_readable_generator(fields: str, table_name: str, results: list):
     headers_raw_names: list = []
 
     if fields == '*':
+        # if the user queried all fields than we have preset headers
         if table_name == 'traffic' or table_name == 'threat':
             headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule']
             headers_raw_names = ['src', 'dst', 'app', 'action', 'rule']
@@ -165,6 +166,7 @@ def human_readable_generator(fields: str, table_name: str, results: list):
             headers_raw_names = ['severity', 'eventType', 'endPointHeader.userName', 'endPointHeader.agentIp',
                                  'endPointHeader.deviceName', 'endPointHeader.agentTime']
     else:
+        # if the user has chosen which fields to query than they will be used as headers
         fields_list = argToList(fields)
         headers = fields_list
         headers_raw_names = fields_list
@@ -1071,237 +1073,51 @@ def search_by_file_hash_command():
 
 
 def query_traffic_logs_command():
-    args = demisto.args()
-
-    start_time = args.get('startTime')
-    end_time = args.get('endTime')
-    limit = args.get('logsAmount', '5')
-    time_range = args.get('timeRange')
-    time_value = args.get('rangeValue')
-
-    if time_range:
-        if time_value:
-            service_end_date = datetime.now()
-            service_start_date = get_start_time(time_range, int(time_value))
-        else:
-            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
-    else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
-        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-
-    # transforms datetime object to epoch time
-    service_start_date_epoch = int(service_start_date.strftime("%s"))
-    service_end_date_epoch = int(service_end_date.strftime("%s"))
-
-    fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, TRAFFIC_FIELDS)
-
-    where = get_where_part(args, PANW_ARGS_DICT)
-
-    if where:
-        query = f'SELECT {fields} FROM panw.traffic WHERE {where} LIMIT {limit}'
-    else:
-        query = f'SELECT {fields} FROM panw.traffic LIMIT {limit}'
-
-    query_data = {
-        "query": query,
-        "startTime": service_start_date_epoch,
-        "endTime": service_end_date_epoch,
-    }
-
-    response = query_loggings(query_data)
-
-    try:
-        result = response.json()['result']
-        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
-        table_name = result['esQuery']['table'][0].split('.')[1]
-    except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
-
-    outputs: list = []
-    results: list = []
-
-    for page in pages:
-        row_contents = page.get('_source')
-        results.append(row_contents)
-        transformed_row = traffic_context_transformer(row_contents)
-        transformed_row['id'] = page.get('_id')
-        transformed_row['score'] = page.get('_score')
-        outputs.append(transformed_row)
-
-    human_readable = human_readable_generator(fields, table_name, results)
-
-    # CODE INDICATORS
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {
-            'Cortex.Logging.Traffic(val.id === obj.id)': outputs
-        }
-    }
-    return entry
+    table_fields = TRAFFIC_FIELDS
+    table_args = PANW_ARGS_DICT
+    table_name = 'panw.traffic'
+    context_transformer_function = traffic_context_transformer
+    table_context_path = 'Cortex.Logging.Traffic(val.id === obj.id)'
+    table_context_standards_paths = ['IP']
+    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+                                    table_context_path, table_context_standards_paths)
 
 
 def query_threat_logs_command():
-    args = demisto.args()
-
-    start_time = args.get('startTime')
-    end_time = args.get('endTime')
-    limit = args.get('logsAmount', '5')
-    time_range = args.get('timeRange')
-    time_value = args.get('rangeValue')
-
-    if time_range:
-        if time_value:
-            service_end_date = datetime.now()
-            service_start_date = get_start_time(time_range, int(time_value))
-        else:
-            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
-    else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
-        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-
-    # transforms datetime object to epoch time
-    service_start_date_epoch = int(service_start_date.strftime("%s"))
-    service_end_date_epoch = int(service_end_date.strftime("%s"))
-
-    fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, THREAT_FIELDS)
-
-    where = get_where_part(args, PANW_ARGS_DICT)
-
-    if where:
-        query = f'SELECT {fields} FROM panw.threat WHERE {where} LIMIT {limit}'
-    else:
-        query = f'SELECT {fields} FROM panw.threat LIMIT {limit}'
-
-    query_data = {
-        "query": query,
-        "startTime": service_start_date_epoch,
-        "endTime": service_end_date_epoch,
-    }
-
-    response = query_loggings(query_data)
-
-    try:
-        result = response.json()['result']
-        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
-        table_name = result['esQuery']['table'][0].split('.')[1]
-    except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
-
-    outputs: list = []
-    results: list = []
-
-    for page in pages:
-        row_contents = page.get('_source')
-        results.append(row_contents)
-        transformed_row = threat_context_transformer(row_contents)
-        transformed_row['id'] = page.get('_id')
-        transformed_row['score'] = page.get('_score')
-        outputs.append(transformed_row)
-
-    human_readable = human_readable_generator(fields, table_name, results)
-
-    # CODE INDICATORS
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {
-            'Cortex.Logging.Threat(val.id === obj.id)': outputs
-        }
-    }
-    return entry
+    table_fields = THREAT_FIELDS
+    table_args = PANW_ARGS_DICT
+    table_name = 'panw.threat'
+    context_transformer_function = threat_context_transformer
+    table_context_path = 'Cortex.Logging.Threat(val.id === obj.id)'
+    table_context_standards_paths = ['IP']
+    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+                                    table_context_path, table_context_standards_paths)
 
 
 def query_traps_logs_command():
-    args = demisto.args()
-
-    start_time = args.get('startTime')
-    end_time = args.get('endTime')
-    limit = args.get('logsAmount', '5')
-    time_range = args.get('timeRange')
-    time_value = args.get('rangeValue')
-
-    if time_range:
-        if time_value:
-            service_end_date = datetime.now()
-            service_start_date = get_start_time(time_range, int(time_value))
-        else:
-            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
-    else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
-        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
-
-    # transforms datetime object to epoch time
-    service_start_date_epoch = int(service_start_date.strftime("%s"))
-    service_end_date_epoch = int(service_end_date.strftime("%s"))
-
-    fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, TRAPS_FIELDS)
-
-    where = get_where_part(args, TMS_ARGS_DICT)
-
-    if where:
-        query = f'SELECT {fields} FROM tms.threat WHERE {where} LIMIT {limit}'
-    else:
-        query = f'SELECT {fields} FROM tms.threat LIMIT {limit}'
-
-    query_data = {
-        "query": query,
-        "startTime": service_start_date_epoch,
-        "endTime": service_end_date_epoch,
-    }
-
-    response = query_loggings(query_data)
-
-    try:
-        result = response.json()['result']
-        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
-        table_name = result['esQuery']['table'][0].split('.')[1]
-    except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
-
-    outputs: list = []
-    results: list = []
-
-    for page in pages:
-        row_contents = page.get('_source')
-        results.append(row_contents)
-        transformed_row = traps_context_transformer(row_contents)
-        transformed_row['id'] = page.get('_id')
-        transformed_row['score'] = page.get('_score')
-        outputs.append(transformed_row)
-
-    human_readable = human_readable_generator(fields, table_name, results)
-
-    # CODE INDICATORS
-
-    entry = {
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': human_readable,
-        'EntryContext': {
-            'Cortex.Logging.Traps(val.id === obj.id)': outputs
-        }
-    }
-    return entry
+    table_fields = TRAPS_FIELDS
+    table_args = TMS_ARGS_DICT
+    table_name = 'tms.threat'
+    context_transformer_function = traps_context_transformer
+    table_context_path = 'Cortex.Logging.Traps(val.id === obj.id)'
+    table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
+    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+                                    table_context_path, table_context_standards_paths)
 
 
 def query_analytics_logs_command():
+    table_fields = ANALYTICS_FIELDS
+    table_args = TMS_ARGS_DICT
+    table_name = 'tms.analytics'
+    context_transformer_function = analytics_context_transformer
+    table_context_path = 'Cortex.Logging.Analytics(val.id === obj.id)'
+    table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
+    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+                                    table_context_path, table_context_standards_paths)
+
+
+def query_table_logs_command(table_fields: list, table_args: dict, table_name: str, context_transformer_function,
+                             table_context_path, table_context_standards_paths):
     args = demisto.args()
 
     start_time = args.get('startTime')
@@ -1326,14 +1142,14 @@ def query_analytics_logs_command():
     service_end_date_epoch = int(service_end_date.strftime("%s"))
 
     fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, ANALYTICS_FIELDS)
+    fields = get_fields_and_check_validity(fields, table_fields)
 
-    where = get_where_part(args, TMS_ARGS_DICT)
+    where = get_where_part(args, table_args)
 
     if where:
-        query = f'SELECT {fields} FROM tms.analytics WHERE {where} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {table_name} WHERE {where} LIMIT {limit}'
     else:
-        query = f'SELECT {fields} FROM tms.analytics LIMIT {limit}'
+        query = f'SELECT {fields} FROM {table_name} LIMIT {limit}'
 
     query_data = {
         "query": query,
@@ -1356,7 +1172,7 @@ def query_analytics_logs_command():
     for page in pages:
         row_contents = page.get('_source')
         results.append(row_contents)
-        transformed_row = analytics_context_transformer(row_contents)
+        transformed_row = context_transformer_function(row_contents)
         transformed_row['id'] = page.get('_id')
         transformed_row['score'] = page.get('_score')
         outputs.append(transformed_row)
@@ -1372,7 +1188,7 @@ def query_analytics_logs_command():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            'Cortex.Logging.Analytics(val.id === obj.id)': outputs
+            table_context_path: outputs,
         }
     }
     return entry
