@@ -123,23 +123,29 @@ This step is relevant only for custom builds that uses a specific demisto server
 
 ## Run Tests - One Before GA
 **Not relevant for contributors**
+
 Same as [Latest GA](#run-tests---latest-ga) except uses one version before the latest GA.
 
 ## Run Tests - Two Before GA
 **Not relevant for contributors**
+
 Same as [Latest GA](#run-tests---latest-ga) except uses two version before the latest GA.
 
 ## Run Tests - Server Master
 **Not relevant for contributors**
+
 Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of demisto server.
 
 ## Slack Notifier
 **Not relevant for contributors**
 
+This step runs only in nightly builds of master branch.
+It will notify the slack channel `#dmst-content-team` about the list of failed tests.
+
+
 ## Validate Docker Images
 **This will not run on master branch (or release branches)**
-
-
+<!-- this should be handled by running validate_files.py -->
 
 ## Instance Test
 **Not relevant for contributors**
