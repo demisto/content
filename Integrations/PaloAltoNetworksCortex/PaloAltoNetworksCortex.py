@@ -1082,7 +1082,7 @@ def query_traffic_logs_command():
     context_transformer_function = traffic_context_transformer
     table_context_path: str = 'Cortex.Logging.Traffic(val.id === obj.id)'
     table_context_standards_paths: list = ['IP']
-    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
+    return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
@@ -1093,7 +1093,7 @@ def query_threat_logs_command():
     context_transformer_function = threat_context_transformer
     table_context_path: str = 'Cortex.Logging.Threat(val.id === obj.id)'
     table_context_standards_paths: list = ['IP']
-    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
+    return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
@@ -1104,7 +1104,7 @@ def query_traps_logs_command():
     context_transformer_function = traps_context_transformer
     table_context_path: str = 'Cortex.Logging.Traps(val.id === obj.id)'
     table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
-    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
+    return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
@@ -1115,11 +1115,11 @@ def query_analytics_logs_command():
     context_transformer_function = analytics_context_transformer
     table_context_path: str = 'Cortex.Logging.Analytics(val.id === obj.id)'
     table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
-    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
+    return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
-def query_table_logs_command(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
+def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
                              table_context_path: str, table_context_standards_paths: list):
     args = demisto.args()
 
