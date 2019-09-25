@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: Google Docs
+  id: GoogleDocs
   version: -1
 configuration:
 - display: Service Account Private Key file contents (JSON)
@@ -19,7 +19,7 @@ configuration:
   type: 8
 description: Create and modify google docs documents.
 display: Google Docs
-name: Google Docs
+name: GoogleDocs
 script:
   commands:
   - arguments:

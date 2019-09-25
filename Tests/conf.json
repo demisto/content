@@ -1842,7 +1842,7 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
-            "integrations": "Google Docs",
+            "integrations": "GoogleDocs",
             "playbookID": "GoogleDocs-test"
         },
         {

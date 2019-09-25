@@ -30,23 +30,21 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 21dff142-8aa2-4b83-8248-f8194965841e
+    taskid: 5e6c6540-005e-46e2-82a6-3438abc5e54e
     type: regular
     task:
-      id: 21dff142-8aa2-4b83-8248-f8194965841e
+      id: 5e6c6540-005e-46e2-82a6-3438abc5e54e
       version: -1
       name: Create Test Doucment
       description: Creates a document
-      script: Google Docs|||create_document
+      script: GoogleDocs|||create_document
       type: regular
       iscommand: true
-      brand: Google Docs
+      brand: GoogleDocs
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      text:
-        simple: This is a test file
       title:
         simple: test_file
     separatecontext: false
@@ -62,17 +60,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: f14b0c21-cd4e-44bb-817f-7b6c4ff57dce
+    taskid: 4c495078-ea58-4fb7-8f28-4c680e7b330a
     type: regular
     task:
-      id: f14b0c21-cd4e-44bb-817f-7b6c4ff57dce
+      id: 4c495078-ea58-4fb7-8f28-4c680e7b330a
       version: -1
       name: 'Get Document after creation '
       description: Returns a document matching the given ID.
-      script: Google Docs|||get_document
+      script: GoogleDocs|||get_document
       type: regular
       iscommand: true
-      brand: Google Docs
+      brand: GoogleDocs
     nexttasks:
       '#none#':
       - "3"
@@ -94,17 +92,17 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b6c6e732-7732-434b-8e0f-4cbc49ffe924
+    taskid: 7b989b93-9175-4d37-8cdf-3e88443e2562
     type: regular
     task:
-      id: b6c6e732-7732-434b-8e0f-4cbc49ffe924
+      id: 7b989b93-9175-4d37-8cdf-3e88443e2562
       version: -1
       name: Update document
       description: Updates a document with a given ID
-      script: Google Docs|||update_document
+      script: GoogleDocs|||update_document
       type: regular
       iscommand: true
-      brand: Google Docs
+      brand: GoogleDocs
     nexttasks:
       '#none#':
       - "4"
@@ -129,17 +127,17 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 90ee96b0-af06-4ec1-8cd5-ece47bb3ce7d
+    taskid: a0aa50db-4056-4097-85de-68e5ac338788
     type: regular
     task:
-      id: 90ee96b0-af06-4ec1-8cd5-ece47bb3ce7d
+      id: a0aa50db-4056-4097-85de-68e5ac338788
       version: -1
       name: Get document after update
       description: Returns a document matching the given ID.
-      script: Google Docs|||get_document
+      script: GoogleDocs|||get_document
       type: regular
       iscommand: true
-      brand: Google Docs
+      brand: GoogleDocs
     scriptarguments:
       document_id:
         simple: ${GoogleDocs.DocumentId}
