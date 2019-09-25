@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Improved implementation of the **qualys-vm-scan-launch**.
+- Improved implementation of the **qualys-vm-scan-launch** command.
