@@ -8,6 +8,7 @@ import requests
 import json
 from pancloud import LoggingService, Credentials
 import base64
+from dateutil.parser import parse
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # disable insecure warnings
@@ -1133,13 +1134,13 @@ def query_table_logs_command(table_fields: list, table_args: dict, table_name: s
         else:
             raise Exception('Enter timeRange and timeValue, or startTime and endTime')
     else:
-        # parses user input to datetime object
-        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
-        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+        # parses user input to datetime object - using dateutil.parser.parse
+        service_start_date = parse(start_time)
+        service_end_date = parse(start_time)
 
     # transforms datetime object to epoch time
-    service_start_date_epoch = int(service_start_date.strftime("%s"))
-    service_end_date_epoch = int(service_end_date.strftime("%s"))
+    service_start_date_epoch = int(service_start_date.timestamp())
+    service_end_date_epoch = int(service_end_date.timestamp())
 
     fields = args.get('fields', 'all')
     fields = get_fields_and_check_validity(fields, table_fields)
