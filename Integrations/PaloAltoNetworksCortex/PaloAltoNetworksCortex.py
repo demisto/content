@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import os
 import requests
 import json
+import re
 from pancloud import LoggingService, Credentials
 import base64
 from dateutil.parser import parse
@@ -173,7 +174,8 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
         headers_raw_names = fields_list
 
     for result in results:
-        filtered_result = {key: value for key, value in result.items() if key in headers_raw_names}
+        filtered_result = {headers[headers_raw_names.index(key)]: value for key, value in result.items()
+                           if key in headers_raw_names}
         filtered_results.append(filtered_result)
 
     return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
@@ -446,9 +448,9 @@ def get_where_part(args: dict, table_args_dict: dict) -> str:
                     for field in table_args_dict[key]:
                         if not where:
                             # the beginning of the where part should start without OR
-                            where += f'{field}={value}'
+                            where += f"{field}='{value}'"
                         else:
-                            where += f' OR {field}={value}'
+                            where += f" OR {field}='{value}'"
     return where
 
 
@@ -459,7 +461,7 @@ def parse_query(query: str) -> str:
     :return: the part of the query after the WHERE word
     """
     if ' WHERE ' in query.upper():
-        return query.upper().split(' WHERE ', 1)[1]
+        return re.split(' WHERE ', query, maxsplit=1, flags=re.IGNORECASE)[1]
     else:
         raise Exception('A compound query must include a WHERE part')
 
@@ -1152,6 +1154,8 @@ def query_table_logs_command(table_fields: list, table_args: dict, query_table_n
     else:
         query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
 
+    demisto.info(f'firsttttt {query}')
+
     query_data = {
         "query": query,
         "startTime": service_start_date_epoch,
@@ -1176,6 +1180,7 @@ def query_table_logs_command(table_fields: list, table_args: dict, query_table_n
         transformed_row = context_transformer_function(row_contents)
         transformed_row['id'] = page.get('_id')
         transformed_row['score'] = page.get('_score')
+        transformed_row = {key: value for key, value in transformed_row.items() if value}
         outputs.append(transformed_row)
 
     human_readable = human_readable_generator(fields, table_name, results)
@@ -1188,7 +1193,7 @@ def query_table_logs_command(table_fields: list, table_args: dict, query_table_n
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': response,
+        'Contents': response.json(),
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
