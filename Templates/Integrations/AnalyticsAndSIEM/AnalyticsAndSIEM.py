@@ -183,7 +183,8 @@ def raw_response_to_context(events: Union[Dict, List]) -> Union[Dict, List]:
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+@logger
+def test_module(client: Client, *_) -> Tuple[str, None, None]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -198,10 +199,11 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
     results = client.test_module_request()
     if 'version' in results:
-        return 'ok', {}, {}
+        return 'ok', None, None
     raise DemistoException(f'Test module failed, {results}')
 
 
+@logger
 def fetch_incidents(
         client: Client,
         fetch_time: str,
@@ -241,6 +243,7 @@ def fetch_incidents(
     return incidents, new_last_run
 
 
+@logger
 def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all events and return outputs in Demisto's format
 
@@ -273,6 +276,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
+@logger
 def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets an event by event ID and return outputs in Demisto's format
 
@@ -304,6 +308,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find event `{event_id}`.', {}, {}
 
 
+@logger
 def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Closes an event and return outputs in Demisto's format
 
@@ -335,6 +340,7 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not close event `{event_id}`')
 
 
+@logger
 def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Updates an event and return outputs in Demisto's format
 
@@ -366,6 +372,7 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not update event `{event_id}`')
 
 
+@logger
 def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Creates a new event and return outputs in Demisto's format
 
@@ -397,6 +404,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not create new event.')
 
 
+@logger
 def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Search for event by given args
 
@@ -465,6 +473,8 @@ def main():  # pragma: no cover
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
+    finally:
+        LOG.print_log()
 
 
 if __name__ == 'builtins':  # pragma: no cover
