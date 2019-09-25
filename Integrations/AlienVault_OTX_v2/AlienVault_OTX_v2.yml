@@ -12,7 +12,7 @@ configuration:
   name: api_token
   required: false
   type: 4
-- display: Indicator Threshold. Minimum number of pulses to consider the indicator malicious.
+- display: Indicator Threshold. The minimum number of pulses to consider the indicator as malicious.
   name: default_threshold
   required: false
   defaultvalue: "2"
@@ -25,78 +25,78 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Query IOCs in AlienVault OTX.
+description: Query Indicators of Compromise in AlienVault OTX.
 display: AlienVault OTX v2
 name: AlienVault_OTX_v2
 script:
   commands:
   - arguments:
     - default: true
-      description: ip to query
+      description: The IP address to query.
       isArray: false
       name: ip
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the ip
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the IP
+        address is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query IP in AlienVault OTX.
+    description: Queries an IP address in AlienVault OTX.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: IP address.
+      description: The address of the IP.
       type: String
     - contextPath: IP.ASN
-      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      description: 'The autonomous system name for the IP address. For example, "AS8948".'
       type: String
     - contextPath: IP.Geo.Country
-      description: The country in which the IP address is located.
+      description: The country where the IP address is located.
       type: String
     - contextPath: IP.Geo.Location
       description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: String
     - contextPath: AlienVaultOTX.IP.Reputation
-      description: IP reputation.
+      description: The reputation of the IP address.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
   - arguments:
     - default: true
-      description: domain to query
+      description: The domain to query.
       isArray: false
       name: domain
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the domain
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the domain
+        is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query domain in AlienVault OTX.
+    description: Queries a domain in AlienVault OTX.
     execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
-      description: 'The domain name, for example: "google.com".'
+      description: 'The domain name. For example, "google.com".'
       type: String
     - contextPath: AlienVaultOTX.Domain.Alexa
-      description: Alexa URL for domain data
+      description: Alexa URL for the domain data.
       type: String
     - contextPath: AlienVaultOTX.Domain.Whois
-      description: Whois URL for domain data
+      description: Whois URL for the domain data.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -105,35 +105,35 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
-      description: ip to query
+      description: The IP address to query.
       isArray: false
       name: ip
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the ip
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the IP address
+        is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query IPv6 in AlienVault OTX
+    description: Queries IPv6 in AlienVault OTX.
     execution: false
     name: alienvault-search-ipv6
     outputs:
     - contextPath: IP.Address
-      description: IP address.
+      description: The IP address.
       type: String
     - contextPath: IP.ASN
-      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      description: 'The autonomous system name for the IP address. For example, "AS8948".'
       type: String
     - contextPath: IP.AlienVaultOTX.Reputation
-      description: AlienVault IP reputation.
+      description: The IP reputation in AlienVault OTX.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -142,61 +142,61 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
-      description: hostname to query
+      description: The host name to query.
       isArray: false
       name: hostname
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the hostname
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the host name
+        is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query hostname in AlienVault OTX.
+    description: Searches for a host name in AlienVault OTX.
     execution: false
     name: alienvault-search-hostname
     outputs:
     - contextPath: Endpoint.Hostname
-      description: The hostname that is mapped to this endpoint.
+      description: The hostname that is mapped to the endpoint.
       type: String
     - contextPath: Endpoint.AlienVaultOTX.Alexa
-      description: Endpoint Alexa URL.
+      description: The Alexa URL endpoint.
       type: String
     - contextPath: Endpoint.AlienVaultOTX.Whois
-      description: Endpoint Whois URL.
+      description: The Whois URL endpoint.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
   - arguments:
     - default: true
-      description: File hash to query.
+      description: The file hash to query.
       isArray: false
       name: file
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the file
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the file
+        is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query file in AlienVault OTX.
+    description: Query a file in AlienVault OTX.
     execution: false
     name: file
     outputs:
@@ -210,7 +210,7 @@ script:
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.Malicious.PulseIDs
-      description: IDs of pulses marked this as malicious.
+      description: IDs of pulses which are marked as malicious.
       type: String
     - contextPath: File.Type
       description: The file type, as determined by libmagic (same as displayed in file entries).
@@ -219,7 +219,7 @@ script:
       description: The size of the file in bytes.
       type: Number
     - contextPath: File.SSDeep
-      description: The ssdeep hash of the file (same as displayed in file entries).
+      description: The SSDeep hash of the file (same as displayed in file entries).
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -228,32 +228,32 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of the indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
   - arguments:
     - default: true
-      description: The cve to query.
+      description: The CVE to query.
       isArray: false
       name: cve_id
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the cve
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the CVE
+        is considered as malicious. If the threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query CVE in AlienVault OTX.
+    description: Query Common Vulnerabilities and Exposures (CVE) in AlienVault OTX.
     execution: false
     name: alienvault-search-cve
     outputs:
     - contextPath: CVE.ID
-      description: 'The ID of the CVE, for example: "CVE-2015-1653".'
+      description: 'The ID of the CVE. For example, "CVE-2015-1653".'
       type: String
     - contextPath: CVE.CVSS
-      description: 'The CVSS of the CVE, for example: "10.0".'
+      description: 'The CVSS of the CVE. For example, "10.0".'
       type: String
     - contextPath: CVE.Published
       description: The timestamp of when the CVE was published.
@@ -268,10 +268,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -279,7 +279,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the indicator.
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", "hostname", or "url".'
       isArray: false
       name: indicator_type
       predefined:
@@ -291,29 +291,29 @@ script:
       required: true
       secret: false
     - default: false
-      description: The indicator to search related hashes for.
+      description: The indicator for which to search related URLs.
       isArray: false
       name: indicator
       required: true
       secret: false
     deprecated: false
-    description: URLs analyzed by AlienVault Labs on this indicator.
+    description: Returns related URLs by indicator.
     execution: false
     name: alienvault-get-related-urls-by-indicator
     outputs:
     - contextPath: AlienVaultOTX.URL.Data
-      description: path of the related URLs.
+      description: The path of the related URLs.
       type: Unknown
   - arguments:
     - default: false
-      description: The indicator to search related hashes for.
+      description: The indicator for which to search for related hashes.
       isArray: false
       name: indicator
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the indicator.
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or "hostname".'
       isArray: false
       name: indicator_type
       predefined:
@@ -324,7 +324,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Malwares analyzed by AlienVault Labs on this indicator.
+    description: Returns related hashes by indicator.
     execution: false
     name: alienvault-get-related-hashes-by-indicator
     outputs:
@@ -334,7 +334,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The type of the indicator.
+      description: 'The type of the indicator. Can be: "IPv4", "IPv6", "domain", or "hostname".'
       isArray: false
       name: indicator_type
       predefined:
@@ -345,14 +345,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: the indicator to search urls for
+      description: The indicator for which to search URLs.
       isArray: false
       name: indicator
       required: true
       secret: false
     deprecated: false
-    description: Passive dns records observed by AlienVault Labs pointing to this
-      indicator
+    description: Returns passive DNS records by indicator.
     execution: false
     name: alienvault-get-passive-dns-data-by-indicator
     outputs:
@@ -360,7 +359,7 @@ script:
       description: The domain value.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.IP
-      description: IP passive dns.
+      description: The IP passive DNS.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.Domain
       description: The domain value.
@@ -369,99 +368,99 @@ script:
       description: The asset type.
       type: String
     - contextPath: AlienVaultOTX.PassiveDNS.FirstSeen
-      description: The first seen date.
+      description: The date first seen.
       type: Date
     - contextPath: AlienVaultOTX.PassiveDNS.LastSeen
-      description: The last seen date.
+      description: The date last seen.
       type: Date
   - arguments:
     - default: true
-      description: The page of pulses to get.
+      description: The page of the pulse to retrieve.
       isArray: false
       name: page
       required: true
       secret: false
     deprecated: false
-    description: Search for pulses in AlienVault OTX
+    description: Searches for pulses in AlienVault OTX.
     execution: false
     name: alienvault-search-pulses
     outputs:
     - contextPath: AlienVaultOTX.Pulses.ID
-      description: Pulse ID
+      description: The ID of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Author.ID
-      description: Author ID
+      description: The ID of the Author.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Author.Username
-      description: Author username
+      description: The username of the Author.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Count
-      description: Pulse count
+      description: The pulse count.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Modified
-      description: Pulse modification date
+      description: The date of the pulse modification.
       type: Date
     - contextPath: AlienVaultOTX.Pulses.Name
-      description: Pulse name
+      description: The name of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Source
-      description: Pulse source
+      description: The source of the Pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.SubscriberCount
-      description: Pulse subscriber count
+      description: The count of the pulse subscriber.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Tags
-      description: Pulse tags
+      description: The tags of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Description
-      description: Pulse description
+      description: The description of the pulse.
       type: String
   - arguments:
     - default: true
-      description: ID of desired pules
+      description: The ID of the pulse.
       isArray: false
       name: pulse_id
       required: true
       secret: false
     deprecated: false
-    description: Get pulse details (pulse are alian vault's entities)
+    description: Returns pulse details.
     execution: false
     name: alienvault-get-pulse-details
     outputs:
     - contextPath: AlienVaultOTX.Pulses.Created
-      description: Pulse created
+      description: The date the pulse was created.
       type: Date
     - contextPath: AlienVaultOTX.Pulses.Author.Username
-      description: Pulse author username
+      description: The author username of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.ID
-      description: Pulse ID
+      description: The ID of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Name
-      description: Pulse name
+      description: The name of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Tags
-      description: Pulse tags
+      description: The tags of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.TargetedCountries
-      description: Pulse targeted countries
+      description: The targeted countries of the pulse.
       type: String
     - contextPath: AlienVaultOTX.Pulses.Description
-      description: Pulse description
+      description: The description of the pulse.
       type: String
   - arguments:
     - default: true
-      description: url to query
+      description: The URL to query.
       isArray: false
       name: url
       required: true
       secret: false
     - name: threshold
-      description: If the number of pulses is bigger than the threshold the url
-        will be considered malicious. If threshold is not specified, the default indicator
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of pulses is bigger than the threshold, the URL
+        is considered as malicious. If threshold is not specified, the default indicator
+        threshold is used, which is configured in the instance settings.
     deprecated: false
-    description: Query url in AlienVault OTX.
+    description: Queries a URL in AlienVault OTX.
     execution: false
     name: url
     outputs:
@@ -469,16 +468,16 @@ script:
       description: The URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Hostname
-      description: URL Hostname.
+      description: The host name of the URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Domain
-      description: URL Domain.
+      description: The domain of the URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Alexa
-      description: Alexa URL for domain data.
+      description: The domain data for the Alexa URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Whois
-      description: Whois URL for domain data.
+      description: The Whois URL for domain data.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -487,10 +486,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: The indicator type.
+      description: The type of indicator.
       type: String
     - contextPath: DBotScore.Vendor
-      description: AlienVault OTX vendor.
+      description: The AlienVault OTX vendor.
       type: String
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: false
