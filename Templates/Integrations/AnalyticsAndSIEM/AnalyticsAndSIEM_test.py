@@ -64,12 +64,12 @@ class TestTestModule:
 
 class TestFetchIncidends:
     time_format = '%Y-%m-%dT%H:%M:%SZ'
-    last_fetch = datetime(2010, 1, 1, 0, 0)
-    new_last_fetch = datetime(2010, 2, 1, 0, 0)
+    last_fetch = '2010-01-01T00:00:00'
+    new_last_fetch = '2010-02-01T00:00:00'
 
     def test_fetch_incidents(self, requests_mock):
         from AnalyticsAndSIEM import fetch_incidents
-        requests_mock.get(BASE_URL + 'event?sinceTime=2010-01-01+00%3A00%3A00', json=EVENT_LIST_INPUT)
+        requests_mock.get(BASE_URL + 'event?sinceTime=2010-01-01T00%3A00%3A00', json=EVENT_LIST_INPUT)
         incidents, last_run = fetch_incidents(client, fetch_time='3 days', last_run=self.last_fetch)
         assert len(incidents) == 2
         assert last_run == self.new_last_fetch
@@ -84,7 +84,7 @@ class TestFetchIncidends:
 
     def test_fetch_incidents_empty(self, requests_mock):
         from AnalyticsAndSIEM import fetch_incidents
-        requests_mock.get(BASE_URL + 'event?sinceTime=2010-01-01+00%3A00%3A00', json={'event': []})
+        requests_mock.get(BASE_URL + 'event?sinceTime=2010-01-01T00%3A00%3A00', json={'event': []})
         incidents, last_run = fetch_incidents(client, fetch_time='3 days', last_run=self.last_fetch)
         assert not incidents
         assert last_run == self.last_fetch

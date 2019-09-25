@@ -150,7 +150,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
+def raw_response_to_context(events: Union[Dict, List]) -> Union[Dict, List]:
     """Formats the API response to Demisto context.
 
     Args:
@@ -160,37 +160,24 @@ def build_context(events: Union[Dict, List]) -> Union[Dict, List]:
         The formatted Dict or List.
 
     Examples:
-        >>> build_context({'eventId': '1', 'description': 'event description', 'createdAt':\
+        >>> raw_response_to_context({'eventId': '1', 'description': 'event description', 'createdAt':\
         '2019-09-09T08:30:07.959533', 'isActive': True, 'assignee': [{'name': 'user1', 'id': '142'}]})
         {'ID': '1', 'Description': 'event description', 'Created': '2019-09-09T08:30:07.959533', 'IsActive': True,\
  'Assignee': [{'Name': 'user1', 'ID': '142'}]}
     """
-
-    def build_dict(event: Dict) -> Dict:
-        """Builds a Dict formatted for Demisto.
-
-        Args:
-            event: A single event from the API call.
-
-        Returns:
-            A Dict formatted for Demisto context.
-        """
-        return {
-            'ID': event.get('eventId'),
-            'Description': event.get('description'),
-            'Created': event.get('createdAt'),
-            'IsActive': event.get('isActive'),
-            'Assignee': [
-                {
-                    'Name': user.get('name'),
-                    'ID': user.get('id')
-                } for user in event.get('assignee', [])
-            ]
-        }
-
     if isinstance(events, list):
-        return [build_dict(event) for event in events]
-    return build_dict(events)
+        return [raw_response_to_context(event) for event in events]
+    return {
+        'ID': events.get('eventId'),
+        'Description': events.get('description'),
+        'Created': events.get('createdAt'),
+        'IsActive': events.get('isActive'),
+        'Assignee': [
+            {
+                'Name': user.get('name'),
+                'ID': user.get('id')
+            } for user in events.get('assignee', [])
+        ]}
 
 
 ''' COMMANDS '''
@@ -218,7 +205,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
 def fetch_incidents(
         client: Client,
         fetch_time: str,
-        last_run: Optional[datetime] = None) -> Tuple[List, datetime]:
+        last_run: Optional[str] = None) -> Tuple[List, datetime]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -231,14 +218,11 @@ def fetch_incidents(
         incidents, new last_run
 
     Examples:
-        >>> client = Client('https://example.net/v1')
-        >>> fetch_incidents(client, '3 days', datetime(2010, 1, 1, 0, 0))
+        >>> fetch_incidents(client, '3 days', '2010-02-01T00:00:00')
     """
-    timestamp_format = '%Y-%m-%dT%H:%M:%S'
     # Get incidents from API
     if not last_run:  # if first time running
         new_last_run, _ = parse_date_range(fetch_time)
-        new_last_run = new_last_run.strftime(timestamp_format)
     else:
         new_last_run = last_run
     incidents: List = list()
@@ -252,8 +236,7 @@ def fetch_incidents(
             'rawJSON': json.dumps(event)
         } for event in events]
 
-        last_incident_timestamp = incidents[-1].get('occurred')
-        new_last_run = datetime.strptime(last_incident_timestamp, timestamp_format)
+        new_last_run = incidents[-1].get('occurred')
     # Return results
     return incidents, new_last_run
 
@@ -278,7 +261,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     events = raw_response.get('event')
     if events:
         title = f'{INTEGRATION_NAME} - List events:'
-        context_entry = build_context(events)
+        context_entry = raw_response_to_context(events)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -309,7 +292,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if events:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}`:'
-        context_entry = build_context(event)
+        context_entry = raw_response_to_context(event)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -340,7 +323,7 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if events and events[0].get('isActive') is False:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been deleted.'
-        context_entry = build_context(event)
+        context_entry = raw_response_to_context(event)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -373,7 +356,7 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if events:
         event = events[0]
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been updated.'
-        context_entry = build_context(event)
+        context_entry = raw_response_to_context(event)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -404,7 +387,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         event = events[0]
         event_id: str = event.get('eventId', '')
         title = f'{INTEGRATION_NAME} - Event `{event_id}` has been created.'
-        context_entry = build_context(event)
+        context_entry = raw_response_to_context(event)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -438,7 +421,7 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Parse response into context & content entries
     if events:
         title = f'{INTEGRATION_NAME} - Results for given query'
-        context_entry = build_context(events)
+        context_entry = raw_response_to_context(events)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -453,7 +436,7 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}'/api/v2/'"
+    base_url = urljoin(params.get('url'), '/api/v2/')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy)
@@ -473,7 +456,7 @@ def main():  # pragma: no cover
     }
     try:
         if command == 'fetch-incidents':
-            incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())
+            incidents, new_last_run = fetch_incidents(client, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command in commands:
