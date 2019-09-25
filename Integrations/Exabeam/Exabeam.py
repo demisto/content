@@ -18,7 +18,7 @@ def convert_unix_to_date(d):
 
 
 class Client:
-    def __init__(self, exabeam_url, username, password, verify, proxies, headers):
+    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool, proxies: bool, headers: dict):
         self.server = exabeam_url.rstrip('/')
         self.base_url = f'{self.server}/uba/api/'
         self.username = username
@@ -33,7 +33,8 @@ class Client:
     def __del__(self):
         self._logout()
 
-    def _http_request(self, method, suffix_url=None, params=None, data=None, full_url=None, resp_type='json'):
+    def _http_request(self, method: str, suffix_url: str = None, params: dict = None, data: dict = None,
+                      full_url: str = None, resp_type: str = 'json'):
         full_url = full_url if full_url else self.base_url + suffix_url
         try:
             res = self.session.request(
@@ -99,7 +100,7 @@ class Client:
         suffix_url = 'ping'
         return self._http_request('GET', suffix_url, resp_type='text')
 
-    def get_notable_users_request(self, api_unit=None, num=None, limit=None):
+    def get_notable_users_request(self, api_unit: str = None, num: int = None, limit: int = None):
 
         suffix_url = 'users/notable'
 
@@ -112,7 +113,7 @@ class Client:
         response = self._http_request('GET', suffix_url, params)
         return response
 
-    def get_user_info_request(self, username):
+    def get_user_info_request(self, username: str):
 
         suffix_url = f'user/{username}/info'
         response = self._http_request('GET', suffix_url)
@@ -140,7 +141,7 @@ class Client:
 
         return response
 
-    def user_sequence_request(self, username=None, parse_start_time=None, parse_end_time=None):
+    def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None):
 
         suffix_url = f'user/{username}/sequences'
         params = {
@@ -160,6 +161,7 @@ def test_module(client: Client, *_):
 
     client.test_module_request()
     demisto.results('ok')
+    return '', None, None
 
 
 def get_notable_users(client: Client, args: Dict):
@@ -174,7 +176,7 @@ def get_notable_users(client: Client, args: Dict):
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
-        return_error('Missing an argument. Make sure to enter the time period number and unit.')
+        return_error('Got invalid time period. Enter the time period number and unit.')
     num, unit = time_
     api_unit = unit[0]
     if api_unit == 'm':
@@ -393,7 +395,7 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command: str = demisto.command()
+        command = demisto.command()
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
