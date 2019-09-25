@@ -10,6 +10,8 @@ import urllib.parse
 from oauth2client import service_account
 from googleapiclient import discovery
 
+import typing
+from collections import defaultdict
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -289,10 +291,11 @@ def batch_update_document_command(service):
     required_revision_id = args.get("required_revision_id", None)
     target_revision_id = args.get("target_revision_id", None)
 
-    payload = {
+    payload: dict = {
         "requests": []
     }
 
+    write_control: typing.DefaultDict = defaultdict()
     if required_revision_id and target_revision_id:
         demisto.results({
             'Type': entryTypes['error'],
@@ -301,12 +304,11 @@ def batch_update_document_command(service):
         })
         return
     elif required_revision_id:
-        payload['writeControl'] = {}
-        payload['writeControl']["requiredRevisionId"] = required_revision_id
+        write_control['writeControl']["requiredRevisionId"] = required_revision_id
     elif target_revision_id:
-        if 'writeControl' not in payload:
-            payload['writeControl'] = {}
-        payload['writeControl']["targetRevisionId"] = target_revision_id
+        write_control['writeControl']["targetRevisionId"] = target_revision_id
+
+    payload = {**payload, **write_control}
 
     for action_type, params in actions.items():
         request = globals()[ACTION_TO_FUNCTION[action_type]](action_type, *params)
