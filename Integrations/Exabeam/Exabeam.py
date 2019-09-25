@@ -171,7 +171,7 @@ def get_notable_users(client: Client, args: Dict):
 
     """
     limit = args.get('limit')
-    time_period: str = args.get('time_period')
+    time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
         return_error('Missing an argument. Make sure to enter the time period number and unit.')
@@ -393,8 +393,8 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command = demisto.command()
-        if command in commands.keys():
+        command: str = demisto.command()
+        if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
     except Exception as e:
