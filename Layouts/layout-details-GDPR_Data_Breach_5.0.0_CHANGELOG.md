@@ -1,2 +1,2 @@
 ## [Unreleased]
-- **New layout for GDPR Data Breach incident type**
+Added a new layout for the **GDPR Data Breach** incident type.
