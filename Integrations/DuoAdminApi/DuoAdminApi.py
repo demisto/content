@@ -39,6 +39,7 @@ OPTIONS_TO_TIME = {
 
 
 def my_make_request(self, method, uri, body, headers):
+    conn = self._connect()
     # if self.proxy_type == 'CONNECT':
     #     # Ensure the request uses the correct protocol and Host.
     #     if self.ca_certs == 'HTTP':
@@ -46,22 +47,11 @@ def my_make_request(self, method, uri, body, headers):
     #     else:
     #         api_proto = 'https'
     #     uri = ''.join((api_proto, '://', self.host, uri))
-    conn = self._connect()
-
-    # backoff on rate limited requests and retry. if a request is rate
-    # limited after MAX_BACKOFF_WAIT_SECS, return the rate limited response
-    wait_secs = self._INITIAL_BACKOFF_WAIT_SECS
-    while True:
-        response, data = self._attempt_single_request(
-            conn, method, uri, body, headers)
-        if response.status != self._RATE_LIMITED_RESP_CODE or wait_secs > self._MAX_BACKOFF_WAIT_SECS:
-            break
-        random_offset = random.uniform(0.0, 1.0)
-        sleep(wait_secs + random_offset)
-        wait_secs = wait_secs * self._BACKOFF_FACTOR
-
+    conn.request(method, uri, body, headers)
+    response = conn.getresponse()
+    data = response.read()
     self._disconnect(conn)
-    return response, data
+    return (response, data)
 
 
 # Utility Methods
