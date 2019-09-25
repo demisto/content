@@ -12,11 +12,8 @@ requests.packages.urllib3.disable_warnings()
 ''' HELPERS '''
 
 
-class DemistoException(Exception):
-    pass
-
-
 def convert_unix_to_date(d):
+    """Convert unix timestamp to datetime in iso format"""
     return datetime.fromtimestamp(int(d) / 1000).isoformat()
 
 
@@ -36,7 +33,7 @@ class Client:
     def __del__(self):
         self._logout()
 
-    def _http_request(self, method, suffix_url, params=None, data=None, full_url=None, resp_type='json'):
+    def _http_request(self, method, suffix_url=None, params=None, data=None, full_url=None, resp_type='json'):
         full_url = full_url if full_url else self.base_url + suffix_url
         try:
             res = self.session.request(
@@ -86,14 +83,14 @@ class Client:
 
     def _login(self):
         """ Login using the credentials and store the cookie """
-        self._http_request('POST', '', full_url=self.server + '/api/auth/login', data={
+        self._http_request('POST', full_url=f'{self.server}/api/auth/login', data={
             'username': self.username,
             'password': self.password
         })
 
     def _logout(self):
         """ Logout from the session """
-        self._http_request('GET', self.server + '/api/auth/logout', None)
+        self._http_request('GET', self._http_request('GET', f'{self.server}/api/auth/logout'))
 
     def test_module(self):
         """
@@ -354,16 +351,13 @@ def get_user_labels(client: Client):
         })
 
     context = {
-        'Exabeam.UserLabel(val.UserLabel && val.UserLabel === obj.UserLabel)': contents
+        'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents
     }
 
     return_outputs(tableToMarkdown('Exabeam User Labels', contents), context, labels)
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
     server_url = demisto.params().get('url')
@@ -373,7 +367,7 @@ def main():
     }
     proxies = handle_proxy()
 
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f'Command being called is demisto.command()')
 
     try:
         client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
