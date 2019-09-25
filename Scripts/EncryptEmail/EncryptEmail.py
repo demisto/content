@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from M2Crypto import BIO, Rand, SMIME, X509
+from M2Crypto import BIO, SMIME, X509
 
 
 def makebuf(text):
@@ -37,8 +37,6 @@ def main():
 
     s.write(out, p7)
     encrypted_message = out.read().decode('utf-8')
-    message = encrypted_message.split('\n\n')
-    content = message[1]
 
     entry_context = {
         'Email': {
