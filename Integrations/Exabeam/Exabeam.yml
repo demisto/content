@@ -36,14 +36,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: Number of the time duration unit
-      isArray: false
-      name: time_duration_number
-      predefined:
-      - ''
-      required: true
-      secret: false
-    - default: false
       defaultValue: '10'
       description: limit number of returned results.
       isArray: false
@@ -180,43 +172,46 @@ script:
       required: true
       secret: false
     - default: false
-      description: Start time of the time range (in UNIX epoch time, e.g 1533124216000)
+      description: Start time of the time range (e.g 2018-08-01T11:50:16)
       isArray: false
       name: start_time
-      required: true
+      required: false
       secret: false
     - default: false
-      description: End time of the time range (in UNIX epoch time e.g 1533124216000)
+      description: End time of the time range (e.g 2018-08-01T11:50:16)
       isArray: false
       name: end_time
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Returns sessions for the given username and time range.
     execution: false
     name: get-user-sessions
     outputs:
-    - contextPath: Exabeam.User.EndTime
+    - contextPath: Exabeam.User.Session.EndTime
       description: Session end time.
       type: Date
-    - contextPath: Exabeam.User.InitialRiskScore
+    - contextPath: Exabeam.User.Session.InitialRiskScore
       description: Session initial risk score.
       type: Number
-    - contextPath: Exabeam.User.Label
+    - contextPath: Exabeam.User.Session.Label
       description: Session's label
       type: String
-    - contextPath: Exabeam.User.LoginHost
+    - contextPath: Exabeam.User.Session.LoginHost
       description: Login host.
       type: String
-    - contextPath: Exabeam.User.RiskScore
+    - contextPath: Exabeam.User.Session.RiskScore
       description: Session risk score.
       type: Number
-    - contextPath: Exabeam.User.SessionID
+    - contextPath: Exabeam.User.Session.SessionID
       description: Session ID.
       type: String
-    - contextPath: Exabeam.User.StartTime
+    - contextPath: Exabeam.User.Session.StartTime
       description: Session start time.
       type: Date
+    - contextPath: Exabeam.User.Username
+      description: Session's username.
+      type: String
   dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false
