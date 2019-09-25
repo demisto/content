@@ -7,8 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
+  defaultvalue: ''
   name: insecure
   required: false
   type: 8
@@ -989,7 +989,13 @@ script:
       description: The package ID.
       isArray: false
       name: package-id
-      required: true
+      required: false
+      secret: false
+    - default: false
+      description: The package name.
+      isArray: false
+      name: package-name
+      required: false
       secret: false
     - default: false
       description: Package parameters. For example - $1=Value1;$2=Value2;$3=Value3
@@ -997,8 +1003,9 @@ script:
       name: parameters
       required: false
       secret: false
+
     deprecated: false
-    description: Create action object.
+    description: Create action object based on package name or package ID.
     execution: false
     name: tn-create-action
     outputs:
