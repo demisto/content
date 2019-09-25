@@ -41,23 +41,29 @@ RETRIES_END_TIME = datetime.min
 
 
 def http_request(method, url_suffix, params=None, data=None):
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
+    while True:
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=HEADERS
+        )
 
-    if res.status_code == 404:
-        return None
-    if res.status_code == 429:
-        # Rate limit response code
+        if res.status_code != 429:
+            # Rate limit response code
+            break
+
+        if datetime.now() > RETRIES_END_TIME:
+            return_error('Max retry time has exceeded.')
+
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
             wait_amount = wait_regex.group()
-            return {'time_to_wait': int(wait_amount)}
+
+    if res.status_code == 404:
+        return None
     if not res.status_code == 200:
         return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
         return None
