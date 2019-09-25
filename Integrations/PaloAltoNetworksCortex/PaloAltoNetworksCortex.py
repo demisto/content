@@ -329,7 +329,7 @@ def traps_context_transformer(row_content: dict) -> dict:
         'RecordType': row_content.get('recordType'),
         'TrapsID': row_content.get('tarpsId'),
         'EventType': row_content.get('eventType'),
-        'UuID': row_content.get('uuid'),
+        'UUID': row_content.get('uuid'),
         'ServerHost': row_content.get('serverHost'),
         'GeneratedTime': row_content.get('generatedTime'),
         'ServerComponentVersion': row_content.get('serverComponentVersion'),
@@ -388,7 +388,7 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
         'TrapsID': row_content.get('trapsId'),
         'EventType': row_content.get('eventType'),
-        'UuID': row_content.get('uuid'),
+        'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
         'RegionID': row_content.get('regionId'),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
@@ -1118,7 +1118,7 @@ def query_analytics_logs_command():
 
 
 def query_table_logs_command(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
-                             table_context_path, table_context_standards_paths):
+                             table_context_path: str, table_context_standards_paths: list):
     args = demisto.args()
 
     start_time = args.get('startTime')
