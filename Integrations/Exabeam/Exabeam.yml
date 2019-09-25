@@ -217,3 +217,5 @@ script:
   script: '-'
   type: python
   subtype: python3
+tests:
+  - Exabeam - Test
