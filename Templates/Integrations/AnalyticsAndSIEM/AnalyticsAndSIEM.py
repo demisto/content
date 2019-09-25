@@ -474,6 +474,7 @@ def main():  # pragma: no cover
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
     finally:
+        # Prints all logs collected by @logger
         LOG.print_log()
 
 
