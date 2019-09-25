@@ -377,7 +377,7 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
                         filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
         filtered_results.append(filtered_result)
 
-    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers) if filtered_results else ''
+    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
 
 
 def parse_processes(processes_list: list) -> list:
