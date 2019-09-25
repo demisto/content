@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
-import json
 import requests
 from typing import Dict
 
@@ -18,11 +17,7 @@ class DemistoException(Exception):
 
 
 def convert_unix_to_date(d):
-    """ Convert millise since epoch to date formatted MM/DD/YYYY HH:MI:SS """
-    if d:
-        dt = datetime.utcfromtimestamp(d / 1000)
-        return dt.strftime('%m/%d/%Y %H:%M:%S')
-    return 'N/A'
+    return datetime.fromtimestamp(int(d) / 1000).isoformat()
 
 
 class Client:
@@ -41,17 +36,11 @@ class Client:
     def __del__(self):
         self._logout()
 
-    def _http_request(self, method, suffix_url, params=None, data=None, full_url=None):
+    def _http_request(self, method, suffix_url, params=None, data=None, full_url=None, resp_type='json'):
         full_url = full_url if full_url else self.base_url + suffix_url
-        sessions_list = {
-            'get': self.session.get,
-            'post': self.session.post,
-            'delete': self.session.delete,
-            'put': self.session.put
-        }
-        session_call = sessions_list[method.lower()]
         try:
-            res = session_call(
+            res = self.session.request(
+                method,
                 full_url,
                 verify=self.verify,
                 data=data,
@@ -62,7 +51,10 @@ class Client:
                 raise ValueError(f'Error in API call to Exabeam {res.status_code}. Reason: {res.text}')
 
             try:
-                return res
+                if resp_type == 'json':
+                    return res.json()
+                else:
+                    return res.text
             except Exception:
                 raise ValueError(
                     f'Failed to parse http response to JSON format. Original response body: \n{res.text}')
@@ -108,7 +100,7 @@ class Client:
         Performs basic get request to check if the server is reachable.
         """
         suffix_url = 'ping'
-        self._http_request('GET', suffix_url)
+        self._http_request('GET', suffix_url, resp_type='text')
 
     def get_notable_users_request(self, unit=None, num=None, limit=None):
 
@@ -121,78 +113,35 @@ class Client:
         }
 
         response = self._http_request('GET', suffix_url, params)
-        return response.json()
+        return response
 
     def get_user_info_request(self, username):
 
         suffix_url = f'user/{username}/info'
         response = self._http_request('GET', suffix_url)
 
-        return response.json()
-
-    def create_watchlist_request(self, title=None, category=None, description=None, items=None):
-
-        suffix_url = 'watchlist'
-
-        params = {
-            'title': title,
-            'category': category,
-            'description': description,
-            'items': items
-        }
-
-        response = self._http_request('POST', suffix_url, params)
-        return response.json()
+        return response
 
     def get_watchlist_request(self):
 
         suffix_url = 'watchlist'
         response = self._http_request('GET', suffix_url)
 
-        return response.json()
+        return response
 
     def get_peergroups_request(self):
 
         suffix_url = 'peerGroup'
 
         response = self._http_request('GET', suffix_url)
-        return response.json()
-
-    def delete_watchlist_request(self, watchlist_id):
-
-        suffix_url = f'watchlist/{watchlist_id}'
-
-        response = self._http_request('DELETE', suffix_url)
         return response
-
-    def add_user_request(self, user_id=None, watchlist_id=None):
-
-        suffix_url = f'watchlist/user/{user_id}/add'
-
-        params = {
-            'itemId': user_id,
-            'watchListId': watchlist_id
-        }
-
-        response = self._http_request('PUT', suffix_url, params)
-        return response.json()
 
     def get_user_labels_request(self):
 
         suffix_url = 'userLabel'
         response = self._http_request('GET', suffix_url)
 
-        return response.json()
-
-    def get_users_request(self, user_label=None):
-
-        suffix_url = 'userLabel/getUserIds'
-        params = {
-            'userLabels': user_label
-        }
-
-        response = self._http_request('GET', suffix_url, params)
-        return response.json()
+        return response
 
     def user_sequence_request(self, username=None, start_time=None, end_time=None):
 
@@ -204,13 +153,7 @@ class Client:
         }
 
         response = self._http_request('GET', suffix_url, params)
-        return response.json()
-
-    def get_asset_data_request(self, asset_id=None):
-
-        suffix_url = f'asset/{asset_id}/data'
-        response = self._http_request('GET', suffix_url)
-        return response.json()
+        return response
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -224,9 +167,12 @@ def get_notable_users(client: Client, args: Dict):
         args: Dict
 
     """
-    unit = args.get('time_duration_unit')
-    num = args.get('time_duration_number')
     limit = args.get('limit')
+    time_period = args.get('time_period')
+    time_ = time_period.split(' ')
+    num = time_[0]
+    unit = time_[1]
+
     contents = []
     headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
@@ -297,7 +243,8 @@ def get_user_info(client: Client, args: Dict):
     if not user_info.get('firstSeen'):
         return_outputs(f'The user {username} was not found', {})
     else:
-        return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context, user)
+        return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context,
+                       user)
 
 
 def get_user_sessions(client: Client, args: Dict):
@@ -454,4 +401,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
