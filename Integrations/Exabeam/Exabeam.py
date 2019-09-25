@@ -41,7 +41,7 @@ class Client:
     def __del__(self):
         self._logout()
 
-    def _http_request(self, method, suffix_url, params=None, data=None, headers=None, full_url=None):
+    def _http_request(self, method, suffix_url, params=None, data=None, full_url=None):
         full_url = full_url if full_url else self.base_url + suffix_url
         sessions_list = {
             'get': self.session.get,
@@ -58,7 +58,7 @@ class Client:
                 proxies=self.proxies,
                 params=params
             )
-            if res.status_code not in {200}:
+            if not res.ok:
                 raise ValueError(f'Error in API call to Exabeam {res.status_code}. Reason: {res.text}')
 
             try:
