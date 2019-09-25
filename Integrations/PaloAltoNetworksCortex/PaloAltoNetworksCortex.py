@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 import os
 import requests
@@ -88,26 +89,27 @@ THREAT_FIELDS = [
 ]
 
 TRAPS_FIELDS = [
-    'all', 'severity', 'agentId', 'endPointHeader.osType','endPointHeader.isVdi', 'endPointHeader.osVersion',
+    'all', 'severity', 'agentId', 'endPointHeader.osType', 'endPointHeader.isVdi', 'endPointHeader.osVersion',
     'endPointHeader.is64', 'endPointHeader.agentIp', 'endPointHeader.deviceName', 'endPointHeader.deviceDomain',
     'endPointHeader.userName', 'endPointHeader.agentTime', 'endPointHeader.tzOffset', 'endPointHeader.agentVersion',
-    'endPointHeader.contentVersion', 'endPointHeader.policyTag', 'endPointHeader.protectionStatus', 
+    'endPointHeader.contentVersion', 'endPointHeader.policyTag', 'endPointHeader.protectionStatus',
     'endPointHeader.dataCollectionStatus', 'recordType', 'trapsId', 'eventType', 'uuid', 'serverHost', 'generatedTime',
-    'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime', 'originalAgentTime', 'facility', 
+    'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime', 'originalAgentTime', 'facility',
     'messageData.eventCategory', 'messageData.moduleId', 'messageData.moduleStatusId', 'messageData.preventionKey',
-    'messageData.processes.pid', 'messageData.processes.parentId', 'messageData.processes.exeFileIdx', 
-    'messageData.processes.userIdx', 'messageData.processes.commandLine', 'messageData.processes.instanceId', 
-    'messageData.processes.terminated', 'messageData.files.rawFullPath', 'messageData.files.fileName', 
-    'messageData.files.sha256', 'messageData.files.fileSize', 'messageData.files.innerObjectSha256', 
-    'messageData.users.userName', 'messageData.postDetected', 'messageData.terminate', 'messageData.block', 
+    'messageData.processes.pid', 'messageData.processes.parentId', 'messageData.processes.exeFileIdx',
+    'messageData.processes.userIdx', 'messageData.processes.commandLine', 'messageData.processes.instanceId',
+    'messageData.processes.terminated', 'messageData.files.rawFullPath', 'messageData.files.fileName',
+    'messageData.files.sha256', 'messageData.files.fileSize', 'messageData.files.innerObjectSha256',
+    'messageData.users.userName', 'messageData.postDetected', 'messageData.terminate', 'messageData.block',
     'messageData.eventParameters', 'messageData.sourceProcessIdx', 'messageData.fileIdx', 'messageData.verdict',
     'messageData.canUpload', 'messageData.targetProcessIdx', 'messageData.moduleCategory', 'messageData.preventionMode',
     'messageData.trapsSeverity', 'messageData.profile', 'messageData.description', 'messageData.cystatusDescription',
     'messageData.sourceProcess.user.userName', 'messageData.sourceProcess.pid', 'messageData.sourceProcess.parentId',
-    'messageData.sourceProcess.exeFileIdx', 'messageData.sourceProcess.userIdx', 
-    'messageData.sourceProcess.commandLine', 'messageData.sourceProcess.instanceId', 
-    'messageData.sourceProcess.terminated', 'messageData.sourceProcess.rawFullPath', 
-    'messageData.sourceProcess.fileName', 'messageData.sourceProcess.sha256', 'messageData.sourceProcess.fileSize', 
+    'messageData.sourceProcess.exeFileIdx', 'messageData.sourceProcess.userIdx',
+    'messageData.sourceProcess.commandLine', 'messageData.sourceProcess.instanceId',
+    'messageData.sourceProcess.terminated', 'messageData.sourceProcess.rawFullPath'
+                                            'messageData.sourceProcess.fileName', 'messageData.sourceProcess.sha256',
+    'messageData.sourceProcess.fileSize'
     'messageData.sourceProcess.innerObjectSha256', 'messageData.class', 'messageData.classId'
 ]
 
@@ -117,7 +119,7 @@ ANALYTICS_FIELDS = [
     'endPointHeader.userName', 'endPointHeader.userDomain', 'endPointHeader.agentTime', 'endPointHeader.tzOffset',
     'endPointHeader.agentVersion', 'endPointHeader.contentVersion', 'endPointHeader.policyTag',
     'endPointHeader.protectionStatus', 'endPointHeader.dataCollectionStatus', 'trapsId', 'eventType', 'uuid',
-    'serverHost', 'generatedTime', 'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime', 
+    'serverHost', 'generatedTime', 'serverComponentVersion', 'regionId', 'customerId', 'recsize', 'serverTime',
     'originalAgentTime', 'facility', 'messageData.eventCategory', 'messageData.sha256', 'messageData.type',
     'messageData.fileName', 'messageData.filePath', 'messageData.fileSize', 'messageData.reported',
     'messageData.blocked', 'messageData.localAnalysisResult.contentVersion', 'messageData.localAnalysisResult.trusted',
@@ -146,6 +148,32 @@ TMS_ARGS_DICT = {
 }
 
 ''' HELPER FUNCTIONS '''
+
+
+def human_readable_generator(fields: str, table_name: str, results: list):
+    filtered_results = []
+    headers = []
+    headers_raw_names = []
+
+    if fields == '*':
+        if table_name == 'traffic' or table_name == 'threat':
+            headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule']
+            headers_raw_names = ['src', 'dst', 'app', 'action', 'rule']
+
+        elif table_name == 'traps' or table_name == 'analytics':
+            headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
+            headers_raw_names = ['severity', 'eventType', 'endPointHeaderdst.userName', 'endPointHeader.agentIp',
+                                 'endPointHeaderdst.deviceName', 'endPointHeaderdst.agentTime']
+    else:
+        fields_list = argToList(fields)
+        headers = fields_list
+        headers_raw_names = fields_list
+
+    for result in results:
+        filtered_result = {key: value for key, value in result.items() if key in headers_raw_names}
+        filtered_results.append(filtered_result)
+
+    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
 
 
 def parse_processes(processes_list: list):
@@ -319,29 +347,29 @@ def traps_context_transformer(row_content: dict):
         'MessageData.PreventionMode': row_content.get('messageData', {}).get('preventionMode'),
         'MessageData.TrapsSeverity': row_content.get('messageData', {}).get('trapsSeverity'),
         'MessageData.SourceProcess.User.Username': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('user', {}).get('userName'),
+                .get('user', {}).get('userName'),
         'MessageData.SourceProcess.PID': row_content.get('messageData', {}).get('sourceProcess', {}).get('pid'),
         'MessageData.SourceProcess.ParentID': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('parentId'),
+                .get('parentId'),
         'MessageData.SourceProcess.ExeFileIdx': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('exeFileIdx'),
+                .get('exeFileIdx'),
         'MessageData.SourceProcess.UserIdx': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('userIdx'),
+                .get('userIdx'),
         'MessageData.SourceProcess.CommandLine': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('commandLine'),
+                .get('commandLine'),
         'MessageData.SourceProcess.InstanceID': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('instanceId'),
+                .get('instanceId'),
         'MessageData.SourceProcess.Terminated': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('terminated'),
+                .get('terminated'),
         'MessageData.SourceProcess.RawFullPath': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('rawFullPath'),
+                .get('rawFullPath'),
         'MessageData.SourceProcess.FileName': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('fileName'),
+                .get('fileName'),
         'MessageData.SourceProcess.SHA256': row_content.get('messageData', {}).get('sourceProcess', {}).get('sha256'),
         'MessageData.SourceProcess.FileSize': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('fileSize'),
+                .get('fileSize'),
         'MessageData.SourceProcess.InnerObjectSHA256': row_content.get('messageData', {}).get('sourceProcess', {})
-                        .get('innerObjectSha256'),
+                .get('innerObjectSha256'),
     }
 
 
@@ -376,51 +404,15 @@ def analytics_context_transformer(row_content: dict):
         'MessageData.Reported': row_content.get('MessageData', {}).get('reported'),
         'MessageData.Blocked': row_content.get('MessageData', {}).get('blocked'),
         'MessageData.LocalAnalysisResult.Trusted': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                        .get('trusted'),
+                .get('trusted'),  # --ignore = E131
         'MessageData.LocalAnalysisResult.Publishers': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                        .get('publishers'),
+                .get('publishers'),
         'MessageData.LocalAnalysisResult.TrustedID': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                        .get('trustedId'),
+                .get('trustedId'),
         'MessageData.ExecutionCount': row_content.get('executionCount'),
         'MessageData.LastSeen': row_content.get('lastSeen'),
         'MessageData.TypeID': row_content.get('typeId')
     }
-
-
-COMMANDS_DATA_DICT = {
-    'cortex-query-traffic-logs': {
-        'table_fields': TRAFFIC_FIELDS,
-        'table_args_dict': PANW_ARGS_DICT,
-        'query_table_name': 'panw.traffic',
-        'context_transformer_function': traffic_context_transformer,
-        'human_readable_generator_function': '',
-        'table_context_path': 'Cortex.Logging.Traffic(val.id === obj.id)'
-    },
-    'cortex-query-threat-logs': {
-        'table_fields': THREAT_FIELDS,
-        'table_args_dict': PANW_ARGS_DICT,
-        'query_table_name': 'panw.threat',
-        'context_transformer_function': threat_context_transformer,
-        'human_readable_generator_function': '',
-        'table_context_path': 'Cortex.Logging.Threat(val.id === obj.id)'
-    },
-    'cortex-query-traps-logs': {
-        'table_fields': TRAPS_FIELDS,
-        'table_args_dict': TMS_ARGS_DICT,
-        'query_table_name': 'tms.threat',
-        'context_transformer_function': traps_context_transformer,
-        'human_readable_generator_function': '',
-        'table_context_path': 'Cortex.Logging.Traps(val.id === obj.id)'
-    },
-    'cortex-query-analytics-logs': {
-        'table_fields': ANALYTICS_FIELDS,
-        'table_args_dict': TMS_ARGS_DICT,
-        'query_table_name': 'tms.analytics',
-        'context_transformer_function': analytics_context_transformer,
-        'human_readable_generator_function': '',
-        'table_context_path': 'Cortex.Logging.Analytics(val.id === obj.id)'
-    }
-}
 
 
 def get_fields_and_check_validity(fields: str, table_fields: list):
@@ -487,6 +479,7 @@ def get_encrypted(auth_id: str, key: str) -> str:
     Returns:
 
     """
+
     def create_nonce() -> bytes:
         return os.urandom(12)
 
@@ -510,6 +503,7 @@ def get_encrypted(auth_id: str, key: str) -> str:
         data = string.encode()
         ct = aes_gcm.encrypt(nonce, data, None)
         return base64.b64encode(nonce + ct)
+
     now = epoch_seconds()
     return encrypt(f'{now}:{auth_id}', key).decode('utf-8')
 
@@ -667,7 +661,6 @@ def initial_logging_service():
 
 
 def poll_query_result(query_id):
-
     logging_service = initial_logging_service()
 
     poll_params = {  # Prepare 'poll' params
@@ -1085,8 +1078,7 @@ def search_by_file_hash_command():
     return entry
 
 
-def query_table_logs_command(command_data_dict: dict):
-
+def query_traffic_logs_command():
     args = demisto.args()
 
     start_time = args.get('startTime')
@@ -1110,18 +1102,15 @@ def query_table_logs_command(command_data_dict: dict):
     service_start_date_epoch = int(service_start_date.strftime("%s"))
     service_end_date_epoch = int(service_end_date.strftime("%s"))
 
-    table_fields = command_data_dict['table_fields']
     fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, table_fields)
+    fields = get_fields_and_check_validity(fields, TRAFFIC_FIELDS)
 
-    table_args_dict = command_data_dict['table_args_dict']
-    where = get_where_part(args, table_args_dict)
+    where = get_where_part(args, PANW_ARGS_DICT)
 
-    query_table_name = command_data_dict['query_table_name']
     if where:
-        query = f'SELECT {fields} FROM {query_table_name} WHERE {where} LIMIT {limit}'
+        query = f'SELECT {fields} FROM panw.traffic WHERE {where} LIMIT {limit}'
     else:
-        query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
+        query = f'SELECT {fields} FROM panw.traffic LIMIT {limit}'
 
     query_data = {
         "query": query,
@@ -1139,19 +1128,20 @@ def query_table_logs_command(command_data_dict: dict):
         raise Exception('Failed to parse the response from Cortex')
 
     outputs: list = []
-    human_readable: list = []
+    results: list = []
 
     for page in pages:
         row_contents = page.get('_source')
-        row_contents['id'] = page.get('_id')
-        row_contents['score'] = page.get('_score')
-        # CHECK FOR THE ID & SCORE !!
-        transformed_row = command_data_dict['context_transformer_function'](row_contents)
+        results.append(row_contents)
+        transformed_row = traffic_context_transformer(row_contents)
+        transformed_row['id'] = page.get('_id')
+        transformed_row['score'] = page.get('_score')
         outputs.append(transformed_row)
 
-    # CODE THE HUMAN READABLE
+    human_readable = human_readable_generator(fields, table_name, results)
 
-    context_root_path = command_data_dict['context_root_path']
+    # CODE INDICATORS
+
     entry = {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -1159,7 +1149,7 @@ def query_table_logs_command(command_data_dict: dict):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {
-            context_root_path: outputs
+            'Cortex.Logging.Traffic(val.id === obj.id)': outputs
         }
     }
     return entry
@@ -1173,7 +1163,6 @@ def process_incident_pairs(incident_pairs, max_incidents):
 
 
 def fetch_incidents():
-
     last_run = demisto.getLastRun()
     last_fetched_event_timestamp = last_run.get('last_fetched_event_timestamp')
     last_query_id = last_run.get('last_query_id')
@@ -1275,11 +1264,14 @@ def main():
             demisto.results(get_social_applications_command())
         elif demisto.command() == 'cortex-search-by-file-hash':
             demisto.results(search_by_file_hash_command())
-        elif demisto.command() == 'cortex-query-traffic-logs' \
-                or demisto.command() == 'cortex-query-threat-logs' \
-                or demisto.command() == 'cortex-query-traps-logs' \
-                or demisto.command() == 'cortex-query-analytics-logs':
-            demisto.results(query_table_logs_command(COMMANDS_DATA_DICT.get(demisto.command())))
+        elif demisto.command() == 'cortex-query-traffic-logs':
+            demisto.results(query_traffic_logs_command())
+        elif demisto.command() == 'cortex-query-threat-logs':
+            demisto.results(query_threat_logs_command())
+        elif demisto.command() == 'cortex-query-traps-logs':
+            demisto.results(query_traps_logs_command())
+        elif demisto.command() == 'cortex-query-analytics-logs':
+            demisto.results(query_analytics_logs_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents()
     except Exception as e:
