@@ -325,12 +325,9 @@ def get_peer_groups(client: Client):
         client: Client
 
     """
-
     groups = client.get_peergroups_request()
-    peer_group = ', '.join(groups)
-    new_group = peer_group.split(',')
     contents = []
-    for group in new_group:
+    for group in groups:
         contents.append({
             'Name': group
         })
@@ -349,12 +346,9 @@ def get_user_labels(client: Client):
         client: Client
 
     """
-
     labels = client.get_user_labels_request()
-    user_labels = ', '.join(labels)
-    new_group = user_labels.split(',')
     contents = []
-    for label in new_group:
+    for label in labels:
         contents.append({
             'Label': label
         })
