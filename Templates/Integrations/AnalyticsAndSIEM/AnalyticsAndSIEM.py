@@ -449,7 +449,7 @@ def main():  # pragma: no cover
     proxy = params.get('proxy')
     client = Client(base_url=base_url, verify=verify_ssl, proxy=proxy)
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
 
     # Switch case
     commands = {
