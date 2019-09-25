@@ -1,21 +1,32 @@
+args:
+- default: false
+  description: The URL(s) or Email(s) to process
+  isArray: true
+  name: input
+  required: false
+  secret: false
+- default: false
+  defaultValue: 'False'
+  description: True if extract FQDN is needed
+  isArray: false
+  name: extractFQDN
+  required: false
+  secret: false
+comment: Extract Domain(s) from URL(s) and/or Email(s)
 commonfields:
   id: ExtractDomainFromUrlAndEmail
   version: -1
+enabled: true
 name: ExtractDomainFromUrlAndEmail
-script: ''
-type: python
+script: '-'
+system: false
 tags:
 - indicator-format
-comment: Extract Domain(s) from URL(s) and/or Email(s)
-enabled: true
-args:
-- name: input
-  description: The URL(s) or Email(s) to process
-  isArray: true
-scripttarget: 0
-runonce: false
+timeout: '0'
+type: python
 dockerimage: demisto/tld
 runas: DBotWeakRole
+runonce: false
 tests:
 - ExtractDomainFromEmailTest
 - ExtractDomainFromUrlAndEmail-Test
