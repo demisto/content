@@ -358,8 +358,7 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
 
         elif table_name == 'traps' or table_name == 'analytics':
             headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
-            headers_raw_names = ['severity', 'eventType', 'endPointHeader.userName', 'endPointHeader.agentIp',
-                                 'endPointHeader.deviceName', 'endPointHeader.agentTime']
+            headers_raw_names = ['severity', 'eventType', 'userName', 'agentIp', 'deviceName', 'agentTime']
     else:
         # if the user has chosen which fields to query than they will be used as headers
         fields_list: list = argToList(fields)
@@ -367,11 +366,18 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
         headers_raw_names = fields_list
 
     for result in results:
-        filtered_result = {headers[headers_raw_names.index(key)]: value for key, value in result.items()
-                           if key in headers_raw_names}
+        filtered_result = {}
+        for key, value in result.items():
+            if key in headers_raw_names:
+                filtered_result[headers[headers_raw_names.index(key)]] = value
+            elif isinstance(value, dict) and key == 'endPointHeader':
+                # handle case which headers are in nested dict (1 nest only)
+                for child_key in value:
+                    if child_key in headers_raw_names:
+                        filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
         filtered_results.append(filtered_result)
 
-    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
+    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers) if filtered_results else ''
 
 
 def parse_processes(processes_list: list) -> list:
@@ -1169,7 +1175,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     try:
         result = response.json()['result']
         pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
-        table_name = result['esQuery']['table'][0].split('.')[1]
+        table_name = result['esQuery']['table'][0].split('.')[1] if query_table_name != 'tms.threat' else 'traps'
     except ValueError:
         raise DemistoException('Failed to parse the response from Cortex')
 
