@@ -117,16 +117,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-calls for the specified escalation
-        policy IDs
+      description: Filters the results, showing only on-call users for the specified escalation
+        policy IDs.
       isArray: true
       name: escalation_policy_ids
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-calls for the specified schedule
-        IDs. If null is provided, it includes permanent on-calls due to direct user
-        escalation targets
+      description: Filters the results, showing only on-call users for the specified schedule
+        IDs. If the value is null, permanent on-call user are included due to direct user
+        escalation policy targets.
       isArray: true
       name: schedule_ids
       required: false
