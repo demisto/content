@@ -347,7 +347,7 @@ script:
                 ],
             'scan': [
                     {to: 'ID', from: 'ID'},
-                    {to: 'Reference', from: 'REF'},
+                    {to: 'Reference', from: 'REFERENCE'},
                     {to: 'Title', from: 'TITLE'},
                     {to: 'Type', from: 'TYPE'},
                     {to: 'LaunchDatetime', from: 'LAUNCH_DATETIME'},
