@@ -306,20 +306,23 @@ def threat_context_transformer(row_content: dict):
 
 
 def traps_context_transformer(row_content: dict):
+    end_point_header = row_content.get('endPointHeader', {})
+    message_data = row_content.get('messageData', {})
+    source_process = message_data.get('sourceProcess', {})
     return {
         'Severity': row_content.get('severity'),
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': row_content.get('endPointHeader', {}).get('osType'),
-        'EndPointHeader.IsVdi': row_content.get('endPointHeader', {}).get('isVdi'),
-        'EndPointHeader.OsVersion': row_content.get('endPointHeader', {}).get('osVersion'),
-        'EndPointHeader.Is64': row_content.get('endPointHeader', {}).get('is64'),
-        'EndPointHeader.AgentIP': row_content.get('endPointHeader', {}).get('agentIp'),
-        'EndPointHeader.DeviceName': row_content.get('endPointHeader', {}).get('deviceName'),
-        'EndPointHeader.DeviceDomain': row_content.get('endPointHeader', {}).get('deviceDomain'),
-        'EndPointHeader.Username': row_content.get('endPointHeader', {}).get('userName'),
-        'EndPointHeader.AgentTime': row_content.get('endPointHeader', {}).get('agentTime'),
-        'EndPointHeader.AgentVersion': row_content.get('endPointHeader', {}).get('agentVersion'),
-        'EndPointHeader.ProtectionStatus': row_content.get('endPointHeader', {}).get('protectionStatus'),
+        'EndPointHeader.OsType': end_point_header.get('osType'),
+        'EndPointHeader.IsVdi': end_point_header.get('isVdi'),
+        'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
+        'EndPointHeader.Is64': end_point_header.get('is64'),
+        'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
+        'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
+        'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
+        'EndPointHeader.Username': end_point_header.get('userName'),
+        'EndPointHeader.AgentTime': end_point_header.get('agentTime'),
+        'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
+        'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
         'RecordType': row_content.get('recordType'),
         'TrapsID': row_content.get('tarpsId'),
         'EventType': row_content.get('eventType'),
@@ -332,62 +335,54 @@ def traps_context_transformer(row_content: dict):
         'ServerTime': row_content.get('serverTime'),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
-        'MessageData.EventCategory': row_content.get('messageData', {}).get('eventCategory'),
-        'MessageData.PreventionKey': row_content.get('messageData', {}).get('preventionKey'),
-        'MessageData.Processes': parse_processes(row_content.get('messageData', {}).get('processes', [])),
-        'MessageData.Files': parse_files(row_content.get('messageData', {}).get('files', [])),
-        'MessageData.Users': parse_users(row_content.get('messageData', {}).get('users', [])),
-        'MessageData.PostDetected': row_content.get('messageData', {}).get('postDetected'),
-        'MessageData.Terminate': row_content.get('messageData', {}).get('terminate'),
-        'MessageData.SourceProcessIdx': row_content.get('messageData', {}).get('sourceProcessIdx'),
-        'MessageData.FileIdx': row_content.get('messageData', {}).get('fileIdx'),
-        'MessageData.Verdict': row_content.get('messageData', {}).get('verdict'),
-        'MessageData.TargetProcessIdx': row_content.get('messageData', {}).get('targetProcessIdx'),
-        'MessageData.ModuleCategory': row_content.get('messageData', {}).get('moduleCategory'),
-        'MessageData.PreventionMode': row_content.get('messageData', {}).get('preventionMode'),
-        'MessageData.TrapsSeverity': row_content.get('messageData', {}).get('trapsSeverity'),
-        'MessageData.SourceProcess.User.Username': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('user', {}).get('userName'),
-        'MessageData.SourceProcess.PID': row_content.get('messageData', {}).get('sourceProcess', {}).get('pid'),
-        'MessageData.SourceProcess.ParentID': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('parentId'),
-        'MessageData.SourceProcess.ExeFileIdx': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('exeFileIdx'),
-        'MessageData.SourceProcess.UserIdx': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('userIdx'),
-        'MessageData.SourceProcess.CommandLine': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('commandLine'),
-        'MessageData.SourceProcess.InstanceID': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('instanceId'),
-        'MessageData.SourceProcess.Terminated': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('terminated'),
-        'MessageData.SourceProcess.RawFullPath': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('rawFullPath'),
-        'MessageData.SourceProcess.FileName': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('fileName'),
-        'MessageData.SourceProcess.SHA256': row_content.get('messageData', {}).get('sourceProcess', {}).get('sha256'),
-        'MessageData.SourceProcess.FileSize': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('fileSize'),
-        'MessageData.SourceProcess.InnerObjectSHA256': row_content.get('messageData', {}).get('sourceProcess', {})
-                .get('innerObjectSha256'),
+        'MessageData.EventCategory': message_data.get('eventCategory'),
+        'MessageData.PreventionKey': message_data.get('preventionKey'),
+        'MessageData.Processes': parse_processes(message_data.get('processes', [])),
+        'MessageData.Files': parse_files(message_data.get('files', [])),
+        'MessageData.Users': parse_users(message_data.get('users', [])),
+        'MessageData.PostDetected': message_data.get('postDetected'),
+        'MessageData.Terminate': message_data.get('terminate'),
+        'MessageData.SourceProcessIdx': message_data.get('sourceProcessIdx'),
+        'MessageData.FileIdx': message_data.get('fileIdx'),
+        'MessageData.Verdict': message_data.get('verdict'),
+        'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
+        'MessageData.ModuleCategory': message_data.get('moduleCategory'),
+        'MessageData.PreventionMode': message_data.get('preventionMode'),
+        'MessageData.TrapsSeverity': message_data.get('trapsSeverity'),
+        'MessageData.SourceProcess.User.Username': source_process.get('user', {}).get('userName'),
+        'MessageData.SourceProcess.PID': source_process.get('pid'),
+        'MessageData.SourceProcess.ParentID': source_process.get('parentId'),
+        'MessageData.SourceProcess.ExeFileIdx': source_process.get('exeFileIdx'),
+        'MessageData.SourceProcess.UserIdx': source_process.get('userIdx'),
+        'MessageData.SourceProcess.CommandLine': source_process.get('commandLine'),
+        'MessageData.SourceProcess.InstanceID': source_process.get('instanceId'),
+        'MessageData.SourceProcess.Terminated': source_process.get('terminated'),
+        'MessageData.SourceProcess.RawFullPath': source_process.get('rawFullPath'),
+        'MessageData.SourceProcess.FileName': source_process.get('fileName'),
+        'MessageData.SourceProcess.SHA256': source_process.get('sha256'),
+        'MessageData.SourceProcess.FileSize': source_process.get('fileSize'),
+        'MessageData.SourceProcess.InnerObjectSHA256': source_process.get('innerObjectSha256')
     }
 
 
 def analytics_context_transformer(row_content: dict):
+    end_point_header = row_content.get('endPointHeader', {})
+    message_data = row_content.get('messageData', {})
+    local_analysis_result = message_data.get('localAnalysisResult', {})
     return {
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': row_content.get('endPointHeader', {}).get('osType'),
-        'EndPointHeader.IsVdi': row_content.get('endPointHeader', {}).get('isVdi'),
-        'EndPointHeader.OsVersion': row_content.get('endPointHeader', {}).get('osVersion'),
-        'EndPointHeader.Is64': row_content.get('endPointHeader', {}).get('is64'),
-        'EndPointHeader.AgentIP': row_content.get('endPointHeader', {}).get('agentIp'),
-        'EndPointHeader.DeviceName': row_content.get('endPointHeader', {}).get('deviceName'),
-        'EndPointHeader.DeviceDomain': row_content.get('endPointHeader', {}).get('deviceDomain'),
-        'EndPointHeader.Username': row_content.get('endPointHeader', {}).get('userName'),
-        'EndPointHeader.UserDomain': row_content.get('endPointHeader', {}).get('userDomain'),
-        'EndPointHeader.AgentTime': row_content.get('endPointHeader', {}).get('agentTime'),
-        'EndPointHeader.AgentVersion': row_content.get('endPointHeader', {}).get('agentVersion'),
-        'EndPointHeader.ProtectionStatus': row_content.get('endPointHeader', {}).get('protectionStatus'),
+        'EndPointHeader.OsType': end_point_header.get('osType'),
+        'EndPointHeader.IsVdi': end_point_header.get('isVdi'),
+        'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
+        'EndPointHeader.Is64': end_point_header.get('is64'),
+        'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
+        'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
+        'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
+        'EndPointHeader.Username': end_point_header.get('userName'),
+        'EndPointHeader.UserDomain': end_point_header.get('userDomain'),
+        'EndPointHeader.AgentTime': end_point_header.get('agentTime'),
+        'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
+        'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
         'TrapsID': row_content.get('trapsId'),
         'EventType': row_content.get('eventType'),
         'UuID': row_content.get('uuid'),
@@ -395,23 +390,20 @@ def analytics_context_transformer(row_content: dict):
         'RegionID': row_content.get('regionId'),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
-        'MessageData.@type': row_content.get('MessageData', {}).get('@type'),
-        'MessageData.SHA256': row_content.get('MessageData', {}).get('sha256'),
-        'MessageData.Type': row_content.get('MessageData', {}).get('type'),
-        'MessageData.FileName': row_content.get('MessageData', {}).get('fileName'),
-        'MessageData.FilePath': row_content.get('MessageData', {}).get('filePath'),
-        'MessageData.FileSize': row_content.get('MessageData', {}).get('fileSize'),
-        'MessageData.Reported': row_content.get('MessageData', {}).get('reported'),
-        'MessageData.Blocked': row_content.get('MessageData', {}).get('blocked'),
-        'MessageData.LocalAnalysisResult.Trusted': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                .get('trusted'),  # --ignore = E131
-        'MessageData.LocalAnalysisResult.Publishers': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                .get('publishers'),
-        'MessageData.LocalAnalysisResult.TrustedID': row_content.get('MessageData', {}).get('localAnalysisResult', {})
-                .get('trustedId'),
-        'MessageData.ExecutionCount': row_content.get('executionCount'),
-        'MessageData.LastSeen': row_content.get('lastSeen'),
-        'MessageData.TypeID': row_content.get('typeId')
+        'MessageData.@type': message_data.get('@type'),
+        'MessageData.SHA256': message_data.get('sha256'),
+        'MessageData.Type': message_data.get('type'),
+        'MessageData.FileName': message_data.get('fileName'),
+        'MessageData.FilePath': message_data.get('filePath'),
+        'MessageData.FileSize': message_data.get('fileSize'),
+        'MessageData.Reported': message_data.get('reported'),
+        'MessageData.Blocked': message_data.get('blocked'),
+        'MessageData.LocalAnalysisResult.Trusted': local_analysis_result.get('trusted'),
+        'MessageData.LocalAnalysisResult.Publishers': local_analysis_result.get('publishers'),
+        'MessageData.LocalAnalysisResult.TrustedID': local_analysis_result.get('trustedId'),
+        'MessageData.ExecutionCount': message_data.get('executionCount'),
+        'MessageData.LastSeen': message_data.get('lastSeen'),
+        'MessageData.TypeID': message_data.get('typeId')
     }
 
 
