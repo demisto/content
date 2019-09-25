@@ -2,8 +2,8 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.test_utils import print_error, print_warning, get_yaml
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,7 +19,7 @@ class ScriptValidator(object):
        old_script (dict): Json representation of the current script from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self.file_path = file_path
         self.current_script = {}
         self.old_script = {}
@@ -28,17 +28,17 @@ class ScriptValidator(object):
             self.current_script = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
             else:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace("\\", "/")
 
             try:
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_script = yaml.safe_load(file_content)
+                res = requests.get(git_hub_path, verify=False)
+                res.raise_for_status()
+                self.old_script = yaml.safe_load(res.content)
             except Exception as e:
-                print(str(e))
-                print_error("Could not find the old script please make sure that you did not break "
-                            "backward compatibility")
+                print_warning("{}\nCould not find the old script please make sure that you did not break "
+                              "backward compatibility".format(str(e)))
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):

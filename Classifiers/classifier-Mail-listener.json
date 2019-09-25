@@ -6,6 +6,10 @@
 	"mapping": {
 		"Phishing": {
 			"internalMapping": {
+				"Email HTML": {
+					"complex": null,
+					"simple": "HTML"
+				},
 				"Attachment Name": {
 					"simple": "attachments",
 					"complex": null
