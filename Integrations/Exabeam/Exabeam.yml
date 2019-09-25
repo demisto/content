@@ -3,7 +3,7 @@ commonfields:
   id: Exabeam
   version: -1
 configuration:
-- display: Server URL
+- display: Server URL (e.g https://100.24.16.156:8484) # disable-secrets-detection
   name: url
   required: true
   type: 0
@@ -28,7 +28,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Time duration unit (can be h,d,M,Y).
+      description: Time duration unit (can be hours,days,months,years).
       isArray: true
       name: time_duration_unit
       predefined:
@@ -47,6 +47,7 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '10'
       description: limit number of returned results.
       isArray: false
       name: limit
@@ -57,42 +58,42 @@ script:
     execution: false
     name: get-notable-users
     outputs:
-    - contextPath: Exabeam.NotableUser.RiskScore
+    - contextPath: Exabeam.User.RiskScore
       description: Notable user risk score.
       type: Number
-    - contextPath: Exabeam.NotableUser.UserFullName
+    - contextPath: Exabeam.User.UserFullName
       description: The user's full name.
       type: String
-    - contextPath: Exabeam.NotableUser.AverageRiskScore
+    - contextPath: Exabeam.User.AverageRiskScore
       description: Notable user avarage risk score.
       type: Number
-    - contextPath: Exabeam.NotableUser.Executive
-      description: Is the user executive
-      type: Boolean
-    - contextPath: Exabeam.NotableUser.FirstSeen
+    - contextPath: Exabeam.User.FirstSeen
       description: Date of the user first seen
       type: Date
-    - contextPath: Exabeam.NotableUser.NotableSessionIds
+    - contextPath: Exabeam.User.NotableSessionIds
       description: Notable session ID.
       type: String
-    - contextPath: Exabeam.NotableUser.AccountsNumber
+    - contextPath: Exabeam.User.AccountsNumber
       description: Number of accounts.
       type: Number
-    - contextPath: Exabeam.NotableUser.LastSeen
+    - contextPath: Exabeam.User.LastSeen
       description: When the user last seen.
       type: Date
-    - contextPath: Exabeam.NotableUser.Location
+    - contextPath: Exabeam.User.Location
       description: User's location.
       type: String
-    - contextPath: Exabeam.NotableUser.UserName
+    - contextPath: Exabeam.User.UserName
       description: User name.
       type: String
-    - contextPath: Exabeam.NotableUser.Labels
+    - contextPath: Exabeam.User.Labels
       description: User's labels.
       type: String
-    - contextPath: Exabeam.NotableUser.LastActivityType
+    - contextPath: Exabeam.User.LastActivityType
       description: User last actibity type.
       type: String
+    - contextPath: Exabeam.User.NotableUser
+      description: Is The user notable user.
+      type: Boolean
   - deprecated: false
     description: Get all watchlist ids and titles.
     execution: false
@@ -115,50 +116,6 @@ script:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
       type: String
-  - arguments:
-    - default: false
-      description: The title of the watchlist
-      isArray: false
-      name: title
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: The watchlist category.
-      isArray: false
-      name: category
-      predefined:
-      - PeerGroups
-      - UserLabels
-      required: true
-      secret: false
-    - default: false
-      description: Watchlist descripiton.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
-      description: Items to add to the watchlist.
-      isArray: false
-      name: items
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a new watchlist
-    execution: false
-    name: create-watchlist
-  - arguments:
-    - default: false
-      description: The watchlist ID.
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Delete a watchlist.
-    execution: false
-    name: delete-watchlist
   - arguments:
     - default: false
       description: Username of the user to fetch
@@ -210,23 +167,6 @@ script:
     - contextPath: Exabeam.User.AccountNames
       description: User account name.
       type: String
-  - arguments:
-    - default: false
-      description: User ID.
-      isArray: false
-      name: user_id
-      required: true
-      secret: false
-    - default: false
-      description: The watchlist ID (get the ID from "get-watchlists" command).
-      isArray: false
-      name: watchlist_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Add user to a watchlist
-    execution: false
-    name: watchlist-add-user
   - deprecated: false
     description: Get all user labels
     execution: false
@@ -234,48 +174,6 @@ script:
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: User Label.
-      type: String
-  - arguments:
-    - default: false
-      description: User label (get the user label from "get-user-labels" command).
-      isArray: false
-      name: user_label
-      required: true
-      secret: false
-    deprecated: false
-    description: Given a list of user label names, return a list of user ids matching
-      those user labels.
-    execution: false
-    name: get-users
-  - arguments:
-    - default: false
-      description: Asset ID (hostanme or IP address)
-      isArray: false
-      name: asset_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Asset data for given asset ID (hostname or IP address)
-    execution: false
-    name: get-asset-data
-    outputs:
-    - contextPath: Exabeam.Asset.FirstSeen
-      description: When the asset was first seen
-      type: Date
-    - contextPath: Exabeam.Asset.HostName
-      description: Asset host name.
-      type: String
-    - contextPath: Exabeam.Asset.IPAddress
-      description: Asset IP address.
-      type: String
-    - contextPath: Exabeam.Asset.Labels
-      description: The asset's lables
-      type: String
-    - contextPath: Exabeam.Asset.LastSeen
-      description: Asset last seen.
-      type: Date
-    - contextPath: Exabeam.Asset.AssetType
-      description: Asset type.
       type: String
   - arguments:
     - default: false
@@ -299,7 +197,7 @@ script:
     deprecated: false
     description: Returns sessions for the given username and time range.
     execution: false
-    name: get-user-sequences
+    name: get-user-sessions
     outputs:
     - contextPath: Exabeam.User.EndTime
       description: Session end time.
