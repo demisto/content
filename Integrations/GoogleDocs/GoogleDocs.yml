@@ -107,7 +107,7 @@ script:
     - contextPath: GoogleDocs.DocumentId
       description: Id of the document to update
       type: Unknown
-  dockerimage: devtesting/googleapi_python3:1.0.0.1569314947
+  dockerimage: demisto/googleapi-python3:1.0.0.2205
   isfetch: false
   longRunning: false
   longRunningPort: false
