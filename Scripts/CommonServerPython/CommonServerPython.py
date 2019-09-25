@@ -1489,7 +1489,7 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
         "EntryContext": outputs
     }
     # Return 'ok' to test module
-    if readable_output == 'ok':
+    if readable_output == 'ok' and not outputs and not raw_response:
         demisto.results('ok')
     if outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
