@@ -516,7 +516,7 @@ def run_all_tests_in_assessment_command():
     ass_id = args.get('assessment_id')
     on_demand_only = args.get('on_demand_only')
     try:
-        params = {'on_demand_only': True} if on_demand_only else None
+        params = {'on_demand_only': on_demand_only == 'True'}
         raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests', params=params)
         hr = raw_res['message'] if 'message' in raw_res else \
             f'Request to run all tests for assessment {ass_id} was sent successfully.'
