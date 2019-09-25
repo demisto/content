@@ -150,7 +150,7 @@ TMS_ARGS_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def human_readable_generator(fields: str, table_name: str, results: list):
+def human_readable_generator(fields: str, table_name: str, results: list) -> str:
     filtered_results: list = []
     headers: list = []
     headers_raw_names: list = []
@@ -178,7 +178,7 @@ def human_readable_generator(fields: str, table_name: str, results: list):
     return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
 
 
-def parse_processes(processes_list: list):
+def parse_processes(processes_list: list) -> list:
     processes_new_list = []
     for process_object in processes_list:
         process_new_object = {
@@ -193,7 +193,7 @@ def parse_processes(processes_list: list):
     return processes_new_list
 
 
-def parse_files(files_list: list):
+def parse_files(files_list: list) -> list:
     files_new_list = []
     for file_object in files_list:
         file_new_object = {
@@ -206,7 +206,7 @@ def parse_files(files_list: list):
     return files_new_list
 
 
-def parse_users(users_list: list):
+def parse_users(users_list: list) -> list:
     users_new_list = []
     for user_object in users_list:
         user_new_object = {
@@ -216,7 +216,7 @@ def parse_users(users_list: list):
     return users_new_list
 
 
-def traffic_context_transformer(row_content: dict):
+def traffic_context_transformer(row_content: dict) -> dict:
     return {
         'RiskOfApp': row_content.get('risk-of-app'),
         'Natsport': row_content.get('natsport'),
@@ -259,7 +259,7 @@ def traffic_context_transformer(row_content: dict):
     }
 
 
-def threat_context_transformer(row_content: dict):
+def threat_context_transformer(row_content: dict) -> dict:
     return {
         'SessionID': row_content.get('sessionid'),
         'Action': row_content.get('action'),
@@ -307,7 +307,7 @@ def threat_context_transformer(row_content: dict):
     }
 
 
-def traps_context_transformer(row_content: dict):
+def traps_context_transformer(row_content: dict) -> dict:
     end_point_header = row_content.get('endPointHeader', {})
     message_data = row_content.get('messageData', {})
     source_process = message_data.get('sourceProcess', {})
@@ -367,7 +367,7 @@ def traps_context_transformer(row_content: dict):
     }
 
 
-def analytics_context_transformer(row_content: dict):
+def analytics_context_transformer(row_content: dict) -> dict:
     end_point_header = row_content.get('endPointHeader', {})
     message_data = row_content.get('messageData', {})
     local_analysis_result = message_data.get('localAnalysisResult', {})
@@ -409,7 +409,7 @@ def analytics_context_transformer(row_content: dict):
     }
 
 
-def get_fields_and_check_validity(fields: str, table_fields: list):
+def get_fields_and_check_validity(fields: str, table_fields: list) -> str:
     """
     This function check if the entered fields are valid (i.e. exists in the table fields) and returns them
     :param fields: string input of fields list (comma separated)
@@ -426,7 +426,7 @@ def get_fields_and_check_validity(fields: str, table_fields: list):
     return fields
 
 
-def get_where_part(args: dict, table_args_dict: dict):
+def get_where_part(args: dict, table_args_dict: dict) -> str:
     """
     This function transforms the relevant entries of dict into the where part of a SQL query
     :param args: a dict
@@ -451,7 +451,7 @@ def get_where_part(args: dict, table_args_dict: dict):
     return where
 
 
-def parse_query(query: str):
+def parse_query(query: str) -> str:
     """
     This function make sure to return only the part of the query after the WHERE word
     :param query: the query string
