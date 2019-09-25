@@ -1119,8 +1119,8 @@ def query_analytics_logs_command():
                                     table_context_path, table_context_standards_paths)
 
 
-def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
-                             table_context_path: str, table_context_standards_paths: list):
+def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function, 
+                     table_context_path: str, table_context_standards_paths: list):
     args = demisto.args()
 
     start_time = args.get('startTime')
