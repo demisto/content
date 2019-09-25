@@ -151,9 +151,9 @@ TMS_ARGS_DICT = {
 
 
 def human_readable_generator(fields: str, table_name: str, results: list):
-    filtered_results = []
-    headers = []
-    headers_raw_names = []
+    filtered_results: list = []
+    headers: list = []
+    headers_raw_names: list = []
 
     if fields == '*':
         if table_name == 'traffic' or table_name == 'threat':
@@ -162,8 +162,8 @@ def human_readable_generator(fields: str, table_name: str, results: list):
 
         elif table_name == 'traps' or table_name == 'analytics':
             headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
-            headers_raw_names = ['severity', 'eventType', 'endPointHeaderdst.userName', 'endPointHeader.agentIp',
-                                 'endPointHeaderdst.deviceName', 'endPointHeaderdst.agentTime']
+            headers_raw_names = ['severity', 'eventType', 'endPointHeader.userName', 'endPointHeader.agentIp',
+                                 'endPointHeader.deviceName', 'endPointHeader.agentTime']
     else:
         fields_list = argToList(fields)
         headers = fields_list
