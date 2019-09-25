@@ -3,6 +3,7 @@ This script will be appended to each server script before being executed.
 Please notice that to add custom common code, add it to the CommonServerUserPython script.
 Note that adding code to CommonServerUserPython can override functions in CommonServerPython
 """
+from __future__ import print_function
 import socket
 import time
 import json
@@ -10,6 +11,7 @@ import sys
 import os
 import re
 import base64
+import logging
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
@@ -564,6 +566,27 @@ def scoreToReputation(score):
     return to_str.get(score, 'None')
 
 
+def b64_encode(text):
+    """
+    Base64 encode a string. Wrapper function around base64.b64encode which will accept a string
+    In py3 will encode the string to binary using utf-8 encoding and return a string result decoded using utf-8
+
+    :param text: string to encode
+    :type text: str
+    :return: encoded string
+    :rtype: str
+    """
+    if not text:
+        return ''
+    to_encode = text
+    if IS_PY3:
+        to_encode = text.encode('utf-8', 'ignore')
+    res = base64.b64encode(to_encode)
+    if IS_PY3:
+        res = res.decode('utf-8')  # type: ignore
+    return res
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -582,16 +605,21 @@ class IntegrationLogger(object):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.buffering = True
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
-        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')
-                and isinstance(demisto.getParam('credentials'), dict)
-                and demisto.getParam('credentials').get('password')):
-            pswrd = self.encode(demisto.getParam('credentials').get('password'))
-            to_encode = pswrd
-            if IS_PY3:
-                to_encode = pswrd.encode('utf-8', 'ignore')
-            self.add_repalce_strs(pswrd, base64.b64encode(to_encode))
+        if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
+            # add common params
+            if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
+                pswrd = self.encode(demisto.getParam('credentials').get('password'))
+                self.add_replace_strs(pswrd, b64_encode(pswrd))
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token')
+            if demisto.params():
+                for (k, v) in demisto.params().items():
+                    k_lower = k.lower()
+                    for p in sensitive_params:
+                        if p in k_lower and v:
+                            self.add_replace_strs(v, b64_encode(v))
 
     def encode(self, message):
         try:
@@ -611,15 +639,28 @@ class IntegrationLogger(object):
         return res
 
     def __call__(self, message):
-        self.messages.append(self.encode(message))
+        text = self.encode(message)
+        if self.buffering:
+            self.messages.append(text)
+        else:
+            demisto.info(text)
 
-    def add_repalce_strs(self, *args):
+    def add_replace_strs(self, *args):
         '''
             Add strings which will be replaced when logging.
             Meant for avoiding passwords and so forth in the log.
         '''
-        to_add = [self.encode(a) for a in args]
+        to_add = [self.encode(a) for a in args if a]
         self.replace_strs.extend(to_add)
+
+    def set_buffering(self, state):
+        """
+        set whether the logger buffers messages or writes staight to the demisto log
+
+        :param state: True/False
+        :type state: boolean
+        """
+        self.buffering = state
 
     def print_log(self, verbose=False):
         if self.write_buf:
@@ -642,8 +683,25 @@ class IntegrationLogger(object):
                 msg = msg[:-1]
         self.write_buf.append(msg)
         if has_newline:
-            self.messages.append("".join(self.write_buf))
+            text = "".join(self.write_buf)
+            if self.buffering:
+                self.messages.append(text)
+            else:
+                demisto.info(text)
             self.write_buf = []
+
+    def print_override(self, *args, **kwargs):
+        # print function that can be used to override print usage of internal modules
+        # will print to the log if the print target is stdout/stderr
+        try:
+            import __builtin__  # type: ignore
+        except ImportError:
+            # Python 3
+            import builtins as __builtin__  # type: ignore
+        file_ = kwargs.get('file')
+        if (not file_) or file_ == sys.stdout or file_ == sys.stderr:
+            kwargs['file'] = self
+        __builtin__.print(*args, **kwargs)
 
 
 """
@@ -1866,6 +1924,74 @@ def get_demisto_version():
         return demisto.demistoVersion()
     else:
         raise AttributeError('demistoVersion attribute not found.')
+
+
+class DemistoHandler(logging.Handler):
+    """
+        Handler to route logging messages to demisto.debug
+    """
+    def __init__(self):
+        logging.Handler.__init__(self)
+
+    def emit(self, record):
+        msg = self.format(record)
+        try:
+            demisto.debug(msg)
+        except Exception:
+            pass
+
+
+class DebugLogger(object):
+    """
+        Wrapper to initiate logging at logging.DEBUG level.
+        Is used when `debug-mode=True`.
+    """
+    def __init__(self):
+        logging.raiseExceptions = False
+        self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
+        if IS_PY3:
+            # pylint: disable=import-error
+            import http.client as http_client
+            # pylint: enable=import-error
+            self.http_client = http_client
+            self.http_client.HTTPConnection.debuglevel = 1
+            self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it alread
+            self.int_logger = IntegrationLogger()
+            self.int_logger.set_buffering(False)
+            setattr(http_client, 'print', self.int_logger.print_override)
+        else:
+            self.http_client = None
+        self.handler = DemistoHandler()
+        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler.setFormatter(demisto_formatter)
+        self.root_logger = logging.getLogger()
+        self.prev_log_level = self.root_logger.getEffectiveLevel()
+        self.root_logger.setLevel(logging.DEBUG)
+        self.root_logger.addHandler(self.handler)
+
+    def __del__(self):
+        if self.handler:
+            self.root_logger.setLevel(self.prev_log_level)
+            self.root_logger.removeHandler(self.handler)
+            self.handler.flush()
+            self.handler.close()
+        if self.http_client:
+            self.http_client.HTTPConnection.debuglevel = 0
+            if self.http_client_print:
+                setattr(self.http_client, 'print', self.http_client_print)
+            else:
+                delattr(self.http_client, 'print')
+
+
+_requests_logger = None
+try:
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+        _requests_logger = DebugLogger()
+except Exception as ex:
+    # Should fail silently so that if there is a problem with the logger it will
+    # not affect the execution of commands and playbooks
+    demisto.info('Failed initializing DebugLogger: {}'.format(ex))
 
 
 def parse_date_string(date_string, date_format='%Y-%m-%dT%H:%M:%S'):
