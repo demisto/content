@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-res = []
 dArgs = demisto.args()
 incidents = demisto.incidents()
 if len(incidents):
@@ -38,6 +37,6 @@ if len(incidents):
                 })
 
         else:
-            res = "Could not identify the Incident ID or Investigation ID."
+            demisto.results("Could not identify the Incident ID or Investigation ID.")
 else:
-    res = "No Incidents to process."
+    demisto.results("No Incidents to process.")
