@@ -103,5 +103,5 @@ the_input = argToList(the_input)
 
 # Otherwise assumes it's already an array
 for item in the_input:
-    results.append(extract_domain(item))
+    results.append(extract_domain(item, isFQDNextract))
 demisto.results(results)
