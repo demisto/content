@@ -31,8 +31,6 @@ script:
         1 year).
       isArray: true
       name: time_period
-      predefined:
-      - ''
       required: true
       secret: false
     - default: false
