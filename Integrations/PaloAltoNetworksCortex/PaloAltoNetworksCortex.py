@@ -1155,6 +1155,237 @@ def query_traffic_logs_command():
     return entry
 
 
+def query_threat_logs_command():
+    args = demisto.args()
+
+    start_time = args.get('startTime')
+    end_time = args.get('endTime')
+    limit = args.get('logsAmount', '5')
+    time_range = args.get('timeRange')
+    time_value = args.get('rangeValue')
+
+    if time_range:
+        if time_value:
+            service_end_date = datetime.now()
+            service_start_date = get_start_time(time_range, int(time_value))
+        else:
+            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
+    else:
+        # parses user input to datetime object
+        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+    # transforms datetime object to epoch time
+    service_start_date_epoch = int(service_start_date.strftime("%s"))
+    service_end_date_epoch = int(service_end_date.strftime("%s"))
+
+    fields = args.get('fields', 'all')
+    fields = get_fields_and_check_validity(fields, THREAT_FIELDS)
+
+    where = get_where_part(args, PANW_ARGS_DICT)
+
+    if where:
+        query = f'SELECT {fields} FROM panw.threat WHERE {where} LIMIT {limit}'
+    else:
+        query = f'SELECT {fields} FROM panw.threat LIMIT {limit}'
+
+    query_data = {
+        "query": query,
+        "startTime": service_start_date_epoch,
+        "endTime": service_end_date_epoch,
+    }
+
+    response = query_loggings(query_data)
+
+    try:
+        result = response.json()['result']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
+        table_name = result['esQuery']['table'][0].split('.')[1]
+    except ValueError:
+        raise Exception('Failed to parse the response from Cortex')
+
+    outputs: list = []
+    results: list = []
+
+    for page in pages:
+        row_contents = page.get('_source')
+        results.append(row_contents)
+        transformed_row = threat_context_transformer(row_contents)
+        transformed_row['id'] = page.get('_id')
+        transformed_row['score'] = page.get('_score')
+        outputs.append(transformed_row)
+
+    human_readable = human_readable_generator(fields, table_name, results)
+
+    # CODE INDICATORS
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Cortex.Logging.Threat(val.id === obj.id)': outputs
+        }
+    }
+    return entry
+
+
+def query_traps_logs_command():
+    args = demisto.args()
+
+    start_time = args.get('startTime')
+    end_time = args.get('endTime')
+    limit = args.get('logsAmount', '5')
+    time_range = args.get('timeRange')
+    time_value = args.get('rangeValue')
+
+    if time_range:
+        if time_value:
+            service_end_date = datetime.now()
+            service_start_date = get_start_time(time_range, int(time_value))
+        else:
+            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
+    else:
+        # parses user input to datetime object
+        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+    # transforms datetime object to epoch time
+    service_start_date_epoch = int(service_start_date.strftime("%s"))
+    service_end_date_epoch = int(service_end_date.strftime("%s"))
+
+    fields = args.get('fields', 'all')
+    fields = get_fields_and_check_validity(fields, TRAPS_FIELDS)
+
+    where = get_where_part(args, TMS_ARGS_DICT)
+
+    if where:
+        query = f'SELECT {fields} FROM tms.threat WHERE {where} LIMIT {limit}'
+    else:
+        query = f'SELECT {fields} FROM tms.threat LIMIT {limit}'
+
+    query_data = {
+        "query": query,
+        "startTime": service_start_date_epoch,
+        "endTime": service_end_date_epoch,
+    }
+
+    response = query_loggings(query_data)
+
+    try:
+        result = response.json()['result']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
+        table_name = result['esQuery']['table'][0].split('.')[1]
+    except ValueError:
+        raise Exception('Failed to parse the response from Cortex')
+
+    outputs: list = []
+    results: list = []
+
+    for page in pages:
+        row_contents = page.get('_source')
+        results.append(row_contents)
+        transformed_row = traps_context_transformer(row_contents)
+        transformed_row['id'] = page.get('_id')
+        transformed_row['score'] = page.get('_score')
+        outputs.append(transformed_row)
+
+    human_readable = human_readable_generator(fields, table_name, results)
+
+    # CODE INDICATORS
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Cortex.Logging.Traps(val.id === obj.id)': outputs
+        }
+    }
+    return entry
+
+
+def query_analytics_logs_command():
+    args = demisto.args()
+
+    start_time = args.get('startTime')
+    end_time = args.get('endTime')
+    limit = args.get('logsAmount', '5')
+    time_range = args.get('timeRange')
+    time_value = args.get('rangeValue')
+
+    if time_range:
+        if time_value:
+            service_end_date = datetime.now()
+            service_start_date = get_start_time(time_range, int(time_value))
+        else:
+            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
+    else:
+        # parses user input to datetime object
+        service_start_date = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        service_end_date = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+
+    # transforms datetime object to epoch time
+    service_start_date_epoch = int(service_start_date.strftime("%s"))
+    service_end_date_epoch = int(service_end_date.strftime("%s"))
+
+    fields = args.get('fields', 'all')
+    fields = get_fields_and_check_validity(fields, ANALYTICS_FIELDS)
+
+    where = get_where_part(args, TMS_ARGS_DICT)
+
+    if where:
+        query = f'SELECT {fields} FROM tms.analytics WHERE {where} LIMIT {limit}'
+    else:
+        query = f'SELECT {fields} FROM tms.analytics LIMIT {limit}'
+
+    query_data = {
+        "query": query,
+        "startTime": service_start_date_epoch,
+        "endTime": service_end_date_epoch,
+    }
+
+    response = query_loggings(query_data)
+
+    try:
+        result = response.json()['result']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
+        table_name = result['esQuery']['table'][0].split('.')[1]
+    except ValueError:
+        raise Exception('Failed to parse the response from Cortex')
+
+    outputs: list = []
+    results: list = []
+
+    for page in pages:
+        row_contents = page.get('_source')
+        results.append(row_contents)
+        transformed_row = analytics_context_transformer(row_contents)
+        transformed_row['id'] = page.get('_id')
+        transformed_row['score'] = page.get('_score')
+        outputs.append(transformed_row)
+
+    human_readable = human_readable_generator(fields, table_name, results)
+
+    # CODE INDICATORS
+
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {
+            'Cortex.Logging.Analytics(val.id === obj.id)': outputs
+        }
+    }
+    return entry
+
+
 def process_incident_pairs(incident_pairs, max_incidents):
     sorted_pairs = sorted(incident_pairs, key=lambda x: x[1])
     sorted_pairs = sorted_pairs[:max_incidents]
