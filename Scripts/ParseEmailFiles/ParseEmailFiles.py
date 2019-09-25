@@ -191,8 +191,9 @@ class DataModel(object):
     def PtypString(data_value):
         if data_value:
             try:
-                encoding = chardet.detect(data_value)
-                data_value = data_value.decode(encoding['encoding'], errors='ignore').replace('\x00', '')
+                res = chardet.detect(data_value)
+                enc = res['encoding'] or 'ascii'  # in rare cases chardet fails to detect and return None as encoding
+                data_value = data_value.decode(enc, errors='ignore').replace('\x00', '')
             except UnicodeDecodeError:
                 data_value = data_value.decode("utf-16-le", errors="ignore").replace('\x00', '')
 
@@ -3292,8 +3293,8 @@ def save_attachments(attachments, root_email_file_name, max_depth):
         if attachment.data is not None:
             display_name = attachment.DisplayName if attachment.DisplayName else attachment.AttachFilename
             demisto.results(fileResult(display_name, attachment.data))
-
-            if max_depth > 0 and display_name.lower().endswith(".eml"):
+            name_lower = display_name.lower()
+            if max_depth > 0 and (name_lower.endswith(".eml") or name_lower.endswith('.p7m')):
                 tf = tempfile.NamedTemporaryFile(delete=False)
 
                 try:
@@ -3302,10 +3303,12 @@ def save_attachments(attachments, root_email_file_name, max_depth):
 
                     inner_eml, attached_inner_emails = handle_eml(tf.name, file_name=root_email_file_name,
                                                                   max_depth=max_depth)
-                    return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
-                                   outputs=None)
-                    attached_emls.append(inner_eml)
-                    attached_emls.extend(attached_inner_emails)
+                    if inner_eml:
+                        return_outputs(readable_output=data_to_md(inner_eml, attachment.DisplayName, root_email_file_name),
+                                       outputs=None)
+                        attached_emls.append(inner_eml)
+                    if attached_inner_emails:
+                        attached_emls.extend(attached_inner_emails)
                 finally:
                     os.remove(tf.name)
 
