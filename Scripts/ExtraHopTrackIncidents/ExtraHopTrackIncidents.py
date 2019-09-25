@@ -31,7 +31,11 @@ if len(incidents):
             if isError(track_ticket):
                 return_error(track_ticket['Contents'])
             else:
-                demisto.results({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": track_ticket['Contents']})
+                demisto.results({
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["text"],
+                    "Contents": track_ticket['Contents']
+                })
 
         else:
             res = "Could not identify the Incident ID or Investigation ID."
