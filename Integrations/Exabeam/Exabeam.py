@@ -1,10 +1,12 @@
+from requests.structures import CaseInsensitiveDict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-from typing import Dict
+from typing import Dict, Optional
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -18,7 +20,8 @@ def convert_unix_to_date(d):
 
 
 class Client:
-    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool, proxies: bool, headers: dict):
+    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool, proxies: bool,
+                 headers: CaseInsensitiveDict[str]):
         self.server = exabeam_url.rstrip('/')
         self.base_url = f'{self.server}/uba/api/'
         self.username = username
@@ -100,7 +103,7 @@ class Client:
         suffix_url = 'ping'
         return self._http_request('GET', suffix_url, resp_type='text')
 
-    def get_notable_users_request(self, api_unit: str = None, num: int = None, limit: int = None):
+    def get_notable_users_request(self, api_unit: str = None, num: Optional[int] = None, limit: int = None):
 
         suffix_url = 'users/notable'
 
