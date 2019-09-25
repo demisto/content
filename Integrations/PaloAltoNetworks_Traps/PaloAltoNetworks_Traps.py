@@ -1,6 +1,5 @@
 ''' IMPORTS '''
 
-import inspect
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -142,7 +141,6 @@ def generate_auth_token():
 
 def parse_data_from_response(resp_obj, operation_name=None):
     new_data_obj = {}  # type: dict
-    operation_name = operation_name if operation_name else inspect.stack()[1].function  # Get the caller function mame
     outputs_obj = OUTPUTS[operation_name]
     for key, val in outputs_obj.items():
         new_data_obj[key] = resp_obj.get(val)
@@ -153,7 +151,7 @@ def parse_data_from_response(resp_obj, operation_name=None):
 def get_endpoint_by_id(endpoint_id):
     path = f'agents/{endpoint_id}'
     endpoint_data = http_request('GET', path, operation_err=f'Get endpoint {endpoint_id} failed')
-    return parse_data_from_response(endpoint_data), endpoint_data
+    return parse_data_from_response(endpoint_data, 'get_endpoint_by_id'), endpoint_data
 
 
 def endpoint_files_retrieve(endpoint_id, file_name, event_id):
@@ -168,7 +166,7 @@ def endpoint_files_retrieve(endpoint_id, file_name, event_id):
     }
     resp = http_request('POST', path, data=data,
                         operation_err=f'Files retrieve command on endpoint {endpoint_id} failed')
-    operation_obj = parse_data_from_response(resp)
+    operation_obj = parse_data_from_response(resp, 'endpoint_files_retrieve')
     operation_obj.update({
         'EndpointID': endpoint_id,
         'Type': 'files-retrieve'
@@ -179,7 +177,7 @@ def endpoint_files_retrieve(endpoint_id, file_name, event_id):
 def endpoint_scan(endpoint_id):
     path = f'agents/{endpoint_id}/scan'
     resp = http_request('POST', path, operation_err=f'Scanning endpoint: {endpoint_id} failed')
-    operation_obj = parse_data_from_response(resp)
+    operation_obj = parse_data_from_response(resp, 'endpoint_scan')
     operation_obj.update({
         'EndpointID': endpoint_id,
         'Type': 'endpoint-scan'
@@ -280,7 +278,7 @@ def event_quarantine(event_id):
 def endpoint_isolate(endpoint_id):
     path = f'agents/{endpoint_id}/isolate'
     resp = http_request('POST', path, operation_err=f'Isolation of endpoint: {endpoint_id} failed')
-    operation_obj = parse_data_from_response(resp)
+    operation_obj = parse_data_from_response(resp, 'endpoint_isolate')
     operation_obj.update({
         'EndpointID': endpoint_id,
         'Type': 'endpoint-isolate'
@@ -308,7 +306,8 @@ def endpoint_isolate_status(operation_id):
 
 def event_quarantine_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get event quarantine status')
-    quarantine_data = parse_data_from_response(additional_data.get('quarantineData')) if additional_data else {}
+    quarantine_data = parse_data_from_response(additional_data.get('quarantineData'),
+                                               'event_quarantine_result') if additional_data else {}
     quarantine_data['Status'] = status
     quarantine_data['OperationID'] = operation_id
     return quarantine_data
