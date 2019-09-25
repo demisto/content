@@ -1183,7 +1183,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
 
     human_readable = human_readable_generator(fields, table_name, results)
 
-    # CODE INDICATORS
+    # @TODO CODE THE INDICATORS ISSUE
     context_standards_outputs: dict = {}  # get_context_standards_outputs(table_context_standards_paths, results)
     context_outputs: dict = {table_context_path: outputs}
     # merge the two dicts into one dict that outputs to context
