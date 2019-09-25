@@ -21,6 +21,7 @@ tasks:
       id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -45,6 +46,7 @@ tasks:
       id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
       version: -1
       name: Endpoint Products
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -165,6 +167,7 @@ tasks:
       id: ea90c16b-6985-4f28-816f-78608df3fe51
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -362,6 +365,7 @@ tasks:
       id: d9d617d9-2efd-466e-8ce7-190f8db83b95
       version: -1
       name: McAfee ePolicy Orchestrator
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -387,6 +391,7 @@ tasks:
       id: 6cf08862-644d-479e-89ce-f9e173a8c562
       version: -1
       name: Carbon Black Enterprise Response
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -412,6 +417,7 @@ tasks:
       id: 471d3862-a05c-42b1-871d-c1faa2fbb7a9
       version: -1
       name: Cylance Protect v2
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -437,6 +443,7 @@ tasks:
       id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
       version: -1
       name: CrowdStrike Falcon Host
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -556,6 +563,7 @@ tasks:
       id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
       version: -1
       name: Active Directory
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -736,6 +744,7 @@ tasks:
       id: ec344482-77f7-42b5-8ee4-34317afd1179
       version: -1
       name: ExtraHop Reveal(x)
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -812,7 +821,8 @@ tasks:
     task:
       id: 344e1330-e5f8-4292-83df-7a4fba147ebf
       version: -1
-      name: Get host information from ExtraHop Reveal(x).
+      name: Get host information from ExtraHop Reveal(x)
+      description: Get host information from ExtraHop Reveal(x).
       script: '|||extrahop-device-search'
       type: regular
       iscommand: true

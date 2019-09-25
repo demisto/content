@@ -18,12 +18,12 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Trust any certificate (Not Secure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
   required: false
-- display: Use System Proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
@@ -31,6 +31,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python3
   commands:
   - name: extrahop-get-alerts
     arguments: []
