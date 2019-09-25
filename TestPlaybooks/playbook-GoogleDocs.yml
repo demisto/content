@@ -45,6 +45,8 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
+      text:
+        simple: This is a test file
       title:
         simple: test_file
     separatecontext: false
@@ -60,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 57460b81-fa39-4d66-8a03-f6f2ec6356e5
+    taskid: f14b0c21-cd4e-44bb-817f-7b6c4ff57dce
     type: regular
     task:
-      id: 57460b81-fa39-4d66-8a03-f6f2ec6356e5
+      id: f14b0c21-cd4e-44bb-817f-7b6c4ff57dce
       version: -1
       name: 'Get Document after creation '
       description: Returns a document matching the given ID.
@@ -119,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 730
         }
       }
     note: false
@@ -127,10 +129,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: aeeadabf-c2f9-42b3-8190-a0ad3b927f1c
+    taskid: 90ee96b0-af06-4ec1-8cd5-ece47bb3ce7d
     type: regular
     task:
-      id: aeeadabf-c2f9-42b3-8190-a0ad3b927f1c
+      id: 90ee96b0-af06-4ec1-8cd5-ece47bb3ce7d
       version: -1
       name: Get document after update
       description: Returns a document matching the given ID.
@@ -138,9 +140,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Google Docs
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       document_id:
         simple: ${GoogleDocs.DocumentId}
@@ -189,34 +188,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 8abc948e-be02-4c10-8999-966263b00c2c
-    type: regular
-    task:
-      id: 8abc948e-be02-4c10-8999-966263b00c2c
-      version: -1
-      name: Untitled Task
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1115,
+        "height": 940,
         "width": 380,
         "x": 50,
         "y": 50
