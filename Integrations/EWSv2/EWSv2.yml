@@ -81,7 +81,7 @@ configuration:
   name: maxFetch
   defaultvalue: "50"
   type: 0
-  required: true
+  required: false
 description: Exchange Web Services and Office 365 (mail)
 display: EWS v2
 name: EWS v2
