@@ -1076,48 +1076,48 @@ def search_by_file_hash_command():
 def query_traffic_logs_command():
     table_fields = TRAFFIC_FIELDS
     table_args = PANW_ARGS_DICT
-    table_name = 'panw.traffic'
+    query_table_name = 'panw.traffic'
     context_transformer_function = traffic_context_transformer
     table_context_path = 'Cortex.Logging.Traffic(val.id === obj.id)'
     table_context_standards_paths = ['IP']
-    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_threat_logs_command():
     table_fields = THREAT_FIELDS
     table_args = PANW_ARGS_DICT
-    table_name = 'panw.threat'
+    query_table_name = 'panw.threat'
     context_transformer_function = threat_context_transformer
     table_context_path = 'Cortex.Logging.Threat(val.id === obj.id)'
     table_context_standards_paths = ['IP']
-    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_traps_logs_command():
     table_fields = TRAPS_FIELDS
     table_args = TMS_ARGS_DICT
-    table_name = 'tms.threat'
+    query_table_name = 'tms.threat'
     context_transformer_function = traps_context_transformer
     table_context_path = 'Cortex.Logging.Traps(val.id === obj.id)'
     table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
-    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_analytics_logs_command():
     table_fields = ANALYTICS_FIELDS
     table_args = TMS_ARGS_DICT
-    table_name = 'tms.analytics'
+    query_table_name = 'tms.analytics'
     context_transformer_function = analytics_context_transformer
     table_context_path = 'Cortex.Logging.Analytics(val.id === obj.id)'
     table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
-    return query_table_logs_command(table_fields, table_args, table_name, context_transformer_function,
+    return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
-def query_table_logs_command(table_fields: list, table_args: dict, table_name: str, context_transformer_function,
+def query_table_logs_command(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
                              table_context_path, table_context_standards_paths):
     args = demisto.args()
 
@@ -1136,7 +1136,7 @@ def query_table_logs_command(table_fields: list, table_args: dict, table_name: s
     else:
         # parses user input to datetime object - using dateutil.parser.parse
         service_start_date = parse(start_time)
-        service_end_date = parse(start_time)
+        service_end_date = parse(end_time)
 
     # transforms datetime object to epoch time
     service_start_date_epoch = int(service_start_date.timestamp())
@@ -1148,9 +1148,9 @@ def query_table_logs_command(table_fields: list, table_args: dict, table_name: s
     where = get_where_part(args, table_args)
 
     if where:
-        query = f'SELECT {fields} FROM {table_name} WHERE {where} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {query_table_name} WHERE {where} LIMIT {limit}'
     else:
-        query = f'SELECT {fields} FROM {table_name} LIMIT {limit}'
+        query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
 
     query_data = {
         "query": query,
@@ -1181,6 +1181,10 @@ def query_table_logs_command(table_fields: list, table_args: dict, table_name: s
     human_readable = human_readable_generator(fields, table_name, results)
 
     # CODE INDICATORS
+    context_standards_outputs: dict = get_context_standards_outputs(table_context_standards_paths, results)
+    context_outputs: dict = {table_context_path: outputs}
+    # merge the two dicts into one dict that outputs to context
+    context_outputs.update(context_standards_outputs)
 
     entry = {
         'Type': entryTypes['note'],
@@ -1188,9 +1192,7 @@ def query_table_logs_command(table_fields: list, table_args: dict, table_name: s
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
-        'EntryContext': {
-            table_context_path: outputs,
-        }
+        'EntryContext': context_outputs
     }
     return entry
 
