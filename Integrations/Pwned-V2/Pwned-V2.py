@@ -61,6 +61,7 @@ def http_request(method, url_suffix, params=None, data=None):
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
             wait_amount = wait_regex.group()
+            time.sleep(int(wait_amount))
 
     if res.status_code == 404:
         return None
@@ -203,28 +204,10 @@ def domain_to_entry_context(domain, api_res):
     return comp_domain
 
 
-def rate_limit_retry(amount_of_seconds, request_type):
-    if datetime.now() > RETRIES_END_TIME:
-        return_error('Max retry time has exceeded.')
-
-    time.sleep(amount_of_seconds)
-    if request_type == 'email':
-        pwned_email_command()
-    else:
-        pwned_domain_command()
-
-
-def retry_needed(api_res, api_paste_res=None):
+def set_retry_end_time():
     global RETRIES_END_TIME
-    if RETRIES_END_TIME == datetime.min and MAX_RETRY_ALLOWED != -1:
+    if MAX_RETRY_ALLOWED != -1:
         RETRIES_END_TIME = datetime.now() + timedelta(seconds=int(MAX_RETRY_ALLOWED))
-
-    if api_res and 'time_to_wait' in api_res:
-        return True
-    elif api_paste_res and 'time_to_wait' in api_paste_res:
-        return True
-
-    return False
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -246,16 +229,9 @@ def pwned_email(email, email_suffix, paste_suffix):
     api_email_res = http_request('GET', url_suffix=email_suffix)
     api_paste_res = http_request('GET', url_suffix=paste_suffix)
 
-    if retry_needed(api_email_res, api_paste_res):
-        wait_amount = max(
-            api_email_res['time_to_wait'] if 'time_to_wait' in api_email_res else 0,
-            api_paste_res['time_to_wait'] if 'time_to_wait' in api_paste_res else 0
-        )
-        rate_limit_retry(wait_amount, 'email')
-    else:
-        md = data_to_markdown('Email', email, api_email_res, api_paste_res)
-        ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
-        return_outputs(md, ec, api_email_res)
+    md = data_to_markdown('Email', email, api_email_res, api_paste_res)
+    ec = email_to_entry_context(email, api_email_res or [], api_paste_res or [])
+    return_outputs(md, ec, api_email_res)
 
 
 def pwned_domain_command():
@@ -267,12 +243,9 @@ def pwned_domain_command():
 def pwned_domain(domain, suffix):
     api_res = http_request('GET', url_suffix=suffix)
 
-    if retry_needed(api_res):
-        rate_limit_retry(api_res['time_to_wait'], 'domain')
-    else:
-        md = data_to_markdown('Domain', domain, api_res)
-        ec = domain_to_entry_context(domain, api_res or [])
-        return_outputs(md, ec, api_res)
+    md = data_to_markdown('Domain', domain, api_res)
+    ec = domain_to_entry_context(domain, api_res or [])
+    return_outputs(md, ec, api_res)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -281,6 +254,7 @@ LOG('Command being called is %s' % (demisto.command()))
 
 try:
     handle_proxy()
+    set_retry_end_time()
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() in ['pwned-email', 'email']:
