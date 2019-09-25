@@ -259,7 +259,7 @@ def get_user_sessions(client: Client, args: Dict):
 
     """
     username = args.get('username')
-    start_time = args.get('start_time', datetime.now()-timedelta(days=30))
+    start_time = args.get('start_time', datetime.now() - timedelta(days=30))
     end_time = args.get('end_time', datetime.now())
     parse_start_time = date_to_timestamp(start_time)
     parse_end_time = date_to_timestamp(end_time)
