@@ -37,7 +37,7 @@ jobs:
           command: |
             python ./Tests/scripts/update_id_set.py -r
       - run:
-          name: Infrastucture testing
+          name: Infrastructure testing
           when: always
           command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v

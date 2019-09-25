@@ -55,7 +55,9 @@ Add ssh keys to circle machine.
 
 ## Create ID Set
 This is the first step in the static validation process of the content code.
+
 By running [Tests/scripts/update_id_set.py](https://github.com/demisto/content/blob/master/Tests/scripts/update_id_set.py), we are able to detect conflict of entities (for example, IDs that are being used more than once).
+
 Also, the script calculate dependencies between integration commands, scripts, playbooks and test-playbooks.
 This is used in the test [selection step](#Configure-Test-Filter).
 
@@ -71,6 +73,12 @@ This is used in the test [selection step](#Configure-Test-Filter).
 <!-- TODO: add troubleshooting errors -->
 
 ## Spell Checks
+**This will not run on master branch**
+
+By running [Tests/scripts/circleci_spell_checker.py](https://github.com/demisto/content/blob/master/Tests/scripts/circleci_spell_checker.py), we scan yml and md files for typos and spelling mistakes.
+One can whitelist a word (for example acronyms are usually detected as misspelled words) by adding it to the [known words](https://github.com/demisto/content/blob/master/Tests/known_words.txt) file.
+
+At the moment, this step does not break the build.
 
 ## Build Content Descriptor
 <!-- TODO: add troubleshooting errors -->
@@ -123,14 +131,21 @@ Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of
 **Not relevant for contributors**
 
 ## Validate Docker Images
+**This will not run on master branch (or release branches)**
+
+
 
 ## Instance Test
 **Not relevant for contributors**
+
 This step runs only in nightly builds of master branch.
+
 Configure each integration instance, trigger a `test-module` (test button in instance configuration screen) and notify `dmst-content-lab` slack channel on failures.
 
 ## Destroy Instances
 **Not relevant for contributors**
+
+This step will download demisto server log and shutdown each server iff relevant "Run Tests" step passed.
 
 ## Uploading artifacts final
 Once more, will upload artifact folder (which now also contains serverlogs) as circle build artifacts.
