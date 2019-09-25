@@ -9,7 +9,8 @@ tags:
 - field-change-triggered
 comment: Links an incident investigation back to the ExtraHop Detection that created
   it.
-system: true
+script: '-'
+system: false
 enabled: true
 scripttarget: 0
 dependson:
