@@ -13,6 +13,7 @@ tasks:
     type: start
     task:
       id: d454b23d-bf15-4908-8ee4-6c607666e3b5
+      description: Start
       version: -1
       name: ""
       iscommand: false
@@ -38,6 +39,7 @@ tasks:
     taskid: 991a7e8a-1cf0-4c21-8084-06e7c2f29309
     type: title
     task:
+      description: Done
       id: 991a7e8a-1cf0-4c21-8084-06e7c2f29309
       version: -1
       name: Done
@@ -61,6 +63,7 @@ tasks:
     type: condition
     task:
       id: dd11c15c-962d-4ed2-89bd-2be155160d3a
+      description: Does SHA256 exist?
       version: -1
       name: Does SHA256 exist?
       type: condition
@@ -97,6 +100,7 @@ tasks:
     type: condition
     task:
       id: 8aa3f46d-9fe0-439a-868e-1d37f94e9150
+      description: Does MD5 exist?
       version: -1
       name: Does MD5 exist?
       type: condition
@@ -133,6 +137,7 @@ tasks:
     type: condition
     task:
       id: 3b85afdc-140b-46dd-88ee-9e1b19127b09
+      description: Does SHA1 exist?
       version: -1
       name: Does SHA1 exist?
       type: condition
@@ -602,6 +607,7 @@ tasks:
     type: title
     task:
       id: e61ed1b2-6f3e-47f3-8f92-52cf0c9304d4
+      description: Done
       version: -1
       name: Done
       type: title
@@ -662,6 +668,7 @@ tasks:
     type: title
     task:
       id: 81bd58c9-aef3-4e18-8c4a-5faec4ddd875
+      description: Done
       version: -1
       name: Done
       type: title
@@ -684,6 +691,7 @@ tasks:
     type: title
     task:
       id: 5d2b34a8-b9d1-4710-843d-b4765d4e20e2
+      description: MD5
       version: -1
       name: MD5
       type: title
@@ -709,6 +717,7 @@ tasks:
     type: title
     task:
       id: d658bc79-875f-4eda-8f49-f618d825ef00
+      description: SHA1
       version: -1
       name: SHA1
       type: title
@@ -734,6 +743,7 @@ tasks:
     type: title
     task:
       id: 3ba21cba-aa82-4776-8359-b8e35dc27854
+      description: SHA256
       version: -1
       name: SHA256
       type: title
