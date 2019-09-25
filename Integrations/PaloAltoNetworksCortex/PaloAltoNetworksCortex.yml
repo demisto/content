@@ -674,6 +674,41 @@ script:
       name: fields
       required: false
       secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
     deprecated: false
     description: TBD
     execution: false
@@ -854,6 +889,41 @@ script:
       name: url
       required: false
       secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
     deprecated: false
     description: TBD
     execution: false
@@ -1029,6 +1099,41 @@ script:
       description: TBD
       isArray: false
       name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
       required: false
       secret: false
     deprecated: false
@@ -1260,6 +1365,41 @@ script:
       description: TBD
       isArray: false
       name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
       required: false
       secret: false
     deprecated: false
