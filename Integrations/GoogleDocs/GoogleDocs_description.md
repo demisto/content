@@ -4,15 +4,23 @@
 3. In Demisto, configure an instance of the Google Cloud Compute integration. For the Service Account Private Key parameter, add the Service Account Private Key file contents (JSON).
 
 
+##Create document command:
 
-##Action parameter in update syntax:  
+Creates a blank document. It's not possible to pass body arguments.
+That's a limitation by the google api. For inserting content you should the update document command.
 
-The actions param syntax is:  
+##Update document command:  
+Update a document based upon it's ID. Actions to perform are passed in the following format:
 
 * action1{param1,param2,...};action2{param1,param2,...}...
 
 It is then converted to:  
-* action1(param1, param2,...), action2(param1, param2),...
+* action1(param1,param2,...), action2(param1,param2),...
 
-where action1 is the function name to be called and param1 and param2 are the parameters
+
+where action1 is the function name to be called and param1 and param2 are the parameters  
+
+For example:  
+insertText(5,hello)  
+insertTable(5,7,7);insertText(5,hello)
 

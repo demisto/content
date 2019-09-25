@@ -79,14 +79,16 @@ script:
       secret: false
     - default: false
       description: The target revision ID of the document that the write request will
-        be applied to. Will throw an error if a newer revision exists.
+        be applied to. Will throw an error if a newer revision exists. Only one of
+        required_revision_id/target_revision_id is allowed.
       isArray: false
       name: required_revision_id
       required: false
       secret: false
     - default: false
       description: The target revision ID of the document that the write request will
-        be applied to. Will merge revision a newer revision exists.
+        be applied to. Will merge revision a newer revision exists.  Only one of required_revision_id/target_revision_id
+        is allowed.
       isArray: false
       name: target_revision_id
       required: false
