@@ -171,7 +171,7 @@ def get_notable_users(client: Client, args: Dict):
 
     """
     limit = args.get('limit')
-    time_period = args.get('time_period')
+    time_period: str = args.get('time_period')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
         return_error('Missing an argument. Make sure to enter the time period number and unit.')
@@ -382,7 +382,6 @@ def main():
     proxies = handle_proxy()
     client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
                     headers=headers)
-    command = demisto.command()
     LOG(f'Command being called is demisto.command()')
     commands = {
         'test-module': test_module,
@@ -394,7 +393,8 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        if command in commands:
+        command = demisto.command()
+        if command in commands.keys():
             return_outputs(*commands[command](client, demisto.args()))
 
     except Exception as e:
