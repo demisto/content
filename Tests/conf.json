@@ -1843,7 +1843,7 @@
         },
         {
             "integrations": "Google Docs",
-            "playbookID": "playbook-GoogleDocs"
+            "playbookID": "GoogleDocs-test"
         },
         {
             "playbookID": "Request Debugging - Test",
