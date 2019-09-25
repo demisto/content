@@ -26,16 +26,13 @@ name: Exabeam
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Time duration unit (can be hours,days,months,years).
+    - default: false
+      description: Time period to fetch notable users (e.g 3 months, 2 days, 4 hours,
+        1 year).
       isArray: true
-      name: time_duration_unit
+      name: time_period
       predefined:
-      - h
-      - d
-      - M
-      - y
+      - ''
       required: true
       secret: false
     - default: false
