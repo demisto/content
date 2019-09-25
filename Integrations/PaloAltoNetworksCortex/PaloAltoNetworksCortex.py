@@ -152,73 +152,6 @@ TMS_ARGS_DICT = {
 ''' HELPER FUNCTIONS '''
 
 
-def human_readable_generator(fields: str, table_name: str, results: list) -> str:
-    filtered_results: list = []
-    headers: list = []
-    headers_raw_names: list = []
-
-    if fields == '*':
-        # if the user queried all fields than we have preset headers
-        if table_name == 'traffic' or table_name == 'threat':
-            headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule']
-            headers_raw_names = ['src', 'dst', 'app', 'action', 'rule']
-
-        elif table_name == 'traps' or table_name == 'analytics':
-            headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
-            headers_raw_names = ['severity', 'eventType', 'endPointHeader.userName', 'endPointHeader.agentIp',
-                                 'endPointHeader.deviceName', 'endPointHeader.agentTime']
-    else:
-        # if the user has chosen which fields to query than they will be used as headers
-        fields_list = argToList(fields)
-        headers = fields_list
-        headers_raw_names = fields_list
-
-    for result in results:
-        filtered_result = {headers[headers_raw_names.index(key)]: value for key, value in result.items()
-                           if key in headers_raw_names}
-        filtered_results.append(filtered_result)
-
-    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
-
-
-def parse_processes(processes_list: list) -> list:
-    processes_new_list = []
-    for process_object in processes_list:
-        process_new_object = {
-            'PID': process_object.get('pid'),
-            'ParentID': process_object.get('parentId'),
-            'ExeFileIdx': process_object.get('exeFileIdx'),
-            'UserIdx': process_object.get('userIdx'),
-            'CommandLine': process_object.get('commandLine'),
-            'Terminated': process_object.get('terminated')
-        }
-        processes_new_list.append(process_new_object)
-    return processes_new_list
-
-
-def parse_files(files_list: list) -> list:
-    files_new_list = []
-    for file_object in files_list:
-        file_new_object = {
-            'RawFullPath': file_object.get('rawFullPath'),
-            'FileName': file_object.get('fileName'),
-            'SHA256': file_object.get('sha256'),
-            'FileSize': file_object.get('fileSize')
-        }
-        files_new_list.append(file_new_object)
-    return files_new_list
-
-
-def parse_users(users_list: list) -> list:
-    users_new_list = []
-    for user_object in users_list:
-        user_new_object = {
-            'Username': user_object.get('userName')
-        }
-        users_new_list.append(user_new_object)
-    return users_new_list
-
-
 def traffic_context_transformer(row_content: dict) -> dict:
     return {
         'RiskOfApp': row_content.get('risk-of-app'),
@@ -410,6 +343,73 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'MessageData.LastSeen': message_data.get('lastSeen'),
         'MessageData.TypeID': message_data.get('typeId')
     }
+
+
+def human_readable_generator(fields: str, table_name: str, results: list) -> str:
+    filtered_results: list = []
+    headers: list = []
+    headers_raw_names: list = []
+
+    if fields == '*':
+        # if the user queried all fields than we have preset headers
+        if table_name == 'traffic' or table_name == 'threat':
+            headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule']
+            headers_raw_names = ['src', 'dst', 'app', 'action', 'rule']
+
+        elif table_name == 'traps' or table_name == 'analytics':
+            headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
+            headers_raw_names = ['severity', 'eventType', 'endPointHeader.userName', 'endPointHeader.agentIp',
+                                 'endPointHeader.deviceName', 'endPointHeader.agentTime']
+    else:
+        # if the user has chosen which fields to query than they will be used as headers
+        fields_list = argToList(fields)
+        headers = fields_list
+        headers_raw_names = fields_list
+
+    for result in results:
+        filtered_result = {headers[headers_raw_names.index(key)]: value for key, value in result.items()
+                           if key in headers_raw_names}
+        filtered_results.append(filtered_result)
+
+    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
+
+
+def parse_processes(processes_list: list) -> list:
+    processes_new_list = []
+    for process_object in processes_list:
+        process_new_object = {
+            'PID': process_object.get('pid'),
+            'ParentID': process_object.get('parentId'),
+            'ExeFileIdx': process_object.get('exeFileIdx'),
+            'UserIdx': process_object.get('userIdx'),
+            'CommandLine': process_object.get('commandLine'),
+            'Terminated': process_object.get('terminated')
+        }
+        processes_new_list.append(process_new_object)
+    return processes_new_list
+
+
+def parse_files(files_list: list) -> list:
+    files_new_list = []
+    for file_object in files_list:
+        file_new_object = {
+            'RawFullPath': file_object.get('rawFullPath'),
+            'FileName': file_object.get('fileName'),
+            'SHA256': file_object.get('sha256'),
+            'FileSize': file_object.get('fileSize')
+        }
+        files_new_list.append(file_new_object)
+    return files_new_list
+
+
+def parse_users(users_list: list) -> list:
+    users_new_list = []
+    for user_object in users_list:
+        user_new_object = {
+            'Username': user_object.get('userName')
+        }
+        users_new_list.append(user_new_object)
+    return users_new_list
 
 
 def get_fields_and_check_validity(fields: str, table_fields: list) -> str:
