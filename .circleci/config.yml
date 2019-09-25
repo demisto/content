@@ -42,7 +42,6 @@ jobs:
           command: |
             pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
-            pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always

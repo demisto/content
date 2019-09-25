@@ -1,5 +1,5 @@
 # Overview
-This article will explain the circleci build process.
+This article will explain the CircleCI build process.
 In addition, we'll explain common errors and how to troubleshoot them.
 
 # Build Sections
@@ -33,7 +33,7 @@ In addition, we'll explain common errors and how to troubleshoot them.
 28. [Uploading artifacts](#uploading-artifacts-final)
 
 ## Spin up Environment
-This is a circle step which setup a machine to run the build on.
+This is a CircleCI step which setup a machine to run the build on.
   
 ## Checkout code
 Download the content source code (clones and checkout to the specific revision).
@@ -64,9 +64,15 @@ This is used in the test [selection step](#Configure-Test-Filter).
 <!-- TODO: add troubleshooting errors -->
 
 ## Infrastructure testing
+This step runs all unit-test files in the following folders:
+- [Tests/scripts/hook_validations/tests](https://github.com/demisto/content/blob/master/Tests/scripts/hook_validations/tests)
+- [Tests/scripts/infrastructure_tests](https://github.com/demisto/content/blob/master/Tests/scripts/infrastructure_tests)
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Validate Files and Yaml
+This step is responsible for the majority of the static validations of the content code.
+ 
 <!-- TODO: add troubleshooting errors -->
 
 ## Configure Test Filter
