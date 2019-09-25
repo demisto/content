@@ -102,12 +102,12 @@ class Client:
         suffix_url = 'ping'
         self._http_request('GET', suffix_url, resp_type='text')
 
-    def get_notable_users_request(self, unit=None, num=None, limit=None):
+    def get_notable_users_request(self, api_unit=None, num=None, limit=None):
 
         suffix_url = 'users/notable'
 
         params = {
-            'unit': unit,
+            'unit': api_unit,
             'num': num,
             'numberOfResults': limit
         }
@@ -143,13 +143,13 @@ class Client:
 
         return response
 
-    def user_sequence_request(self, username=None, start_time=None, end_time=None):
+    def user_sequence_request(self, username=None, parse_start_time=None, parse_end_time=None):
 
         suffix_url = f'user/{username}/sequences'
         params = {
             'username': username,
-            'startTime': start_time,
-            'endTime': end_time
+            'startTime': parse_start_time,
+            'endTime': parse_end_time
         }
 
         response = self._http_request('GET', suffix_url, params)
@@ -172,11 +172,14 @@ def get_notable_users(client: Client, args: Dict):
     time_ = time_period.split(' ')
     num = time_[0]
     unit = time_[1]
+    api_unit = unit[0]
+    if api_unit == 'm':
+        api_unit = api_unit.upper()
 
     contents = []
     headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
-    users = client.get_notable_users_request(unit, num, limit).get('users', [])
+    users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
     if not users:
         return_outputs('No users were found in this period of time.', {})
     else:
@@ -256,12 +259,14 @@ def get_user_sessions(client: Client, args: Dict):
 
     """
     username = args.get('username')
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = args.get('start_time', datetime.now()-timedelta(days=30))
+    end_time = args.get('end_time', datetime.now())
+    parse_start_time = date_to_timestamp(start_time)
+    parse_end_time = date_to_timestamp(end_time)
     contents = []
     headers = ['SessionID', 'RiskScore', 'InitialRiskScore', 'StartTime', 'EndTime', 'LoginHost', 'Label']
 
-    user = client.user_sequence_request(username, start_time, end_time)
+    user = client.user_sequence_request(username, parse_start_time, parse_end_time)
     session = user.get('sessions')
     for session_ in session:
         contents.append({
@@ -271,13 +276,13 @@ def get_user_sessions(client: Client, args: Dict):
             'InitialRiskScore': session_.get('initialRiskScore'),
             'RiskScore': round(session_.get('riskScore')),
             'LoginHost': session_.get('loginHost'),
-            'Label': session_.get('label'),
-            })
+            'Label': session_.get('label')
+        })
 
     context = {
-        'Exabeam.User': {
+        'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
             'Username': username,
-            'Session(val.SessionID && val.SessionID === obj.SessionID)': contents
+            'Session': contents
         }
     }
 
