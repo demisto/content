@@ -2,8 +2,10 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 # imports
+import random
 import calendar
 import duo_client
+from time import sleep
 
 # Setup
 
@@ -36,15 +38,45 @@ OPTIONS_TO_TIME = {
 }
 
 
+def my_make_request(self, method, uri, body, headers):
+    # if self.proxy_type == 'CONNECT':
+    #     # Ensure the request uses the correct protocol and Host.
+    #     if self.ca_certs == 'HTTP':
+    #         api_proto = 'http'
+    #     else:
+    #         api_proto = 'https'
+    #     uri = ''.join((api_proto, '://', self.host, uri))
+    conn = self._connect()
+
+    # backoff on rate limited requests and retry. if a request is rate
+    # limited after MAX_BACKOFF_WAIT_SECS, return the rate limited response
+    wait_secs = self._INITIAL_BACKOFF_WAIT_SECS
+    while True:
+        response, data = self._attempt_single_request(
+            conn, method, uri, body, headers)
+        if response.status != self._RATE_LIMITED_RESP_CODE or wait_secs > self._MAX_BACKOFF_WAIT_SECS:
+            break
+        random_offset = random.uniform(0.0, 1.0)
+        sleep(wait_secs + random_offset)
+        wait_secs = wait_secs * self._BACKOFF_FACTOR
+
+    self._disconnect(conn)
+    return response, data
+
+
 # Utility Methods
 
 def create_api_call():
     if USE_SSL:
-        return duo_client.Admin(
+        client = duo_client.Admin(
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
             host=HOST,
+            ca_certs='DISABLE'
         )
+        client._make_request = lambda method, uri, body, headers: my_make_request(client, method, uri, body,
+                                                                                  headers)
+        return client
 
     return duo_client.Admin(
         ikey=INTEGRATION_KEY,
