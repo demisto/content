@@ -157,7 +157,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The destination. Could be IPv4, address block or any
+      description: The destination. Could be IPv4, address block or any.
       isArray: false
       name: destination
       required: true
@@ -179,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The position the rule will created in. '
+      description: 'The position the rule will be created in. '
       isArray: false
       name: position
       required: false
@@ -253,26 +253,107 @@ script:
       description: The rule's ID.
       isArray: false
       name: rule_id
-      required: false
+      required: true
       secret: false
     - default: false
       description: The name of the interface
       isArray: false
       name: interface_name
-      required: false
+      required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: The type of interface.
       isArray: false
       name: interface_type
-      required: false
+      predefined:
+      - In
+      - Out
+      - Global
+      required: true
       secret: false
     deprecated: false
     description: Delete a rule.
     execution: false
     name: cisco-asa-delete-rule
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of the interface.
+      isArray: false
+      name: interface_type
+      predefined:
+      - In
+      - Out
+      - Global
+      required: true
+      secret: false
+    - default: false
+      description: The interface's name.
+      isArray: false
+      name: interface_name
+      required: true
+      secret: false
+    - default: false
+      description: The rule ID
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - default: false
+      description: Will the rule be active.
+      isArray: false
+      name: active
+      required: false
+      secret: false
+    - default: false
+      description: The log level of the rule.
+      isArray: false
+      name: log_level
+      required: false
+      secret: false
+    - default: false
+      description: 'The position the rule will be in. '
+      isArray: false
+      name: position
+      required: false
+      secret: false
+    - default: false
+      description: A list of remarks for the rule.
+      isArray: true
+      name: remarks
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: True if the rule is a permit.
+      isArray: false
+      name: permit
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The destination. Could be IPv4, address block or any
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: The source. Could be IPv4, address block or any
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit an existing rule.
+    execution: false
+    name: cisco-asa-edit-rule
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
+tests:
+- No test
