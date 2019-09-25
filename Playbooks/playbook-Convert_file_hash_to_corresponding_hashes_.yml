@@ -811,4 +811,4 @@ outputs:
   description: Output for detected MD5 hash.
   type: string
 tests:
-Test Convert file hash to corresponding hashes
+- Test Convert file hash to corresponding hashes
