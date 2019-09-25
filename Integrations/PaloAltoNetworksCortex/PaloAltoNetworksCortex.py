@@ -362,7 +362,7 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
                                  'endPointHeader.deviceName', 'endPointHeader.agentTime']
     else:
         # if the user has chosen which fields to query than they will be used as headers
-        fields_list = argToList(fields)
+        fields_list: list = argToList(fields)
         headers = fields_list
         headers_raw_names = fields_list
 
@@ -375,9 +375,9 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
 
 
 def parse_processes(processes_list: list) -> list:
-    processes_new_list = []
+    processes_new_list: list = []
     for process_object in processes_list:
-        process_new_object = {
+        process_new_object: dict = {
             'PID': process_object.get('pid'),
             'ParentID': process_object.get('parentId'),
             'ExeFileIdx': process_object.get('exeFileIdx'),
@@ -390,9 +390,9 @@ def parse_processes(processes_list: list) -> list:
 
 
 def parse_files(files_list: list) -> list:
-    files_new_list = []
+    files_new_list: list = []
     for file_object in files_list:
-        file_new_object = {
+        file_new_object: dict = {
             'RawFullPath': file_object.get('rawFullPath'),
             'FileName': file_object.get('fileName'),
             'SHA256': file_object.get('sha256'),
@@ -403,9 +403,9 @@ def parse_files(files_list: list) -> list:
 
 
 def parse_users(users_list: list) -> list:
-    users_new_list = []
+    users_new_list: list = []
     for user_object in users_list:
-        user_new_object = {
+        user_new_object: dict = {
             'Username': user_object.get('userName')
         }
         users_new_list.append(user_new_object)
@@ -443,7 +443,7 @@ def get_where_part(args: dict, table_args_dict: dict) -> str:
                 # if query arg is supplied than we just need to parse it and only it
                 return parse_query(args[key])
             else:
-                values_list = argToList(args[key])
+                values_list: list = argToList(args[key])
                 for value in values_list:
                     for field in table_args_dict[key]:
                         if not where:
@@ -1076,45 +1076,45 @@ def search_by_file_hash_command():
 
 
 def query_traffic_logs_command():
-    table_fields = TRAFFIC_FIELDS
-    table_args = PANW_ARGS_DICT
-    query_table_name = 'panw.traffic'
+    table_fields: list = TRAFFIC_FIELDS
+    table_args: dict = PANW_ARGS_DICT
+    query_table_name: str = 'panw.traffic'
     context_transformer_function = traffic_context_transformer
-    table_context_path = 'Cortex.Logging.Traffic(val.id === obj.id)'
-    table_context_standards_paths = ['IP']
+    table_context_path: str = 'Cortex.Logging.Traffic(val.id === obj.id)'
+    table_context_standards_paths: list = ['IP']
     return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_threat_logs_command():
-    table_fields = THREAT_FIELDS
-    table_args = PANW_ARGS_DICT
-    query_table_name = 'panw.threat'
+    table_fields: list = THREAT_FIELDS
+    table_args: dict = PANW_ARGS_DICT
+    query_table_name: str = 'panw.threat'
     context_transformer_function = threat_context_transformer
-    table_context_path = 'Cortex.Logging.Threat(val.id === obj.id)'
-    table_context_standards_paths = ['IP']
+    table_context_path: str = 'Cortex.Logging.Threat(val.id === obj.id)'
+    table_context_standards_paths: list = ['IP']
     return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_traps_logs_command():
-    table_fields = TRAPS_FIELDS
-    table_args = TMS_ARGS_DICT
-    query_table_name = 'tms.threat'
+    table_fields: list = TRAPS_FIELDS
+    table_args: dict = TMS_ARGS_DICT
+    query_table_name: str = 'tms.threat'
     context_transformer_function = traps_context_transformer
-    table_context_path = 'Cortex.Logging.Traps(val.id === obj.id)'
-    table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
+    table_context_path: str = 'Cortex.Logging.Traps(val.id === obj.id)'
+    table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
     return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
 
 def query_analytics_logs_command():
-    table_fields = ANALYTICS_FIELDS
-    table_args = TMS_ARGS_DICT
-    query_table_name = 'tms.analytics'
+    table_fields: list = ANALYTICS_FIELDS
+    table_args: dict = TMS_ARGS_DICT
+    query_table_name: str = 'tms.analytics'
     context_transformer_function = analytics_context_transformer
-    table_context_path = 'Cortex.Logging.Analytics(val.id === obj.id)'
-    table_context_standards_paths = ['File', 'Endpoint', 'Process', 'Host']
+    table_context_path: str = 'Cortex.Logging.Analytics(val.id === obj.id)'
+    table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
     return query_table_logs_command(table_fields, table_args, query_table_name, context_transformer_function,
                                     table_context_path, table_context_standards_paths)
 
@@ -1153,8 +1153,6 @@ def query_table_logs_command(table_fields: list, table_args: dict, query_table_n
         query = f'SELECT {fields} FROM {query_table_name} WHERE {where} LIMIT {limit}'
     else:
         query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
-
-    demisto.info(f'firsttttt {query}')
 
     query_data = {
         "query": query,
