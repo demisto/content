@@ -441,62 +441,62 @@ script:
       description: IOC enrichment data
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: String
     - contextPath: File.Name
-      description: The name of the hash being stored
-      type: string
+      description: The full file name (including file extension).
+      type: String
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-      type: string
+      description: The vendor that reported the file as malicious.
+      type: String
     - contextPath: File.Malicious.Description
-      description: For malicious files, the vendor that made the decision
-      type: string
+      description: A description explaining why the file was determined to be malicious.
+      type: String
     - contextPath: File.MD5
-      description: Bad hash MD5
-      type: string
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: File.SHA1
-      description: Bad hash SHA1
-      type: string
+      description: The SHA1 hash of the file.
+      type: String
     - contextPath: File.SHA256
-      description: Bad hash SHA256
-      type: string
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: URL.Data
-      description: The URL that was searched
-      type: string
+      description: The URL
+      type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious urls, the vendor that made the decision
-      type: string
+      description: The vendor reporting the URL as malicious.
+      type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious urls, the reason for the vendor to make the decision
-      type: string
+      description: A description of the malicious URL.
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious ips, the vendor that made the decision
-      type: string
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious ips, the reason for the vendor to make the decision
-      type: string
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
     - contextPath: IP.Address
-      description: The IP address of the IOC
-      type: string
+      description: IP address
+      type: String
     - contextPath: Domain.Name
-      description: The name of the Domain for the IOC
-      type: string
+      description: 'The domain name, for example: "google.com".'
+      type: String
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-      type: string
+      description: The vendor reporting the domain as malicious.
+      type: String
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
-      type: string
+      description: A description explaining why the domain was reported as malicious.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -612,62 +612,62 @@ script:
       description: IOC enrichment data
       type: string
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: string
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: File.Name
-      description: The name of the hash being stored
-      type: string
+      description: The full file name (including file extension).
+      type: String
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-      type: string
+      description: The vendor that reported the file as malicious.
+      type: String
     - contextPath: File.Malicious.Description
-      description: For malicious files, the vendor that made the decision
-      type: string
+      description: A description explaining why the file was determined to be malicious.
+      type: String
     - contextPath: File.MD5
-      description: Bad hash MD5
-      type: string
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: File.SHA1
-      description: Bad hash SHA1
-      type: string
+      description: The SHA1 hash of the file.
+      type: String
     - contextPath: File.SHA256
-      description: Bad hash SHA256
-      type: string
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: URL.Data
-      description: The URL that was searched
-      type: string
+      description: The URL
+      type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious urls, the vendor that made the decision
-      type: string
+      description: The vendor reporting the URL as malicious.
+      type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious urls, the reason for the vendor to make the decision
-      type: string
+      description: A description of the malicious URL.
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious ips, the vendor that made the decision
-      type: string
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious ips, the reason for the vendor to make the decision
-      type: string
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
     - contextPath: IP.Address
-      description: The IP address of the IOC
-      type: string
+      description: IP address
+      type: String
     - contextPath: Domain.Name
-      description: The name of the Domain for the IOC
-      type: string
+      description: 'The domain name, for example: "google.com".'
+      type: String
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-      type: string
+      description: The vendor reporting the domain as malicious.
+      type: String
     - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
-      type: string
+      description: A description explaining why the domain was reported as malicious.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
