@@ -35,7 +35,7 @@ PWNED_PASTE_SUFFIX = '/pasteaccount/'
 EMAIL_TRUNCATE_VERIFIED_SUFFIX = '?truncateResponse=false&includeUnverified=true'
 DOMAIN_TRUNCATE_VERIFIED_SUFFIX = '&truncateResponse=false&includeUnverified=true'
 
-retries_end_time = datetime.min
+RETRIES_END_TIME = datetime.min
 
 ''' HELPER FUNCTIONS '''
 
@@ -52,7 +52,7 @@ def http_request(method, url_suffix, params=None, data=None):
 
     if res.status_code == 404:
         return None
-    elif res.status_code == 429:
+    if res.status_code == 429:
         # Rate limit response code
         wait_regex = re.search(r'\d+', res.json()['message'])
         if wait_regex:
@@ -90,7 +90,7 @@ def data_to_markdown(query_type, query_arg, api_res, api_paste_res=None):
 
     md = '### Have I Been Pwned query for ' + query_type.lower() + ': *' + query_arg + '*\n'
 
-    if api_res and len(api_res) > 0:
+    if api_res:
         records_found = True
         for breach in api_res:
             verified_breach = 'Verified' if breach['IsVerified'] else 'Unverified'
@@ -100,7 +100,7 @@ def data_to_markdown(query_type, query_arg, api_res, api_paste_res=None):
             md += html_description_to_human_readable(breach['Description']) + '\n'
             md += 'Data breached: **' + ','.join(breach['DataClasses']) + '**\n'
 
-    if api_paste_res and len(api_paste_res) > 0:
+    if api_paste_res:
         records_found = True
         pastes_list = []
         for paste_breach in api_paste_res:
@@ -198,8 +198,8 @@ def domain_to_entry_context(domain, api_res):
 
 
 def rate_limit_retry(amount_of_seconds, request_type):
-    if datetime.now() > retries_end_time:
-        return_error('Max retry time has exceeded')
+    if datetime.now() > RETRIES_END_TIME:
+        return_error('Max retry time has exceeded.')
 
     time.sleep(amount_of_seconds)
     if request_type == 'email':
@@ -209,14 +209,15 @@ def rate_limit_retry(amount_of_seconds, request_type):
 
 
 def retry_needed(api_res, api_paste_res=None):
-    global retries_end_time
-    if retries_end_time == datetime.min and not MAX_RETRY_ALLOWED == -1:
-        retries_end_time = datetime.now() + timedelta(seconds=int(MAX_RETRY_ALLOWED))
+    global RETRIES_END_TIME
+    if RETRIES_END_TIME == datetime.min and MAX_RETRY_ALLOWED != -1:
+        RETRIES_END_TIME = datetime.now() + timedelta(seconds=int(MAX_RETRY_ALLOWED))
 
     if api_res and 'time_to_wait' in api_res:
         return True
     elif api_paste_res and 'time_to_wait' in api_paste_res:
         return True
+
     return False
 
 
