@@ -1,11 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 # imports
-import random
 import calendar
 import duo_client
-from time import sleep
 
 # Setup
 
@@ -38,8 +37,20 @@ OPTIONS_TO_TIME = {
 }
 
 
-def my_make_request(self, method, uri, body, headers):
+def override_make_request(self, method, uri, body, headers):
+    """
+
+    This function is an override function to the original
+    duo_client.client.Client._make_request function in API version 4.1.0
+
+    The reason for it is: the API creates a bad uri address for the GET requests.
+
+    """
+
     conn = self._connect()
+
+    # Ignored original code #
+    # --------------------- #
     # if self.proxy_type == 'CONNECT':
     #     # Ensure the request uses the correct protocol and Host.
     #     if self.ca_certs == 'HTTP':
@@ -47,6 +58,9 @@ def my_make_request(self, method, uri, body, headers):
     #     else:
     #         api_proto = 'https'
     #     uri = ''.join((api_proto, '://', self.host, uri))
+    # ------------------- #
+    # End of ignored code #
+
     conn.request(method, uri, body, headers)
     response = conn.getresponse()
     data = response.read()
@@ -64,8 +78,8 @@ def create_api_call():
             host=HOST,
             ca_certs='DISABLE'
         )
-        client._make_request = lambda method, uri, body, headers: my_make_request(client, method, uri, body,
-                                                                                  headers)
+        client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body,
+                                                                                        headers)
         return client
 
     return duo_client.Admin(
