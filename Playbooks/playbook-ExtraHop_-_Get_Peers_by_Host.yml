@@ -1,5 +1,6 @@
 id: ExtraHop - Get Peers by Host
 version: -1
+fromversion: 4.5.0
 name: ExtraHop - Get Peers by Host
 description: Given a host, the playbook will retrieve the peer network devices that
   communicated with that host in a given time range.  In addition to a list of peers
@@ -15,6 +16,7 @@ tasks:
       id: 71394f2c-bc76-4885-8bab-b55ce0094789
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -39,6 +41,7 @@ tasks:
       id: f4953d89-2219-4d74-8acf-d819728d0ac9
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -401,3 +404,5 @@ inputs:
   description: The ending timestamp of the time range the playbook will use to search,
     expressed in seconds since the epoch.
 outputs: []
+tests:
+- ExtraHop-Test

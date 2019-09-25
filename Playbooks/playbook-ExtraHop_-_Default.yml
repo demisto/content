@@ -1,5 +1,6 @@
 id: ExtraHop - Default
 version: -1
+fromversion: 4.5.0
 name: ExtraHop - Default
 description: Default playbook to run for all ExtraHop Detection incidents.  This playbook
   handles ticket tracking as well as triggering specific playbooks based on the name
@@ -14,6 +15,7 @@ tasks:
       id: 71394f2c-bc76-4885-8bab-b55ce0094789
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -38,6 +40,7 @@ tasks:
       id: 0e0163c7-a066-42d3-8ee5-3d788d4e32ed
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -199,6 +202,7 @@ tasks:
       id: 2e429114-7e8a-4fdc-8d53-bd6ff3476efb
       version: -1
       name: Ticket Tracking
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -310,3 +314,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- ExtraHop-Test

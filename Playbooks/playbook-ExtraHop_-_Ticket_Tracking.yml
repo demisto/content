@@ -1,5 +1,6 @@
 id: ExtraHop - Ticket Tracking
 version: -1
+fromversion: 4.5.0
 name: ExtraHop - Ticket Tracking
 description: Links the Demisto incident back to the ExtraHop detection that created
   it for ticket tracking purposes.
@@ -13,6 +14,7 @@ tasks:
       id: 71394f2c-bc76-4885-8bab-b55ce0094789
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -88,6 +90,7 @@ tasks:
       id: f4953d89-2219-4d74-8acf-d819728d0ac9
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -729,3 +732,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- ExtraHop-Test
