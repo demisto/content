@@ -1165,7 +1165,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
         ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
-        incident = {} # type: Dict[Any, Any]
+        incident = {}  # type: Dict[Any, Any]
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
