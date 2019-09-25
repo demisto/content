@@ -1123,7 +1123,7 @@ def query_analytics_logs_command():
                             table_context_path)
 
 
-def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function, 
+def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
                      table_context_path: str):
     args = demisto.args()
 
