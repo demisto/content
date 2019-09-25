@@ -104,9 +104,7 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
-MAX_FETCH = int(demisto.params().get('maxFetch', 50))
-if MAX_FETCH > 50:
-    MAX_FETCH = 50
+MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
