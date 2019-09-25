@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Changed display name from "AttackIQ FireDrill" to "AttackIQ Platform"
+  - Changed the integtration name from "AttackIQ FireDrill" to "AttackIQ Platform"
 
 
 ## [19.9.1] - 2019-09-18
