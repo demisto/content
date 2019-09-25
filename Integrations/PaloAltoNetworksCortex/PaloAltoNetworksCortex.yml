@@ -625,22 +625,753 @@ script:
     - contextPath: Cortex.Logging.severity
       description: Threat Severity.
       type: Unknown
-  - deprecated: false
-    description: 'TBD'
+  - arguments:
+    - default: false
+      description: TBD
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: rule
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: from_zone
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: to_zone
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: TBD
     execution: false
     name: cortex-query-traffic-logs
-  - deprecated: false
-    description: 'TBD'
+    outputs:
+    - contextPath: Cortex.Logging.Traffic.RiskOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Natsport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.SessionID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Packets
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.CharacteristicOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.App
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Vsys
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Nat
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.ReceiveTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.SubcategoryOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Users
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Proto
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.TunneledApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Natdport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Dst
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Natdst
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Rule
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Dport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Elapsed
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.DeviceName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Subtype
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.TimeReceived
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.SessionEndReason
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Natsrc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Src
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Start
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.TimeGenerated
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.CategoryOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Srcloc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Dstloc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Serial
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Bytes
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.VsysID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.To
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Category
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Sport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.Tunnel
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traffic.IsPhishing
+      description: TBD
+      type: Unknown
+  - arguments:
+    - default: false
+      description: TBD
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: rule
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: from_zone
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: to_zone
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    deprecated: false
+    description: TBD
     execution: false
     name: cortex-query-threat-logs
-  - deprecated: false
-    description: 'TBD'
+    outputs:
+    - contextPath: Cortex.Logging.Threat.SessionID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Action
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.App
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Nat
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.SubcategoryOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.PcapID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Natdst
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Flags
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Dport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.ThreatID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Natsrc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.CategoryOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Srcloc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Dstloc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.To
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.RiskOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Natsport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.URLDenied
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.CharacteristicOfApp
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.HTTPMethod
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.From
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Vsys
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.ReceiveTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Users
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Proto
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Natdport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Dst
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Rule
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.CategoryOfThreatID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.DeviceName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Subtype
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.TimeReceived
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Direction
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Misc
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Severity
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Src
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.TimeGenerated
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Serial
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.VsysID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.URLDomain
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Category
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.Sport
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Threat.IsPhishing
+      description: TBD
+      type: Unknown
+  - arguments:
+    - default: false
+      description: TBD
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: TBD
     execution: false
     name: cortex-query-traps-logs
-  - deprecated: false
-    description: 'TBD'
+    outputs:
+    - contextPath: Cortex.Logging.Traps.Severity
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.AgentID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.OsType
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.IsVdi
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.OsVersion
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.Is64
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentIP
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.DeviceName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.DeviceDomain
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.Username
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentVersion
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.ProtectionStatus
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.RecordType
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.TrapsID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.EventType
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.UUID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.ServerHost
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.GeneratedTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.ServerComponentVersion
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.RegionID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.CustomerID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.ServerTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.OriginalAgentTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.Facility
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.EventCategory
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.PreventionKey
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.PID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.ParentID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.ExeFileIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.UserIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.CommandLine
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.Terminated
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.RawFullPath
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.FileName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.SHA256
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.FileSize
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.InnerObjectSHA256
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Users.Username
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.PostDetected
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Terminate
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcessIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.FileIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.Verdict
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.TargetProcessIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.ModuleCategory
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.PreventionMode
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.TrapsSeverity
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.User.Username
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.PID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.ParentID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.ExeFileIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.UserIdx
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.CommandLine
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InstanceID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.Terminated
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.RawFullPath
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.FileName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.SHA256
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.FileSize
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InnerObjectSHA256
+      description: TBD
+      type: Unknown
+  - arguments:
+    - default: false
+      description: TBD
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: TBD
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    deprecated: false
+    description: TBD
     execution: false
     name: cortex-query-analytics-logs
+    outputs:
+    - contextPath: Cortex.Logging.Analytics.AgentID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OsType
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.IsVdi
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OsVersion
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.Is64
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentIP
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DeviceName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DeviceDomain
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.Username
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.UserDomain
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentVersion
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.ProtectionStatus
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DataCollectionStatus
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.TrapsID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.EventType
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.UUID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.GeneratedTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.RegionID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.OriginalAgentTime
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.Facility
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.type
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.SHA256
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.Type
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.FileName
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.FilePath
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.FileSize
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.Reported
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.Blocked
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Trusted
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Publishers
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.TrustedID
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.ExecutionCount
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.LastSeen
+      description: TBD
+      type: Unknown
+    - contextPath: Cortex.Logging.Analytics.MessageData.TypeID
+      description: TBD
+      type: Unknown
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   longRunning: false
