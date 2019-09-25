@@ -38,14 +38,14 @@ client = Client(BASE_URL)
 
 
 class TestBuildContext:
-    def test_build_context_dict(self):
-        from AnalyticsAndSIEM import build_context
-        res = build_context(EVENT_LIST_INPUT['event'][0])
+    def test_raw_response_to_context_dict(self):
+        from AnalyticsAndSIEM import raw_response_to_context
+        res = raw_response_to_context(EVENT_LIST_INPUT['event'][0])
         assert res == EVENT_LIST_OUTPUT['Event'][0]
 
-    def test_build_context_list(self):
-        from AnalyticsAndSIEM import build_context
-        res = build_context(EVENT_LIST_INPUT['event'])
+    def test_raw_response_to_context_list(self):
+        from AnalyticsAndSIEM import raw_response_to_context
+        res = raw_response_to_context(EVENT_LIST_INPUT['event'])
         assert res == EVENT_LIST_OUTPUT['Event']
 
 
@@ -53,7 +53,7 @@ class TestTestModule:
     def test_test_module(self, requests_mock):
         from AnalyticsAndSIEM import test_module
         requests_mock.get(BASE_URL + 'version', json={'version': '1.0.0'})
-        assert test_module(client) == ('ok', {}, {})
+        assert test_module(client) == ('ok', None, None)
 
     def test_test_module_negative(self, requests_mock):
         from AnalyticsAndSIEM import test_module, DemistoException
