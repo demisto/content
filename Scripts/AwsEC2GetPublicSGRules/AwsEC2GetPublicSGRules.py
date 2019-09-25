@@ -23,7 +23,7 @@ def raise_error(error):
 
 
 def get_ec2_sg_public_rules(group_id, ip_permissions, checked_protocol=None, checked_from_port=None,
-                            checked_to_port=None, region=None, include_ipv6=False):
+                            checked_to_port=None, region=None, include_ipv6='no'):
     """
         Get the list of public
         which can be passed on to the following command:
@@ -117,15 +117,21 @@ def main(args):
         include_ipv6=args.get('includeIPv6')
     )
 
-    demisto.results({
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': json.dumps(public_rules),
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Public Security Group Rules', public_rules,
-                                         ['groupId', 'ipProtocol', 'fromPort', 'toPort', 'cidrIp', 'region']),
-        'EntryContext': {'AWS.EC2.SecurityGroup.PublicRules': public_rules}
-    })
+    readable_output = tableToMarkdown('Public Security Group Rules', public_rules,
+                                      ['groupId', 'ipProtocol', 'fromPort', 'toPort', 'cidrIp', 'region']
+                                      )
+
+    context = {
+        'AWS': {
+            'EC2': {
+                'SecurityGroup': {
+                    'PublicRules': public_rules
+                }
+            }
+        }
+    }
+
+    return_outputs(readable_output, context, raw_response=public_rules)
 
 
 if __name__ in ('builtins', '__builtin__'):
