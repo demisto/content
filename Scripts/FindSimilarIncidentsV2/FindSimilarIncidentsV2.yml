@@ -146,5 +146,5 @@ type: python
 dockerimage: demisto/dateutil
 runonce: false
 tests:
-- No test
+- dedup_-_generic_-_test
 fromversion: 4.5.0

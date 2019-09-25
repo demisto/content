@@ -377,7 +377,7 @@ demisto.results({
 **Please Note:** By default, IgnoreAutoExtract is set to ```False```.
 
 ## Quality Examples of Integrations
-* [McAfee Advanced Threat Defence](https://github.com/demisto/content/blob/master/Integrations/integration-McAfee-ATD.yml)
-* [Joe Security](https://github.com/demisto/content/blob/master/Integrations/integration-JoeSecurity.yml)
+* [McAfee Advanced Threat Defence](https://github.com/demisto/content/tree/master/Integrations/McAfee_Advanced_Threat_Defense)
+* [Joe Security](https://github.com/demisto/content/tree/master/Integrations/JoeSecurity)
 * [Cybereason](https://github.com/demisto/content/blob/master/Integrations/integration-Cybereason.yml)
 * [Anything written by this guy **except** Minemeld](https://github.com/yardensade)
