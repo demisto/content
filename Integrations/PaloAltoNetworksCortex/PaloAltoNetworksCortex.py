@@ -425,7 +425,7 @@ def get_fields_and_check_validity(fields: str, table_fields: list) -> str:
             # if fields=all than we don't need to continue
             return '*'
         if field not in table_fields:
-            raise Exception(f'{field} is not a valid field of the query')
+            raise DemistoException(f'{field} is not a valid field of the query')
     return fields
 
 
@@ -463,7 +463,15 @@ def parse_query(query: str) -> str:
     if ' WHERE ' in query.upper():
         return re.split(' WHERE ', query, maxsplit=1, flags=re.IGNORECASE)[1]
     else:
-        raise Exception('A compound query must include a WHERE part')
+        raise DemistoException('A compound query must include a WHERE part')
+
+
+def get_context_standards_outputs(results: list, table_name: str):
+    if table_name == 'panw.traffic' or table_name == 'panw.threat':
+        pass
+    elif table_name == 'tms.threat' or table_name == 'tms.analytics':
+        pass
+    return {}
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
@@ -1081,9 +1089,8 @@ def query_traffic_logs_command():
     query_table_name: str = 'panw.traffic'
     context_transformer_function = traffic_context_transformer
     table_context_path: str = 'Cortex.Logging.Traffic(val.id === obj.id)'
-    table_context_standards_paths: list = ['IP']
     return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
-                                    table_context_path, table_context_standards_paths)
+                            table_context_path)
 
 
 def query_threat_logs_command():
@@ -1092,9 +1099,8 @@ def query_threat_logs_command():
     query_table_name: str = 'panw.threat'
     context_transformer_function = threat_context_transformer
     table_context_path: str = 'Cortex.Logging.Threat(val.id === obj.id)'
-    table_context_standards_paths: list = ['IP']
     return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
-                                    table_context_path, table_context_standards_paths)
+                            table_context_path)
 
 
 def query_traps_logs_command():
@@ -1103,9 +1109,8 @@ def query_traps_logs_command():
     query_table_name: str = 'tms.threat'
     context_transformer_function = traps_context_transformer
     table_context_path: str = 'Cortex.Logging.Traps(val.id === obj.id)'
-    table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
     return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
-                                    table_context_path, table_context_standards_paths)
+                            table_context_path)
 
 
 def query_analytics_logs_command():
@@ -1114,13 +1119,12 @@ def query_analytics_logs_command():
     query_table_name: str = 'tms.analytics'
     context_transformer_function = analytics_context_transformer
     table_context_path: str = 'Cortex.Logging.Analytics(val.id === obj.id)'
-    table_context_standards_paths: list = ['File', 'Endpoint', 'Process', 'Host']
     return query_table_logs(table_fields, table_args, query_table_name, context_transformer_function,
-                                    table_context_path, table_context_standards_paths)
+                            table_context_path)
 
 
 def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function, 
-                     table_context_path: str, table_context_standards_paths: list):
+                     table_context_path: str):
     args = demisto.args()
 
     start_time = args.get('startTime')
@@ -1134,7 +1138,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
             service_end_date = datetime.now()
             service_start_date = get_start_time(time_range, int(time_value))
         else:
-            raise Exception('Enter timeRange and timeValue, or startTime and endTime')
+            raise DemistoException('Enter timeRange and timeValue, or startTime and endTime')
     else:
         # parses user input to datetime object - using dateutil.parser.parse
         service_start_date = parse(start_time)
@@ -1167,7 +1171,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
         pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
-        raise Exception('Failed to parse the response from Cortex')
+        raise DemistoException('Failed to parse the response from Cortex')
 
     outputs: list = []
     results: list = []
@@ -1184,7 +1188,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     human_readable = human_readable_generator(fields, table_name, results)
 
     # @TODO CODE THE INDICATORS ISSUE
-    context_standards_outputs: dict = {}  # get_context_standards_outputs(table_context_standards_paths, results)
+    context_standards_outputs: dict = get_context_standards_outputs(results, query_table_name)
     context_outputs: dict = {table_context_path: outputs}
     # merge the two dicts into one dict that outputs to context
     context_outputs.update(context_standards_outputs)
