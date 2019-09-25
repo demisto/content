@@ -1,6 +1,7 @@
 id: playbook-GoogleDocs
 version: -1
 name: playbook-GoogleDocs
+description: This is a playbook for performing for testing all google docs commands. creation, update and get.
 starttaskid: "0"
 tasks:
   "0":
