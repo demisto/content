@@ -53,7 +53,8 @@ tasks:
         simple: GET
       password: {}
       proxy: {}
-      saveAsFile: {}
+      saveAsFile:
+        simple: "yes"
       unsecure: {}
       url:
         simple: https://github.com/demisto/content/raw/master/TestData/pdf_noeof.pdf
