@@ -613,7 +613,7 @@ class IntegrationLogger(object):
             if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
                 pswrd = self.encode(demisto.getParam('credentials').get('password'))
                 self.add_replace_strs(pswrd, b64_encode(pswrd))
-            sensitive_params = ('api_key', 'apikey', 'password', 'secret')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token')
             if demisto.params():
                 for (k, v) in demisto.params().items():
                     k_lower = k.lower()
