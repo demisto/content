@@ -92,12 +92,12 @@ class Client:
         """ Logout from the session """
         self._http_request('GET', self._http_request('GET', f'{self.server}/api/auth/logout'))
 
-    def test_module(self):
+    def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
         suffix_url = 'ping'
-        self._http_request('GET', suffix_url, resp_type='text')
+        return self._http_request('GET', suffix_url, resp_type='text')
 
     def get_notable_users_request(self, api_unit=None, num=None, limit=None):
 
@@ -156,6 +156,12 @@ class Client:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
+def test_module(client: Client, *_):
+
+    client.test_module_request()
+    demisto.results('ok')
+
+
 def get_notable_users(client: Client, args: Dict):
     """ Get notable users in a period of time
 
@@ -167,18 +173,22 @@ def get_notable_users(client: Client, args: Dict):
     limit = args.get('limit')
     time_period = args.get('time_period')
     time_ = time_period.split(' ')
-    num = time_[0]
-    unit = time_[1]
+    if not len(time_) == 2:
+        return_error('Missing an argument. Make sure to enter the time period number and unit.')
+    num, unit = time_
     api_unit = unit[0]
     if api_unit == 'm':
         api_unit = api_unit.upper()
+
+    if api_unit not in {'d', 'y', 'M', 'h'}:
+        return_error('The time unit is incorrect - can be hours, days, months, years')
 
     contents = []
     headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
     users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
     if not users:
-        return_outputs('No users were found in this period of time.', {})
+        return 'No users were found in this period of time.', {}
     else:
         for user in users:
             user_ = user.get('user', {})
@@ -204,7 +214,8 @@ def get_notable_users(client: Client, args: Dict):
             'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
         }
 
-        return_outputs(tableToMarkdown('Exabeam Notable Users', contents, headers, removeNull=True), context, users)
+        human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers, removeNull=True)
+        return human_readable, context, users
 
 
 def get_user_info(client: Client, args: Dict):
@@ -241,10 +252,10 @@ def get_user_info(client: Client, args: Dict):
     }
 
     if not user_info.get('firstSeen'):
-        return_outputs(f'The user {username} was not found', {})
+        return f'The user {username} was not found', {}
     else:
-        return_outputs(tableToMarkdown(f'User {username} information', contents, headers, removeNull=True), context,
-                       user)
+        human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
+        return human_readable, context, user
 
 
 def get_user_sessions(client: Client, args: Dict):
@@ -284,13 +295,13 @@ def get_user_sessions(client: Client, args: Dict):
     }
 
     if session:
-        return_outputs(tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True),
-                       context, user)
+        human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
+        return human_readable, context, user
     else:
-        return_outputs(f'The user {username} was not found', {})
+        return f'The user {username} was not found', {}
 
 
-def get_watchlist(client: Client):
+def get_watchlist(client: Client, *_):
     """  Returns all watchlist ids and titles.
 
     Args:
@@ -312,10 +323,11 @@ def get_watchlist(client: Client):
         'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
     }
 
-    return_outputs(tableToMarkdown('Exabeam Watchlists', contents, headers), context, watchlist)
+    human_readable = tableToMarkdown('Exabeam Watchlists', contents, headers)
+    return human_readable, context, watchlist
 
 
-def get_peer_groups(client: Client):
+def get_peer_groups(client: Client, *_):
     """ Returns all peer groups
 
     Args:
@@ -333,10 +345,11 @@ def get_peer_groups(client: Client):
         'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents
     }
 
-    return_outputs(tableToMarkdown('Exabeam Peer Groups', contents), context, groups)
+    human_readable = tableToMarkdown('Exabeam Peer Groups', contents)
+    return human_readable, context, groups
 
 
-def get_user_labels(client: Client):
+def get_user_labels(client: Client, *_):
     """ Returns all user Labels
 
     Args:
@@ -354,7 +367,8 @@ def get_user_labels(client: Client):
         'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents
     }
 
-    return_outputs(tableToMarkdown('Exabeam User Labels', contents), context, labels)
+    human_readable = tableToMarkdown('Exabeam User Labels', contents)
+    return human_readable, context, labels
 
 
 def main():
@@ -366,27 +380,22 @@ def main():
         'Accept': 'application/json'
     }
     proxies = handle_proxy()
-
+    client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
+                    headers=headers)
+    command = demisto.command()
     LOG(f'Command being called is demisto.command()')
-
+    commands = {
+        'test-module': test_module,
+        'get-notable-users': get_notable_users,
+        'get-watchlists': get_watchlist,
+        'get-peer-groups': get_peer_groups,
+        'get-user-info': get_user_info,
+        'get-user-labels': get_user_labels,
+        'get-user-sessions': get_user_sessions
+    }
     try:
-        client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
-                        headers=headers)
-        if demisto.command() == 'test-module':
-            client.test_module()
-            demisto.results('ok')
-        elif demisto.command() == 'get-notable-users':
-            get_notable_users(client, demisto.args())
-        elif demisto.command() == 'get-watchlists':
-            get_watchlist(client)
-        elif demisto.command() == 'get-peer-groups':
-            get_peer_groups(client)
-        elif demisto.command() == 'get-user-info':
-            get_user_info(client, demisto.args())
-        elif demisto.command() == 'get-user-labels':
-            get_user_labels(client)
-        elif demisto.command() == 'get-user-sessions':
-            get_user_sessions(client, demisto.args())
+        if command in commands:
+            return_outputs(*commands[command](client, demisto.args()))
 
     except Exception as e:
         return_error(str(e))
