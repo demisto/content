@@ -22,6 +22,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "AWS - SQS",
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
+        },
+        {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
             "fromversion": "5.0.0"
@@ -1834,6 +1838,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1909,6 +1917,7 @@
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
         "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
