@@ -587,7 +587,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "23"
     scriptarguments:
       question-id: {}
       question-name:
@@ -598,35 +598,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 3810
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: b6fd8266-d2f5-43c3-84c7-188001c64e94
-    type: regular
-    task:
-      id: b6fd8266-d2f5-43c3-84c7-188001c64e94
-      version: -1
-      name: Get saved question result
-      script: '|||tn-get-saved-question-result'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      question-id:
-        simple: "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3985
         }
       }
     note: false
@@ -648,7 +619,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4160
+          "y": 3985
         }
       }
     note: false
@@ -714,7 +685,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2930
+          "y": 2935
         }
       }
     note: false
@@ -725,7 +696,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4175,
+        "height": 4000,
         "width": 380,
         "x": 50,
         "y": 50

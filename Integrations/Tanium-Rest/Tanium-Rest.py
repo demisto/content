@@ -589,8 +589,16 @@ def get_saved_questions(client, data_args):
 
 def create_action(client, data_args):
     package_id = data_args.get('package-id')
+    package_name = data_args.get('package-name')
     parameters = data_args.get('parameters')
     parameters_condition = []  # type: ignore
+
+    if not package_id and not package_name:
+        return_error('package id and package name are missing')
+
+    if package_name:
+        get_package_res = client.do_request('GET', 'packages/by-name/' + package_name)
+        package_id = get_package_res.get('data').get('id')
 
     if parameters:
         try:
