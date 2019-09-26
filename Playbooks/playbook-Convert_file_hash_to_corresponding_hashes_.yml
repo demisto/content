@@ -1,6 +1,6 @@
 id: Convert file hash to corresponding hashes
 version: -1
-name: 'Convert file hash to corresponding hashes '
+name: Convert file hash to corresponding hashes
 fromversion: 4.0.0
 description: |
   The playbook allows to get all of the relevant file hash even if there is only one hash type available
