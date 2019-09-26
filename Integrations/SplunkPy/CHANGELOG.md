@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Added two new parameters for the names of the earliest and latest times to fetch fields.
 
 
 ## [19.9.1] - 2019-09-18
