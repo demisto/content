@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e022bd69-4460-4696-855e-81d3323303c2
+    taskid: 459137f7-cf03-450e-87d2-94cec22b590d
     type: start
     task:
-      id: e022bd69-4460-4696-855e-81d3323303c2
+      id: 459137f7-cf03-450e-87d2-94cec22b590d
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: efcd23f5-fc62-4c91-83b9-e98ab516cb4c
+    taskid: b4056e07-be74-4f27-8514-dcdbc5700a6f
     type: regular
     task:
-      id: efcd23f5-fc62-4c91-83b9-e98ab516cb4c
+      id: b4056e07-be74-4f27-8514-dcdbc5700a6f
       version: -1
       name: Query Logs
       description: Query Cortex Logging service
@@ -62,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 21176b7f-b8b3-459e-836a-96319c46d089
+    taskid: 0d4f433b-00ef-445e-8460-3719365cd961
     type: condition
     task:
-      id: 21176b7f-b8b3-459e-836a-96319c46d089
+      id: 0d4f433b-00ef-445e-8460-3719365cd961
       version: -1
       name: Verify Query Logs Outputs
       type: condition
@@ -173,10 +173,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f4403e40-6841-4124-8c0b-27a73745869d
+    taskid: f87c9945-4496-47b8-8655-059ecc878341
     type: title
     task:
-      id: f4403e40-6841-4124-8c0b-27a73745869d
+      id: f87c9945-4496-47b8-8655-059ecc878341
       version: -1
       name: Success
       description: Query Cortex Logging service according to pre-set queries
@@ -196,10 +196,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: de5e02df-f0c0-4513-839c-60f099aabd10
+    taskid: 57bc1e0a-2b44-4b32-8db5-48c4f57407a1
     type: regular
     task:
-      id: de5e02df-f0c0-4513-839c-60f099aabd10
+      id: 57bc1e0a-2b44-4b32-8db5-48c4f57407a1
       version: -1
       name: Fetch events
       description: Execute FetchIncident for a given instance
@@ -229,10 +229,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 869c1903-5ddd-4c8a-8d3e-81ec9b6febc2
+    taskid: 3e01dc08-f22a-4916-83f3-7f49eb5aeeee
     type: regular
     task:
-      id: 869c1903-5ddd-4c8a-8d3e-81ec9b6febc2
+      id: 3e01dc08-f22a-4916-83f3-7f49eb5aeeee
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -263,10 +263,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 4790da22-38af-4385-8332-ccb7c9d18d0d
+    taskid: 0dbc00b5-9ce6-4cb0-819f-0e74fb784bdd
     type: regular
     task:
-      id: 4790da22-38af-4385-8332-ccb7c9d18d0d
+      id: 0dbc00b5-9ce6-4cb0-819f-0e74fb784bdd
       version: -1
       name: cortex-query-threat-logs
       description: TBD
@@ -305,10 +305,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 00fa1968-2e24-4c4a-8eed-d1601929b39b
+    taskid: f8b6e4df-1071-4a47-8dbd-409ef09fb9a0
     type: condition
     task:
-      id: 00fa1968-2e24-4c4a-8eed-d1601929b39b
+      id: f8b6e4df-1071-4a47-8dbd-409ef09fb9a0
       version: -1
       name: Verify Query Threat Logs Outputs
       type: condition
@@ -326,7 +326,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Threat.Severity
+                accessor: Logging.Threat.Src
             iscontext: true
     view: |-
       {
@@ -340,10 +340,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 6e78430f-4ac0-4e42-81c1-c26e7566cbbc
+    taskid: cca21371-284c-469a-864f-81ad1b536f14
     type: regular
     task:
-      id: 6e78430f-4ac0-4e42-81c1-c26e7566cbbc
+      id: cca21371-284c-469a-864f-81ad1b536f14
       version: -1
       name: cortex-query-traffic-logs
       description: TBD
@@ -380,10 +380,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: bd4e27a9-e5ea-41f5-86bc-b538e11da6d5
+    taskid: 90960bf2-89bb-4239-8153-e5e12de6432d
     type: condition
     task:
-      id: bd4e27a9-e5ea-41f5-86bc-b538e11da6d5
+      id: 90960bf2-89bb-4239-8153-e5e12de6432d
       version: -1
       name: Verify Query Traffic Logs Outputs
       type: condition
@@ -415,10 +415,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: e53d2f00-fb88-425b-8d1d-797e2b899021
+    taskid: f8aec994-140c-4380-8a27-8fe33c9cff76
     type: regular
     task:
-      id: e53d2f00-fb88-425b-8d1d-797e2b899021
+      id: f8aec994-140c-4380-8a27-8fe33c9cff76
       version: -1
       name: cortex-query-traps-logs
       description: TBD
@@ -454,10 +454,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 683b3400-8121-4ae7-830e-cb2b23f75f32
+    taskid: eaad556a-f3e2-48da-8df0-3d7ef7f62935
     type: regular
     task:
-      id: 683b3400-8121-4ae7-830e-cb2b23f75f32
+      id: eaad556a-f3e2-48da-8df0-3d7ef7f62935
       version: -1
       name: cortex-query-analytics-logs
       description: TBD
@@ -493,10 +493,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 1603b271-7b6e-40e3-8ede-241caae8420c
+    taskid: e1105989-382e-4665-8de4-a9ff1a3806b3
     type: condition
     task:
-      id: 1603b271-7b6e-40e3-8ede-241caae8420c
+      id: e1105989-382e-4665-8de4-a9ff1a3806b3
       version: -1
       name: Verify Query Traps Logs Outputs
       type: condition
@@ -528,10 +528,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: a7ecbd5e-ae37-403d-881b-fc4ed0f28eb1
+    taskid: d9357ada-7506-40cc-8b27-19f8e6dfebe4
     type: condition
     task:
-      id: a7ecbd5e-ae37-403d-881b-fc4ed0f28eb1
+      id: d9357ada-7506-40cc-8b27-19f8e6dfebe4
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
@@ -549,7 +549,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Analytics.EventType
+                accessor: Logging.Analytics.Severity
             iscontext: true
     view: |-
       {
