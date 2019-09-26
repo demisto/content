@@ -194,36 +194,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 9129e9fb-1a06-4fec-8e64-bb5732ff8e57
-    type: regular
-    task:
-      id: 9129e9fb-1a06-4fec-8e64-bb5732ff8e57
-      version: -1
-      name: Failed to verify
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      message:
-        simple: Failed to verify query logs outputs
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1085
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
     taskid: de5e02df-f0c0-4513-839c-60f099aabd10
@@ -345,8 +315,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "4"
       "yes":
       - "5"
     separatecontext: false
@@ -422,8 +390,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "4"
       "yes":
       - "5"
     separatecontext: false
@@ -537,8 +503,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "4"
       "yes":
       - "5"
     separatecontext: false
@@ -574,8 +538,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "4"
       "yes":
       - "5"
     separatecontext: false
@@ -594,28 +556,6 @@ tasks:
         "position": {
           "x": -370,
           "y": 725
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 5faa3a80-c274-4075-897a-c34b92edc33f
-    type: title
-    task:
-      id: 5faa3a80-c274-4075-897a-c34b92edc33f
-      version: -1
-      name: Failure
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1280
         }
       }
     note: false
