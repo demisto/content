@@ -43,10 +43,22 @@ def unescape_url(escaped_url):
     return url
 
 
-def extract_domain(the_input, isFQDNextract):
-    is_url = None
-    domain_from_mail = None
+def get_tld_or_fqdn(the_input, isFQDNextract):
     fqdn = None
+    domain = get_tld(the_input, fail_silently=True, as_object=True)
+
+    # handle fqdn if needed
+    if isFQDNextract and domain:
+        # get the subdomain using tld.subdomain
+        subdomain = domain.subdomain
+        if (subdomain):
+            fqdn = "{}.{}".format(subdomain, str(domain))
+
+    return domain, fqdn
+
+
+def extract_domain(the_input, isFQDNextract):
+    domain_from_mail = None
 
     is_email = validate_email(the_input)
     if is_email:
@@ -65,27 +77,14 @@ def extract_domain(the_input, isFQDNextract):
         else:
             the_input = unescape_url(the_input)
 
-        is_url = domain = get_tld(the_input, fail_silently=True, as_object=True)
-
-        # handle fqdn if needed
-        if isFQDNextract and domain:
-            # get the subdomain using tld.subdomain
-            subdomain = domain.subdomain
-            if (subdomain):
-                fqdn = "{}.{}".format(subdomain, str(domain))
+        domain, fqdn = get_tld_or_fqdn(the_input, isFQDNextract)
 
     # Extract domain itself from a potential subdomain
-    if domain_from_mail or not is_url:
+    if domain_from_mail or not domain:
         full_domain = 'https://'
         full_domain += domain_from_mail if domain_from_mail else the_input
         # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        domain = get_tld(full_domain, fail_silently=True, as_object=True)
-
-        # handle fqdn if needed
-        if isFQDNextract and domain:
-            subdomain = domain.subdomain
-            if (subdomain):
-                fqdn = "{}.{}".format(subdomain, str(domain))
+        domain, fqdn = get_tld_or_fqdn(full_domain, isFQDNextract)
 
     # convert None to empty string if needed
     result = domain if not isFQDNextract else fqdn
