@@ -183,7 +183,8 @@ def endpoint_scan(endpoint_id):
 
 def endpoint_scan_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get scan results')
-    scan_data = parse_data_from_response(additional_data.get('scanData'), 'endpoint_scan_result') if additional_data else {}
+    scan_data = parse_data_from_response(additional_data.get('scanData'),
+                                         'endpoint_scan_result') if additional_data else {}
     scan_data['Status'] = status
     scan_data['OperationID'] = operation_id
     return scan_data
@@ -538,7 +539,6 @@ def main():
             endpoint_isolate_command()
         elif demisto.command() == 'traps-endpoint-isolate-status':
             endpoint_isolate_status_command()
-
 
     # Log exceptions
     except Exception as e:
