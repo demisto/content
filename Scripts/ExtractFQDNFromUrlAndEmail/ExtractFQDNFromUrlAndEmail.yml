@@ -3,7 +3,7 @@ args:
   description: The URL(s) or Email(s) to process
   isArray: true
   name: input
-  required: falses
+  required: false
   secret: false
 comment: Extract FQDN(s) from URL(s) and/or Email(s)
 commonfields:
