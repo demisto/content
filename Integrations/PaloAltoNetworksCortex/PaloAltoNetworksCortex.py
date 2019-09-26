@@ -517,7 +517,7 @@ def get_context_standards_outputs(results: list) -> dict:
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
             'OSVersion': end_point_header.get('osVersion'),
-            'OS': os_type_number_to_string(int(end_point_header.get('osType'))),
+            'OS': os_type_number_to_string(end_point_header.get('osType')),
             'ID': result.get('agentId')
         }
         delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
@@ -546,7 +546,7 @@ def get_context_standards_outputs(results: list) -> dict:
                 'DigitalSignature.Publisher': message_data.get('localAnalysisResult', {}).get('publishers')
             }
             delete_empty_value_dict_and_append_to_lists(file_data, [files])
-            if subtype.lower() == 'wildfire':
+            if subtype and subtype.lower() == 'wildfire':
                 file_data = {
                     'SHA256': result.get('filedigest'),
                     'Name': result.get('misc'),
