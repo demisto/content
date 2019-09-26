@@ -38,7 +38,7 @@ tasks:
       id: 6940ec13-06c0-4763-8485-0d626ea90c9c
       version: -1
       name: traps-endpoint-files-retrieve
-      description: Execute a file retrieve action / SAM on specified agent.
+      description: Execute a file retrieve action / SAM on the specified agent.
       script: Traps|||traps-endpoint-files-retrieve
       type: regular
       iscommand: true
@@ -76,7 +76,6 @@ tasks:
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
         The remote action should have the following structure:
-
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
@@ -126,7 +125,7 @@ tasks:
       id: c2d488f9-d7be-4416-8025-85e2b23e543f
       version: -1
       name: traps-endpoint-files-retrieve-result
-      description: Get endpoint file retrieve result.
+      description: Get the result of an endpoint file retrieval action.
       script: Traps|||traps-endpoint-files-retrieve-result
       type: regular
       iscommand: true
@@ -156,7 +155,7 @@ tasks:
       id: 8c65d7a1-5d83-471c-8068-594ad8c42965
       version: -1
       name: traps-endpoint-files-retrieve-result
-      description: Get endpoint file retrieve result.
+      description: Get the result of an endpoint file retrieveal action.
       script: Traps|||traps-endpoint-files-retrieve-result
       type: regular
       iscommand: true
@@ -191,15 +190,15 @@ inputs:
 - key: endpoint_id
   value: {}
   required: true
-  description: Endpoint ID.
+  description: The ID of the endpoint.
 - key: file_name
   value: {}
   required: true
-  description: File name to retrieve (including path).
+  description: the name of the file to retrieve (including path).
 - key: event_id
   value: {}
   required: true
-  description: Event ID.
+  description: The ID of the Event.
 outputs: []
 tests:
   - No test - Is be tested in Traps test playbook
