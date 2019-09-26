@@ -560,7 +560,8 @@ def get_context_standards_outputs(results: list) -> dict:
                         'Path': raw_file.get('rawFullPath'),
                         'SHA256': raw_file.get('sha256'),
                         'Size': raw_file.get('fileSize'),
-                        'DigitalSignature.Publisher': raw_file.get('signers')
+                        'DigitalSignature.Publisher': raw_file.get('signers'),
+                        'Company': raw_file.get('companyName')
                     }
                     delete_empty_value_dict_and_append_to_lists(file_data, [files])
 
