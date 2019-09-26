@@ -363,7 +363,7 @@ def main():
             return
 
         ec = {
-            'GoogleDocs(val.DocumentId && val.DocumentId == DocumentId.Query)': {
+            'GoogleDocs(val.DocumentId && val.DocumentId == obj.DocumentId)': {
                 'RevisionId': res['revisionId'],
                 'DocumentId': res['documentId'],
                 'Title': res['title']
