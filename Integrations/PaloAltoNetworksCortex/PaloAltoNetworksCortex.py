@@ -164,9 +164,7 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'Nat': row_content.get('nat'),
         'ReceiveTime': row_content.get('receive_time'),
         'SubcategoryOfApp': row_content.get('subcategory-of-app'),
-        'Users': row_content.get('users'),
         'Proto': row_content.get('proto'),
-        'TunneledApp': row_content.get('tunneled-app'),
         'Natdport': row_content.get('natdport'),
         'Dst': row_content.get('dst'),
         'Natdst': row_content.get('natdst'),
@@ -175,7 +173,6 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'Elapsed': row_content.get('elapsed'),
         'DeviceName': row_content.get('device_name'),
         'Subtype': row_content.get('subtype'),
-        'TimeReceived': row_content.get('time_received'),
         'SessionEndReason': row_content.get('session_end_reason'),
         'Natsrc': row_content.get('natsrc'),
         'Src': row_content.get('src'),
@@ -190,8 +187,7 @@ def traffic_context_transformer(row_content: dict) -> dict:
         'To': row_content.get('to'),
         'Category': row_content.get('category'),
         'Sport': row_content.get('sport'),
-        'Tunnel': row_content.get('tunnel'),
-        'IsPhishing': row_content.get('is_phishing')
+        'Tunnel': row_content.get('tunnel')
     }
 
 
@@ -214,13 +210,11 @@ def threat_context_transformer(row_content: dict) -> dict:
         'To': row_content.get('to'),
         'RiskOfApp': row_content.get('risk-of-app'),
         'Natsport': row_content.get('natsport'),
-        'URLDenied': row_content.get('url_denied'),
         'CharacteristicOfApp': row_content.get('characteristic-of-app'),
         'HTTPMethod': row_content.get('http_method'),
         'From': row_content.get('from'),
         'Vsys': row_content.get('vsys'),
         'ReceiveTime': row_content.get('receive_time'),
-        'Users': row_content.get('users'),
         'Proto': row_content.get('proto'),
         'Natdport': row_content.get('natdport'),
         'Dst': row_content.get('dst'),
@@ -228,7 +222,6 @@ def threat_context_transformer(row_content: dict) -> dict:
         'CategoryOfThreatID': row_content.get('category-of-threatid'),
         'DeviceName': row_content.get('device_name'),
         'Subtype': row_content.get('subtype'),
-        'TimeReceived': row_content.get('time_received'),
         'Direction': row_content.get('direction'),
         'Misc': row_content.get('misc'),
         'Severity': row_content.get('severity'),
@@ -238,8 +231,7 @@ def threat_context_transformer(row_content: dict) -> dict:
         'VsysID': row_content.get('vsys_id'),
         'URLDomain': row_content.get('url_domain'),
         'Category': row_content.get('category'),
-        'Sport': row_content.get('sport'),
-        'IsPhishing': row_content.get('is_phishing')
+        'Sport': row_content.get('sport')
     }
 
 
@@ -261,10 +253,8 @@ def traps_context_transformer(row_content: dict) -> dict:
         'EndPointHeader.AgentTime': end_point_header.get('agentTime'),
         'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
         'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
-        'RecordType': row_content.get('recordType'),
         'TrapsID': row_content.get('tarpsId'),
         'EventType': row_content.get('eventType'),
-        'UUID': row_content.get('uuid'),
         'ServerHost': row_content.get('serverHost'),
         'GeneratedTime': row_content.get('generatedTime'),
         'ServerComponentVersion': row_content.get('serverComponentVersion'),
@@ -280,8 +270,6 @@ def traps_context_transformer(row_content: dict) -> dict:
         'MessageData.Users': parse_users(message_data.get('users', [])),
         'MessageData.PostDetected': message_data.get('postDetected'),
         'MessageData.Terminate': message_data.get('terminate'),
-        'MessageData.SourceProcessIdx': message_data.get('sourceProcessIdx'),
-        'MessageData.FileIdx': message_data.get('fileIdx'),
         'MessageData.Verdict': message_data.get('verdict'),
         'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
         'MessageData.ModuleCategory': message_data.get('moduleCategory'),
@@ -290,16 +278,13 @@ def traps_context_transformer(row_content: dict) -> dict:
         'MessageData.SourceProcess.User.Username': source_process.get('user', {}).get('userName'),
         'MessageData.SourceProcess.PID': source_process.get('pid'),
         'MessageData.SourceProcess.ParentID': source_process.get('parentId'),
-        'MessageData.SourceProcess.ExeFileIdx': source_process.get('exeFileIdx'),
-        'MessageData.SourceProcess.UserIdx': source_process.get('userIdx'),
         'MessageData.SourceProcess.CommandLine': source_process.get('commandLine'),
         'MessageData.SourceProcess.InstanceID': source_process.get('instanceId'),
         'MessageData.SourceProcess.Terminated': source_process.get('terminated'),
         'MessageData.SourceProcess.RawFullPath': source_process.get('rawFullPath'),
         'MessageData.SourceProcess.FileName': source_process.get('fileName'),
         'MessageData.SourceProcess.SHA256': source_process.get('sha256'),
-        'MessageData.SourceProcess.FileSize': source_process.get('fileSize'),
-        'MessageData.SourceProcess.InnerObjectSHA256': source_process.get('innerObjectSha256')
+        'MessageData.SourceProcess.FileSize': source_process.get('fileSize')
     }
 
 
@@ -322,7 +307,6 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
         'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
         'TrapsID': row_content.get('trapsId'),
-        'EventType': row_content.get('eventType'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
         'RegionID': row_content.get('regionId'),
@@ -330,7 +314,6 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'Facility': row_content.get('facility'),
         'MessageData.@type': message_data.get('@type'),
         'MessageData.SHA256': message_data.get('sha256'),
-        'MessageData.Type': message_data.get('type'),
         'MessageData.FileName': message_data.get('fileName'),
         'MessageData.FilePath': message_data.get('filePath'),
         'MessageData.FileSize': message_data.get('fileSize'),
@@ -340,8 +323,7 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'MessageData.LocalAnalysisResult.Publishers': local_analysis_result.get('publishers'),
         'MessageData.LocalAnalysisResult.TrustedID': local_analysis_result.get('trustedId'),
         'MessageData.ExecutionCount': message_data.get('executionCount'),
-        'MessageData.LastSeen': message_data.get('lastSeen'),
-        'MessageData.TypeID': message_data.get('typeId')
+        'MessageData.LastSeen': message_data.get('lastSeen')
     }
 
 
