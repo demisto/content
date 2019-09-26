@@ -472,6 +472,30 @@ def parse_query(query: str) -> str:
         raise DemistoException('A compound query must include a WHERE part')
 
 
+def delete_empty_value_dict_and_append_to_lists(input_dict: dict, list_of_lists: list):
+    """
+    This function filters all items of input_dict that has empty value (i.e. null/none/''...)
+    and appends the filtered dict to each list in the list_of_lists
+    :param input_dict: the dict to be filtered
+    :param list_of_lists: a list of lists that the filtered dict should be added to each one of the lists
+    """
+    filtered_dict = {key: value for key, value in input_dict.items() if value}
+    if filtered_dict:
+        for input_list in list_of_lists:
+            input_list.append(filtered_dict)
+
+
+def os_type_number_to_string(os_type_number):
+    if os_type_number == 1:
+        return 'Windows'
+    elif os_type_number == 2:
+        return 'OS X/macOS'
+    elif os_type_number == 3:
+        return 'Android'
+    elif os_type_number == 4:
+        return 'Linux'
+
+
 def get_context_standards_outputs(results: list) -> dict:
     outputs: dict = {}
     endpoints: list = []
@@ -479,35 +503,63 @@ def get_context_standards_outputs(results: list) -> dict:
     files: list = []
     processes: list = []
     ips: list = []
+    domains: list = []
 
     for result in results:
+
+        subtype = result.get('subtype')
+        message_data: dict = result.get('messageData', {})
         end_point_header: dict = result.get('endPointHeader', {})
+
+        # Endpoint & Host
         endpoint = {
             'Hostname': end_point_header.get('deviceName'),
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
-            'OSVersion': end_point_header.get('osVersion')
+            'OSVersion': end_point_header.get('osVersion'),
+            'OS': os_type_number_to_string(int(end_point_header.get('osType'))),
+            'ID': result.get('agentId')
         }
-        endpoint = {key: value for key, value in endpoint.items() if value}
-        if endpoint:
-            endpoints.append(endpoint)
-            hosts.append(endpoint)
+        delete_empty_value_dict_and_append_to_lists(endpoint, [endpoints, hosts])
 
-        message_data: dict = result.get('messageData', {})
+        # Domain
+        domain = {'Name': result.get('url_domain')}
+        delete_empty_value_dict_and_append_to_lists(domain, [domains])
+
+        # File
         raw_files: list = message_data.get('files', [])
-        if message_data and raw_files:
-            for raw_file in raw_files:
+        if message_data:
+            if subtype.lower() == 'wildfire':
                 file_data = {
-                    'Name': raw_file.get('fileName'),
-                    'Path': raw_file.get('rawFullPath'),
-                    'SHA256': raw_file.get('sha256'),
-                    'Size': raw_file.get('fileSize')
+                    'SHA256': result.get('filedigest'),
+                    'Name': result.get('misc'),
+                    'Type': result.get('filetype')
                 }
-                file_data = {key: value for key, value in file_data.items() if value}
-                if file_data:
-                    files.append(file_data)
+                delete_empty_value_dict_and_append_to_lists(file_data, [files])
+            if raw_files:
+                for raw_file in raw_files:
+                    file_data = {
+                        'Name': raw_file.get('fileName'),
+                        'Path': raw_file.get('rawFullPath'),
+                        'SHA256': raw_file.get('sha256'),
+                        'Size': raw_file.get('fileSize'),
+                        'DigitalSignature.Publisher': raw_file.get()
+                    }
+                    delete_empty_value_dict_and_append_to_lists(file_data, [files])
 
+        # Process
         raw_processes: list = message_data.get('processes', [])
+        source_process: dict = message_data.get('sourceProcess', {})
+        if message_data and source_process:
+            process_data = {
+                'PID': source_process.get('pid'),
+                'Parent': source_process.get('parentId'),
+                'SHA256': source_process.get('sha256'),
+                'Name': source_process.get('fileName'),
+                'Path': source_process.get('rawFullPath'),
+                'CommandLine': source_process.get('commandLine')
+            }
+            delete_empty_value_dict_and_append_to_lists(process_data, [processes])
         if message_data and raw_processes:
             for raw_process in raw_processes:
                 process_data = {
@@ -515,16 +567,15 @@ def get_context_standards_outputs(results: list) -> dict:
                     'Parent': raw_process.get('parentId'),
                     'CommandLine': raw_process.get('commandLine'),
                 }
-                process_data = {key: value for key, value in process_data.items() if value}
-                if process_data:
-                    processes.append(process_data)
+                delete_empty_value_dict_and_append_to_lists(process_data, [processes])
 
     outputs.update({
-        'File': files,
-        'Endpoint': endpoints,
-        'Host': hosts,
-        'Process': processes,
-        'IP': ips
+        outputPaths['file']: files,
+        'Endpoint(val.IPAddress === obj.IPAddress)': endpoints,
+        'Host(val.IPAddress === obj.IPAddress)': hosts,
+        'Process(val.PID === obj.PID)': processes,
+        outputPaths['ip']: ips,
+        outputPaths['domain']: domains
     })
     outputs = {key: value for key, value in outputs.items() if value}
     return outputs
