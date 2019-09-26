@@ -36,7 +36,7 @@ class Client:
 
     def _http_request(self, method: str, suffix_url: str = None, params: dict = None, data: dict = None,
                       full_url: str = None, resp_type: str = 'json'):
-        full_url = full_url if full_url else self.base_url + suffix_url  # type: ignore
+        full_url = full_url if full_url else f'{self.base_url}{suffix_url}'
         try:
             res = self.session.request(
                 method,
@@ -156,7 +156,7 @@ class Client:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, *_):  # type: ignore
+def test_module(client: Client, *_):
 
     client.test_module_request()
     demisto.results('ok')
@@ -397,7 +397,7 @@ def main():
     try:
         command = demisto.command()
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
 
     except Exception as e:
         return_error(str(e))
