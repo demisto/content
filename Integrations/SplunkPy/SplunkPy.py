@@ -213,6 +213,7 @@ if proxy:
             handler=handler(proxy),
             host=demisto.params()['host'],
             port=demisto.params()['port'],
+            app=demisto.params()['app'],
             username=demisto.params()['authentication']['identifier'],
             password=demisto.params()['authentication']['password'],
             verify=VERIFY_CERTIFICATE)
@@ -225,6 +226,7 @@ else:
     service = client.connect(
         host=demisto.params()['host'],
         port=demisto.params()['port'],
+        app=demisto.params()['app'],
         username=demisto.params()['authentication']['identifier'],
         password=demisto.params()['authentication']['password'],
         verify=VERIFY_CERTIFICATE)

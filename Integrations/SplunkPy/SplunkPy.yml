@@ -78,6 +78,11 @@ configuration:
   defaultvalue: index_latest
   type: 0
   required: false
+- display: The app context of the namespace
+  name: app
+  defaultvalue: ""
+  type: 0
+  required: false
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
