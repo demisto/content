@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-from typing import Dict, Optional
+from typing import Dict, Optional, MutableMapping, Union, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -20,8 +20,8 @@ def convert_unix_to_date(d):
 
 
 class Client:
-    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool, proxies: bool,
-                 headers: CaseInsensitiveDict[str]):
+    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool,
+                 proxies: Optional[MutableMapping[str, str]], headers: Dict[Any, Any]):
         self.server = exabeam_url.rstrip('/')
         self.base_url = f'{self.server}/uba/api/'
         self.username = username
@@ -38,7 +38,7 @@ class Client:
 
     def _http_request(self, method: str, suffix_url: str = None, params: dict = None, data: dict = None,
                       full_url: str = None, resp_type: str = 'json'):
-        full_url = full_url if full_url else self.base_url + suffix_url
+        full_url = full_url if full_url else self.base_url + suffix_url  # type: ignore
         try:
             res = self.session.request(
                 method,
@@ -103,7 +103,7 @@ class Client:
         suffix_url = 'ping'
         return self._http_request('GET', suffix_url, resp_type='text')
 
-    def get_notable_users_request(self, api_unit: str = None, num: Optional[int] = None, limit: int = None):
+    def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None):
 
         suffix_url = 'users/notable'
 
@@ -112,7 +112,6 @@ class Client:
             'num': num,
             'numberOfResults': limit
         }
-
         response = self._http_request('GET', suffix_url, params)
         return response
 
@@ -120,7 +119,6 @@ class Client:
 
         suffix_url = f'user/{username}/info'
         response = self._http_request('GET', suffix_url)
-
         return response
 
     def get_watchlist_request(self):
@@ -160,7 +158,7 @@ class Client:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, *_):
+def test_module(client: Client, *_):  # type: ignore
 
     client.test_module_request()
     demisto.results('ok')
@@ -175,12 +173,14 @@ def get_notable_users(client: Client, args: Dict):
         args: Dict
 
     """
-    limit = args.get('limit')
+    limit: int = args.get('limit', 10)
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
         return_error('Got invalid time period. Enter the time period number and unit.')
-    num, unit = time_
+    num: str = time_[0]
+    unit: str = time_[1]
+    # num, unit = time_
     api_unit = unit[0]
     if api_unit == 'm':
         api_unit = api_unit.upper()
@@ -230,7 +230,7 @@ def get_user_info(client: Client, args: Dict):
         args: Dict
 
     """
-    username = args.get('username')
+    username: str = args.get('username', '')
     headers = ['Username', 'RiskScore', 'AverageRiskScore', 'LastSessionID', 'Labels', 'FirstSeen',
                'LastSeen', 'LastActivityType', 'AccountNames', 'PeerGroupFieldName', 'PeerGroupFieldValue',
                'PeerGroupDisplayName', 'PeerGroupType']
