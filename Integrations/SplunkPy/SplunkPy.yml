@@ -66,14 +66,14 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- display: Earliest time to fetch field name (the name of the field to define the
-    earliest time of the query by)
+- display: Earliest time to fetch (the name of the Splunk field whose value defines the query's
+    earliest time to fetch)
   name: earliest_fetch_time_fieldname
   defaultvalue: index_earliest
   type: 0
   required: false
-- display: Latest time to fetch field name (the name of the field to define the latest
-    time of the query by)
+- display: Latest time to fetch (the name of the Splunk field whose value defines the query's
+    latest time to fetch)
   name: latest_fetch_time_fieldname
   defaultvalue: index_latest
   type: 0
