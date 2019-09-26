@@ -187,8 +187,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1280
+          "x": 265,
+          "y": 1220
         }
       }
     note: false
@@ -220,8 +220,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1085
+          "x": 265,
+          "y": 1045
         }
       }
     note: false
@@ -305,10 +305,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 2b751b24-57d6-4ec7-8201-80a848109c8a
+    taskid: 00fa1968-2e24-4c4a-8eed-d1601929b39b
     type: condition
     task:
-      id: 2b751b24-57d6-4ec7-8201-80a848109c8a
+      id: 00fa1968-2e24-4c4a-8eed-d1601929b39b
       version: -1
       name: Verify Query Threat Logs Outputs
       type: condition
@@ -326,7 +326,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Threat.SessionID
+                accessor: Logging.Threat.Severity
             iscontext: true
     view: |-
       {
@@ -380,10 +380,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 0474dd06-d5c9-4fa7-88e1-2f56394aac52
+    taskid: bd4e27a9-e5ea-41f5-86bc-b538e11da6d5
     type: condition
     task:
-      id: 0474dd06-d5c9-4fa7-88e1-2f56394aac52
+      id: bd4e27a9-e5ea-41f5-86bc-b538e11da6d5
       version: -1
       name: Verify Query Traffic Logs Outputs
       type: condition
@@ -401,7 +401,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Traffic.SessionID
+                accessor: Logging.Traffic.Src
             iscontext: true
     view: |-
       {
@@ -493,10 +493,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 51086fcc-adf0-4c49-832f-730e900537bb
+    taskid: 1603b271-7b6e-40e3-8ede-241caae8420c
     type: condition
     task:
-      id: 51086fcc-adf0-4c49-832f-730e900537bb
+      id: 1603b271-7b6e-40e3-8ede-241caae8420c
       version: -1
       name: Verify Query Traps Logs Outputs
       type: condition
@@ -514,7 +514,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Traps.TrapsID
+                accessor: Logging.Traps.Severity
             iscontext: true
     view: |-
       {
@@ -528,10 +528,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 844e4625-981b-41f3-8f95-62d8cf0f9169
+    taskid: a7ecbd5e-ae37-403d-881b-fc4ed0f28eb1
     type: condition
     task:
-      id: 844e4625-981b-41f3-8f95-62d8cf0f9169
+      id: a7ecbd5e-ae37-403d-881b-fc4ed0f28eb1
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
@@ -549,7 +549,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Analytics.TrapsID
+                accessor: Logging.Analytics.EventType
             iscontext: true
     view: |-
       {
@@ -566,7 +566,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1515,
+        "height": 1455,
         "width": 1660,
         "x": -370,
         "y": -170
