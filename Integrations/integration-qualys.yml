@@ -1262,7 +1262,8 @@ script:
       description: 'The scan reference for a vulnerability scan. This will have the
         format: scan/nnnnnnnnnn.nnnnn'
     outputs:
-    - description: Report.ID
+    - contextPath: Report.ID
+      description: Report ID
     description: allows users to take actions on vulnerability scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results
     execution: true
