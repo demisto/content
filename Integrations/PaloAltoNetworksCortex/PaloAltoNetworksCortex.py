@@ -494,6 +494,8 @@ def os_type_number_to_string(os_type_number):
         return 'Android'
     elif os_type_number == 4:
         return 'Linux'
+    else:
+        return ''
 
 
 def get_context_standards_outputs(results: list) -> dict:
