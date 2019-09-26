@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added two new parameters for the names of the earliest and latest times to fetch fields.
+Added the *Earliest time to fetch* and *Latest time to fetch* parameters, which are the name of the Splunk fields whose value defines the query's earliest and latest time to fetch.
 
 
 ## [19.9.1] - 2019-09-18
