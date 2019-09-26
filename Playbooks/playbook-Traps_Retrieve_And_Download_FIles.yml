@@ -155,7 +155,7 @@ tasks:
       id: 8c65d7a1-5d83-471c-8068-594ad8c42965
       version: -1
       name: traps-endpoint-files-retrieve-result
-      description: Get the result of an endpoint file retrieveal action.
+      description: Get the result of an endpoint file retrieval action.
       script: Traps|||traps-endpoint-files-retrieve-result
       type: regular
       iscommand: true

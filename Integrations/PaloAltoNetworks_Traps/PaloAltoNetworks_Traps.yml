@@ -298,7 +298,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The ID of the operation for which to get the result of the quaratine
+      description: The ID of the operation for which to get the result of the quarantine
         operation.
       isArray: false
       name: operation_id
