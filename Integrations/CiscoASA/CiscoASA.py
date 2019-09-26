@@ -23,10 +23,11 @@ class Client(BaseClient):
     def get_all_rules(self, specific_interface: Optional[str] = None, rule_type: str = 'All') -> list:
         """
         Args:
-             specific_interface):
+             specific_interface): the name of the interface
+             rule_type: All/Global/In
 
         Returns:
-             all rules in Cisco ASA of the specified type/interface/rule id
+             all rules in Cisco ASA of the specified type/interface
         """
         rules = []
         # Get global rules
@@ -71,18 +72,30 @@ class Client(BaseClient):
                 for item in items:
                     item['interface'] = interface
                     item['interface_type'] = "Out"
-                print(items)
                 rules.extend(items)
 
         return rules
 
     def rule_action(self, rule_id: str, interface_name: str, interface_type: str, command: str = 'GET',
                     data: dict = None) -> dict:
-        print(f"rule_id: {rule_id}, interfade_name: {interface_name}, interface_type: {interface_type}"
-              f"command: {command}, data:{data}")
+        """
+
+        Args:
+            rule_id: The Rule ID.
+            interface_name: the name of the interface.
+            interface_type: The type of interface.
+            command: What
+            data:
+
+        Returns:
+            Does the command on the rule.
+            Delete - delete rule
+            GET - rule info
+            PATCH - edit rule
+        """
         resp_type = {"GET": "json",
                      "DELETE": "text",
-                     "PATCH": "text"
+                     "PATCH": "response"
 
         }
         if interface_type == "Global":
@@ -93,19 +106,33 @@ class Client(BaseClient):
                                       resp_type=resp_type[command], json_data=data)
         if interface_type == 'Out':
             rule = self._http_request(command, f'/api/access/out/{interface_name}/rules/{rule_id}',
-                                      resp_type=resp_type[command],json_data=data)
+                                      resp_type=resp_type[command], json_data=data)
         if command == 'GET':
             rule['interface'] = interface_name
             rule['interface_type'] = interface_type
         return rule
 
     def create_rule_request(self, interface_type: str, interface_name: str, rule_body: dict) -> dict:
+        """
+
+        Args:
+            interface_type:
+            interface_name:
+            rule_body: The information about the rule.
+
+        Returns:
+            The new created rule's information.
+
+        """
         if interface_type == "Global":
-            loc = self._http_request("POST", '/api/access/global/rules', data=rule_body)
+            res = self._http_request("POST", '/api/access/global/rules', json_data=rule_body, resp_type="response")
         if interface_type == 'In':
-            loc = self._http_request("POST", '/api/access/in/{}/rules'.format(interface_name), data=rule_body)
+            res = self._http_request("POST", '/api/access/in/{}/rules'.format(interface_name), json_data=rule_body,
+                                     resp_type="response")
         if interface_type == 'Out':
-            loc = self._http_request("POST", '/api/access/out/{}/rules'.format(interface_name), data=rule_body)
+            res = self._http_request("POST", '/api/access/out/{}/rules'.format(interface_name), json_data=rule_body,
+                                     resp_type="response")
+        loc = res.headers.get("Location")
         rule = self._http_request('GET', loc[loc.find('/api'):])
         rule['interface'] = interface_name
         rule['interface_type'] = interface_type
@@ -115,10 +142,10 @@ class Client(BaseClient):
         self._http_request("GET", "/api/aaa/authorization")
 
     def backup(self, data: dict):
-        self._http_request("POST", "/api/backup", data=data)
+        self._http_request("POST", "/api/backup", json_data=data, resp_type="response")
 
     def restore(self, data: dict):
-        self._http_request("POST", "/api/restore", data=data)
+        self._http_request("POST", "/api/restore", json_data=data, resp_type='response')
 
 
 '''HELPER COMMANDS'''
@@ -195,6 +222,16 @@ def list_rules_command(client: Client, args):
 
 @logger
 def backup_command(client: Client, args):
+    """
+
+    Args:
+        client:
+        args:
+
+    Returns:
+        Creates a backup. Returns a message if backup was created successfully.
+
+    """
     location = "disk0:/"+args.get("backup_name")
     passphrase = args.get("passphrase")
     data = {'location': location}
@@ -213,7 +250,7 @@ def restore_command(client: Client, args):
     if passphrase:
         data['passphrase'] = passphrase
 
-    client.restore()
+    client.restore(data)
     return "Restored backup successfully.", {}, ""
 
 
@@ -240,21 +277,26 @@ def create_rule_command(client: Client, args):
     source = args.get('source')
     dest = args.get('destination')
     permit = args.get('permit')
-    interface = args.get ('interface_name')
+    interface = args.get('interface_name')
     interface_type = args.get('interface_type')
+
+    interface = None if interface_type == "Global" else interface
+    if interface_type != "Global" and not interface:
+        raise ValueError("For In/Out interfaces, an interface name is mandatory.")
 
     remarks = argToList(args.get('remarks'), ',')
     position = args.get('position')
     log_level = args.get('logging_level')
     active = args.get('active', 'True')
 
+
     rule_body = {}
     rule_body['sourceService'] = {"kind": "NetworkProtocol",
                                   "value": "ip"}
-    ## Set up source
+    # Set up source
     if is_ipv4(source):
         rule_body["sourceAddress"] = {"kind": "IPv4Address",
-                                       "value": source}
+                                      "value": source}
     if source == 'any':
         rule_body["sourceAddress"] = {"kind": "AnyIPAddress",
                                       "value": "any4"}
@@ -290,6 +332,7 @@ def create_rule_command(client: Client, args):
     if log_level:
         rule_body['ruleLogging'] = {'logStatus': log_level}
 
+
     try:
         raw_rule = client.create_rule_request(interface_type, interface, rule_body)
         rules = raw_to_rules([raw_rule])
@@ -313,25 +356,30 @@ def delete_rule_command(client: Client, args):
     rule_id = args.get('rule_id')
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
-
-    client.rule_action(rule_id, interface, interface_type, 'DELETE')
+    try:
+        client.rule_action(rule_id, interface, interface_type, 'DELETE')
+    except Exception as e:
+        if 'Not Found' in str(e):
+            raise ValueError(f"Rule {rule_id} does not exist in interface {interface} of type {interface_type}.")
 
     return f"Rule {rule_id} deleted successfully.", {}, ""
 
 
 @logger
 def edit_rule_command(client: Client, args):
-    source = args.get('source')
-    dest = args.get('destination')
-    permit = args.get('permit')
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
     rule_id = args.get('rule_id')
+
+    interface = None if interface_type == "Global" else interface
 
     remarks = argToList(args.get('remarks'), ',')
     position = args.get('position')
     log_level = args.get('logging_level')
     active = args.get('active', 'True')
+    source = args.get('source')
+    dest = args.get('destination')
+    permit = args.get('permit')
 
     rule_body = {}
 
@@ -376,9 +424,9 @@ def edit_rule_command(client: Client, args):
     if log_level:
         rule_body['ruleLogging'] = {'logStatus': log_level}
 
-    print(rule_body)
     try:
-        raw_rule = client.rule_action(rule_id, interface, interface_type, "PATCH", rule_body)
+        client.rule_action(rule_id, interface, interface_type, "PATCH", rule_body)
+        raw_rule = client.rule_action(rule_id, interface, interface_type, 'GET')
         rules = raw_to_rules([raw_rule])
 
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
@@ -396,6 +444,14 @@ def edit_rule_command(client: Client, args):
 
 @logger
 def test_command(client: Client):
+    """
+    Args:
+        client:
+
+    Returns:
+        Runs a random GET API request just to see if successful.
+    """
+
     client.test_command_request()
 
 '''MAIN'''

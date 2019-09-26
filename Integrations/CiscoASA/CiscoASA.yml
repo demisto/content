@@ -169,7 +169,7 @@ script:
       name: permit
       predefined:
       - 'True'
-      - ' False'
+      - 'False'
       required: true
       secret: false
     - default: false
@@ -207,7 +207,8 @@ script:
       isArray: false
       name: active
       predefined:
-      - True False
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -300,10 +301,14 @@ script:
       name: rule_id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
       description: Will the rule be active.
       isArray: false
       name: active
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     - default: false
@@ -355,4 +360,3 @@ script:
   runonce: false
   script: '-'
   type: python
-
