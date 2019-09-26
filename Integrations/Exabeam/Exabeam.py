@@ -1,10 +1,12 @@
+from requests.structures import CaseInsensitiveDict
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-from typing import Dict, Optional, MutableMapping, Any
+from typing import Dict, Optional, MutableMapping
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,7 +21,7 @@ def convert_unix_to_date(d):
 
 class Client:
     def __init__(self, exabeam_url: str, username: str, password: str, verify: bool,
-                 proxies: Optional[MutableMapping[str, str]], headers: Dict[Any, Any]):
+                 proxies: Optional[MutableMapping[str, str]], headers: CaseInsensitiveDict[str]):
         self.server = exabeam_url.rstrip('/')
         self.base_url = f'{self.server}/uba/api/'
         self.username = username
@@ -396,7 +398,7 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command = demisto.command()
+        command: str = demisto.command()
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
