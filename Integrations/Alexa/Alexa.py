@@ -31,7 +31,7 @@ def alexa_fallback_command(domain):
         strip_beginning = raw_result.replace('style="margin-bottom:-2px;"/> ', '')
         strip_commas = strip_beginning.replace(',', '')
         formatted_result = strip_commas.replace('</a>', '')
-    except:
+    except:  # noqa
         formatted_result = '-1'
     return formatted_result
 
@@ -44,7 +44,7 @@ def alexa_domain_command():
                                 verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
         rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
-    except:
+    except:  # noqa
         rank = alexa_fallback_command(domain)
     if int(rank) > THRESHOLD:
         dbot_score = 2
@@ -90,7 +90,7 @@ def test_module_command():
                                 verify=USE_SSL, proxies=PROXIES)
         root = ET.fromstring(str(resp.content))
         rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
-    except:
+    except:  # noqa
         rank = alexa_fallback_command(domain)
     if rank == '1':
         result = 'ok'
