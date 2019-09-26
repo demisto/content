@@ -1,85 +1,80 @@
-import demistomock as demisto
-import requests
+
 from CiscoASA import Client
 import pytest
 
 MOCK_RULES_GLOBAL = {
-                      "kind": "collection#ExtendedACE",
-                      "selfLink": "https://example.com/api/access/global/rules",
-                      "rangeInfo": {
-                        "offset": 0,
-                        "limit": 1,
-                        "total": 1
-                      },
-                      "items": [
-                        {
-                          "kind": "object#ExtendedACE",
-                          "selfLink": "https://example.com/api/access/global/rules/1090940913",
-                          "permit": True,
-                          "sourceAddress": {
-                            "kind": "IPv4Address",
-                            "value": "8.8.8.8"
-                          },
-                          "destinationAddress": {
-                            "kind": "AnyIPAddress",
-                            "value": "any"
-                          },
-                          "sourceService": {
-                            "kind": "NetworkProtocol",
-                            "value": "ip"
-                          },
-                          "destinationService": {
-                            "kind": "NetworkProtocol",
-                            "value": "ip"
-                          },
-                          "active": True,
-                          "remarks": [],
-                          "ruleLogging": {
-                            "logInterval": 300,
-                            "logStatus": "Default"
-                          },
-                          "position": 1,
-                          "isAccessRule": True,
-                          "objectId": "1090940913"
-                        },
-                        {
-                          "kind": "object#ExtendedACE",
-                          "selfLink": "https://example.com/api/access/global/rules/123456789",
-                          "permit": True,
-                          "sourceAddress": {
-                            "kind": "IPv4Address",
-                            "value": "1.1.1.1"
-                          },
-                          "destinationAddress": {
-                            "kind": "AnyIPAddress",
-                            "value": "any"
-                          },
-                          "sourceService": {
-                            "kind": "NetworkProtocol",
-                            "value": "ip"
-                          },
-                          "destinationService": {
-                            "kind": "NetworkProtocol",
-                            "value": "ip"
-                          },
-                          "active": True,
-                          "remarks": [],
-                          "ruleLogging": {
-                            "logInterval": 300,
-                            "logStatus": "Default"
-                          },
-                          "position": 1,
-                          "isAccessRule": True,
-                          "objectId": "123456789"
-                        }
-                      ]
-                    }
+    "kind": "collection#ExtendedACE",
+    "selfLink": "https://example.com/api/access/global/rules",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 1,
+        "total": 1
+    },
+    "items": [
+        {
+            "kind": "object#ExtendedACE",
+            "selfLink": "https://example.com/api/access/global/rules/1090940913",
+            "permit": True,
+            "sourceAddress": {
+                "kind": "IPv4Address", "value": "8.8.8.8"},
+            "destinationAddress": {"kind": "AnyIPAddress", "value": "any"},
+            "sourceService": {
+                "kind": "NetworkProtocol",
+                "value": "ip"
+            },
+            "destinationService": {
+                "kind": "NetworkProtocol",
+                "value": "ip"
+            },
+            "active": True,
+            "remarks": [],
+            "ruleLogging": {
+                "logInterval": 300,
+                "logStatus": "Default"
+            },
+            "position": 1,
+            "isAccessRule": True,
+            "objectId": "1090940913"
+        },
+        {
+            "kind": "object#ExtendedACE",
+            "selfLink": "https://example.com/api/access/global/rules/123456789",
+            "permit": True,
+            "sourceAddress": {
+                "kind": "IPv4Address",
+                "value": "1.1.1.1"
+            },
+            "destinationAddress": {
+                "kind": "AnyIPAddress",
+                "value": "any"
+            },
+            "sourceService": {
+                "kind": "NetworkProtocol",
+                "value": "ip"
+            },
+            "destinationService": {
+                "kind": "NetworkProtocol",
+                "value": "ip"
+            },
+            "active": True,
+            "remarks": [],
+            "ruleLogging": {
+                "logInterval": 300,
+                "logStatus": "Default"
+            },
+            "position": 1,
+            "isAccessRule": True,
+            "objectId": "123456789"
+        }
+    ]
+}
 
 RULES = [
     {'SourceIP': '8.8.8.8', 'DestIP': 'any', 'IsActive': True, 'Interface': None, 'InterfaceType': None,
      'Remarks': [], 'Position': 1, 'ID': '1090940913', 'Permit': True},
     {'SourceIP': '1.1.1.1', 'DestIP': 'any', 'IsActive': True, 'Interface': None, 'InterfaceType': None,
      'Remarks': [], 'Position': 1, 'ID': '123456789', 'Permit': True}]
+
 
 def test_get_all_rules(requests_mock):
 
@@ -93,23 +88,22 @@ def test_get_all_rules(requests_mock):
 
     _, outputs, _ = list_rules_command(client, args)
 
-    #Assert that the rules  are exported as expected (in the outputs)
+    # Assert that the rules  are exported as expected (in the outputs)
     assert '1090940913' == outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')[0].get("ID")
     assert '123456789' == outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')[1].get("ID")
 
     empty_mock = {
-                  "selfLink": "https://example.com/api/access/out",
-                  "rangeInfo": {
-                    "offset": 0,
-                    "limit": 0,
-                    "total": 0
-                  },
-                  "items": []
-                }
+        "selfLink": "https://example.com/api/access/out",
+        "rangeInfo": {
+            "offset": 0,
+            "limit": 0,
+            "total": 0
+        },
+        "items": []
+    }
     requests_mock.get("https://example.com/api/access/global/rules", json=empty_mock, status_code=200)
 
     _, outputs, _ = list_rules_command(client, args)
-
 
     # Assert outputs is empty when there's no rule
     assert [] == outputs.get('CiscoASA.Rules(val.ID && val.ID == obj.ID)')
@@ -144,12 +138,12 @@ def test_create_rule(requests_mock):
         'interface_type': "In",
         'remarks': "This,is,remark",
         'position': 2,
-        'logging_level':"Default",
+        'logging_level': "Default",
         'active': 'True'
     }
 
     requests_mock.post("https://example.com/api/access/global/rules", json=MOCK_RULES_GLOBAL.get('items')[1],
-                      status_code=201)
+                       status_code=201)
 
     client = Client("https://example.com", auth=("username", "password"), verify=False, proxy=False)
 
@@ -158,14 +152,12 @@ def test_create_rule(requests_mock):
     with pytest.raises(ValueError):
         create_rule_command(client, args)
 
+
 def test_raw_to_rules():
     from CiscoASA import raw_to_rules
     rules = raw_to_rules(MOCK_RULES_GLOBAL.get("items"))
     assert RULES == rules
 
+
 def test_edit_rule_command(mocker):
     mocker.patch.object(Client, "rule_action", return_value={})
-
-
-
-

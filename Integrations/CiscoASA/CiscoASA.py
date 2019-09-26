@@ -5,8 +5,6 @@ import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import requests
-from requests.auth import HTTPBasicAuth
 import socket
 
 # Disable insecure warnings
@@ -29,7 +27,7 @@ class Client(BaseClient):
         Returns:
              all rules in Cisco ASA of the specified type/interface
         """
-        rules = []
+        rules = []  # type: list
         # Get global rules
         if specific_interface is None and rule_type in ['All', 'Global']:
             res = self._http_request('GET', '/api/access/global/rules')
@@ -96,8 +94,7 @@ class Client(BaseClient):
         resp_type = {"GET": "json",
                      "DELETE": "text",
                      "PATCH": "response"
-
-        }
+                     }
         if interface_type == "Global":
             rule = self._http_request(command, f'/api/access/global/rules/{rule_id}', resp_type=resp_type[command],
                                       json_data=data)
@@ -160,8 +157,8 @@ def raw_to_rules(raw_rules):
     """
     rules = []
     for rule in raw_rules:
-        rules.append({"SourceIP": rule.get('sourceAddress',{}).get('value'),
-                      "DestIP": rule.get('destinationAddress',{}).get('value'),
+        rules.append({"SourceIP": rule.get('sourceAddress', {}).get('value'),
+                      "DestIP": rule.get('destinationAddress', {}).get('value'),
                       "IsActive": rule.get('active'),
                       "Interface": rule.get("interface"),
                       "InterfaceType": rule.get("interface_type"),
@@ -206,7 +203,7 @@ def list_rules_command(client: Client, args):
     interface_type = args.get('interface_type', 'All')
 
     try:
-        raw_rules = client.get_all_rules(interface, interface_type) # demisto.getRules() #
+        raw_rules = client.get_all_rules(interface, interface_type)  # demisto.getRules() #
         rules = raw_to_rules(raw_rules)
         outputs = {'CiscoASA.Rules(val.ID && val.ID == obj.ID)': rules}
         hr = tableToMarkdown("Rules:", rules, ["ID", "SourceIP", "DestIP", "Permit", "Interface", "InterfaceType",
@@ -232,7 +229,7 @@ def backup_command(client: Client, args):
         Creates a backup. Returns a message if backup was created successfully.
 
     """
-    location = "disk0:/"+args.get("backup_name")
+    location = "disk0:/" + args.get("backup_name")
     passphrase = args.get("passphrase")
     data = {'location': location}
     if passphrase:
@@ -244,7 +241,7 @@ def backup_command(client: Client, args):
 
 @logger
 def restore_command(client: Client, args):
-    location = "disk0:/"+args.get("backup_name")
+    location = "disk0:/" + args.get("backup_name")
     passphrase = args.get("passphrase")
     data = {'location': location}
     if passphrase:
@@ -254,13 +251,12 @@ def restore_command(client: Client, args):
     return "Restored backup successfully.", {}, ""
 
 
-
 @logger
 def rule_by_id_command(client: Client, args):
     rule_id = args.get('rule_id')
     interface_type = args.get('interface_type')
     interface = args.get('interface_name')
-    interface = None if interface_type == "Global" else interface
+    interface = "" if interface_type == "Global" else interface
 
     raw_rules = client.rule_action(rule_id, interface, interface_type, 'GET')
     rules = raw_to_rules([raw_rules])
@@ -280,7 +276,7 @@ def create_rule_command(client: Client, args):
     interface = args.get('interface_name')
     interface_type = args.get('interface_type')
 
-    interface = None if interface_type == "Global" else interface
+    interface = "" if interface_type == "Global" else interface
     if interface_type != "Global" and not interface:
         raise ValueError("For In/Out interfaces, an interface name is mandatory.")
 
@@ -289,8 +285,7 @@ def create_rule_command(client: Client, args):
     log_level = args.get('logging_level')
     active = args.get('active', 'True')
 
-
-    rule_body = {}
+    rule_body = {}  # type: dict
     rule_body['sourceService'] = {"kind": "NetworkProtocol",
                                   "value": "ip"}
     # Set up source
@@ -306,24 +301,24 @@ def create_rule_command(client: Client, args):
     if not rule_body.get('sourceAddress'):
         raise ValueError("Source is not a valid IPv4 address/network/any.")
 
-    ## Set up dest
+    # Set up dest
     rule_body['destinationService'] = {"kind": "NetworkProtocol",
                                        "value": "ip"}
 
     if is_ipv4(dest):
         rule_body["destinationAddress"] = {"kind": "IPv4Address",
-                                       "value": dest}
+                                           "value": dest}
     if dest == 'any':
         rule_body["destinationAddress"] = {"kind": "AnyIPAddress",
-                                      "value": "any4"}
+                                           "value": "any4"}
     if '/' in dest:
         rule_body["destinationAddress"] = {"kind": "IPv4Network",
-                                      "value": dest}
+                                           "value": dest}
 
     if not rule_body.get('destinationAddress'):
         raise ValueError("Destination is not a valid IPv4 address/network/any.")
 
-    ## everything else
+    # everything else
     rule_body['permit'] = True if permit == 'True' else False
     rule_body['remarks'] = remarks
     rule_body['active'] = True if active == 'True' else False
@@ -331,7 +326,6 @@ def create_rule_command(client: Client, args):
         rule_body['position'] = position
     if log_level:
         rule_body['ruleLogging'] = {'logStatus': log_level}
-
 
     try:
         raw_rule = client.create_rule_request(interface_type, interface, rule_body)
@@ -371,7 +365,7 @@ def edit_rule_command(client: Client, args):
     interface_type = args.get('interface_type')
     rule_id = args.get('rule_id')
 
-    interface = None if interface_type == "Global" else interface
+    interface = "" if interface_type == "Global" else interface
 
     remarks = argToList(args.get('remarks'), ',')
     position = args.get('position')
@@ -381,12 +375,12 @@ def edit_rule_command(client: Client, args):
     dest = args.get('destination')
     permit = args.get('permit')
 
-    rule_body = {}
+    rule_body = {}  # type: dict
 
     if source:
         rule_body['sourceService'] = {"kind": "NetworkProtocol",
                                       "value": "ip"}
-        ## Set up source
+        # Set up source
         if is_ipv4(source):
             rule_body["sourceAddress"] = {"kind": "IPv4Address",
                                           "value": source}
@@ -397,10 +391,10 @@ def edit_rule_command(client: Client, args):
             rule_body["sourceAddress"] = {"kind": "IPv4Network",
                                           "value": source}
 
-    ## Set up dest
+    # Set up dest
     if dest:
         rule_body['destinationService'] = {"kind": "NetworkProtocol",
-                                               "value": "ip"}
+                                           "value": "ip"}
 
         if is_ipv4(dest):
             rule_body["destinationAddress"] = {"kind": "IPv4Address",
@@ -412,7 +406,7 @@ def edit_rule_command(client: Client, args):
             rule_body["destinationAddress"] = {"kind": "IPv4Network",
                                                "value": dest}
 
-    ## everything else
+    # everything else
     if permit:
         rule_body['permit'] = True if permit == 'True' else False
     if remarks:
@@ -442,6 +436,7 @@ def edit_rule_command(client: Client, args):
         else:
             raise e
 
+
 @logger
 def test_command(client: Client):
     """
@@ -454,6 +449,7 @@ def test_command(client: Client):
 
     client.test_command_request()
 
+
 '''MAIN'''
 
 
@@ -461,7 +457,7 @@ def main():
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
     verify_certificate = not demisto.params().get('insecure', False)
-    proxy =  demisto.params().get('proxy', False)
+    proxy = demisto.params().get('proxy', False)
 
     # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.params()['server'][:-1] \
