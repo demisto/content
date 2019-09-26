@@ -72,10 +72,25 @@ This step runs all unit-test files in the following folders:
 
 ## Validate Files and Yaml
 This step is responsible for the majority of the static validations of the content code.
+- It checks for backward compatibility issues:
+  - docker changes
+  - id/name changes
+  - additional required parameters/arguments
+  - context key changes
+- Enforce content standards:
+  - valid descriptions
+  - content entity schemas
+  - argument/parameter conflicts
+  - context output standards
  
 <!-- TODO: add troubleshooting errors -->
 
 ## Configure Test Filter
+This step decides and filters which test-playbooks should run.
+Special behavior:
+- nightly: will run all test-playbooks (with the exception of "skip" tests).
+- changes to CommonServer/CommonServerPython: will run all test-playbooks (with the exception of "skip" and "nightly" tests).
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Spell Checks
@@ -100,13 +115,16 @@ This will upload all files stored under the artifact folder as a circle build ar
 ![](artifacts_1.png)
 
 ## Run Unit Testing and Lint
+
 ## Download Artifacts
 **Not relevant for contributors**
 
-This step is relevant only for custom builds that uses a specific demisto server build. 
+This step is relevant only for custom builds that uses a specific demisto server build.
+It will download the demisto installer from the given build number.
 
 ## Download Configuration
 **Not relevant for contributors**
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Create Instance
