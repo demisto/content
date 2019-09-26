@@ -1,12 +1,10 @@
-from requests.structures import CaseInsensitiveDict
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
-from typing import Dict, Optional, MutableMapping, Union, Any
+from typing import Dict, Optional, MutableMapping, Any
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
