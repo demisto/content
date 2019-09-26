@@ -21,7 +21,7 @@ def convert_unix_to_date(d):
 
 class Client:
     def __init__(self, exabeam_url: str, username: str, password: str, verify: bool,
-                 proxies: Optional[MutableMapping[str, str]], headers: CaseInsensitiveDict[str]):
+                 proxies: Optional[MutableMapping[str, str]], headers):
         self.server = exabeam_url.rstrip('/')
         self.base_url = f'{self.server}/uba/api/'
         self.username = username
@@ -398,7 +398,7 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command: str = demisto.command()
+        command = demisto.command()  # type: ignore
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
