@@ -178,7 +178,6 @@ def get_notable_users(client: Client, args: Dict):
         return_error('Got invalid time period. Enter the time period number and unit.')
     num: str = time_[0]
     unit: str = time_[1]
-    # num, unit = time_
     api_unit = unit[0]
     if api_unit == 'm':
         api_unit = api_unit.upper()
@@ -191,7 +190,7 @@ def get_notable_users(client: Client, args: Dict):
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
     users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
     if not users:
-        return 'No users were found in this period of time.', {}
+        return 'No users were found in this period of time.', {}, {}
     else:
         for user in users:
             user_ = user.get('user', {})
@@ -255,7 +254,7 @@ def get_user_info(client: Client, args: Dict):
     }
 
     if not user_info.get('firstSeen'):
-        return f'The user {username} was not found', {}
+        return f'The user {username} was not found', {}, {}
     else:
         human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
         return human_readable, context, user
@@ -301,7 +300,7 @@ def get_user_sessions(client: Client, args: Dict):
         human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
         return human_readable, context, user
     else:
-        return f'The user {username} was not found', {}
+        return f'The user {username} was not found', {}, {}
 
 
 def get_watchlist(client: Client, *_):
@@ -396,7 +395,7 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command: str = demisto.command()  # type: ignore
+        command = demisto.command()
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
