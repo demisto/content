@@ -432,7 +432,9 @@ def get_graph_access_token() -> str:
             return access_token
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
-        raise ValueError('Tenant ID not found')
+        raise ValueError(
+            'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly.'
+        )
     url: str = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token'
     data: dict = {
         'grant_type': 'client_credentials',
@@ -525,6 +527,52 @@ def http_request(
         error_message = 'Proxy Error - if \'Use system proxy settings\' in the integration configuration has been ' \
                         'selected, try deselecting it.'
         raise ConnectionError(error_message)
+
+
+def integration_health():
+
+    bot_framework_api_health = 'Operational'
+    graph_api_health = 'Operational'
+
+    try:
+        get_bot_access_token()
+    except ValueError as e:
+        bot_framework_api_health = f'Non operational - {str(e)}'
+
+    try:
+        get_graph_access_token()
+    except ValueError as e:
+        graph_api_health = f'Non operational - {str(e)}'
+
+    api_health_output: list = [{
+        'Bot Framework API Health': bot_framework_api_health,
+        'Graph API Health': graph_api_health
+    }]
+
+    api_health_human_readble: str = tableToMarkdown('Microsoft API Health', api_health_output)
+
+    mirrored_channels_output = list()
+    integration_context: dict = demisto.getIntegrationContext()
+    teams: list = json.loads(integration_context.get('teams', '[]'))
+    for team in teams:
+        mirrored_channels: list = team.get('mirrored_channels', [])
+        for channel in mirrored_channels:
+            mirrored_channels_output.append({
+                'Team': team.get('team_name'),
+                'Channel': channel.get('channel_name'),
+                'Investigation ID': channel.get('investigation_id')
+            })
+
+    mirrored_channels_human_readable: str
+
+    if mirrored_channels_output:
+        mirrored_channels_human_readable = tableToMarkdown(
+            'Microsoft Teams Mirrored Channels', mirrored_channels_output
+        )
+    else:
+        mirrored_channels_human_readable = 'No mirrored channels.'
+
+    demisto.results(api_health_human_readble + mirrored_channels_human_readable)
 
 
 def validate_auth_header(headers: dict) -> bool:
@@ -1376,18 +1424,23 @@ def long_running_loop():
     certificate: str = demisto.params().get('certificate', '')
     private_key: str = demisto.params().get('key', '')
 
+    certificate_path = str()
+    private_key_path = str()
+
     try:
         port_mapping: str = PARAMS.get('longRunningPort', '')
+        port: int
         if port_mapping:
-            port: int = int(port_mapping.split(':')[0])
+            if ':' in port_mapping:
+                port = int(port_mapping.split(':')[1])
+            else:
+                port = int(port_mapping)
         else:
             raise ValueError('No port mapping was provided')
         Thread(target=channel_mirror_loop, daemon=True).start()
         demisto.info('Started channel mirror loop thread')
 
         ssl_args = dict()
-        certificate_path = str()
-        private_key_path = str()
 
         if certificate and private_key:
             certificate_file = NamedTemporaryFile(delete=False)
@@ -1433,7 +1486,8 @@ def main():
         'long-running-execution': long_running_loop,
         'send-notification': send_message,
         'mirror-investigation': mirror_investigation,
-        'close-channel': close_channel
+        'close-channel': close_channel,
+        'microsoft-teams-integration-health': integration_health
         # 'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
     }

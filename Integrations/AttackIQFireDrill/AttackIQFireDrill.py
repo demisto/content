@@ -514,8 +514,10 @@ def run_all_tests_in_assessment_command():
     """
     args = demisto.args()
     ass_id = args.get('assessment_id')
+    on_demand_only = args.get('on_demand_only')
     try:
-        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests')
+        params = {'on_demand_only': on_demand_only == 'True'}
+        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests', params=params)
         hr = raw_res['message'] if 'message' in raw_res else \
             f'Request to run all tests for assessment {ass_id} was sent successfully.'
         demisto.results(hr)

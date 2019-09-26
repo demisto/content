@@ -6,9 +6,12 @@ import json
 import requests
 from datetime import datetime, timedelta
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
-USE_SSL = True
+USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
@@ -198,7 +201,7 @@ def extract_on_call_now_user_data(users_on_call_now):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
         'EntryContext': {
-            'PagerDutyUser(val.ID==obj.ID)': contexts
+            'PagerDutyUser(val.ID===obj.ID)': contexts
         }
     }
 
@@ -568,11 +571,15 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
     return extract_on_call_user_data(users_on_call.get('users', []))
 
 
-def get_on_call_now_users_command(limit=None):
+def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
     """Get the list of users that are on call now."""
     param_dict = {}
     if limit is not None:
         param_dict['limit'] = limit
+    if escalation_policy_ids is not None:
+        param_dict['escalation_policy_ids[]'] = argToList(escalation_policy_ids)
+    if schedule_ids is not None:
+        param_dict['schedule_ids[]'] = argToList(schedule_ids)
 
     url = SERVER_URL + ON_CALLS_USERS_SUFFIX
     users_on_call_now = http_request('GET', url, param_dict)
