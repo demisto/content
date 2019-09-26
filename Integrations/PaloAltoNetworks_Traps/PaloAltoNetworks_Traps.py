@@ -99,13 +99,13 @@ def http_request(method, url_suffix, plain_url=False, params=None, data=None, op
             headers=create_headers(with_auth),
         )
     except requests.exceptions.ConnectionError:
-        return_error(f'Error connecting to Traps server check your connection and you server address')
+        return_error(f'Error connecting to Traps server. Please check your connection and you server address')
     if parse_response:
-        res = parse_http_response(res, operation_err, plain_url)
+        res = extract_and_validate_http_response(res, operation_err, plain_url)
     return res
 
 
-def parse_http_response(resp, operation_err_message, test=False):
+def extract_and_validate_http_response(resp, operation_err_message, test=False):
     try:
         resp.raise_for_status()
         return resp.json() if not test else resp.content
