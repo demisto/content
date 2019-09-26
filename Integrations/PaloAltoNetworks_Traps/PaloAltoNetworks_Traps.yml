@@ -17,7 +17,7 @@ configuration:
   type: 0
 - display: Private Key
   name: private_key
-  required: false
+  required: true
   type: 14
 - display: Trust any certificate (not secure)
   name: insecure
