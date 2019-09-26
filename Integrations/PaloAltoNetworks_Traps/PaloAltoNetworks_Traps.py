@@ -253,7 +253,7 @@ def hashes_blacklist_status(hash_ids):
     data = {
         'hashes': hash_ids
     }
-    ids_obj = http_request('POST', path, data=data)
+    ids_obj = http_request('POST', path, data=data, operation_err='Failed to get hashes status')
     result = list(map(lambda id_obj: parse_data_from_response(id_obj, 'hashes_blacklist_status'), ids_obj))
     return result
 
@@ -539,7 +539,6 @@ def main():
             endpoint_isolate_command()
         elif demisto.command() == 'traps-endpoint-isolate-status':
             endpoint_isolate_status_command()
-
     # Log exceptions
     except Exception as e:
         LOG(e)
