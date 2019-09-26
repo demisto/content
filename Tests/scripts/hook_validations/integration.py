@@ -415,7 +415,11 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
-                context_list.append(output['contextPath'])
+                command_name = command['name']
+                try:
+                    context_list.append(output['contextPath'])
+                except KeyError:
+                    print('Invalid context output for command {}. Output is {}'.format(command_name, output))
 
             command_to_context_list[command['name']] = sorted(context_list)
 
