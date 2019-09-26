@@ -1,0 +1,1189 @@
+id: Google-KMS-test
+version: -1
+name: Google-KMS-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6b37caf1-7f7a-4a96-88bf-64ac48c48b1b
+    type: start
+    task:
+      id: 6b37caf1-7f7a-4a96-88bf-64ac48c48b1b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 1ecdbcd9-ac17-4049-890b-c00bbd37705e
+    type: regular
+    task:
+      id: 1ecdbcd9-ac17-4049-890b-c00bbd37705e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 38c5dcc6-b2c0-4e6d-81ce-2bf5605e2298
+    type: regular
+    task:
+      id: 38c5dcc6-b2c0-4e6d-81ce-2bf5605e2298
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: '|||google-kms-get-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      crypto_key_id:
+        simple: TestCryptoKey
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 73c56f4f-5fce-4c32-8bb3-98a54243681a
+    type: condition
+    task:
+      id: 73c56f4f-5fce-4c32-8bb3-98a54243681a
+      version: -1
+      name: Check CryptoKey
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleKMS.CryptoKey.Name
+            iscontext: true
+          right:
+            value:
+              simple: projects/kms-integration/locations/global/keyRings/TestKeyRing/cryptoKeys/TestCryptoKey
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4aa1b785-5b1d-4079-8494-b6d50ed6b649
+    type: title
+    task:
+      id: 4aa1b785-5b1d-4079-8494-b6d50ed6b649
+      version: -1
+      name: CryptoKey Commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 91aade71-8f66-4da9-8c41-4eec95514f57
+    type: title
+    task:
+      id: 91aade71-8f66-4da9-8c41-4eec95514f57
+      version: -1
+      name: CryptoKeyVersion commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 701a1291-c505-42f8-8192-ecea407383e9
+    type: regular
+    task:
+      id: 701a1291-c505-42f8-8192-ecea407383e9
+      version: -1
+      name: google-kms-destroy-key
+      description: Destroy the primary CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-destroy-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: bd123998-e946-4603-8c62-ff454277fc61
+    type: regular
+    task:
+      id: bd123998-e946-4603-8c62-ff454277fc61
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: Google Key Management Service|||google-kms-get-key
+      type: regular
+      iscommand: true
+      brand: Google Key Management Service
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 76fecd58-a27e-47ec-8fc2-e58d5ae913fe
+    type: condition
+    task:
+      id: 76fecd58-a27e-47ec-8fc2-e58d5ae913fe
+      version: -1
+      name: Check key destruction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new_name1
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DESTROY_SCHEDULED
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: af4c0a9d-36e3-4416-8e68-1ae96a66fad6
+    type: regular
+    task:
+      id: af4c0a9d-36e3-4416-8e68-1ae96a66fad6
+      version: -1
+      name: google-kms-restore-key
+      description: Restore the primary CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-restore-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: e560389d-70ff-4ab5-8b83-d5cd99263663
+    type: regular
+    task:
+      id: e560389d-70ff-4ab5-8b83-d5cd99263663
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: Google Key Management Service|||google-kms-get-key
+      type: regular
+      iscommand: true
+      brand: Google Key Management Service
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: b9351f96-03f2-4a24-87a1-f6469337f198
+    type: condition
+    task:
+      id: b9351f96-03f2-4a24-87a1-f6469337f198
+      version: -1
+      name: Check key restoration
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new_name1
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DISABLED
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 298b7346-67b3-44e5-889b-5d18816c4f65
+    type: regular
+    task:
+      id: 298b7346-67b3-44e5-889b-5d18816c4f65
+      version: -1
+      name: google-kms-enable-key
+      description: Enable the primary CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-enable-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: bef60676-cfa2-4434-8ac2-d68a23fb9451
+    type: regular
+    task:
+      id: bef60676-cfa2-4434-8ac2-d68a23fb9451
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: Google Key Management Service|||google-kms-get-key
+      type: regular
+      iscommand: true
+      brand: Google Key Management Service
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: b86051ba-c045-4045-86db-f1ea656cd4ea
+    type: condition
+    task:
+      id: b86051ba-c045-4045-86db-f1ea656cd4ea
+      version: -1
+      name: Check key enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new_name1
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: ENABLED
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: bbc5a954-2fdc-4f11-8985-4264c2f3c656
+    type: regular
+    task:
+      id: bbc5a954-2fdc-4f11-8985-4264c2f3c656
+      version: -1
+      name: google-kms-disable-key
+      description: Disable the primary CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-disable-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6041b3e5-bd1a-46b5-8d37-7c607ed11a7b
+    type: regular
+    task:
+      id: 6041b3e5-bd1a-46b5-8d37-7c607ed11a7b
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: Google Key Management Service|||google-kms-get-key
+      type: regular
+      iscommand: true
+      brand: Google Key Management Service
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: df115a3f-2c46-4a7e-82e7-2a9563ae5c01
+    type: condition
+    task:
+      id: df115a3f-2c46-4a7e-82e7-2a9563ae5c01
+      version: -1
+      name: Check key disabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: new_name1
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DISABLED
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 80d82375-0bf3-46e3-8c9e-e692e469baea
+    type: regular
+    task:
+      id: 80d82375-0bf3-46e3-8c9e-e692e469baea
+      version: -1
+      name: google-kms-enable-key
+      description: Enable the primary CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-enable-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      crypto_key_id:
+        simple: new_name1
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 14c06bfc-f120-485a-8a2c-1c627fe70df2
+    type: regular
+    task:
+      id: 14c06bfc-f120-485a-8a2c-1c627fe70df2
+      version: -1
+      name: google-kms-destroy-key-version
+      description: Schedule a CryptoKeyVersion for destruction.
+      script: '|||google-kms-destroy-key-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      crypto_key_version:
+        simple: "1"
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 77cc1480-8b00-410f-8269-935af1c727c1
+    type: regular
+    task:
+      id: 77cc1480-8b00-410f-8269-935af1c727c1
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: '|||google-kms-get-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 6c75eec1-a246-40be-8bfb-bc16489120e8
+    type: condition
+    task:
+      id: 6c75eec1-a246-40be-8bfb-bc16489120e8
+      version: -1
+      name: Check key-version destruction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: this_is_my_key_too
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DESTROY_SCHEDULED
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 51113eed-b7ed-4048-8cb4-b9986bcb34f3
+    type: regular
+    task:
+      id: 51113eed-b7ed-4048-8cb4-b9986bcb34f3
+      version: -1
+      name: google-kms-restore-key-version
+      description: Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state.
+      script: '|||google-kms-restore-key-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      crypto_key_version:
+        simple: "1"
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: bec26ea4-2168-4c77-8273-c0144e697f43
+    type: regular
+    task:
+      id: bec26ea4-2168-4c77-8273-c0144e697f43
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: '|||google-kms-get-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 3b17816f-008a-46b9-804c-4f583342f500
+    type: condition
+    task:
+      id: 3b17816f-008a-46b9-804c-4f583342f500
+      version: -1
+      name: Check key-version restoration
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: this_is_my_key_too
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DISABLED
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: f1603c12-e683-4ad9-8d65-4b8c8b648b4a
+    type: regular
+    task:
+      id: f1603c12-e683-4ad9-8d65-4b8c8b648b4a
+      version: -1
+      name: google-kms-enable-key-version
+      description: Enable a CryptoKeyVersion of a given CryptoKey.
+      script: '|||google-kms-enable-key-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      crypto_key_version:
+        simple: "1"
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 2babf2c3-a669-4f71-8e5c-80a0024550bb
+    type: regular
+    task:
+      id: 2babf2c3-a669-4f71-8e5c-80a0024550bb
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: '|||google-kms-get-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 2a06db7e-85ae-49ae-8ee4-493fecf08619
+    type: condition
+    task:
+      id: 2a06db7e-85ae-49ae-8ee4-493fecf08619
+      version: -1
+      name: Check key-version enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: this_is_my_key_too
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: ENABLED
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: c53cacfd-2853-47ed-86b4-f50c9ed9f7c6
+    type: regular
+    task:
+      id: c53cacfd-2853-47ed-86b4-f50c9ed9f7c6
+      version: -1
+      name: google-kms-disable-key-version
+      description: Disable a CryptoKeyVersion of a given CryptoKey
+      script: '|||google-kms-disable-key-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      crypto_key_version:
+        simple: "1"
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 50f814ff-427f-4a32-8145-f6ea334f82c0
+    type: regular
+    task:
+      id: 50f814ff-427f-4a32-8145-f6ea334f82c0
+      version: -1
+      name: google-kms-get-key
+      description: Returns metadata for a given CryptoKey, as well as its primary
+        CryptoKeyVersion.
+      script: '|||google-kms-get-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 4d7cd9c5-698a-4c93-8d4e-7cfd0a616b67
+    type: condition
+    task:
+      id: 4d7cd9c5-698a-4c93-8d4e-7cfd0a616b67
+      version: -1
+      name: Check key-version disabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleKMS
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: GoogleKMS.CryptoKey.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: this_is_my_key_too
+                accessor: CryptoKey.PrimaryCryptoKeyVersion.State
+            iscontext: true
+          right:
+            value:
+              simple: DISABLED
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 7038ad5b-0898-4ccc-8fd0-098ee50d40f3
+    type: regular
+    task:
+      id: 7038ad5b-0898-4ccc-8fd0-098ee50d40f3
+      version: -1
+      name: google-kms-enable-key-version
+      description: Enable a CryptoKeyVersion of a given CryptoKey.
+      script: '|||google-kms-enable-key-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      crypto_key_id:
+        simple: this_is_my_key_too
+      crypto_key_version:
+        simple: "1"
+      key_ring_id: {}
+      location_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 569ac20f-fac0-4290-8167-dbf37363904e
+    type: title
+    task:
+      id: 569ac20f-fac0-4290-8167-dbf37363904e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3155,
+        "width": 1290,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
