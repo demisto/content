@@ -396,7 +396,7 @@ def main():
         'get-user-sessions': get_user_sessions
     }
     try:
-        command = demisto.command()  # type: ignore
+        command: str = demisto.command()  # type: ignore
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
 
