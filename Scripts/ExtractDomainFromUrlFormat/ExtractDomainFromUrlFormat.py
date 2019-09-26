@@ -87,7 +87,6 @@ def extract_domain(the_input, isFQDNextract):
             if (subdomain):
                 fqdn = "{}.{}".format(subdomain, str(domain))
 
-
     # convert None to empty string if needed
     result = domain if not isFQDNextract else fqdn
     result = '' if not result else result
@@ -103,5 +102,5 @@ the_input = argToList(the_input)
 
 # Otherwise assumes it's already an array
 for item in the_input:
-    results.append(extract_domain(item, isFQDNextract))
+    results.append(extract_domain(item, isFQDNextract == 'True'))
 demisto.results(results)
