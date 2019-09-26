@@ -26,8 +26,6 @@ PRIVATE_KEY = PARAMS.get('private_key')
 REQUEST_HEADERS = {
     'Content-Type': 'application/json'
 }
-# Remove proxy if not set to true in params
-handle_proxy()
 
 OUTPUTS = {
     'get_endpoint_by_id': {
@@ -285,6 +283,15 @@ def endpoint_isolate(endpoint_id):
 
 
 def sam_operation(operation_id, operation_err):
+    """
+    This functions invokes an API call to the sam operation endpoint on Traps server to get the operation status and/or
+    results.
+    :param operation_id: the operation on which to get the status/results
+    :param operation_err: The error to return in case of a failure (changes according to the command fired.)
+    :return:
+        status: the status of the operation.
+        additional_data: additional data regarding the operation (like scan results)
+    """
     path = f'sam/operations/{operation_id}'
     result = http_request('GET', path, operation_err=operation_err)
     if result.get('summaryData').get('incompatible'):
@@ -491,6 +498,9 @@ def endpoint_isolate_status_command():
 
 
 def main():
+    # Remove proxy if not set to true in params
+    handle_proxy()
+
     ''' COMMANDS MANAGER / SWITCH PANEL '''
 
     LOG('Command being called is %s' % (demisto.command()))
