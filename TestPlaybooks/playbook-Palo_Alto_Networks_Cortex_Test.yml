@@ -1,28 +1,27 @@
 id: Palo Alto Networks Cortex Test
 version: -1
 name: Palo Alto Networks Cortex Test
-fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c2cc0994-e128-4664-82cd-7574a681aa70
+    taskid: e022bd69-4460-4696-855e-81d3323303c2
     type: start
     task:
-      id: c2cc0994-e128-4664-82cd-7574a681aa70
+      id: e022bd69-4460-4696-855e-81d3323303c2
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -170
         }
       }
     note: false
@@ -30,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 80e43dcd-2e39-4121-8ce5-437cdaa7d6c5
+    taskid: efcd23f5-fc62-4c91-83b9-e98ab516cb4c
     type: regular
     task:
-      id: 80e43dcd-2e39-4121-8ce5-437cdaa7d6c5
+      id: efcd23f5-fc62-4c91-83b9-e98ab516cb4c
       version: -1
       name: Query Logs
       description: Query Cortex Logging service
@@ -63,20 +62,21 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: e320e093-da21-41d8-82d2-810620887c81
+    taskid: 21176b7f-b8b3-459e-836a-96319c46d089
     type: condition
     task:
-      id: e320e093-da21-41d8-82d2-810620887c81
+      id: 21176b7f-b8b3-459e-836a-96319c46d089
       version: -1
       name: Verify Query Logs Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "4"
       "yes":
-      - "5"
+      - "7"
+      - "9"
+      - "11"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -173,10 +173,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 407edf81-648b-4a7a-8445-f98ed1cf6e72
+    taskid: f4403e40-6841-4124-8c0b-27a73745869d
     type: title
     task:
-      id: 407edf81-648b-4a7a-8445-f98ed1cf6e72
+      id: f4403e40-6841-4124-8c0b-27a73745869d
       version: -1
       name: Success
       description: Query Cortex Logging service according to pre-set queries
@@ -188,7 +188,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 720
+          "y": 1280
         }
       }
     note: false
@@ -196,10 +196,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: c22f4804-f123-459b-8038-82b16c2ec85e
+    taskid: 9129e9fb-1a06-4fec-8e64-bb5732ff8e57
     type: regular
     task:
-      id: c22f4804-f123-459b-8038-82b16c2ec85e
+      id: 9129e9fb-1a06-4fec-8e64-bb5732ff8e57
       version: -1
       name: Failed to verify
       description: Prints an error entry with a given message
@@ -207,6 +207,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
     scriptarguments:
       message:
         simple: Failed to verify query logs outputs
@@ -215,7 +218,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 1085
         }
       }
     note: false
@@ -223,10 +226,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 84ecc014-b640-4717-8007-432a04ed5438
+    taskid: de5e02df-f0c0-4513-839c-60f099aabd10
     type: regular
     task:
-      id: 84ecc014-b640-4717-8007-432a04ed5438
+      id: de5e02df-f0c0-4513-839c-60f099aabd10
       version: -1
       name: Fetch events
       description: Execute FetchIncident for a given instance
@@ -248,7 +251,371 @@ tasks:
       {
         "position": {
           "x": 480,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 869c1903-5ddd-4c8a-8d3e-81ec9b6febc2
+    type: regular
+    task:
+      id: 869c1903-5ddd-4c8a-8d3e-81ec9b6febc2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 4790da22-38af-4385-8332-ccb7c9d18d0d
+    type: regular
+    task:
+      id: 4790da22-38af-4385-8332-ccb7c9d18d0d
+      version: -1
+      name: cortex-query-threat-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-threat-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action: {}
+      endTime: {}
+      fields: {}
+      from_zone: {}
+      hash: {}
+      ip: {}
+      port: {}
+      query: {}
+      rangeValue: {}
+      rule: {}
+      startTime: {}
+      timeRange: {}
+      to_zone: {}
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2b751b24-57d6-4ec7-8201-80a848109c8a
+    type: condition
+    task:
+      id: 2b751b24-57d6-4ec7-8201-80a848109c8a
+      version: -1
+      name: Verify Query Threat Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.SessionID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 6e78430f-4ac0-4e42-81c1-c26e7566cbbc
+    type: regular
+    task:
+      id: 6e78430f-4ac0-4e42-81c1-c26e7566cbbc
+      version: -1
+      name: cortex-query-traffic-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-traffic-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      action: {}
+      endTime: {}
+      fields: {}
+      from_zone: {}
+      ip: {}
+      port: {}
+      query: {}
+      rangeValue: {}
+      rule: {}
+      startTime: {}
+      timeRange: {}
+      to_zone: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 0474dd06-d5c9-4fa7-88e1-2f56394aac52
+    type: condition
+    task:
+      id: 0474dd06-d5c9-4fa7-88e1-2f56394aac52
+      version: -1
+      name: Verify Query Traffic Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.SessionID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: e53d2f00-fb88-425b-8d1d-797e2b899021
+    type: regular
+    task:
+      id: e53d2f00-fb88-425b-8d1d-797e2b899021
+      version: -1
+      name: cortex-query-traps-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-traps-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      category: {}
+      endTime: {}
+      fields: {}
+      hash: {}
+      host: {}
+      ip: {}
+      query: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 683b3400-8121-4ae7-830e-cb2b23f75f32
+    type: regular
+    task:
+      id: 683b3400-8121-4ae7-830e-cb2b23f75f32
+      version: -1
+      name: cortex-query-analytics-logs
+      description: TBD
+      script: Palo Alto Networks Cortex|||cortex-query-analytics-logs
+      type: regular
+      iscommand: true
+      brand: Palo Alto Networks Cortex
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      category: {}
+      endTime: {}
+      fields: {}
+      hash: {}
+      host: {}
+      ip: {}
+      query: {}
+      rangeValue: {}
+      startTime: {}
+      timeRange: {}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 51086fcc-adf0-4c49-832f-730e900537bb
+    type: condition
+    task:
+      id: 51086fcc-adf0-4c49-832f-730e900537bb
+      version: -1
+      name: Verify Query Traps Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.TrapsID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 844e4625-981b-41f3-8f95-62d8cf0f9169
+    type: condition
+    task:
+      id: 844e4625-981b-41f3-8f95-62d8cf0f9169
+      version: -1
+      name: Verify Query Analytics Logs Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.TrapsID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5faa3a80-c274-4075-897a-c34b92edc33f
+    type: title
+    task:
+      id: 5faa3a80-c274-4075-897a-c34b92edc33f
+      version: -1
+      name: Failure
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1280
         }
       }
     note: false
@@ -259,10 +626,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 810,
-        "x": 50,
-        "y": 50
+        "height": 1515,
+        "width": 1660,
+        "x": -370,
+        "y": -170
       }
     }
   }
