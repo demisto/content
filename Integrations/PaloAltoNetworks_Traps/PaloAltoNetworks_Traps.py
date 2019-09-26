@@ -18,8 +18,6 @@ SERVER = PARAMS['url'][:-1] \
     if (PARAMS['url'] and PARAMS['url'].endswith('/')) else PARAMS['url']
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
-# How many time before the first fetch to retrieve incidents
-FETCH_TIME = PARAMS.get('fetch_time', '3 days')
 # Service base URL
 BASE_URL = SERVER + '/xapi/v1/'
 APPLICATION_ID = PARAMS.get('application_id')
