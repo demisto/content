@@ -528,10 +528,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: d9357ada-7506-40cc-8b27-19f8e6dfebe4
+    taskid: 14137fdb-ea7a-4c8b-8ed9-1dda850ae03a
     type: condition
     task:
-      id: d9357ada-7506-40cc-8b27-19f8e6dfebe4
+      id: 14137fdb-ea7a-4c8b-8ed9-1dda850ae03a
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
@@ -549,7 +549,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Analytics.Severity
+                accessor: Logging.Analytics.EndPointHeader.AgentTime
             iscontext: true
     view: |-
       {
