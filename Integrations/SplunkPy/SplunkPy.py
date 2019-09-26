@@ -342,8 +342,11 @@ if demisto.command() == 'fetch-incidents':
         t = t - timedelta(minutes=10)
         lastRun = t.strftime(SPLUNK_TIME_FORMAT)
 
-    kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now, "count": FETCH_LIMIT, 'offset': search_offset}
+    earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
+    latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: lastRun,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
     searchquery_oneshot = demisto.params()['fetchQuery']
 
