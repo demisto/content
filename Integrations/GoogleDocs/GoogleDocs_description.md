@@ -13,4 +13,21 @@ It is then converted to:
 where action1 is the function name to be called and param1 and param2 are the parameters  
 For example:  
 insertText(5,hello)  
-insertTable(5,7,7);insertText(5,hello)
+insertTable(5,7,7);insertText(5,hello)  
+###List of allowed actions:
+-createNamedRange(start_index, end_index, name, segment_id(optional))  
+-createParagraphBullets(start_index, end_index, bullet_type, segment_id(optional))  
+-deleteContentRange(start_index, end_index, segment_id(optional))  
+-deleteNamedRangeByName(name)  
+-deleteNamedRangeById(named_range_id)
+-deleteParagraphBullets(start_index, end_index, segment_id(optional))  
+-deletePositionedObject(object_id)  
+-deleteTableColumn(index, row_index, column_index, segment_id(optional))  
+-deleteTableRow(index, row_index, column_index, segment_id(optional))  
+-insertInlineImage(index, uri, width, height, segment_id(optional))  
+-insertPageBreak(index, segment_id(optional))  
+-insertTable(index, rows, columns, segment_id(optional))  
+-insertTableColumn(index, row_index, column_index, insert_below, segment_id(optional))  
+-insertTableRow(index, row_index, column_index, insert_below, segment_id(optional))  
+-insertText(index, text, segment_id(optional))  
+-replaceAllText(source, target, match_case)
