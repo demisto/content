@@ -57,11 +57,11 @@ OUTPUTS = {
         'EventID': 'eventGuid'
     },
     'hashes_blacklist_status': {
-        'MD5': 'hash',
+        'SHA256': 'hash',
         'BlacklistStatus': 'status'
     },
     'event_quarantine_result': {
-        'MD5': 'fileHash',
+        'SHA256': 'fileHash',
         'FilePath': 'filePath'
     },
     'endpoint_scan_result': {
@@ -440,10 +440,10 @@ def hash_blacklist_command():
     if status == 'success':
         md = f'#### Successfully blacklisted: {hash_id}'
         status_obj = {
-            'MD5': hash_id,
+            'SHA256': hash_id,
             'BlacklistStatus': 'blacklisted'
         }
-        context = {'Traps.File(val.MD5 == obj.MD5)': status_obj}
+        context = {'Traps.File(val.SHA256 == obj.SHA256)': status_obj}
 
     elif status == 'ignore':
         md = f'#### Hash: {hash_id} already appears in blacklist'
@@ -460,10 +460,10 @@ def hash_blacklist_remove_command():
     if status == 'success':
         md = f'#### Successfully removed {hash_id} from blacklist'
         status_obj = {
-            'MD5': hash_id,
+            'SHA256': hash_id,
             'BlacklistStatus': 'none'
         }
-        context = {'Traps.File(val.MD5 == obj.MD5)': status_obj}
+        context = {'Traps.File(val.SHA256 == obj.SHA256)': status_obj}
     else:
         md = f'#### Failed to remove {hash_id} from blacklist:'
 
@@ -475,7 +475,7 @@ def hashes_blacklist_status_command():
     hash_ids = args.get('hash_ids').split(',')
     ids_obj = hashes_blacklist_status(hash_ids)
     md = tableToMarkdown('Hashes status:', ids_obj, headerTransform=pascalToSpace)
-    context = {'Traps.File(val.MD5 == obj.MD5)': ids_obj}
+    context = {'Traps.File(val.SHA256 == obj.SHA256)': ids_obj}
     return_outputs(md, context)
 
 
