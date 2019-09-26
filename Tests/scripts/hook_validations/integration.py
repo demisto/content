@@ -415,6 +415,10 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
+                command_name = command['name']
+                print(f'command name: {command_name}')
+                print(command.get('outputs', []).index(output))
+                print(output)
                 context_list.append(output['contextPath'])
 
             command_to_context_list[command['name']] = sorted(context_list)
