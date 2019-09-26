@@ -472,12 +472,62 @@ def parse_query(query: str) -> str:
         raise DemistoException('A compound query must include a WHERE part')
 
 
-def get_context_standards_outputs(results: list, table_name: str):
-    if table_name == 'panw.traffic' or table_name == 'panw.threat':
-        pass
-    elif table_name == 'tms.threat' or table_name == 'tms.analytics':
-        pass
-    return {}
+def get_context_standards_outputs(results: list) -> dict:
+    outputs: dict = {}
+    endpoints: list = []
+    hosts: list = []
+    files: list = []
+    processes: list = []
+    ips: list = []
+
+    for result in results:
+        end_point_header: dict = result.get('endPointHeader', {})
+        endpoint = {
+            'Hostname': end_point_header.get('deviceName'),
+            'IPAddress': end_point_header.get('agentIp'),
+            'Domain': end_point_header.get('deviceDomain'),
+            'OSVersion': end_point_header.get('osVersion')
+        }
+        endpoint = {key: value for key, value in endpoint.items() if value}
+        if endpoint:
+            endpoints.append(endpoint)
+            hosts.append(endpoint)
+
+        message_data: dict = result.get('messageData', {})
+        raw_files: list = message_data.get('files', [])
+        if message_data and raw_files:
+            for raw_file in raw_files:
+                file_data = {
+                    'Name': raw_file.get('fileName'),
+                    'Path': raw_file.get('rawFullPath'),
+                    'SHA256': raw_file.get('sha256'),
+                    'Size': raw_file.get('fileSize')
+                }
+                file_data = {key: value for key, value in file_data.items() if value}
+                if file_data:
+                    files.append(file_data)
+
+        raw_processes: list = message_data.get('processes', [])
+        if message_data and raw_processes:
+            for raw_process in raw_processes:
+                process_data = {
+                    'PID': raw_process.get('pid'),
+                    'Parent': raw_process.get('parentId'),
+                    'CommandLine': raw_process.get('commandLine'),
+                }
+                process_data = {key: value for key, value in process_data.items() if value}
+                if process_data:
+                    processes.append(process_data)
+
+    outputs.update({
+        'File': files,
+        'Endpoint': endpoints,
+        'Host': hosts,
+        'Process': processes,
+        'IP': ips
+    })
+    outputs = {key: value for key, value in outputs.items() if value}
+    return outputs
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
@@ -1194,7 +1244,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     human_readable = human_readable_generator(fields, table_name, results)
 
     # @TODO CODE THE INDICATORS ISSUE
-    context_standards_outputs: dict = get_context_standards_outputs(results, query_table_name)
+    context_standards_outputs: dict = get_context_standards_outputs(results)
     context_outputs: dict = {table_context_path: outputs}
     # merge the two dicts into one dict that outputs to context
     context_outputs.update(context_standards_outputs)
