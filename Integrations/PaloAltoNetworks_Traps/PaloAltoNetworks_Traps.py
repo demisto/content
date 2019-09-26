@@ -183,7 +183,7 @@ def endpoint_scan(endpoint_id):
 
 def endpoint_scan_result(operation_id):
     status, additional_data = sam_operation(operation_id, f'Could not get scan results')
-    scan_data = parse_data_from_response(additional_data.get('scanData')) if additional_data else {}
+    scan_data = parse_data_from_response(additional_data.get('scanData'), 'endpoint_scan_result') if additional_data else {}
     scan_data['Status'] = status
     scan_data['OperationID'] = operation_id
     return scan_data
@@ -544,7 +544,7 @@ def main():
     except Exception as e:
         LOG(e)
         LOG.print_log()
-        demisto.results(e)
+        return_error(e)
 
 
 if __name__ in ["__builtin__", "builtins", "__main__"]:
