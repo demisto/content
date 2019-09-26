@@ -1696,6 +1696,10 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1970,6 +1974,7 @@
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
