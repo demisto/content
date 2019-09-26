@@ -24,7 +24,7 @@ name: Alexa Rank Indicator
 script:
   commands:
   - arguments:
-    - default: false
+    - default: true
       description: domain to search
       isArray: false
       name: domain
