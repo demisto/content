@@ -91,8 +91,7 @@ def get_modified_files(files_string):
                     re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 is_indicator_json = True
 
             # conf.json
