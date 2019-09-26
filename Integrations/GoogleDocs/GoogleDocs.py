@@ -295,7 +295,7 @@ def batch_update_document_command(service):
         "requests": []
     }
 
-    write_control: typing.DefaultDict = defaultdict()
+    write_control: typing.DefaultDict = defaultdict(dict)
     if required_revision_id and target_revision_id:
         demisto.results({
             'Type': entryTypes['error'],
