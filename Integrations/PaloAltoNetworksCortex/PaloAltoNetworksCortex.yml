@@ -1529,6 +1529,9 @@ script:
     - contextPath: Cortex.Logging.Analytics.MessageData.LastSeen
       description: File last seen date
       type: String
+    - contextPath: Cortex.Logging.Analytics.Severity
+      description: The threat severity.
+      type: String
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
   longRunning: false
