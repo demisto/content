@@ -1,10 +1,11 @@
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-''' IMPORTS '''
 
+''' IMPORTS '''
 import json
-import requests
+import urllib3
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -12,54 +13,29 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 
-class Client:
-    def __init__(self, username, password, domain, url, use_ssl):
-        self.url = url
-        self.base_url = self.url
-        self.verify = use_ssl
+class Client(BaseClient):
+    def __init__(self, base_url, username, password, domain, **kwargs):
         self.username = username
         self.password = password
         self.domain = domain
         self.session = ''
+        super(Client, self).__init__(base_url, **kwargs)
 
     def do_request(self, method, url_suffix, data=None):
         if not self.session:
             self.update_session()
 
-        res = self.http_request(method, url_suffix, data)
+        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data, resp_type='response', ok_codes = [200, 403,404] )
 
         if res.status_code == 403:
             self.update_session()
-            res = self.http_request(method, url_suffix, data)
-            if res.status_code != 200:
-                return_error('Error in API call to ' + self.url + url_suffix + ' response= ' + res.text)
-            return res.json()
-
-        return res.json()
-
-    def http_request(self, method, url_suffix, data=None, headers={}):
-        if self.session:
-            headers['session'] = self.session
-        # A wrapper for requests lib to send our requests and handle requests and responses better
-        res = requests.request(
-            method,
-            self.url + url_suffix,
-            verify=self.verify,
-            data=json.dumps(data),
-            headers=headers
-        )
+            res = self._http_request(method, url_suffix,headers={'session': self.session}, json_data=data, ok_codes=[200, 403, 404])
+            return res
 
         if res.status_code == 404:
             return_error(res.json().get('text'))
 
-        # Handle error responses gracefully
-        if res.status_code not in {200, 403}:
-            reason = res.reason
-            if res.content:
-                reason = reason + ' ' + str(res.content)
-            return_error('Error in API call to Integration [%d] - %s' % (res.status_code, reason))
-
-        return res
+        return res.json()
 
     def update_session(self):
         body = {
@@ -68,11 +44,9 @@ class Client:
             'password': self.password
         }
 
-        res = self.http_request('GET', 'session/login', body)
-        if res.status_code != 200:
-            return_error('')
+        res = self._http_request('GET', 'session/login', json_data=body, ok_codes = [200] )
 
-        self.session = res.json().get('data').get('session')
+        self.session = res.get('data').get('session')
 
     def parse_sensor_parameters(self, parameters):
         sensors = parameters.split(';')
@@ -168,23 +142,29 @@ class Client:
         item = {}  # type: ignore
         item['ContentSet'] = {}
         item['ModUser'] = {}
-        item['Command'] = package['command']
-        item['CommandTimeout'] = package['command_timeout']
-        item['ContentSet']['Id'] = package['content_set']['id']
-        item['ContentSet']['Name'] = package['content_set']['name']
-        item['CreationTime'] = package['creation_time']
-        item['DisplayName'] = package['display_name']
-        item['ExpireSeconds'] = package['expire_seconds']
-        item['ID'] = package['id']
-        item['LastModifiedBy'] = package['last_modified_by']
-        item['LastUpdate'] = package['last_update']
-        item['ModUser']['Domain'] = package['mod_user']['domain']
-        item['ModUser']['Id'] = package['mod_user']['id']
-        item['ModUser']['Name'] = package['mod_user']['name']
-        item['ModificationTime'] = package['modification_time']
-        item['Name'] = package['name']
-        item['SourceId'] = package['source_id']
-        item['VerifyExpireSeconds'] = package['verify_expire_seconds']
+        item['Command'] = package.get('command')
+        item['CommandTimeout'] = package.get('command_timeout')
+        content_set = package.get('content_set')
+        if content_set:
+            item['ContentSet']['Id'] = content_set.get('id')
+            item['ContentSet']['Name'] = content_set.get('name')
+
+        item['CreationTime'] = package.get('creation_time')
+        item['DisplayName'] = package.get('display_name')
+        item['ExpireSeconds'] = package.get('expire_seconds')
+        item['ID'] = package.get('id')
+        item['LastModifiedBy'] = package.get('last_modified_by')
+        item['LastUpdate'] = package.get('last_update')
+        mod_user = package.get('ModUser')
+        if mod_user:
+            item['ModUser']['Domain'] = mod_user.get('domain')
+            item['ModUser']['Id'] = mod_user.get('id')
+            item['ModUser']['Name'] = mod_user.get('name')
+
+        item['ModificationTime'] = package.get('modification_time')
+        item['Name'] = package.get('name')
+        item['SourceId'] = package.get('source_id')
+        item['VerifyExpireSeconds'] = package.get('verify_expire_seconds')
         item['Parameters'] = self.get_parameter_item(package)
 
         files = package.get('files')
@@ -202,62 +182,76 @@ class Client:
 
     def get_question_item(self, question):
         item = {}
-        item['ID'] = question['id']
-        item['Expiration'] = question['expiration']
-        item['ExpireSeconds'] = question['expire_seconds']
-        item['ForceComputerIdFlag'] = question['force_computer_id_flag']
-        item['IsExpired'] = question['is_expired']
-        item['QueryText'] = question['query_text']
+        item['ID'] = question.get('id')
+        item['Expiration'] = question.get('expiration')
+        item['ExpireSeconds'] = question.get('expire_seconds')
+        item['ForceComputerIdFlag'] = question.get('force_computer_id_flag')
+        item['IsExpired'] = question.get('is_expired')
+        item['QueryText'] = question.get('query_text')
 
-        saved_question_id = question['saved_question']['id']
+        saved_question_id = question.get('saved_question').get('id')
         if saved_question_id:
             item['SavedQuestionId'] = saved_question_id
-        item['UserId'] = question['user']['id']
-        item['UserName'] = question['user']['name']
+        user = question.get('user')
+        if user:
+            item['UserId'] = user.get('id')
+            item['UserName'] = user.get('name')
         return item
 
     def get_saved_question_item(self, question):
         item = {}
-        item['ArchiveEnabledFlag'] = question['archive_enabled_flag']
-        item['ArchiveOwner'] = question['archive_owner']
-        item['ExpireSeconds'] = question['expire_seconds']
-        item['ID'] = question['id']
-        item['IssueSeconds'] = question['issue_seconds']
-        item['IssueSecondsNeverFlag'] = question['issue_seconds_never_flag']
-        item['KeepSeconds'] = question['keep_seconds']
-        item['ModTime'] = question['mod_time']
-        item['ModUserDomain'] = question['mod_user']['domain']
-        item['ModUserId'] = question['mod_user']['id']
-        item['ModUserName'] = question['mod_user']['name']
-        item['MostRecentQuestionId'] = question['most_recent_question_id']
-        item['Name'] = question['name']
-        item['QueryText'] = question['query_text']
-        item['QuestionId'] = question['question']['id']
-        item['RowCountFlag'] = question['row_count_flag']
-        item['SortColumn'] = question['sort_column']
-        item['UserId'] = question['user']['id']
-        item['UserName'] = question['user']['name']
+        item['ArchiveEnabledFlag'] = question.get('archive_enabled_flag')
+        item['ArchiveOwner'] = question.get('archive_owner')
+        item['ExpireSeconds'] = question.get('expire_seconds')
+        item['ID'] = question.get('id')
+        item['IssueSeconds'] = question.get('issue_seconds')
+        item['IssueSecondsNeverFlag'] = question.get('issue_seconds_never_flag')
+        item['KeepSeconds'] = question.get('keep_seconds')
+        item['ModTime'] = question.get('mod_time')
+
+        mod_user = question.get('ModUser')
+        if mod_user:
+            item['ModUserDomain'] = mod_user.get('domain')
+            item['ModUserId'] = mod_user.get('id')
+            item['ModUserName'] = mod_user.get('name')
+
+        item['MostRecentQuestionId'] = question.get('most_recent_question_id')
+        item['Name'] = question.get('name')
+        item['QueryText'] = question.get('query_text')
+        item['QuestionId'] = question.get('question').get('id')
+        item['RowCountFlag'] = question.get('row_count_flag')
+        item['SortColumn'] = question.get('sort_column')
+
+        user = question.get('user')
+        if user:
+            item['UserId'] = user.get('id')
+            item['UserName'] = user.get('name')
         return item
 
     def get_sensor_item(self, sensor):
         item = {}
-        item['Category'] = sensor['category']
-        item['ContentSetId'] = sensor['content_set']['id']
-        item['ContentSetName'] = sensor['content_set']['name']
-        item['CreationTime'] = sensor['creation_time']
-        item['Description'] = sensor['description']
-        item['Hash'] = sensor['hash']
-        item['ID'] = sensor['id']
-        item['IgnoreCaseFlag'] = sensor['ignore_case_flag']
-        item['KeepDuplicatesFlag'] = sensor['keep_duplicates_flag']
-        item['LastModifiedBy'] = sensor['last_modified_by']
-        item['MaxAgeSeconds'] = sensor['max_age_seconds']
-        item['ModUserDomain'] = sensor['mod_user']['domain']
-        item['ModUserId'] = sensor['mod_user']['id']
-        item['ModUserName'] = sensor['mod_user']['name']
-        item['ModificationTime'] = sensor['modification_time']
-        item['Name'] = sensor['name']
-        item['SourceId'] = sensor['source_id']
+        item['Category'] = sensor.get('category')
+        content_set = sensor.get('content_set')
+        if content_set:
+            item['ContentSetId'] = content_set.get('id')
+            item['ContentSetName'] = content_set.get('name')
+        item['CreationTime'] = sensor.get('creation_time')
+        item['Description'] = sensor.get('description')
+        item['Hash'] = sensor.get('hash')
+        item['ID'] = sensor.get('id')
+        item['IgnoreCaseFlag'] = sensor.get('ignore_case_flag')
+        item['KeepDuplicatesFlag'] = sensor.get('keep_duplicates_flag')
+        item['LastModifiedBy'] = sensor.get('last_modified_by')
+        item['MaxAgeSeconds'] = sensor.get('max_age_seconds')
+
+        mod_user = sensor.get('mod_user')
+        if mod_user:
+            item['ModUserDomain'] = mod_user.get('domain')
+            item['ModUserId'] = mod_user.get('id')
+            item['ModUserName'] = mod_user.get('name')
+        item['ModificationTime'] = sensor.get('modification_time')
+        item['Name'] = sensor.get('name')
+        item['SourceId'] = sensor.get('source_id')
         item['Parameters'] = self.get_parameter_item(sensor)
         return item
 
@@ -280,82 +274,90 @@ class Client:
 
     def get_action_item(self, action):
         item = {}
-        item['ActionGroupId'] = action['action_group']['id']
-        item['ActionGroupName'] = action['action_group']['name']
-        item['ApproverId'] = action['approver']['id']
-        item['ApproverName'] = action['approver']['name']
-        item['CreationTime'] = action['creation_time']
-        item['ExpirationTime'] = action['expiration_time']
-        item['ExpireSeconds'] = action['expire_seconds']
-        item['HistorySavedQuestionId'] = action['history_saved_question']['id']
-        item['ID'] = action['id']
-        item['Name'] = action['name']
-        item['PackageId'] = action['package_spec']['id']
-        item['PackageName'] = action['package_spec']['name']
-        item['SavedActionId'] = action['saved_action']['id']
-        item['StartTime'] = action['start_time']
-        item['Status'] = action['status']
-        item['StoppedFlag'] = action['stopped_flag']
-        item['TargetGroupId'] = action['target_group']['id']
-        item['TargetGroupName'] = action['target_group']['name']
-        item['UserDomain'] = action['user']['domain']
-        item['UserId'] = action['user']['id']
-        item['UserName'] = action['user']['name']
+
+        item['ActionGroupId'] = action.get('action_group').get('id')
+        item['ActionGroupName'] = action.get('action_group').get('name')
+        item['ApproverId'] = action.get('approver').get('id')
+        item['ApproverName'] = action.get('approver').get('name')
+        item['CreationTime'] = action.get('creation_time')
+        item['ExpirationTime'] = action.get('expiration_time')
+        item['ExpireSeconds'] = action.get('expire_seconds')
+        item['HistorySavedQuestionId'] = action.get('history_saved_question').get('id')
+        item['ID'] = action.get('id')
+        item['Name'] = action.get('name')
+        item['PackageId'] = action.get('package_spec').get('id')
+        item['PackageName'] = action.get('package_spec').get('name')
+        item['SavedActionId'] = action.get('saved_action').get('id')
+        item['StartTime'] = action.get('start_time')
+        item['Status'] = action.get('status')
+        item['StoppedFlag'] = action.get('stopped_flag')
+        item['TargetGroupId'] = action.get('target_group').get('id')
+        item['TargetGroupName'] = action.get('target_group').get('name')
+
+        user = action.get('user')
+        if user:
+            item['UserDomain'] = user.get('domain')
+            item['UserId'] = user.get('id')
+            item['UserName'] = user.get('name')
         return item
 
     def get_saved_action_item(self, action):
         item = {}
-        item['ActionGroupId'] = action['action_group_id']
-        item['ApprovedFlag'] = action['approved_flag']
-        item['ApproverId'] = action['approver']['id']
-        item['ApproverName'] = action['approver']['name']
-        item['CreationTime'] = action['creation_time']
-        item['EndTime'] = action['end_time']
-        item['ExpireSeconds'] = action['expire_seconds']
-        item['ID'] = action['id']
-        item['LastActionId'] = action['last_action']['id']
-        item['LastActionStartTime'] = action['last_action']['start_time']
-        item['TargetGroupId'] = action['target_group']['id']
-        item['LastStartTime'] = action['last_start_time']
-        item['Name'] = action['name']
-        item['NextStartTime'] = action['next_start_time']
-        item['PackageId'] = action['package_spec']['id']
-        item['PackageName'] = action['package_spec']['name']
-        item['PackageSourceHash'] = action['package_spec']['source_hash']
-        item['StartTime'] = action['start_time']
-        item['Status'] = action['status']
-        item['UserId'] = action['user']['id']
-        item['UserName'] = action['user']['name']
+        item['ActionGroupId'] = action.get('action_group_id')
+        item['ApprovedFlag'] = action.get('approved_flag')
+        item['ApproverId'] = action.get('approver').get('id')
+        item['ApproverName'] = action.get('approver').get('name')
+        item['CreationTime'] = action.get('creation_time')
+        item['EndTime'] = action.get('end_time')
+        item['ExpireSeconds'] = action.get('expire_seconds')
+        item['ID'] = action.get('id')
+        item['LastActionId'] = action.get('last_action').get('id')
+        item['LastActionStartTime'] = action.get('last_action').get('start_time')
+        item['TargetGroupId'] = action.get('target_group').get('id')
+        item['LastStartTime'] = action.get('last_start_time')
+        item['Name'] = action.get('name')
+        item['NextStartTime'] = action.get('next_start_time')
+
+        package_spec = action.get('package_spec')
+        if package_spec:
+            item['PackageId'] = package_spec.get('id')
+            item['PackageName'] = package_spec.get('name')
+            item['PackageSourceHash'] = package_spec.get('source_hash')
+        item['StartTime'] = action.get('start_time')
+        item['Status'] = action.get('status')
+        item['UserId'] = action.get('user').get('id')
+        item['UserName'] = action.get('user').get('name')
         return item
 
     def get_saved_action_pending_item(self, action):
         item = {}
-        item['ApprovedFlag'] = action['approved_flag']
-        item['ID'] = action['id']
-        item['Name'] = action['name']
-        item['OwnerUserId'] = action['owner_user_id']
+        item['ApprovedFlag'] = action.get('approved_flag')
+        item['ID'] = action.get('id')
+        item['Name'] = action.get('name')
+        item['OwnerUserId'] = action.get('owner_user_id')
         return item
 
     def get_host_item(self, client):
         item = {}
-        item['ComputerId'] = client['computer_id']
-        item['FullVersion'] = client['full_version']
-        item['HostName'] = client['host_name']
-        item['IpAddressClient'] = client['ipaddress_client']
-        item['IpAddressServer'] = client['ipaddress_server']
-        item['LastRegistration'] = client['last_registration']
-        item['Status'] = client['status']
+        item['ComputerId'] = client.get('computer_id')
+        item['FullVersion'] = client.get('full_version')
+        item['HostName'] = client.get('host_name')
+        item['IpAddressClient'] = client.get('ipaddress_client')
+        item['IpAddressServer'] = client.get('ipaddress_server')
+        item['LastRegistration'] = client.get('last_registration')
+        item['Status'] = client.get('status')
         return item
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client, data_args):
     client.do_request('GET', 'system_status')
+    return demisto.results('ok')
 
 
-def get_system_status(client):
+def get_system_status(client, data_args):
     raw_response = client.do_request('GET', 'system_status')
     response = raw_response.get('data')
 
@@ -531,7 +533,8 @@ def create_saved_question(client, data_args):
 
     context = createContext(response, removeNull=True)
     outputs = {'Tanium.SavedQuestion(val.ID === obj.ID)': context}
-    return_outputs(readable_output='Question saved. ID = ' + str(response['ID']), outputs=outputs, raw_response=raw_response)
+    return_outputs(readable_output='Question saved. ID = ' + str(response['ID']), outputs=outputs,
+                   raw_response=raw_response)
 
 
 def get_saved_question_metadata(client, data_args):
@@ -563,7 +566,8 @@ def get_saved_question_result(client, data_args):
     if rows is None:
         context = {'SavedQuestionID': id, 'Status': 'Pending'}
         return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={'Tanium.SavedQuestionResult(val.SavedQuestionID === id)': context}, raw_response=res)
+                              outputs={'Tanium.SavedQuestionResult(val.SavedQuestionID === id)': context},
+                              raw_response=res)
 
     context = {'SavedQuestionID': id, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
@@ -714,6 +718,75 @@ def get_saved_actions_pending(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
+def create_group(client, data_args):
+    group_name = data_args.get('group-name')
+    hosts = data_args.get('hosts')
+    text_filter = data_args.get('text-filter')
+
+    if not text_filter and not hosts:
+        return_error('text-filter and hosts arguments are missing')
+
+    body = {'name': group_name}
+    endpoint_url = ''
+
+    if hosts:
+        hosts = hosts.split(',')
+        hosts_list = []
+        for host in hosts:
+            hosts_list.append({'computer_name': host})
+
+        body['computer_specs'] = hosts_list
+        endpoint_url = 'computer_groups'
+
+    if text_filter:
+        body['text'] = text_filter
+        endpoint_url = 'groups'
+
+    raw_response = client.do_request('POST', endpoint_url, body)
+    group = raw_response.get('data')
+    group = client.update_id(group)
+
+    context = createContext(group, removeNull=True)
+    outputs = {'Tanium.Group(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Group created', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_group(client, data_args):
+    id = data_args.get('id')
+    name = data_args.get('name')
+    endpoint_url = ''
+    if not id and not name:
+        return_error('id and name arguments are missing')
+    if id:
+        endpoint_url = 'groups/' + str(id)
+    if name:
+        endpoint_url = 'groups/by-name/' + name
+
+    raw_response = client.do_request('GET', endpoint_url)
+    group = raw_response.get('data')
+    group = client.update_id(group)
+
+    context = createContext(group, removeNull=True)
+    outputs = {'Tanium.Group(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Group information', group)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def get_groups(client, data_args):
+    count = int(data_args.get('count'))
+    raw_response = client.do_request('GET', 'groups')
+
+    groups = []
+    for group in raw_response.get('data')[:-1][:count]:
+        groups.append(client.update_id(group))
+
+    context = createContext(groups, removeNull=True)
+    outputs = {'Tanium.Group(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Groups', groups)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -731,58 +804,46 @@ def main():
 
     # Remove proxy if not set to true in params
     handle_proxy()
-    LOG('Command being called is %s' % (demisto.command()))
+    command = demisto.command()
+    client = Client(base_url, username, password, domain, verify=use_ssl)
+    demisto.info(f'Command being called is {command}')
+
+    commands = {
+        'test-module': test_module,
+        f'tn-get-system-status': get_system_status,
+        f'tn-get-package': get_package,
+        f'tn-create-package': create_package,
+        f'tn-list-packages': get_packages,
+        f'tn-get-sensor': get_sensor,
+        f'tn-list-sensors': get_sensors,
+        f'tn-ask-question': ask_question,
+        f'tn-get-question-metadata': get_question_metadata,
+        f'tn-get-question-result': get_question_result,
+        f'tn-create-saved-question': create_saved_question,
+        f'tn-get-saved-question-metadata': get_saved_question_metadata,
+        f'tn-get-saved-question-result': get_saved_question_result,
+        f'tn-list-saved-questions': get_saved_questions,
+        f'tn-create-action': create_action,
+        f'tn-get-action': get_action,
+        f'tn-list-actions': get_actions,
+        f'tn-create-saved-action': create_saved_action,
+        f'tn-get-saved-action': get_saved_action,
+        f'tn-list-saved-actions': get_saved_actions,
+        f'tn-list-saved-actions-pending-approval': get_saved_actions_pending,
+        f'tn-create-group': create_group,
+        f'tn-get-group': get_group,
+        f'tn-list-groups': get_groups
+    }
 
     try:
-        client = Client(username, password, domain, base_url, use_ssl)
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module(client)
-            demisto.results('ok')
-        elif demisto.command() == 'tn-get-system-status':
-            get_system_status(client)
-        elif demisto.command() == 'tn-get-package':
-            get_package(client, demisto.args())
-        elif demisto.command() == 'tn-create-package':
-            create_package(client, demisto.args())
-        elif demisto.command() == 'tn-list-packages':
-            get_packages(client, demisto.args())
-        elif demisto.command() == 'tn-get-sensor':
-            get_sensor(client, demisto.args())
-        elif demisto.command() == 'tn-list-sensors':
-            get_sensors(client, demisto.args())
-        elif demisto.command() == 'tn-ask-question':
-            ask_question(client, demisto.args())
-        elif demisto.command() == 'tn-get-question-metadata':
-            get_question_metadata(client, demisto.args())
-        elif demisto.command() == 'tn-get-question-result':
-            get_question_result(client, demisto.args())
-        elif demisto.command() == 'tn-create-saved-question':
-            create_saved_question(client, demisto.args())
-        elif demisto.command() == 'tn-get-saved-question-metadata':
-            get_saved_question_metadata(client, demisto.args())
-        elif demisto.command() == 'tn-get-saved-question-result':
-            get_saved_question_result(client, demisto.args())
-        elif demisto.command() == 'tn-list-saved-questions':
-            get_saved_questions(client, demisto.args())
-        elif demisto.command() == 'tn-create-action':
-            create_action(client, demisto.args())
-        elif demisto.command() == 'tn-get-action':
-            get_action(client, demisto.args())
-        elif demisto.command() == 'tn-list-actions':
-            get_actions(client, demisto.args())
-        elif demisto.command() == 'tn-create-saved-action':
-            create_saved_action(client, demisto.args())
-        elif demisto.command() == 'tn-get-saved-action':
-            get_saved_action(client, demisto.args())
-        elif demisto.command() == 'tn-list-saved-actions':
-            get_saved_actions(client, demisto.args())
-        elif demisto.command() == 'tn-list-saved-actions-pending-approval':
-            get_saved_actions_pending(client, demisto.args())
-
-    # Log exceptions
+        if command in commands:
+            return commands[command](client, demisto.args())
+        # Log exceptions
     except Exception as e:
-        return_error('error has occurred: {}'.format(str(e)), error=e)
+        err_msg = f'Error in Tanium Rest Integration [{e}]'
+        return_error(err_msg, error=e)
+    finally:
+        LOG.print_log()
 
 
 if __name__ == 'builtins':
