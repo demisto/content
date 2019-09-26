@@ -1851,7 +1851,8 @@
         },
                 {
             "playbookID": "Test Convert file hash to corresponding hashes",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "integrations": "VirusTotal - Private API"
         },
         {
             "integrations": "Hybrid Analysis",
