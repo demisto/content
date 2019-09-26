@@ -10,6 +10,7 @@ from googleapiclient import discovery
 
 import typing
 from collections import defaultdict
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -17,24 +18,29 @@ requests.packages.urllib3.disable_warnings()
 
 SCOPES = ['https://www.googleapis.com/auth/documents']
 
-ACTION_TO_FUNCTION = {
-    'createNamedRange': 'create_named_range',
-    'createParagraphBullets': 'create_paragraph_bullets',
-    'deleteContentRange': 'delete_content_range',
-    'deleteNamedRange': 'delete_named_range',
-    'deleteParagraphBullets': 'delete_paragraph_bullets',
-    'deletePositionedObject': 'delete_position_object',
-    'deleteTableColumn': 'delete_table_column',
-    'deleteTableRow': 'delete_table_row',
-    'insertInlineImage': 'insert_inline_image',
-    'insertPageBreak': 'insert_page_break',
-    'insertTable': 'insert_table',
-    'insertTableColumn': 'insert_table_column',
-    'insertTableRow': 'insert_Table_row',
-    'insertText': 'insert_text',
-    'replaceAllText': 'replace_all_text'
-}
 ''' HELPER FUNCTIONS '''
+
+
+def get_function_by_action_name(action):
+    action_to_function = {
+        'createNamedRange': create_named_range,
+        'createParagraphBullets': create_paragraph_bullets,
+        'deleteContentRange': delete_content_range,
+        'deleteNamedRangeByName': delete_named_range_by_name,
+        'deleteNamedRangeById': delete_named_range_by_id,
+        'deleteParagraphBullets': delete_paragraph_bullets,
+        'deletePositionedObject': delete_positioned_object,
+        'deleteTableColumn': delete_table_column,
+        'deleteTableRow': delete_table_row,
+        'insertInlineImage': insert_inline_image,
+        'insertPageBreak': insert_page_break,
+        'insertTable': insert_table,
+        'insertTableColumn': insert_table_column,
+        'insertTableRow': insert_table_row,
+        'insertText': insert_text,
+        'replaceAllText': replace_all_text
+    }
+    return action_to_function[action]
 
 
 def parse_actions(actions: str):
@@ -187,7 +193,7 @@ def delete_content_range(action_name, start_index, end_index, segment_id=None):
     return {action_name: get_range_object(segment_id, start_index, end_index)}
 
 
-def inset_inline_image(action_name, index, uri, width, height, segment_id=None):
+def insert_inline_image(action_name, index, uri, width, height, segment_id=None):
     return {
         action_name: {
             "uri": uri,
@@ -308,8 +314,9 @@ def batch_update_document_command(service):
 
     payload = {**payload, **write_control}
 
+    # Return a function based on the action name and execute it
     for action_type, params in actions.items():
-        request = globals()[ACTION_TO_FUNCTION[action_type]](action_type, *params)
+        request = get_function_by_action_name(action_type)(action_type, *params)
         payload["requests"].append(request)
 
     service.documents().batchUpdate(documentId=document_id, body=payload).execute()
