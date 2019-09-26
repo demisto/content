@@ -1,5 +1,5 @@
 ## [Unreleased]
-The ***Is AutoFocus Enabled?*** task now checks for the **AutoFocus v2** integration.
+The ***Is AutoFocus Enabled?*** task now checks for the **AutoFocus v2** integration SlashNext SEER™ threat.
 
 ## [19.9.1] - 2019-09-18
 #### New Playbook
