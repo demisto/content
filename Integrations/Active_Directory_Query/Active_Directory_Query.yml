@@ -393,5 +393,37 @@ script:
       specified group
   runonce: false
   dockerimage: demisto/ldap:1.0.0.75
+ - name: ad-create-group
+    arguments:
+    - name: name
+      required: true
+    - name: group-class
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - group
+      - top
+    - name: group-type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - security
+      - distribution
+    - name: dn
+      required: true
+      description: Please use " instead of ' when initializing this
+    - name: members
+      description: Must be a full DN
+      isArray: true
+    description: Create a new Active Directory security or mail-enabled group.
+    execution: true
+  - name: ad-delete-group
+    arguments:
+    - name: dn
+      required: true
+    description: Delete an existing Active Directory security or mail-enabled group.
+    execution: true
+  dockerimage: demisto/ldap:1.0.0.75
+  runonce: false
 tests:
   - Active Directory Test
