@@ -35,7 +35,7 @@ tasks:
     task:
       id: 2fd612aa-4287-4576-89d2-e76416ea5602
       version: -1
-      name: 'Convert file hash to corresponding hashes '
+      name: Convert file hash to corresponding hashes
       description: |
         The playbook allows to get all of the relevant file hash even if there is only one hash type available
         For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes
