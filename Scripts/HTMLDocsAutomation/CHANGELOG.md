@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for commands that have only headlines and no text in the human readable output.
 
 ## [19.9.1] - 2019-09-18
  - Added the *permissions* argument with the following options:
