@@ -39,7 +39,7 @@ tasks:
       description: |
         The playbook allows to get all of the relevant file hash even if there is only one hash type available
         For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes
-      playbookName: 'Convert file hash to corresponding hashes '
+      playbookName: Convert file hash to corresponding hashes
       type: playbook
       iscommand: false
       brand: ""
