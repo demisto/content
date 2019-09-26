@@ -8,7 +8,6 @@ configuration:
   required: true
   type: 0
 - display: Trust any certificate (not secure)
-  defaultvalue: ''
   name: insecure
   required: false
   type: 8
@@ -1003,7 +1002,6 @@ script:
       name: parameters
       required: false
       secret: false
-
     deprecated: false
     description: Create action object based on package name or package ID.
     execution: false
@@ -1079,7 +1077,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '5'
-      description: Number ofactions to return.
+      description: Number of actions to return.
       isArray: false
       name: count
       required: false
@@ -1260,11 +1258,62 @@ script:
     - contextPath: Tanium.PendingSavedAction.OwnerUserId
       description: The id of the user who owns this object.
       type: Number
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of group.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a group object based on ID or name.
+    execution: false
+    name: tn-get-group
+  - arguments:
+    - default: false
+      description: Name of group to create.
+      isArray: false
+      name: group-name
+      required: true
+      secret: false
+    - default: false
+      description: Comma separated list of hosts, For example - Host1,Host2
+      isArray: false
+      name: hosts
+      required: false
+      secret: false
+    - default: false
+      description: ' Text filter-based computer group, For example - operating system
+        contains windows'
+      isArray: false
+      name: text-filter
+      required: false
+      secret: false
+    deprecated: false
+    description: Create group object based on hosts list or text filter.
+    execution: false
+    name: tn-create-group
+  - arguments:
+    - default: false
+      defaultValue: '5'
+      description: Number of groups to return.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-list-groups
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Tanium Rest Test
