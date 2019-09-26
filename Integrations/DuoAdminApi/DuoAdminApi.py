@@ -111,17 +111,17 @@ def get_host_port_from_proxy_settings(proxy_settings):
 
     port = proxy_settings_str.split(':')[-1]
 
-    host = re.search(ipv4Regex, proxy_settings_str)
+    host_regex_filter = re.search(ipv4Regex, proxy_settings_str)
 
-    if host:
-        host = host.group()
+    if host_regex_filter:
+        host = host_regex_filter.group()
     else:
         proxy_settings_str_args = proxy_settings_str.split(':')
 
         if 'http' in proxy_settings_str:
             host = ':'.join(proxy_settings_str_args[1:-1])[2:]
         else:
-            host = proxy_settings_str_args[0:-1]
+            host = ':'.join(proxy_settings_str_args[0:-1])
 
     return host, port
 
