@@ -1,7 +1,25 @@
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 import demistomock as demisto
 
-MOCK_URL = "http://123-fake-api.com/api"
+MOCK_URL = "http://123-fake-api.com"
+MOCK_API_URL = MOCK_URL + "/api"
+
+MOCK_PARAMS = {
+    "credentials": {
+        "identifier": "mock_email",
+        "password": "mock_pass"
+    },
+    "insecure": True,
+    "proxy": False,
+    "serverUrl": MOCK_URL,
+    "client_id": "mock_cliend_id",
+    "threshold": 6
+}
+
+MOCK_ACCESS_TOKEN = {
+    'expires_in': 3600,
+    'access_token': '3220879210'
+}
 
 MOCK_GET_ALL_OBJS_ARGUMENTS = {'limit': '2', 'page': '0'}
 
@@ -124,22 +142,20 @@ EXPECTED_ERROR_STRINGS = [
 ]
 
 
-def mock_access_token():
-    return 'fake_access_token'
-
-
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
-def test_create_indicator_command(mocker, requests_mock):
-    from ThreatQ_v2 import create_indicator_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_CREATE_INDICATOR_ARGUMENTS)
+def mock_demisto(mocker, mock_args):
+    mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
+    mocker.patch.object(demisto, 'args', return_value=mock_args)
     mocker.patch.object(demisto, 'results')
 
-    requests_mock.post(MOCK_URL + '/indicators', json=MOCK_INDICATOR_CREATION_RESPONSE)
 
+def test_create_indicator_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_CREATE_INDICATOR_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/indicators', json=MOCK_INDICATOR_CREATION_RESPONSE)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+
+    from ThreatQ_v2 import create_indicator_command
     create_indicator_command()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
 
@@ -153,18 +169,14 @@ def test_create_indicator_command(mocker, requests_mock):
     assert entry_context['Attribute'][1]['Value'] == 'test_value2'
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_edit_event_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_EDIT_EVENT_ARGUMENTS)
+    requests_mock.put(MOCK_API_URL + '/events/2019', json=MOCK_GET_EVENT_RESPONSE)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+
     from ThreatQ_v2 import edit_event_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_EDIT_EVENT_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.put(MOCK_URL + '/events/2019', json=MOCK_GET_EVENT_RESPONSE)
-
     edit_event_command()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Event(val.ID === obj.ID)']
 
@@ -173,19 +185,15 @@ def test_edit_event_command(mocker, requests_mock):
     assert entry_context['Description'] == 'test'  # html markups should be cleaned
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_upload_file_command(mocker, requests_mock):
-    from ThreatQ_v2 import upload_file_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_UPLOAD_FILE_ARGUMENTS)
+    mock_demisto(mocker, MOCK_UPLOAD_FILE_ARGUMENTS)
     mocker.patch.object(demisto, 'getFilePath', return_value=MOCK_FILE_INFO)
-    mocker.patch.object(demisto, 'results')
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.post(MOCK_API_URL + '/attachments', json=MOCK_FILE_UPLOAD_RESPONSE)
 
-    requests_mock.post(MOCK_URL + '/attachments', json=MOCK_FILE_UPLOAD_RESPONSE)
-
+    from ThreatQ_v2 import upload_file_command
     upload_file_command()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.File(val.ID === obj.ID)']
 
@@ -197,21 +205,17 @@ def test_upload_file_command(mocker, requests_mock):
     assert entry_context['Name'] == 'testfile.txt'
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_get_email_reputation(mocker, requests_mock):
-    from ThreatQ_v2 import get_email_reputation
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_EMAIL_REPUTATION_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.get(MOCK_URL + '/search?query=foo@demisto.com&limit=1',
+    mock_demisto(mocker, MOCK_EMAIL_REPUTATION_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/search?query=foo@demisto.com&limit=1',
                       json=MOCK_SEARCH_BY_NAME_RESPONSE)
-    requests_mock.get(MOCK_URL + '/indicators/2019?with=attributes,sources,score,type',
+    requests_mock.get(MOCK_API_URL + '/indicators/2019?with=attributes,sources,score,type',
                       json=MOCK_GET_INDICATOR_RESPONSE)
 
+    from ThreatQ_v2 import get_email_reputation
     get_email_reputation()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
     generic_context = results[0]['EntryContext']['Account.Email(val.Address && val.Address == obj.Address)']
@@ -223,18 +227,14 @@ def test_get_email_reputation(mocker, requests_mock):
     assert results[0]['EntryContext']['DBotScore']['Score'] == 3
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_get_related_objs_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_RELATED_OBJS_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/adversaries/1/indicators?with=sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
+
     from ThreatQ_v2 import get_related_objs_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_RELATED_OBJS_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.get(MOCK_URL + '/adversaries/1/indicators?with=sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
-
     get_related_objs_command('indicator')
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Adversary(val.ID === obj.ID)']
 
@@ -244,18 +244,14 @@ def test_get_related_objs_command(mocker, requests_mock):
     assert entry_context['RelatedIndicator'][1]['Type'] == 'IP Address'
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_get_all_objs_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_GET_ALL_OBJS_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/indicators?with=attributes,sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
+
     from ThreatQ_v2 import get_all_objs_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_GET_ALL_OBJS_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.get(MOCK_URL + '/indicators?with=attributes,sources,score', json=MOCK_INDICATOR_LIST_RESPONSE)
-
     get_all_objs_command('indicator')
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Indicator(val.ID === obj.ID)']
 
@@ -265,18 +261,14 @@ def test_get_all_objs_command(mocker, requests_mock):
     assert entry_context[1]['Type'] == 'IP Address'
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_search_by_name_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_SEARCH_BY_NAME_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/search?query=foo@demisto&limit=10', json=MOCK_SEARCH_BY_NAME_RESPONSE)
+
     from ThreatQ_v2 import search_by_name_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_SEARCH_BY_NAME_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.get(MOCK_URL + '/search?query=foo@demisto&limit=10', json=MOCK_SEARCH_BY_NAME_RESPONSE)
-
     search_by_name_command()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
 
     assert 'Search Results - Indicators' in results[0]['HumanReadable']
@@ -286,18 +278,14 @@ def test_search_by_name_command(mocker, requests_mock):
     assert len(results[0]['EntryContext']) == 3
 
 
-@patch('ThreatQ_v2.get_access_token', mock_access_token)
 def test_search_by_id_command(mocker, requests_mock):
+    mock_demisto(mocker, MOCK_SEARCH_BY_ID_ARGUMENTS)
+    requests_mock.post(MOCK_API_URL + '/token', json=MOCK_ACCESS_TOKEN)
+    requests_mock.get(MOCK_API_URL + '/events/2019?with=attributes,sources', json=MOCK_GET_EVENT_RESPONSE)
+
     from ThreatQ_v2 import search_by_id_command
-
-    mocker.patch.object(demisto, 'args', return_value=MOCK_SEARCH_BY_ID_ARGUMENTS)
-    mocker.patch.object(demisto, 'results')
-
-    requests_mock.get(MOCK_URL + '/events/2019?with=attributes,sources', json=MOCK_GET_EVENT_RESPONSE)
-
     search_by_id_command()
 
-    # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     entry_context = results[0]['EntryContext']['ThreatQ.Event(val.ID === obj.ID)']
 
@@ -309,9 +297,9 @@ def test_search_by_id_command(mocker, requests_mock):
 def test_get_errors_string_from_bad_request():
     from ThreatQ_v2 import get_errors_string_from_bad_request
     from requests.models import Response
-
     res = Mock(spec=Response)
 
     for error_response, expected_result in zip(MOCK_ERROR_RESPONSES, EXPECTED_ERROR_STRINGS):
         res.json.return_value = error_response
-        assert expected_result in get_errors_string_from_bad_request(res, 400)
+        actual_result = get_errors_string_from_bad_request(res, 400)
+        assert expected_result in actual_result
