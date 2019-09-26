@@ -307,6 +307,7 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
         'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
         'TrapsID': row_content.get('trapsId'),
+        'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
         'RegionID': row_content.get('regionId'),
