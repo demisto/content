@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Added requests debugging logger when `debug-mode=true`.
   - Added the ***BaseClient*** and ***DemistoException*** objects.
   - Added the ***build_dbot_entry*** and ***build_malicious_dbot_entry*** functions.
   - Added spaces between cells for ***tableToMarkdown*** function output, to prevent auto-extract over multiple cells.

@@ -21,7 +21,7 @@ configuration:
   required: false
   type: 8
 description: A search engine used for searching Internet-connected devices
-display: Shodan_v2
+display: Shodan v2
 name: Shodan_v2
 script:
   commands:
