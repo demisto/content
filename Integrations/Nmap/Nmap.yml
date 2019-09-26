@@ -4,7 +4,7 @@ commonfields:
 name: nmap
 display: nmap
 category: Network Security
-description: Run nmap scans with the given parameters so SEER™
+description: Run nmap scans with the given parameters
 configuration: []
 fromversion: 5.0.0
 script:
