@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-SCOPES = ['https://www.googleapis.com/auth/documents']
+SCOPES = ['https://www.googleapis.com/auth/documents']  # Permissions the application needs to use google docs
 
 ''' HELPER FUNCTIONS '''
 
@@ -56,21 +56,9 @@ def parse_actions(actions: str):
     return parsed_actions
 
 
-def log_error(f):
-    def wrapped(*args, **kwrags):
-        try:
-            res = f(*args, **kwrags)
-            return res
-        except Exception as e:
-            return_error(str(e))
-
-    return wrapped
-
-
-@log_error
 def get_http_client_with_proxy(disable_ssl):
     proxies = handle_proxy()
-    if not proxies or not proxies['https']:
+    if not proxies.get('https', True):
         raise Exception('https proxy value is empty. Check Demisto server configuration')
     https_proxy = proxies['https']
     if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
@@ -85,7 +73,6 @@ def get_http_client_with_proxy(disable_ssl):
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl)
 
 
-@log_error
 def get_credentials(credentials, scopes):
     credentials = service_account.ServiceAccountCredentials.from_json_keyfile_dict(credentials, scopes=scopes)
     return credentials
@@ -294,19 +281,18 @@ def batch_update_document_command(service):
     actions = parse_actions(args.get('actions'))
     required_revision_id = args.get("required_revision_id", None)
     target_revision_id = args.get("target_revision_id", None)
+    document = batch_update_document(service, document_id, actions, required_revision_id, target_revision_id)
+    return document
 
+
+def batch_update_document(service, document_id, actions, required_revision_id=None, target_revision_id=None):
     payload: dict = {
         "requests": []
     }
 
     write_control: typing.DefaultDict = defaultdict(dict)
     if required_revision_id and target_revision_id:
-        demisto.results({
-            'Type': entryTypes['error'],
-            'ContentsFormat': formats['text'],
-            'Contents': 'Enter required_revision_id or target_revision_id but not both'
-        })
-        return
+        raise Exception("Enter required_revision_id or target_revision_id but not both")
     elif required_revision_id:
         write_control['writeControl']["requiredRevisionId"] = required_revision_id
     elif target_revision_id:
@@ -327,7 +313,11 @@ def batch_update_document_command(service):
 def create_document_command(service):
     args = demisto.args()
     title = args.get('title')
+    document = create_document(service, title)
+    return document
 
+
+def create_document(service, title):
     payload = {
         "title": title,
     }
@@ -349,7 +339,7 @@ def get_document(service, document_id):
 
 
 def main():
-    LOG('Command being called is %s' % (demisto.command()))
+    demisto.debug('Command being called is %s' % (demisto.command()))
     proxy = demisto.params().get('proxy')
     disable_ssl = demisto.params().get('insecure', False)
     service_account_credentials = json.loads(demisto.params().get('service_account_credentials'))
@@ -362,11 +352,11 @@ def main():
 
     try:
         service = get_client(service_account_credentials, SCOPES, proxy, disable_ssl)
-        if demisto.command() == 'update_document':
+        if demisto.command() == 'google-docs-update-document':
             res = batch_update_document_command(service)
-        elif demisto.command() == 'create_document':
+        elif demisto.command() == 'google-docs-create-document':
             res = create_document_command(service)
-        elif demisto.command() == 'get_document':
+        elif demisto.command() == 'google-docs-get-document':
             res = get_document_command(service)
         else:
             return_error("Command {} does not exist".format(demisto.command()))

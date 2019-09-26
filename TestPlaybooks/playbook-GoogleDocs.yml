@@ -37,7 +37,7 @@ tasks:
       version: -1
       name: Create Test Doucment
       description: Creates a document
-      script: GoogleDocs|||create_document
+      script: GoogleDocs|||google-docs-create-document
       type: regular
       iscommand: true
       brand: GoogleDocs
@@ -67,7 +67,7 @@ tasks:
       version: -1
       name: 'Get Document after creation '
       description: Returns a document matching the given ID.
-      script: GoogleDocs|||get_document
+      script: GoogleDocs|||google-docs-get-document
       type: regular
       iscommand: true
       brand: GoogleDocs
@@ -99,7 +99,7 @@ tasks:
       version: -1
       name: Update document
       description: Updates a document with a given ID
-      script: GoogleDocs|||update_document
+      script: GoogleDocs|||google-docs-update-document
       type: regular
       iscommand: true
       brand: GoogleDocs
@@ -134,7 +134,7 @@ tasks:
       version: -1
       name: Get document after update
       description: Returns a document matching the given ID.
-      script: GoogleDocs|||get_document
+      script: GoogleDocs|||google-docs-get-document
       type: regular
       iscommand: true
       brand: GoogleDocs

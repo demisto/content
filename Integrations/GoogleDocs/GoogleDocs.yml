@@ -32,7 +32,7 @@ script:
     deprecated: false
     description: Returns a document matching the given ID.
     execution: false
-    name: get_document
+    name: google-docs-get-document
     outputs:
     - contextPath: GoogleDocs.Title
       description: Title of the document
@@ -53,7 +53,7 @@ script:
     deprecated: false
     description: Creates a document
     execution: false
-    name: create_document
+    name: google-docs-create-document
     outputs:
     - contextPath: GoogleDocs.Title
       description: Title of the document
@@ -96,7 +96,7 @@ script:
     deprecated: false
     description: Updates a document with a given ID
     execution: false
-    name: update_document
+    name: google-docs-update-document
     outputs:
     - contextPath: GoogleDocs.Title
       description: Title of the document
