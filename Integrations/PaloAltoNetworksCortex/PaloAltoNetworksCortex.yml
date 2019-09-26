@@ -773,7 +773,7 @@ script:
       description: The hostname of the firewall that logged the network traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.Subtype
-      description: Traffic log subtype. Values are: start, end, drop, deny.
+      description: 'Traffic log subtype. Values are: start, end, drop, deny.'
       type: String
     - contextPath: Cortex.Logging.Traffic.SessionEndReason
       description: The reason a session terminated. If the termination had multiple causes.
@@ -1036,14 +1036,14 @@ script:
       description: Subtype of the threat log.
       type: String
     - contextPath: Cortex.Logging.Threat.Direction
-      description: Indicates the direction of the attack, client-to-server or server-to-client:
+      description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
       type: String
     - contextPath: Cortex.Logging.Threat.Misc
-      description: The meaning of this field differs depending on the log's subtype:
+      description: "The meaning of this field differs depending on the log's subtype:
         Subtype is URL, this field contains the requested URI.
         Subtype is File, this field contains the file name or file type.
         Subtype is Virus, this field contains the file name.
-        Subtype is WildFire, this field contains the file name.
+        Subtype is WildFire, this field contains the file name."
       type: String
     - contextPath: Cortex.Logging.Threat.Severity
       description: Severity associated with the event.
@@ -1247,8 +1247,8 @@ script:
       description: Parent process identifier.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Processes.ExeFileIdx
-      description: Index of target files for specific security events such as:
-        Scanning, Malicious DLL, Malicious Macro events.
+      description: "Index of target files for specific security events such as:
+        Scanning, Malicious DLL, Malicious Macro events."
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Processes.UserIdx
       description: Index of users.
