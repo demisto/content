@@ -1,6 +1,7 @@
-from .PaloAltoNetworks_Traps import *
+import demistomock as demisto
 
-SERVER_MOCK_URL = 'https://demisto.mock.mybrz.net'
+
+SERVER_MOCK_URL = 'https://demisto.mock.mybrz.net/xapi/v1/'
 
 integration_params = {
         "application_id": "bcab5b57-6ca4-43ee-a4c0-618a2246d4ac",
@@ -13,6 +14,8 @@ integration_params = {
 
 def test_create_headers(mocker):
     mocker.patch.object(demisto, 'params', return_value=integration_params)
+    from PaloAltoNetworks_Traps import create_headers
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
     headers = create_headers(True)
     expect_headers = {
         'Content-Type': 'application/json',
@@ -22,7 +25,9 @@ def test_create_headers(mocker):
 
 
 
-def test_get_endpoint_id():
+def test_parse_data_from_response(mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
+    from PaloAltoNetworks_Traps import parse_data_from_response
     resp_obj = {
         'guid': 'd3339851f18f470182bf2bf98ad5db4b',
         'name': 'EC2AMAZ-8IEUJEN',
@@ -41,33 +46,23 @@ def test_get_endpoint_id():
         'wsConnected': False,
         'capabilities': {'quarantine': True, 'networkIsolation': True, 'terminateProcess': True,
                                  'fileRetrieval': True, 'liveTerminal': True, 'scriptExecution': False}}
-    endpoint_data, raw_data = parse_data_from_response(resp_obj, 'get_endpoint_by_id')
-    expectd_endpoint_data = {'ID': 'd3339851f18f470182bf2bf98ad5db4b', 'Name': 'EC2AMAZ-8IEUJEN', 'Domain': 'WORKGROUP',
+    endpoint_data = parse_data_from_response(resp_obj, 'get_endpoint_by_id')
+    expected_endpoint_data = {'ID': 'd3339851f18f470182bf2bf98ad5db4b', 'Name': 'EC2AMAZ-8IEUJEN', 'Domain': 'WORKGROUP',
                              'Platform': 'windows', 'Status': 'active', 'IP': 'xxx.xx.xx.xxx',
                              'ComputerSid': 'S-1-5-21-202186053-2642234773-3690463397', 'IsCompromised': False,
                              'OsVersion': '10.0.14393', 'OsProductType': 'server', 'OsProductName': '', 'Is64': True,
                              'LastSeen': '2019-09-24T15:10:21.000Z', 'LastUser': 'Administrator'}
-    expected_raw_data = {'guid': 'd3339851f18f470182bf2bf98ad5db4b', 'name': 'EC2AMAZ-8IEUJEN', 'domain': 'WORKGROUP',
-                         'platform': 'windows', 'status': 'active', 'scanStatus': 'success',
-                         'trapsVersion': '6.1.0.13046', 'contentVersion': '63-10484', 'ip': 'xxx.xx.xx.xxx',
-                         'computerSid': 'S-1-5-21-202186053-2642234773-3690463397', 'installStatus': 'installed',
-                         'installTime': '2019-09-05T10:51:35.000Z',
-                         'distributionId': {'guid': 'afbf42010b6233624ffc20ca95d51ff3'}, 'compromised': False,
-                         'alias': None, 'osVersion': '10.0.14393', 'osProductType': 'server', 'osProductName': '',
-                         'is64': True, 'lastSeen': '2019-09-24T15:10:21.000Z',
-                         'provisioning': {'name': None, 'domain': None, 'ip': None}, 'lastUser': 'Administrator',
-                         'isLicensed': True, 'vdi': 'none', 'isolationStatus': 'isolated', 'wsConnected': False,
-                         'capabilities': {'quarantine': True, 'networkIsolation': True, 'terminateProcess': True,
-                                          'fileRetrieval': True, 'liveTerminal': True, 'scriptExecution': False}}
-    assert endpoint_data == expectd_endpoint_data
-    assert raw_data == expected_raw_data
+
+    assert endpoint_data == expected_endpoint_data
 
 
-def test_event_quarantine(requests_mock):
+def test_event_quarantine(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
+    from PaloAltoNetworks_Traps import event_quarantine
     event_id = '7dc177a4df1c41b19ca1e67e8573b6be'
     quarantine_path = f'events/{event_id}/quarantine'
     mock_resp_json = {'operationId': {'samMessageIds': ['80cf8859df7811e9acbf0245d8e950da']}}
-    requests_mock.get(SERVER_MOCK_URL + quarantine_path, json=mock_resp_json)
+    requests_mock.post(SERVER_MOCK_URL + quarantine_path, json=mock_resp_json)
     operations = event_quarantine(event_id)
     expected_operations = [{
         'EventID': '7dc177a4df1c41b19ca1e67e8573b6be',
@@ -77,11 +72,13 @@ def test_event_quarantine(requests_mock):
     assert expected_operations == operations
 
 
-def test_endpoint_isolate(requests_mock):
+def test_endpoint_isolate(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
+    from PaloAltoNetworks_Traps import endpoint_isolate
     endpoint_id = 'd3339851f18f470182bf2bf98ad5db4b'
     isolate_path = f'agents/{endpoint_id}/isolate'
     mock_resp_json = {'operationId': '458e2003dfb411e9acbf0245d8e950da'}
-    requests_mock.get(SERVER_MOCK_URL + isolate_path, json=mock_resp_json)
+    requests_mock.post(SERVER_MOCK_URL + isolate_path, json=mock_resp_json)
     operation_obj = endpoint_isolate(endpoint_id)
     expected_operation = {
         'OperationID': '458e2003dfb411e9acbf0245d8e950da',
