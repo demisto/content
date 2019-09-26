@@ -512,7 +512,7 @@ def get_context_standards_outputs(results: list) -> dict:
         end_point_header: dict = result.get('endPointHeader', {})
 
         # Endpoint & Host
-        endpoint = {
+        endpoint_data = {
             'Hostname': end_point_header.get('deviceName'),
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
@@ -520,15 +520,32 @@ def get_context_standards_outputs(results: list) -> dict:
             'OS': os_type_number_to_string(int(end_point_header.get('osType'))),
             'ID': result.get('agentId')
         }
-        delete_empty_value_dict_and_append_to_lists(endpoint, [endpoints, hosts])
+        delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
 
         # Domain
-        domain = {'Name': result.get('url_domain')}
-        delete_empty_value_dict_and_append_to_lists(domain, [domains])
+        domain_data = {'Name': result.get('url_domain')}
+        delete_empty_value_dict_and_append_to_lists(domain_data, [domains])
+
+        # IP
+        ip_fields = ['src', 'dst', 'natsrc', 'natdst']
+        for field in ip_fields:
+            ip_data = {
+                'Address': result.get(field)
+            }
+            delete_empty_value_dict_and_append_to_lists(ip_data, [ips])
 
         # File
         raw_files: list = message_data.get('files', [])
         if message_data:
+            file_data = {
+                'Name': message_data.get('fileName'),
+                'Type': message_data.get('type'),
+                'Path': message_data.get('filePath'),
+                'Size': message_data.get('fileSize'),
+                'SHA256': message_data.get('sha256'),
+                'DigitalSignature.Publisher': message_data.get('localAnalysisResult', {}).get('publishers')
+            }
+            delete_empty_value_dict_and_append_to_lists(file_data, [files])
             if subtype.lower() == 'wildfire':
                 file_data = {
                     'SHA256': result.get('filedigest'),
@@ -543,7 +560,7 @@ def get_context_standards_outputs(results: list) -> dict:
                         'Path': raw_file.get('rawFullPath'),
                         'SHA256': raw_file.get('sha256'),
                         'Size': raw_file.get('fileSize'),
-                        'DigitalSignature.Publisher': raw_file.get()
+                        'DigitalSignature.Publisher': raw_file.get('signers')
                     }
                     delete_empty_value_dict_and_append_to_lists(file_data, [files])
 
