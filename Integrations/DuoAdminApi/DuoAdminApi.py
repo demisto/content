@@ -103,7 +103,7 @@ def set_proxy():
 
     # if no proxy settings have been set
     except ValueError:
-        admin_api.set_proxy(proxy_type=None)
+        admin_api.set_proxy(host=None, port=None, proxy_type=None)
 
 
 def get_host_port_from_proxy_settings(proxy_settings):
