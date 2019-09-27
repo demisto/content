@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: vmray
+  id: vmray v2
   version: -1
 configuration:
 - defaultvalue: https://cloud.vmray.com
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: Ransomware analysis sandboxing.
 display: VMRay
-name: vmray
+name: vmray v2
 script:
   commands:
   - arguments:
@@ -519,9 +519,23 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
+  - arguments:
+    - default: true
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
+        and SHA256.
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks the file reputation of the specified hash.
+    execution: false
+    name: file
   dockerimage: demisto/python
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
-fromversion: 4.0.0
+sourcemoduleid: vmray
