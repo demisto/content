@@ -493,10 +493,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: e1105989-382e-4665-8de4-a9ff1a3806b3
+    taskid: 9f17ce67-21a6-437a-8611-daba264c9bbe
     type: condition
     task:
-      id: e1105989-382e-4665-8de4-a9ff1a3806b3
+      id: 9f17ce67-21a6-437a-8611-daba264c9bbe
       version: -1
       name: Verify Query Traps Logs Outputs
       type: condition
@@ -514,7 +514,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Traps.Severity
+                accessor: Logging.Traps.AgentID
             iscontext: true
     view: |-
       {
@@ -528,10 +528,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 14137fdb-ea7a-4c8b-8ed9-1dda850ae03a
+    taskid: 111c55dd-eb42-4a84-807a-97d69a9f6963
     type: condition
     task:
-      id: 14137fdb-ea7a-4c8b-8ed9-1dda850ae03a
+      id: 111c55dd-eb42-4a84-807a-97d69a9f6963
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
@@ -549,7 +549,7 @@ tasks:
             value:
               complex:
                 root: Cortex
-                accessor: Logging.Analytics.EndPointHeader.AgentTime
+                accessor: Logging.Analytics.AgentID
             iscontext: true
     view: |-
       {
