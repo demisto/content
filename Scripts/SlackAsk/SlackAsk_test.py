@@ -1,7 +1,9 @@
 import demistomock as demisto
 from CommonServerPython import entryTypes
 import json
-from SlackAsk import main
+import dateparser
+import datetime
+import SlackAsk
 
 
 BLOCKS = [{
@@ -85,12 +87,13 @@ def test_slack_ask_user(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
@@ -99,7 +102,9 @@ def test_slack_ask_user(mocker):
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'message': 'wat up',
         'to': 'alexios'
@@ -112,12 +117,14 @@ def test_slack_ask_user_additional(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'additionalOptions': 'maybe', 'reply': 'Thank you brother.'
+        'additionalOptions': 'maybe', 'reply': 'Thank you brother.', 'lifetime': '24 hours',
+        'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
@@ -126,7 +133,9 @@ def test_slack_ask_user_additional(mocker):
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS_ADDITIONAL),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'message': 'wat up',
         'to': 'alexios'
@@ -139,12 +148,13 @@ def test_slack_ask_channel(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'channel': 'general', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
@@ -153,7 +163,9 @@ def test_slack_ask_channel(mocker):
         'blocks': json.dumps({
             'blocks': json.dumps(BLOCKS),
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'message': 'wat up',
         'channel': 'general'
@@ -166,20 +178,23 @@ def test_slack_ask_user_threads(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
     assert call_args[1] == {
         'message': json.dumps({
-            'message': 'wat up - Please reply to this thread with `yes` or `no`',
+            'message': 'wat up - Please reply to this thread with `yes` or `no`.',
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
         'to': 'alexios',
@@ -192,20 +207,24 @@ def test_slack_ask_user_threads_additional(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'user': 'alexios', 'message': 'wat up', 'option1': 'yes#red', 'option2': 'no#red',
-        'additionalOptions': 'maybe', 'responseType': 'thread', 'reply': 'Thank you brother.'
+        'additionalOptions': 'maybe', 'responseType': 'thread', 'reply': 'Thank you brother.',
+        'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
     assert call_args[1] == {
         'message': json.dumps({
-            'message': 'wat up - Please reply to this thread with `yes` or `no` or `maybe`',
+            'message': 'wat up - Please reply to this thread with `yes` or `no` or `maybe`.',
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
         'to': 'alexios',
@@ -218,20 +237,23 @@ def test_slack_ask_channel_threads(mocker):
     mocker.patch.object(demisto, 'investigation', return_value={'id': '22'})
     mocker.patch.object(demisto, 'args', return_value={
         'channel': 'general', 'message': 'wat up', 'responseType': 'thread', 'option1': 'yes#red', 'option2': 'no#red',
-        'reply': 'Thank you brother.'
+        'reply': 'Thank you brother.', 'lifetime': '24 hours', 'defaultResponse': 'NoResponse'
     })
     mocker.patch.object(demisto, 'results')
+    mocker.patch.object(dateparser, 'parse', return_value=datetime.datetime(2019, 9, 26, 18, 38, 25))
 
     # Arrange
-    main()
+    SlackAsk.main()
     call_args = demisto.executeCommand.call_args[0]
 
     # Assert
     assert call_args[1] == {
         'message': json.dumps({
-            'message': 'wat up - Please reply to this thread with `yes` or `no`',
+            'message': 'wat up - Please reply to this thread with `yes` or `no`.',
             'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@22',
-            'reply': 'Thank you brother.'
+            'reply': 'Thank you brother.',
+            'expiry': '2019-09-26 18:38:25',
+            'default_response': 'NoResponse'
         }),
         'ignoreAddURL': 'true',
         'channel': 'general',

@@ -20,18 +20,19 @@ args:
   secret: false
 - default: false
   defaultValue: Yes#green
-  description: The first reply option. The default is "Yes" with a green button. To change the color of the button, add
-    the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "green". For
-    example, "Yes#green".
+  description: The first reply option. The default is "Yes" with a green button. To
+    change the color of the button, add the pound sign (#) followed by the name of
+    the new color (green, red, or black). The default color is "green". For example,
+    "Yes#green".
   isArray: false
   name: option1
   required: false
   secret: false
 - default: false
   defaultValue: No#red
-  description: The second reply option. The default is "No" with a red button. To change the button color, add
-    the pound sign (#) followed by the name of the new color (green, red, or black). The default color is "red". For
-    example, "No#red".
+  description: The second reply option. The default is "No" with a red button. To
+    change the button color, add the pound sign (#) followed by the name of the new
+    color (green, red, or black). The default color is "red". For example, "No#red".
   isArray: false
   name: option2
   required: false
@@ -80,9 +81,24 @@ args:
   secret: false
 - default: false
   defaultValue: Thank you for your response.
-  description: The reply to send back to the user.
+  description: The reply to send to the user.
   isArray: false
   name: reply
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
+  isArray: false
+  name: lifetime
+  required: false
+  secret: false
+- default: false
+  defaultValue: NoReponse
+  description: Default response in case the question expires.
+  isArray: false
+  name: defaultResponse
   required: false
   secret: false
 comment: Sends a message (question) to either user (in a direct message) or to a channel.

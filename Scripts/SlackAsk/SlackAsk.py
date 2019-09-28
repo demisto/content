@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import dateparser
 
 STYLES_DICT = {
     'black': '',
@@ -57,10 +58,19 @@ def main():
     option2 = demisto.get(demisto.args(), 'option2')
     extra_options = argToList(demisto.args().get('additionalOptions', ''))
     reply = demisto.get(demisto.args(), 'reply')
+    response_type = demisto.get(demisto.args(), 'responseType')
+    lifetime = demisto.get(demisto.args(), 'lifetime')
+    try:
+        expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
+                                   '%Y-%m-%d %H:%M:%S')
+    except Exception:
+        expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
+                                   '%Y-%m-%d %H:%M:%S')
+    default_response = demisto.get(demisto.args(), 'defaultResponse')
+
     entitlement_string = entitlement + '@' + demisto.investigation()['id']
     if demisto.get(demisto.args(), 'task'):
         entitlement_string += '|' + demisto.get(demisto.args(), 'task')
-    response_type = demisto.args().get('responseType')
 
     args = {
         'ignoreAddURL': 'true'
@@ -73,11 +83,13 @@ def main():
         for option in user_options:
             options.append(option.split('#')[0])
         string_options = ' or '.join(list(map(lambda o: '`{}`'.format(o), options)))
-        message = '{} - Please reply to this thread with {}'.format(demisto.args()['message'], string_options)
+        message = '{} - Please reply to this thread with {}.'.format(demisto.args()['message'], string_options)
         args['message'] = json.dumps({
             'message': message,
             'entitlement': entitlement_string,
-            'reply': reply
+            'reply': reply,
+            'expiry': expiry,
+            'default_response': default_response
         })
     else:
         for option in user_options:
@@ -94,7 +106,9 @@ def main():
         args['blocks'] = json.dumps({
             'blocks': blocks,
             'entitlement': entitlement_string,
-            'reply': reply
+            'reply': reply,
+            'expiry': expiry,
+            'default_response': default_response
         })
         args['message'] = demisto.args()['message']
 
