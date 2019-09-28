@@ -9,6 +9,8 @@ STYLES_DICT = {
     'red': 'danger'
 }
 
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+
 
 def create_blocks(text: str, entitlement: str, options: list, reply: str) -> list:
     value = json.dumps({
@@ -62,10 +64,10 @@ def main():
     lifetime = demisto.get(demisto.args(), 'lifetime')
     try:
         expiry = datetime.strftime(dateparser.parse('in ' + lifetime, settings={'TIMEZONE': 'UTC'}),
-                                   '%Y-%m-%d %H:%M:%S')
+                                   DATE_FORMAT)
     except Exception:
         expiry = datetime.strftime(dateparser.parse('in 1 day', settings={'TIMEZONE': 'UTC'}),
-                                   '%Y-%m-%d %H:%M:%S')
+                                   DATE_FORMAT)
     default_response = demisto.get(demisto.args(), 'defaultResponse')
 
     entitlement_string = entitlement + '@' + demisto.investigation()['id']

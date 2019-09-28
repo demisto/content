@@ -1815,6 +1815,43 @@ def test_check_for_answers_error(mocker, requests_mock):
     }])
 
 
+def test_check_for_answers_handle_entitlement_error(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(demisto, 'handleEntitlementForUser', side_effect=InterruptedError())
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+    mocker.patch.object(demisto, 'error')
+
+    requests_mock.post(
+        'https://oproxy.demisto.ninja/slack-poll',
+        json={'payload': PAYLOAD_JSON},
+        status_code=200
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = json.dumps([{
+        'thread': 'notcool',
+        'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8@30|44',
+        'expiry': '3000-09-26 18:38:25',
+        'default_response': 'NoResponse'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+
+    # Assert
+
+    assert demisto.handleEntitlementForUser.call_count == 1
+    assert demisto.error.call_count == 1
+
+    # Should not delete the question
+    assert demisto.getIntegrationContext()['questions'] == json.dumps([])
+
+
 @pytest.mark.asyncio
 async def test_check_entitlement(mocker):
     from Slack import check_and_handle_entitlement

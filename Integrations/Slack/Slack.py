@@ -8,8 +8,9 @@ from distutils.util import strtobool
 import asyncio
 import concurrent
 import requests
+from typing import Tuple
 
-# disable insecure warnings
+# disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
@@ -34,8 +35,9 @@ INCIDENT_OPENED = 'incidentOpened'
 INCIDENT_NOTIFICATION_CHANNEL = 'incidentNotificationChannel'
 PLAYGROUND_INVESTIGATION_TYPE = 9
 WARNING_ENTRY_TYPE = 11
-DEFAULT_ENDPOINT = 'https://oproxy.demisto.ninja/slack-poll'
+ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
 POLL_INTERVAL_MINUTES = 1
+DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 ''' GLOBALS '''
 
@@ -50,7 +52,6 @@ ALLOW_INCIDENTS: bool
 NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
-ENDPOINT_URL: str
 VERIFY_CERT: bool
 QUESTION_LIFETIME: int
 
@@ -412,8 +413,7 @@ def long_running_loop():
         error = ''
         try:
             check_for_mirrors()
-            if ENDPOINT_URL:
-                check_for_answers(datetime.utcnow())
+            check_for_answers(datetime.utcnow())
         except requests.exceptions.ConnectionError as e:
             error = 'Could not connect to the Slack endpoint: {}'.format(str(e))
         except Exception as e:
@@ -425,7 +425,7 @@ def long_running_loop():
             time.sleep(5)
 
 
-def check_for_answers(now):
+def check_for_answers(now: datetime):
     """
     Checks for answered questions
     :param now: The current date.
@@ -438,16 +438,19 @@ def check_for_answers(now):
         questions = json.loads(questions)
     if users:
         users = json.loads(users)
-    now_string = datetime.strftime(now, '%Y-%m-%d %H:%M:%S')
+    now_string = datetime.strftime(now, DATE_FORMAT)
 
     for question in questions:
         if question.get('last_poll_time'):
             if question.get('expiry'):
-                expiry = datetime.strptime(question['expiry'], '%Y-%m-%d %H:%M:%S')
+                # Check if the question expired - if it did, answer it with the default response and remove it
+                expiry = datetime.strptime(question['expiry'], DATE_FORMAT)
                 if expiry < now:
-                    answer_question(question.get('default_response'), question, questions, '')
+                    answer_question(question.get('default_response'), question, questions)
                     continue
-            last_poll_time = datetime.strptime(question['last_poll_time'], '%Y-%m-%d %H:%M:%S')
+            # Check if it has been enough time(determined by the POLL_INTERVAL_MINUTES parameter)
+            # since the last polling time. if not, continue to the next question until it has.
+            last_poll_time = datetime.strptime(question['last_poll_time'], DATE_FORMAT)
             delta = now - last_poll_time
             minutes = delta.total_seconds() / 60
             if minutes < POLL_INTERVAL_MINUTES:
@@ -468,6 +471,8 @@ def check_for_answers(now):
         try:
             answer = res.json()
         except Exception:
+            demisto.info('Slack - Could not parse response for entitlement {}: {}'
+                         .format(question.get('entitlement'), res.content))
             pass
         if not answer:
             continue
@@ -495,9 +500,12 @@ def check_for_answers(now):
     set_to_latest_integration_context('questions', questions)
 
 
-def answer_question(text, question, questions, email):
-    content, guid, incident_id, task_id = extract_entitlement(question.get('entitlement'), text)
-    demisto.handleEntitlementForUser(incident_id, guid, email, content, task_id)
+def answer_question(text: str, question: dict, questions: list, email: str = ''):
+    content, guid, incident_id, task_id = extract_entitlement(question.get('entitlement', ''), text)
+    try:
+        demisto.handleEntitlementForUser(incident_id, guid, email, content, task_id)
+    except Exception as e:
+        demisto.error('Failed handling entitlement {}: {}'.format(question.get('entitlement'), str(e)))
     question['remove'] = True
     set_to_latest_integration_context('questions', questions)
 
@@ -529,7 +537,7 @@ def check_for_mirrors():
                 set_to_latest_integration_context('mirrors', mirrors)
 
 
-def extract_entitlement(entitlement, text):
+def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str]:
     """
     Extracts entitlement components from an entitlement string
     :param entitlement: The entitlement itself
@@ -1442,7 +1450,7 @@ def init_globals():
     Initializes global variables according to the integration parameters
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
-    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, ENDPOINT_URL, VERIFY_CERT
+    global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
@@ -1454,8 +1462,7 @@ def init_globals():
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
-    ENDPOINT_URL = DEFAULT_ENDPOINT
-    VERIFY_CERT = demisto.params().get('verifyEndpoint', False)
+    VERIFY_CERT = not demisto.params().get('unsecure', False)
 
 
 def main():
