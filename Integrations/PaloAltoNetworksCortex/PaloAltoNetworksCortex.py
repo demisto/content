@@ -1380,7 +1380,6 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     # merge the two dicts into one dict that outputs to context
     context_outputs.update(context_standards_outputs)
 
-    contents: dict = {}
     try:
         contents = response.json()
     except ValueError as e:
