@@ -153,6 +153,11 @@ TMS_ARGS_DICT = {
 
 
 def traffic_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrives data from a row of raw data into context path locations
+    :param row_content: a dict representing raw data of a row
+    :return: a dict with context paths and their corresponding value
+    """
     return {
         'RiskOfApp': row_content.get('risk-of-app'),
         'Natsport': row_content.get('natsport'),
@@ -192,6 +197,11 @@ def traffic_context_transformer(row_content: dict) -> dict:
 
 
 def threat_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrives data from a row of raw data into context path locations
+    :param row_content: a dict representing raw data of a row
+    :return: a dict with context paths and their corresponding value
+    """
     return {
         'SessionID': row_content.get('sessionid'),
         'Action': row_content.get('action'),
@@ -236,6 +246,11 @@ def threat_context_transformer(row_content: dict) -> dict:
 
 
 def traps_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrives data from a row of raw data into context path locations
+    :param row_content: a dict representing raw data of a row
+    :return: a dict with context paths and their corresponding value
+    """
     end_point_header = row_content.get('endPointHeader', {})
     message_data = row_content.get('messageData', {})
     source_process = message_data.get('sourceProcess', {})
@@ -289,6 +304,11 @@ def traps_context_transformer(row_content: dict) -> dict:
 
 
 def analytics_context_transformer(row_content: dict) -> dict:
+    """
+    This function retrives data from a row of raw data into context path locations
+    :param row_content: a dict representing raw data of a row
+    :return: a dict with context paths and their corresponding value
+    """
     end_point_header = row_content.get('endPointHeader', {})
     message_data = row_content.get('messageData', {})
     local_analysis_result = message_data.get('localAnalysisResult', {})
@@ -328,7 +348,17 @@ def analytics_context_transformer(row_content: dict) -> dict:
     }
 
 
-def human_readable_generator(fields: str, table_name: str, results: list) -> str:
+def logs_human_readable_output_generator(fields: str, table_name: str, results: list) -> str:
+    """
+    This function gets all relevant data for the human readable output of a specific table
+    By design if the user queries all fields of the table (i.e. eneters '*' in the query) than the outputs
+    shown in the war room will be the same for each query - the outputs will be the headers list in the code.
+    If the user selects different fields in the query than those fields will be shown to the user.
+    :param fields: the field of the table named table_name
+    :param table_name: the name of the table
+    :param results: the results needs to be shown
+    :return: a markdown table of the outputs
+    """
     filtered_results: list = []
     headers: list = []
     headers_raw_names: list = []
@@ -364,7 +394,13 @@ def human_readable_generator(fields: str, table_name: str, results: list) -> str
 
 
 def parse_processes(processes_list: list) -> list:
-    processes_new_list: list = []
+    """
+    This function gets a processes list and retrives specific data from each process and builds a new list of the
+    parsed process data.
+    :param processes_list: the raw processes list
+    :return: the parsed processes list
+    """
+    parsed_processes_list: list = []
     for process_object in processes_list:
         process_new_object: dict = {
             'PID': process_object.get('pid'),
@@ -374,12 +410,18 @@ def parse_processes(processes_list: list) -> list:
             'CommandLine': process_object.get('commandLine'),
             'Terminated': process_object.get('terminated')
         }
-        processes_new_list.append(process_new_object)
-    return processes_new_list
+        parsed_processes_list.append(process_new_object)
+    return parsed_processes_list
 
 
 def parse_files(files_list: list) -> list:
-    files_new_list: list = []
+    """
+    This function gets a files list and retrives specific data from each file and builds a new list of the
+    parsed file data.
+    :param files_list: the raw file list
+    :return: the parsed file list
+    """
+    parsed_files_list: list = []
     for file_object in files_list:
         file_new_object: dict = {
             'RawFullPath': file_object.get('rawFullPath'),
@@ -387,21 +429,21 @@ def parse_files(files_list: list) -> list:
             'SHA256': file_object.get('sha256'),
             'FileSize': file_object.get('fileSize')
         }
-        files_new_list.append(file_new_object)
-    return files_new_list
+        parsed_files_list.append(file_new_object)
+    return parsed_files_list
 
 
 def parse_users(users_list: list) -> list:
-    users_new_list: list = []
-    for user_object in users_list:
-        user_new_object: dict = {
-            'Username': user_object.get('userName')
-        }
-        users_new_list.append(user_new_object)
-    return users_new_list
+    """
+    This function gets a users list and retrives specific data from each user and builds a new list of the
+    parsed user data.
+    :param users_list: the raw users list
+    :return: the parsed users list
+    """
+    return [{'Username': user.get('userName')} for user in users_list]
 
 
-def get_fields_and_check_validity(fields: str, table_fields: list) -> str:
+def verify_table_fields(fields: str, table_fields: list) -> str:
     """
     This function check if the entered fields are valid (i.e. exists in the table fields) and returns them
     :param fields: string input of fields list (comma separated)
@@ -418,29 +460,29 @@ def get_fields_and_check_validity(fields: str, table_fields: list) -> str:
     return fields
 
 
-def get_where_part(args: dict, table_args_dict: dict) -> str:
+def build_where_clause(args: dict, table_args_dict: dict) -> str:
     """
     This function transforms the relevant entries of dict into the where part of a SQL query
     :param args: a dict
     :param table_args_dict: the dict of the transformed fields
     :return: a string represents the where part of a SQL query
     """
-    where: str = ''
+    where_clause: str = ''
     for key in args.keys():
         if key in table_args_dict.keys():
-            if key == 'query' and args[key]:
+            if key == 'query':
                 # if query arg is supplied than we just need to parse it and only it
                 return parse_query(args[key])
             else:
                 values_list: list = argToList(args[key])
                 for value in values_list:
                     for field in table_args_dict[key]:
-                        if not where:
+                        if not where_clause:
                             # the beginning of the where part should start without OR
-                            where += f"{field}='{value}'"
+                            where_clause += f"{field}='{value}'"
                         else:
-                            where += f" OR {field}='{value}'"
-    return where
+                            where_clause += f" OR {field}='{value}'"
+    return where_clause
 
 
 def parse_query(query: str) -> str:
@@ -455,20 +497,25 @@ def parse_query(query: str) -> str:
         raise DemistoException('A compound query must include a WHERE part')
 
 
-def delete_empty_value_dict_and_append_to_lists(input_dict: dict, list_of_lists: list):
+def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists: list):
     """
-    This function filters all items of input_dict that has empty value (i.e. null/none/''...)
+    This function filters all items of input_dict that has empty value (e.g. null/none/''...)
     and appends the filtered dict to each list in the list_of_lists
-    :param input_dict: the dict to be filtered
+    :param raw_dict: the dict to be filtered
     :param list_of_lists: a list of lists that the filtered dict should be added to each one of the lists
     """
-    filtered_dict = {key: value for key, value in input_dict.items() if value}
+    filtered_dict = {key: value for key, value in raw_dict.items() if value}
     if filtered_dict:
         for input_list in list_of_lists:
             input_list.append(filtered_dict)
 
 
-def os_type_number_to_string(os_type_number):
+def os_type_number_to_string(os_type_number: int) -> str:
+    """
+    This functions maps each os type number into a corresponding string name
+    :param os_type_number: the number of the os type
+    :return: the name of the os
+    """
     if os_type_number == 1:
         return 'Windows'
     elif os_type_number == 2:
@@ -482,7 +529,12 @@ def os_type_number_to_string(os_type_number):
 
 
 def get_context_standards_outputs(results: list) -> dict:
-    outputs: dict = {}
+    """
+    This function gets a list of all results and retrives from it all needed data for Demisto's indicators, all by
+    context standard outputs format.
+    :param results: the raw data
+    :return: a dict with all retrived data into the exact context locations of each indicator
+    """
     endpoints: list = []
     hosts: list = []
     files: list = []
@@ -572,14 +624,14 @@ def get_context_standards_outputs(results: list) -> dict:
                 }
                 delete_empty_value_dict_and_append_to_lists(process_data, [processes])
 
-    outputs.update({
+    outputs: dict = {
         outputPaths['file']: files,
         'Endpoint(val.IPAddress === obj.IPAddress)': endpoints,
         'Host(val.IPAddress === obj.IPAddress)': hosts,
         'Process(val.PID === obj.PID)': processes,
         outputPaths['ip']: ips,
         outputPaths['domain']: domains
-    })
+    }
     outputs = {key: value for key, value in outputs.items() if value}
     return outputs
 
@@ -1194,6 +1246,10 @@ def search_by_file_hash_command():
 
 
 def query_traffic_logs_command():
+    """
+    The function of the command that queries panw.traffic table
+    :return: a Demisto's entry with all the parsed data
+    """
     table_fields: list = TRAFFIC_FIELDS
     table_args: dict = PANW_ARGS_DICT
     query_table_name: str = 'panw.traffic'
@@ -1204,6 +1260,10 @@ def query_traffic_logs_command():
 
 
 def query_threat_logs_command():
+    """
+    The function of the command that queries panw.threat table
+    :return: a Demisto's entry with all the parsed data
+    """
     table_fields: list = THREAT_FIELDS
     table_args: dict = PANW_ARGS_DICT
     query_table_name: str = 'panw.threat'
@@ -1214,6 +1274,10 @@ def query_threat_logs_command():
 
 
 def query_traps_logs_command():
+    """
+    The function of the command that queries tms.threat table
+    :return: a Demisto's entry with all the parsed data
+    """
     table_fields: list = TRAPS_FIELDS
     table_args: dict = TMS_ARGS_DICT
     query_table_name: str = 'tms.threat'
@@ -1224,6 +1288,10 @@ def query_traps_logs_command():
 
 
 def query_analytics_logs_command():
+    """
+    The function of the command that queries tms.analytics table
+    :return: a Demisto's entry with all the parsed data
+    """
     table_fields: list = ANALYTICS_FIELDS
     table_args: dict = TMS_ARGS_DICT
     query_table_name: str = 'tms.analytics'
@@ -1235,6 +1303,16 @@ def query_analytics_logs_command():
 
 def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
                      table_context_path: str):
+    """
+    This function is a generic function that get's all the data needed for a specific table of Cortex and acts as a 
+    regular command function
+    :param table_fields: the fields of the table named query_table_name (fields that can be selected in a query)
+    :param table_args: all the args of the table that can be queried
+    :param query_table_name: the name of the table in Cortex
+    :param context_transformer_function: the context transformer function to parse the data
+    :param table_context_path: the context path where the parsed data should be located
+    :return: the function return's a Demisto's entry
+    """
     args = demisto.args()
 
     start_time = args.get('startTime')
@@ -1258,10 +1336,10 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     service_start_date_epoch = int(service_start_date.timestamp())
     service_end_date_epoch = int(service_end_date.timestamp())
 
-    fields = args.get('fields', 'all')
-    fields = get_fields_and_check_validity(fields, table_fields)
+    fields_str = args.get('fields', 'all')
+    fields = verify_table_fields(fields_str, table_fields)
 
-    where = get_where_part(args, table_args)
+    where = build_where_clause(args, table_args)
 
     if where:
         query = f'SELECT {fields} FROM {query_table_name} WHERE {where} LIMIT {limit}'
@@ -1269,9 +1347,9 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
         query = f'SELECT {fields} FROM {query_table_name} LIMIT {limit}'
 
     query_data = {
-        "query": query,
-        "startTime": service_start_date_epoch,
-        "endTime": service_end_date_epoch,
+        'query': query,
+        'startTime': service_start_date_epoch,
+        'endTime': service_end_date_epoch,
     }
 
     response = query_loggings(query_data)
@@ -1295,16 +1373,22 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
         transformed_row = {key: value for key, value in transformed_row.items() if value}
         outputs.append(transformed_row)
 
-    human_readable = human_readable_generator(fields, table_name, results)
+    human_readable = logs_human_readable_output_generator(fields, table_name, results)
 
     context_standards_outputs: dict = get_context_standards_outputs(results)
     context_outputs: dict = {table_context_path: outputs}
     # merge the two dicts into one dict that outputs to context
     context_outputs.update(context_standards_outputs)
 
+    contents: dict = {}
+    try:
+        contents = response.json()
+    except ValueError as e:
+        raise DemistoException(str(e))
+
     entry = {
         'Type': entryTypes['note'],
-        'Contents': response.json(),
+        'Contents': contents,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
