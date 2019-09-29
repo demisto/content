@@ -510,7 +510,7 @@ def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists: l
             input_list.append(filtered_dict)
 
 
-def os_type_number_to_string(os_type_number: int) -> str:
+def os_type_number_to_string(os_type_number) -> str:
     """
     This functions maps each os type number into a corresponding string name
     :param os_type_number: the number of the os type
