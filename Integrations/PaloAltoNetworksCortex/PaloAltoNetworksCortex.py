@@ -350,8 +350,8 @@ def analytics_context_transformer(row_content: dict) -> dict:
 
 def logs_human_readable_output_generator(fields: str, table_name: str, results: list) -> str:
     """
-    This function gets all relevant data for the human readable output of a specific table
-    By design if the user queries all fields of the table (i.e. eneters '*' in the query) than the outputs
+    This function gets all relevant data for the human readable output of a specific table.
+    By design if the user queries all fields of the table (i.e. enters '*' in the query) than the outputs
     shown in the war room will be the same for each query - the outputs will be the headers list in the code.
     If the user selects different fields in the query than those fields will be shown to the user.
     :param fields: the field of the table named table_name
@@ -1336,8 +1336,8 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     service_start_date_epoch = int(service_start_date.timestamp())
     service_end_date_epoch = int(service_end_date.timestamp())
 
-    fields_str = args.get('fields', 'all')
-    fields = verify_table_fields(fields_str, table_fields)
+    unverified_fields = args.get('fields', 'all')
+    fields = verify_table_fields(unverified_fields, table_fields)
 
     where = build_where_clause(args, table_args)
 
