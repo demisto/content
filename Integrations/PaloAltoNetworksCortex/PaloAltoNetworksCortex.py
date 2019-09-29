@@ -1304,7 +1304,7 @@ def query_analytics_logs_command():
 def query_table_logs(table_fields: list, table_args: dict, query_table_name: str, context_transformer_function,
                      table_context_path: str):
     """
-    This function is a generic function that get's all the data needed for a specific table of Cortex and acts as a 
+    This function is a generic function that get's all the data needed for a specific table of Cortex and acts as a
     regular command function
     :param table_fields: the fields of the table named query_table_name (fields that can be selected in a query)
     :param table_args: all the args of the table that can be queried
