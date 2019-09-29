@@ -670,7 +670,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The fields that are selected in the query. Selection can be all
+      defaultValue: 'all'
+      description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
       isArray: false
       name: fields
