@@ -14,14 +14,6 @@ def get_dict_value(data, key):
     return None
 
 
-def raise_error(error):
-    return {
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(error)
-    }
-
-
 def get_ec2_sg_public_rules(group_id, ip_permissions, checked_protocol=None, checked_from_port=None,
                             checked_to_port=None, region=None, include_ipv6='no'):
     """
@@ -93,7 +85,7 @@ def main(args):
         try:
             ip_perms = json.loads(ip_perms)
         except json.JSONDecodeError:
-            demisto.results(raise_error('Unable to parse ipPermissions. Invalid JSON string'))
+            return_error('Unable to parse ipPermissions. Invalid JSON string.')
 
     # If checked from_port or to_port is not specified
     # it will default to 0-65535 (all port)

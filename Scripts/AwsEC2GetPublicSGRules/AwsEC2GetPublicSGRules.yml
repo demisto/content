@@ -6,7 +6,10 @@ args:
   required: true
   secret: false
 - default: false
-  description: JSON string of the ipPermissions
+  description: JSON string of the ipPermissions. IpPermissions should have one or
+    more rules which are composed of IpProtocol, FromPort, ToPort, IpRanges. Refer
+    to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
+    for example/reference.
   isArray: true
   name: ipPermissions
   required: true
@@ -55,7 +58,7 @@ args:
   secret: false
 comment: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
 commonfields:
-  id: 0d62193f-6d73-477d-8020-2261f7d885c3
+  id: AwsEC2GetPublicSGRules
   version: -1
 enabled: true
 name: AwsEC2GetPublicSGRules

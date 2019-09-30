@@ -1,4 +1,4 @@
-id: TestAwsEC2GetPublicSGRules
+id: TestAwsEC2GetPublicSGRules-Test
 version: -1
 name: AwsEC2GetPublicSGRules-Test
 starttaskid: "0"
