@@ -1,8 +1,8 @@
 ''' IMPORTS '''
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 import json
 import requests
 import copy
@@ -399,12 +399,12 @@ def event_update_command():
     md = f'### Event: {event_id} was updated'
     md += f'\n##### New status: {status}' if status else ''
     md += f'\n##### New comment: {comment}' if comment else ''
-    return_outputs(md, {})
+    return_outputs(md, None)
 
 
 def event_bulk_update_status_command():
     args = demisto.args()
-    event_ids = args.get('event_ids').split(',')
+    event_ids = argToList(args.get('event_ids'))
     status = args.get('status')
     results = event_bulk_update_status(event_ids, status)
     md = tableToMarkdown('Successfully updated', results.get('UpdateSuccess'), headerTransform=pascalToSpace)
@@ -541,8 +541,6 @@ def main():
             endpoint_isolate_status_command()
     # Log exceptions
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
         return_error(e)
 
 
