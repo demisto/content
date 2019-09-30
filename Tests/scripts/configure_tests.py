@@ -275,6 +275,11 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
+    tests_set = set([])
+    updated_script_names = set([])
+    updated_playbook_names = set([])
+    catched_scripts, catched_playbooks = set([]), set([])
+
     script_to_version = {}
     playbook_to_version = {}
     integration_to_version = {}
@@ -284,6 +289,12 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+
+            package_name = os.path.dirname(file_path)
+            if glob.glob(package_name + "/*_test.py"):
+                catched_scripts.add(name)
+                tests_set.add('Found a unittest for the script {}'.format(package_name))
+
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             playbook_names.add(name)
@@ -301,11 +312,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
-
-    catched_scripts, catched_playbooks = set([]), set([])
-    updated_script_names = set([])
-    updated_playbook_names = set([])
-    tests_set = set([])
 
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
@@ -401,7 +407,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                             update_test_set(tests, tests_set)
 
                         package_name = os.path.dirname(script_file_path)
-                        if glob.glob(package_name + "/*_test.yml")[0]:
+                        if glob.glob(package_name + "/*_test.py"):
                             catched_scripts.add(script_name)
                             tests.add('Found a unittest for the script {}'.format(script_name))
 
@@ -451,7 +457,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                     update_test_set(tests, tests_set)
 
                 package_name = os.path.dirname(script_file_path)
-                if glob.glob(package_name + "/*_test.yml")[0]:
+                if glob.glob(package_name + "/*_test.py"):
                     catched_scripts.add(script_name)
                     tests.add('Found a unittest for the script {}'.format(script_name))
 
@@ -587,7 +593,6 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
-        files_string = "m Scripts/ParseCSV/ParseCSV.yml"
         tests = get_test_list(files_string, branch_name)
 
         tests_string = '\n'.join(tests)
