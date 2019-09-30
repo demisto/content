@@ -69,6 +69,7 @@ class IntegrationValidator(object):
         self.is_proxy_configured_correctly()
         self.is_insecure_configured_correctly()
         self.is_valid_category()
+        self.is_valid_id()
 
         return self._is_valid
 
@@ -488,3 +489,14 @@ class IntegrationValidator(object):
                 return True
 
         return False
+
+    def is_valid_id(self):
+        """Validate that the id equals to the name."""
+        _id = self.current_integration.get('commonfields', {}).get('id')
+        name = self.current_integration.get('name', '')
+        if _id != name:
+            print_error("The ID of the integration '{}' should be equal to its name, "
+                        "please update the file.".format(self.file_path))
+            self._is_valid = False
+
+        return self._is_valid

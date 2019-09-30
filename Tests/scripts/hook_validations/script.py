@@ -80,7 +80,8 @@ class ScriptValidator(object):
     def is_valid_script(self):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         is_script_valid = any([
-            self.is_valid_subtype()
+            self.is_valid_subtype(),
+            self.is_valid_id()
         ])
 
         return is_script_valid
@@ -184,3 +185,14 @@ class ScriptValidator(object):
                 return True
 
         return False
+
+    def is_valid_id(self):
+        """Validate that the id equals to the name."""
+        _id = self.current_script.get('commonfields', {}).get('id')
+        name = self.current_script.get('name', '')
+        if _id != name:
+            print_error("The ID of the script '{}' should be equal to its name, "
+                        "please update the file.".format(self.file_path))
+            return False
+
+        return True
