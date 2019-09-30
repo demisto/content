@@ -1,11 +1,6 @@
 # Linting
 As part of the build process we run a few linters to catch common programming errors. Linters are run only when working with the package (directory) structure. 
 
-### Prerequisites
- - [Docker](https://www.docker.com/)
- - [Flake8](http://flake8.pycqa.org/en/latest/)
- - [Mypy](http://mypy-lang.org/)
-
 All linters are run via the following script:
 ```
 ./Tests/scripts/pkg_dev_test_tasks.py -h
