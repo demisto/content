@@ -63,10 +63,16 @@ def convert_incident_fields_to_array():
                 f.truncate()
 
 
-def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
+def copy_dir_yml(file_names, dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
     for path in scan_files:
+        if os.path.basename(path) in file_names:
+            raise NameError('You have two content flies with the same '
+                            'basename, the file is {}'.format(os.path.basename(path)))
+        else:
+            file_names.add(os.path.basename(path))
+
         with open(path, 'r') as f:
             yml_info = yaml.safe_load(f)
 
@@ -85,11 +91,17 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     print ' - total post files: %d' % (post_files, )
 
 
-def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
+def copy_dir_json(flie_names, dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
+        if odpath in file_names:
+            raise NameError('You have two content flies with the same '
+                            'basename, the file is {}'.format(dpath))
+        else:
+            file_names.add(dpath)
+
         shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
         # this part is a workaround because server doesn't support indicatorfield-*.json naming
         shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
@@ -144,9 +156,10 @@ def main(circle_artifacts):
         for package in scanned_packages:
             merge_script_package_to_yml(package, d)
 
+    flie_names = set([])
     for d in CONTENT_DIRS:
         print 'copying dir %s to bundles ...' % (d,)
-        copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
+        copy_dir_files(flie_names, d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
 
     copy_test_files(BUNDLE_TEST)
 
