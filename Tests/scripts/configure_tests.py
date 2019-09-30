@@ -384,6 +384,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     for script in script_set:
         script_data = script.values()[0]
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         command_to_integration = script_data.get('command_to_integration', {})
@@ -398,6 +399,11 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         if tests:
                             catched_scripts.add(script_name)
                             update_test_set(tests, tests_set)
+
+                        package_name = os.path.dirname(script_file_path)
+                        if glob.glob(package_name + "/*_test.yml")[0]:
+                            catched_scripts.add(script_name)
+                            tests.add('Found a unittest for the script {}'.format(script_name))
 
                         updated_script_names.add(script_name)
                         new_versions = (script_fromversion, script_toversion)
@@ -433,6 +439,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
     for script in script_set:
         script_data = script.values()[0]
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
@@ -442,6 +449,11 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 if tests:
                     catched_scripts.add(script_name)
                     update_test_set(tests, tests_set)
+
+                package_name = os.path.dirname(script_file_path)
+                if glob.glob(package_name + "/*_test.yml")[0]:
+                    catched_scripts.add(script_name)
+                    tests.add('Found a unittest for the script {}'.format(script_name))
 
                 updated_script_names.add(script_name)
                 new_versions = (script_fromversion, script_toversion)
@@ -575,6 +587,7 @@ def create_test_file(is_nightly, skip_save=False):
             last_commit, second_last_commit = commit_string.split()
             files_string = run_command("git diff --name-status {}...{}".format(second_last_commit, last_commit))
 
+        files_string = "m Scripts/ParseCSV/ParseCSV.yml"
         tests = get_test_list(files_string, branch_name)
 
         tests_string = '\n'.join(tests)

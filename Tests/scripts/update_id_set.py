@@ -116,6 +116,7 @@ def get_integration_data(file_path):
     cmd_list = [command.get('name') for command in commands]
 
     integration_data['name'] = name
+    integration_data['file_path'] = file_path
     if toversion:
         integration_data['toversion'] = toversion
     if fromversion:
@@ -142,6 +143,7 @@ def get_playbook_data(file_path):
     command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
+    playbook_data['file_path'] = file_path
     if toversion:
         playbook_data['toversion'] = toversion
     if fromversion:
@@ -175,6 +177,7 @@ def get_script_data(file_path, script_code=None):
     script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
+    script_data['file_path'] = file_path
     if toversion:
         script_data['toversion'] = toversion
     if fromversion:
