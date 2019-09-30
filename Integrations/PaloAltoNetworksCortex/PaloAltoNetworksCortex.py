@@ -330,10 +330,11 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
-        'RegionID': row_content.get('regionId'),
+        'RegionID': region_id_number_to_string(row_content.get('regionId')),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
         'MessageData.@type': message_data.get('@type'),
+        'MessageData.Type': message_data.get('type'),
         'MessageData.SHA256': message_data.get('sha256'),
         'MessageData.FileName': message_data.get('fileName'),
         'MessageData.FilePath': message_data.get('filePath'),
@@ -524,6 +525,20 @@ def os_type_number_to_string(os_type_number) -> str:
         return 'Android'
     elif os_type_number == 4:
         return 'Linux'
+    else:
+        return ''
+
+
+def region_id_number_to_string(region_id_number) -> str:
+    """
+    This function maps each region id number into a corresponding string name
+    :param region_id_number: the number of the region id
+    :return: the name of the region id
+    """
+    if region_id_number == 10:
+        return 'Americas (N. Virginia)'
+    elif region_id_number == 70:
+        return 'EMEA (Frankfurt)'
     else:
         return ''
 
