@@ -1,0 +1,404 @@
+id: JSONtoCSV-Test
+version: -1
+name: JSONtoCSV-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 04dcd661-f87e-4382-8d5b-f827cc6030d0
+    type: start
+    task:
+      id: 04dcd661-f87e-4382-8d5b-f827cc6030d0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 0bdf951a-d81e-402d-884f-cff12fc3e86a
+    type: regular
+    task:
+      id: 0bdf951a-d81e-402d-884f-cff12fc3e86a
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: d0db2bb2-4805-4194-8e25-874c4af48645
+    type: regular
+    task:
+      id: d0db2bb2-4805-4194-8e25-874c4af48645
+      version: -1
+      name: JSON File to CSV
+      description: JSON File to CSV
+      scriptName: JSONFileToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      delimiter: {}
+      entryid:
+        simple: ${lastCompletedTaskEntries}
+      filename:
+        simple: bar.csv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: fb193c98-4546-47b3-8cc5-2f99448ddecc
+    type: regular
+    task:
+      id: fb193c98-4546-47b3-8cc5-2f99448ddecc
+      version: -1
+      name: Creates JSON file
+      description: Creates json file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      data:
+        simple: |-
+          [
+              {
+                      "dn": "DC=demisto,DC=int",
+                      "provider": "activedir"
+                  },
+                  {
+                      "dn": "CN=Users,DC=demisto,DC=int",
+                      "provider": "activedir"
+                  },
+                  {
+                      "dn": "CN=Computers,DC=demisto,DC=int",
+                      "provider": "activedir"
+                  }]
+      entryId: {}
+      filename:
+        simple: test.json
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: f24ecb73-eab1-4914-8efb-7f7be846ac09
+    type: regular
+    task:
+      id: f24ecb73-eab1-4914-8efb-7f7be846ac09
+      version: -1
+      name: Get JSON back from CSV file
+      description: Get JSON back from CSV file
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domains: {}
+      entryID:
+        simple: ${lastCompletedTaskEntries}
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: b46cea14-60a1-4e5d-87ac-9ed7d0f6e27a
+    type: condition
+    task:
+      id: b46cea14-60a1-4e5d-87ac-9ed7d0f6e27a
+      version: -1
+      name: Check args
+      description: check if "White Stripes" equals "White Stripes"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV.[0].dn
+            iscontext: true
+          right:
+            value:
+              simple: DC=demisto,DC=int
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 83c6707d-5a8b-4a28-8e96-401dc18edd1f
+    type: title
+    task:
+      id: 83c6707d-5a8b-4a28-8e96-401dc18edd1f
+      version: -1
+      name: TASK SUCCESS
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 17031a51-1d60-4d19-820e-dab7dbdff2a6
+    type: regular
+    task:
+      id: 17031a51-1d60-4d19-820e-dab7dbdff2a6
+      version: -1
+      name: Load JSON
+      description: Load json obj
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      input:
+        simple: |-
+          [
+              {
+                  "dn": "DC=demisto,DC=int",
+                  "provider": "activedir"
+              },
+              {
+                  "dn": "CN=Users,DC=demisto,DC=int",
+                  "provider": "activedir"
+              },
+              {
+                  "dn": "CN=Computers,DC=demisto,DC=int",
+                  "provider": "activedir"
+              }]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 3cf4cfe1-2416-4d6c-84ac-e7807670b91d
+    type: regular
+    task:
+      id: 3cf4cfe1-2416-4d6c-84ac-e7807670b91d
+      version: -1
+      name: Run JSON to CSV
+      scriptName: JSONtoCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      delimiter: {}
+      entryid:
+        simple: ${lastCompletedTaskEntries}
+      filename:
+        simple: test.csv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 1c2f753f-dd82-42e4-87e6-6dde556f3543
+    type: regular
+    task:
+      id: 1c2f753f-dd82-42e4-87e6-6dde556f3543
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: a8af3a88-f5db-4e81-89c4-0be32cba85f6
+    type: regular
+    task:
+      id: a8af3a88-f5db-4e81-89c4-0be32cba85f6
+      version: -1
+      name: Get JSON back from CSV file
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      domains: {}
+      entryID: {}
+      file:
+        simple: test.csv
+      hashes: {}
+      ips: {}
+      parseAll: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 0de5635e-d949-4588-8dba-da7ef117bbfa
+    type: condition
+    task:
+      id: 0de5635e-d949-4588-8dba-da7ef117bbfa
+      version: -1
+      name: Check args
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ParseCSV.ParsedCSV.[0].dn
+            iscontext: true
+          right:
+            value:
+              simple: DC=demisto,DC=int
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
