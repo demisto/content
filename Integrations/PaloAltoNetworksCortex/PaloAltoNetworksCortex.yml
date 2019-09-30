@@ -670,7 +670,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 'all'
+      defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
       isArray: false
@@ -834,6 +834,9 @@ script:
       type: String
     - contextPath: Cortex.Logging.Traffic.Tunnel
       description: Type of tunnel.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
       type: String
   - arguments:
     - default: false
@@ -1083,6 +1086,21 @@ script:
       type: String
     - contextPath: Cortex.Logging.Threat.Sport
       description: Source port utilized by the session.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
       type: String
   - arguments:
     - default: false
@@ -1340,6 +1358,81 @@ script:
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InnerObjectSHA256
       description: Source process inner object SHA256 hash
       type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.osVersion
+      description: OS version.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.IPAddress
+      description: The IP address of the host.
+      type: String
+    - contextPath: Host.Domain
+      description: The domain of the host.
+      type: String
+    - contextPath: Host.osVersion
+      description: The OS version of the host.
+      type: String
+    - contextPath: Host.OS
+      description: Host OS.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: Process.PID
+      description: The PID of the process.
+      type: Number
+    - contextPath: Process.Parent
+      description: Parent process objects.
+      type: String
+    - contextPath: Process.CommandLine
+      description: The full command line (including arguments).
+      type: String
+    - contextPath: Process.SHA256
+      description: The SHA256 hash of the process.
+      type: String
+    - contextPath: Process.Name
+      description: The name of the process.
+      type: String
+    - contextPath: Process.Path
+      description: The file system path to the binary file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.DigitalSignature.Publisher
+      description: The publisher of the digital signature for the file.
+      type: String
+    - contextPath: File.Company
+      description: The name of the company that released a binary.
+      type: String
   - arguments:
     - default: false
       description: Agent IP or array of ip's to search.
@@ -1532,6 +1625,63 @@ script:
       type: String
     - contextPath: Cortex.Logging.Analytics.Severity
       description: The threat severity.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.osVersion
+      description: OS version.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.IPAddress
+      description: The IP address of the host.
+      type: String
+    - contextPath: Host.Domain
+      description: The domain of the host.
+      type: String
+    - contextPath: Host.osVersion
+      description: The OS version of the host.
+      type: String
+    - contextPath: Host.OS
+      description: Host OS.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.DigitalSignature.Publisher
+      description: The publisher of the digital signature for the file.
+      type: String
+    - contextPath: File.Company
+      description: The name of the company that released a binary.
       type: String
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true

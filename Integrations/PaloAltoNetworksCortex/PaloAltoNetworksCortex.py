@@ -583,24 +583,24 @@ def get_context_standards_outputs(results: list) -> dict:
                 'DigitalSignature.Publisher': message_data.get('localAnalysisResult', {}).get('publishers')
             }
             delete_empty_value_dict_and_append_to_lists(file_data, [files])
-            if subtype and subtype.lower() == 'wildfire':
+        if subtype and subtype.lower() == 'wildfire':
+            file_data = {
+                'SHA256': result.get('filedigest'),
+                'Name': result.get('misc'),
+                'Type': result.get('filetype')
+            }
+            delete_empty_value_dict_and_append_to_lists(file_data, [files])
+        if raw_files:
+            for raw_file in raw_files:
                 file_data = {
-                    'SHA256': result.get('filedigest'),
-                    'Name': result.get('misc'),
-                    'Type': result.get('filetype')
+                    'Name': raw_file.get('fileName'),
+                    'Path': raw_file.get('rawFullPath'),
+                    'SHA256': raw_file.get('sha256'),
+                    'Size': raw_file.get('fileSize'),
+                    'DigitalSignature.Publisher': raw_file.get('signers'),
+                    'Company': raw_file.get('companyName')
                 }
                 delete_empty_value_dict_and_append_to_lists(file_data, [files])
-            if raw_files:
-                for raw_file in raw_files:
-                    file_data = {
-                        'Name': raw_file.get('fileName'),
-                        'Path': raw_file.get('rawFullPath'),
-                        'SHA256': raw_file.get('sha256'),
-                        'Size': raw_file.get('fileSize'),
-                        'DigitalSignature.Publisher': raw_file.get('signers'),
-                        'Company': raw_file.get('companyName')
-                    }
-                    delete_empty_value_dict_and_append_to_lists(file_data, [files])
 
         # Process
         raw_processes: list = message_data.get('processes', [])
