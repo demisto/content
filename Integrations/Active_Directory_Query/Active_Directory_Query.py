@@ -622,7 +622,7 @@ def create_group():
     group_name = args.get("name")
     group_class = args.get("group-class")
     sam_account_name = args.get('name')
-    group_type_map = {"security": "2147483650", "distribution":"2"}
+    group_type_map = {"security": "2147483650", "distribution": "2"}
     group_type = group_type_map[args.get("group-type")]
     if args.get('members'):
         members = args.get('members')
