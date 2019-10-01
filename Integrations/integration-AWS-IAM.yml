@@ -912,7 +912,7 @@ script:
                     roleSessionName = args.get('roleSessionName'),
                     roleSessionDuration = args.get('roleSessionDuration'),
                 )
-            kwars = {
+            kwargs = {
                 'PolicyArn':args.get('policyArn'),
                 'VersionId':args.get('versionId')
             }
@@ -1023,6 +1023,71 @@ script:
 
         except Exception as e:
             return raise_error(e)
+
+
+    def get_account_password_policy(args):
+        try:
+            client = aws_session(
+                    roleArn = args.get('roleArn'),
+                    roleSessionName = args.get('roleSessionName'),
+                    roleSessionDuration = args.get('roleSessionDuration'),
+                )
+
+            response = client.get_account_password_policy()
+            data = (response['PasswordPolicy'])
+
+            raw = json.loads(json.dumps(response['PasswordPolicy'], cls=DatetimeEncoder))
+            ec = {'AWS.IAM.PasswordPolicy': raw}
+            return create_entry('AWS IAM Account Password Policy', data, ec)
+
+        except Exception as e:
+            return raise_error(e)
+
+
+    def update_account_password_policy(args):
+        try:
+            client = aws_session(
+                    roleArn=args.get('roleArn'),
+                    roleSessionName=args.get('roleSessionName'),
+                    roleSessionDuration=args.get('roleSessionDuration'),
+                )
+            try:
+                response = client.get_account_password_policy()
+                kwargs = response['PasswordPolicy']
+            except client.exceptions.NoSuchEntityException as e:
+                kwargs = {}
+
+            # ExpirePasswords is part of the response but cannot be included
+            # in the request
+            if 'ExpirePasswords' in kwargs:
+                kwargs.pop('ExpirePasswords')
+
+            if args.get('minimumPasswordLength'):
+                kwargs.update({'MinimumPasswordLength': int(args.get('minimumPasswordLength'))})
+            if args.get('requireSymbols'):
+                kwargs.update({'RequireSymbols': bool(args.get('requireSymbols'))})
+            if args.get('requireNumbers'):
+                kwargs.update({'RequireNumbers': bool(args.get('requireNumbers'))})
+            if args.get('requireUppercaseCharacters'):
+                kwargs.update({'RequireUppercaseCharacters': bool(args.get('requireUppercaseCharacters'))})
+            if args.get('requireLowercaseCharacters'):
+                kwargs.update({'RequireLowercaseCharacters': bool(args.get('requireLowercaseCharacters'))})
+            if args.get('allowUsersToChangePassword'):
+                kwargs.update({'AllowUsersToChangePassword': bool(args.get('allowUsersToChangePassword'))})
+            if args.get('maxPasswordAge'):
+                kwargs.update({'MaxPasswordAge': int(args.get('maxPasswordAge'))})
+            if args.get('passwordReusePrevention'):
+                kwargs.update({'PasswordReusePrevention': int(args.get('passwordReusePrevention'))})
+            if args.get('hardExpiry'):
+                kwargs.update({'HardExpiry': bool(args.get('hardExpiry'))})
+
+            response = client.update_account_password_policy(**kwargs)
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+                return "The Account Password Policy was updated"
+
+        except Exception as e:
+            return raise_error(e)
+
 
     def test_function():
         try:
@@ -1159,6 +1224,12 @@ script:
 
     if demisto.command() == 'aws-iam-delete-account-alias':
         result = delete_account_alias(demisto.args())
+
+    if demisto.command() == 'aws-iam-get-account-password-policy':
+        result = get_account_password_policy(demisto.args())
+
+    if demisto.command() == 'aws-iam-update-account-password-policy':
+        result = update_account_password_policy(demisto.args())
 
     demisto.results(result)
     sys.exit(0)
@@ -2428,6 +2499,72 @@ script:
         from 900 seconds (15 minutes) up to the maximum session duration setting for
         the role.
     description: Deletes the specified AWS account alias.
+    execution: true
+  - name: aws-iam-get-account-password-policy
+    arguments: []
+    outputs:
+    - contextPath: AWS.IAM.PasswordPolicy
+      description: Account's password policy
+      type: Unknown
+    description: Get AWS account's password policy
+  - name: aws-iam-update-account-password-policy
+    arguments:
+    - name: minimumPasswordLength
+      predefined:
+      - ""
+      description: The minimum number of characters allowed in an IAM user password.
+    - name: requireSymbols
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether IAM user passwords must contain at least one
+        of the non-alphanumeric characters.
+    - name: requireNumbers
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether IAM user passwords must contain at least one
+        numeric character (0 to 9).
+    - name: requireUppercaseCharacters
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether IAM user passwords must contain at least one
+        uppercase character from the ISO basic Latin alphabet (A to Z).
+    - name: requireLowercaseCharacters
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Specifies whether IAM user passwords must contain at least one
+        lowercase character from the ISO basic Latin alphabet (a to z).
+    - name: allowUsersToChangePassword
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Allows all IAM users in your account to use the AWS Management
+        Console to change their own passwords.
+    - name: maxPasswordAge
+      predefined:
+      - ""
+      description: The number of days that an IAM user password is valid.
+    - name: passwordReusePrevention
+      predefined:
+      - ""
+      description: Specifies the number of previous passwords that IAM users are prevented
+        from reusing.
+    - name: hardExpiry
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Prevents IAM users from setting a new password after their password
+        has expired.
+    description: Create/update password policy
     execution: true
   dockerimage: demisto/boto3
   runonce: false
