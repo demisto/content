@@ -96,7 +96,7 @@ def copy_dir_json(flie_names, dir_name, version_num, bundle_pre, bundle_post, bu
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
-        if odpath in file_names:
+        if dpath in file_names:
             raise NameError('You have two content flies with the same '
                             'basename, the file is {}'.format(dpath))
         else:
