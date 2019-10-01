@@ -2,6 +2,8 @@ import random
 import string
 import demistomock as demisto
 from datetime import datetime, timedelta
+from pytest import raises
+from CommonServerPython import *
 
 """ Helper functions """
 
@@ -123,3 +125,42 @@ def test_get_encrypted():
     auth_id = random_string(50)
     auth_key = random_string(32)
     get_encrypted(auth_id, auth_key)
+
+
+class TestParseFunctions:
+    def test_verify_table_fields(self):
+        from PaloAltoNetworksCortex import verify_table_fields
+        table_fields = ['risk-of-app', 'all', 'aaa', 'config_ver', '3dx', 'users']
+        fields_list_all_input = 'risk-of-app,config_ver,all,users'
+        fields_list_neagtive_input = 'xyz,risk-of-app'
+        fields_list_positive_input = 'risk-of-app,config_ver,users'
+        fields_list_all_output = '*'
+        # All test
+        assert fields_list_all_output == verify_table_fields(fields_list_all_input, table_fields)
+        # Positive test - input is equal to output
+        assert fields_list_positive_input == verify_table_fields(fields_list_positive_input, table_fields)
+        # Raising exception test
+        with raises(DemistoException, match='xyz is not a valid field of the query'):
+            verify_table_fields(fields_list_neagtive_input, table_fields)
+
+    def test_logs_human_readable_output_generator(self):
+        from PaloAltoNetworksCortex import logs_human_readable_output_generator
+
+    def test_parse_query(self):
+        from PaloAltoNetworksCortex import parse_query
+        query_upper_input = "SELECT * FROM panw.traffic WHERE src='8.8.8.8'"
+        query_lower_input = "SELECT * FROM panw.traffic where src='8.8.8.8'"
+        query_mix_input = "SELECT * FROM panw.traffic WhErE src='8.8.8.8'"
+        query_negative_input = "SELECT * FROM panw.traffic"
+        query_output = "src='8.8.8.8'"
+        # Upper test
+        assert query_output == parse_query(query_upper_input)
+        # Lower test
+        assert query_output == parse_query(query_lower_input)
+        # Mix test
+        assert query_output == parse_query(query_mix_input)
+        with raises(DemistoException, match='A compound query must include a WHERE part'):
+            parse_query(query_negative_input)
+
+    def test_build_where_clause(self):
+        from PaloAltoNetworksCortex import build_where_clause
