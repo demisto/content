@@ -1509,6 +1509,11 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
