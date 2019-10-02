@@ -135,7 +135,7 @@ def test_module():
     try:
         get_on_call_now_users_command()
     except Exception as e:
-        raise return_error(e)
+        return_error(e)
 
     demisto.results('ok')
 
