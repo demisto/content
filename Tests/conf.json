@@ -3,13 +3,36 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
+            "integrations": "AutoFocus V2",
+            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
+            "fromversion": "4.5.0",
+            "timeout": 500
+        },
+        {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
         },
         {
+
             "integrations": "AlienVault_OTX_v2",
             "playbookID": "Alienvault_OTX_v2-test"
+        },
+        {
+            "integrations": "AWS - SQS",
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
         {
             "integrations": "SlackV2",
@@ -146,7 +169,7 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Pwned",
+            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned test",
             "nightly": true
         },
@@ -356,6 +379,11 @@
         {
             "playbookID": "Luminate-TestPlaybook",
             "integrations": "Luminate"
+        },
+        {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "SumoLogic-Test",
@@ -1339,7 +1367,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1351,7 +1379,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1363,7 +1391,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1375,7 +1403,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1437,6 +1465,14 @@
             "nightly": true
         },
         {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
@@ -1478,7 +1514,17 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "playbookID": "Calculate Severity - Standard - Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Symantec Advanced Threat Protection",
@@ -1532,7 +1578,7 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Pwned"
+            "integrations": "Have I Been Pwned? V2"
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -1662,6 +1708,10 @@
         {
             "integrations": "DomainTools",
             "playbookID": "DomainTools-Test"
+        },
+        {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
         },
         {
             "integrations": "Cisco Spark",
@@ -1797,14 +1847,33 @@
             "playbookID": "Test-VulnDB"
         },
         {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
+        },
+        {
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {
@@ -1858,7 +1927,13 @@
         "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
         "nexpose_test": "Failed to create site (issue 18694)",
         "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
-        "IntSights Mssp Test": "Account Expired (issue #16351)"
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
+        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1913,6 +1988,7 @@
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
