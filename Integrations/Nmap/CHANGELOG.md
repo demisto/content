@@ -11,4 +11,5 @@
 
 
 ## [19.10.0] - 2019-10-02
-Regular expressions (regex) now work as expected.
+#### New Integration
+Run nmap scans with the given parameters

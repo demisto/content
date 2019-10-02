@@ -11,4 +11,5 @@
 
 
 ## [19.10.0] - 2019-10-02
-Regular expressions (regex) now work as expected.
+#### New Playbook
+Use this playbook to initiate an endpoint scan and retrieve the scan results.
