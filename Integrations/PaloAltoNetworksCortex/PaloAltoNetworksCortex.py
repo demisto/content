@@ -287,20 +287,22 @@ def traps_context_transformer(row_content: dict) -> dict:
     return {
         'Severity': row_content.get('severity'),
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
-        [end_point_header.get('osType')] if end_point_header.get('osType') else '',
-        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
-        if end_point_header.get('isVdi') else '',
-        'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
-        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
-        if end_point_header.get('is64') else '',
-        'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
-        'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
-        'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
-        'EndPointHeader.Username': end_point_header.get('userName'),
-        'EndPointHeader.AgentTime': end_point_header.get('agentTime'),
-        'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
-        'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
+        'EndPointHeader': {
+            'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
+            [end_point_header.get('osType')] if end_point_header.get('osType') else '',
+            'IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
+            if end_point_header.get('isVdi') else '',
+            'OsVersion': end_point_header.get('osVersion'),
+            'Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
+            if end_point_header.get('is64') else '',
+            'AgentIP': end_point_header.get('agentIp'),
+            'DeviceName': end_point_header.get('deviceName'),
+            'DeviceDomain': end_point_header.get('deviceDomain'),
+            'Username': end_point_header.get('userName'),
+            'AgentTime': end_point_header.get('agentTime'),
+            'AgentVersion': end_point_header.get('agentVersion'),
+            'ProtectionStatus': end_point_header.get('protectionStatus')
+        },
         'TrapsID': row_content.get('tarpsId'),
         'EventType': row_content.get('eventType'),
         'ServerHost': row_content.get('serverHost'),
@@ -312,31 +314,35 @@ def traps_context_transformer(row_content: dict) -> dict:
         'ServerTime': row_content.get('serverTime'),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
-        'MessageData.EventCategory': message_data.get('eventCategory'),
-        'MessageData.PreventionKey': message_data.get('preventionKey'),
-        'MessageData.Processes': parse_processes(message_data.get('processes', [])),
-        'MessageData.Files': parse_files(message_data.get('files', [])),
-        'MessageData.Users': parse_users(message_data.get('users', [])),
-        'MessageData.PostDetected': message_data.get('postDetected'),
-        'MessageData.Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
-        [message_data.get('terminate')] if message_data.get('terminate') else '',
-        'MessageData.Verdict': message_data.get('verdict'),
-        'MessageData.Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['blocked'][message_data.get('blocked')]
-        if message_data.get('blocked') else '',
-        'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
-        'MessageData.ModuleCategory': message_data.get('moduleCategory'),
-        'MessageData.PreventionMode': message_data.get('preventionMode'),
-        'MessageData.TrapsSeverity': message_data.get('trapsSeverity'),
-        'MessageData.SourceProcess.User.Username': source_process.get('user', {}).get('userName'),
-        'MessageData.SourceProcess.PID': source_process.get('pid'),
-        'MessageData.SourceProcess.ParentID': source_process.get('parentId'),
-        'MessageData.SourceProcess.CommandLine': source_process.get('commandLine'),
-        'MessageData.SourceProcess.InstanceID': source_process.get('instanceId'),
-        'MessageData.SourceProcess.Terminated': source_process.get('terminated'),
-        'MessageData.SourceProcess.RawFullPath': source_process.get('rawFullPath'),
-        'MessageData.SourceProcess.FileName': source_process.get('fileName'),
-        'MessageData.SourceProcess.SHA256': source_process.get('sha256'),
-        'MessageData.SourceProcess.FileSize': source_process.get('fileSize')
+        'MessageData': {
+            'EventCategory': message_data.get('eventCategory'),
+            'PreventionKey': message_data.get('preventionKey'),
+            'Processes': parse_processes(message_data.get('processes', [])),
+            'Files': parse_files(message_data.get('files', [])),
+            'Users': parse_users(message_data.get('users', [])),
+            'PostDetected': message_data.get('postDetected'),
+            'Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
+            [message_data.get('terminate')] if message_data.get('terminate') else '',
+            'Verdict': message_data.get('verdict'),
+            'Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['blocked'][message_data.get('blocked')]
+            if message_data.get('blocked') else '',
+            'TargetProcessIdx': message_data.get('targetProcessIdx'),
+            'ModuleCategory': message_data.get('moduleCategory'),
+            'PreventionMode': message_data.get('preventionMode'),
+            'TrapsSeverity': message_data.get('trapsSeverity'),
+            'SourceProcess': {
+                'User': {'Username': source_process.get('user', {}).get('userName')},
+                'PID': source_process.get('pid'),
+                'ParentID': source_process.get('parentId'),
+                'CommandLine': source_process.get('commandLine'),
+                'InstanceID': source_process.get('instanceId'),
+                'Terminated': source_process.get('terminated'),
+                'RawFullPath': source_process.get('rawFullPath'),
+                'FileName': source_process.get('fileName'),
+                'SHA256': source_process.get('sha256'),
+                'FileSize': source_process.get('fileSize')
+            }
+        }
     }
 
 
@@ -352,21 +358,23 @@ def analytics_context_transformer(row_content: dict) -> dict:
     local_analysis_result = message_data.get('localAnalysisResult', {})
     return {
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
-        [end_point_header.get('osType')] if end_point_header.get('osType') else '',
-        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
-        if end_point_header.get('isVdi') else '',
-        'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
-        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
-        if end_point_header.get('is64') else '',
-        'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
-        'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
-        'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
-        'EndPointHeader.Username': end_point_header.get('userName'),
-        'EndPointHeader.UserDomain': end_point_header.get('userDomain'),
-        'EndPointHeader.AgentTime': end_point_header.get('agentTime'),
-        'EndPointHeader.AgentVersion': end_point_header.get('agentVersion'),
-        'EndPointHeader.ProtectionStatus': end_point_header.get('protectionStatus'),
+        'EndPointHeader': {
+            'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
+            [end_point_header.get('osType')] if end_point_header.get('osType') else '',
+            'IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi']
+            [end_point_header.get('isVdi')] if end_point_header.get('isVdi') else '',
+            'OsVersion': end_point_header.get('osVersion'),
+            'Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
+            if end_point_header.get('is64') else '',
+            'AgentIP': end_point_header.get('agentIp'),
+            'DeviceName': end_point_header.get('deviceName'),
+            'DeviceDomain': end_point_header.get('deviceDomain'),
+            'Username': end_point_header.get('userName'),
+            'UserDomain': end_point_header.get('userDomain'),
+            'AgentTime': end_point_header.get('agentTime'),
+            'AgentVersion': end_point_header.get('agentVersion'),
+            'ProtectionStatus': end_point_header.get('protectionStatus'),
+        },
         'TrapsID': row_content.get('trapsId'),
         'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
@@ -375,21 +383,24 @@ def analytics_context_transformer(row_content: dict) -> dict:
         if row_content.get('regionId') else '',
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
-        'MessageData.@type': message_data.get('@type'),
-        'MessageData.Type': message_data.get('type'),
-        'MessageData.SHA256': message_data.get('sha256'),
-        'MessageData.FileName': message_data.get('fileName'),
-        'MessageData.FilePath': message_data.get('filePath'),
-        'MessageData.FileSize': message_data.get('fileSize'),
-        'MessageData.Reported': message_data.get('reported'),
-        'MessageData.Blocked': message_data.get('blocked'),
-        'MessageData.LocalAnalysisResult.Trusted': local_analysis_result.get('trusted'),
-        'MessageData.LocalAnalysisResult.Publishers': local_analysis_result.get('publishers'),
-        'MessageData.LocalAnalysisResult.TrustedID': VALUE_TRANSFORM_DICT['analytics']['messageData']
-        ['localAnalysisResult']['trustedId'][local_analysis_result.get('trustedId')]
-        if local_analysis_result.get('trustedId') else '',
-        'MessageData.ExecutionCount': message_data.get('executionCount'),
-        'MessageData.LastSeen': message_data.get('lastSeen')
+        'MessageData': {
+            '@type': message_data.get('@type'),
+            'Type': message_data.get('type'),
+            'SHA256': message_data.get('sha256'),
+            'FileName': message_data.get('fileName'),
+            'FilePath': message_data.get('filePath'),
+            'FileSize': message_data.get('fileSize'),
+            'Reported': message_data.get('reported'),
+            'Blocked': message_data.get('blocked'),
+            'LocalAnalysisResult': {
+                'Trusted': local_analysis_result.get('trusted'),
+                'Publishers': local_analysis_result.get('publishers'),
+                'TrustedID': VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']
+                [local_analysis_result.get('trustedId')] if local_analysis_result.get('trustedId') else ''
+            },
+            'ExecutionCount': message_data.get('executionCount'),
+            'LastSeen': message_data.get('lastSeen')
+        }
     }
 
 
@@ -438,7 +449,7 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
                         filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
         filtered_results.append(filtered_result)
 
-    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers)
+    return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers, removeNull=True)
 
 
 def parse_processes(processes_list: list) -> list:

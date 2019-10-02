@@ -1,7 +1,6 @@
 id: Palo Alto Networks Cortex Test
 version: -1
 name: Palo Alto Networks Cortex Test
-fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":
@@ -306,10 +305,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: f8b6e4df-1071-4a47-8dbd-409ef09fb9a0
+    taskid: d5f516b7-49b9-4d9a-8ad1-aefcb14f3346
     type: condition
     task:
-      id: f8b6e4df-1071-4a47-8dbd-409ef09fb9a0
+      id: d5f516b7-49b9-4d9a-8ad1-aefcb14f3346
       version: -1
       name: Verify Query Threat Logs Outputs
       type: condition
@@ -328,6 +327,20 @@ tasks:
               complex:
                 root: Cortex
                 accessor: Logging.Threat.Src
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.Dst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Threat.Rule
             iscontext: true
     view: |-
       {
@@ -381,10 +394,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 90960bf2-89bb-4239-8153-e5e12de6432d
+    taskid: d64311fe-5e67-4c45-86eb-755ccd394db9
     type: condition
     task:
-      id: 90960bf2-89bb-4239-8153-e5e12de6432d
+      id: d64311fe-5e67-4c45-86eb-755ccd394db9
       version: -1
       name: Verify Query Traffic Logs Outputs
       type: condition
@@ -403,6 +416,20 @@ tasks:
               complex:
                 root: Cortex
                 accessor: Logging.Traffic.Src
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.Dst
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traffic.Rule
             iscontext: true
     view: |-
       {
@@ -455,10 +482,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: eaad556a-f3e2-48da-8df0-3d7ef7f62935
+    taskid: 10e444de-59b6-490a-89fe-e93441323559
     type: regular
     task:
-      id: eaad556a-f3e2-48da-8df0-3d7ef7f62935
+      id: 10e444de-59b6-490a-89fe-e93441323559
       version: -1
       name: cortex-query-analytics-logs
       description: TBD
@@ -494,10 +521,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 9f17ce67-21a6-437a-8611-daba264c9bbe
+    taskid: 67d15807-20ee-4592-8631-81cba3ee2cc8
     type: condition
     task:
-      id: 9f17ce67-21a6-437a-8611-daba264c9bbe
+      id: 67d15807-20ee-4592-8631-81cba3ee2cc8
       version: -1
       name: Verify Query Traps Logs Outputs
       type: condition
@@ -517,6 +544,27 @@ tasks:
                 root: Cortex
                 accessor: Logging.Traps.AgentID
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.EndPointHeader.DeviceName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.EndPointHeader.AgentIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Traps.MessageData
+            iscontext: true
     view: |-
       {
         "position": {
@@ -529,10 +577,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 111c55dd-eb42-4a84-807a-97d69a9f6963
+    taskid: 093e8226-3fe1-419d-8d0b-39ac0a0a8cab
     type: condition
     task:
-      id: 111c55dd-eb42-4a84-807a-97d69a9f6963
+      id: 093e8226-3fe1-419d-8d0b-39ac0a0a8cab
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
@@ -551,6 +599,27 @@ tasks:
               complex:
                 root: Cortex
                 accessor: Logging.Analytics.AgentID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.EndPointHeader.DeviceName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.EndPointHeader.AgentIP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Cortex
+                accessor: Logging.Analytics.MessageData
             iscontext: true
     view: |-
       {
