@@ -5,10 +5,11 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import json
+
 import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
@@ -534,11 +535,11 @@ def get_question_result(client, data_args):
     if rows is None:
         context = {'QuestionID': id, 'Status': 'Pending'}
         return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={'Tanium.QuestionResult(val.QuestionID === id)': context}, raw_response=res)
+                              outputs={f'Tanium.QuestionResult(val.QuestionID == {id})': context}, raw_response=res)
 
     context = {'QuestionID': id, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.QuestionResult(val.QuestionID === id)': context}
+    outputs = {f'Tanium.QuestionResult(val.QuestionID == {id})': context}
     human_readable = tableToMarkdown('Question results', rows)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -587,12 +588,12 @@ def get_saved_question_result(client, data_args):
     if rows is None:
         context = {'SavedQuestionID': id, 'Status': 'Pending'}
         return return_outputs(readable_output='Question is still executing, Question id: ' + str(id),
-                              outputs={'Tanium.SavedQuestionResult(val.SavedQuestionID === id)': context},
+                              outputs={f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id})': context},
                               raw_response=res)
 
     context = {'SavedQuestionID': id, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID === obj.ID)': context}
+    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID == {id})': context}
     human_readable = tableToMarkdown('question results:', rows)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -749,15 +750,18 @@ def create_manual_group(client, data_args):
 
     body = {'name': group_name}
 
-    hosts = hosts.split(',')
-    ips = ip_addresses.split(',')
     hosts_list = []
     ips_list = []
 
-    for host in hosts:
-        hosts_list.append({'computer_name': host})
-    for ip in ips:
-        ips_list.append({'ip_address': ip})
+    if hosts:
+        hosts = hosts.split(',')
+        for host in hosts:
+            hosts_list.append({'computer_name': host})
+
+    if ip_addresses:
+        ip_addresses = ip_addresses.split(',')
+        for ip in ip_addresses:
+            ips_list.append({'ip_address': ip})
 
     body['computer_specs'] = hosts_list
     body['computer_specs'].extend(ips_list)
@@ -823,7 +827,6 @@ def get_groups(client, data_args):
         for group in raw_response.get('data')[:-1][:count]:
             groups.append(client.get_group_item(group))
 
-
     context = createContext(groups, removeNull=True)
     outputs = {'Tanium.Group(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Groups', groups)
@@ -833,8 +836,11 @@ def get_groups(client, data_args):
 def delete_group(client, data_args):
     id = data_args.get('id')
     raw_response = client.do_request('DELETE', 'groups/' + str(id))
+    group = {'ID': int(id), 'Deleted': True}
     human_readable = 'Group has been deleted. ID = ' + str(id)
-    return_outputs(readable_output=human_readable, outputs={}, raw_response=raw_response)
+    context = createContext(group, removeNull=True)
+    outputs = {'Tanium.Group(val.ID === obj.ID)': context}
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
