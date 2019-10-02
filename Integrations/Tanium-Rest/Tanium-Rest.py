@@ -348,6 +348,27 @@ class Client(BaseClient):
         item['Status'] = client.get('status')
         return item
 
+    def get_group_item(self, group):
+        item = {}
+        item['ID'] = group.get('id')
+        item['Name'] = group.get('name')
+        item['Deleted'] = group.get('deleted_flag')
+        item['Text'] = group.get('text')
+
+        type = group.get('type')
+        if type == 0:
+            type = 'Filter-based group'
+        elif type == 1:
+            type = 'Action group'
+        elif type == 2:
+            type = 'Action policy pair group'
+        elif type == 3:
+            type = 'Ad hoc group'
+        elif type == 4:
+            type = 'Manual group'
+
+        item['Type'] = type
+        return item
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -718,33 +739,48 @@ def get_saved_actions_pending(client, data_args):
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
 
 
-def create_group(client, data_args):
+def create_manual_group(client, data_args):
     group_name = data_args.get('group-name')
-    hosts = data_args.get('hosts')
-    text_filter = data_args.get('text-filter')
+    hosts = data_args.get('computer-names')
+    ip_addresses = data_args.get('ip-addresses')
 
-    if not text_filter and not hosts:
-        return_error('text-filter and hosts arguments are missing')
+    if not ip_addresses and not hosts:
+        return_error('computer-names and ip-addresses arguments are missing')
 
     body = {'name': group_name}
-    endpoint_url = ''
 
-    if hosts:
-        hosts = hosts.split(',')
-        hosts_list = []
-        for host in hosts:
-            hosts_list.append({'computer_name': host})
+    hosts = hosts.split(',')
+    ips = ip_addresses.split(',')
+    hosts_list = []
+    ips_list = []
 
-        body['computer_specs'] = hosts_list
-        endpoint_url = 'computer_groups'
+    for host in hosts:
+        hosts_list.append({'computer_name': host})
+    for ip in ips:
+        ips_list.append({'ip_address': ip})
 
-    if text_filter:
-        body['text'] = text_filter
-        endpoint_url = 'groups'
+    body['computer_specs'] = hosts_list
+    body['computer_specs'].extend(ips_list)
 
-    raw_response = client.do_request('POST', endpoint_url, body)
+    raw_response = client.do_request('POST', 'computer_groups', body)
     group = raw_response.get('data')
-    group = client.update_id(group)
+    group = client.get_group_item(group)
+
+    context = createContext(group, removeNull=True)
+    outputs = {'Tanium.Group(val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Group created', context)
+    return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def create_filter_based_group(client, data_args):
+    group_name = data_args.get('group-name')
+    text_filter = data_args.get('text-filter')
+
+    body = {'name': group_name, 'text': text_filter}
+
+    raw_response = client.do_request('POST', 'groups', body)
+    group = raw_response.get('data')
+    group = client.get_group_item(group)
 
     context = createContext(group, removeNull=True)
     outputs = {'Tanium.Group(val.ID === obj.ID)': context}
@@ -765,7 +801,7 @@ def get_group(client, data_args):
 
     raw_response = client.do_request('GET', endpoint_url)
     group = raw_response.get('data')
-    group = client.update_id(group)
+    group = client.get_group_item(group)
 
     context = createContext(group, removeNull=True)
     outputs = {'Tanium.Group(val.ID === obj.ID)': context}
@@ -775,16 +811,30 @@ def get_group(client, data_args):
 
 def get_groups(client, data_args):
     count = int(data_args.get('count'))
-    raw_response = client.do_request('GET', 'groups')
-
+    type = data_args.get('group-type')
     groups = []
-    for group in raw_response.get('data')[:-1][:count]:
-        groups.append(client.update_id(group))
+    raw_response = {}
+    if type == 'Manual':
+        raw_response = client.do_request('GET', 'computer_groups')
+        for group in raw_response.get('data')[:count]:
+            groups.append(client.get_group_item(group))
+    elif type == 'FilterBased':
+        raw_response = client.do_request('GET', 'groups')
+        for group in raw_response.get('data')[:-1][:count]:
+            groups.append(client.get_group_item(group))
+
 
     context = createContext(groups, removeNull=True)
     outputs = {'Tanium.Group(val.ID === obj.ID)': context}
     human_readable = tableToMarkdown('Groups', groups)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
+
+
+def delete_group(client, data_args):
+    id = data_args.get('id')
+    raw_response = client.do_request('DELETE', 'groups/' + str(id))
+    human_readable = 'Group has been deleted. ID = ' + str(id)
+    return_outputs(readable_output=human_readable, outputs={}, raw_response=raw_response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -830,9 +880,11 @@ def main():
         f'tn-get-saved-action': get_saved_action,
         f'tn-list-saved-actions': get_saved_actions,
         f'tn-list-saved-actions-pending-approval': get_saved_actions_pending,
-        f'tn-create-group': create_group,
+        f'tn-create-filter-based-group': create_filter_based_group,
+        f'tn-create-manual-group': create_manual_group,
         f'tn-get-group': get_group,
-        f'tn-list-groups': get_groups
+        f'tn-list-groups': get_groups,
+        f'tn-delete-group': delete_group
     }
 
     try:

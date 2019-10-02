@@ -1275,6 +1275,22 @@ script:
     description: Get a group object based on ID or name.
     execution: false
     name: tn-get-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Unknown
+    - contextPath: Tanium.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Tanium.Group.Text
+      description: A description of the clients that this group represents.
+      type: String
+    - contextPath: Tanium.Group.Type
+      description: The type of the group.
+      type: String
+    - contextPath: Tanium.Group.Deleted
+      description: Value is true if the group is deleted, false if the group is active.
+      type: Boolean
   - arguments:
     - default: false
       description: Name of group to create.
@@ -1285,20 +1301,45 @@ script:
     - default: false
       description: Comma separated list of hosts, For example - Host1,Host2
       isArray: false
-      name: hosts
+      name: computer-names
       required: false
       secret: false
+    - default: false
+      description: Comma separated list of Ip addresses, For example - 12.12.12.12,10.1.1.1
+      isArray: false
+      name: ip-addresses
+      required: false
+      secret: false
+    deprecated: false
+    description: Create group object based on computers or IP addresses list.
+    execution: false
+    name: tn-create-manual-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Number
+  - arguments:
     - default: false
       description: ' Text filter-based computer group, For example - operating system
         contains windows'
       isArray: false
       name: text-filter
-      required: false
+      required: true
+      secret: false
+    - default: false
+      description: Name of group to create.
+      isArray: false
+      name: group-name
+      required: true
       secret: false
     deprecated: false
-    description: Create group object based on hosts list or text filter.
+    description: Create group object based on text filter.
     execution: false
-    name: tn-create-group
+    name: tn-create-filter-based-group
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Number
   - arguments:
     - default: false
       defaultValue: '5'
@@ -1307,9 +1348,43 @@ script:
       name: count
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: group-type
+      predefined:
+      - Manual
+      - FilterBased
+      required: true
+      secret: false
     deprecated: false
     execution: false
     name: tn-list-groups
+    outputs:
+    - contextPath: Tanium.Group.ID
+      description: The unique ID of the group object.
+      type: Unknown
+    - contextPath: Tanium.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: Tanium.Group.Text
+      description: A description of the clients that this group represents.
+      type: String
+    - contextPath: Tanium.Group.Type
+      description: The type of the group.
+      type: String
+    - contextPath: Tanium.Group.Deleted
+      description: Value is true if the group is deleted, false if the group is active.
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: tn-delete-group
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   runonce: false
