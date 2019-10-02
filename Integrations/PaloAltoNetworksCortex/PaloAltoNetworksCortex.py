@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 import os
 import requests
 import json
-import re
 from pancloud import LoggingService, Credentials
 import base64
 from dateutil.parser import parse
@@ -129,23 +128,23 @@ ANALYTICS_FIELDS = [
 ]
 
 PANW_ARGS_DICT = {
-    'ip': ['src', 'dst'],
-    'rule': ['rule'],
-    'from_zone': ['from'],
-    'to_zone': ['to'],
-    'port': ['sport', 'dport'],
-    'action': ['action'],
-    'hash': ['filedigest'],
-    'url': ['misc LIKE'],
+    'ip': ['src=', 'dst='],
+    'rule': ['rule='],
+    'from_zone': ['from='],
+    'to_zone': ['to='],
+    'port': ['sport=', 'dport='],
+    'action': ['action='],
+    'hash': ['filedigest='],
+    'url': ['misc LIKE '],
     'query': []
 }
 
 TMS_ARGS_DICT = {
-    'ip': ['endPointHeader.agentIp'],
-    'host': ['endPointHeader.deviceName'],
-    'user': ['endPointHeader.userName'],
-    'category': ['messageData.eventCategory'],
-    'hash': ['messageData.files.sha256'],
+    'ip': ['endPointHeader.agentIp='],
+    'host': ['endPointHeader.deviceName='],
+    'user': ['endPointHeader.userName='],
+    'category': ['messageData.eventCategory='],
+    'hash': ['messageData.files.sha256='],
     'query': []
 }
 
@@ -473,29 +472,17 @@ def build_where_clause(args: dict, table_args_dict: dict) -> str:
         if key in table_args_dict.keys():
             if key == 'query':
                 # if query arg is supplied than we just need to parse it and only it
-                return parse_query(args[key])
+                return args[key].strip()
             else:
                 values_list: list = argToList(args[key])
                 for value in values_list:
                     for field in table_args_dict[key]:
                         if not where_clause:
                             # the beginning of the where part should start without OR
-                            where_clause += f"{field}='{value}'"
+                            where_clause += f"{field}'{value}'"
                         else:
-                            where_clause += f" OR {field}='{value}'"
+                            where_clause += f" OR {field}'{value}'"
     return where_clause
-
-
-def parse_query(query: str) -> str:
-    """
-    This function make sure to return only the part of the query after the WHERE word
-    :param query: the query string
-    :return: the part of the query after the WHERE word
-    """
-    if ' WHERE ' in query.upper():
-        return re.split(' WHERE ', query, maxsplit=1, flags=re.IGNORECASE)[1]
-    else:
-        raise DemistoException('A compound query must include a WHERE part')
 
 
 def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists: list):
