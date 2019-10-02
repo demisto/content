@@ -733,4 +733,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- ExtraHop-Test
+- ExtraHop_v2-Test

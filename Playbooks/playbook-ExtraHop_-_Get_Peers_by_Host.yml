@@ -405,4 +405,4 @@ inputs:
     expressed in seconds since the epoch.
 outputs: []
 tests:
-- ExtraHop-Test
+- ExtraHop_v2-Test
