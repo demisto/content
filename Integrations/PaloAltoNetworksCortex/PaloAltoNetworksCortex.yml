@@ -871,7 +871,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Destination port or array of ports to search.
+      description: Port or array of ports to search.
       isArray: false
       name: port
       required: false
@@ -898,7 +898,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Hash or array of hashes to search.
+      description: Hash (SHA256) or array of hashes to search.
       isArray: false
       name: hash
       required: false
