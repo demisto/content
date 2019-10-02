@@ -726,8 +726,9 @@ script:
     name: cortex-query-traffic-logs
     outputs:
     - contextPath: Cortex.Logging.Traffic.Action
-      description: TBD
-      type: Unknown
+      description: Identifies the action that the firewall took for the network
+        traffic.
+      type: String
     - contextPath: Cortex.Logging.Traffic.RiskOfApp
       description: Indicates how risky the application is from a network security
         perspective. Values range from 1-5, where 5 is the riskiest.
@@ -1290,8 +1291,8 @@ script:
       description: Subtype of event.
       type: String
     - contextPath: Cortex.Logging.Traps.UUID
-      description: TBD
-      type: Unknown
+      description: Unique identifier for the event in Cortex.
+      type: String
     - contextPath: Cortex.Logging.Traps.ServerHost
       description: Hostname of the Traps management service.
       type: String
