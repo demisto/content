@@ -186,6 +186,17 @@ script:
     description: Lists alert events for a specific alert.
     execution: false
     name: helix-get-events-by-alert
+  - arguments:
+    - default: true
+      description: ID of an alert.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a specific alert from an helix endpoint.
+    execution: false
+    name: helix-get-endpoints-by-alert
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

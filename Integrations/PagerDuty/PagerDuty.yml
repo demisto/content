@@ -15,8 +15,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -117,16 +116,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified escalation
-        policy IDs.
+      description: Filters the results, showing only on-call users for the specified
+        escalation policy IDs.
       isArray: true
       name: escalation_policy_ids
       required: false
       secret: false
     - default: false
-      description: Filters the results, showing only on-call users for the specified schedule
-        IDs. If the value is null, permanent on-call user are included due to direct user
-        escalation policy targets.
+      description: Filters the results, showing only on-call users for the specified
+        schedule IDs. If the value is null, permanent on-call user are included due
+        to direct user escalation policy targets.
       isArray: true
       name: schedule_ids
       required: false
@@ -549,6 +548,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - PagerDuty Test

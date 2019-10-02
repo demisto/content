@@ -147,6 +147,18 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/events'
         return self._http_request('POST', suffix)
 
+    def get_endpoints_by_alert(self, alert_id: Union[int, str]) -> Dict:
+        """Fetches endpoints for an alert by sending a GET request.
+
+        Args:
+            alert_id: Alert ID to get endpoints for.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/endpoints'
+        return self._http_request('POST', suffix)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -370,7 +382,7 @@ def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Create a note for a case
+    """Create a case for an alert
 
     Args:
         client: Client object with request
@@ -396,7 +408,7 @@ def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Create a note for a case
+    """Get events for a specific alert
 
     Args:
         client: Client object with request
@@ -410,7 +422,7 @@ def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     events = raw_response.get('results')
     if events:
         title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context_entry = build_transformed_dict(events, {})  # TODO: edit this
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
         }
@@ -420,6 +432,33 @@ def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
+
+
+def get_endpoints_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Fetch endpoints of a specific alert
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    alert_id = args.get('id')
+    raw_response = client.get_endpoints_by_alert(alert_id=alert_id)
+    endpoints = demisto.get(raw_response, 'results.endpoints')
+    if endpoints:
+        title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
+        context_entry = build_transformed_dict(endpoints, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any endpoints.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -451,6 +490,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert,
+        f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert,
     }
     try:
         if command == 'fetch-incidents':
