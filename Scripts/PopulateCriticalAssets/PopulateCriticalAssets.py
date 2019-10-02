@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 field_cli_name = "criticalassets"
-current_value = (demisto.incidents()[0].get("CustomFields").get(field_cli_name)
+current_value = (demisto.incidents()[0].get("CustomFields", {}).get(field_cli_name)
                  or demisto.incidents()[0].get(field_cli_name))
 critical_assets = demisto.args().get('critical_assets')
 grid_lst = []  # type: list
