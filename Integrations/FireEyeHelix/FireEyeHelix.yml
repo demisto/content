@@ -30,22 +30,28 @@ name: FireEyeHelix
 script:
   commands:
   - arguments:
-    - default: true
-      description: The ID of event for which to get information.
+    - default: false
+      description: Maximum number of results to return per page.
       isArray: false
-      name: event_id
-      required: true
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The initial index from which to return the results.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
-    description: Returns an event by event ID.
+    description: Returns all alerts.
     execution: false
-    name: analytics-and-siem-get-event
+    name: helix-list-alerts
     outputs:
     - contextPath: FireEyeHelix.Event.ID
-      description: The ID of event.
+      description: The ID of the event.
       type: String
     - contextPath: FireEyeHelix.Event.Description
-      description: A description of the event.
+      description: The description of the event.
       type: String
     - contextPath: FireEyeHelix.Event.Created
       description: The date/time that the event was created.
@@ -54,209 +60,125 @@ script:
       description: Whether the event is active.
       type: Boolean
     - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: The name of the user assigned to the event.
+      description: A list of names of users assigned to the event.
       type: String
     - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: The ID of the user assigned to the event.
+      description: A list of IDs of users assigned to the event.
       type: String
   - arguments:
     - default: true
-      description: The ID of the event to close.
+      description: Alert ID.
       isArray: false
-      name: event_id
+      name: id
       required: true
       secret: false
     deprecated: false
-    description: Closes the specified event.
+    description: Get alert by id.
     execution: false
-    name: analytics-and-siem-close-event
-    outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Assignee.IsActive
-      description: Whether the event is active.
-      type: Boolean
+    name: helix-get-alert-by-id
   - arguments:
-    - default: false
-      description: The ID of the event to update.
+    - default: true
+      description: ID of the alert to update.
       isArray: false
-      name: event_id
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Change status, assign, assess, add to case.
+    execution: false
+    name: helix-update-alert
+  - arguments:
+    - default: true
+      description: ID of the alert the note is created for.
+      isArray: false
+      name: id
       required: true
       secret: false
     - default: false
-      description: The updated description of the event.
+      description: Note to add to the alert.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    description: Create an alert note.
+    execution: false
+    name: helix-alert-create-note
+  - arguments:
+    - default: false
+      description: Name of the case to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Status of the case to create.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Severity of the case to create.
+      isArray: false
+      name: severity
+      required: false
+      secret: false
+    - default: false
+      description: Tags of the newly created case.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Priority of the case to create.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: State of the case to create.
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    - default: false
+      description: Info links of the case to create.
+      isArray: false
+      name: info_links
+      required: false
+      secret: false
+    - default: false
+      description: ID of the assignee of the case.
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: Total days the case is unresolved.
+      isArray: false
+      name: total_days_unresolved
+      required: false
+      secret: false
+    - default: false
+      description: Description of the created case.
       isArray: false
       name: description
       required: false
       secret: false
     - default: false
-      description: A CSV list of user IDs to assign to the event. This list will replace
-        the users currently assigned to the event.
-      isArray: true
-      name: assignee
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates the specified event.
-    execution: false
-    name: analytics-and-siem-update-event
-    outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Description
-      description: The updated description of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Created
-      description: The date/time that the event was created.
-      type: Date
-    - contextPath: FireEyeHelix.Event.IsActive
-      description: Whether the event is active.
-      type: Boolean
-    - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: A list of names of users currently assigned to the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: A list of IDs of users currently assigned to the event.
-      type: String
-  - arguments:
-    - default: false
-      description: A description of the event.
+      description: ID of the alert the case is created under.
       isArray: false
-      name: description
+      name: alert_id
       required: true
       secret: false
-    - default: false
-      description: A CSV list of user IDs to assign to the event.
-      isArray: true
-      name: assignee
-      required: false
-      secret: false
     deprecated: false
-    description: Creates an event in the service system
+    description: Create a case.
     execution: false
-    name: analytics-and-siem-create-event
-    outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Description
-      description: The description of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Created
-      description: The date/time that the event was created.
-      type: Date
-    - contextPath: FireEyeHelix.Event.IsActive
-      description: Whether the event is active.
-      type: Boolean
-    - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: A list of names of users assigned to the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: A list of IDs of users assigned to the event.
-      type: String
-  - arguments:
-    - default: false
-      description: A CSV list of event IDs.
-      isArray: false
-      name: event_id
-      required: false
-      secret: false
-    - default: false
-      description: The date/time from which to begin the search.
-      isArray: false
-      name: since_time
-      required: false
-      secret: false
-    - default: false
-      description: A CSV list of user IDs.
-      isArray: false
-      name: assignee
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether the event is active. Can be "true" or "false". If empty,
-        will return active and inactive events.
-      isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns events that match the specified query.
-    execution: false
-    name: analytics-and-siem-query
-    outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Description
-      description: The description of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Created
-      description: The date/time that the event was created.
-      type: Date
-    - contextPath: FireEyeHelix.Event.IsActive
-      description: Whether the event is active.
-      type: Boolean
-    - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: A list of names of users assigned to the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: A list of IDs of users assigned to the event.
-      type: String
-  - arguments:
-    - default: true
-      defaultValue: '50'
-      description: Maximum results to get
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    - default: false
-      description: Filter events by created before, format (%Y-%m-%dT%H:%M:%SZ)
-      isArray: false
-      name: event_created_date_before
-      required: false
-      secret: false
-    - default: false
-      description: Filter events by created after, format (%Y-%m-%dT%H:%M:%SZ)
-      isArray: false
-      name: event_created_date_after
-      required: false
-      secret: false
-    deprecated: false
-    description: Returns all events.
-    execution: false
-    name: analytics-and-siem-list-events
-    outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Description
-      description: The description of the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Created
-      description: The date/time that the event was created.
-      type: Date
-    - contextPath: FireEyeHelix.Event.IsActive
-      description: Whether the event is active.
-      type: Boolean
-    - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: A list of names of users assigned to the event.
-      type: String
-    - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: A list of IDs of users assigned to the event.
-      type: String
-  dockerimage: demisto/python3:3.7.4.977
+    name: helix-alert-create-case
+  dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3

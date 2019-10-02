@@ -23,7 +23,7 @@ Attributes:
 """
 INTEGRATION_NAME = 'FireEye Helix'
 # lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'fireeye-helix'
+INTEGRATION_COMMAND_NAME = 'helix'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'FireEye'
 
@@ -37,45 +37,103 @@ class Client(BaseClient):
         """
         return self._http_request('GET', '/healthcheck', resp_type='content')
 
-    def list_events_request(self, max_results: Union[int, str] = None,
-                            event_created_date_after: Optional[Union[str, datetime]] = None,
-                            event_created_date_before: Optional[Union[str, datetime]] = None
-                            ) -> Dict:
-        """Returns all events by sending a GET request.
+    def list_alerts_request(self, limit: Union[int, str] = None, offset: Union[int, str] = None) -> Dict:
+        """Returns all alerts by sending a GET request.
 
         Args:
-            max_results: The maximum number of events to return.
-            event_created_date_after: Returns events created after this date.
-            event_created_date_before: Returns events created before this date.
+            limit: The maximum number of alerts to return.
+            offset: The initial index from which to return the results.
+            # event_created_date_after: Optional[Union[str, datetime]] = None, todo: CHANGE THIS AND BELOW
+            # event_created_date_before: Optional[Union[str, datetime]] = None
+            # event_created_date_after: Returns events created after this date.
+            # event_created_date_before: Returns events created before this date.
 
         Returns:
-            Response from API. from since_time if supplied else returns all events in given limit.
+            Response from API.
         """
-        # The service endpoint to request from
-        suffix = 'event'
+        suffix = '/api/v3/alerts'
         # Dictionary of params for the request
         params = assign_params(
-            sinceTime=event_created_date_after,
-            fromTime=event_created_date_before,
-            limit=max_results)
+            limit=limit,
+            offset=offset
+        )
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def event_request(self, event_id: AnyStr) -> Dict:
-        """Return an event by the event ID.
+    def get_alert_by_id_request(self, _id: Union[int, str]) -> Dict:
+        """Return a single alert by sending a GET request.
 
         Args:
-            event_id: Event ID to get.
+            _id: ID  of the alert to get.
 
         Returns:
-            Response JSON
+            Response from API.
         """
-        # The service endpoint to request from
-        suffix = 'event'
-        # Dictionary of params for the request
-        params = assign_params(eventId=event_id)
-        # Send a request using our http_request wrapper
-        return self._http_request('GET', suffix, params=params)
+        suffix = f'/api/v3/alerts/{_id}'
+        return self._http_request('GET', suffix)
+
+    def update_alert_by_id_request(self, body: Dict) -> Dict:
+        """Updates a single alert by sending a POST request.
+
+        Args:
+            body: Request body to update dictionary.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts'
+        return self._http_request('POST', suffix, json_data=body)
+
+    def create_alert_note(self, _id: Union[int, str], note: str) -> Dict:
+        """Creates a single note for an alert by sending a POST request.
+
+        Args:
+            _id: Alert ID to create .
+            note: Note to add to alert.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{_id}/notes'
+        body = assign_params(note=note)
+        return self._http_request('POST', suffix, json_data=body)
+
+    def create_alert_case(self, alert_id: Union[int, str], name: str, status: str = None,
+                          severity: Union[int, str] = None, tags: str = None, priority: str = None, state: str = None,
+                          info_links: str = None, assigned_to: str = None, total_days_unresolved: str = None,
+                          description: str = None) -> Dict:
+        """Creates a single case for an alert by sending a POST request.
+
+        Args:
+            alert_id: Alert ID to create case for.
+            name: Name of the case.
+            status: Status of the case.
+            severity: Severity of the case.
+            tags: Tags of the case.
+            priority: Priority of the case.
+            state: State of the case.
+            info_links: Info links of the case.
+            assigned_to: Assignee list.
+            total_days_unresolved: Total days the case is unresolved.
+            description: Description of the case.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/cases'
+        body = assign_params(
+            status=status,
+            severity=severity,
+            tags=tags,
+            name=name,
+            priority=priority,
+            state=state,
+            info_links=info_links,
+            assigned_to=assigned_to,
+            total_days_unresolved=total_days_unresolved,
+            description=description
+        )
+        return self._http_request('POST', suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -176,7 +234,7 @@ def fetch_incidents(
     else:
         new_last_run = last_run
     incidents: List = list()
-    raw_response = client.list_events_request(event_created_date_after=new_last_run)
+    raw_response = client.list_alerts_request(event_created_date_after=new_last_run)  # TODO: Adjust this
     events = raw_response.get('event')
     if events:
         # Creates incident entry
@@ -192,7 +250,61 @@ def fetch_incidents(
     return incidents, new_last_run
 
 
-def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_alerts(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Lists all alerts and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    limit = args.get('limit')
+    offset = args.get('offset')
+    raw_response = client.list_alerts_request(limit=limit, offset=offset)
+    alerts = raw_response.get('results')
+    if alerts:
+        title = f'{INTEGRATION_NAME} - List alerts:'
+        context_entry = build_transformed_dict(alerts, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
+
+
+def get_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get alert by id and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    _id = args.get('id')
+    raw_response = client.get_alert_by_id_request(_id=_id)
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - Alert {_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
+
+
+def update_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all events and return outputs in Demisto's format
 
     Args:
@@ -202,26 +314,74 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    max_results = args.get('max_results')
-    event_created_date_before = args.get('event_created_date_before')
-    event_created_date_after = args.get('event_created_date_after')
-    raw_response = client.list_events_request(
-        event_created_date_before=event_created_date_before,
-        event_created_date_after=event_created_date_after,
-        max_results=max_results)
-    events = raw_response.get('event')
-    if events:
-        title = f'{INTEGRATION_NAME} - List events:'
-        context_entry = build_transformed_dict(events, {})  # TODO: edit this
+    _id = args.get('id')
+    raw_response = client.update_alert_by_id_request(body=args)
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
+
+
+def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create a note for an alert
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    _id = args.get('id')
+    note = args.get('note')
+    raw_response = client.create_alert_note(_id=_id, note=note)
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
+
+
+def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create a note for a case
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    _id = args.get('id')
+    note = args.get('note')
+    raw_response = client.create_alert_case(_id=_id, note=note)
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -247,7 +407,11 @@ def main():  # pragma: no cover
     commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents,
-        f'{INTEGRATION_COMMAND_NAME}-list-events': list_events,
+        f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts,
+        f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id,
+        f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id,
+        f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note,
+        f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case,
     }
     try:
         if command == 'fetch-incidents':
