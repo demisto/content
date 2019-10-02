@@ -1333,7 +1333,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
 
     start_time = args.get('startTime')
     end_time = args.get('endTime')
-    limit = args.get('logsAmount', '5')
+    limit = args.get('limit', '5')
     time_range = args.get('timeRange')
     time_value = args.get('rangeValue')
 

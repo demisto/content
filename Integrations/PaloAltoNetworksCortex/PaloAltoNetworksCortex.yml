@@ -712,6 +712,13 @@ script:
       name: rangeValue
       required: false
       secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: The command searches the Cortex panw.traffic table which is the traffic
       logs table for PAN-OS/Panorama.
@@ -883,6 +890,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: The fields that are selected in the query. Selection can be all
         (same as *) or listing of specific fields in the table.
       isArray: false
@@ -934,6 +942,12 @@ script:
         week.
       isArray: false
       name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1100,7 +1114,8 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
   - arguments:
     - default: false
@@ -1141,6 +1156,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: The fields that are selected in the query. Selection can be all
         (same as *) or listing of specific fields in the table.
       isArray: false
@@ -1180,6 +1196,13 @@ script:
         week.
       isArray: false
       name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1419,7 +1442,8 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
     - contextPath: File.Path
       description: The path where the file is located.
@@ -1475,6 +1499,7 @@ script:
       required: false
       secret: false
     - default: false
+      defaultValue: all
       description: The fields that are selected in the query. Selection can be all
         (same as *) or listing of specific fields in the table.
       isArray: false
@@ -1514,6 +1539,13 @@ script:
         week.
       isArray: false
       name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1669,7 +1701,8 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: File.Type
-      description: The file type, as determined by libmagic (same as displayed in file entries).
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
       type: String
     - contextPath: File.Path
       description: The path where the file is located.
