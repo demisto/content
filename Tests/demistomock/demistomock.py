@@ -2,6 +2,7 @@ import json
 import logging
 
 integrationContext = {}
+is_debug = False  # type: bool
 
 exampleIncidents = [
     {
