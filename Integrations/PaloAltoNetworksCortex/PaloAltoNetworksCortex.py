@@ -148,6 +148,36 @@ TMS_ARGS_DICT = {
     'query': []
 }
 
+VALUE_TRANSFORM_DICT = {
+    'traps': {
+        'messageData': {
+            'action': [],
+            'block': ['File was not blocked', 'File was blocked'],
+            'quarantine': ['File was not quarantined', 'File was quarantined'],
+            'terminate': ['Traps did not terminate the file', 'Traps terminated the file'],
+            'localAnalysisResult': [],
+            'trapsSeverity': []
+        },
+        'endPointHeader': {
+            'is64': ['The endpoint is not running x64 architecture', 'The endpoint is running x64 architecture'],
+            'isVdi': ['The endpoint is not a VDI', 'The endpoint is a VDI'],
+            'osType': ['', 'Windows', 'OS X/macOS', 'Android', 'Linux']
+        }
+    },
+    'analytics': {
+        'messageData': {
+            'type': []
+        },
+        'endPointHeader': {
+            'is64': ['The endpoint is not running x64 architecture', 'The endpoint is running x64 architecture'],
+            'isVdi': ['The endpoint is not a VDI', 'The endpoint is a VDI'],
+            'osType': ['', 'Windows', 'OS X/macOS', 'Android', 'Linux']
+        },
+        'regionId': {10: 'Americas (N. Virginia)', 70: 'EMEA (Frankfurt)'}
+    }
+}
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -257,9 +287,9 @@ def traps_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'AgentID': row_content.get('agentId'),
         'EndPointHeader.OsType': end_point_header.get('osType'),
-        'EndPointHeader.IsVdi': end_point_header.get('isVdi'),
+        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')],
         'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
-        'EndPointHeader.Is64': end_point_header.get('is64'),
+        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')],
         'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
         'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
         'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
@@ -283,7 +313,8 @@ def traps_context_transformer(row_content: dict) -> dict:
         'MessageData.Files': parse_files(message_data.get('files', [])),
         'MessageData.Users': parse_users(message_data.get('users', [])),
         'MessageData.PostDetected': message_data.get('postDetected'),
-        'MessageData.Terminate': message_data.get('terminate'),
+        'MessageData.Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
+        [message_data.get('terminate')],
         'MessageData.Verdict': message_data.get('verdict'),
         'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
         'MessageData.ModuleCategory': message_data.get('moduleCategory'),
@@ -329,7 +360,7 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
-        'RegionID': region_id_number_to_string(row_content.get('regionId')),
+        'RegionID': VALUE_TRANSFORM_DICT['analytics']['regionId'][row_content.get('regionId')],
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
         'MessageData.@type': message_data.get('@type'),
@@ -498,38 +529,6 @@ def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists: l
             input_list.append(filtered_dict)
 
 
-def os_type_number_to_string(os_type_number) -> str:
-    """
-    This functions maps each os type number into a corresponding string name
-    :param os_type_number: the number of the os type
-    :return: the name of the os
-    """
-    if os_type_number == 1:
-        return 'Windows'
-    elif os_type_number == 2:
-        return 'OS X/macOS'
-    elif os_type_number == 3:
-        return 'Android'
-    elif os_type_number == 4:
-        return 'Linux'
-    else:
-        return ''
-
-
-def region_id_number_to_string(region_id_number) -> str:
-    """
-    This function maps each region id number into a corresponding string name
-    :param region_id_number: the number of the region id
-    :return: the name of the region id
-    """
-    if region_id_number == 10:
-        return 'Americas (N. Virginia)'
-    elif region_id_number == 70:
-        return 'EMEA (Frankfurt)'
-    else:
-        return ''
-
-
 def get_context_standards_outputs(results: list) -> dict:
     """
     This function gets a list of all results and retrives from it all needed data for Demisto's indicators, all by
@@ -556,7 +555,7 @@ def get_context_standards_outputs(results: list) -> dict:
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
             'OSVersion': end_point_header.get('osVersion'),
-            'OS': os_type_number_to_string(end_point_header.get('osType')),
+            'OS': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')],
             'ID': result.get('agentId')
         }
         delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
