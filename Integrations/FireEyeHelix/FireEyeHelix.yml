@@ -175,6 +175,17 @@ script:
     description: Create a case.
     execution: false
     name: helix-alert-create-case
+  - arguments:
+    - default: true
+      description: Alert ID to get event by.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Lists alert events for a specific alert.
+    execution: false
+    name: helix-get-events-by-alert
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

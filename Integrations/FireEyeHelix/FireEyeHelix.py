@@ -88,7 +88,7 @@ class Client(BaseClient):
         """Creates a single note for an alert by sending a POST request.
 
         Args:
-            _id: Alert ID to create .
+            _id: Alert ID to create note for.
             note: Note to add to alert.
 
         Returns:
@@ -101,7 +101,7 @@ class Client(BaseClient):
     def create_alert_case(self, alert_id: Union[int, str], name: str, status: str = None,
                           severity: Union[int, str] = None, tags: str = None, priority: str = None, state: str = None,
                           info_links: str = None, assigned_to: str = None, total_days_unresolved: str = None,
-                          description: str = None) -> Dict:
+                          description: str = None, **kwargs) -> Dict:
         """Creates a single case for an alert by sending a POST request.
 
         Args:
@@ -134,6 +134,18 @@ class Client(BaseClient):
             description=description
         )
         return self._http_request('POST', suffix, json_data=body)
+
+    def get_events_by_alert(self, alert_id: Union[int, str]) -> Dict:
+        """Fetches events for an alert by sending a GET request.
+
+        Args:
+            alert_id: Alert ID to get events for.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/events'
+        return self._http_request('POST', suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -344,7 +356,7 @@ def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     note = args.get('note')
     raw_response = client.create_alert_note(_id=_id, note=note)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
+        title = f'{INTEGRATION_NAME} - Created Note for Alert {_id}:'
         context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
@@ -354,7 +366,7 @@ def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
 
 
 def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -367,14 +379,40 @@ def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    _id = args.get('id')
-    note = args.get('note')
-    raw_response = client.create_alert_case(_id=_id, note=note)
+    alert_id = args.get('id')
+    raw_response = client.create_alert_case(**args)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
+        title = f'{INTEGRATION_NAME} - Updated Alert {alert_id}:'
         context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
+
+
+def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create a note for a case
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    alert_id = args.get('id')
+    raw_response = client.get_events_by_alert(alert_id=alert_id)
+    events = raw_response.get('results')
+    if events:
+        title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
@@ -412,6 +450,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case,
+        f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert,
     }
     try:
         if command == 'fetch-incidents':
