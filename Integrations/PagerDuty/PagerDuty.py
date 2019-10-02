@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-IS_PY3 = sys.version_info[0] == 3
 # PagerDuty API works only with secured communication.
 USE_SSL = not demisto.params().get('insecure', False)
 
@@ -107,7 +106,7 @@ def http_request(method, url, params_dict=None, data=None):
 
     except Exception as e:
         LOG(e)
-        raise e
+        raise
 
 
 def translate_severity(sev):
