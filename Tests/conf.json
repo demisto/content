@@ -1946,6 +1946,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
         "LogRhythm": "LogRhythm host is unreachable (Issue 19362)",
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
         "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
