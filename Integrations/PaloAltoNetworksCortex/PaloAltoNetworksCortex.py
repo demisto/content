@@ -411,8 +411,8 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
     if fields == '*':
         # if the user queried all fields than we have preset headers
         if table_name == 'traffic' or table_name == 'threat':
-            headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule']
-            headers_raw_names = ['src', 'dst', 'app', 'action', 'rule']
+            headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule', 'Time Generated']
+            headers_raw_names = ['src', 'dst', 'app', 'action', 'rule', 'time_generated']
 
         elif table_name == 'traps' or table_name == 'analytics':
             headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
@@ -427,7 +427,10 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
         filtered_result = {}
         for key, value in result.items():
             if key in headers_raw_names:
-                filtered_result[headers[headers_raw_names.index(key)]] = value
+                if key == 'time_generated':
+                    filtered_result[headers[headers_raw_names.index(key)]] = datetime.fromtimestamp(value).isoformat()
+                else:
+                    filtered_result[headers[headers_raw_names.index(key)]] = value
             elif isinstance(value, dict) and key == 'endPointHeader':
                 # handle case which headers are in nested dict (1 nest only)
                 for child_key in value:
