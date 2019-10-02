@@ -73,6 +73,12 @@ script:
       name: type
       required: false
       secret: false
+    - name: offline
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: When set to True, will block any outgoing communication
     deprecated: false
     description: Rasterize an email body into an image
     execution: false
@@ -100,7 +106,42 @@ script:
     description: Rasterize an image file
     execution: false
     name: rasterize-image
-  dockerimage: demisto/chromium:1.0.0.1848
+  - arguments:
+    - default: true
+      description: Entry ID of PDF file
+      isArray: false
+      name: EntryID
+      required: true
+      secret: false
+    - default: false
+      description: Max pages to render (default is 3)
+      defaultvalue: 3
+      isArray: false
+      name: maxPages
+      required: false
+      secret: false
+    - default: false
+      description: The pdf password
+      isArray: false
+      name: pdfPassword
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: If true will stack the pages horizontaly, will stack them verticly by default
+      isArray: false
+      name: horizontal
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Rasterize a PDF file
+    execution: false
+    name: rasterize-pdf
+  dockerimage: demisto/chromium:1.0.0.2354
   isfetch: false
   runonce: false
   script: '-'
