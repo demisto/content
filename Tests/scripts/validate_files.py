@@ -125,7 +125,7 @@ class FilesValidator(object):
                 print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
                     file_path, file_status))
 
-            elif print_ignored_files:
+            elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
                 print_warning('Ignoring file path: {}'.format(file_path))
 
         modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
