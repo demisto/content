@@ -793,7 +793,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: ExtraHop
+                  simple: ExtraHop v2
           - - operator: isEqualString
               left:
                 value:
@@ -823,10 +823,10 @@ tasks:
       version: -1
       name: Get host information from ExtraHop Reveal(x)
       description: Get host information from ExtraHop Reveal(x).
-      script: '|||extrahop-device-search'
+      script: 'ExtraHop v2|||extrahop-device-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ExtraHop v2
     nexttasks:
       '#none#':
       - "4"

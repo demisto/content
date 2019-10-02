@@ -15,7 +15,7 @@ enabled: true
 scripttarget: 0
 dependson:
   must:
-  - '|||extrahop-track-ticket'
+  - 'ExtraHop v2|||extrahop-track-ticket'
 runonce: false
 dockerimage: demisto/python3:3.7.2.200
 runas: DBotWeakRole

@@ -1,0 +1,471 @@
+id: ExtraHop-Test
+version: -1
+name: ExtraHop-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29a59964-9b9a-4570-8168-3c6e0e0bd7bf
+    type: start
+    task:
+      id: 29a59964-9b9a-4570-8168-3c6e0e0bd7bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 3a579c68-6fd6-47fb-8885-b6cac919ef76
+    type: condition
+    task:
+      id: 3a579c68-6fd6-47fb-8885-b6cac919ef76
+      version: -1
+      name: Check alert rule exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ExtraHop.Alert.[0].Id
+            iscontext: true
+          right:
+            value:
+              simple: "13"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 95386c23-f944-417b-8d39-4111a5aeb15d
+    type: condition
+    task:
+      id: 95386c23-f944-417b-8d39-4111a5aeb15d
+      version: -1
+      name: Check device
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.[1].Device.[0].Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: e0838ddc-95fa-470f-8f8e-88be342f08a9
+    type: condition
+    task:
+      id: e0838ddc-95fa-470f-8f8e-88be342f08a9
+      version: -1
+      name: Verify device on whitelist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.[2].Device.[0].OnWatchlist
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: dfff52ca-8d0e-4686-8ba8-f70c81cec706
+    type: regular
+    task:
+      id: dfff52ca-8d0e-4686-8ba8-f70c81cec706
+      version: -1
+      name: extrahop-whitelist-modify
+      description: Add a device to the watchlist in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-edit-watchlist'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      add:
+        simple: "106"
+      remove: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 39bdde20-8e38-471b-8a7c-626fe1d65627
+    type: regular
+    task:
+      id: 39bdde20-8e38-471b-8a7c-626fe1d65627
+      version: -1
+      name: extrahop-whitelist-modify
+      description: Remove a device from the watchlist in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-edit-watchlist'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      add: {}
+      remove:
+        simple: "106"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 8b3eef32-3099-4507-864f-8743f246e186
+    type: regular
+    task:
+      id: 8b3eef32-3099-4507-864f-8743f246e186
+      version: -1
+      name: extrahop-get-alerts
+      description: Get all alert rules from ExtraHop.
+      script: 'ExtraHop v2|||extrahop-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: d59813d9-d556-45be-836d-d26bb54eacdb
+    type: regular
+    task:
+      id: d59813d9-d556-45be-836d-d26bb54eacdb
+      version: -1
+      name: extrahop-device-search
+      description: Search for devices in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-device-search'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      active_from: {}
+      active_until: {}
+      activity: {}
+      discover_time: {}
+      ip: {}
+      l3_only: {}
+      limit: {}
+      mac: {}
+      match_type: {}
+      name: {}
+      operator: {}
+      role: {}
+      software: {}
+      tag: {}
+      vendor: {}
+      vlan: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 7ed56a45-b0c1-4a17-8103-e6b512f7551d
+    type: regular
+    task:
+      id: 7ed56a45-b0c1-4a17-8103-e6b512f7551d
+      version: -1
+      name: extrahop-get-watchlist
+      description: Get all devices on the watchlist in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-get-watchlist'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 59f79511-ca86-4de3-875d-0addfde8fbfb
+    type: regular
+    task:
+      id: 59f79511-ca86-4de3-875d-0addfde8fbfb
+      version: -1
+      name: extrahop-get-peers
+      description: Get all peers for a device from ExtraHop.
+      script: 'ExtraHop v2|||extrahop-get-peers'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      ip_or_id:
+        simple: "106"
+      peer_role: {}
+      protocol: {}
+      query_from: {}
+      query_until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 5caf3897-7566-44c1-8e8d-92280507be45
+    type: regular
+    task:
+      id: 5caf3897-7566-44c1-8e8d-92280507be45
+      version: -1
+      name: extrahop-get-protocols
+      script: 'ExtraHop v2|||extrahop-get-protocols'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      ip_or_id:
+        simple: "106"
+      query_from: {}
+      query_until: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 0e490773-fc01-470d-8317-8af63b2c8fe7
+    type: regular
+    task:
+      id: 0e490773-fc01-470d-8317-8af63b2c8fe7
+      version: -1
+      name: extrahop-get-activity-map
+      description: Get a link to a Live Activity Map in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-get-activity-map'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      from_time: {}
+      ip_or_id:
+        simple: "106"
+      peer_role: {}
+      protocol: {}
+      time_interval: {}
+      until_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 10ea378f-0ea9-4793-8e97-518992bc9997
+    type: regular
+    task:
+      id: 10ea378f-0ea9-4793-8e97-518992bc9997
+      version: -1
+      name: extrahop-tag-devices
+      description: Add a tag from a device in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-tag-devices'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      add:
+        simple: "106"
+      remove: {}
+      tag:
+        simple: test-playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6dc3f673-5a25-4d04-87d9-ed7aef6aa15c
+    type: regular
+    task:
+      id: 6dc3f673-5a25-4d04-87d9-ed7aef6aa15c
+      version: -1
+      name: extrahop-tag-devices
+      description: Remove a tag from a device in ExtraHop.
+      script: 'ExtraHop v2|||extrahop-tag-devices'
+      type: regular
+      iscommand: true
+      brand: ExtraHop v2
+    scriptarguments:
+      add: {}
+      remove:
+        simple: "106"
+      tag:
+        simple: test-playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_12_yes": 0.74,
+      "8_9_yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 450,
+        "y": 30
+      }
+    }
+  }
+inputs: []
+outputs: []
