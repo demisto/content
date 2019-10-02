@@ -165,11 +165,6 @@
         },
         {
             "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned test",
-            "nightly": true
-        },
-        {
-            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned v2 test"
         },
         {
@@ -1873,7 +1868,6 @@
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
