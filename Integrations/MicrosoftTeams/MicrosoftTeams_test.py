@@ -1260,7 +1260,7 @@ def test_integration_health(mocker):
 |Bot Framework API Health|Graph API Health|
 |---|---|
 | Operational | Operational |
-### Microsft Teams Mirrored Channels
+### Microsoft Teams Mirrored Channels
 |Channel|Investigation ID|Team|
 |---|---|---|
 | incident-10 | 10 | The-A-Team |
