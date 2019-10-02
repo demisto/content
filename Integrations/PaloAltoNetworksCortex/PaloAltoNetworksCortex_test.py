@@ -144,8 +144,52 @@ class TestParseFunctions:
             verify_table_fields(fields_list_negative_input, table_fields)
 
     def test_logs_human_readable_output_generator(self):
-        # from PaloAltoNetworksCortex import logs_human_readable_output_generator
-        pass
+        from PaloAltoNetworksCortex import logs_human_readable_output_generator
+        raw_results = [
+            {
+                'severity': 'emergency',
+                'eventType': 'AgentSecurityEvent',
+                'endPointHeader': {
+                    'userName': 'Administrator',
+                    'agentIp': '8.8.8.8',
+                    'deviceName': 'PC123',
+                    'agentTime': '2019-03-25T11:01:04.896Z'
+                },
+                'uuid': 'x1z2y3',
+                'dstrbd1': 'dstrbd2',
+                'recsize': 2825,
+                'dstrbd2': 'dstrbd3',
+                'facility': 'TrapsAgent'
+            }
+        ]
+        headers_all = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
+        headers_gc = ['uuid', 'recsize', 'facility']
+        table_name = 'traps'
+        filtered_results_all = [
+            {
+                'Severity': 'emergency',
+                'Event Type': 'AgentSecurityEvent',
+                'User': 'Administrator',
+                'Agent Address': '8.8.8.8',
+                'Agent Name': 'PC123',
+                'Agent Time': '2019-03-25T11:01:04.896Z'
+            }
+        ]
+        filtered_results_gc = [
+            {
+                'uuid': 'x1z2y3',
+                'recsize': 2825,
+                'facility': 'TrapsAgent'
+            }
+        ]
+        fields_all_input = '*'
+        fields_gc_input = 'uuid,recsize,facility'
+        # All case test
+        assert tableToMarkdown(f'Logs {table_name} table', filtered_results_all, headers=headers_all) \
+            == logs_human_readable_output_generator(fields_all_input, table_name, raw_results)
+        # General case test
+        assert tableToMarkdown(f'Logs {table_name} table', filtered_results_gc, headers=headers_gc) \
+            == logs_human_readable_output_generator(fields_gc_input, table_name, raw_results)
 
     def test_build_where_clause(self):
         from PaloAltoNetworksCortex import build_where_clause
