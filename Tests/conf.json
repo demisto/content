@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -20,6 +24,10 @@
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "AWS - SQS",
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
         {
             "integrations": "SlackV2",
@@ -1501,6 +1509,11 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
@@ -1692,6 +1705,10 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1834,6 +1851,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1905,9 +1926,9 @@
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
-        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235",
-        "ShodanTest": "Test is failing. #19311"
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1962,6 +1983,7 @@
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
