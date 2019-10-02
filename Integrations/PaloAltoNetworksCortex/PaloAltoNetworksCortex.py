@@ -10,6 +10,7 @@ from pancloud import LoggingService, Credentials
 import base64
 from dateutil.parser import parse
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from typing import Dict
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -148,25 +149,25 @@ TMS_ARGS_DICT = {
     'query': []
 }
 
-VALUE_TRANSFORM_DICT = {
+VALUE_TRANSFORM_DICT: Dict[object, Dict[object, Dict]] = {
     'traps': {
         'messageData': {
-            'action': [],
             'block': ['File was not blocked', 'File was blocked'],
-            'quarantine': ['File was not quarantined', 'File was quarantined'],
-            'terminate': ['Traps did not terminate the file', 'Traps terminated the file'],
-            'localAnalysisResult': [],
-            'trapsSeverity': []
+            'terminate': ['Traps did not terminate the file', 'Traps terminated the file']
         },
         'endPointHeader': {
             'is64': ['The endpoint is not running x64 architecture', 'The endpoint is running x64 architecture'],
             'isVdi': ['The endpoint is not a VDI', 'The endpoint is a VDI'],
             'osType': ['', 'Windows', 'OS X/macOS', 'Android', 'Linux']
-        }
+        },
+        'regionId': {10: 'Americas (N. Virginia)', 70: 'EMEA (Frankfurt)'}
     },
     'analytics': {
         'messageData': {
-            'type': []
+            'localAnalysisResult': {
+                'trustedId': ['Traps did not evaluate the signer of the file', 'The signer is trusted',
+                              'The signer is not trusted']
+            }
         },
         'endPointHeader': {
             'is64': ['The endpoint is not running x64 architecture', 'The endpoint is running x64 architecture'],
@@ -286,10 +287,13 @@ def traps_context_transformer(row_content: dict) -> dict:
     return {
         'Severity': row_content.get('severity'),
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': end_point_header.get('osType'),
-        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')],
+        'EndPointHeader.OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
+        [end_point_header.get('osType')] if end_point_header.get('osType') else '',
+        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
+        if end_point_header.get('isVdi') else '',
         'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
-        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')],
+        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
+        if end_point_header.get('is64') else '',
         'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
         'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
         'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
@@ -302,7 +306,8 @@ def traps_context_transformer(row_content: dict) -> dict:
         'ServerHost': row_content.get('serverHost'),
         'GeneratedTime': row_content.get('generatedTime'),
         'ServerComponentVersion': row_content.get('serverComponentVersion'),
-        'RegionID': row_content.get('regionId'),
+        'RegionID': VALUE_TRANSFORM_DICT['traps']['regionId'][row_content.get('regionId')]
+        if row_content.get('regionId') else '',
         'CustomerID': row_content.get('customerId'),
         'ServerTime': row_content.get('serverTime'),
         'OriginalAgentTime': row_content.get('originalAgentTime'),
@@ -314,7 +319,7 @@ def traps_context_transformer(row_content: dict) -> dict:
         'MessageData.Users': parse_users(message_data.get('users', [])),
         'MessageData.PostDetected': message_data.get('postDetected'),
         'MessageData.Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
-        [message_data.get('terminate')],
+        [message_data.get('terminate')] if message_data.get('terminate') else '',
         'MessageData.Verdict': message_data.get('verdict'),
         'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
         'MessageData.ModuleCategory': message_data.get('moduleCategory'),
@@ -342,12 +347,16 @@ def analytics_context_transformer(row_content: dict) -> dict:
     end_point_header = row_content.get('endPointHeader', {})
     message_data = row_content.get('messageData', {})
     local_analysis_result = message_data.get('localAnalysisResult', {})
+    local_analysis_result = message_data.get('localAnalysisResult', {})
     return {
         'AgentID': row_content.get('agentId'),
-        'EndPointHeader.OsType': end_point_header.get('osType'),
-        'EndPointHeader.IsVdi': end_point_header.get('isVdi'),
+        'EndPointHeader.OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
+        [end_point_header.get('osType')] if end_point_header.get('osType') else '',
+        'EndPointHeader.IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
+        if end_point_header.get('isVdi') else '',
         'EndPointHeader.OsVersion': end_point_header.get('osVersion'),
-        'EndPointHeader.Is64': end_point_header.get('is64'),
+        'EndPointHeader.Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
+        if end_point_header.get('is64') else '',
         'EndPointHeader.AgentIP': end_point_header.get('agentIp'),
         'EndPointHeader.DeviceName': end_point_header.get('deviceName'),
         'EndPointHeader.DeviceDomain': end_point_header.get('deviceDomain'),
@@ -360,7 +369,8 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
-        'RegionID': VALUE_TRANSFORM_DICT['analytics']['regionId'][row_content.get('regionId')],
+        'RegionID': VALUE_TRANSFORM_DICT['analytics']['regionId'][row_content.get('regionId')]
+        if row_content.get('regionId') else '',
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
         'MessageData.@type': message_data.get('@type'),
@@ -373,7 +383,9 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'MessageData.Blocked': message_data.get('blocked'),
         'MessageData.LocalAnalysisResult.Trusted': local_analysis_result.get('trusted'),
         'MessageData.LocalAnalysisResult.Publishers': local_analysis_result.get('publishers'),
-        'MessageData.LocalAnalysisResult.TrustedID': local_analysis_result.get('trustedId'),
+        'MessageData.LocalAnalysisResult.TrustedID': VALUE_TRANSFORM_DICT['analytics']['messageData']
+        ['localAnalysisResult']['trustedId'][local_analysis_result.get('trustedId')]
+        if local_analysis_result.get('trustedId') else '',
         'MessageData.ExecutionCount': message_data.get('executionCount'),
         'MessageData.LastSeen': message_data.get('lastSeen')
     }
@@ -555,7 +567,8 @@ def get_context_standards_outputs(results: list) -> dict:
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
             'OSVersion': end_point_header.get('osVersion'),
-            'OS': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')],
+            'OS': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')]
+            if end_point_header.get('osType') else '',
             'ID': result.get('agentId')
         }
         delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
