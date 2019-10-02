@@ -99,7 +99,6 @@ def set_proxy():
 
             if USE_PROXY:
                 admin_api.set_proxy(host=host, port=port)
-                return
 
     # if no proxy settings have been set
     except ValueError:
