@@ -196,7 +196,7 @@ class TestParseFunctions:
         table_args_dict = {'ip': ['src=', 'dst='], 'url': ['misc LIKE '], 'query': []}
         args_general_case_input = {'ip': '8.8.8.8', 'url': 'google.com', 'test': 'test'}
         args_query_case_input = {'ip': '8.8.8.8', 'test': 'test', 'query': " action='allow' AND packets='1'"}
-        args_general_case_output = "src=8.8.8.8 OR dst='8.8.8.8' OR misc LIKE 'google.com'"
+        args_general_case_output = "src='8.8.8.8' OR dst='8.8.8.8' OR misc LIKE 'google.com'"
         args_query_case_output = "action='allow' AND packets='1'"
         # General case test
         assert args_general_case_output == build_where_clause(args_general_case_input, table_args_dict)
