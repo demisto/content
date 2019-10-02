@@ -1412,7 +1412,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
         'HumanReadable': human_readable,
         'EntryContext': context_outputs
     }
-    return entry
+    return entry if pages else 'No logs found.'
 
 
 def process_incident_pairs(incident_pairs, max_incidents):
