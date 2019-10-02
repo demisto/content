@@ -31,7 +31,7 @@ INTEGRATION_CONTEXT_NAME = 'AnalyticsAndSIEM'
 
 
 class Client(BaseClient):
-    def test_module_request(self) -> Dict:
+    def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -39,10 +39,10 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_events_request(self, max_results: Union[int, str] = None,
-                            event_created_date_after: Optional[Union[str, datetime]] = None,
-                            event_created_date_before: Optional[Union[str, datetime]] = None
-                            ) -> Dict:
+    def list_events(self, max_results: Union[int, str] = None,
+                    event_created_date_after: Optional[Union[str, datetime]] = None,
+                    event_created_date_before: Optional[Union[str, datetime]] = None
+                    ) -> Dict:
         """Returns all events by sending a GET request.
 
         Args:
@@ -63,7 +63,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def event_request(self, event_id: AnyStr) -> Dict:
+    def get_event(self, event_id: AnyStr) -> Dict:
         """Return an event by the event ID.
 
         Args:
@@ -79,7 +79,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def close_event_request(self, event_id: AnyStr) -> Dict:
+    def close_event(self, event_id: AnyStr) -> Dict:
         """Closes the specified event.
 
         Args:
@@ -95,8 +95,8 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('DELETE', suffix, params=params)
 
-    def update_event_request(self, event_id: AnyStr, description: Optional[AnyStr] = None,
-                             assignee: Optional[List[str]] = None) -> Dict:
+    def update_event(self, event_id: AnyStr, description: Optional[AnyStr] = None,
+                     assignee: Optional[List[str]] = None) -> Dict:
         """Updates the specified event.
 
         Args:
@@ -115,7 +115,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def create_event_request(self, description: str, assignee: List[str] = None) -> Dict:
+    def create_event(self, description: str, assignee: List[str] = None) -> Dict:
         """Creates an event in the service.
 
         Args:
@@ -132,7 +132,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def query_request(self, **kwargs) -> Dict:
+    def query(self, **kwargs) -> Dict:
         """Query the specified kwargs.
 
         Args:
@@ -184,7 +184,7 @@ def raw_response_to_context(events: Union[Dict, List]) -> Union[Dict, List]:
 
 
 @logger
-def test_module(client: Client, *_) -> Tuple[str, None, None]:
+def test_module_command(client: Client, *_) -> Tuple[str, None, None]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -197,17 +197,17 @@ def test_module(client: Client, *_) -> Tuple[str, None, None]:
     Raises:
         DemistoException: If test failed.
     """
-    results = client.test_module_request()
+    results = client.test_module()
     if 'version' in results:
         return 'ok', None, None
     raise DemistoException(f'Test module failed, {results}')
 
 
 @logger
-def fetch_incidents(
+def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        last_run: Optional[str] = None) -> Tuple[List, datetime]:
+        last_run: Optional[str] = None) -> Tuple[List, str]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -220,31 +220,36 @@ def fetch_incidents(
         incidents, new last_run
 
     Examples:
-        >>> fetch_incidents(client, '3 days', '2010-02-01T00:00:00')
+        >>> fetch_incidents_command(client, '3 days', '2010-02-01T00:00:00')
     """
+    occurred_format = '%Y-%m-%dT%H:%M:%SZ'
     # Get incidents from API
     if not last_run:  # if first time running
-        new_last_run, _ = parse_date_range(fetch_time)
+        datetime_new_last_run, _ = parse_date_range(fetch_time, date_format=occurred_format)
     else:
-        new_last_run = last_run
+        datetime_new_last_run = parse_date_string(last_run)
+    new_last_run = datetime_new_last_run.strftime(occurred_format)
     incidents: List = list()
-    raw_response = client.list_events_request(event_created_date_after=new_last_run)
+    raw_response = client.list_events(event_created_date_after=datetime_new_last_run)
     events = raw_response.get('event')
     if events:
-        # Creates incident entry
-        incidents = [{
-            'name': f"{INTEGRATION_NAME}: {event.get('eventId')}",
-            'occurred': event.get('createdAt'),
-            'rawJSON': json.dumps(event)
-        } for event in events]
-
-        new_last_run = incidents[-1].get('occurred')
+        for event in events:
+            # Creates incident entry
+            occurred = event.get('createdAt')
+            datetime_occurred = parse_date_string(occurred)
+            incidents.append({
+                'name': f"{INTEGRATION_NAME}: {event.get('eventId')}",
+                'occurred': occurred,
+                'rawJSON': json.dumps(event)
+            })
+            if datetime_occurred > datetime_new_last_run:
+                new_last_run = datetime_occurred.strftime(occurred_format)
     # Return results
     return incidents, new_last_run
 
 
 @logger
-def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_events_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all events and return outputs in Demisto's format
 
     Args:
@@ -257,7 +262,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     max_results = args.get('max_results')
     event_created_date_before = args.get('event_created_date_before')
     event_created_date_after = args.get('event_created_date_after')
-    raw_response = client.list_events_request(
+    raw_response = client.list_events(
         event_created_date_before=event_created_date_before,
         event_created_date_after=event_created_date_after,
         max_results=max_results)
@@ -277,7 +282,7 @@ def list_events(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets an event by event ID and return outputs in Demisto's format
 
     Args:
@@ -290,7 +295,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
     event_id = args.get('event_id', '')
     # Make request and get raw response
-    raw_response = client.event_request(event_id)
+    raw_response = client.get_event(event_id)
     # Parse response into context & content entries
     events = raw_response.get('event')
     if events:
@@ -309,7 +314,7 @@ def get_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def close_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Closes an event and return outputs in Demisto's format
 
     Args:
@@ -322,7 +327,7 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Get arguments from user
     event_id = args.get('event_id', '')
     # Make request and get raw response
-    raw_response = client.close_event_request(event_id)
+    raw_response = client.close_event(event_id)
     # Parse response into context & content entries
     events = raw_response.get('event')
     if events and events[0].get('isActive') is False:
@@ -341,7 +346,7 @@ def close_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Updates an event and return outputs in Demisto's format
 
     Args:
@@ -356,7 +361,7 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     description = args.get('description')
     assignee = argToList(args.get('assignee', ''))
     # Make request and get raw response
-    raw_response = client.update_event_request(event_id, description=description, assignee=assignee)
+    raw_response = client.update_event(event_id, description=description, assignee=assignee)
     events = raw_response.get('event')
     # Parse response into context & content entries
     if events:
@@ -373,7 +378,7 @@ def update_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_event_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Creates a new event and return outputs in Demisto's format
 
     Args:
@@ -387,7 +392,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     description = args.get('description', '')
     assignee = argToList(demisto.args().get('assignee', ''))
     # Make request and get raw response
-    raw_response = client.create_event_request(description, assignee)
+    raw_response = client.create_event(description, assignee)
     events = raw_response.get('event')
     # Parse response into context & content entries
     if events:
@@ -405,7 +410,7 @@ def create_event(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def query_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Search for event by given args
 
     Args:
@@ -424,7 +429,7 @@ def query(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         isActive=args.get('is_active') == 'true' if args.get('is_active') else None
     )
     # Make request and get raw response
-    raw_response = client.query_request(**query_dict)
+    raw_response = client.query(**query_dict)
     events = raw_response.get('event')
     # Parse response into context & content entries
     if events:
@@ -453,29 +458,27 @@ def main():  # pragma: no cover
 
     # Switch case
     commands = {
-        'test-module': test_module,
-        'fetch-incidents': fetch_incidents,
-        f'{INTEGRATION_COMMAND_NAME}-list-events': list_events,
-        f'{INTEGRATION_COMMAND_NAME}-get-event': get_event,
-        f'{INTEGRATION_COMMAND_NAME}-delete-event': close_event,
-        f'{INTEGRATION_COMMAND_NAME}-update-event': update_event,
-        f'{INTEGRATION_COMMAND_NAME}-create-event': create_event,
-        f'{INTEGRATION_COMMAND_NAME}-query': query
+        'test-module': test_module_command,
+        'fetch-incidents': fetch_incidents_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-events': list_events_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-event': get_event_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-event': close_event_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-event': update_event_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-event': create_event_command,
+        f'{INTEGRATION_COMMAND_NAME}-query': query_command
     }
     try:
         if command == 'fetch-incidents':
-            incidents, new_last_run = fetch_incidents(client, last_run=demisto.getLastRun())
+            incidents, new_last_run = fetch_incidents_command(client, last_run=demisto.getLastRun())
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg, error=e)
-    finally:
-        # Prints all logs collected by @logger
-        LOG.print_log()
 
 
 if __name__ == 'builtins':  # pragma: no cover
