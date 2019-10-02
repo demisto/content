@@ -44,8 +44,12 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-g', '--buildName', help='The build name', required=True)
     parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
+    parser.add_argument('-m', '--memCheck', type=str2bool,
+                        help='Should trigger memory checks or not. The slack channel to check the data is: '
+                             'dmst_content_nightly_memory_data', default=False)
     parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
                                                       'tests on(Valid only when using AMI)', default="NonAMI")
+
     options = parser.parse_args()
 
     return options
@@ -481,7 +485,10 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
     options = options_handler()
     stdout, stderr = get_docker_memory_data()
     text = 'Memory Usage: {}'.format(stdout) if not stderr else stderr
-    if options.nightly:
+    if options.nightly and options.memCheck:
+        send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
+        stdout, stderr = get_docker_processes_data()
+        text = stdout if not stderr else stderr
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
 
     run_test(c, proxy, failed_playbooks, integrations, unmockable_integrations, playbook_id,
@@ -519,6 +526,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
+    is_memory_check = options.memCheck
     slack = options.slack
     circle_ci = options.circleci
     build_number = options.buildNumber
@@ -575,14 +583,13 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                                                     nightly_integrations)
     else:  # In case of a non AMI run we don't want to use the mocking mechanism
         mockless_tests = tests
-    if options.nightly:
+    if is_nightly and is_memory_check:
         mem_lim, err = get_docker_limit()
         send_slack_message(slack, SLACK_MEM_CHANNEL_ID,
                            'Build Number: {0}\n Server Address: {1}\nMemory Limit: {2}'.format(build_number, server,
                                                                                                mem_lim),
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
-    # test_index = 0
     if is_ami and mock_tests:
         proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mock_tests:
@@ -592,12 +599,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version)
-            # if test_index % 10 == 0:
-            # stdout, stderr = get_docker_processes_data()
-            # text = stdout if not stderr else stderr
-            # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-            # print(test_index)
-            # test_index += 1
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto('')
@@ -612,12 +613,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                           filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, is_ami)
-        # if test_index % 10 == 0:
-        # stdout, stderr = get_docker_processes_data()
-        # text = stdout if not stderr else stderr
-        # send_slack_message(slack, SLACK_MEM_CHANNEL_ID, text, 'Content CircleCI', 'False')
-        # print(test_index)
-        # test_index += 1
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
                        proxy, is_ami)

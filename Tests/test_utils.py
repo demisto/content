@@ -6,6 +6,7 @@ import json
 import requests
 import argparse
 from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
@@ -43,7 +44,7 @@ def run_command(command, is_silenced=True, exit_on_error=True):
         string. The output of the command you are trying to execute.
     """
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
     else:
         p = Popen(command.split())
 
@@ -56,6 +57,23 @@ def run_command(command, is_silenced=True, exit_on_error=True):
             raise RuntimeError('Failed to run command {}\nerror details:\n{}'.format(command, err))
 
     return output
+
+
+def get_remote_file(full_file_path, tag='master'):
+    github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
+    res = requests.get(github_path, verify=False)
+    if res.status_code != 200:
+        print_warning('Could not find the old entity file under "{}".\n'
+                      'please make sure that you did not break backward compatibility. '
+                      'Reason: {}'.format(github_path, res.reason))
+        return {}
+
+    if full_file_path.endswith('json'):
+        details = json.loads(res.content)
+    else:
+        details = yaml.safe_load(res.content)
+
+    return details
 
 
 def filter_packagify_changes(modified_files, added_files, removed_files, tag='master'):
@@ -73,10 +91,8 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag='ma
     packagify_diff = {}  # type: dict
     for file_path in removed_files:
         if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
-            github_path = os.path.join(CONTENT_GITHUB_LINK, tag, file_path).replace('\\', '/')
-            file_content = requests.get(github_path, verify=False).content
-            details = yaml.safe_load(file_content)
-            if 404 not in details:
+            details = get_remote_file(file_path, tag)
+            if details:
                 uniq_identifier = '_'.join([details['name'],
                                            details.get('fromversion', '0.0.0'),
                                            details.get('toversion', '99.99.99')])
@@ -117,7 +133,7 @@ def get_last_release_version():
     """
     tags = run_command('git tag').split('\n')
     tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
-    tags.sort(cmp=server_version_compare, reverse=True)
+    tags.sort(key=LooseVersion, reverse=True)
 
     return tags[0]
 
