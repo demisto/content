@@ -149,9 +149,9 @@ class TestParseFunctions:
 
     def test_build_where_clause(self):
         from PaloAltoNetworksCortex import build_where_clause
-        table_args_dict = {'ip': ['src', 'dst'], 'url': ['misc LIKE'], 'query': []}
+        table_args_dict = {'ip': ['src=', 'dst='], 'url': ['misc LIKE '], 'query': []}
         args_general_case_input = {'ip': '8.8.8.8', 'url': 'google.com', 'test': 'test'}
-        args_query_case_input = {'ip': '8.8.8.8', 'test': 'test', 'query': "action='allow' AND packets='1'"}
+        args_query_case_input = {'ip': '8.8.8.8', 'test': 'test', 'query': " action='allow' AND packets='1'"}
         args_general_case_output = "src=8.8.8.8 OR dst='8.8.8.8' OR misc LIKE 'google.com'"
         args_query_case_output = "action='allow' AND packets='1'"
         # General case test
