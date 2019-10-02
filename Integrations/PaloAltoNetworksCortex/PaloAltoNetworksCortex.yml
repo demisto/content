@@ -725,6 +725,9 @@ script:
     execution: false
     name: cortex-query-traffic-logs
     outputs:
+    - contextPath: Cortex.Logging.Traffic.Action
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traffic.RiskOfApp
       description: Indicates how risky the application is from a network security
         perspective. Values range from 1-5, where 5 is the riskiest.
@@ -760,9 +763,15 @@ script:
       description: Identifies the application's subcategory. The subcategory is related
         to the application's category,
       type: String
+    - contextPath: Cortex.Logging.Traffic.Users
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traffic.Proto
       description: IP protocol associated with the session.
       type: String
+    - contextPath: Cortex.Logging.Traffic.TunneledApp
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traffic.Natdport
       description: Post-NAT destination port.
       type: String
@@ -790,6 +799,9 @@ script:
     - contextPath: Cortex.Logging.Traffic.Subtype
       description: 'Traffic log subtype. Values are: start, end, drop, deny.'
       type: String
+    - contextPath: Cortex.Logging.Traffic.TimeReceived
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traffic.SessionEndReason
       description: The reason a session terminated. If the termination had multiple
         causes. This field displays only the highest priority reason.
@@ -842,6 +854,9 @@ script:
     - contextPath: Cortex.Logging.Traffic.Tunnel
       description: Type of tunnel.
       type: String
+    - contextPath: Cortex.Logging.Traffic.IsPhishing
+      description: TBD
+      type: Unknown
     - contextPath: IP.Address
       description: IP address
       type: String
@@ -1025,6 +1040,9 @@ script:
     - contextPath: Cortex.Logging.Threat.Natsport
       description: Post-NAT source port.
       type: String
+    - contextPath: Cortex.Logging.Threat.URLDenied
+      description: TBD
+      type: String
     - contextPath: Cortex.Logging.Threat.CharacteristicOfApp
       description: Identifies the behaviorial characteristic of the application associated
         with the network traffic.
@@ -1042,6 +1060,9 @@ script:
     - contextPath: Cortex.Logging.Threat.ReceiveTime
       description: Time the log was received at the management plane.
       type: String
+    - contextPath: Cortex.Logging.Threat.Users
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Threat.Proto
       description: IP protocol associated with the session.
       type: String
@@ -1064,6 +1085,9 @@ script:
     - contextPath: Cortex.Logging.Threat.Subtype
       description: Subtype of the threat log.
       type: String
+    - contextPath: Cortex.Logging.Threat.TimeReceived
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Threat.Direction
       description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
       type: String
@@ -1101,6 +1125,9 @@ script:
     - contextPath: Cortex.Logging.Threat.Sport
       description: Source port utilized by the session.
       type: String
+    - contextPath: Cortex.Logging.Threat.IsPhishing
+      description: TBD
+      type: Unknown
     - contextPath: IP.Address
       description: IP address
       type: String
@@ -1253,12 +1280,18 @@ script:
     - contextPath: Cortex.Logging.Traps.EndPointHeader.ProtectionStatus
       description: The Traps agent status.
       type: String
+    - contextPath: Cortex.Logging.Traps.RecordType
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traps.TrapsID
       description: Tenant external ID.
       type: String
     - contextPath: Cortex.Logging.Traps.EventType
       description: Subtype of event.
       type: String
+    - contextPath: Cortex.Logging.Traps.UUID
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Traps.ServerHost
       description: Hostname of the Traps management service.
       type: String
@@ -1602,6 +1635,9 @@ script:
     - contextPath: Cortex.Logging.Analytics.TrapsID
       description: Tenant external ID.
       type: String
+    - contextPath: Cortex.Logging.Analytics.EventType
+      description: TBD
+      type: Unknown
     - contextPath: Cortex.Logging.Analytics.UUID
       description: Event unique ID.
       type: String
