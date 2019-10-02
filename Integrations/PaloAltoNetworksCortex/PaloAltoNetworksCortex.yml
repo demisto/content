@@ -1312,6 +1312,9 @@ script:
     - contextPath: Cortex.Logging.Traps.MessageData.Verdict
       description: Traps verdict for the file.
       type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Blocked
+      description: Block action taken on the file.
+      type: String
     - contextPath: Cortex.Logging.Traps.MessageData.TargetProcessIdx
       description: The prevention target process index in the processes array.
       type: String
