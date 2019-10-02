@@ -132,7 +132,7 @@ class TestParseFunctions:
         from PaloAltoNetworksCortex import verify_table_fields
         table_fields = ['risk-of-app', 'all', 'aaa', 'config_ver', '3dx', 'users']
         fields_list_all_input = 'risk-of-app,config_ver,all,users'
-        fields_list_neagtive_input = 'xyz,risk-of-app'
+        fields_list_negative_input = 'xyz,risk-of-app'
         fields_list_positive_input = 'risk-of-app,config_ver,users'
         fields_list_all_output = '*'
         # All test
@@ -141,28 +141,20 @@ class TestParseFunctions:
         assert fields_list_positive_input == verify_table_fields(fields_list_positive_input, table_fields)
         # Raising exception test
         with raises(DemistoException, match='xyz is not a valid field of the query'):
-            verify_table_fields(fields_list_neagtive_input, table_fields)
+            verify_table_fields(fields_list_negative_input, table_fields)
 
     def test_logs_human_readable_output_generator(self):
         # from PaloAltoNetworksCortex import logs_human_readable_output_generator
         pass
 
-    def test_parse_query(self):
-        from PaloAltoNetworksCortex import parse_query
-        query_upper_input = "SELECT * FROM panw.traffic WHERE src='8.8.8.8'"
-        query_lower_input = "SELECT * FROM panw.traffic where src='8.8.8.8'"
-        query_mix_input = "SELECT * FROM panw.traffic WhErE src='8.8.8.8'"
-        query_negative_input = "SELECT * FROM panw.traffic"
-        query_output = "src='8.8.8.8'"
-        # Upper test
-        assert query_output == parse_query(query_upper_input)
-        # Lower test
-        assert query_output == parse_query(query_lower_input)
-        # Mix test
-        assert query_output == parse_query(query_mix_input)
-        with raises(DemistoException, match='A compound query must include a WHERE part'):
-            parse_query(query_negative_input)
-
     def test_build_where_clause(self):
-        # from PaloAltoNetworksCortex import build_where_clause
-        pass
+        from PaloAltoNetworksCortex import build_where_clause
+        table_args_dict = {'ip': ['src', 'dst'], 'url': ['misc LIKE'], 'query': []}
+        args_general_case_input = {'ip': '8.8.8.8', 'url': 'google.com', 'test': 'test'}
+        args_query_case_input = {'ip': '8.8.8.8', 'test': 'test', 'query': "action='allow' AND packets='1'"}
+        args_general_case_output = "src=8.8.8.8 OR dst='8.8.8.8' OR misc LIKE 'google.com'"
+        args_query_case_output = "action='allow' AND packets='1'"
+        # General case test
+        assert args_general_case_output == build_where_clause(args_general_case_input, table_args_dict)
+        # Query case test
+        assert args_query_case_output == build_where_clause(args_query_case_input, table_args_dict)
