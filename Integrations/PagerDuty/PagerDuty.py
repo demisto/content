@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
+IS_PY3 = sys.version_info[0] == 3
 # PagerDuty API works only with secured communication.
 USE_SSL = not demisto.params().get('insecure', False)
 
@@ -102,11 +103,11 @@ def http_request(method, url, params_dict=None, data=None):
                                )
         res.raise_for_status()
 
-        return res.json()
+        return unicode_to_str_recur(res.json())
 
     except Exception as e:
         LOG(e)
-        raise(e)
+        raise e
 
 
 def translate_severity(sev):
@@ -115,6 +116,19 @@ def translate_severity(sev):
     elif sev == 'Low':
         return 1
     return 0
+
+
+def unicode_to_str_recur(obj):
+    """Converts unicode elements of obj (incl. dictionary and list) to string recursively"""
+    if IS_PY3:
+        return obj
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
 
 
 def test_module():
