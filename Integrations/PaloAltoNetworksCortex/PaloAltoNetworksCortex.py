@@ -321,6 +321,8 @@ def traps_context_transformer(row_content: dict) -> dict:
         'MessageData.Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
         [message_data.get('terminate')] if message_data.get('terminate') else '',
         'MessageData.Verdict': message_data.get('verdict'),
+        'MessageData.Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['blocked'][message_data.get('blocked')]
+        if message_data.get('blocked') else '',
         'MessageData.TargetProcessIdx': message_data.get('targetProcessIdx'),
         'MessageData.ModuleCategory': message_data.get('moduleCategory'),
         'MessageData.PreventionMode': message_data.get('preventionMode'),
