@@ -1,6 +1,6 @@
-id: ExtraHop-Test
+id: ExtraHop_v2-Test
 version: -1
-name: ExtraHop-Test
+name: ExtraHop_v2-Test
 starttaskid: "0"
 tasks:
   "0":

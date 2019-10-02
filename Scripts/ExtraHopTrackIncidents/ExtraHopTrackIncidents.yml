@@ -20,4 +20,4 @@ runonce: false
 dockerimage: demisto/python3:3.7.2.200
 runas: DBotWeakRole
 tests:
-- ExtraHop-Test
+- ExtraHop_v2-Test
