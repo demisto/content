@@ -3032,4 +3032,4 @@ script:
   dockerimage: demisto/python3:3.7.2.200
   runonce: false
 tests:
-- ExtraHop-Test
+- ExtraHop_v2-Test
