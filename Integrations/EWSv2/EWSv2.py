@@ -882,7 +882,7 @@ def get_last_run():
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
     
     # In case we have existing last_run data
-    if last_run.get(LAST_RUN_IDS) === None:
+    if last_run.get(LAST_RUN_IDS) is None:
         last_run[LAST_RUN_IDS] = []
     
     return last_run
