@@ -11,6 +11,8 @@ To get you started, refer to our [Getting Started article](https://github.com/de
 After you finish developing, there are two steps left before you can create a pull request:
 
  - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
+ 
+ - Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
 
  - Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes).
 
