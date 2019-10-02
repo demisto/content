@@ -1,4 +1,6 @@
 ## [Unreleased]
+  - Added handling for cases where the rate limit is exceeded.
+  - Added the *max_retry_time* integration parameter, which defines the maximum time per request.
 
 
 ## [19.8.2] - 2019-08-22
