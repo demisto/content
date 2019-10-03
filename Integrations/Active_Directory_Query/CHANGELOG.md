@@ -1,9 +1,7 @@
 ## [Unreleased]
-
-
-## [19.9.2] - 2019-09-26
  - Added Create Group command
  - Added Delete Group command
+
 
 ## [19.9.1] - 2019-09-18
   - Fix an issue in the ***custom-field-data*** argument.
