@@ -239,10 +239,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: State of the case.
+      description: Status of the case.
       isArray: false
-      name: state
+      name: status
       required: false
+      secret: false
+    - default: true
+      description: ID of the case to update.
+      isArray: false
+      name: id
+      required: true
       secret: false
     deprecated: false
     description: Change case assignee or status.

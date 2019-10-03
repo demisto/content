@@ -60,7 +60,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def get_alert_by_id_request(self, _id: Union[int, str]) -> Dict:
+    def get_alert_by_id(self, _id: Union[int, str]) -> Dict:
         """Return a single alert by sending a GET request.
 
         Args:
@@ -72,7 +72,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{_id}'
         return self._http_request('GET', suffix)
 
-    def update_alert_by_id_request(self, body: Dict) -> Dict:
+    def update_alert_by_id(self, body: Dict) -> Dict:
         """Updates a single alert by sending a POST request.
 
         Args:
@@ -145,7 +145,7 @@ class Client(BaseClient):
             Response from API.
         """
         suffix = f'/api/v3/alerts/{alert_id}/events'
-        return self._http_request('POST', suffix)
+        return self._http_request('GET', suffix)
 
     def get_endpoints_by_alert(self, alert_id: Union[int, str]) -> Dict:
         """Fetches endpoints for an alert by sending a GET request.
@@ -157,7 +157,7 @@ class Client(BaseClient):
             Response from API.
         """
         suffix = f'/api/v3/alerts/{alert_id}/endpoints'
-        return self._http_request('POST', suffix)
+        return self._http_request('GET', suffix)
 
     def get_cases_by_alert(self, alert_id: Union[int, str], limit: Union[int, str], offset: Union[int, str],
                            order_by: str) -> Dict:
@@ -178,7 +178,37 @@ class Client(BaseClient):
             offset=offset,
             order_by=order_by
         )
-        return self._http_request('POST', suffix, json_data=body)
+        return self._http_request('GET', suffix, json_data=body)
+
+    def update_case(self, case_id: Union[int, str], assigned_to: List, status: str) -> Dict:
+        """Updates a case by send a PATCH request.
+
+        Args:
+            case_id: ID of the case.
+            assigned_to: List of case assignees.
+            status: Status of the case.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/cases/{case_id}'
+        params = assign_params(
+            assigned_to=assigned_to,
+            status=status
+        )
+        return self._http_request('PATCH', suffix, params=params)
+
+    def get_event_by_id(self, event_id: Union[str, int]):
+        """Fetches an event by id via a GET request.
+
+        Args:
+            event_id: ID of an event.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v1/events/{event_id}'
+        return self._http_request('GET', suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -334,7 +364,7 @@ def get_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     _id = args.get('id')
-    raw_response = client.get_alert_by_id_request(_id=_id)
+    raw_response = client.get_alert_by_id(_id=_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Alert {_id}:'
         context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
@@ -360,7 +390,7 @@ def update_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     _id = args.get('id')
-    raw_response = client.update_alert_by_id_request(body=args)
+    raw_response = client.update_alert_by_id(body=args)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
         context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
@@ -452,7 +482,7 @@ def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
 def get_endpoints_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -507,7 +537,50 @@ def get_cases_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not find any endpoints.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
+
+
+def update_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Update a case
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    case_id = args.get('id')
+    raw_response = client.update_case(case_id=case_id, assigned_to=argToList(args.get('assigned_to')),
+                                      status=args.get('status'))
+    return f'{INTEGRATION_NAME} - Created case successfully.', {}, raw_response
+
+
+def get_event_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get alert by id and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    _id = args.get('id')
+    raw_response = client.get_event_by_id(event_id=_id)
+    event = raw_response.get('events')
+    if event:
+        title = f'{INTEGRATION_NAME} - Event {_id}:'
+        context_entry = build_transformed_dict(event, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -541,6 +614,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert,
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert,
         f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert,
+        f'{INTEGRATION_COMMAND_NAME}-update-case': update_case,
+        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id,
     }
     try:
         if command == 'fetch-incidents':
