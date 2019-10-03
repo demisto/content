@@ -342,6 +342,28 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('DELETE', suffix)
 
+    def list_sensors(self, limit: Union[int, str], offset: Union[int, str], hostname: str, status: str) -> Dict:
+        """Fetches sensors using GET request
+
+        Args:
+            limit: Number of results to return per page.
+            offset: The initial index from which to return the results.
+            hostname: Host name of the sensor.
+            status: Status of the sensor.
+
+        Returns:
+            Response from API
+        """
+        suffix = '/api/v3/sensors'
+        params = assign_params(
+            limit=limit,
+            offset=offset,
+            hostname=hostname,
+            status=status
+        )
+        return self._http_request('GET', suffix, params=params)
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -809,6 +831,32 @@ def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Deleted list successfully.', {}, raw_response
 
 
+def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Lists all sensors and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    raw_response = client.list_sensors(**args)
+    sensors = raw_response.get('results')
+    if sensors:
+        title = f'{INTEGRATION_NAME} - List sensors:'
+        context_entry = build_transformed_dict(sensors, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Sensor(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any sensors.', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -847,6 +895,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
         f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
     }
     try:
         if command == 'fetch-incidents':

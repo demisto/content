@@ -538,6 +538,35 @@ script:
     description: Deletes a single list by id.
     execution: false
     name: helix-delete-list
+  - arguments:
+    - default: false
+      description: Max number of results to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The initial index from which to return the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Host name of the sensor.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: Status of the sensor.
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetches all sensors.
+    execution: false
+    name: helix-list-sensors
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
