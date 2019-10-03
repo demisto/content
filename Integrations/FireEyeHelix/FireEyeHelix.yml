@@ -527,6 +527,17 @@ script:
     description: Update a list.
     execution: false
     name: helix-update-list
+  - arguments:
+    - default: true
+      description: ID of the list to delete.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a single list by id.
+    execution: false
+    name: helix-delete-list
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

@@ -330,6 +330,17 @@ class Client(BaseClient):
         )
         return self._http_request('PATCH', suffix, json_data=body)
 
+    def delete_list(self, list_id: Union[str, int]) -> Dict:
+        """Deletes a list using DELETE request
+
+        Args:
+            list_id: ID of a list.
+
+        Returns:
+            Response from API
+        """
+        suffix = f'/api/v3/lists/{list_id}'
+        return self._http_request('DELETE', suffix)
 
 ''' HELPER FUNCTIONS '''
 
@@ -783,6 +794,21 @@ def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Updated list successfully.', {}, raw_response
 
 
+def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Update a list. return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('list_id')
+    raw_response = client.delete_list(list_id)
+    return f'{INTEGRATION_NAME} - Deleted list successfully.', {}, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -820,6 +846,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
         f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
     }
     try:
         if command == 'fetch-incidents':
