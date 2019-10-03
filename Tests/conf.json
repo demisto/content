@@ -3,6 +3,16 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
+            "integrations": "AutoFocus V2",
+            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
+            "fromversion": "4.5.0",
+            "timeout": 500
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test"
         },
@@ -14,6 +24,10 @@
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "AWS - SQS",
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
         {
             "integrations": "SlackV2",
@@ -1495,6 +1509,11 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
@@ -1686,6 +1705,10 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1828,6 +1851,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1845,6 +1872,8 @@
         }
     ],
     "skipped_tests": {
+        "SentinelOne V2 - test": "Failing test (Issue 19361)",
+        "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
         "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
@@ -1899,6 +1928,7 @@
         "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
         "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
@@ -1918,6 +1948,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "LogRhythmRest": "LogRhythm host is unreachable (Issue 19362)",
         "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
         "Jask": "Returning 401 (issue 18879)",
         "SumoLogic": "No credentials (Issue 18441)",
@@ -1955,6 +1986,7 @@
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2022,6 +2054,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Rasterize": "No API calls "
     }
 }

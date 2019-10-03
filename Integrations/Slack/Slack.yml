@@ -13,7 +13,7 @@ configuration:
   type: 4
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
-  required: true
+  required: false
   type: 0
 - defaultvalue: 'true'
   display: Send notifications about incidents to the dedicated channel
@@ -41,6 +41,10 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: unsecure
   required: false
   type: 8
 - defaultvalue: 'true'
@@ -226,9 +230,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the thread to which to reply.
+      description: The ID of the thread to which to reply - can be retrieved from
+        a previous send-notification command.
       isArray: false
       name: threadID
+      required: false
+      secret: false
+    - default: false
+      description: A JSON string of Slack blocks to send in the message.
+      isArray: false
+      name: blocks
       required: false
       secret: false
     deprecated: false
@@ -336,7 +347,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The thread ID to which to send the file as a reply.
+      description: The ID of the thread to which to reply - can be retrieved from
+        a previous send-notification command.
       isArray: false
       name: threadID
       required: false
@@ -485,11 +497,12 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.1560
+  dockerimage: demisto/slack:1.0.0.2218
   isfetch: false
   longRunning: true
+  longRunningPort: false
+  subtype: python3
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 fromversion: 5.0.0
