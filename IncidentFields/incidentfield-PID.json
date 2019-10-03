@@ -10,7 +10,7 @@
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "",
+	"description": "PID",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,
