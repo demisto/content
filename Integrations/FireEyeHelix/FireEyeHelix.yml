@@ -567,6 +567,30 @@ script:
     description: Fetches all sensors.
     execution: false
     name: helix-list-sensors
+  - arguments:
+    - default: false
+      description: Max number of results to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The initial index from which to return the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of field names to sort the results by. For
+        example: “createDate” or "-updateDate,riskOrder"'
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all rules.
+    execution: false
+    name: helix-list-rules
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

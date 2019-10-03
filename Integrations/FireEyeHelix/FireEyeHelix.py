@@ -363,6 +363,25 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
+    def list_rules(self, limit: Union[int, str], offset: Union[int, str], sort: str) -> Dict:
+        """Fetches rules using GET request
+
+        Args:
+            limit: Number of results to return per page.
+            offset: The initial index from which to return the results.
+            sort: Comma-separated list of field names to sort the results by.
+
+        Returns:
+            Response from API
+        """
+        suffix = '/api/v1/rules'
+        params = assign_params(
+            limit=limit,
+            offset=offset,
+            sort=sort
+        )
+        return self._http_request('GET', suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -857,6 +876,32 @@ def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any sensors.', {}, {}
 
 
+def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Lists all rules and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    raw_response = client.list_rules(**args)
+    rules = raw_response.get('rules')
+    if rules:
+        title = f'{INTEGRATION_NAME} - List rules:'
+        context_entry = build_transformed_dict(rules, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any rules.', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -896,6 +941,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
     }
     try:
         if command == 'fetch-incidents':
