@@ -1,4 +1,5 @@
 ## [Unreleased]
+- Added a new "app" parameter, which is the app context of the namespace.
 
 
 ## [19.10.0] - 2019-10-03
