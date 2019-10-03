@@ -1,5 +1,6 @@
 ## [Unreleased]
 - Added a new "app" parameter, which is the app context of the namespace.
+- Prettified the human readable of the search command.
 
 
 ## [19.10.0] - 2019-10-03
