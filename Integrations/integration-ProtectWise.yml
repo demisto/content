@@ -42,7 +42,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Filter by LOW , MEDIUM , or HIGH threatLevel
+- display: Filter by  threat level (LOW, MEDIUM, or HIGH)
   name: threatLevel
   defaultvalue: ""
   type: 0
@@ -62,7 +62,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: "Maximum events to fetch at a time"
+- display: "Maximum events to fetch per fetch"
   name: maxFetch
   defaultvalue: "50"
   type: 0
@@ -472,61 +472,61 @@ script:
     arguments:
     - name: sensorId
       default: true
-      description: The id of the individual sensor (if not provided will query all
-        available sensors)
-    description: Collection of all available sensors
+      description: The ID of the individual sensor. If empty, will query all
+        available sensors.
+    description: Returns the specified, or all available sensors.
   - name: protectwise-show-sensors
     arguments:
     - name: sensorId
       default: true
-      description: The id of the individual sensor (if not provided will query all
-        available sensors)
+      description: The ID of the individual sensor. If empty, will query all
+        available sensors.
     outputs:
     - contextPath: Protectwise.Sensor.id
-      description: Sensor ID
+      description: The ID of the sensor.
     - contextPath: Protectwise.Sensor.friendly_name
-      description: Sensor Name
+      description: The name of the sensor.
     - contextPath: Protectwise.Sensor.ip_address
-      description: Sensor IP address
+      description: The IP address of the sensor.
     - contextPath: Protectwise.Sensor.last_seen
-      description: Time when sensor was last seen
+      description: The time when the sensor was last seen.
     - contextPath: Protectwise.Sensor.customer_id
-      description: Sensor's Customer ID
+      description: The customer ID of the sensor.
     - contextPath: Protectwise.Sensor.enabled
-      description: Is the sensor enabled
-    description: Collection of all available sensors
+      description: Whether the sensor is enabled.
+    description: Returns all available sensors.
   - name: search
     deprecated: true
     arguments:
     - name: start
       required: true
-      description: 'Timestamp of the start time of the event  end,  Example: 1401451200000,
-        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the start time of the event  end,  for example: 1401451200000,
+        or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event, Example: 1401451500000, or
-        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+      description: 'The timestamp of the end of the event, for example: 1401451500000, or
+        ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00.'
     - name: eventType
-      description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+      description: Filter by one or more event types. Can be "MaliciousFlow", "KillChainEscalation", or "MaliciousConversation".
     - name: killChainStage
-      description: Filter by killchain stage (Methodology  Recon  Delivery  Exploit  Beacon  CnC  Fortification  Data_Theft)
+      description: Filter by killchain stage. Can be "Methodology", "Recon", "Delivery", "Exploit", "Beacon", "CnC", "Fortification", or Data_Theft".
     - name: threatLevel
-      description: Filter by Low, Medium, or High threats (NONE  LOW  MEDIUM  HIGH)
+      description: Filter by threat level. Can be "NONE", "LOW", "MEDIUM", or "HIGH".
     - name: threatCategory
-      description: Filter by threat category (ExploitsAndAttacks  DenialOfService  Malware  Scanning  Botnets  Phishing  Suspicious  MaliciousHost  APT  Misc  Unknown)
+      description: Filter by threat category. Can be "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".
     - name: observationStage
-      description: Filter by Realtime or Retrospective
+      description: Filter by observation stage. Can be "Realtime" or "Retrospective".
     - name: ip
-      description: Filter by events that are affected by a specific IP address
+      description: Filter by events that are affected by a specific IP address.
     - name: minLimit
-      description: Try to return at least this many results per page
+      description: The minimum number of results to return per page.
     - name: maxLimit
-      description: Do not return more than this many results
+      description: The maximum number of results to return per page.
     - name: reverseOrder
-      description: Return results sorted by descending timestamp (default = true)
+      description: Whether to sort results by descending timestamp. If "true", results are returned in descending timestamp order. If "false", results are returned in ascending timestamp order. Default is "true".
     - name: nextPage
-      description: An identifier to fetch the next page in the result set
-    description: search Events ,Events are resources that describe a threat and contains
+      description: An identifier to fetch the next page in the result set.
+    description: Searches for events. Events are resources that describe a threat and contain
       a collection of observations.
   - name: protectwise-search-events
     arguments:
