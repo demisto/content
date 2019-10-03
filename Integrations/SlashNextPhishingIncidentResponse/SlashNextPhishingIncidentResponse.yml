@@ -318,8 +318,7 @@ script:
       required: true
       description: host can either be a domain name or IPv4 address.
     - name: limit
-      description: maximum number of URL records to fetch. This is an optional parameter
-        with a default value of 10.
+      description: maximum number of URL records to fetch.
       defaultValue: "10"
     outputs:
     - contextPath: DBotScore.Indicator
