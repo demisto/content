@@ -13,6 +13,10 @@
             "timeout": 500
         },
         {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorld"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test"
         },
