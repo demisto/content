@@ -1948,7 +1948,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "LogRhythm": "LogRhythm host is unreachable (Issue 19362)",
+        "LogRhythmRest": "LogRhythm host is unreachable (Issue 19362)",
         "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
         "Jask": "Returning 401 (issue 18879)",
         "SumoLogic": "No credentials (Issue 18441)",
