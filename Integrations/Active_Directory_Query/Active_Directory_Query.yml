@@ -391,8 +391,6 @@ script:
       type: string
     description: Retrieves the list of users or computers that are members of the
       specified group
-  runonce: false
-  dockerimage: demisto/ldap:1.0.0.75
  - name: ad-create-group
     arguments:
     - name: name
