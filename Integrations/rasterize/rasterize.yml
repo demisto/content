@@ -115,7 +115,7 @@ script:
       secret: false
     - default: false
       description: Max pages to render (default is 3)
-      defaultvalue: 3
+      defaultValue: "3"
       isArray: false
       name: maxPages
       required: false
@@ -128,8 +128,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultvalue: 'false'
       description: If true will stack the pages horizontaly, will stack them verticly by default
+      defaultValue: "false"
       isArray: false
       name: horizontal
       predefined:
