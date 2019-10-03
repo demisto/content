@@ -363,7 +363,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def list_rules(self, limit: Union[int, str], offset: Union[int, str], sort: str) -> Dict:
+    def list_rules(self, limit: Union[int, str], offset: Union[int, str], sort: str, **kwargs) -> Dict:
         """Fetches rules using GET request
 
         Args:
@@ -381,6 +381,20 @@ class Client(BaseClient):
             sort=sort
         )
         return self._http_request('GET', suffix, params=params)
+
+    def edit_rule(self, rule_id: Union[int, str], enabled: Union[str, bool]) -> Union:
+        """Edit a single rule using PATCH request
+
+        Args:
+            rule_id: ID of the rule.
+            enabled: Is the rule enabled.
+
+        Returns:
+            Response from API
+        """
+        suffix = f'/api/v1/rules/{rule_id}'
+        body = assign_params(enabled=enabled and enabled != 'false')
+        return self._http_request('PATCH', suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -902,6 +916,33 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any rules.', {}, {}
 
 
+def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Edit a single rule and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    rule_id = args.get('rule_id')
+    raw_response = client.edit_rule(**args)
+    rules = raw_response.get('rules')
+    if rules:
+        title = f'{INTEGRATION_NAME} - Successfully updated rule {rule_id}:'
+        context_entry = build_transformed_dict(rules, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find matching rule.', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -942,6 +983,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
+        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
     }
     try:
         if command == 'fetch-incidents':
@@ -949,7 +991,8 @@ def main():  # pragma: no cover
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

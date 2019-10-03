@@ -591,6 +591,27 @@ script:
     description: Get all rules.
     execution: false
     name: helix-list-rules
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Is the rule enabled.
+      isArray: false
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      description: ID of the rule.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Edit an existing rule.
+    execution: false
+    name: helix-edit-rule
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
