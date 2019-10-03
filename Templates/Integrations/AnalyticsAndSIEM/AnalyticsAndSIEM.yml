@@ -1,0 +1,254 @@
+category: Analytics & SIEM
+commonfields:
+  id: AnalyticsAndSIEM
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: AnalyticsAndSIEM
+name: AnalyticsAndSIEM
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The ID of event for which to get information.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns an event by event ID.
+    execution: false
+    name: analytics-and-siem-get-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: A description of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: The date/time that the event was created.
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Whether the event is active.
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: The name of the user assigned to the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: The ID of the user assigned to the event.
+      type: String
+  - arguments:
+    - default: true
+      description: The ID of the event to close.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Closes the specified event.
+    execution: false
+    name: analytics-and-siem-close-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.IsActive
+      description: Whether the event is active.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the event to update.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: The updated description of the event.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of user IDs to assign to the event. This list will replace
+        the users currently assigned to the event.
+      isArray: true
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates the specified event.
+    execution: false
+    name: analytics-and-siem-update-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: The updated description of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: The date/time that the event was created.
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Whether the event is active.
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: A list of names of users currently assigned to the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: A list of IDs of users currently assigned to the event.
+      type: String
+  - arguments:
+    - default: false
+      description: A description of the event.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of user IDs to assign to the event.
+      isArray: true
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an event in the service system
+    execution: false
+    name: analytics-and-siem-create-event
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: The description of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: The date/time that the event was created.
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Whether the event is active.
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: A list of names of users assigned to the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: A list of IDs of users assigned to the event.
+      type: String
+  - arguments:
+    - default: false
+      description: A CSV list of event IDs.
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to begin the search.
+      isArray: false
+      name: since_time
+      required: false
+      secret: false
+    - default: false
+      description: A CSV list of user IDs.
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether the event is active. Can be "true" or "false". If empty,
+        will return active and inactive events.
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns events that match the specified query.
+    execution: false
+    name: analytics-and-siem-query
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: The description of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: The date/time that the event was created.
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Whether the event is active.
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: A list of names of users assigned to the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: A list of IDs of users assigned to the event.
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum results to get
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: Filter events by created before, format (%Y-%m-%dT%H:%M:%SZ)
+      isArray: false
+      name: event_created_date_before
+      required: false
+      secret: false
+    - default: false
+      description: Filter events by created after, format (%Y-%m-%dT%H:%M:%SZ)
+      isArray: false
+      name: event_created_date_after
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all events.
+    execution: false
+    name: analytics-and-siem-list-events
+    outputs:
+    - contextPath: AnalyticsAndSIEM.Event.ID
+      description: The ID of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Description
+      description: The description of the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Created
+      description: The date/time that the event was created.
+      type: Date
+    - contextPath: AnalyticsAndSIEM.Event.IsActive
+      description: Whether the event is active.
+      type: Boolean
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.Name
+      description: A list of names of users assigned to the event.
+      type: String
+    - contextPath: AnalyticsAndSIEM.Event.Assignee.ID
+      description: A list of IDs of users assigned to the event.
+      type: String
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
