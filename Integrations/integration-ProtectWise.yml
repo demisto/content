@@ -62,7 +62,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ""
+- display: "Maximum events to fetch at a time"
   name: maxFetch
   defaultvalue: "50"
   type: 0
