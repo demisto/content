@@ -630,15 +630,15 @@ script:
       description: Observed stage (Realtime or Retrospective)
     - contextPath: Protectwise.Event.Netflows.key
       description: Netflow key
-    - contextPath: Protectwise.Event.Netflows.id.srcIp
+    - contextPath: Protectwise.Event.Netflows.srcIp
       description: Netflow Source IP
-    - contextPath: Protectwise.Event.Netflows.id.dstIp
+    - contextPath: Protectwise.Event.Netflows.dstIp
       description: Netflow Dst IP
-    - contextPath: Protectwise.Event.Netflows.id.srcPort
+    - contextPath: Protectwise.Event.Netflows.srcPort
       description: Netflow Source Port
-    - contextPath: Protectwise.Event.Netflows.id.dstPort
+    - contextPath: Protectwise.Event.Netflows.dstPort
       description: Netflow Dst Port
-    - contextPath: Protectwise.Event.Netflows.id.layer4Proto
+    - contextPath: Protectwise.Event.Netflows.layer4Proto
       description: Netflow Layer 4 Protocol
     - contextPath: Protectwise.Event.Observations.id
       description: Observation ID
