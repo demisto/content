@@ -1872,6 +1872,7 @@
         }
     ],
     "skipped_tests": {
+        "VxStream Test": "Failing test (Issue 19439)",
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
         "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
