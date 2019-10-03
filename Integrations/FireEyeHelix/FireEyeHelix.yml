@@ -371,6 +371,81 @@ script:
     description: Get a specific list by an id.
     execution: false
     name: helix-get-list-by-id
+  - arguments:
+    - default: true
+      description: Name of the list.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Short name of the list.
+      isArray: false
+      name: short_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is internal.
+      isArray: false
+      name: is_internal
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is active.
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is protected.
+      isArray: false
+      name: is_protected
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Usage of the list.
+      isArray: false
+      name: usage
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is hiddden.
+      isArray: false
+      name: is_hidden
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Type of the list.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Description of the list.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a list.
+    execution: false
+    name: helix-create-list
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
