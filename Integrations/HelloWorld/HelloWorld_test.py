@@ -2,7 +2,7 @@ from HelloWorld import Client, say_hello_command, say_hello_over_http_command
 
 
 def test_say_hello():
-    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    client = Client(base_url="https://test.com", verify=False, auth=("test", "test"))
     args = {
         "name": "Dbot"
     }
@@ -13,9 +13,9 @@ def test_say_hello():
 
 def test_say_hello_over_http(requests_mock):
     mock_response = {"result": "Hello Dbot"}
-    requests_mock.get("https://test.com/api/v1/suffix/hello/Dbot", json=mock_response)
+    requests_mock.get("https://test.com/hello/Dbot", json=mock_response)
 
-    client = Client(url="https://test.com", verify=False, username="test", password="test")
+    client = Client(base_url="https://test.com", verify=False, auth=("test", "test"))
     args = {
         "name": "Dbot"
     }
