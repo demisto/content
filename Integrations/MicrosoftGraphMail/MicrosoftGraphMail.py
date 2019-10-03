@@ -482,11 +482,7 @@ def delete_mail_command():
         removeNull=True
     )
 
-    entry_context = {
-        f'MSGraphMail(val.ID === {message_id}': None
-    }
-
-    return_outputs(human_readable, entry_context)
+    demisto.results(human_readable)
 
 
 def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
