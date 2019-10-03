@@ -62,6 +62,11 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
+- display: ""
+  name: maxFetch
+  defaultvalue: "50"
+  type: 0
+  required: false
 script:
   script: |-
     var DEFAULT_EVENT_HEADERS = ['message','id','type','sensorId','threatScore','killChainStage','confidence','startedAt','observedAt','endedAt','observationCount','netflowCount','observedStage'];
@@ -91,11 +96,12 @@ script:
                 params.insecure,
                 params.proxy
             );
+            var body;
             if (tokResult.StatusCode !== 200 && tokResult.StatusCode !== 201) {
                 throw 'Failed to create token, request status code: ' + tokResult.StatusCode + ', body: ' + tokResult.Body;
             }
             try {
-                var body = JSON.parse(tokResult.Body);
+                body = JSON.parse(tokResult.Body);
             } catch (ex) {
                 throw 'Error parsing token - ' + tokResult.Body + ' - ' + ex;
             }
@@ -181,7 +187,8 @@ script:
         return {
             "name": event.message,
             "labels": labels,
-            "rawJSON": JSON.stringify(event)
+            "rawJSON": JSON.stringify(event),
+            "occurred": convertTimestampToString(event.observedAt)
         };
     };
 
@@ -203,11 +210,15 @@ script:
                 params.threatCategory, null, null, null, null, null, null, null, token);
             try {
                 var res = JSON.parse(data).events;
+                res.reverse();
             } catch (ex) {
                 throw 'Error parsing event fetch - ' + data + ' - ' + ex;
             }
             var incidents = [];
             for (var i = 0; i < res.length; i++) {
+                if (incidents.length >= Math.min(parseInt(params.maxFetch), 50)) {
+                    break;
+                }
                 var skip = true;
                 if (params.messageFilter && res[i].message) {
                     filters = params.messageFilter.split(',');
@@ -222,9 +233,10 @@ script:
                 }
                 if(!skip) {
                     incidents.push(createIncidentFromEvent(res[i]));
+                    lastRun.time = Math.max(lastRun.time, res[i].startedAt)+1;
                 }
             }
-            setLastRun({time: now});
+            setLastRun(lastRun);
             return JSON.stringify(incidents);
         case 'sensors':
         case 'protectwise-show-sensors':
@@ -251,10 +263,11 @@ script:
             };
         case 'search':
         case 'protectwise-search-events':
+            var res;
             var raw = eventsSearch(args.start, args.end, args.eventType, args.killChainStage, args.threatLevel,
                 args.threatCategory, args.observationStage, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, token);
             try {
-                var res = JSON.parse(raw).events;
+                res = JSON.parse(raw).events;
             } catch (ex) {
                 throw 'Error parsing event search - ' + raw + ' - ' + ex;
             }
@@ -300,13 +313,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                 for(var i = 0; i < nf.length; i++) {
-                    nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                    nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                    nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                    nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                    nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                    nf[i].srcIp = nf[i]['id.srcIp'];
+                    nf[i].dstIp = nf[i]['id.dstIp'];
+                    nf[i].srcPort  = nf[i]['id.srcPort'];
+                    nf[i].dstPort = nf[i]['id.dstPort'];
+                    nf[i].layer4Proto = nf[i]['id.layer4Proto'];
                     }
-                event['Netflows'] = nf;
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Related Netflows', nf, DEFAULT_NETFLOW_HEADERS);
             }
 
@@ -319,7 +332,7 @@ script:
                        }
                    });
                 });
-                event['Observations'] = obs;
+                event.Observations = obs;
                 md += '\n' + tableToMarkdown('Related Observations', obs, DEFAULT_OBSERVATION_HEADERS);
             }
 
@@ -332,10 +345,11 @@ script:
             };
         case 'observation-search':
         case 'protectwise-search-observations':
+            var res;
             var raw = observationSearch(args.sensorId, args.start, args.end, args.type, args.killChainStage, args.threatLevel,
                 args.threatCategory, args.hasKillChain, args.ip, args.expandDetails, args.minLimit, args.maxLimit, args.reverseOrder, args.nextPage, args.signatureId, token);
             try {
-                var res = JSON.parse(raw).observations;
+                res = JSON.parse(raw).observations;
             } catch (ex) {
                 throw 'Error parsing observation search - ' + raw + ' - ' + ex;
             }
@@ -398,13 +412,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                     for(var i = 0; i < nf.length; i++) {
-                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
-                        }
-                event['Netflows'] = nf;
+                        nf[i].srcIp = nf[i]['id.srcIp'];
+                        nf[i].dstIp = nf[i]['id.dstIp'];
+                        nf[i].srcPort  = nf[i]['id.srcPort'];
+                        nf[i].dstPort = nf[i]['id.dstPort'];
+                        nf[i].layer4Proto = nf[i]['id.layer4Proto'];
+                    }
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -429,13 +443,13 @@ script:
             if (res.netflows && res.netflows.length > 0) {
                 var nf = filterClone(res.netflows, DEFAULT_NETFLOW_HEADERS);
                     for(var i = 0; i < nf.length; i++) {
-                        nf[i]['srcIp'] = nf[i]['id.srcIp'];
-                        nf[i]['dstIp'] = nf[i]['id.dstIp'];
-                        nf[i]['srcPort']  = nf[i]['id.srcPort'];
-                        nf[i]['dstPort'] = nf[i]['id.dstPort'];
-                        nf[i]['layer4Proto'] = nf[i]['id.layer4Proto'];
+                        nf[i].srcIp = nf[i]['id.srcIp'];
+                        nf[i].dstIp = nf[i]['id.dstIp'];
+                        nf[i].srcPort  = nf[i]['id.srcPort'];
+                        nf[i].dstPort = nf[i]['id.dstPort'];
+                        nf[i].layer4Proto = nf[i]['id.layer4Proto'];
                     }
-                event['Netflows'] = nf;
+                event.Netflows = nf;
                 md += '\n' + tableToMarkdown('Included Netflows', res.netflows);
             }
 
@@ -729,29 +743,29 @@ script:
       description: An identifier to fetch the next page in the result set
     outputs:
     - contextPath: Protectwise.Observation.id
-      description: "Observation ID"
+      description: Observation ID
     - contextPath: Protectwise.Observation.killChainStage
-      description: "Observation's Killchain Stage"
+      description: Observation's Killchain Stage
     - contextPath: Protectwise.Observation.source
-      description: "Observation Source"
+      description: Observation Source
     - contextPath: Protectwise.Observation.sensorId
-      description: "ID of the Protectwise sensor that generated the Observation"
+      description: ID of the Protectwise sensor that generated the Observation
     - contextPath: Protectwise.Observation.threatScore
-      description: "Observation's Threat Score"
+      description: Observation's Threat Score
     - contextPath: Protectwise.Observation.severity
-      description: "Observation's Severity"
+      description: Observation's Severity
     - contextPath: Protectwise.Observation.confidence
-      description: "Observation's Confidence level"
+      description: Observation's Confidence level
     - contextPath: Protectwise.Observation.occurredAt
-      description: "Observation - Time Occurred"
+      description: Observation - Time Occurred
     - contextPath: Protectwise.Observation.observedAt
-      description: "Observation - Time Observed"
+      description: Observation - Time Observed
     - contextPath: Protectwise.Observation.endedAt
-      description: "Observation - Time Ended"
+      description: Observation - Time Ended
     - contextPath: Protectwise.Observation.netflowId
-      description: "ID of the Netflow tied to this Observation"
+      description: ID of the Netflow tied to this Observation
     - contextPath: Protectwise.Observation.observedStage
-      description: "Attack stage reflected by the observation"
+      description: Attack stage reflected by the observation
     description: search observations in ProtectWise
   - name: pw-observation-get
     deprecated: true
@@ -773,29 +787,29 @@ script:
       description: the sensor id or comma-separated list of ids
     outputs:
     - contextPath: Protectwise.Observation.id
-      description: "Observation ID"
+      description: Observation ID
     - contextPath: Protectwise.Observation.killChainStage
-      description: "Observation's Killchain Stage"
+      description: Observation's Killchain Stage
     - contextPath: Protectwise.Observation.source
-      description: "Observation Source"
+      description: Observation Source
     - contextPath: Protectwise.Observation.sensorId
-      description: "ID of the Protectwise sensor that generated the Observation"
+      description: ID of the Protectwise sensor that generated the Observation
     - contextPath: Protectwise.Observation.threatScore
-      description: "Observation's Threat Score"
+      description: Observation's Threat Score
     - contextPath: Protectwise.Observation.severity
-      description: "Observation's Severity"
+      description: Observation's Severity
     - contextPath: Protectwise.Observation.confidence
-      description: "Observation's Confidence level"
+      description: Observation's Confidence level
     - contextPath: Protectwise.Observation.occurredAt
-      description: "Observation - Time Occurred"
+      description: Observation - Time Occurred
     - contextPath: Protectwise.Observation.observedAt
-      description: "Observation - Time Observed"
+      description: Observation - Time Observed
     - contextPath: Protectwise.Observation.endedAt
-      description: "Observation - Time Ended"
+      description: Observation - Time Ended
     - contextPath: Protectwise.Observation.netflowId
-      description: "ID of the Netflow tied to this Observation"
+      description: ID of the Netflow tied to this Observation
     - contextPath: Protectwise.Observation.observedStage
-      description: "Attack stage reflected by the observation"
+      description: Attack stage reflected by the observation
     description: Lookup a single observation for ProtectWise
   - name: event-pcap-download
     deprecated: true
@@ -895,3 +909,4 @@ script:
 fromversion: 3.5.0
 tests:
   - Protectwise-Test
+  runonce: false
