@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - return_outputs can return readable_output only
 
 ## [19.10.0] - 2019-10-03
   - Added requests debugging logger when `debug-mode=true`.
