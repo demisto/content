@@ -117,7 +117,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
       description: The vendor that determined this IP address to be malicious.
@@ -202,7 +202,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
       description: The vendor used to calculate the score.
