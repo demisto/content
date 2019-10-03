@@ -940,8 +940,7 @@ def delete_group():
     # delete group
     success = conn.delete(dn)
     if not success:
-        raise Exception("Failed to create group")
-        traceback.print_exc()
+        raise Exception("Failed to delete group")
 
     demisto_entry = {
         'ContentsFormat': formats['text'],
