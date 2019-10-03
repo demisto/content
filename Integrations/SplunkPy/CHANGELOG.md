@@ -1,4 +1,8 @@
 ## [Unreleased]
+- Added a new "app" parameter, which is the app context of the namespace.
+
+
+## [19.10.0] - 2019-10-03
 Added the *Earliest time to fetch* and *Latest time to fetch* parameters, which are the name of the Splunk fields whose value defines the query's earliest and latest time to fetch.
 
 
