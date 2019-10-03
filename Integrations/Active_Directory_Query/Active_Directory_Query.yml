@@ -396,14 +396,17 @@ script:
  - name: ad-create-group
     arguments:
     - name: name
+      description: The group's Active Directory name
       required: true
     - name: group-class
+      description: The class of group in the hierarchy (top/group)
       required: true
       auto: PREDEFINED
       predefined:
       - group
       - top
     - name: group-type
+      description: The type of group (security or mail/distro)
       required: true
       auto: PREDEFINED
       predefined:
@@ -411,15 +414,16 @@ script:
       - distribution
     - name: dn
       required: true
-      description: Please use " instead of ' when initializing this
+      description: The Group's Full Distinguished Name (DN); Use " instead of ' when initializing this
     - name: members
-      description: Must be a full DN
+      description: The Full DN Of Users/Groups that will be members of the newly created group
       isArray: true
     description: Create a new Active Directory security or mail-enabled group.
     execution: true
   - name: ad-delete-group
     arguments:
     - name: dn
+      description: The Group's Full Distinguished Name (DN)
       required: true
     description: Delete an existing Active Directory security or mail-enabled group.
     execution: true
