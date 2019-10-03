@@ -296,6 +296,40 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix, json_data=body)
 
+    def update_list(self, list_id: Union[str, int], name: str, short_name: str, is_internal: Union[str, bool],
+                    is_active: Union[str, bool], is_protected: Union[str, bool], is_hidden: Union[str, bool],
+                    usage: str, type: str, description: str, **kwargs) -> Dict:
+        """Creates a list using a POST request
+
+        Args:
+            list_id: ID of the list.
+            name: Name of the list.
+            short_name: Short name of the list.
+            is_internal: Boolean flag for is internal.
+            is_active: Boolean flag for is active.
+            is_protected: Boolean flag for is protected.
+            is_hidden: Boolean flag for is hiddden.
+            usage: Usage of the list.
+            type: Type of the list.
+            description: Description of the list.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/lists/{list_id}'
+        body = assign_params(
+            name=name,
+            short_name=short_name,
+            is_internal=is_internal and is_internal != 'false',
+            is_active=is_active and is_active != 'false',
+            is_protected=is_protected and is_protected != 'false',
+            is_hidden=is_hidden and is_hidden,
+            usage=usage,
+            type=type,
+            description=description
+        )
+        return self._http_request('PATCH', suffix, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -735,6 +769,20 @@ def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Created list successfully.', {}, raw_response
 
 
+def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Update a list. return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    raw_response = client.update_list(**args)
+    return f'{INTEGRATION_NAME} - Updated list successfully.', {}, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -771,6 +819,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
     }
     try:
         if command == 'fetch-incidents':

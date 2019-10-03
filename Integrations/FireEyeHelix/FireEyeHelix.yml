@@ -310,7 +310,7 @@ script:
       default: false
       description: Set to true if the list is internal.
       isArray: false
-      name: 'is_internal '
+      name: is_internal
       predefined:
       - 'true'
       - 'false'
@@ -446,6 +446,87 @@ script:
     description: Create a list.
     execution: false
     name: helix-create-list
+  - arguments:
+    - default: false
+      description: Name of the list.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Short name of the list.
+      isArray: false
+      name: short_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is internal.
+      isArray: false
+      name: is_internal
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is active.
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is protected.
+      isArray: false
+      name: is_protected
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Usage of the list.
+      isArray: false
+      name: usage
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Boolean flag for is hiddden.
+      isArray: false
+      name: is_hidden
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Type of the list.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Description of the list.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: true
+      description: ID of the list.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Update a list.
+    execution: false
+    name: helix-update-list
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
