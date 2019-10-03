@@ -159,6 +159,27 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/endpoints'
         return self._http_request('POST', suffix)
 
+    def get_cases_by_alert(self, alert_id: Union[int, str], limit: Union[int, str], offset: Union[int, str],
+                           order_by: str) -> Dict:
+        """Fetches cases for an alert by sending a GET request.
+
+        Args:
+            alert_id: Alert ID to get endpoints for.
+            limit: Number of results to return per page.
+            offset: The initial index from which to return the results.
+            order_by: Which field to use when ordering the results.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/cases'
+        body = assign_params(
+            limit=limit,
+            offset=offset,
+            order_by=order_by
+        )
+        return self._http_request('POST', suffix, json_data=body)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -448,10 +469,38 @@ def get_endpoints_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     raw_response = client.get_endpoints_by_alert(alert_id=alert_id)
     endpoints = demisto.get(raw_response, 'results.endpoints')
     if endpoints:
-        title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
+        title = f'{INTEGRATION_NAME} - Endpoints for alert {alert_id}:'
         context_entry = build_transformed_dict(endpoints, {})  # TODO: edit this
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any endpoints.', {}, {}
+
+
+def get_cases_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Fetch cases of a specific alert
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    alert_id = args.get('id')
+    raw_response = client.get_cases_by_alert(alert_id=alert_id, limit=args.get('limit'), offset=args.get('offset'),
+                                             order_by=args.get('order_by'))
+    cases = raw_response.get('results.endpoints')
+    if cases:
+        title = f'{INTEGRATION_NAME} - Cases for alert {alert_id}:'
+        context_entry = build_transformed_dict(cases, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Case(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
@@ -491,6 +540,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert,
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert,
+        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert,
     }
     try:
         if command == 'fetch-incidents':

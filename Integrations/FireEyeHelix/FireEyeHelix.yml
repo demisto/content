@@ -197,6 +197,57 @@ script:
     description: Retrieves a specific alert from an helix endpoint.
     execution: false
     name: helix-get-endpoints-by-alert
+  - arguments:
+    - default: true
+      description: ID of an alert.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Number of results to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The initial index from which to return the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Which field to use when ordering the results.
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    deprecated: false
+    description: Get cases of an alert.
+    execution: false
+    name: helix-get-cases-by-alert
+  - arguments:
+    - default: false
+      isArray: false
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: IDs of the new assignees of the case.
+      isArray: true
+      name: assigned_to
+      required: false
+      secret: false
+    - default: false
+      description: State of the case.
+      isArray: false
+      name: state
+      required: false
+      secret: false
+    deprecated: false
+    description: Change case assignee or status.
+    execution: false
+    name: helix-update-case
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
