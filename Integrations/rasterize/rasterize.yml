@@ -8,10 +8,10 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- defaultvalue: 'true'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
+  defaultvalue: ''
   type: 8
 description: Rasterize URLs or emails given to it
 display: Rasterize
