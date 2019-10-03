@@ -471,18 +471,7 @@ def delete_mail_command():
     message_id = demisto.args().get('message_id')
     delete_mail(user_id, message_id, folder_id)
 
-    human_readable = tableToMarkdown(
-        'Message has been deleted successfully',
-        {
-            'Message ID': message_id,
-            'User ID': user_id,
-            'Folder ID': folder_id
-        },
-        headers=['Message ID', 'User ID', 'Folder ID'],
-        removeNull=True
-    )
-
-    demisto.results(human_readable)
+    demisto.results('Message has been deleted successfully.')
 
 
 def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id: str = None) -> dict:
