@@ -233,7 +233,7 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        suffix = f'/api/v3/lists'
+        suffix = '/api/v3/lists'
         params = assign_params(
             limit=limit,
             offset=offset,
@@ -250,6 +250,18 @@ class Client(BaseClient):
             order_by=order_by
         )
         return self._http_request('GET', suffix, params=params)
+
+    def get_list_by_id(self, list_id: Union[str, int]) -> Dict:
+        """Get a list by id via a GET request
+
+        Args:
+            list_id: ID of the list
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/lists/{list_id}'
+        return self._http_request('GET', suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -624,7 +636,7 @@ def get_event_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
-def get_lists_commands(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get lists return outputs in Demisto's format
 
     Args:
@@ -648,6 +660,32 @@ def get_lists_commands(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any lists.', {}, {}
+
+
+def get_list_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get a list by ID return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('id')
+    raw_response = client.get_list_by_id(list_id)
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - List {list_id}:'
+        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find the list.', {}, {}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -683,7 +721,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-update-case': update_case_command,
         f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_commands,
+        f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
     }
     try:
         if command == 'fetch-incidents':

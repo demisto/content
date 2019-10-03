@@ -360,6 +360,17 @@ script:
     description: Get lists.
     execution: false
     name: helix-get-lists
+  - arguments:
+    - default: true
+      description: ID of the list.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific list by an id.
+    execution: false
+    name: helix-get-list-by-id
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
