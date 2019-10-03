@@ -128,7 +128,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: 'false'
+      defaultvalue: 'false'
       description: If true will stack the pages horizontaly, will stack them verticly by default
       isArray: false
       name: horizontal
