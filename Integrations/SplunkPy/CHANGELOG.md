@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Added the *Earliest time to fetch* and *Latest time to fetch* parameters, which are the name of the Splunk fields whose value defines the query's earliest and latest time to fetch.
-- Added a new "app" parameter, which is the app context of the namespace.
+- Added the *app* parameter, which is the app context of the namespace.
 
 ## [19.9.1] - 2019-09-18
 -
