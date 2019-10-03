@@ -11,7 +11,7 @@
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "",
+	"description": "Parent Process ID",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,
