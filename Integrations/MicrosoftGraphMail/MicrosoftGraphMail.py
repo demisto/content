@@ -482,7 +482,7 @@ def delete_mail_command():
         removeNull=True
     )
 
-    entry_context = {}
+    entry_context = {}  # type: ignore
 
     return_outputs(human_readable, entry_context)
 
