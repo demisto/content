@@ -3,7 +3,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml
+from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -176,9 +176,11 @@ class ScriptValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the docker image as been changed."""
-        if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                return True
 
         return False
