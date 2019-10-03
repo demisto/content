@@ -765,8 +765,8 @@ script:
         to the application's category,
       type: String
     - contextPath: Cortex.Logging.Traffic.Users
-      description: TBD
-      type: Unknown
+      description: Srcuser or dstuser or srcip (one of).
+      type: String
     - contextPath: Cortex.Logging.Traffic.Proto
       description: IP protocol associated with the session.
       type: String
@@ -1062,8 +1062,8 @@ script:
       description: Time the log was received at the management plane.
       type: String
     - contextPath: Cortex.Logging.Threat.Users
-      description: TBD
-      type: Unknown
+      description: Srcuser or dstuser or srcip (one of).
+      type: String
     - contextPath: Cortex.Logging.Threat.Proto
       description: IP protocol associated with the session.
       type: String
