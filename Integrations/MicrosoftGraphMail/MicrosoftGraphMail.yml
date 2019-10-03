@@ -55,7 +55,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Search term. This argument cannot contain reserved characters such as !, $, #, @, etc.
+      description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc.
         For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
       isArray: false
       name: search
