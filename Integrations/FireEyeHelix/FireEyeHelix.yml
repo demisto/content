@@ -254,6 +254,112 @@ script:
     description: Change case assignee or status.
     execution: false
     name: helix-update-case
+  - arguments:
+    - default: true
+      description: ID of an event.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get an event by an event ID.
+    execution: false
+    name: helix-get-event-by-id
+  - arguments:
+    - default: false
+      description: Number of results to return per page.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The initial index from which to return the results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Multiple values may be separated by commas.
+      isArray: false
+      name: usage
+      required: false
+      secret: false
+    - default: false
+      description: Creation date of the list.
+      isArray: false
+      name: created_at
+      required: false
+      secret: false
+    - default: false
+      description: Description of the list.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true if the list is active.
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true if the list is internal.
+      isArray: false
+      name: 'is_internal '
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set to true if list is protected.
+      isArray: false
+      name: is_protected
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Name of the list.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: Short name of the list.
+      isArray: false
+      name: short_name
+      required: false
+      secret: false
+    - default: false
+      description: Type of the list.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: The time the list was last updated at.
+      isArray: false
+      name: updated_at
+      required: false
+      secret: false
+    - default: false
+      description: Which field to use when ordering the results.
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    deprecated: false
+    description: Get lists.
+    execution: false
+    name: helix-get-lists
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

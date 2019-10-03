@@ -198,7 +198,7 @@ class Client(BaseClient):
         )
         return self._http_request('PATCH', suffix, params=params)
 
-    def get_event_by_id(self, event_id: Union[str, int]):
+    def get_event_by_id(self, event_id: Union[str, int]) -> Dict:
         """Fetches an event by id via a GET request.
 
         Args:
@@ -209,6 +209,47 @@ class Client(BaseClient):
         """
         suffix = f'/api/v1/events/{event_id}'
         return self._http_request('GET', suffix)
+
+    def get_lists(self, limit: Union[int, str], offset: Union[int, str], created_at: str, description: str,
+                  is_active: Union[str, bool], is_internal: Union[str, bool], is_protected: Union[str, bool], name: str,
+                  short_name: str, type: str, updated_at: str, usage: str, order_by: str, **kwargs) -> Dict:
+        """Fetches lists by a GET request
+
+        Args:
+            limit: Number of results to return per page.
+            offset: The initial index from which to return the results.
+            created_at: Creation date of the list.
+            description: Description of the list.
+            is_active: Set to true if the list is active.
+            is_internal: Set to true if the list is internal.
+            is_protected: Set to true if list is protected.
+            name: Name of the list.
+            short_name: Short name of the list.
+            type: Type of the list.
+            updated_at: The time the list was last updated at.
+            usage: Multiple values may be separated by commas.
+            order_by: Which field to use when ordering the results.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/lists'
+        params = assign_params(
+            limit=limit,
+            offset=offset,
+            created_at=created_at,
+            description=description,
+            is_active=is_active and is_active != 'false',
+            is_internal=is_internal and is_internal != 'false',
+            is_protected=is_protected and is_protected != 'false',
+            name=name,
+            short_name=short_name,
+            type=type,
+            updated_at=updated_at,
+            usage=usage,
+            order_by=order_by
+        )
+        return self._http_request('GET', suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -325,7 +366,7 @@ def fetch_incidents(
     return incidents, new_last_run
 
 
-def list_alerts(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all alerts and return outputs in Demisto's format
 
     Args:
@@ -353,7 +394,7 @@ def list_alerts(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def get_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get alert by id and return outputs in Demisto's format
 
     Args:
@@ -379,7 +420,7 @@ def get_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def update_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all events and return outputs in Demisto's format
 
     Args:
@@ -405,7 +446,7 @@ def update_alert_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Create a note for an alert
 
     Args:
@@ -432,7 +473,7 @@ def create_alert_note(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
 
 
-def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_alert_case_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Create a case for an alert
 
     Args:
@@ -458,7 +499,7 @@ def create_alert_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
 
 
-def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get events for a specific alert
 
     Args:
@@ -485,7 +526,7 @@ def get_events_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
-def get_endpoints_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Fetch endpoints of a specific alert
 
     Args:
@@ -512,7 +553,7 @@ def get_endpoints_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return f'{INTEGRATION_NAME} - Could not find any endpoints.', {}, {}
 
 
-def get_cases_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Fetch cases of a specific alert
 
     Args:
@@ -540,7 +581,7 @@ def get_cases_by_alert(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
 
 
-def update_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def update_case_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Update a case
 
     Args:
@@ -556,8 +597,8 @@ def update_case(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Created case successfully.', {}, raw_response
 
 
-def get_event_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Get alert by id and return outputs in Demisto's format
+def get_event_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get event by id and return outputs in Demisto's format
 
     Args:
         client: Client object with request
@@ -583,6 +624,32 @@ def get_event_by_id(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
+def get_lists_commands(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get lists return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    raw_response = client.get_lists(**args)
+    event = raw_response.get('events')
+    if event:
+        title = f'{INTEGRATION_NAME} - Lists:'
+        context_entry = build_transformed_dict(event, {})  # TODO: edit this
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not find any lists.', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -606,16 +673,17 @@ def main():  # pragma: no cover
     commands = {
         'test-module': test_module,
         'fetch-incidents': fetch_incidents,
-        f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts,
-        f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id,
-        f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id,
-        f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note,
-        f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case,
-        f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert,
-        f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert,
-        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert,
-        f'{INTEGRATION_COMMAND_NAME}-update-case': update_case,
-        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id,
+        f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
+        f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-case': update_case_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_commands,
     }
     try:
         if command == 'fetch-incidents':
