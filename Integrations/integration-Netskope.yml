@@ -225,11 +225,43 @@ script:
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: retArray,
+            Contents: result.data,
             ReadableContensFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Netskope Events', retArray, headers),
             EntryContext: ec
         };
+    }
+
+    function now() {
+        return parseInt(new Date().getTime()/1000)
+    }
+
+    function fetchAlerts() {
+        last_run = parseInt(getLastRun())
+        if (!last_run) {
+            last_run = now() - parseInt(translateTimeperiod('Last24Hours'))
+        }
+
+        args = {}
+        args.type = ""
+        args.starttime = last_run.toString()
+        args.endtime = now().toString()
+
+        alerts = getAlerts().Contents
+
+        incidents = []
+        alerts.forEach(function(item) {
+            incident = {}
+            d = new Date(0)
+            d.setSeconds(item.timestamp)
+            incident.occurred = d.toISOString()
+            incident.name = item.alert_type + " - " + item.alert_name
+            incident.rawJSON = JSON.stringify(item)
+            incidents.push(incident)
+        })
+
+        setLastRun(alerts[0].timestamp)
+        return JSON.stringify(incidents.reverse())
     }
 
     switch (command) {
@@ -246,6 +278,8 @@ script:
                 return 'ok';
             }
             return result;
+        case 'fetch-incidents':
+            return fetchAlerts();
         case 'netskope-events':
             return getEvents();
         case 'netskope-alerts':
@@ -382,6 +416,7 @@ script:
       description: Alert ID
       type: string
     description: Gets a list of alerts
+  isfetch: true
   runonce: false
 tests:
   - Netskope Test
