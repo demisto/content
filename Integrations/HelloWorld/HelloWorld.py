@@ -67,7 +67,7 @@ def say_hello_command(client, args):
     result = client.say_hello(name)
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = "## {}".format(result)
+    readable_output = "{}".format(result)
     outputs = {
         "hello": result
     }
@@ -108,24 +108,28 @@ def fetch_incidents(client, last_run, first_fetch_time):
 
     # Handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT)
+        last_fetch, _ = parse_date_range(first_fetch_time)
+    else:
+        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
 
+    latest_created_time = last_fetch
     incidents = []
     items = client.list_incidents()
     for item in items:
-        incident_created_time = item["created_time"]
+        incident_created_time = datetime.strptime(item["created_time"], DATE_FORMAT)
         incident = {
             "name": item["description"],
-            "occurred": datetime.strptime(incident_created_time, "%Y-%m-%dT%H:%M:%SZ"),
+            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "rawJSON": json.dumps(item)
         }
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > last_fetch:
-            last_fetch = incident_created_time
-            incidents.append(incident)
+        incidents.append(incident)
 
-    next_run = {"last_fetch": last_fetch}
+        # Update last run and add incident if the incident is newer than last fetch
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+
+    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 

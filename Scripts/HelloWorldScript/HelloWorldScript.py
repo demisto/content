@@ -12,7 +12,7 @@ def say_hello_command(args):
 
     original_result = say_hello(name)
 
-    markdown = "**{}**".format(original_result)
+    markdown = "## {}".format(original_result)
     outputs = {
         "HelloWorld": {
             "hello": original_result
@@ -31,3 +31,7 @@ def main():
         return_outputs(*say_hello_command(demisto.args()))
     except Exception as ex:
         return_error("Failed to execute HelloWorldScript. Error: {}".format(str(ex)))
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
