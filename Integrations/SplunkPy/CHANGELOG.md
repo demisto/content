@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Added a new "app" parameter, which is the app context of the namespace.
+- Added the *app* parameter, which is the app context of the namespace.
 - Prettified the human readable of the search command.
 
 
