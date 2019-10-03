@@ -60,7 +60,6 @@ class StructureValidator(object):
         CONNECTIONS_REGEX: "canvas-context-connections",
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
-        INCIDENT_FIELDS_REGEX: "incidentfields",
         INCIDENT_FIELD_REGEX: "incidentfield",
     }
 
