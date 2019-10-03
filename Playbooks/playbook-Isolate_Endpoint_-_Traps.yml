@@ -1,0 +1,203 @@
+id: Isolate Endpoint - Traps
+version: -1
+fromversion: 4.5.0
+name: Isolate Endpoint - Traps
+description: This playbook accepts an endpoint ID from Traps integration and performs
+  isolation on this endpoint.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db8c61b1-9887-4c83-82f8-16e173bff1de
+    type: start
+    task:
+      id: db8c61b1-9887-4c83-82f8-16e173bff1de
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 51601fa9-ee3f-427a-84ac-aee609d05d44
+    type: condition
+    task:
+      id: 51601fa9-ee3f-427a-84ac-aee609d05d44
+      version: -1
+      name: Is Traps integration enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Traps
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 56243283-6b5a-4157-89f8-8c9399bac654
+    type: title
+    task:
+      id: 56243283-6b5a-4157-89f8-8c9399bac654
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 58c109ff-477c-426a-8187-465ce596ceac
+    type: condition
+    task:
+      id: 58c109ff-477c-426a-8187-465ce596ceac
+      version: -1
+      name: Is there an endpoint to isolate?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EndpointId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0c995345-9005-435b-8e15-c292b8d8ddbc
+    type: regular
+    task:
+      id: 0c995345-9005-435b-8e15-c292b8d8ddbc
+      version: -1
+      name: Traps - Isolate endpoint
+      description: Isolates the specified endpoint.
+      script: '|||traps-endpoint-isolate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.57,
+      "3_2_#default#": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 940,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EndpointId
+  value: {}
+  required: false
+  description: Endpoint ID of the endpoint to isolate, fetched by Palo Alto Networks
+    Traps integration.
+outputs: []
+tests:
+  - No Test
