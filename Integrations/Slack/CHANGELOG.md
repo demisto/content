@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [19.10.0] - 2019-10-03
 Added support for sending blocks (graphical attachments) in messages. For more information see the integration documentation.
