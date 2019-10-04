@@ -430,6 +430,22 @@ def test_smime(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing Email Attachment'
 
 
+def test_smime_msg(mocker):
+    info = 'CDFV2 Microsoft Outlook Message'
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime-p7s.msg', info=info))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    # assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'test'
+
+
 def test_msg_headers_map():
     email_data, ignore = handle_msg('test_data/utf_subject.msg', 'utf_subject.msg')
     assert '?utf-8' not in email_data['Subject']
