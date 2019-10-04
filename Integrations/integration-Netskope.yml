@@ -293,7 +293,7 @@ script:
         }
 
         setLastRun(last_run);
-        return JSON.stringify();
+        return JSON.stringify(incidents);
     }
 
     switch (command) {
