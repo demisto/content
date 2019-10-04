@@ -5,11 +5,8 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-# Python template - reading arguments, calling a command, handling errors and returning results
-res = []
 # Constant and mandatory arguments
 file_path = demisto.get(demisto.context(), 'Accessdata.Job.Result.SnapshotDetails.File')
-converted = {}
 res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
 data = demisto.get(res[0], 'Contents')
 converted = json.loads(xml2json(data))

@@ -29,8 +29,8 @@ while sec < timeout:
         })
         ec = demisto.get(resp[0], 'Contents')
         # find status
-        if ec is not None and 'State' in ec and \
-			(ec['State'] == "Started" or ec['State'] == "Pending" or ec['State'] == "Submitted" or ec['State'] == "InProgress"):
+        if ec is not None and 'State' in ec and (
+            ec['State'] == "Started" or ec['State'] == "Pending" or ec['State'] == "Submitted" or ec['State'] == "InProgress"):
             sec += interval
             sleep(interval)
             # continue loop
