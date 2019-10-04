@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import json
 from time import sleep
 
 timeout = 960
@@ -9,48 +8,49 @@ interval = 10
 res = []
 # Constant and mandatory arguments
 
-caseid = demisto.get(demisto.args(),'caseid')
-jobid = demisto.get(demisto.args(),'jobid')
+caseid = demisto.get(demisto.args(), 'caseid')
+jobid = demisto.get(demisto.args(), 'jobid')
 
 feDone = False
 
-############ Poll stage ############
+# Poll stage
 status = None
 sec = 0
 ec = {}
 resp = None
-sleep(10) # small waitto be sure job is submitted, otherwise we get 404
+sleep(10)  # small waitto be sure job is submitted, otherwise we get 404
 while sec < timeout:
     if not feDone:
         status = "Done"
-        ######## Get status
-        resp = demisto.executeCommand('accessdata-get-jobstatus',{
+        # Get status
+        resp = demisto.executeCommand('accessdata-get-jobstatus', {
             'caseID': caseid,
-            'jobID' : jobid
+            'jobID': jobid
         })
-        ec = demisto.get(resp[0],'Contents')
-        ##### find status
-        if ec is not None and 'State' in ec and (ec['State'] == "Started" or ec['State'] == "Pending" or ec['State'] == "Submitted" or ec['State'] == "InProgress"):
+        ec = demisto.get(resp[0], 'Contents')
+        # find status
+        if ec is not None and 'State' in ec and \
+			(ec['State'] == "Started" or ec['State'] == "Pending" or ec['State'] == "Submitted" or ec['State'] == "InProgress"):
             sec += interval
             sleep(interval)
-            ### continue loop
+            # continue loop
         else:
-            ## loop done failed
+            # loop done failed
             feDone = True
     else:
         break
 
-############ Get results ############
+# Get results
 if not feDone:
-    demisto.results( {
-        "Type" : entryTypes["error"],
-        "ContentsFormat" : formats["text"],
-        "Contents" : 'Could not retrieve job results from Quinc (may be due to timeout).'
-    } )
+    demisto.results({
+        "Type": entryTypes["error"],
+        "ContentsFormat": formats["text"],
+        "Contents": 'Could not retrieve job results from Quinc (may be due to timeout).'
+    })
 
 demisto.results({
     "ContentsFormat": formats["json"],
     "Type": entryTypes["note"],
     "Contents": ec,
-    "EntryContext": {"Accessdata.Job(val.ID == obj.ID)" : ec}
-} )
+    "EntryContext": {"Accessdata.Job(val.ID == obj.ID)": ec}
+})

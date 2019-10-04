@@ -21,7 +21,7 @@ JOB_KEY = 'Accessdata.Job'
 
 def create_jobstate_context(contents):
     return {
-         JOB_KEY+'(val.ID == obj.ID)': contents
+        JOB_KEY + '(val.ID == obj.ID)': contents
     }
 
 
@@ -46,9 +46,9 @@ class Client:
             'EnterpriseApiKey': token,
             'Accept': 'application/json',
             'Content-Type': 'application/json'
-            }
+        }
 
-    def http_request(self, method, url_suffix, body=None,  params=None):
+    def http_request(self, method, url_suffix, body=None, params=None):
         try:
             full_url = self.base_url + url_suffix
             res = requests.request(
@@ -212,7 +212,7 @@ class Client:
             'ContentsFormat': formats['text'],
             'Contents': res,
             'HumanReadable': "JobID: " + str(res),
-            'EntryContext': {JOB_KEY+'(val.ID && val.Type == obj.Type)': ec}
+            'EntryContext': {JOB_KEY + '(val.ID && val.Type == obj.Type)': ec}
         }
 
     def legacyagent_runmemoryacquisition(self, args):
@@ -234,7 +234,7 @@ class Client:
             'ContentsFormat': formats['json'],
             'Contents': ec,
             'HumanReadable': "JobID: " + str(res),
-            'EntryContext': {JOB_KEY+'(val.ID && val.Type == obj.Type)': ec}
+            'EntryContext': {JOB_KEY + '(val.ID && val.Type == obj.Type)': ec}
         }
 
     def read_casefile(self, args):

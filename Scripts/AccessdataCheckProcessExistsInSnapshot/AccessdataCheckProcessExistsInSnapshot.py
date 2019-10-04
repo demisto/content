@@ -10,7 +10,7 @@ res = []
 # Constant and mandatory arguments
 file_path = demisto.get(demisto.context(), 'Accessdata.Job.Result.SnapshotDetails.File')
 converted = {}
-res = demisto.executeCommand('accessdata-read-casefile', {"filepath" : file_path})
+res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
 data = demisto.get(res[0], 'Contents')
 converted = json.loads(xml2json(data))
 
@@ -26,9 +26,9 @@ proc = {
 }
 
 demisto.results({
-    'Type' : entryTypes['note'],
-    'ContentsFormat' : formats['json'],
-    'Contents' : proc,
+    'Type': entryTypes['note'],
+    'ContentsFormat': formats['json'],
+    'Contents': proc,
     'HumanReadable': 'Process "' + proc['Name'] + '" exists: ' + proc['Exists'],
-    'EntryContext': { 'Accessdata.Process(val && val.Name == obj.Name)' : proc }
+    'EntryContext': {'Accessdata.Process(val && val.Name == obj.Name)': proc}
 })
