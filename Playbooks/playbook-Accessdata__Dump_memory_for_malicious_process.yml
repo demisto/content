@@ -1,5 +1,6 @@
-id: Accessdata__Dump_memory_for_malicious_process
+id: Accessdata_Dump_memory_for_malicious_process
 version: -1
+fromversion: 4.1.0
 name: 'Accessdata: Dump memory for malicious process'
 description: This playbook dumps memory  if given process is running on legacy AD
   agent
@@ -13,6 +14,7 @@ tasks:
       id: 99bfc13d-9778-48de-8160-5c7f85e763d2
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -67,6 +69,7 @@ tasks:
       id: d6f18812-652f-4ea5-81fc-89ec01fba64f
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -338,4 +341,6 @@ inputs:
   description: ""
 outputs:
 - contextPath: Result
+  description: ""
 - contextPath: State
+  description: ""
