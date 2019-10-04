@@ -328,7 +328,7 @@ inputs:
   description: ""
 - key: targetIP
   value:
-    simple: 10.10.0.159
+    simple: X.X.X.X
   required: true
   description: ""
 - key: process_name

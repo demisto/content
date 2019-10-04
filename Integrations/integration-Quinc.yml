@@ -9,9 +9,9 @@ description: Use the Quinc v2 integration to protect against and provide additio
   visibility into phishing and other malicious email attacks.
 detaileddescription: Please get Token for connection to Quinc
 configuration:
-- display: Server URL (e.g., 10.10.0.145)
+- display: Server URL (FQDN or IP address in X.X.X.X format)
   name: ServerName
-  defaultvalue: jakkuvm07
+  defaultvalue: server_url
   type: 0
   required: true
 - display: The token is required to connect to Quinc.
