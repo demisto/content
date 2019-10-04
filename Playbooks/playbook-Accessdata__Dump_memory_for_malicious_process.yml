@@ -1,4 +1,4 @@
-id: Accessdata: Dump memory for malicious process
+id: Accessdata__Dump_memory_for_malicious_process
 version: -1
 name: 'Accessdata: Dump memory for malicious process'
 description: This playbook dumps memory  if given process is running on legacy AD
