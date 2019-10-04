@@ -228,7 +228,7 @@ def get_email_context(email_data, mailbox):
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
         'ID': email_data['id'],
         'ThreadId': email_data['threadId'],
-        'Labels': ', '.join(email_data['labelIds']),
+        'Labels': ', '.join(email_data.get('labelIds', [])),
         'Headers': context_headers,
         'Attachments': email_data.get('payload', {}).get('filename', ''),
         # only for format 'raw'
