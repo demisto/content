@@ -30,7 +30,7 @@ try:
     os.remove(OUTPUT_FILE_PATH)
     return_outputs(readable_output='Successfully generated docx',
                    outputs={}, raw_response={'data': encoded})
-except Exception as e:
+except Exception:
     tb = traceback.format_exc()
     wrap = "=====sane-doc-reports error====="
     err = f'{wrap}\n{tb}{wrap}\n'
