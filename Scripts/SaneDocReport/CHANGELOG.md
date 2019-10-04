@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- DOCX reports now fail gracefully (error shown in the docx instead of failure to generate completely).
+- Added the itemsSection element to DOCX reports (mainly used in investigation reports).
 
 ## [19.10.0] - 2019-10-03
   - Fixed several issues related to tables in reports generated as DOCX files.  
