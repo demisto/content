@@ -95,3 +95,5 @@ script:
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test

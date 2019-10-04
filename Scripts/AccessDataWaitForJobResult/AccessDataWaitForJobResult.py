@@ -15,7 +15,7 @@ feDone = False
 # Poll stage
 status = None
 sec = 0
-ec = {}
+ec = {}  # type: dict
 resp = None
 sleep(10)  # small waitto be sure job is submitted, otherwise we get 404
 while sec < timeout:
