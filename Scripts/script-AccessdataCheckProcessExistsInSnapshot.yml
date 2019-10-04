@@ -1,6 +1,6 @@
 commonfields:
-  id: 1a7b35fb-42e4-4056-87b5-3898e4906797
-  version: 1
+  id: AccessdataCheckProcessExistsInSnapshot
+  version: -1
 name: AccessdataCheckProcessExistsInSnapshot
 script: |-
   # encoding=utf8
