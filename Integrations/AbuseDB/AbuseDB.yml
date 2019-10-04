@@ -26,7 +26,7 @@ configuration:
   name: disregard_quota
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -43,14 +43,14 @@ script:
   commands:
   - arguments:
     - default: true
-      description: ' IP address to check'
+      description: The IP address to check.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Time range to return reports for (in days), default is 30
+      description: The time range to return reports (in days). Default is 30.
       isArray: false
       name: days
       required: false
@@ -58,8 +58,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Report length, "true" returns the full report, "false" does not
-        return reported categories, default is "true"
+      description: The length of the report. "true" returns the full report, "false"
+        does not return reported categories. Default is "true".
       isArray: false
       name: verbose
       predefined:
@@ -69,62 +69,68 @@ script:
       secret: false
     - default: false
       defaultValue: '80'
-      description: Minimum score from AbuseIPDB to consider the IP malicious (must
-        be greater than 20), default is 80
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       isArray: false
       name: threshold
       required: false
       secret: false
     deprecated: false
-    description: Checks the specified IP address against the AbuseIP database
+    description: Checks the specified IP address against the AbuseIP database.
     execution: false
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: IP address
-      type: Unknown
+      description: The address of the IP.
+      type: String
     - contextPath: IP.Geo.Country
-      description: Country associated with this IP Address
-      type: Unknown
+      description: The country in which the IP address is located.
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Detections
-      description: The Detections that led to the verdict
-      type: Unknown
+      description: The Detections that led to the verdict.
+      type: String
     - contextPath: AbuseIPDB.IP.Address
-      description: IP address
-      type: Unknown
+      description: The IP address fetched from AbuseIPDB.
+      type: String
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
-      description: Confidence score fetched from AbuseIPDB
-      type: Unknown
+      description: The confidence score fetched from AbuseIPDB.
+      type: String
     - contextPath: AbuseIPDB.IP.TotalReports
-      description: The number of times this address has been reported
-      type: Unknown
+      description: The number of times the address has been reported.
+      type: Number
     - contextPath: AbuseIPDB.IP.Geo.Country
-      description: Country associated with this IP Address
-      type: Unknown
+      description: The country associated with the IP Address.
+      type: String
     - contextPath: AbuseIPDB.IP.Reports
-      description: Reports summary (for "verbose" reports)
-      type: Unknown
+      description: The reports summary (for "verbose" reports).
+      type: String
     - contextPath: DBotScore.Score
-      description: Analysis score
-      type: Unknown
+      description: The actual score.
+      type: Number
     - contextPath: DBotScore.Vendor
-      description: Vendor name (AbuseIPDB)
-      type: Unknown
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Indicator
-      description: The IP address
-      type: Unknown
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type (ip)
-      type: Unknown
+      description: The indicator type.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: The vendor that determined this IP address to be malicious.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Detections
-      description: The Detections that led to the verdict
-      type: Unknown
+      description: The Detections that led to the verdict.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: AbuseIPDB.IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
   - arguments:
     - default: false
       description: IPv4 Address Block in CIDR notation.
@@ -134,105 +140,107 @@ script:
       secret: false
     - default: false
       defaultValue: '30'
-      description: Time range to return reports for (in days), default is 30
+      description: The time range to return reports (in days). Default is 30.
       isArray: false
       name: days
       required: false
       secret: false
     - default: false
       defaultValue: '40'
-      description: Maximum number of IPs to check, default is 40
+      description: The maximum number of IPs to check. Default is 40.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '80'
-      description: Minimum score from AbuseIPDB to consider the IP malicious (must
-        be greater than 20), default is 80
+      description: The minimum score from AbuseIPDB to consider whether the IP address
+        is malicious (must be greater than 20). Default is 80.
       isArray: false
       name: threshold
       required: false
       secret: false
     deprecated: false
-    description: Queries a block of IPs to check against the database
+    description: Queries a block of IP addresses to check against the database.
     execution: false
     name: abuseipdb-check-cidr-block
     outputs:
     - contextPath: IP.Address
-      description: IP address
-      type: Unknown
+      description: The IP address.
+      type: String
     - contextPath: IP.Geo.Country
-      description: Country associated with this IP Address
-      type: Unknown
+      description: The country in which the IP address is located.
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Detections
-      description: The Detections that led to the verdict
-      type: Unknown
+      description: The Detections that led to the verdict.
+      type: String
     - contextPath: AbuseIPDB.IP.Address
-      description: IP address
-      type: Unknown
+      description: The IP address fetched from AbuseIPDB.
+      type: String
     - contextPath: AbuseIPDB.IP.AbuseConfidenceScore
-      description: Confidence score fetched from AbuseIPDB
+      description: The confidence score fetched from AbuseIPDB.
       type: Unknown
     - contextPath: AbuseIPDB.IP.TotalReports
-      description: The number of times this address has been reported
+      description: The number of times this address has been reported.
       type: Unknown
     - contextPath: AbuseIPDB.IP.Geo.Country
-      description: Country associated with this IP Address
+      description: The country associated with this IP Address.
       type: Unknown
     - contextPath: AbuseIPDB.IP.Reports
-      description: Reports summary (for "verbose" reports)
+      description: Reports summary (for "verbose" reports).
       type: Unknown
     - contextPath: DBotScore.Score
-      description: Analysis score
-      type: Unknown
+      description: The actual score.
+      type: Number
     - contextPath: DBotScore.Vendor
-      description: Vendor name (AbuseIPDB)
-      type: Unknown
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Indicator
-      description: The IP address
-      type: Unknown
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: The type (ip)
-      type: Unknown
+      description: The indicator type.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Vendor
-      description: The vendor that determined this IP address to be malicious
-      type: Unknown
+      description: The vendor used to calculate the score.
+      type: String
     - contextPath: AbuseIPDB.IP.Malicious.Detections
-      description: The Detections that led to the verdict
-      type: Unknown
+      description: The Detections that led to the verdict.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
   - arguments:
     - default: false
-      description: ' The IP address to report'
+      description: The IP address to report.
       isArray: false
       name: ip
       required: true
       secret: false
     - default: false
-      description: CSV list of category IDs (numerical representation or in their
-        name)
+      description: A CSV list of category IDs. For more information, see https://www.abuseipdb.com/categories.
       isArray: false
       name: categories
       required: true
       secret: false
     deprecated: false
-    description: Report an IP address to AbuseIPDB
+    description: Reports an IP address to AbuseIPDB.
     execution: false
     name: abuseipdb-report-ip
   - arguments:
     - default: false
       defaultValue: '30'
-      description: Time range to return reports for (in days), default is 30
+      description: The time range to return reports (in days). Default is 30.
       isArray: false
       name: days
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: 'Maximum number of IPs to retrieve, default is 50 '
+      description: 'The maximum number of IPs to retrieve. Default is 50. '
       isArray: false
       name: limit
       required: false
@@ -240,7 +248,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Save a list of blacklisted IPs into the Context
+      description: Whether to save a list of blacklisted IPs in the Context Data in
+        Demisto. Default is false.
       isArray: false
       name: saveToContext
       predefined:
@@ -249,25 +258,25 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of the most reported IP addresses
+    description: Returns a list of the most reported IP addresses.
     execution: false
     name: abuseipdb-get-blacklist
     outputs:
     - contextPath: AbuseIPDB.Blacklist
-      description: List of blacklisted IPs
+      description: A list of blacklisted IP addresses.
       type: Unknown
   - deprecated: false
-    description: Returns a list of report categories from AbuseIPDB
+    description: Returns a list of report categories from AbuseIPDB.
     execution: false
     name: abuseipdb-get-categories
     outputs:
     - contextPath: AbuseIPDB.Categories
-      description: List of AbuseIPDB categories
+      description: The list of AbuseIPDB categories.
       type: string
   isfetch: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
+  subtype: python2
 tests:
 - AbuseIPDB Test
