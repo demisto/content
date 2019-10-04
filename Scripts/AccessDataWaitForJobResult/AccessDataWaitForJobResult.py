@@ -4,8 +4,7 @@ from time import sleep
 
 timeout = 960
 interval = 10
-# Python template - reading arguments, calling a command, handling errors and returning results
-res = []
+
 # Constant and mandatory arguments
 
 caseid = demisto.get(demisto.args(), 'caseid')
@@ -29,8 +28,8 @@ while sec < timeout:
         })
         ec = demisto.get(resp[0], 'Contents')
         # find status
-        if ec is not None and 'State' in ec and (
-            ec['State'] == "Started" or ec['State'] == "Pending" or ec['State'] == "Submitted" or ec['State'] == "InProgress"):
+        unfinishedStates = ["Started", "Pending", "Submitted", "InProgress"]
+        if ec is not None and 'State' in ec and ec['State'] in unfinishedStates:
             sec += interval
             sleep(interval)
             # continue loop
