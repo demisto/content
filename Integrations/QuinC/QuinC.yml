@@ -1,0 +1,98 @@
+commonfields:
+  id: Quinc
+  version: -1
+name: Quinc
+display: Quinc
+category: Forensics & Malware Analysis
+description: Use the Quinc integration to protect against and provide additional
+  visibility into phishing and other malicious email attacks.
+detaileddescription: Please get Token for connection to Quinc
+configuration:
+- display: Server URL (FQDN or IP address in X.X.X.X format)
+  name: ServerName
+  defaultvalue: server_url
+  type: 0
+  required: true
+- display: The token is required to connect to Quinc.
+  name: Token
+  defaultvalue: 1861a70a-3287-4289-938b-bbab1446e2d2
+  type: 0
+  required: true
+- display: Scheme
+  name: Scheme
+  defaultvalue: http
+  type: 15
+  required: false
+  options:
+  - http
+  - https
+- display: Trust any certificate (insecure)
+  name: Insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  commands:
+  - name: accessdata-get-jobstatus
+    arguments:
+    - name: caseID
+      required: true
+      description: ID of case
+      defaultValue: "1"
+    - name: jobID
+      required: true
+      description: ID of job
+      defaultValue: "1"
+    outputs:
+    - contextPath: State
+      description: Job state
+      type: string
+    - contextPath: Result
+      description: Job result
+      type: string
+    description: Get status of job
+  - name: accessdata-legacyagent-get-processlist
+    arguments:
+    - name: caseid
+      required: true
+      description: ID of case
+      defaultValue: "1"
+    - name: targetIP
+      required: true
+      description: IP address of agent
+      defaultValue: locallhost
+    outputs:
+    - contextPath: Accessdata.Job(val.Type=="Volatile").ID
+      description: ID of job
+      type: string
+    description: Return list of process from legacy agent
+  - name: accessdata-legacyagent-get-memorydump
+    arguments:
+    - name: caseid
+      required: true
+      description: ID of case
+      defaultValue: "1"
+    - name: targetIP
+      required: true
+      description: IP address of agent
+      defaultValue: locallhost
+    outputs:
+    - contextPath: Accessdata.Job.ID
+      description: ID of job
+      type: string
+    description: Creates legacy agent memory dump
+  - name: accessdata-read-casefile
+    arguments:
+    - name: filepath
+      required: true
+      description: Path to case file
+      defaultValue: localhost
+    outputs:
+    - contextPath: Accessdata.File.Contents
+      description: Contents of the file
+      type: string
+    description: Reads file from case folder and puts its contents to current context
+  dockerimage: demisto/python3:3.7.4.977
+  runonce: false
+  script: '-'
+  type: python

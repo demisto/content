@@ -1,0 +1,1 @@
+Use the Quinc integration to protect against and provide additional visibility into phishing and other malicious email attacks.
