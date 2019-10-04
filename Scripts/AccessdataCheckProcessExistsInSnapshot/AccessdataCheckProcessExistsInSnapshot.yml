@@ -14,6 +14,7 @@ args:
   description: Process name that need to be checked
 outputs:
 - contextPath: Accessdata.Process.Exists
+  description: ""
   type: boolean
 scripttarget: 0
 runonce: false

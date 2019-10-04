@@ -6,7 +6,6 @@ display: Quinc
 category: Forensics & Malware Analysis
 description: Use the Quinc integration to protect against and provide additional
   visibility into phishing and other malicious email attacks.
-detaileddescription: Please get Token for connection to Quinc
 configuration:
 - display: Server URL (FQDN or IP address in X.X.X.X format)
   name: ServerName

@@ -17,6 +17,7 @@ args:
   description: ID of job
 outputs:
 - contextPath: Accessdata.Job.Result
+  description: ""
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
