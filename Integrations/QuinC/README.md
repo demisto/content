@@ -80,7 +80,7 @@ Get status of job
                 "Submitted": "2019-10-04T22:02:21.109807Z", 
                 "JobId": "2e667db2-ee5a-4522-aff8-4047769bd211", 
                 "Ended": "0001-01-01T00:00:00", 
-                "Connection": "123.123.123.10", 
+                "Connection": "X.X.X.X", 
                 "ItemGuid": "f7d5833f-79a7-4dbc-8bd9-0f021e20af00", 
                 "TaskId": "9645eb6b-5bc5-4342-823b-8aa0e4594c27", 
                 "CurrentState": 3
@@ -98,12 +98,12 @@ Get status of job
             }, 
             "ResultFiles": [
                 {
-                    "Path": "\\\\123.123.123.11\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml", 
+                    "Path": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml", 
                     "Hash": "2356d44b3444e10e57f96838559af940", 
                     "Filename": "snapshot.xml"
                 }, 
                 {
-                    "Path": "\\\\123.123.123.11\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml", 
+                    "Path": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml", 
                     "Hash": "cc01e8745696fcb6141fc67bfbb07763", 
                     "Filename": "certificates.xml"
                 }
@@ -131,7 +131,7 @@ Get status of job
             }, 
             "CertificateDetails": {
                 "Code": 0, 
-                "File": "\\\\123.123.123.11\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml"
+                "File": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml"
             }, 
             "PrefetchDetails": {
                 "Code": 0, 
@@ -170,7 +170,7 @@ Get status of job
             }, 
             "SnapshotDetails": {
                 "Code": 0, 
-                "File": "\\\\123.123.123.11\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml"
+                "File": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml"
             }, 
             "Message": null, 
             "UsersDetails": {
@@ -207,7 +207,7 @@ Return list of process from legacy agent
 
 
 ##### Command Example
-`accessdata-legacyagent-get-processlist caseid=1 target_ip=123.123.123.10`
+`accessdata-legacyagent-get-processlist caseid=1 target_ip=X.X.X.X`
 
 ##### Context Example
 ```
@@ -244,7 +244,7 @@ Creates legacy agent memory dump
 
 
 ##### Command Example
-`accessdata-legacyagent-get-memorydump caseid=1 target_ip=123.123.123.10`
+`accessdata-legacyagent-get-memorydump caseid=1 target_ip=X.X.X.X`
 
 ##### Context Example
 ```
@@ -280,7 +280,7 @@ Reads file from case folder and puts its contents to current context
 
 
 ##### Command Example
-`accessdata-read-casefile filepath="\\123.123.123.11\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_852\84040804-2e76-4912-bfe6-891f453fb335\1\snapshot.xml"`
+`accessdata-read-casefile filepath="\\X.Q.X.Q\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_852\84040804-2e76-4912-bfe6-891f453fb335\1\snapshot.xml"`
 
 ##### Context Example
 ```
