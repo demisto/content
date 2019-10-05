@@ -98,12 +98,12 @@ Get status of job
             }, 
             "ResultFiles": [
                 {
-                    "Path": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml", 
+                    "Path": "\\\\X.X.X.X\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml", 
                     "Hash": "2356d44b3444e10e57f96838559af940", 
                     "Filename": "snapshot.xml"
                 }, 
                 {
-                    "Path": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml", 
+                    "Path": "\\\\X.X.X.X\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml", 
                     "Hash": "cc01e8745696fcb6141fc67bfbb07763", 
                     "Filename": "certificates.xml"
                 }
@@ -131,7 +131,7 @@ Get status of job
             }, 
             "CertificateDetails": {
                 "Code": 0, 
-                "File": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml"
+                "File": "\\\\X.X.X.X\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\certificates.xml"
             }, 
             "PrefetchDetails": {
                 "Code": 0, 
@@ -170,7 +170,7 @@ Get status of job
             }, 
             "SnapshotDetails": {
                 "Code": 0, 
-                "File": "\\\\X.Q.X.Q\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml"
+                "File": "\\\\X.X.X.X\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_854\\9645eb6b-5bc5-4342-823b-8aa0e4594c27\\1\\snapshot.xml"
             }, 
             "Message": null, 
             "UsersDetails": {
@@ -280,7 +280,7 @@ Reads file from case folder and puts its contents to current context
 
 
 ##### Command Example
-`accessdata-read-casefile filepath="\\X.Q.X.Q\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_852\84040804-2e76-4912-bfe6-891f453fb335\1\snapshot.xml"`
+`accessdata-read-casefile filepath="\\X.X.X.X\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_852\84040804-2e76-4912-bfe6-891f453fb335\1\snapshot.xml"`
 
 ##### Context Example
 ```
