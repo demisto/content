@@ -48,7 +48,7 @@ def fetch_incidents(last_run):
 def say_hello_command(args):
     name = args.get("name")
 
-    return "Hello {}".format(name)
+    return "**Hello {}**".format(name)
 
 
 def main():
