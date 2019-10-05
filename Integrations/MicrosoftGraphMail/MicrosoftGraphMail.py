@@ -9,33 +9,150 @@ import requests
 import base64
 import os
 import binascii
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-""" GLOBALS/PARAMS """
-# Global annotation
-CONTEXT = demisto.getIntegrationContext()
-DEMISTOBOT = 'https://demistobot.demisto.com/msg-mail-token'
-# Credentials
-TOKEN = demisto.params().get('token')
-TENANT_ID = demisto.params().get('tenant_id')
+''' GLOBAL VARS '''
+PARAMS = demisto.params()
+TENANT_ID = PARAMS.get('tenant_id')
+AUTH_AND_TOKEN_URL = PARAMS.get('auth_id', '').split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = PARAMS.get('enc_key')
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 # Remove trailing slash to prevent wrong URL path to service
-URL = demisto.params().get('url')
+URL = PARAMS.get('url', '')
 SERVER = URL[:-1] if (URL and URL.endswith('/')) else URL
-# Should we use SSL
-USE_SSL = not demisto.params().get('unsecure', False)
 # Service base URL
-BASE_URL = str(SERVER) + '/v1.0'
+BASE_URL = SERVER + '/v1.0'
+APP_NAME = 'ms-graph-mail'
 
+USE_SSL = not PARAMS.get('insecure', False)
 # Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
+if not PARAMS.get('proxy'):
     os.environ.pop('HTTP_PROXY', '')
     os.environ.pop('HTTPS_PROXY', '')
     os.environ.pop('http_proxy', '')
     os.environ.pop('https_proxy', '')
 
 ''' HELPER FUNCTIONS '''
+
+
+def epoch_seconds(d: datetime = None) -> int:
+    """
+    Return the number of seconds for given date. If no date, return current.
+
+    Args:
+        d (datetime): timestamp
+    Returns:
+         int: timestamp in epoch
+    """
+    if not d:
+        d = datetime.utcnow()
+    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def get_encrypted(content: str, key: str) -> str:
+    """
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
+    """
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        }),
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
 
 
 def error_parser(resp_err: requests.Response) -> str:
@@ -77,7 +194,7 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
     Returns:
         dict: requests.json()
     """
-    token = get_token()
+    token = get_access_token()
     headers = {
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json',
@@ -99,66 +216,12 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         error = error_parser(res)
         return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
     try:
-        return res.json()
+        if method.lower() != 'delete':  # the DELETE request returns nothing in response
+            return res.json()
+        return {}
     except ValueError:
         return_error('Could not decode response from API')
         return {}  # return_error will exit
-
-
-def epoch_seconds(d: datetime = None) -> int:
-    """
-    Return the number of seconds for given date. If no date, return current.
-
-    Args:
-        d (datetime): timestamp
-    Returns:
-         int: timestamp in epoch
-    """
-    if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
-
-
-def get_token() -> str:
-    """
-    Check if we have a valid token and if not get one from demistobot
-
-    Returns:
-        str: token from demistobot
-
-    """
-    product = 'MicrosoftGraphMail'
-    token = CONTEXT.get('token')
-    stored = CONTEXT.get('stored')
-    if token and stored:
-        if epoch_seconds() - stored < 60 * 60 - 30:
-            return token
-    headers = {
-        'Authorization': TOKEN,
-        'Accept': 'application/json'
-    }
-
-    r = requests.get(
-        DEMISTOBOT,
-        headers=headers,
-        params={
-            'tenant': TENANT_ID,
-            'product': product
-        },
-        verify=USE_SSL
-    )
-    if r.status_code != requests.codes.ok:
-        return_error(
-            f'Error when trying to get token from Demisto Bot: [{r.status_code}] - {r.text}')
-    data = r.json()
-
-    demisto.setIntegrationContext(
-        {
-            'token': data.get('token'),
-            'stored': epoch_seconds()
-        }
-    )
-    return data.get('token')
 
 
 def assert_pages(pages: Union[str, int]) -> int:
@@ -342,24 +405,6 @@ def file_result_creator(raw_response: dict) -> dict:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
-    """
-    Performs basic get request to get item samples
-    """
-    url = BASE_URL + '/me'
-    token = get_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-    response = requests.get(url, headers=headers, verify=USE_SSL)
-    if response.status_code == 403:
-        return True
-    else:
-        return_error(error_parser(response))
-
-
 def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
     """Returning all mails from given user
 
@@ -437,9 +482,7 @@ def delete_mail_command():
         removeNull=True
     )
 
-    entry_context = {
-        f'MSGraphMail(val.ID === {message_id}': None
-    }
+    entry_context = {}  # type: ignore
 
     return_outputs(human_readable, entry_context)
 
@@ -571,8 +614,7 @@ def main():
 
     try:
         if command == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
+            get_access_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command()
@@ -586,9 +628,7 @@ def main():
             get_attachment_command()
     # Log exceptions
     except Exception as e:
-        LOG(e)
-        LOG.print_log()
-        raise
+        return_error(str(e))
 
 
 if __name__ == "builtins":

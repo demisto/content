@@ -110,7 +110,13 @@ script:
     }
 
     function dateToEpoch(d) {
-        return d ? new Date(d).getTime() : null;
+        if (d) {
+            var epoch = String(new Date(d).getTime());
+            var trimmedEpoch = epoch.substring(0, epoch.length - 3);
+            return trimmedEpoch;
+        } else {
+            return null;
+        }
     }
 
     function add(a, k, ok, f) {
@@ -254,7 +260,7 @@ script:
             n.KillChains = v.kill_chains;
         }
         if (score === 3) {
-            n.Malicious = {Vendor: 'CrowdStrike', Description: 'High confidence'};
+            n.Malicious = {Vendor: 'FalconIntel', Description: 'High confidence'};
         }
         if (!ec[path]) {
             ec[path] = [];
@@ -315,7 +321,12 @@ script:
                     if (!ec.DBotScore) {
                         ec.DBotScore = [];
                     }
-                    ec.DBotScore.push({Indicator: res.obj[i].indicator, Type: dbotType, Vendor: 'CrowdStrike', Score: dbotScore});
+                    ec.DBotScore.push({
+                        Indicator: res.obj[i].indicator,
+                        Type: dbotType,
+                        Vendor: 'FalconIntel',
+                        Score: dbotScore
+                    });
                 }
                 found = true;
             }
@@ -327,14 +338,40 @@ script:
             Type: entryTypes.note,
             Contents: res.body,
             ContentsFormat: formats.json,
+            IgnoreAutoExtract: true,
             HumanReadable: md,
             EntryContext: ec
         };
     }
 
     function doIndicator(ind, type, title, appendContextFunc) {
-        var a = {equal: ind};
-        var res = doReq('GET', 'indicator/'+ VERSION +'/search/indicator', a);
+        var a = {'indicator.equal': ind};
+        if (type === 'hash') {
+            if (!ind || ind.length === 0) {
+                ind = '';
+            }
+            var hashType = '';
+            switch (ind.length) {
+                case 32:
+                    hashType = 'hash_md5';
+                    break;
+                case 40:
+                    hashType = 'hash_sha1';
+                    break;
+                case 64:
+                    hashType = 'hash_sha256';
+                    break;
+                default:
+                    throw 'Invalid hash. Hash length is: ' + ind.length + '. Please provide either MD5 (32 length), SHA1 (40 length), or SHA256 (64 length) hash.';
+            }
+            a['type.equal'] = hashType;
+        } else if (type == 'ip') {
+            a['type.equal'] = 'ip_address';
+        } else {
+            a['type.equal'] = type;
+        }
+
+        var res = doReq('GET', 'indicator/'+ VERSION +'/search', a);
         var md = '## ' + title + ': ' + ind + '\n';
         var ec = {};
         var found = false;
@@ -350,18 +387,28 @@ script:
                 } else {
                     dbotScore = 1;
                 }
-                ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: dbotScore}; // ok to override, we expect only one
+                ec.DBotScore = {
+                    Indicator: ind,
+                    Type: type,
+                    Vendor: 'FalconIntel',
+                    Score: dbotScore
+                }; // ok to override, we expect only one
                 found = true;
             }
         }
         if (!found) {
             md += 'No result found';
-            ec.DBotScore = {Indicator: ind, Type: type, Vendor: 'CrowdStrike', Score: 0};
+            ec.DBotScore = {
+                Indicator: ind,
+                Type: type,
+                Vendor: 'FalconIntel',
+                Score: 0};
         }
         return {
             Type: entryTypes.note,
             Contents: res.body,
             ContentsFormat: formats.json,
+            IgnoreAutoExtract: true,
             HumanReadable: md,
             EntryContext: ec
         };
@@ -369,7 +416,7 @@ script:
 
     function doFile(hash) {
         return doIndicator(hash, 'hash', 'Falcon Intel file reputation for', function(ec) {
-            var malFile = {Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}};
+            var malFile = {Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}};
             var hashType = hash.length === 32 ? 'MD5' : hash.length === 40 ? 'SHA1' : 'SHA256';
             malFile[hashType] = hash;
             addMalicious(ec, outputPaths.file, malFile);
@@ -378,19 +425,19 @@ script:
 
     function doIP(ip) {
         return doIndicator(ip, 'ip', 'Falcon Intel IP reputation for', function(ec) {
-            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 
     function doURL(url) {
         return doIndicator(url, 'url', 'Falcon Intel URL reputation for', function(ec) {
-            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 
     function doDomain(domain) {
         return doIndicator(domain, 'domain', 'Falcon Intel domain reputation for', function(ec) {
-            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'CrowdStrike', Description: 'High confidence'}});
+            addMalicious(ec, outputPaths.domain, {Name: domain, Malicious: {Vendor: 'FalconIntel', Description: 'High confidence'}});
         });
     }
 

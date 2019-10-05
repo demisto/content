@@ -1,0 +1,111 @@
+commonfields:
+  id: MaxMind GeoIP2
+  version: -1
+name: MaxMind GeoIP2
+display: MaxMind GeoIP2
+category: Data Enrichment & Threat Intelligence
+description: Enriches IP addresses
+configuration:
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Account ID
+  name: account
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Service Version
+  name: mode
+  defaultvalue: city
+  type: 15
+  required: true
+  options:
+  - country
+  - city
+  - insights
+- display: Base URL
+  name: url
+  defaultvalue: https://geoip.maxmind.com/
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP Address to be queried
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address
+      type: string
+    - contextPath: IP.Geo.Country
+      description: The IP country
+      type: string
+    - contextPath: IP.Geo.Location
+      description: The IP geographic location in coordinates
+      type: string
+    - contextPath: IP.ASN
+      description: The IP ASN
+      type: string
+    - contextPath: MaxMind.Geo.TimeZone
+      description: The time zone the IP is located
+      type: string
+    - contextPath: MaxMind.Geo.Accuracy
+      description: The accuracy of the location
+      type: number
+    - contextPath: MaxMind.Geo.Continent
+      description: The IP Continent
+      type: string
+    - contextPath: MaxMind.Geo.Subdivision
+      description: The IP subdivision
+      type: string
+    - contextPath: MaxMind.Organization
+      description: The IP organization
+      type: string
+    - contextPath: MaxMind.Tor
+      description: Is IP a Tor exit node?
+      type: boolean
+    - contextPath: MaxMind.Host
+      description: The IP host
+      type: string
+    - contextPath: MaxMind.Anonymous
+      description: Is the IP anonymous?
+      type: boolean
+    - contextPath: MaxMind.UserType
+      description: The IP user type
+      type: string
+    - contextPath: MaxMind.ISP
+      description: The IP ISP
+      type: string
+    - contextPath: MaxMind.Domain
+      description: The domain associated to the IP
+      type: string
+    - contextPath: MaxMind.ISO_Code
+      description: ISO code for the country the IP is located
+      type: string
+    - contextPath: MaxMind.RegisteredCountry
+      description: Country the IP is registered
+      type: string
+    - contextPath: MaxMind.City
+      description: City the IP is located in
+      type: string
+    description: Check IP reputation (when information is available, returns a JSON
+      with details). Uses all configured Threat Intelligence feeds
+  runonce: false
+tests:
+  - MaxMind Test

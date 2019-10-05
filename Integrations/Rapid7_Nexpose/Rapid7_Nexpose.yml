@@ -1,0 +1,1012 @@
+category: Vulnerability Management
+commonfields:
+  id: Rapid7 Nexpose
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:8080)
+  name: server
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (unsecure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: 2FA token
+  name: token
+  required: false
+  type: 0
+description: Rapid7's on-premise vulnerability management solution, Nexpose, helps
+  you reduce your threat exposure by enabling you to assess and respond to changes
+  in your environment real time and prioritizing risk across vulnerabilities, configurations,
+  and controls.
+display: Rapid7 Nexpose
+name: Rapid7 Nexpose
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: integer <int64> The identifier of the asset.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the specified asset.
+    execution: false
+    name: nexpose-get-asset
+    outputs:
+    - contextPath: Nexpose.Asset.Addresses
+      description: All addresses discovered on the asset.
+      type: unknown
+    - contextPath: Nexpose.Asset.AssetId
+      description: Id of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Hardware
+      description: The primary Media Access Control (MAC) address of the asset. The
+        format is six groups of two hexadecimal digits separated by colons.
+      type: string
+    - contextPath: Nexpose.Asset.Aliases
+      description: All host names or aliases discovered on the asset.
+      type: unknown
+    - contextPath: Nexpose.Asset.HostType
+      description: The type of asset, Valid values are unknown, guest, hypervisor,
+        physical, mobile
+      type: string
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+      type: string
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities on the asset.
+      type: number
+    - contextPath: Nexpose.Asset.CPE
+      description: The Common Platform Enumeration (CPE) of the operating system.
+      type: string
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+      type: date
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+      type: number
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Software.Software
+      description: The description of the software.
+      type: string
+    - contextPath: Nexpose.Asset.Software.Version
+      description: The version of the software.
+      type: string
+    - contextPath: Nexpose.Asset.Services.Name
+      description: The name of the service.
+      type: string
+    - contextPath: Nexpose.Asset.Services.Port
+      description: The port of the service.
+      type: number
+    - contextPath: Nexpose.Asset.Services.Product
+      description: The product running the service.
+      type: string
+    - contextPath: Nexpose.Asset.Services.protocol
+      description: The protocol of the service, valid values are ip, icmp, igmp, ggp,
+        tcp, pup, udp, idp, esp, nd, raw
+      type: string
+    - contextPath: Nexpose.Asset.Users.FullName
+      description: The full name of the user account.
+      type: string
+    - contextPath: Nexpose.Asset.Users.Name
+      description: The name of the user account.
+      type: string
+    - contextPath: Nexpose.Asset.Users.UserId
+      description: The identifier of the user account.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Id
+      description: The identifier of the vulnerability.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Instances
+      description: The number of vulnerable occurrences of the vulnerability. This
+        does not include invulnerable instances.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Title
+      description: The title (summary) of the vulnerability.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Malware
+      description: The malware kits that are known to be used to exploit the vulnerability.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Exploit
+      description: The exploits that can be used to exploit a vulnerability.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.CVSS
+      description: The CVSS exploit score.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Risk
+      description: The risk score of the vulnerability, rounded to a maximum of to
+        digits of precision. If using the default Rapid7 Real Risk™ model, this value
+        ranges from 0-1000.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.PublishedOn
+      description: The date the vulnerability was first published or announced. The
+        format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.ModifiedOn
+      description: The last date the vulnerability was modified. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.Severity
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
+        "Critical".'
+      type: string
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
+      type: string
+    - contextPath: CVE.ID
+      description: Common Vulnerabilities and Exposures ids
+      type: string
+  - arguments:
+    - default: false
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: integer <int32> The number of records retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all assets for which you have access.
+    execution: false
+    name: nexpose-get-assets
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: The identifier of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Address
+      description: The primary IPv4 or IPv6 address of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Name
+      description: The primary host name (local or FQDN) of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+      type: string
+    - contextPath: Nexpose.Asset.Exploits
+      description: The number of distinct exploits that can exploit any of the vulnerabilities
+        on the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Malware
+      description: The number of distinct malware kits that vulnerabilities on the
+        asset are susceptible to.
+      type: number
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Assessed
+      description: Whether the asset has been assessed for vulnerabilities at least
+        once.
+      type: boolean
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+      type: date
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+      type: number
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
+      type: string
+  - arguments:
+    - default: false
+      description: 'Multiple criteria of <string> Filter to match assets, according
+        to the Search Criteria API standard. multiple filters can be provided using
+        '';'' separator. For example: ''ip-address in range 1.2.3.4,1.2.3.8;host-name
+        is myhost''. For more information regarding Search Criteria, refer to https://help.rapid7.com/insightvm/en-us/api/index.html#section/Overview/Responses'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: integer <int32> The number of records retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    - default: false
+      description: <string> Search by a specific IP address
+      isArray: false
+      name: ipAddressIs
+      required: false
+      secret: false
+    - default: false
+      description: <string> Search by a specific host name
+      isArray: false
+      name: hostNameIs
+      required: false
+      secret: false
+    - default: false
+      description: <float> Get all assets whose risk score is higher
+      isArray: false
+      name: riskScoreHigherThan
+      required: false
+      secret: false
+    - default: false
+      description: <string> Search by vulnerability title
+      isArray: false
+      name: vulnerabilityTitleContains
+      required: false
+      secret: false
+    - default: false
+      description: Multiple criteria of integer<int32> Search by site ids
+      isArray: false
+      name: siteIdIn
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: <string> Operator to determine how to match filters. all requires
+        that all filters match for an asset to be included. any requires only one
+        filter to match for an asset to be included.
+      isArray: false
+      name: match
+      predefined:
+      - all
+      - any
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all assets for which you have access that match the given
+      search criteria.
+    execution: false
+    name: nexpose-search-assets
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: The identifier of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Address
+      description: The primary IPv4 or IPv6 address of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Name
+      description: The primary host name (local or FQDN) of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Site
+      description: Asset site name.
+      type: string
+    - contextPath: Nexpose.Asset.Exploits
+      description: The number of distinct exploits that can exploit any of the vulnerabilities
+        on the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Malware
+      description: The number of distinct malware kits that vulnerabilities on the
+        asset are susceptible to.
+      type: number
+    - contextPath: Nexpose.Asset.OperatingSystem
+      description: Operating system of the asset.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerabilities
+      description: The total number of vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Asset.RiskScore
+      description: The risk score (with criticality adjustments) of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Assessed
+      description: Whether the asset has been assessed for vulnerabilities at least
+        once.
+      type: boolean
+    - contextPath: Nexpose.Asset.LastScanDate
+      description: Last scan date of the asset.
+      type: date
+    - contextPath: Nexpose.Asset.LastScanId
+      description: Id of the asset's last scan.
+      type: number
+    - contextPath: Endpoint.IP
+      description: Endpoint IP address.
+      type: string
+    - contextPath: Endpoint.HostName
+      description: Endpoint host name.
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint operating system.
+      type: string
+  - arguments:
+    - default: false
+      description: Multiple criteria of integer <int64> Identifiers of scans
+      isArray: true
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the specified scan.
+    execution: false
+    name: nexpose-get-scan
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: string
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+      type: number
+  - arguments:
+    - default: false
+      description: integer <int64> The identifier of the asset.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: <string> The identifier of the vulnerability.
+      isArray: false
+      name: vulnerabilityId
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the details and possible remediations for an asset's given
+      vulnerability.
+    execution: false
+    name: nexpose-get-asset-vulnerability
+    outputs:
+    - contextPath: Nexpose.Asset.AssetId
+      description: Identifier of the asset.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Id
+      description: The identifier of the vulnerability.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Title
+      description: The title (summary) of the vulnerability.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Severity
+      description: 'The severity of the vulnerability, one of: "Moderate", "Severe",
+        "Critical".'
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.RiskScore
+      description: The risk score of the vulnerability, rounded to a maximum of to
+        digits of precision. If using the default Rapid7 Real Risk™ model, this value
+        ranges from 0-1000.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.CVSS
+      description: The CVSS vector(s) for the vulnerability.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSV3
+      description: The CVSS v3 vector.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Published
+      description: The date the vulnerability was first published or announced. The
+        format is an ISO 8601 date, YYYY-MM-DD.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.Added
+      description: The date the vulnerability coverage was added. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.Modified
+      description: The last date the vulnerability was modified. The format is an
+        ISO 8601 date, YYYY-MM-DD.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSScore
+      description: The CVSS score, which ranges from 0-10.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.CVSSV3Score
+      description: The CVSS3 score, which ranges from 0-10.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Categories
+      description: All vulnerability categories assigned to this vulnerability.
+      type: unknown
+    - contextPath: Nexpose.Asset.Vulnerability.CVES
+      description: All CVEs assigned to this vulnerability.
+      type: unknown
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Port
+      description: The port of the service the result was discovered on.
+      type: number
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Protocol
+      description: The protocol of the service the result was discovered on, valid
+        values ip, icmp, igmp, ggp, tcp, pup, udp, idp, esp, nd, raw
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Since
+      description: The date and time the result was first recorded, in the ISO8601
+        format. If the result changes status this value is the date and time of the
+        status change.
+      type: date
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Proof
+      description: The proof explaining why the result was found vulnerable.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Check.Status
+      description: The status of the vulnerability check result. Valid values are,
+        unknown, not-vulnerable, vulnerable, vulnerable-version, vulnerable-potential,
+        vulnerable-with-exception-applied, vulnerable-version-with-exception-applied,
+        vulnerable-potential-with-exception-applied
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Type
+      description: 'The type of the solution. One of: "Configuration", "Rollup patch",
+        "Patch".'
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Summary
+      description: The summary of the solution.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Steps
+      description: The steps required to remediate the vulnerability.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.Estimate
+      description: The estimated duration to apply the solution, in minutes.
+      type: string
+    - contextPath: Nexpose.Asset.Vulnerability.Solution.AdditionalInformation
+      description: Additional information or resources that can assist in applying
+        the remediation
+      type: string
+    - contextPath: CVE.ID
+      description: Common Vulnerabilities and Exposures ids
+      type: string
+  - arguments:
+    - default: false
+      description: <string> The site name. Name must be unique.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: <string> The site's description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Multiple criteria of <string> Specify asset addresses to be included
+        in site scans
+      isArray: true
+      name: assets
+      required: true
+      secret: false
+    - default: false
+      description: '<string> The identifier of a scan template. Use nexpose-get-report-templates
+        to get all templates,  default scan template is selected when not specified. '
+      isArray: false
+      name: scanTemplateId
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: <string> The site importance. Defaults to "normal" if not specified.
+      isArray: false
+      name: importance
+      predefined:
+      - very_low
+      - low
+      - normal
+      - high
+      - very_high
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new site with the specified configuration.
+    execution: false
+    name: nexpose-create-site
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The created site Id
+      type: number
+  - arguments:
+    - default: false
+      description: Id of the site to delete
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a site.
+    execution: false
+    name: nexpose-delete-site
+  - arguments:
+    - default: false
+      description: integer <int32> The number of records retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves accessible sites.
+    execution: false
+    name: nexpose-get-sites
+    outputs:
+    - contextPath: Nexpose.Site.Id
+      description: The identifier of the site.
+      type: number
+    - contextPath: Nexpose.Site.Name
+      description: The site name.
+      type: string
+    - contextPath: Nexpose.Site.Assets
+      description: The number of assets that belong to the site.
+      type: number
+    - contextPath: Nexpose.Site.Type
+      description: The type of the site. Valid values are agent, dynamic, static
+      type: string
+    - contextPath: Nexpose.Site.Vulnerabilities
+      description: The total number of vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Site.Risk
+      description: The risk score (with criticality adjustments) of the site.
+      type: number
+    - contextPath: Nexpose.Site.LastScan
+      description: The date and time of the site's last scan.
+      type: date
+  - deprecated: false
+    description: Returns all available report templates.
+    execution: false
+    name: nexpose-get-report-templates
+    outputs:
+    - contextPath: Nexpose.Template.Id
+      description: The identifier of the report template.
+      type: number
+    - contextPath: Nexpose.Template.Name
+      description: The name of the report template.
+      type: string
+    - contextPath: Nexpose.Template.Description
+      description: The description of the report template.
+      type: string
+    - contextPath: Nexpose.Template.Type
+      description: The type of the report template. document is a templatized, typically
+        printable, report that has various sections of content. export is data-oriented
+        output, typically CSV. file is a printable report template using a report
+        template file.
+      type: string
+  - arguments:
+    - default: false
+      description: Multiple criteria of integer<int64> Asset ids to create the report
+        on, comma separated.
+      isArray: false
+      name: assets
+      required: true
+      secret: false
+    - default: false
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: <string> The report name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: <string> The report format, default is PDF
+      isArray: false
+      name: format
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      required: false
+      secret: false
+    deprecated: false
+    description: Generates a new report on given assets according to a template and
+      arguments.
+    execution: false
+    name: nexpose-create-assets-report
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
+  - arguments:
+    - default: false
+      description: Multiple criteria of integer<int32> Site ids to create the report
+        on, comma separated.
+      isArray: false
+      name: sites
+      required: true
+      secret: false
+    - default: false
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: <string> The report name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: <string> The report format, default is PDF
+      isArray: false
+      name: format
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      required: false
+      secret: false
+    deprecated: false
+    description: Generates a new report on given sites according to a template and
+      arguments.
+    execution: false
+    name: nexpose-create-sites-report
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
+  - arguments:
+    - default: false
+      description: integer <int64> The identifier of the scan.
+      isArray: false
+      name: scan
+      required: true
+      secret: false
+    - default: false
+      description: <string> Report template id to create the report with. If none
+        is provided, the first template available will be used.
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - default: false
+      description: <string> The report name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: <string> The report format, default is PDF
+      isArray: false
+      name: format
+      predefined:
+      - pdf
+      - rtf
+      - xml
+      - html
+      - text
+      required: false
+      secret: false
+    deprecated: false
+    description: Generates a new report for a specified scan.
+    execution: false
+    name: nexpose-create-scan-report
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
+  - arguments:
+    - default: false
+      description: integer <int32> The identifier of the site.
+      isArray: false
+      name: site
+      required: true
+      secret: false
+    - default: false
+      description: Multiple criteria of <string> The hosts that should be included
+        as a part of the scan. This should be a mixture of IP Addresses and host names
+        as a comma separated string array.
+      isArray: true
+      name: hosts
+      required: false
+      secret: false
+    - default: false
+      description: <string> The user-driven scan name for the scan.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Starts a scan for the specified site.
+    execution: false
+    name: nexpose-start-site-scan
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+      type: number
+  - arguments:
+    - default: false
+      description: Multiple criteria of <string> IP addresses of assets, comma separated.
+      isArray: false
+      name: IPs
+      required: false
+      secret: false
+    - default: false
+      description: Multiple criteria of <string> Host names of assets, comma separated.
+      isArray: false
+      name: hostNames
+      required: false
+      secret: false
+    - default: false
+      description: <string> The user-driven scan name for the scan.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Starts a scan for specified asset IP addresses and host names.
+    execution: false
+    name: nexpose-start-assets-scan
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+    - contextPath: Nexpose.Scan.Vulnerabilities.Critical
+      description: The number of critical vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Moderate
+      description: The number of moderate vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Severe
+      description: The number of severe vulnerabilities.
+      type: number
+    - contextPath: Nexpose.Scan.Vulnerabilities.Total
+      description: The total number of vulnerabilities.
+      type: number
+  - arguments:
+    - default: false
+      description: integer <int64> ID of the scan to stop.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Stop the specified scan
+    execution: false
+    name: nexpose-stop-scan
+  - arguments:
+    - default: false
+      description: integer <int64> ID of the scan to pause.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Pause the specified scan
+    execution: false
+    name: nexpose-pause-scan
+  - arguments:
+    - default: false
+      description: integer <int64> ID of the scan to resume.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resume the specified scan
+    execution: false
+    name: nexpose-resume-scan
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: <boolean> Return active or past scans.
+      isArray: false
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: integer <int32> The number of records retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: 'Multiple criteria of <string> The criteria to sort the records
+        by, in the format: property[,ASC|DESC]. The default sort order is ascending.
+        Multiple sort criteria can be specified using multiple sort query parameters
+        separated by a '';''. For example: ''riskScore,DESC;hostName,ASC'''
+      isArray: false
+      name: sort
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of scans.
+    execution: false
+    name: nexpose-get-scans
+    outputs:
+    - contextPath: Nexpose.Scan.Id
+      description: The identifier of the scan.
+      type: number
+    - contextPath: Nexpose.Scan.ScanType
+      description: The scan type (automated, manual, scheduled).
+      type: string
+    - contextPath: Nexpose.Scan.StartedBy
+      description: The name of the user that started the scan.
+      type: date
+    - contextPath: Nexpose.Scan.Assets
+      description: The number of assets found in the scan
+      type: number
+    - contextPath: Nexpose.Scan.TotalTime
+      description: The duration of the scan in minutes.
+      type: string
+    - contextPath: Nexpose.Scan.Completed
+      description: The end time of the scan in ISO8601 format.
+      type: date
+    - contextPath: Nexpose.Scan.Status
+      description: The scan status. Valid values are aborted, unknown, running, finished,
+        stopped, error, paused, dispatched, integrating
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+fromversion: 3.6.0
+tests:
+  - nexpose_test

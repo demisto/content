@@ -21,8 +21,6 @@ mapping:
   isPredefined:
     type: bool
     required: yes
-  releaseNotes:
-    type: str
   fromDate:
     type: str
   toDate:

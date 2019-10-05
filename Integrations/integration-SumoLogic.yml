@@ -9,9 +9,9 @@ description: Cloud-based service for logs & metrics management
 detaileddescription: |-
   Follow this guide to generate access keys: [https://help.sumologic.com/Manage/Security/Access_Keys](https://help.sumologic.com/Manage/Security/Access_Keys).
   For the URL argument, take a look here: [https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints](https://help.sumologic.com/APIs/01Collector_Management_API/Sumo_Logic_Endpoints)
+  For a list of possible values for the **timeZone** parameter, refer to the **TZ database name** column in this [Wikipedia](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article.
 configuration:
-- display: SumoLogic URL, in the format https://api.us2.sumologic.com/api/. This is
-    region specific.
+- display: 'Sumo Logic URL (region specific), for example: https://api.us2.sumologic.com/api/'
   name: url
   defaultvalue: https://api.us2.sumologic.com/api/
   type: 0
@@ -21,19 +21,19 @@ configuration:
   defaultvalue: v1
   type: 0
   required: true
-- display: The access ID - can be created under "Settings"
+- display: Access ID - can be created in Sumo Logic under "Settings"
   name: accessID
   defaultvalue: ""
   type: 0
   required: true
-- display: The access key - can be created under "Settings"
+- display: Access key - can be created in Sumo Logic under "Settings"
   name: accessKey
   defaultvalue: ""
   type: 4
   required: true
 - display: Use system proxy settings
   name: useproxy
-  defaultvalue: "true"
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Trust any certificate (unsecure)
@@ -46,7 +46,7 @@ configuration:
   defaultvalue: "3"
   type: 0
   required: true
-- display: Default limit for the number of records to retrieve
+- display: Default maximum number of records to retrieve
   name: limit
   defaultvalue: "100"
   type: 0
@@ -66,9 +66,14 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Default max total wait for results
+- display: Default max total wait for results (in milliseconds)
   name: maxTimeout
   defaultvalue: "600"
+  type: 0
+  required: false
+- display: Time zone of the collector to fetch from (see detailed description)
+  name: timeZone
+  defaultvalue: UTC
   type: 0
   required: false
 script:
@@ -89,7 +94,6 @@ script:
             params.insecure,
             params.useproxy
         );
-
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             var errObj;
             try {
@@ -114,7 +118,7 @@ script:
         return {body: result.Body, obj: obj, statusCode: result.StatusCode, cookies: result.Cookies};
     };
 
-    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, sleep) {
+    var search = function(query, from, to, limit, offset, timezone, maxTimeToWaitForResults, byReceiptTime, sleep) {
         var p = {query: query};
         if (from) {
             p.from = from;
@@ -124,6 +128,9 @@ script:
         }
         if (timezone) {
             p.timeZone = timezone;
+        }
+        if (byReceiptTime) {
+            p.byReceiptTime = byReceiptTime;
         }
         // Create the job
         var res = doReq('POST', 'search/jobs', p, null);
@@ -173,7 +180,7 @@ script:
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
-            doReq('GET', 'collectors', {limit: '1'}, null);
+            doReq('GET', 'collectors', {limit: '3'}, null);
             return 'ok';
         case 'fetch-incidents':
             if (!params.fetchQuery) {
@@ -185,7 +192,7 @@ script:
                 // First time, retrieve events from the last 10 min
                 lastRun = {time: now - 10 * 60 * 1000};
             }
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, 'UTC', a2i(params.maxTimeout, 180),
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
                 a2i(params.sleepBetweenChecks, defaultSleep));
             var incidents = [];
             if (s.messages) {
@@ -217,7 +224,7 @@ script:
             }
             var headers = 'headers' in args ? argToList(args.headers) : undefined;
             var s = search(query, args.from, args.to, a2i(args.limit, defaultLimit), a2i(args.offset, 0), args.timezone,
-                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, a2i(params.sleepBetweenChecks, defaultSleep));
+                a2i(args.maxTimeToWaitForResults, defaultSearchTimeout) * 60, args.byReceiptTime, a2i(params.sleepBetweenChecks, defaultSleep));
             var md = '';
             var ec = {};
             if (s.messages && s.messages.length > 0) {
@@ -242,40 +249,47 @@ script:
     - name: query
       required: true
       default: true
-      description: The search query to execute
+      description: The search query to execute.
     - name: from
       required: true
-      description: The ISO 8601 date of the time range to start the search (example
-        - 2016-08-28T12:00:00). Can also be milliseconds since epoch.
+      description: 'The ISO 8601 date of the time range to start the search. For example:
+        2016-08-28T12:00:00. Can also be milliseconds since epoch.'
     - name: to
       required: true
-      description: The ISO 8601 date of the time range to end the search (example
-        - 2016-08-28T12:00:00). Can also be milliseconds since epoch.
+      description: 'The ISO 8601 date of the time range to end the search. For example:
+        2016-08-28T12:00:00). Can also be milliseconds since epoch.'
     - name: limit
-      description: Max results returned from query, int - by default will be 100
+      description: Maximum number of results to return from the query. Default is 100. The value specified will override the default set in the "limit" parameter.
       defaultValue: "100"
     - name: offset
       description: Return results starting at this offset. should be int - by default
         is 0
       defaultValue: "0"
     - name: timezone
-      description: The time zone if from/to is not in milliseconds, default is UTC,  See
+      description: The time zone if from/to is not in milliseconds. Default is UTC. See
         this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article
         for a list of time zone codes.
       defaultValue: UTC
     - name: maxTimeToWaitForResults
-      description: Max amount of minutes to wait for search to end, default is 10
-        minutes
+      description: Maximum amount of time (in minutes) to wait for the search to complete. Default is 10
+        minutes.
       defaultValue: "10"
     - name: headers
-      description: Table's headers to be shown by order given as comma-separated values,
-        e.g. _blockid,_collector,_format
+      description: 'A CSV list of table headers that are displayed in order. For example: "_blockid,_collector,_format".'
+    - name: byReceiptTime
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", the search is executed using receipt time. Default is "false".
+      defaultValue: "false"
     outputs:
     - contextPath: Search.Messages
-      description: The array of raw message objects
+      description: The array of raw message objects.
     - contextPath: Search.Records
-      description: The array of aggregate records
-    description: Search SumoLogic for matching records to the given query
+      description: The array of aggregate records.
+    description: Search SumoLogic for records that match the specified query.
   isfetch: true
+  runonce: false
 tests:
-  - No test
+  - SumoLogic-Test

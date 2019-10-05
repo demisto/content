@@ -1,0 +1,1299 @@
+id: ThreatX-test
+version: -1
+name: ThreatX-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5867e753-76e3-4c88-8df6-f11cbec13ca6
+    type: start
+    task:
+      id: 5867e753-76e3-4c88-8df6-f11cbec13ca6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6b26a423-234a-42b9-810f-113db6cf5274
+    type: regular
+    task:
+      id: 6b26a423-234a-42b9-810f-113db6cf5274
+      version: -1
+      name: threatx-block-ip
+      description: Temporarily block an IP or CIDR
+      script: ThreatX|||threatx-block-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 65ff2452-6c90-4625-855c-8b5f78ef6899
+    type: regular
+    task:
+      id: 65ff2452-6c90-4625-855c-8b5f78ef6899
+      version: -1
+      name: threatx-unblock-ip
+      description: Unblock a blocked IP or CIDR
+      script: ThreatX|||threatx-unblock-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5135f6c8-8861-4d88-8fe3-921fcf3483b5
+    type: regular
+    task:
+      id: 5135f6c8-8861-4d88-8fe3-921fcf3483b5
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: adda5440-e811-40fd-8a12-7efcd8c60e38
+    type: regular
+    task:
+      id: adda5440-e811-40fd-8a12-7efcd8c60e38
+      version: -1
+      name: threatx-blacklist-ip
+      description: Add an IP or CIDR to the Blacklist
+      script: ThreatX|||threatx-blacklist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 49ebcb03-ab1c-42be-8c7c-2fb693f229fd
+    type: regular
+    task:
+      id: 49ebcb03-ab1c-42be-8c7c-2fb693f229fd
+      version: -1
+      name: threatx-whitelist-ip
+      description: Add an IP or CIDR to the Whitelist
+      script: ThreatX|||threatx-whitelist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 63a527d9-8d08-448e-8ab6-172678c2b745
+    type: regular
+    task:
+      id: 63a527d9-8d08-448e-8ab6-172678c2b745
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 152adf71-66b3-49df-8872-251c19519435
+    type: regular
+    task:
+      id: 152adf71-66b3-49df-8872-251c19519435
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c76fb7d4-9533-409d-8e4d-0957b53eea94
+    type: regular
+    task:
+      id: c76fb7d4-9533-409d-8e4d-0957b53eea94
+      version: -1
+      name: threatx-unblacklist-ip
+      description: Remove an IP or CIDR from the Blacklist
+      script: ThreatX|||threatx-unblacklist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: adedb1f6-6555-4f38-8405-6d11f5b71120
+    type: regular
+    task:
+      id: adedb1f6-6555-4f38-8405-6d11f5b71120
+      version: -1
+      name: threatx-add-entity-note
+      description: 'Add a new note to the Entity. Example: !threatx-add-entity-note
+        entity_id=566056709695514809 message="test note"'
+      script: ThreatX|||threatx-add-entity-note
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entity_id:
+        simple: "870617232157515386"
+      message:
+        simple: Demisto test playbook note
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 9832c90a-681f-4b54-86ae-0d44905b85f4
+    type: regular
+    task:
+      id: 9832c90a-681f-4b54-86ae-0d44905b85f4
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 643ac58e-7fec-409b-897a-ef0121aea284
+    type: regular
+    task:
+      id: 643ac58e-7fec-409b-897a-ef0121aea284
+      version: -1
+      name: threatx-get-entity-notes
+      description: Get the notes attached to an Entity by Entity ID
+      script: ThreatX|||threatx-get-entity-notes
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      entity_id:
+        simple: "870617232157515386"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: f8c162d7-11cf-4e0b-8433-aeff398798f0
+    type: regular
+    task:
+      id: f8c162d7-11cf-4e0b-8433-aeff398798f0
+      version: -1
+      name: threatx-get-entities
+      description: 'Get high-level Entity information via the Entity ID, Entity Name,
+        or Entity IP. Example: !threatx-get-entities entity_name=CynicalGraaf,MJ12Bot
+        entity_id= 566056709675514809 entity_ip=12.12.12.12,14.14.14.14'
+      script: ThreatX|||threatx-get-entities
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      entity_id:
+        simple: "870617232157515386"
+      entity_ip: {}
+      entity_name: {}
+      timeframe:
+        simple: "3-Months"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 524bcf7c-7c3d-4b0e-875a-87bf6f26981d
+    type: regular
+    task:
+      id: 524bcf7c-7c3d-4b0e-875a-87bf6f26981d
+      version: -1
+      name: threatx-unwhitelist-ip
+      description: Remove an IP or CIDR from the Whitelist
+      script: ThreatX|||threatx-unwhitelist-ip
+      type: regular
+      iscommand: true
+      brand: ThreatX
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      ip:
+        simple: 12.12.12.12
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 216215d5-8578-4090-8a8a-79d6e58030f3
+    type: regular
+    task:
+      id: 216215d5-8578-4090-8a8a-79d6e58030f3
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 74a1687c-39d7-4191-80b1-49c202c86a71
+    type: regular
+    task:
+      id: 74a1687c-39d7-4191-80b1-49c202c86a71
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: dc897190-3685-46ba-8a55-662cfd87e65b
+    type: regular
+    task:
+      id: dc897190-3685-46ba-8a55-662cfd87e65b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 13e554f0-fef9-46a2-860a-e0cf9d368e0c
+    type: condition
+    task:
+      id: 13e554f0-fef9-46a2-860a-e0cf9d368e0c
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: bdfee8ac-53f0-4b71-8fdc-43bbceee5e30
+    type: regular
+    task:
+      id: bdfee8ac-53f0-4b71-8fdc-43bbceee5e30
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: a4d1da1d-36dd-4a42-800a-391a502cc3ca
+    type: condition
+    task:
+      id: a4d1da1d-36dd-4a42-800a-391a502cc3ca
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 5f33d199-bfac-47f4-8158-023a59d8f7ce
+    type: regular
+    task:
+      id: 5f33d199-bfac-47f4-8158-023a59d8f7ce
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 0faecfb1-e20e-4a5d-8613-3dfaa00e6cee
+    type: regular
+    task:
+      id: 0faecfb1-e20e-4a5d-8613-3dfaa00e6cee
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: c8024bdf-afd8-4533-80f1-ab88c30d3fa3
+    type: condition
+    task:
+      id: c8024bdf-afd8-4533-80f1-ab88c30d3fa3
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 1998271e-15ef-419a-8721-0afef0715fa3
+    type: regular
+    task:
+      id: 1998271e-15ef-419a-8721-0afef0715fa3
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 33f507b5-fcf6-403b-8cef-938b5c54fd94
+    type: condition
+    task:
+      id: 33f507b5-fcf6-403b-8cef-938b5c54fd94
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 0ae47cf2-c4b0-4eb2-83c6-82aa3a10ed9b
+    type: regular
+    task:
+      id: 0ae47cf2-c4b0-4eb2-83c6-82aa3a10ed9b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 717358dc-ab0f-4d71-8e9c-e81fcd41db8b
+    type: regular
+    task:
+      id: 717358dc-ab0f-4d71-8e9c-e81fcd41db8b
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 824ff6ee-7239-4e79-8778-d4db55a55b5f
+    type: condition
+    task:
+      id: 824ff6ee-7239-4e79-8778-d4db55a55b5f
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 44d27eaf-9740-4c49-86a8-9f6c0b25a8de
+    type: regular
+    task:
+      id: 44d27eaf-9740-4c49-86a8-9f6c0b25a8de
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 82bfe601-1572-4ea4-876b-0ef568a7d16b
+    type: condition
+    task:
+      id: 82bfe601-1572-4ea4-876b-0ef568a7d16b
+      version: -1
+      name: IP Address Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    scriptarguments:
+      value:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 84d16a39-cfaf-4be6-84bc-e2ab252a1dfb
+    type: regular
+    task:
+      id: 84d16a39-cfaf-4be6-84bc-e2ab252a1dfb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 8310d52a-0d66-47b9-8708-7ed119445d31
+    type: condition
+    task:
+      id: 8310d52a-0d66-47b9-8708-7ed119445d31
+      version: -1
+      name: Entity ID Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 5939a0fb-c092-4eb5-8824-b1e604c51576
+    type: condition
+    task:
+      id: 5939a0fb-c092-4eb5-8824-b1e604c51576
+      version: -1
+      name: Entity Note Content Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.Note.content}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: 1a6c6c6c-a80e-4054-8ab7-d720877ac2fc
+    type: condition
+    task:
+      id: 1a6c6c6c-a80e-4054-8ab7-d720877ac2fc
+      version: -1
+      name: Entity Note Timestamp Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.Note.timestamp}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 28df9714-9d9a-4b6e-8f3c-498ec35d9469
+    type: condition
+    task:
+      id: 28df9714-9d9a-4b6e-8f3c-498ec35d9469
+      version: -1
+      name: Entity Note Username Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.Note.username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: 8d05527f-d4b5-4972-8a5a-1a195b4adb45
+    type: regular
+    task:
+      id: 8d05527f-d4b5-4972-8a5a-1a195b4adb45
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 4efb3e21-318d-4d01-883b-49bfeb03744b
+    type: condition
+    task:
+      id: 4efb3e21-318d-4d01-883b-49bfeb03744b
+      version: -1
+      name: Entity ID Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: d415e034-a9fb-433f-8f79-1fb7827abcb2
+    type: condition
+    task:
+      id: d415e034-a9fb-433f-8f79-1fb7827abcb2
+      version: -1
+      name: Entity Name Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 788c8816-d456-465e-84c3-2e720ebc4326
+    type: condition
+    task:
+      id: 788c8816-d456-465e-84c3-2e720ebc4326
+      version: -1
+      name: Entity IP Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: f84f0390-2e78-40b6-8c69-f8367136f3dd
+    type: condition
+    task:
+      id: f84f0390-2e78-40b6-8c69-f8367136f3dd
+      version: -1
+      name: Entity Risk Exists
+      description: Check if a given value exists in the context. Will return 'no'
+        for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    scriptarguments:
+      value:
+        simple: ${Threatx.Entity.Risk}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: fc06eb81-82cf-428e-86ba-0233b297ae3d
+    type: regular
+    task:
+      id: fc06eb81-82cf-428e-86ba-0233b297ae3d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7065,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

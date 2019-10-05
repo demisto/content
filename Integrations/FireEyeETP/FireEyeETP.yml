@@ -1,0 +1,312 @@
+commonfields:
+  id: FireEye ETP
+  version: -1
+name: FireEye ETP
+display: FireEye ETP
+category: Email Gateway
+description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.'
+configuration:
+  - display: 'Server URL. Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com,
+    https://etp.us.fireeyegov.com '
+    name: server
+    defaultvalue: https://etp.us.fireeye.com
+    type: 0
+    required: true
+  - display: API key
+    name: api_key
+    defaultvalue: ""
+    type: 4
+    required: true
+  - display: Trust any certificate (unsecure)
+    name: unsecure
+    defaultvalue: "true"
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    defaultvalue: ""
+    type: 0
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    defaultvalue: ""
+    type: 8
+    required: false
+  - display: Incident type
+    name: incidentType
+    defaultvalue: ""
+    type: 13
+    required: false
+  - display: Messages status. All messages with the status specified will be imported
+      as incidents.
+    name: message_status
+    defaultvalue: delivered (retroactive)
+    type: 0
+    required: false
+script:
+  script: '-'
+  type: python
+  commands:
+    - name: fireeye-etp-search-messages
+      arguments:
+        - name: from_email
+          description: 'List of ''From'' email-addresses, max limit of entries is 10. '
+        - name: from_email_not_in
+          description: 'List of ''From'' email-addresses not to be included, max limit
+        of entries is 10. '
+        - name: recipients
+          description: List of 'To'/'Cc' email-addresses, max limit of entries is 10.
+        - name: recipients_not_in
+          description: 'list of ''To''/''Cc'' email-addresses not to be included, max
+        limit of entries is 10. '
+        - name: subject
+          description: List of strings, max limit of entries is 10.
+        - name: from_accepted_date_time
+          description: ' The time stamp of the email-accepted date to specify the beginning
+        of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''to_accepted_date_time''  as
+        well to set the complete date range for the search.'
+        - name: to_accepted_date_time
+          description: ' The time stamp of the email-accepted date to specify the end
+        of the date range to search, e.g. 2017-10- 24T10:48:51.000Z . Specify ''from_accepted_date_time''  as
+        well to set the complete date range for the search.'
+        - name: rejection_reason
+          description: 'list of ETP rejection reason codes ( "ETP102", "ETP103", "ETP104",
+        "ETP200", "ETP201", "ETP203", "ETP204", "ETP205", "ETP300", "ETP301", "ETP302",
+        "ETP401", "ETP402", "ETP403", "ETP404", "ETP405") '
+        - name: sender_ip
+          description: List of sender IP addresses, max limit of entries is 10.
+        - name: status
+          description: List of email status values( "accepted", "deleted", "delivered",
+            "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)",
+            "permanent failure", "processing", "quarantined", "rejected", "temporary failure").
+        - name: status_not_in
+          description: List of email status values not to include( "accepted", "deleted",
+            "delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped
+            (oob retroactive)", "permanent failure", "processing", "quarantined", "rejected",
+            "temporary failure").
+        - name: last_modified_date_time
+          description: 'Date corresponding to last modified date, along with one of the
+        following operators: ">", "<", ">=", "<=".  E.g. use value "<2017-10-24T18:00:00.000Z"
+        to search for messages that were last modified after the specified time stamp.'
+        - name: domain
+          description: List of domain names.
+        - name: has_attachments
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Boolean value to indicate if the message has attachments.
+        - name: max_message_size
+          description: The default value is 20kb and maximum value is 100kb.
+      outputs:
+        - contextPath: FireEyeETP.Message.acceptedDateTime
+          description: Message accepted date.
+        - contextPath: FireEyeETP.Message.countryCode
+          description: Sender country code.
+        - contextPath: FireEyeETP.Message.domain
+          description: Domain.
+        - contextPath: FireEyeETP.Message.emailSize
+          description: Email size in kb.
+        - contextPath: FireEyeETP.Message.lastModifiedDateTime
+          description: Message last modified date.
+        - contextPath: FireEyeETP.Message.recipientHeader
+          description: List of message recipients header (includes the display name of
+            the user).
+        - contextPath: FireEyeETP.Message.recipients
+          description: List of message recipients.
+        - contextPath: FireEyeETP.Message.senderHeader
+          description: Message sender header (includes the display name of the user).
+        - contextPath: FireEyeETP.Message.sender
+          description: Message sender address.
+        - contextPath: FireEyeETP.Message.senderSMTP
+          description: Message sender SMTP.
+        - contextPath: FireEyeETP.Message.senderIP
+          description: Message sender IP.
+        - contextPath: FireEyeETP.Message.status
+          description: Message status.
+        - contextPath: FireEyeETP.Message.subject
+          description: Message subject
+        - contextPath: FireEyeETP.Message.verdicts.AS
+          description: pass/fail verdict for AS.
+        - contextPath: FireEyeETP.Message.verdicts.AV
+          description: pass/fail verdict for AV
+        - contextPath: FireEyeETP.Message.verdicts.AT
+          description: pass/fail verdict for AT
+        - contextPath: FireEyeETP.Message.verdicts.PV
+          description: pass/fail verdict for PV
+        - contextPath: FireEyeETP.Message.id
+          description: Message ID.
+      description: Search for messages that include specified message attributes that
+        are accessible in he ETP portal.
+    - name: fireeye-etp-get-message
+      arguments:
+        - name: message_id
+          required: true
+          description: The message ID.
+      outputs:
+        - contextPath: FireEyeETP.Message.acceptedDateTime
+          description: Message accepted date.
+        - contextPath: FireEyeETP.Message.countryCode
+          description: Sender country code.
+        - contextPath: FireEyeETP.Message.domain
+          description: Domain.
+        - contextPath: FireEyeETP.Message.emailSize
+          description: Email size in kb.
+        - contextPath: FireEyeETP.Message.lastModifiedDateTime
+          description: Message last modified date.
+        - contextPath: FireEyeETP.Message.recipientHeader
+          description: List of message recipients header (includes the display name of
+            the user).
+        - contextPath: FireEyeETP.Message.recipients
+          description: List of message recipients.
+        - contextPath: FireEyeETP.Message.senderHeader
+          description: Message sender header (includes the display name of the user).
+        - contextPath: FireEyeETP.Message.sender
+          description: Message sender address.
+        - contextPath: FireEyeETP.Message.senderSMTP
+          description: Message sender SMTP.
+        - contextPath: FireEyeETP.Message.senderIP
+          description: Message sender IP.
+        - contextPath: FireEyeETP.Message.status
+          description: Message status.
+        - contextPath: FireEyeETP.Message.subject
+          description: Message subject
+        - contextPath: FireEyeETP.Message.verdicts.AS
+          description: pass/fail verdict for AS.
+        - contextPath: FireEyeETP.Message.verdicts.AV
+          description: pass/fail verdict for AV
+        - contextPath: FireEyeETP.Message.verdicts.AT
+          description: pass/fail verdict for AT
+        - contextPath: FireEyeETP.Message.verdicts.PV
+          description: pass/fail verdict for PV
+        - contextPath: FireEyeETP.Message.id
+          description: Message ID.
+      description: Get the data of a specific message.
+    - name: fireeye-etp-get-alerts
+      arguments:
+        - name: legacy_id
+          description: Alert ID as shown in ETP Web Portal.
+        - name: from_last_modified_on
+          description: Datetime in yyy-mm-ddThh:mm:ss.fff format. Default last 90 days.
+        - name: etp_message_id
+          description: Email message id.
+        - name: size
+          description: Number of alerts intended in response. Default 20. Valid range
+            1-100 .
+      outputs:
+        - contextPath: FireEyeETP.Alerts.meta.read
+          description: Email read flag.
+        - contextPath: FireEyeETP.Alerts.meta.last_modified_on
+          description: Last modified timestamp.
+        - contextPath: FireEyeETP.Alerts.meta.legacy_id
+          description: 'Alert ID as shown in ETP Web Portal '
+        - contextPath: FireEyeETP.Alerts.alert.product
+          description: Product alerted
+        - contextPath: FireEyeETP.Alerts.alert.timestamp
+          description: Alert timestamp
+        - contextPath: FireEyeETP.Alerts.alert.malware_md5
+          description: md5 of file attached
+        - contextPath: FireEyeETP.Alerts.email.status
+          description: The email status.
+        - contextPath: FireEyeETP.Alerts.email.source_ip
+          description: Email source IP.
+        - contextPath: FireEyeETP.Alerts.email.smtp.rcpt_to
+          description: Recipient SMTP.
+        - contextPath: FireEyeETP.Alerts.email.smtp.mail_from
+          description: Sender SMTP.
+        - contextPath: FireEyeETP.Alerts.email.etp_message_id
+          description: The message ID.
+        - contextPath: FireEyeETP.Alerts.email.headers.cc
+          description: Email 'cc' recipients.
+        - contextPath: FireEyeETP.Alerts.email.headers.to
+          description: Email recipients.
+        - contextPath: FireEyeETP.Alerts.email.headers.from
+          description: Email sender.
+        - contextPath: FireEyeETP.Alerts.email.headers.subject
+          description: Email subject.
+        - contextPath: FireEyeETP.Alerts.email.attachment
+          description: File name or URL pointing to file.
+        - contextPath: FireEyeETP.Alerts.email.timestamp.accepted
+          description: Email accepted time.
+        - contextPath: FireEyeETP.Alerts.id
+          description: The alert ID.
+      description: Get summary format information about the alerts.
+    - name: fireeye-etp-get-alert
+      arguments:
+        - name: alert_id
+          required: true
+          description: The alert ID.
+      outputs:
+        - contextPath: FireEyeETP.Alerts.meta.read
+          description: Email read flag.
+        - contextPath: FireEyeETP.Alerts.meta.last_modified_on
+          description: Last modified timestamp.
+        - contextPath: FireEyeETP.Alerts.meta.legacy_id
+          description: 'Alert ID as shown in ETP Web Portal '
+        - contextPath: FireEyeETP.Alerts.meta.acknowledged
+          description: Acknowledged
+        - contextPath: FireEyeETP.Alerts.alert.product
+          description: Product generate the alert.
+        - contextPath: FireEyeETP.Alerts.alert.alert_type
+          description: Alert type code.
+        - contextPath: FireEyeETP.Alerts.alert.severity
+          description: Severity code.
+        - contextPath: FireEyeETP.Alerts.alert.explanation.analysis
+          description: Analysis
+        - contextPath: FireEyeETP.Alerts.alert.explanation.anomaly
+          description: Anomaly
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.domain
+          description: Malware domain
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.downloaded_at
+          description: Malware downloaded at timestamp
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.executed_at
+          description: Malware executed at timestamp
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.name
+          description: Malware name
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.sid
+          description: Malware sid
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.stype
+          description: Malware type
+        - contextPath: FireEyeETP.Alerts.alert.explanation.malware_detected.malware.submitted_at
+          description: Malware submitted at
+        - contextPath: FireEyeETP.Alerts.alert.explanation.protocol
+          description: Protocol
+        - contextPath: FireEyeETP.Alerts.alert.explanation.timestamp
+          description: Explanation timestamp
+        - contextPath: FireEyeETP.Alerts.alert.timestamp
+          description: Alert timestamp.
+        - contextPath: FireEyeETP.Alerts.alert.action
+          description: Alert acrion
+        - contextPath: FireEyeETP.Alerts.alert.name
+          description: Alert name.
+        - contextPath: FireEyeETP.Alerts.email.status
+          description: The email status.
+        - contextPath: FireEyeETP.Alerts.email.source_ip
+          description: Email source IP.
+        - contextPath: FireEyeETP.Alerts.email.smtp.rcpt_to
+          description: Recipient SMTP.
+        - contextPath: FireEyeETP.Alerts.email.smtp.mail_from
+          description: Sender SMTP.
+        - contextPath: FireEyeETP.Alerts.email.etp_message_id
+          description: FE ETP unique message ID.
+        - contextPath: FireEyeETP.Alerts.email.headers.cc
+          description: Email cc recipients.
+        - contextPath: FireEyeETP.Alerts.email.headers.to
+          description: Email recipients.
+        - contextPath: FireEyeETP.Alerts.email.headers.from
+          description: 'Email sender '
+        - contextPath: FireEyeETP.Alerts.email.headers.subject
+          description: Email subject
+        - contextPath: FireEyeETP.Alerts.email.attachment
+          description: File name or URL pointing to file
+        - contextPath: FireEyeETP.Alerts.email.timestamp.accepted
+          description: Email eccepted time
+        - contextPath: FireEyeETP.Alerts.id
+          description: The alert unique ID
+      description: Detailed information from any particular alert. Alerts more than
+        90 days old are not available.
+  isfetch: true
+  runonce: false
+tests:
+  - No Test
+

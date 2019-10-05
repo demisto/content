@@ -19,6 +19,7 @@ tasks:
       name: ''
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '39'
@@ -27,7 +28,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '2':
     id: '2'
     taskid: c4e87e26-a8fc-473a-8f84-e63335a552e8
@@ -140,6 +140,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '26'
@@ -148,7 +149,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '12':
     id: '12'
     taskid: 1a99d7e1-2c84-4d57-80be-0ec42482d952
@@ -367,6 +367,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '12'
@@ -375,7 +376,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '22':
     id: '22'
     taskid: d24700ff-dc15-4f52-8faa-ab74f7d65ae3
@@ -448,6 +448,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '42'
@@ -456,7 +457,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '28':
     id: '28'
     taskid: 2f89f21c-0088-460a-81b2-b0c3f021b89c
@@ -488,12 +488,12 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     separatecontext: false
     view: "{\n  \"position\": {\n    \"x\": 685,\n    \"y\": 3465\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '30':
     id: '30'
     taskid: 50789baf-1476-467a-8386-0be463a4a460
@@ -505,6 +505,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '17'
@@ -513,7 +514,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '31':
     id: '31'
     taskid: 7d784d78-4fc1-4465-8a32-4c13aff74e60
@@ -525,6 +525,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '7'
@@ -533,7 +534,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    description: ''
   '33':
     id: '33'
     taskid: 6f2e21d2-2a93-433e-81f5-3c9abd359e95
@@ -719,6 +719,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '11'
@@ -730,7 +731,6 @@ tasks:
     - fieldname: detectionsla
       action: start
     ignoreworker: false
-    description: ''
   '40':
     id: '40'
     taskid: 83e23120-b009-4565-8ab7-880b247aee16
@@ -742,6 +742,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '16'
@@ -752,7 +753,6 @@ tasks:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-    description: ''
   '41':
     id: '41'
     taskid: 88612884-d640-4dd1-85f4-0daa684ecf99
@@ -764,6 +764,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '30'
@@ -774,7 +775,6 @@ tasks:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
-    description: ''
   '42':
     id: '42'
     taskid: b7d4e2cb-4d75-4c0d-8d87-732af590173e
@@ -786,6 +786,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '34'
@@ -798,7 +799,6 @@ tasks:
     - fieldname: remediationsla
       action: start
     ignoreworker: false
-    description: ''
   '43':
     id: '43'
     taskid: f863f789-c46a-44e2-8d8b-02174df5010b
@@ -810,6 +810,7 @@ tasks:
       type: title
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '8'
@@ -820,7 +821,6 @@ tasks:
     - fieldname: remediationsla
       action: stop
     ignoreworker: false
-    description: ''
 system: true
 view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
   \     \"height\": 3660,\n      \"width\": 1670,\n      \"x\": 40,\n      \"y\":\

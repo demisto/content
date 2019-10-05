@@ -2,7 +2,8 @@ commonfields:
   id: Cylance Protect
   version: -1
 name: Cylance Protect
-display: Cylance Protect
+deprecated: true
+display: Cylance Protect (Deprecated)
 category: Endpoint
 system: true
 fromversion: 2.0.1
@@ -449,6 +450,7 @@ script:
   type: javascript
   commands:
   - name: cylance-protect-get-list
+    deprecated: true
     arguments:
     - name: list_type
       required: true
@@ -491,6 +493,7 @@ script:
     - contextPath: Cylance.List.Classification
       description: classification
   - name: cylance-protect-get-devices
+    deprecated: true
     arguments:
     - name: page_size
       description: The page size
@@ -520,6 +523,7 @@ script:
     - contextPath: Endpoint.DNSName
       description: Endpoint DNS name
   - name: cylance-protect-get-threats
+    deprecated: true
     arguments:
     - name: page_size
       description: The page size
@@ -535,6 +539,7 @@ script:
       description: The headers columns to show by order
     description: Gets information about Cylance protect threats
   - name: cylance-protect-download-threat
+    deprecated: true
     arguments:
     - name: sha256
       required: true
@@ -567,6 +572,7 @@ script:
     - contextPath: Cylance.Threat.Running
       description: Threat Running
   - name: cylance-protect-get-threat-details
+    deprecated: true
     arguments:
     - name: sha256
       required: true
@@ -576,6 +582,7 @@ script:
       description: The headers columns to show by order
     description: Get details about a specific threat according to it's sha256
   - name: cylance-protect-device-delete
+    deprecated: true
     arguments:
     - name: serial_number
       required: true
@@ -583,6 +590,7 @@ script:
       description: The device serial number
     description: Removes a device from Cylance protect
   - name: cylance-protect-get-device-threats
+    deprecated: true
     arguments:
     - name: serial_number
       required: true
@@ -653,6 +661,7 @@ script:
     - contextPath: Cylance.Threat.Md5
       description: Threat Md5
   - name: cylance-protect-update-device-threats
+    deprecated: true
     arguments:
     - name: serial_number
       required: true
@@ -672,12 +681,14 @@ script:
       description: The headers columns to show by order
     description: Updates threats of a device
   - name: cylance-protect-delete-hash-from-lists
+    deprecated: true
     arguments:
     - name: sha256
       required: true
       description: A list or single value of hash/es
     description: Delete hashes from lists
   - name: cylance-protect-update-hash-at-lists
+    deprecated: true
     arguments:
     - name: list_type
       required: true
@@ -707,6 +718,7 @@ script:
       description: The reason why the file is in the list (65 chars limited)
     description: Update hash in the lists
   - name: cylance-protect-upload-threat
+    deprecated: true
     arguments:
     - name: sha256
       required: true
@@ -715,6 +727,7 @@ script:
     description: Allows to create an Upload request for a set of hashes that will
       be executed by endpoints eventually (not synced)
   - name: cylance-protect-get-threated-devices
+    deprecated: true
     arguments:
     - name: sha256
       required: true
@@ -788,6 +801,7 @@ script:
     - contextPath: Endpoint.CylanceThreat.Zones
       description: Endpoint CylanceThreat Zones
   - name: cylance-protect-get-zones
+    deprecated: true
     arguments:
     - name: headers
       description: The headers columns to show by order
@@ -798,6 +812,7 @@ script:
     - contextPath: Cylance.Zone.Name
       description: Zone Name
   - name: cylance-protect-create-zone
+    deprecated: true
     arguments:
     - name: zone_name
       required: true
@@ -828,6 +843,7 @@ script:
     - contextPath: ThreatCount
       description: Zone Threat Count
   - name: cylance-protect-update-zone
+    deprecated: true
     arguments:
     - name: zone_name
       required: true
@@ -855,6 +871,7 @@ script:
     - contextPath: Cylance.Zone.Name
       description: Zone Name
   - name: cylance-protect-get-policies
+    deprecated: true
     arguments: []
     description: Get all policies
     outputs:
@@ -863,6 +880,7 @@ script:
     - contextPath: Cylance.Policy.Name
       description: Policy Name
   - name: cylance-protect-get-policy-details
+    deprecated: true
     arguments:
     - name: policy_id
       description: The Policy ID. This information supersedes the Policy Name, if

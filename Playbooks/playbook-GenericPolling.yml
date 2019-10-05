@@ -2,8 +2,8 @@ id: GenericPolling
 version: -1
 name: GenericPolling
 description: |-
-  Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-  This playbook implements polling by continually running the command in Step #2 until the operation completes.
+  Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+  This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
   The remote action should have the following structure:
 
   1. Initiate the operation.
@@ -88,7 +88,7 @@ tasks:
       id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
       version: -1
       name: Waiting for polling to complete (Automated Task)
-      description: This task will complete automatically once the polling is done
+      description: This task will complete automatically when polling is complete.
       tags:
       - polling
       type: condition
@@ -217,30 +217,30 @@ inputs:
   value:
     simple: ids
   required: true
-  description: Name of the argument of the polling command
+  description: Argument name of the polling command.
 - key: Interval
   value:
     simple: "1"
   required: true
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Frequency that the polling command will run (minutes).
 - key: Timeout
   value:
     simple: "10"
   required: true
-  description: How much time to poll before declaring a timeout and resuming the playbook
-    (minutes)
+  description: Amount of time to poll before declaring a timeout and resuming the playbook
+    (in minutes).
 - key: dt
   value: {}
   required: true
-  description: DT filter for polling IDs. Polling will stop when no results are returned.
+  description: "DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!=='Success').SHA256."
 - key: AdditionalPollingCommandArgNames
   value: {}
   required: false
-  description: Names of additional arguments for the polling command (e.g. arg1,arg2,...)
+  description: "Names of additional arguments for the polling command, for example: (arg1,arg2,...)."
 - key: AdditionalPollingCommandArgValues
   value: {}
   required: false
-  description: Values of the additional arguments for the polling command (e.g. value1,value2,...)
+  description: "Values of the additional arguments for the polling command, for example: (value1,value2,...)."
 outputs: []
 tests:
 - No test

@@ -278,4 +278,3 @@ script:
   type: python
 tests:
 - No tests
-

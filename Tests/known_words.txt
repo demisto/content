@@ -1,0 +1,6 @@
+Phishing
+remediate
+playbook
+firewalls
+IOCs
+Emails

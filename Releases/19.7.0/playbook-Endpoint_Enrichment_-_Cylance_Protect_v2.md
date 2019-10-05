@@ -1,0 +1,1 @@
+Fixed a bug where the playbook would fail if Cylance Protect v2 was not enabled.

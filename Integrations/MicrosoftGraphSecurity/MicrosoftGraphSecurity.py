@@ -4,6 +4,8 @@ from CommonServerUserPython import *
 import requests
 from datetime import datetime, timedelta
 from typing import Dict, Any
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -15,10 +17,19 @@ if not demisto.params()['proxy']:
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params()['host'][:-1] if demisto.params()['host'].endswith('/') else demisto.params()['host']
+PARAMS = demisto.params()
+SERVER = PARAMS['host'][:-1] if PARAMS['host'].endswith('/') else PARAMS['host']
 BASE_URL = SERVER + '/v1.0/'
-TENANT = demisto.params()['tenant']
-USE_SSL = not demisto.params().get('unsecure', False)
+TENANT = PARAMS['tenant_id']
+AUTH_AND_TOKEN_URL = PARAMS['auth_id'].split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = PARAMS.get('enc_key')
+USE_SSL = not PARAMS.get('insecure', False)
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+APP_NAME = 'ms-graph-security'
 
 ''' HELPER FUNCTIONS '''
 
@@ -32,6 +43,105 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
+def get_encrypted(content: str, key: str) -> str:
+    """
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
+    """
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT, ENC_KEY)
+        }),
+        verify=USE_SSL
+    )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
+
+
 def get_timestamp(time_description):
     if time_description == 'Last24Hours':
         time_delta = 1
@@ -42,32 +152,11 @@ def get_timestamp(time_description):
     return datetime.strftime(datetime.now() - timedelta(time_delta), '%Y-%m-%d')
 
 
-def get_token():
-    """
-    Check if we have a valid token and if not get one
-    """
-    ctx = demisto.getIntegrationContext()
-    if ctx.get('token') and ctx.get('stored'):
-        if epoch_seconds() - ctx.get('stored') < 60 * 60 - 30:
-            return ctx.get('token')
-    r = requests.get('https://demistobot.demisto.com/mstoken', params={'tenant': TENANT})
-    data = r.json()
-    if r.status_code != requests.codes.ok:
-        error_object = json.loads(data.get('detail'))
-        error_details = error_object.get('error_description')
-        if error_details:
-            return_error(error_details)
-        else:
-            return_error(error_object)
-    demisto.setIntegrationContext({'token': data.get('token'), 'stored': epoch_seconds()})
-    return data.get('token')
-
-
 def http_request(method, url_suffix, json=None, params=None):
     """
     Generic request to the graph
     """
-    token = get_token()
+    token = get_access_token()
     r = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -267,7 +356,7 @@ def get_alert_details_command(args):
             network_connections_hr = []
             for connection in network_connections:
                 connection_hr = {}
-                for key, value in connection.iteritems():
+                for key, value in connection.items():
                     if value or value is False:
                         connection_hr[capitalize_first_letter(key)] = value
                 network_connections_hr.append(connection_hr)
@@ -280,7 +369,7 @@ def get_alert_details_command(args):
             processes_hr = []
             for process in processes:
                 process_hr = {}
-                for key, value in process.iteritems():
+                for key, value in process.items():
                     if value or value is False:
                         process_hr[capitalize_first_letter(key)] = value
                 processes_hr.append(process_hr)
@@ -306,7 +395,7 @@ def get_alert_details_command(args):
             user_states_hr = []
             for state in user_states:
                 state_hr = {}
-                for key, value in state.iteritems():
+                for key, value in state.items():
                     if value or value is False:
                         state_hr[capitalize_first_letter(key)] = value
                 user_states_hr.append(state_hr)
@@ -344,7 +433,7 @@ def get_alert_details_command(args):
             registry_keys_hr = []
             for r_key in registry_keys:
                 r_key_hr = {}
-                for key, value in r_key.iteritems():
+                for key, value in r_key.items():
                     if value or value is False:
                         r_key_hr[capitalize_first_letter(key)] = value
                 registry_keys_hr.append(r_key_hr)
@@ -501,8 +590,29 @@ def get_user(user_id):
 
 
 def test_function():
-    http_request('GET', 'users', {'$select': 'displayName'})
-    demisto.results('ok')
+    token = get_access_token()
+    response = requests.get(
+        BASE_URL + 'users',
+        headers={
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        params={'$select': 'displayName'},
+        verify=USE_SSL
+    )
+    try:
+        data = response.json() if response.text else {}
+        if not response.ok:
+            return_error(f'API call to MS Graph Security failed. Please check authentication related parameters.'
+                         f' [{response.status_code}] - {demisto.get(data, "error.message")}')
+
+        demisto.results('ok')
+
+    except TypeError as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to MS Graph Security failed, could not parse result. '
+                     f'Please check authentication related parameters. [{response.status_code}]')
 
 
 ''' EXECUTION CODE '''
@@ -529,6 +639,4 @@ try:
         get_user_command()
 
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    return_error(str(e))

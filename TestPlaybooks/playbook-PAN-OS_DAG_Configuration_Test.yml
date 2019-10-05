@@ -1,0 +1,669 @@
+id: PAN-OS DAG Configuration Test
+version: -1
+name: PAN-OS DAG Configuration Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 05af766f-51df-4629-80f8-286ddc484399
+    type: start
+    task:
+      id: 05af766f-51df-4629-80f8-286ddc484399
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9b4a4149-bd28-4f38-8d4a-a20206e6f895
+    type: regular
+    task:
+      id: 9b4a4149-bd28-4f38-8d4a-a20206e6f895
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a0727e5f-4d07-4442-884c-f085adea27fd
+    type: regular
+    task:
+      id: a0727e5f-4d07-4442-884c-f085adea27fd
+      version: -1
+      name: Unregister IP from tag
+      description: Unregisters IP addresses from a tag
+      script: Panorama|||panorama-unregister-ip-tag
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IPs:
+        simple: ${inputs.ip}
+      tag:
+        simple: ${inputs.tag_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9936e7be-ed9e-4688-854f-b04b3eac5a47
+    type: regular
+    task:
+      id: 9936e7be-ed9e-4688-854f-b04b3eac5a47
+      version: -1
+      name: Delete address group
+      description: Deletes an address group
+      script: Panorama|||panorama-delete-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      name:
+        simple: ${inputs.address_group}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 880be585-1905-4ff7-8e08-f60c79092edc
+    type: regular
+    task:
+      id: 880be585-1905-4ff7-8e08-f60c79092edc
+      version: -1
+      name: delete 'from' rule
+      description: Deletes a policy rule
+      script: Panorama|||panorama-delete-rule
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.rule_name}-from
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ee5870e9-8336-4d9a-8847-2dedbad35253
+    type: regular
+    task:
+      id: ee5870e9-8336-4d9a-8847-2dedbad35253
+      version: -1
+      name: Get address group
+      description: Get details for the specified address group
+      script: Panorama|||panorama-get-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      name:
+        simple: ${inputs.address_group}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 017b0904-682b-4900-8b58-1775848a0c29
+    type: condition
+    task:
+      id: 017b0904-682b-4900-8b58-1775848a0c29
+      version: -1
+      name: check if address group does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: Panorama.AddressGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.address_group
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 995198fe-4e0e-4b65-8289-08038f9a2748
+    type: title
+    task:
+      id: 995198fe-4e0e-4b65-8289-08038f9a2748
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 91ca0b4b-e832-4f70-8035-baa13e70d6c3
+    type: regular
+    task:
+      id: 91ca0b4b-e832-4f70-8035-baa13e70d6c3
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: cfa9f824-2909-46f8-8d7a-89dec17f4637
+    type: regular
+    task:
+      id: cfa9f824-2909-46f8-8d7a-89dec17f4637
+      version: -1
+      name: Get address group
+      description: Get details for the specified address group
+      script: Panorama|||panorama-get-address-group
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      name:
+        simple: ${inputs.address_group}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 1b5c9327-eb9f-4037-8d4f-e8e4d95fdc4a
+    type: condition
+    task:
+      id: 1b5c9327-eb9f-4037-8d4f-e8e4d95fdc4a
+      version: -1
+      name: Check if address group exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.AddressGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.address_group
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Panorama.AddressGroups.Match
+            iscontext: true
+          right:
+            value:
+              simple: inputs.tag_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 720614d8-bab4-41d5-883c-c97845dce912
+    type: regular
+    task:
+      id: 720614d8-bab4-41d5-883c-c97845dce912
+      version: -1
+      name: Get Rules
+      description: Returns a list of predefined Security Rules.
+      script: Panorama|||panorama-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 2839025c-a5b8-4920-88df-28422727c523
+    type: condition
+    task:
+      id: 2839025c-a5b8-4920-88df-28422727c523
+      version: -1
+      name: Check the rule does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 0e2c61a9-a941-428b-89a5-14f8192bc7fe
+    type: regular
+    task:
+      id: 0e2c61a9-a941-428b-89a5-14f8192bc7fe
+      version: -1
+      name: Get Rules
+      description: Returns a list of predefined Security Rules.
+      script: Panorama|||panorama-list-rules
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: bfef2fb2-5238-434d-8a3b-a49d8296d24b
+    type: condition
+    task:
+      id: bfef2fb2-5238-434d-8a3b-a49d8296d24b
+      version: -1
+      name: Check if the rule defined
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 9918be34-bd09-421c-8487-aa204f3410d2
+    type: regular
+    task:
+      id: 9918be34-bd09-421c-8487-aa204f3410d2
+      version: -1
+      name: delete 'to' rule
+      description: Deletes a policy rule
+      script: Panorama|||panorama-delete-rule
+      type: regular
+      iscommand: true
+      brand: Panorama
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.rule_name}-to
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: ecd1cbdd-5a5b-484b-89d0-0e21ab7afaf9
+    type: playbook
+    task:
+      id: ecd1cbdd-5a5b-484b-89d0-0e21ab7afaf9
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 2ec6ee7c-b7ae-441a-878d-43039c42a704
+    type: playbook
+    task:
+      id: 2ec6ee7c-b7ae-441a-878d-43039c42a704
+      version: -1
+      name: PAN-OS DAG Configuration
+      description: "This playbook utilizes the Dynamic Address Group capability of
+        PAN-OS\nDAG allows the analyst to create a rule once with the group as the
+        source/destination and add IPs dynamically without the need to commit the
+        configuration every time.\n\nThe playbook checks if the given tag already
+        exists, and if yes then it adds the IP to the tag.\n\nIf the tag does not
+        exist, it creates a new address group with the given tag and a matching rule
+        and will commit the configuration. \n"
+      playbookName: PAN-OS DAG Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      address_group_name:
+        simple: ${inputs.address_group}
+      auto_commit:
+        simple: "Yes"
+      ip_list:
+        simple: ${inputs.ip}
+      rule_name:
+        simple: ${inputs.rule_name}
+      tag_name:
+        simple: ${inputs.tag_name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 906474c3-a8c2-4ab1-85f1-3ba09b4f61be
+    type: regular
+    task:
+      id: 906474c3-a8c2-4ab1-85f1-3ba09b4f61be
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: tag_name
+  value:
+    simple: dag_test_tag
+  required: false
+  description: ""
+- key: rule_name
+  value:
+    simple: dag_test_rule
+  required: false
+  description: ""
+- key: address_group
+  value:
+    simple: dag_test_ag
+  required: false
+  description: ""
+- key: ip
+  value:
+    simple: 9.9.9.9
+  required: false
+  description: ""
+outputs: []

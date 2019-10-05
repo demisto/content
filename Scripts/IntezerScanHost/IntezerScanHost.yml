@@ -1,0 +1,35 @@
+commonfields:
+  id: IntezerScanHost
+  version: -1
+name: IntezerScanHost
+script: ''
+type: python
+tags: []
+enabled: true
+comment: Scans the Intezer host.
+args:
+- name: host
+  required: true
+  description: Computer name.
+- name: os
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - linux
+  - osx
+  - windows
+  description: OS
+- name: intezer_api_key
+  required: true
+  secret: true
+  description: Intezer API key.
+outputs:
+- contextPath: Intezer.Analysis.ID
+  description: 'Endpoint analysis ID. '
+  type: string
+scripttarget: 0
+timeout: 900ns
+runonce: false
+runas: DBotWeakRole
+tests:
+  - no test (Impossible to mock test)

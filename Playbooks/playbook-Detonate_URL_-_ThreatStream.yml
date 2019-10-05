@@ -1,0 +1,505 @@
+id: Detonate URL - ThreatStream
+version: -1
+name: Detonate URL - ThreatStream
+fromversion: 4.5.0
+description: |-
+  Detonates one or more URLs using the Anomali ThreatStream v2 sandbox integration.
+  Returns relevant reports to the War Room and URL reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8de349d2-da6c-44b0-80fa-9ba905fae572
+    type: start
+    task:
+      id: 8de349d2-da6c-44b0-80fa-9ba905fae572
+      version: -1
+      name: ""
+      description: Start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: ebd0e978-215d-43e5-8ceb-54384a2f99ba
+    type: regular
+    task:
+      id: ebd0e978-215d-43e5-8ceb-54384a2f99ba
+      version: -1
+      name: ThreatStream Submit URL for Analysis
+      description: Submits a file or URL to the ThreatStream-hosted Sandbox for detonation.
+      script: '|||threatstream-submit-to-sandbox'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      detail:
+        simple: ${inputs.Tags}
+      premium_sandbox:
+        simple: ${inputs.PremiumSandbox}
+      report_platform:
+        simple: ${inputs.VM}
+      submission_classification:
+        simple: ${inputs.SubmissionClassification}
+      submission_type:
+        simple: url
+      submission_value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8449fa75-aa65-469c-849d-89c02cb850f4
+    type: playbook
+    task:
+      id: 8449fa75-aa65-469c-849d-89c02cb850f4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: ThreatStream
+          accessor: Analysis.ReportID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: report_id
+      PollingCommandName:
+        simple: threatstream-get-analysis-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatStream.Analysis(val.Status=='processing').ReportID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4cd6fbcd-1b55-40ed-8dfd-c54be310bccf
+    type: title
+    task:
+      id: 4cd6fbcd-1b55-40ed-8dfd-c54be310bccf
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 6788a219-1746-44bf-8dfe-6b5c0ef9f311
+    type: condition
+    task:
+      id: 6788a219-1746-44bf-8dfe-6b5c0ef9f311
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks if there is at least one URL to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
+    type: condition
+    task:
+      id: 569601dc-c5d2-430b-8fe7-df84b0d9c3a9
+      version: -1
+      name: Is Anomali ThreatStream v2 enabled?
+      description: Checks if there is an active instance of the Anomali ThreatStream v2 integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Anomali ThreatStream v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: a9f1b51f-cb92-456b-8597-ed0f6816bc9d
+    type: regular
+    task:
+      id: a9f1b51f-cb92-456b-8597-ed0f6816bc9d
+      version: -1
+      name: ThreatStream Get Report
+      description: Returns a report of the file or URL that was submitted to the sandbox.
+      script: '|||threatstream-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      report_id:
+        simple: ${ThreatStream.Analysis.ReportID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+  required: false
+  description: URL to detonate.
+- key: Interval
+  value:
+    simple: "5"
+  required: false
+  description: How often to execute polling (in minutes).
+- key: Timeout
+  value:
+    simple: "120"
+  required: false
+  description: The duration after which to stop polling and to resume the playbook
+    (in minutes).
+- key: VM
+  value: {}
+  required: false
+  description: The VM to use (string)
+- key: SubmissionClassification
+  value: {}
+  required: false
+  description: Classification of the sandbox submission.
+- key: PremiumSandbox
+  value: {}
+  required: false
+  description: Specifies if the premium sandbox should be used for detonation.
+- key: Tags
+  value: {}
+  required: false
+  description: A CSV list of tags applied to this sample.
+outputs:
+- contextPath: ANYRUN.Task.AnalysisDate
+  description: Date and time the analysis was executed.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Category
+  description: Category of a process behavior.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.Action
+  description: Actions performed by a process.
+  type: String
+- contextPath: ANYRUN.Task.Behavior.ThreatLevel
+  description: Threat score associated with a process behavior.
+  type: Number
+- contextPath: ANYRUN.Task.Behavior.ProcessUUID
+  description: Unique ID of the process whose behaviors are being profiled.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Reputation
+  description: Connection reputation.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ProcessUUID
+  description: ID of the process that created the connection.
+  type: String
+- contextPath: ANYRUN.Task.Connection.ASN
+  description: Connection autonomous system network.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Country
+  description: Connection country.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Protocol
+  description: Connection protocol.
+  type: String
+- contextPath: ANYRUN.Task.Connection.Port
+  description: Connection port number.
+  type: Number
+- contextPath: ANYRUN.Task.Connection.IP
+  description: Connection IP number.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.Reputation
+  description: Reputation of the DNS request.
+  type: String
+- contextPath: ANYRUN.Task.DnsRequest.IP
+  description: IP addresses associated with a DNS request.
+  type: Unknown
+- contextPath: ANYRUN.Task.DnsRequest.Domain
+  description: Domain resolution of a DNS request.
+  type: String
+- contextPath: ANYRUN.Task.Threat.ProcessUUID
+  description: Unique process ID from where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Msg
+  description: Threat message.
+  type: String
+- contextPath: ANYRUN.Task.Threat.Class
+  description: Class of the threat.
+  type: String
+- contextPath: ANYRUN.Task.Threat.SrcPort
+  description: Port on which the threat originated.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.DstPort
+  description: Destination port of the threat.
+  type: Number
+- contextPath: ANYRUN.Task.Threat.SrcIP
+  description: Source IP address where the threat originated.
+  type: String
+- contextPath: ANYRUN.Task.Threat.DstIP
+  description: Destination IP address of the threat.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Reputation
+  description: Reputation of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Country
+  description: HTTP request country.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProcessUUID
+  description: ID of the process making the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Body
+  description: HTTP request body parameters and details.
+  type: Unknown
+- contextPath: ANYRUN.Task.HttpRequest.HttpCode
+  description: HTTP request response code.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.Status
+  description: Status of the HTTP request.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.ProxyDetected
+  description: Whether the HTTP request was made through a proxy.
+  type: Boolean
+- contextPath: ANYRUN.Task.HttpRequest.Port
+  description: HTTP request port.
+  type: Number
+- contextPath: ANYRUN.Task.HttpRequest.IP
+  description: HTTP request IP address.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.URL
+  description: HTTP request URL.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Host
+  description: HTTP request host.
+  type: String
+- contextPath: ANYRUN.Task.HttpRequest.Method
+  description: HTTP request method type.
+  type: String
+- contextPath: ANYRUN.Task.FileInfo
+  description: Details of the submitted file.
+  type: String
+- contextPath: ANYRUN.Task.OS
+  description: OS of the sandbox in which the file was analyzed.
+  type: String
+- contextPath: ANYRUN.Task.ID
+  description: The unique ID of the task.
+  type: String
+- contextPath: ANYRUN.Task.MIME
+  description: The MIME of the file submitted for analysis.
+  type: String
+- contextPath: ANYRUN.Task.Verdict
+  description: ANY.RUN verdict for the maliciousness of the submitted file or URL.
+  type: String
+- contextPath: ANYRUN.Task.Process.FileName
+  description: File name of the process.
+  type: String
+- contextPath: ANYRUN.Task.Process.PID
+  description: Process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.PPID
+  description: Parent process identification number.
+  type: Number
+- contextPath: ANYRUN.Task.Process.ProcessUUID
+  description: Unique process ID (used by ANY.RUN).
+  type: String
+- contextPath: ANYRUN.Task.Process.CMD
+  description: Process command.
+  type: String
+- contextPath: ANYRUN.Task.Process.Path
+  description: Path of the executed command.
+  type: String
+- contextPath: ANYRUN.Task.Process.User
+  description: User who executed the command.
+  type: String
+- contextPath: ANYRUN.Task.Process.IntegrityLevel
+  description: The process integrity level.
+  type: String
+- contextPath: ANYRUN.Task.Process.ExitCode
+  description: Process exit code.
+  type: Number
+- contextPath: ANYRUN.Task.Process.MainProcess
+  description: Whether the process is the main process.
+  type: Boolean
+- contextPath: ANYRUN.Task.Process.Version.Company
+  description: Company responsible for the program executed.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Description
+  description: Description of the type of program.
+  type: String
+- contextPath: ANYRUN.Task.Process.Version.Version
+  description: Version of the program executed.
+  type: String
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+  type: String
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: Number
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: String
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+  type: String
+- contextPath: URL.Data
+  description: URL data.
+  type: String
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision.
+  type: String
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason that the vendor made the decision.
+  type: String
+- contextPath: ANYRUN.Task.Status
+  description: Task analysis status.
+  type: String
+tests:
+  - No test

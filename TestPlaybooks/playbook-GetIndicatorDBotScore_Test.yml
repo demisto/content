@@ -1,0 +1,114 @@
+id: GetIndicatorDBotScore Test
+version: -1
+name: GetIndicatorDBotScore Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 55e13214-4bb4-4462-8959-db897e1fb340
+    type: start
+    task:
+      id: 55e13214-4bb4-4462-8959-db897e1fb340
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: fe0f0294-e058-4fde-8100-040ed5d9b181
+    type: regular
+    task:
+      id: fe0f0294-e058-4fde-8100-040ed5d9b181
+      version: -1
+      name: Get Indicator DBot Score
+      description: Add into the incident's context the system internal DBot score
+        for the input indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      indicator:
+        simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 15b11383-5e38-410c-884a-faedf29b9673
+    type: regular
+    task:
+      id: 15b11383-5e38-410c-884a-faedf29b9673
+      version: -1
+      name: Create Indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      comment:
+        simple: SHA1 test hash
+      customFields: {}
+      merge: {}
+      relatedIncidents: {}
+      reputation:
+        simple: Bad
+      seenNow: {}
+      source:
+        simple: Test Indicator
+      sourceTimeStamp: {}
+      type:
+        simple: SHA1
+      value:
+        simple: e1112134b6dcc8bed54e0e34d8ac272795e73d74
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

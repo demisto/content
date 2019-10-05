@@ -1,0 +1,1 @@
+Fixing fetch incidents command by adding timeZone parameter.

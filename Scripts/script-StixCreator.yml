@@ -160,6 +160,7 @@ outputs:
 scripttarget: 0
 runonce: false
 dockerimage: demisto/stix2:1.0.0.204
+subtype: python3
 runas: DBotWeakRole
 tests:
 - StixCreator-Test

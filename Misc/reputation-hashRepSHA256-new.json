@@ -1,0 +1,14 @@
+{
+  "id": "hashRepSHA256",
+  "version": -1,
+  "regex": "\\b[a-fA-F\\d]{64}\\b",
+  "reputationCommand": "file",
+  "details": "File SHA-256",
+  "disabled": true,
+  "contextValue": "SHA256",
+  "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256)",
+  "enhancementScriptNames": [
+    "FileReputation"
+  ],
+  "fromVersion": "5.0.0"
+}

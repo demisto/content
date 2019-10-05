@@ -50,6 +50,7 @@ enabled: true
 scripttarget: 0
 runonce: false
 dockerimage: demisto/python3
+subtype: python3
 runas: DBotWeakRole
 tests:
 - No Tests

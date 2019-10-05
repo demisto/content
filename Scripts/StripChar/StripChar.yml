@@ -1,0 +1,31 @@
+args:
+- default: false
+  description: Text to trim (e.g. "~!!~www.mydomain.com~!~!~")
+  isArray: false
+  name: value
+  required: true
+  secret: false
+- default: false
+  description: Characters to stripped from the text (e.g. "!~")
+  isArray: false
+  name: chars
+  required: true
+  secret: false
+comment: |-
+  Strip set of characters from prefix and/or suffix
+  e.g. StripChar value=~!!~www.mydomain.com~!~!~  chars=!~ will return www.mydomain.com
+commonfields:
+  id: StripChars
+  version: -1
+enabled: true
+name: StripChars
+script: '-'
+system: false
+tags:
+- transformer
+- string
+timeout: '0'
+type: python
+runonce: false
+tests:
+- stripChars - Test

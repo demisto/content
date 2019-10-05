@@ -1,0 +1,420 @@
+category: Endpoint
+fromversion: 4.1.0
+commonfields:
+  id: Cortex XDR - IR
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Server URL (copy url from XDR - press ? to see more info)
+  name: url
+  required: true
+  type: 0
+- display: API Key ID
+  name: apikey_id
+  required: true
+  type: 4
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+display: Palo Alto Networks Cortex XDR - Investigation and Response
+name: Cortex XDR - IR
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Time format 2019-12-31T23:59:00.
+      isArray: false
+      name: lte_creation_time
+      required: false
+      secret: false
+    - default: false
+      description: Returned incidents that were created on or after the specified date/time, in the format 2019-12-31T23:59:00.
+      isArray: false
+      name: gte_creation_time
+      required: false
+      secret: false
+    - default: false
+      description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
+      isArray: false
+      name: lte_modification_time
+      required: false
+      secret: false
+    - default: false
+      description: Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.
+      isArray: false
+      name: gte_modification_time
+      required: false
+      secret: false
+    - default: false
+      description: An array or CSV string of incident IDs.
+      isArray: true
+      name: incident_id_list
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: since_creation_time
+      required: false
+      secret: false
+      description: Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+    - default: false
+      isArray: false
+      name: since_modification_time
+      required: false
+      secret: false
+      description: Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: sort_by_modification_time
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+      description: Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending).
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Maximum number of incidents to return per page. The default and maximum is 100.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Returns a list of incidents, which you can filter by a list of incident IDs (max 100), the time the incident was last modified, and the time the incident was created.
+      If you pass multiple filtering argument, they will be concatenated using the AND condition. The OR condition is not supported.
+    execution: false
+    name: xdr-get-incidents
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Incident.incident_id
+      description: Unique ID assigned to each returned incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the calculated severity (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.host_count
+      description: Number of hosts involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
+      description: A link to the incident view on XDR.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_pretty_name
+      description: Full name of the user assigned to the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alert_count
+      description: Total number of alerts in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.user_count
+      description: Number of users involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.severity
+      description: Calculated severity of the incident (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.status
+      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.description
+      description: Dynamic calculated description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
+      description: Comments entered by the user when the incident was resolved.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
+      description: Date and time the incident was created on XDR.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: date
+  - arguments:
+    - default: false
+      description: The ID of the incident for which to get additional data.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '1000'
+      description: Maximum number of alerts to return. Default is 1,000.
+      isArray: false
+      name: alerts_limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns additional data for the specified incident, for example, related alerts,
+      file artifacts, network artifacts, and so on.
+    execution: false
+    name: xdr-get-incident-extra-data
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.Incident.incident_id
+      description: Unique ID assigned to each returned incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_severity
+      description: Incident severity assigned by the user. This does not affect the calculated severity (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.manual_description
+      description: Incident description provided by the user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_mail
+      description: Email address of the assigned user.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.high_severity_alert_count
+      description: Number of alerts with the severity HIGH.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.host_count
+      description: Number of hosts involved in the incident
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.xdr_url
+      description: A link to the incident view on XDR.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.assigned_user_pretty_name
+      description: Full name of the user assigned to the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alert_count
+      description: Total number of alerts in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.med_severity_alert_count
+      description: Number of alerts with the severity MEDIUM.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.user_count
+      description: Number of users involved in the incident.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.severity
+      description: Calculated severity of the incident (LOW, MEDIUM, HIGH).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
+      description: Number of alerts with the severity LOW.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.status
+      description: Current status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED,
+        RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.description
+      description: Dynamic calculated description of the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.resolve_comment
+      description: Comments entered by the user when the incident was resolved.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.notes
+      description: Comments entered by the user regarding the incident.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.creation_time
+      description: Date and time the incident was created on XDR.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.detection_time
+      description: Date and time that the first alert occurred in the incident.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.modification_time
+      description: Date and time that the incident was last modified.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.category
+      description: Category of the alert, for example, Spyware Detected via Anti-Spyware profile.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.action_pretty
+      description: The action that triggered the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.description
+      description: Textual description of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.severity
+      description: Severity of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_ip
+      description: Host IP involved in the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.source
+      description: Source of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.user_name
+      description: User name involved with the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.alert_id
+      description: Unique ID for each alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.host_name
+      description: Host name involved in the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.detection_timestamp
+      description: Date and time that the alert occurred.
+      type: date
+    - contextPath: PaloAltoNetworksXDR.Incident.alerts.name
+      description: Calculated name of the alert.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_port
+      description: The remote port related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.alert_count
+      description: Number of alerts related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+      description: The remote IP related to the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.is_manual
+      description: Whether the artifact was created by the user (manually).
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+      description: The domain related to the artifact.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.network_artifacts.type
+      description: The artifact type, for example, IP.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status
+      description: Digital signature status of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_process
+      description: Whether the file artifact is related to a process execution.
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_name
+      description: Name of the file.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict
+      description: The file verdict, calculated by Wildfire.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.alert_count
+      description: Number of alerts related to the artifact.
+      type: number
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious
+      description: Whether the artifact is malicious, decided by the Wildfire verdict.
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.is_manual
+      description: Whether the artifact was created by the user (manually).
+      type: boolean
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.type
+      description: The artifact type, for example, hash.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+      description: SHA-256 hash of the file
+      type: String
+  - arguments:
+    - default: false
+      description: XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity to assign to the incident (LOW, MEDIUM, or HIGH).
+      isArray: false
+      name: manual_severity
+      predefined:
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: false
+      secret: false
+    - default: false
+      description: Email address of the user to assigned to the incident.
+      isArray: false
+      name: assigned_user_mail
+      required: false
+      secret: false
+    - default: false
+      description: Full name of the user assigned to the incident.
+      isArray: false
+      name: assigned_user_pretty_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the incident (NEW, UNDER_INVESTIGATION, RESOLVED_THREAT_HANDLED, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_OTHER).
+      isArray: false
+      name: status
+      predefined:
+      - NEW
+      - UNDER_INVESTIGATION
+      - RESOLVED_THREAT_HANDLED
+      - RESOLVED_KNOWN_ISSUE
+      - RESOLVED_DUPLICATE
+      - RESOLVED_FALSE_POSITIVE
+      - RESOLVED_OTHER
+      required: false
+      secret: false
+    - default: false
+      description: Comment explaining why the incident was resolved. This should be set when the incident is resolved.
+      isArray: false
+      name: resolve_comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, will remove all assigned users from the incident.
+      isArray: false
+      name: unassign_user
+      predefined:
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: |-
+      Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in assignee email argument.
+    execution: false
+    name: xdr-update-incident
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
