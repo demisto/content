@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.0] - 2019-10-03
   - Fixed an issue with the ***sentinelone-disconnect-agent*** command.
   - Fixed human-readable output in the ***sentinelone-get-threat*** command in cases where the content_hash does not exist.
 
