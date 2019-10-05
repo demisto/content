@@ -165,11 +165,6 @@
         },
         {
             "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned test",
-            "nightly": true
-        },
-        {
-            "integrations": "Have I Been Pwned? V2",
             "playbookID": "Pwned v2 test"
         },
         {
@@ -751,7 +746,7 @@
             "integrations": "McAfee ESM-v10",
             "instance_names": "v11.1.3",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500
+            "timeout": 720
         },
         {
             "integrations": "GoogleSafeBrowsing",
@@ -1876,7 +1871,6 @@
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
         "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
@@ -2015,6 +2009,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
@@ -2055,6 +2050,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Rasterize": "No API calls "
     }
 }
