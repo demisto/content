@@ -8,7 +8,7 @@ description: Use the Quinc integration to protect against and provide additional
   visibility into phishing and other malicious email attacks.
 configuration:
 - display: Server URL (FQDN or IP address in X.X.X.X format)
-  name: ServerName
+  name: server_name
   defaultvalue: server_url
   type: 0
   required: true
@@ -56,7 +56,7 @@ script:
       required: true
       description: ID of case
       defaultValue: "1"
-    - name: targetIP
+    - name: target_ip
       required: true
       description: IP address of agent
       defaultValue: locallhost
@@ -71,7 +71,7 @@ script:
       required: true
       description: ID of case
       defaultValue: "1"
-    - name: targetIP
+    - name: target_ip
       required: true
       description: IP address of agent
       defaultValue: locallhost

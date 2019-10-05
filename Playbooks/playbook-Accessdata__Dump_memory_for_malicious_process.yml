@@ -49,8 +49,8 @@ tasks:
     scriptarguments:
       caseid:
         simple: ${inputs.caseid}
-      targetIP:
-        simple: ${inputs.targetIP}
+      target_ip:
+        simple: ${inputs.target_ip}
     separatecontext: false
     view: |-
       {
@@ -266,8 +266,8 @@ tasks:
     scriptarguments:
       caseid:
         simple: ${inputs.caseid}
-      targetIP:
-        simple: ${inputs.targetIP}
+      target_ip:
+        simple: ${inputs.target_ip}
     separatecontext: false
     view: |-
       {
@@ -329,7 +329,7 @@ inputs:
     simple: "1"
   required: true
   description: ""
-- key: targetIP
+- key: target_ip
   value:
     simple: X.X.X.X
   required: true

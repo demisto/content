@@ -190,7 +190,7 @@ class Client:
 
         url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/volatile'
         data = {
-            'ips': {'targets': [args['targetIP']]},
+            'ips': {'targets': [args['target_ip']]},
             'Volatile': {
                 'Operation': 12,
                 'IncludeProcessTree': True,
@@ -220,7 +220,7 @@ class Client:
         url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + \
             '/memoryacquistion'
         data = {
-            'ips': {'targets': [args['targetIP']]},
+            'ips': {'targets': [args['target_ip']]},
             'MemoryAcquistion': {'Operation': 11}
         }
         res = self.http_request('POST', url, json.dumps(data))
@@ -275,7 +275,7 @@ def main():
 
     use_ssl = not demisto.params().get('Insecure', True)
     url = demisto.params().get('Scheme', 'http') + '://' + \
-        demisto.params().get('ServerName') + ':4443/'
+        demisto.params().get('server_name') + ':4443/'
     token = demisto.params()['Token']
 
     LOG('Command being called is %s' % (demisto.command()))
