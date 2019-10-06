@@ -78,7 +78,7 @@ def update_replace_copy_dev(playbook):
 
 
 def update_playbook(source_path, destination_path):
-    print "Starting..."
+    print("Starting...")
 
     with open(source_path) as f:
         playbook = yaml.load(f, Loader=yamlordereddictloader.SafeLoader)
@@ -101,6 +101,7 @@ def update_playbook(source_path, destination_path):
 
     # Configure safe dumper (multiline for strings)
     yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str
+
     def repr_str(dumper, data):
         if '\n' in data:
             return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')
@@ -114,12 +115,12 @@ def update_playbook(source_path, destination_path):
             Dumper=yamlordereddictloader.SafeDumper,
             default_flow_style=False)
 
-    print "Finished - new yml saved at {}".format(destination_path)
+    print("Finished - new yml saved at {}".format(destination_path))
 
 
 def main(argv):
     if len(argv) < 1:
-        print "Please provide <source playbook path>, <optional - destination playbook path>"
+        print("Please provide <source playbook path>, <optional - destination playbook path>")
         sys.exit(1)
 
     source_path = argv[0]
