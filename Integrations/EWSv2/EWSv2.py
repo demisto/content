@@ -1879,6 +1879,9 @@ def get_item_as_eml(item_id, target_mailbox=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
 
+    if not isinstance(item, Message):
+        return_error(item)
+
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
