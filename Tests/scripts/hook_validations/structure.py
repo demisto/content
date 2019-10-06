@@ -267,13 +267,13 @@ class StructureValidator(object):
             '.yml': yaml.safe_load,
             '.json': json.load,
         }
-        file_path = self.file_path
-        file_extension = os.path.splitext(file_path)[1]
+
+        file_extension = os.path.splitext(self.file_path)[1]
         if file_extension not in file_type_suffix_to_loading_func:
             print_error("An unknown error has occurred. Please retry.")
 
         load_function = file_type_suffix_to_loading_func[file_extension]
-        with open(file_path, 'r') as file_obj:
+        with open(self.file_path, 'r') as file_obj:
             loaded_file_data = load_function(file_obj)
             return loaded_file_data
 
