@@ -118,7 +118,7 @@ def test_integration_file_with_invalid_id():
 
 def test_playbook_file_with_valid_id():
     validator = StructureValidator(file_path="./Tests/setup/playbook-valid-id-test.yml")
-    assert not validator.is_file_id_without_slashes(), \
+    assert validator.is_file_id_without_slashes(), \
         "Didn't find a slash in the ID even though it contains a slash."
 
 
