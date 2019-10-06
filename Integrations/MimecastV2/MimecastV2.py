@@ -1833,6 +1833,76 @@ def create_mimecast_incident_api_response_to_markdown(api_response):
     return md
 
 
+def get_mimecast_incident():
+    api_response = create_get_mimecast_incident_request()
+
+    markdown_output = get_mimecast_incident_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_get_mimecast_incident_request():
+    api_endpoint = '/api/ttp/remediation/get-incident'
+    incident_id = demisto.args().get('incident_id').encode('utf-8')
+
+    data = [{
+        'id': incident_id
+    }]
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def get_mimecast_incident_api_response_to_markdown(api_response):
+    incident_code = api_response['data'][0]['code']
+    incident_type = api_response['data'][0]['type']
+    incident_reason = api_response['data'][0]['reason']
+    incident_identified_messages_amount = api_response['data'][0]['Identified']
+    incident_successful_messages_amount = api_response['data'][0]['Successful']
+    incident_failed_messages_amount = api_response['data'][0]['Failed']
+    incident_restored_messages_amount = api_response['data'][0]['Restored']
+    incident_id = api_response['data'][0]['id']
+
+    md = '###Incident ' + incident_id + ' has been found###\n'
+    md += 'Type: ' + incident_type
+    md += '\nReason: ' + incident_reason
+    md += '\nThe number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+    md += '\nThe number successfully remediated messages: ' + incident_successful_messages_amount
+    md += '\nThe number of messages that failed to remediate: ' + incident_failed_messages_amount
+    md += '\nThe number of messages that were restored from the incident: ' + incident_restored_messages_amount
+
+    messages_table_list = list()
+    for message in api_response['data'][0]['searchCriteria']:
+        message_entry = {
+            'From': message['from'],
+            'To': message['to'],
+            'Start date from the remediation incident creation': message['start'],
+            'End date from the remediation incident creation': message['end'],
+            'Message ID': message['messageId'],
+            'File hash': message['fileHash'],
+            'Code provided to restore a message': message['restoreCode'],
+            'Mimecast code used to restore a previously remediated message': message['unremediateCode']
+        }
+
+        messages_table_list.append(message_entry)
+
+    md = tableToMarkdown(md, messages_table_list,
+                         ['From', 'To', 'Start date from the remediation incident creation',
+                          'End date from the remediation incident creation', 'Message ID',
+                          'File hash', 'Code provided to restore a message',
+                          'Mimecast code used to restore a previously remediated message'])
+
+    return md
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
