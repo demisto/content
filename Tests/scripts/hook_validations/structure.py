@@ -81,6 +81,7 @@ class StructureValidator(object):
         """
         self.is_valid_scheme()
         self.is_valid_version()
+        self.is_file_id_without_slashes()
 
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
@@ -288,7 +289,7 @@ class StructureValidator(object):
             file_id = file_commonfields.get('id')
         return file_id
 
-    def does_id_contain_slashes(self):
+    def is_file_id_without_slashes(self):
         """Check if the ID of the file contains any slashes ('/').
 
         Returns:

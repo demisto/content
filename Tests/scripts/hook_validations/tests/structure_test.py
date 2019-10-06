@@ -108,7 +108,7 @@ def test_integration_file_with_valid_id():
     # copyfile("./Tests/setup/integration-valid-id-test.yml", "Integrations/integration-valid-id-test.yml")
     # validator = StructureValidator(file_path="Integrations/integration-valid-id-test.yml")
     validator = StructureValidator(file_path="./Tests/setup/integration-valid-id-test.yml")
-    assert not validator.does_id_contain_slashes(), \
+    assert validator.is_file_id_without_slashes(), \
         "Found a slash in the file's ID even though it contains no slashes.."
 
     # os.remove("Integrations/integration-valid-id-test.yml")
@@ -118,7 +118,7 @@ def test_integration_file_with_invalid_id():
     # copyfile("./Tests/setup/integration-invalid-id-test.yml", "Integrations/integration-invalid-id-test.yml")
     # validator = StructureValidator(file_path="Integrations/integration-invalid-id-test.yml")
     validator = StructureValidator(file_path="./Tests/setup/integration-invalid-id-test.yml")
-    assert validator.does_id_contain_slashes(), \
+    assert not validator.is_file_id_without_slashes(), \
         "Didn't find a slash in the ID even though it contains a slash."
 
     # os.remove("Integrations/integration-invalid-id-test.yml")
