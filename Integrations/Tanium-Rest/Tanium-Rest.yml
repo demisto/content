@@ -1349,12 +1349,13 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Gets all groups.
     execution: false
     name: tn-list-groups
     outputs:
     - contextPath: Tanium.Group.ID
       description: The unique ID of the group object.
-      type: Unknown
+      type: Number
     - contextPath: Tanium.Group.Name
       description: The name of the group.
       type: String
@@ -1369,11 +1370,13 @@ script:
       type: Boolean
   - arguments:
     - default: false
+      description: The group ID.
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
+    description: Delete a group object.
     execution: false
     name: tn-delete-group
   dockerimage: demisto/python3:3.7.4.977
