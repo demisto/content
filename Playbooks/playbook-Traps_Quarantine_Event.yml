@@ -189,3 +189,5 @@ inputs:
   required: false
   description: Event ID
 outputs: []
+tests:
+  - No tests - Cannot test this as we have no reversble cpmmand
