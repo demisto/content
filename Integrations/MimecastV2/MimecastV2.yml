@@ -32,8 +32,8 @@ configuration:
   name: secretKey
   required: false
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8

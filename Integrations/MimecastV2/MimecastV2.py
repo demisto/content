@@ -1479,6 +1479,285 @@ def download_attachment_request(attachment_id):
     return response.content
 
 
+def get_groups():
+    api_response = create_get_groups_request()
+
+    markdown_output = groups_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_get_groups_request():
+    api_endpoint = '/api/directory/find-groups'
+    query_string = demisto.args().get('query_string').encode('utf-8')
+    query_source = demisto.args().get('query_source').encode('utf-8')
+    pagination = demisto.args().get('pagination')
+
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
+
+    if pagination:
+        meta['pagination'] = {
+            'pageSize': int(pagination)
+        }
+
+    if query_string:
+        data['query'] = query_string
+    if query_source:
+        data['source'] = query_source
+
+    payload = {
+        'meta': meta,
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def groups_api_response_to_markdown(api_response):
+    num_groups_found = api_response['pagination']['pageSize']
+    query_string = api_response['data']['query']
+    query_source = api_response['data']['source']
+
+    if not num_groups_found:
+        md = '###Found 0 groups###'
+
+        if query_string:
+            md += ' query: ' + query_string
+
+        if query_source:
+            md += ' source: ' + query_source
+
+        md += '###'
+        return md
+
+    md = '###Found ' + str(num_groups_found) + ' groups:###'
+
+    if query_string:
+        md += ' query: ' + query_string
+
+    if query_source:
+        md += ' source: ' + query_source
+
+    groups_table_list = list()
+    for group in api_response['data']['folders']:
+        group_entry = {
+            'Name': group['description'],
+            'Source': group['source'],
+            'Group ID': group['id'],
+            'Number of users': group['userCount'],
+            'Parent ID': group['parentId'],
+            'Number of child groups': group['folderCount']
+        }
+
+        groups_table_list.append(group_entry)
+
+    md = tableToMarkdown(md, groups_table_list,
+                         ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'])
+
+    return md
+
+
+def get_group_members():
+    api_response = create_get_group_members_request()
+
+    markdown_output = group_members_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_get_group_members_request():
+    api_endpoint = '/api/directory/get-group-members'
+    group_id = demisto.args().get('groupID').encode('utf-8')
+    pagination = demisto.args().get('pagination')
+
+    meta = dict()  # type: Dict[str, Dict[str, int]]
+    data = dict()  # type: Dict[str, Dict[str, str]]
+
+    if pagination:
+        meta['pagination'] = {
+            'pageSize': int(pagination)
+        }
+
+    data['id'] = group_id
+
+    payload = {
+        'meta': meta,
+        'data': [data]
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def group_members_api_response_to_markdown(api_response):
+    num_users_found = api_response['pagination']['pageSize']
+    group_id = demisto.args().get('groupID').encode('utf-8')
+
+    if not num_users_found:
+        md = '###Found 0 users for group ID: ' + group_id + '###'
+        return md
+
+    md = '###Found ' + str(num_users_found) + ' users for group ID: ' + group_id + '###'
+
+    users_table_list = list()
+    for user in api_response['data']['groupMembers']:
+        user_entry = {
+            'Name': user['name'],
+            'Email address': user['emailAddress'],
+            'Domain': user['domain'],
+            'Type': user['type'],
+            'Internal user': str(user['internal'])
+        }
+
+        users_table_list.append(user_entry)
+
+    md = tableToMarkdown(md, users_table_list,
+                         ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
+
+    return md
+
+
+def add_remove_member_to_group(action_type):
+    if action_type == 'add':
+        api_endpoint = '/api/directory/add-group-member'
+    else:
+        api_endpoint = '/api/directory/remove-group-member'
+
+    api_response = create_add_remove_group_member_request(api_endpoint)
+
+    markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_add_remove_group_member_request(api_endpoint):
+    group_id = demisto.args().get('groupID').encode('utf-8')
+    email = demisto.args().get('email_address').encode('utf-8')
+    domain = demisto.args().get('domain_address').encode('utf-8')
+
+    data = [{
+        'id': group_id,
+        'emailAddress': email,
+        'domain': domain
+    }]
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def add_remove_api_response_to_markdown(api_response, action_type):
+    address_modified = api_response['data'][0]['emailAddress']
+    group_id = api_response['data'][0]['folderId']
+
+    if action_type == 'add':
+        return '###' + address_modified + ' had been added to group ID ' + group_id + '###'
+    return '###' + address_modified + ' has been removed from group ID ' + group_id + '###'
+
+
+def create_group():
+    api_response = create_group_request()
+
+    markdown_output = create_group_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_group_request():
+    api_endpoint = '/api/directory/create-group'
+    group_name = demisto.args().get('group_name').encode('utf-8')
+    parent_id = demisto.args().get('parent_id', '-1').encode('utf-8')
+
+    data = [{
+        'description': group_name,
+    }]
+
+    if parent_id != '-1'.encode('utf-8'):
+        data[0]['parentId'] = parent_id
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def create_group_api_response_to_markdown(api_response):
+    group_name = api_response['data'][0]['description']
+    group_source = api_response['data'][0]['source']
+    group_id = api_response['data'][0]['id']
+
+    md = '###' + group_name + ' has been created###\n'
+    md += 'Group source: ' + group_source
+    md += '\nGroup ID: ' + group_id
+
+    return md
+
+
+def update_group():
+    api_response = create_update_group_request()
+
+    markdown_output = update_group_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_update_group_request():
+    api_endpoint = '/api/directory/update-group'
+    group_name = demisto.args().get('group_name').encode('utf-8')
+    group_id = demisto.args().get('group_id').encode('utf-8')
+    parent_id = demisto.args().get('parent_id', ).encode('utf-8')
+
+    data = [{
+        'id': group_id
+    }]
+
+    if group_name:
+        data[0]['description'] = group_name
+
+    if parent_id:
+        data[0]['parentId'] = parent_id
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def update_group_api_response_to_markdown(api_response):
+    group_name = api_response['data'][0]['description']
+
+    return '###' + group_name + ' has been updated###\n'
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(),))
