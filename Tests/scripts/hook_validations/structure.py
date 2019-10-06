@@ -296,7 +296,8 @@ class StructureValidator(object):
         """
         loaded_file_data = self.load_data_from_file()
         file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
-        return '/' in file_id
+        if '/' in file_id:
+            self._is_valid = False
 
 
 
