@@ -116,11 +116,12 @@ def test_integration_file_with_valid_id():
 
 def test_integration_file_with_invalid_id():
     copyfile("./Tests/setup/integration-invalid-id-test.yml", "Integrations/integration-invalid-id-test.yml")
-    validator = StructureValidator(file_path="Integrations/integration-invalid-id-test.yml")
+    # validator = StructureValidator(file_path="Integrations/integration-invalid-id-test.yml")
+    validator = StructureValidator(file_path="./Tests/setup/integration-invalid-id-test.yml")
 
     assert not validator.is_file_valid(), \
         "Didn't find a problem in the file although it is not valid"
 
-    os.remove("Integrations/integration-invalid-id-test.yml")
+    # os.remove("Integrations/integration-invalid-id-test.yml")
 
 
