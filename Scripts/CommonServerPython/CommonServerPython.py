@@ -1463,7 +1463,7 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs, raw_response=None):
+def return_outputs(readable_output, outputs=None, raw_response=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1488,12 +1488,14 @@ def return_outputs(readable_output, outputs, raw_response=None):
         "Contents": raw_response,
         "EntryContext": outputs
     }
-
-    if outputs and raw_response is None:
+    # Return 'readable_output' only if needed
+    if readable_output and not outputs and not raw_response:
+        demisto.results(readable_output)
+    elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-
-    demisto.results(return_entry)
+    else:
+        demisto.results(return_entry)
 
 
 def return_error(message, error='', outputs=None):
@@ -1930,6 +1932,7 @@ class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to demisto.debug
     """
+
     def __init__(self):
         logging.Handler.__init__(self)
 
@@ -1946,6 +1949,7 @@ class DebugLogger(object):
         Wrapper to initiate logging at logging.DEBUG level.
         Is used when `debug-mode=True`.
     """
+
     def __init__(self):
         logging.raiseExceptions = False
         self.handler = None  # just incase our http_client code throws an exception. so we don't error in the __del__
@@ -2212,6 +2216,7 @@ if 'requests' in sys.modules:
         :return: No data returned
         :rtype: ``None``
         """
+
         def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None):
             self._base_url = base_url
             self._verify = verify
@@ -2268,7 +2273,7 @@ if 'requests' in sys.modules:
             :type resp_type: ``str``
             :param resp_type:
                 Determines which data format to return from the HTTP request. The default
-                is 'json'. Other options are 'text', 'content' or 'response'. Use 'response'
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
                  to return the full response object.
 
             :type ok_codes: ``tuple``
@@ -2319,6 +2324,8 @@ if 'requests' in sys.modules:
                         return res.text
                     if resp_type == 'content':
                         return res.content
+                    if resp_type == 'xml':
+                        ET.parse(res.text)
                     return res
                 except ValueError as exception:
                     raise DemistoException('Failed to parse json object from response: {}'
