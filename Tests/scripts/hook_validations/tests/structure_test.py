@@ -109,7 +109,7 @@ def test_integration_file_with_valid_id():
     validator = StructureValidator(file_path="Integrations/integration-valid-id-test.yml")
 
     assert validator.is_file_valid(), \
-        "Found "
+        "Found a problem in file even though it's valid"
 
     os.remove("Integrations/integration-valid-id-test.yml")
 
