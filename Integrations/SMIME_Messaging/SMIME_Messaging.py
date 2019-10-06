@@ -140,7 +140,7 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decrypt_email_body(client: Client, args:Dict):
+def decrypt_email_body(client: Client, args: Dict):
     """ Decrypt the message
 
     Args:

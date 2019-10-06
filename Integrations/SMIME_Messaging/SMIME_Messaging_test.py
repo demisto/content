@@ -1,4 +1,3 @@
-from M2Crypto import SMIME, BIO, X509
 from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body
 import demistomock as demisto
 
