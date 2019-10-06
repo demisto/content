@@ -81,7 +81,7 @@ def update_playbook(source_path, destination_path):
     print "Starting..."
 
     with open(source_path) as f:
-        playbook = yaml.load(f, Loader=yamlordereddictloader.Loader)
+        playbook = yaml.load(f, Loader=yamlordereddictloader.SafeLoader)
 
     playbook = update_replace_copy_dev(playbook)
 
@@ -99,11 +99,19 @@ def update_playbook(source_path, destination_path):
     if not destination_path.startswith("playbook-"):
         destination_path = "playbook-{}".format(destination_path)
 
+    # Configure safe dumper (multiline for strings)
+    yaml.SafeDumper.org_represent_str = yaml.SafeDumper.represent_str
+    def repr_str(dumper, data):
+        if '\n' in data:
+            return dumper.represent_scalar(u'tag:yaml.org,2002:str', data, style='|')
+        return dumper.org_represent_str(data)
+    yaml.add_representer(str, repr_str, Dumper=yamlordereddictloader.SafeDumper)
+
     with open(destination_path, 'w') as f:
         yaml.dump(
             playbook,
             f,
-            Dumper=yamlordereddictloader.Dumper,
+            Dumper=yamlordereddictloader.SafeDumper,
             default_flow_style=False)
 
     print "Finished - new yml saved at {}".format(destination_path)
