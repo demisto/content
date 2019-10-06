@@ -825,18 +825,11 @@ def get_group(client, data_args):
 
 def get_groups(client, data_args):
     count = int(data_args.get('count'))
-    type = data_args.get('group-type')
     groups = []
-
-    for key in group_types.keys():
-        if group_types[key] == type:
-            type = key
-            break
 
     raw_response = client.do_request('GET', 'groups')
     for group in raw_response.get('data')[:-1][:count]:
-        if group.get('type') == type:
-            groups.append(client.get_group_item(group))
+        groups.append(client.get_group_item(group))
 
     context = createContext(groups, removeNull=True)
     outputs = {'Tanium.Group(val.ID === obj.ID)': context}

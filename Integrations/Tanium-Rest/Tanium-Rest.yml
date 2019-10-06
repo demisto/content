@@ -1348,15 +1348,6 @@ script:
       name: count
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      isArray: false
-      name: group-type
-      predefined:
-      - Manual
-      - FilterBased
-      required: true
-      secret: false
     deprecated: false
     execution: false
     name: tn-list-groups
@@ -1390,6 +1381,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Tanium Rest Test
