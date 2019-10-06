@@ -1,8 +1,13 @@
 {
 	"id": "incident_criticalassets",
 	"version": -1,
-	"modified": "2019-09-19T11:17:20.236683204Z",
+	"modified": "2019-10-06T12:42:27.040292745Z",
+	"commitMessage": "",
+	"shouldPublish": false,
+	"shouldCommit": false,
+	"shouldPush": false,
 	"name": "Critical Assets",
+	"prevName": "Critical Assets",
 	"ownerOnly": false,
 	"placeholder": "",
 	"description": "A table of critical assets involved in the incident, including the name and asset type.",
@@ -17,7 +22,7 @@
 	"isReadOnly": false,
 	"selectValues": [],
 	"validationRegex": "",
-	"useAsKpi": false,
+	"useAsKpi": true,
 	"locked": false,
 	"system": false,
 	"content": true,
@@ -25,7 +30,9 @@
 	"hidden": false,
 	"associatedTypes": [
 		"Phishing",
-		"Malware"
+		"Malware",
+		"Access",
+		"Network"
 	],
 	"systemAssociatedTypes": null,
 	"associatedToAll": false,
