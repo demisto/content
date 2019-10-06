@@ -40,7 +40,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Period for initial fetch window
+- display: Timeframe for initial fetch
   name: firstFetch
   defaultvalue: Last60Minutes
   type: 15
@@ -52,7 +52,7 @@ configuration:
   - Last30Days
   - Last60Days
   - Last90Days
-- display: Maximum events to fetch per fetch
+- display: Maximum number of events to fetch per fetch
   name: maxFetch
   defaultvalue: "50"
   type: 0
