@@ -2170,19 +2170,6 @@ script:
         return incidents;
     }
 
-    function convertToAmericanTime(lastTime) {
-        // convert 18/7/2017 8:17:49 AM to 7/18/2017 8:17:49 AM
-        var dateStr = lastTime.split(' ')[0];
-        var dayStr = dateStr.split('/')[0];
-        var monthStr = dateStr.split('/')[1];
-        var yearStr = dateStr.split('/')[2];
-        var timeStr = lastTime.split(' ')[1];
-        var extStr = lastTime.split(' ')[2];
-
-        var americanTimeStr = monthStr + '/' + dayStr + '/' + yearStr + ' ' + timeStr + ' ' + extStr;
-        return americanTimeStr;
-    }
-
     function buildIncident(records, contentId, moduleId){
         var labels = [];
         var lastTime;
