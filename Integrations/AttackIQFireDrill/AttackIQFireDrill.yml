@@ -514,7 +514,7 @@ script:
       description: Is the template hidden.
       type: Boolean
   - deprecated: false
-    description: List all assets
+    description: List all assets.
     execution: false
     name: attackiq-list-assets
     outputs:
@@ -571,7 +571,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Create a new assesment
+    description: Create a new assesment.
     execution: false
     name: attackiq-create-assessment
     outputs:

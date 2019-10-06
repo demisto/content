@@ -1,9 +1,9 @@
 ## [Unreleased]
  - New commands added:
-    - attackiq-list-assessment-templates
-    - attackiq-list-assets
-    - attackiq-create-assessment
-    - attackiq-add-assets-to-assessment
+    - Command ***attackiq-list-assessment-templates***: List all available assessment templates.
+    - Command ***attackiq-list-assets***: List all assets.
+    - Command ***attackiq-create-assessment***: Create a new assessment.
+    - Command ***attackiq-add-assets-to-assessment***: Add assets or asset groups to an assessment.
 
 ## [19.10.0] - 2019-10-03
   - Changed the integtration name from "AttackIQ FireDrill" to "AttackIQ Platform"
