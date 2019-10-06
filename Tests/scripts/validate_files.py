@@ -118,7 +118,10 @@ class FilesValidator(object):
             elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
                 deleted_files.add(file_path)
             elif file_status.lower().startswith('r') and checked_type(file_path):
-                modified_files_list.add((file_data[1], file_data[2]))
+                if checked_type(file_data[2], CODE_FILES_REGEX):
+                    modified_files_list.add(file_path)
+                else:
+                    modified_files_list.add((file_data[1], file_data[2]))
             elif checked_type(file_path, [SCHEMA_REGEX]):
                 modified_files_list.add(file_path)
             elif file_status.lower() not in KNOWN_FILE_STATUSES:

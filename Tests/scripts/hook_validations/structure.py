@@ -196,8 +196,8 @@ class StructureValidator(object):
         if not change_string:
             change_string = run_command("git diff HEAD {0}".format(self.file_path))
 
-        is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
-        is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
+        is_added_from_version = re.search(r"\+([ ]+)?fromversion: .*", change_string)
+        is_added_from_version_secondary = re.search(r"\+([ ]+)?\"fromVersion\": .*", change_string)
 
         if is_added_from_version or is_added_from_version_secondary:
             print_error("You've added fromversion to an existing file in the system, this is not allowed, please undo. "
@@ -210,7 +210,7 @@ class StructureValidator(object):
     def is_release_branch():
         """Check if we are working on a release branch."""
         diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
-        if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
 
         return False
