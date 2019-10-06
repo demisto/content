@@ -1,0 +1,90 @@
+category: Authentication
+commonfields:
+  id: SMIME_Messaging
+  version: -1
+configuration:
+- display: Public Key
+  name: public_key
+  required: true
+  type: 12
+- display: Private Key
+  name: private_key
+  required: true
+  type: 14
+description: S/MIME - Secure Multipurpose Internet Mail Extensions- provides a consistent
+  way to send and receive secure MIME data.
+display: SMIME_Messaging
+name: SMIME_Messaging
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The message body to send.
+      isArray: false
+      name: message_body
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items from service.
+    execution: false
+    name: sign-email
+    outputs:
+    - contextPath: SMIME.Message
+      description: The signed message body.
+      type: String
+    - contextPath: SMIME.Headers
+      description: The s/mime signing headers.
+      type: String
+  - arguments:
+    - default: false
+      description: The message body to encrypt.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    deprecated: false
+    description: Encrypts an email message with S/MIME protocol by using a public
+      RSA certificate.
+    execution: false
+    name: encrypt-email-body
+    outputs:
+    - contextPath: SMIME.Message
+      description: The encrypted message.
+      type: String
+    - contextPath: SMIME.Headers
+      description: The encryption headers.
+      type: String
+  - arguments:
+    - default: false
+      description: The signed email with p7 ending.
+      isArray: false
+      name: signed_message
+      required: true
+      secret: false
+    deprecated: false
+    description: Verify the signature
+    execution: false
+    name: verify-sign
+  - arguments:
+    - default: false
+      description: The encrypted message with p7 extension
+      isArray: false
+      name: encrypt_message
+      required: true
+      secret: false
+    deprecated: false
+    description: Decrypt the message body.
+    execution: false
+    name: decrypt-email-body
+    outputs:
+    - contextPath: SMIME.Message
+      description: The decrypted message.
+      type: String
+  dockerimage: demisto/m2crypto:1.0.0.1850
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
