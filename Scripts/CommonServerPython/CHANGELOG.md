@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added **is_debug_mode** wrapper method for checking if debug-mode is enabled. 
 
 ## [19.10.0] - 2019-10-03
   - Added requests debugging logger when `debug-mode=true`.
