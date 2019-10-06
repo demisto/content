@@ -164,7 +164,10 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Have I Been Pwned? V2",
+            "integrations": [
+                "Have I Been Pwned? V2",
+                "ThreatQ v2"
+            ],
             "playbookID": "Pwned v2 test"
         },
         {
