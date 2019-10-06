@@ -39,7 +39,7 @@ search_flag = re.IGNORECASE if ignore_case else 0
 # fill whitelisted array with all the the values that match the regex items in listname argument
 for item in items:
     for list_item in lst:
-        if list_item and re.search(item, list_item, search_flag):
+        if list_item and re.search(list_item, item, search_flag):
             hr += item + " is in the list\n"
             whitlisted.append(item)
 
