@@ -5,7 +5,7 @@
 	"name": "Critical Assets",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "A table of critical assets involved in the incident with their name and their type.",
+	"description": "A table of critical assets involved in the incident, including the name and asset type.",
 	"cliName": "criticalassets",
 	"type": "grid",
 	"closeForm": false,

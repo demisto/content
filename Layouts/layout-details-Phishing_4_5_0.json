@@ -103,7 +103,7 @@
 				"queryType": ""
 			},
 			{
-				"description": "Critical Assets that were found at the investigation stage, to be involved in the incident.",
+				"description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
 				"fields": [
 					{
 						"fieldId": "incident_criticalassets",
