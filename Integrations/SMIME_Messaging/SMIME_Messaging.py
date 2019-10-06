@@ -75,7 +75,7 @@ def encrypt_email_body(client: Client, args: Dict):
         args: Dict
 
     """
-    message_body = args.get('message').encode('utf-8')
+    message_body = args.get('message', '').encode('utf-8')
 
     # Make a MemoryBuffer of the message.
     buf = makebuf(message_body)
@@ -119,9 +119,6 @@ def verify(client: Client, args: Dict):
 
     """
     signed_message = demisto.getFilePath(args.get('signed_message'))
-    # print(signed_message)
-    # file_ = open(signed_message['path'], 'r')
-    # file_data = file_.read()
 
     # Load the signer's cert.
     x509 = X509.load_cert(client.public_key_file)
