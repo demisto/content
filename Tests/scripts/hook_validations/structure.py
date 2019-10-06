@@ -299,5 +299,6 @@ class StructureValidator(object):
         file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
         if '/' in file_id:
             self._is_valid = False
+            print_error("File's ID contains slashes - please remove.")
             return False
         return True
