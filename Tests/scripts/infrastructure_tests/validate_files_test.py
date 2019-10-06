@@ -24,10 +24,15 @@ D       Integrations/integration-Recorded_Future.yml'''
     assert 'Integrations/integration-Recorded_Future.yml' in deleted
 
     changed_files = 'R100       Integrations/Recorded_Future_v2/Recorded_Future.py ' \
-                    'Integrations/Recorded_Future/Recorded_Future_v2.py'
+                    'Integrations/Recorded_Future/Recorded_Future.py'
+    modified, added, deleted, old_format = file_validator.get_modified_files(changed_files)
+    assert len(modified) == 1
+    assert 'Integrations/Recorded_Future/Recorded_Future.yml' in modified
+    assert len(added) == 0
+    assert len(deleted) == 0
+
+    changed_files = 'A       Integrations/Recorded_Future/some_yml.yml'
     modified, added, deleted, old_format = file_validator.get_modified_files(changed_files)
     assert len(modified) == 0
-    assert len(added) == 1
-    assert 'Integrations/Recorded_Future/Recorded_Future.yml' in added
-    assert len(deleted) == 1
-    assert 'Integrations/integration-Recorded_Future.yml' in deleted
+    assert len(added) == 0
+    assert len(deleted) == 0
