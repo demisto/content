@@ -1,5 +1,9 @@
 ## [Unreleased]
-
+ - New commands added:
+    - attackiq-list-assessment-templates
+    - attackiq-list-assets
+    - attackiq-create-assessment
+    - attackiq-add-assets-to-assessment
 
 ## [19.10.0] - 2019-10-03
   - Changed the integtration name from "AttackIQ FireDrill" to "AttackIQ Platform"
