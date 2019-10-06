@@ -630,7 +630,10 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
         if not demisto_user and not ALLOW_INCIDENTS:
             data = 'You are not allowed to create incidents.'
         else:
-            data = await translate_create(demisto_user, text)
+            try:
+                data = await translate_create(demisto_user, text)
+            except Exception as e:
+                data = 'Failed creating incidents: {}'.format(str(e))
     else:
         try:
             data = demisto.directMessage(text, user.get('name'), user.get('profile', {}).get('email'), ALLOW_INCIDENTS)
@@ -654,7 +657,7 @@ async def translate_create(demisto_user: dict, message: str) -> str:
     json_pattern = r'(?<=json=).*'
     name_pattern = r'(?<=name=).*'
     type_pattern = r'(?<=type=).*'
-    message = message.replace("\n", '').replace('`', '').replace('```', '')
+    message = message.replace("\n", '').replace('`', '')
     json_match = re.search(json_pattern, message)
     created_incident = None
     data = ''
