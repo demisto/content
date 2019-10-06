@@ -172,7 +172,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
