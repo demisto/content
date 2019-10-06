@@ -2091,7 +2091,6 @@ script:
                             var recordValues = fieldValue;
                             Object.keys(recordValues).forEach(function(key) {
                                 if (key === "Date Created") {
-                                    //log("recordValues[key] is: " + recordValues[key])
 
                                     if(params.useEuropeanTime) {
                                         lastTime = getOccurredTime(recordValues[key], 0);
@@ -2099,7 +2098,6 @@ script:
                                     } else {
                                         lastTime = recordValues[key];
                                     }
-                                    //log("Date Created 3 is: " + lastTime.toString())
                                 }
                                 if (recordValues[key] !== null && recordValues[key] !== undefined){
                                     if (Array.isArray(recordValues[key])){ // array of nested objects
@@ -2152,7 +2150,6 @@ script:
                             } else {
                                 lastTime = fieldValue;
                             }
-                            log("Date Created 2 is: " + lastTime)
                         }
                     }
                 }
@@ -2261,7 +2258,6 @@ script:
                             lastTime = fieldValue;
                         }
 
-                        log("lastTime is " + lastTime);
                     }
                 }
             }
