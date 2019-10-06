@@ -1545,7 +1545,7 @@ def groups_api_response_to_markdown(api_response):
         md += ' source: ' + query_source
 
     groups_table_list = list()
-    for group in api_response['data']['folders']:
+    for group in api_response['data'][0]['folders']:
         group_entry = {
             'Name': group['description'],
             'Source': group['source'],
@@ -1610,7 +1610,7 @@ def group_members_api_response_to_markdown(api_response):
     md = '###Found ' + str(num_users_found) + ' users for group ID: ' + group_id + '###'
 
     users_table_list = list()
-    for user in api_response['data']['groupMembers']:
+    for user in api_response['data'][0]['groupMembers']:
         user_entry = {
             'Name': user['name'],
             'Email address': user['emailAddress'],
@@ -1730,7 +1730,7 @@ def create_update_group_request():
     api_endpoint = '/api/directory/update-group'
     group_name = demisto.args().get('group_name').encode('utf-8')
     group_id = demisto.args().get('group_id').encode('utf-8')
-    parent_id = demisto.args().get('parent_id', ).encode('utf-8')
+    parent_id = demisto.args().get('parent_id').encode('utf-8')
 
     data = [{
         'id': group_id
@@ -1755,7 +1755,82 @@ def create_update_group_request():
 def update_group_api_response_to_markdown(api_response):
     group_name = api_response['data'][0]['description']
 
-    return '###' + group_name + ' has been updated###\n'
+    return '###' + group_name + ' has been updated###'
+
+
+def create_mimecast_incident():
+    api_response = create_mimecast_incident_request()
+
+    markdown_output = create_mimecast_incident_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_mimecast_incident_request():
+    api_endpoint = '/api/ttp/remediation/create'
+    reason = demisto.args().get('reason').encode('utf-8')
+    start_date = demisto.args().get('start_date').encode('utf-8')
+    end_date = demisto.args().get('end_date').encode('utf-8')
+    search_by = demisto.args().get('search_by').encode('utf-8')
+    hash_or_message_id = demisto.args().get('hash_message_id').encode('utf-8')
+
+    data = [{
+        'reason': reason,
+        'hashOrMessageId': hash_or_message_id,
+        'searchBy': search_by
+    }]
+
+    if start_date:
+        data[0]['start'] = start_date
+
+    if end_date:
+        data[0]['end'] = end_date
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def create_mimecast_incident_api_response_to_markdown(api_response):
+    incident_code = api_response['data'][0]['code']
+    incident_type = api_response['data'][0]['type']
+    incident_reason = api_response['data'][0]['reason']
+    incident_identified_messages_amount = api_response['data'][0]['Identified']
+    incident_successful_messages_amount = api_response['data'][0]['Successful']
+    incident_failed_messages_amount = api_response['data'][0]['Failed']
+    incident_restored_messages_amount = api_response['data'][0]['Restored']
+    incident_id = api_response['data'][0]['id']
+
+    md = '###Incident with code ' + incident_code + ' and id ' + incident_id + ' has been created###\n'
+    md += 'Type: ' + incident_type
+    md += '\nreason: ' + incident_reason
+    md += '\nThe number of messages identified based on the search criteria: ' + incident_identified_messages_amount
+    md += '\nThe number successfully remediated messages: ' + incident_successful_messages_amount
+    md += '\nThe number of messages that failed to remediate: ' + incident_failed_messages_amount
+    md += '\nThe number of messages that were restored from the incident: ' + incident_restored_messages_amount
+
+    messages_table_list = list()
+    for message in api_response['data'][0]['searchCriteria']:
+        message_entry = {
+            'From': message['from'],
+            'To': message['to'],
+            'Message ID': message['messageId'],
+            'Mimecast code used to restore a previously remediated message': message['unremediateCode']
+        }
+
+        messages_table_list.append(message_entry)
+
+    md = tableToMarkdown(md, messages_table_list,
+                         ['From', 'To', 'Message ID', 'Mimecast code used to restore a previously remediated message'])
+
+    return md
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
