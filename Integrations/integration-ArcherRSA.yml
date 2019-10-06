@@ -2781,7 +2781,7 @@ script:
             fieldIdToSearchOn = JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id);
             dateOperator = "GreaterThan";
             var day = 60 * 1000 * 60 * 24;
-            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 1)));
+            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
         }
 
         var rawResponse = searchSendSoapRequest(
@@ -3464,8 +3464,6 @@ script:
             return getUserId(args);
         case 'archer-reset-cache':
             return resetIntegrationCache();
-        case 'archer-fetch':
-            return fetchIncidents(args);
         case 'fetch-incidents':
             return fetchIncidents(args);
         default:
@@ -3759,8 +3757,6 @@ script:
     arguments: []
     description: Reset Archer's integration cache. Run this command if you change
       the fields of your Archer application
-  - name: archer-fetch
-    arguments: []
   isfetch: true
   runonce: false
 tests:
