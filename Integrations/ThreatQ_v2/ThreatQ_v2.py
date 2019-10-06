@@ -1177,6 +1177,7 @@ def get_file_reputation():
 command = demisto.command()
 LOG('command is {0}'.format(demisto.command()))
 try:
+    x = 0
     handle_proxy()
     if command == 'test-module':
         test_module()

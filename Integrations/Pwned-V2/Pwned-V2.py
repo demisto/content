@@ -257,6 +257,7 @@ def pwned_domain(domain, suffix):
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    x = 0
     handle_proxy()
     set_retry_end_time()
     if demisto.command() == 'test-module':
