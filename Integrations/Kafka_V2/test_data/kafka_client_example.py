@@ -1,6 +1,9 @@
 import pykafka
 from pykafka.common import OffsetType
 
+# Example demonstrating how to fetch 5 messages and then fetch another 5 from the point we left off
+# running using: python kafka_client_example.py
+
 
 def consume_messages(topic, offsets, max):
     part_offset_dict = {}
@@ -28,7 +31,7 @@ def consume_messages(topic, offsets, max):
     return part_offset_dict
 
 
-# localhost works only on mac when connecting to a
+# localhost works only on mac when connecting to a docker running kafka
 client = pykafka.KafkaClient(hosts='localhost:9092')
 print("topics: {}".format(client.topics))
 topic = client.topics['mytest-topic']
