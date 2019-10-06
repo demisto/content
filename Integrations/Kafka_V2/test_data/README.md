@@ -1,6 +1,6 @@
 ## Setting up a local instance of Kafka
 
-use https://github.com/wurstmeister/kafka-docker
+Use https://github.com/wurstmeister/kafka-docker
 
 ```
 git clone https://github.com/wurstmeister/kafka-docker .
