@@ -6,7 +6,7 @@ Use https://github.com/wurstmeister/kafka-docker
 git clone https://github.com/wurstmeister/kafka-docker .
 ```
 <!-- disable-secrets-detection-start -->
-* Edit file `docker-compose-single-broker.yml
+* Edit file `docker-compose-single-broker.yml`
 * Change KAFKA_ADVERTISED_HOST_NAME to your machine's IP. use `ifconfig | grep 'inet '` to see available ips.
 * Start a Kafka cluster:
 ```
