@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed ***panorama-check-logs-status*** to work with **GenericPolling** playbook.
 
 
 ## [19.9.1] - 2019-09-18

@@ -3433,8 +3433,7 @@ def panorama_get_traffic_logs(job_id):
     return result
 
 
-def panorama_check_traffic_logs_status_command():
-    job_id = demisto.args().get('job_id')
+def check_traffic_logs_status(job_id):
     result = panorama_get_traffic_logs(job_id)
 
     if result['response']['@status'] == 'error':
@@ -3464,6 +3463,12 @@ def panorama_check_traffic_logs_status_command():
                                          removeNull=True),
         'EntryContext': {"Panorama.TrafficLogs(val.JobID == obj.JobID)": query_traffic_status_output}
     })
+
+
+def panorama_check_traffic_logs_status_batch_command():
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        check_traffic_logs_status(job_id)
 
 
 def prettify_traffic_logs(traffic_logs):
@@ -4073,7 +4078,7 @@ def main():
             panorama_query_traffic_logs_command()
 
         elif demisto.command() == 'panorama-check-traffic-logs-status':
-            panorama_check_traffic_logs_status_command()
+            panorama_check_traffic_logs_status_batch_command()
 
         elif demisto.command() == 'panorama-get-traffic-logs':
             panorama_get_traffic_logs_command()
