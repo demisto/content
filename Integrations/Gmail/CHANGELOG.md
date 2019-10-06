@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fixed an issue where getting an email without labels with fail.
+Fixed an issue where emails without labels were not retrieved.
 
 ## [19.9.1] - 2019-09-18
   - Added 7 commands:
