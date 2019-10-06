@@ -5,14 +5,17 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import json
-
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-
+group_types = {0: 'Filter-based group',
+              1: 'Action group',
+              2: 'Action policy pair group',
+              3: 'Ad hoc group',
+              4: 'Manual group'}
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, domain, **kwargs):
@@ -355,21 +358,10 @@ class Client(BaseClient):
         item['Name'] = group.get('name')
         item['Deleted'] = group.get('deleted_flag')
         item['Text'] = group.get('text')
-
         type = group.get('type')
-        if type == 0:
-            type = 'Filter-based group'
-        elif type == 1:
-            type = 'Action group'
-        elif type == 2:
-            type = 'Action policy pair group'
-        elif type == 3:
-            type = 'Ad hoc group'
-        elif type == 4:
-            type = 'Manual group'
-
-        item['Type'] = type
+        item['Type'] = group_types[type]
         return item
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -593,7 +585,7 @@ def get_saved_question_result(client, data_args):
 
     context = {'SavedQuestionID': id, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
-    outputs = {'Tanium.SavedQuestionResult(val.Tanium.SavedQuestionID == {id})': context}
+    outputs = {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id})': context}
     human_readable = tableToMarkdown('question results:', rows)
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=res)
 
@@ -616,11 +608,16 @@ def get_saved_questions(client, data_args):
 def create_action(client, data_args):
     package_id = data_args.get('package-id')
     package_name = data_args.get('package-name')
+    group_id = data_args.get('target-group-id')
+    group_question = data_args.get('target-group-question')
     parameters = data_args.get('parameters')
     parameters_condition = []  # type: ignore
 
     if not package_id and not package_name:
         return_error('package id and package name are missing')
+
+    if not group_id and not group_question:
+        return_error('target group id and target group question are missing')
 
     if package_name:
         get_package_res = client.do_request('GET', 'packages/by-name/' + package_name)
@@ -638,6 +635,19 @@ def create_action(client, data_args):
         body['package_spec']['parameters'] = []
         for param in parameters_condition:
             body['package_spec']['parameters'].append(param)
+
+    group = {}
+    if group_id:
+        group = {'id': group_id}
+
+    if group_question:
+        group = client.parse_question(group_question, None)
+        group = group.get('group')
+
+        if not group:
+            return_error('Failed to parse target group question')
+
+    body['target_group'] = group
 
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
@@ -817,14 +827,15 @@ def get_groups(client, data_args):
     count = int(data_args.get('count'))
     type = data_args.get('group-type')
     groups = []
-    raw_response = {}
-    if type == 'Manual':
-        raw_response = client.do_request('GET', 'computer_groups')
-        for group in raw_response.get('data')[:count]:
-            groups.append(client.get_group_item(group))
-    elif type == 'FilterBased':
-        raw_response = client.do_request('GET', 'groups')
-        for group in raw_response.get('data')[:-1][:count]:
+
+    for key in group_types.keys():
+        if group_types[key] == type:
+            type = key
+            break
+
+    raw_response = client.do_request('GET', 'groups')
+    for group in raw_response.get('data')[:-1][:count]:
+        if group.get('type') == type:
             groups.append(client.get_group_item(group))
 
     context = createContext(groups, removeNull=True)
