@@ -301,7 +301,3 @@ class StructureValidator(object):
             self._is_valid = False
             return False
         return True
-
-
-
-
