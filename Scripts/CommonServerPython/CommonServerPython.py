@@ -1931,8 +1931,8 @@ def get_demisto_version():
 def is_debug_mode():
     """Return if this script/command was passed debug-mode=true option
 
-    Returns:
-        bool -- true if debug-mode is enabled
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
     """
     # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
     return hasattr(demisto, 'is_debug') and demisto.is_debug
