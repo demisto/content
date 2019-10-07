@@ -1003,11 +1003,13 @@ script:
       required: false
       secret: false
     - default: false
+      description: The target group ID to deploy the package.
       isArray: false
       name: target-group-id
       required: false
       secret: false
     - default: false
+      description: The target group question to gets the machines for deploy the package.
       isArray: false
       name: target-group-question
       required: false
