@@ -278,16 +278,15 @@ class StructureValidator(object):
             loaded_file_data = load_function(file_obj)
             return loaded_file_data
 
-    def get_file_id_from_loaded_file_data(self, loaded_file_data):
-        if INTEGRATIONS_DIR in self.file_path or SCRIPTS_DIR in self.file_path:
-            # In integrations, the id is under 'commonfields'.
+    @staticmethod
+    def get_file_id_from_loaded_file_data(loaded_file_data):
+        file_id = loaded_file_data.get('id')
+        if not file_id:
+            # In integrations/scripts, the id is under 'commonfields'.
             file_id = loaded_file_data.get('commonfields', {}).get('id')
-        elif LAYOUTS_DIR in self.file_path:
+        if not file_id:
             # In layout, the id is under 'layout'.
             file_id = loaded_file_data.get('layout', {}).get('id')
-        else:
-            # rest of content entities
-            file_id = loaded_file_data.get('id')
 
         return file_id
 
