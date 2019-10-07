@@ -1872,6 +1872,7 @@ def get_mimecast_incident_api_response_to_markdown(api_response):
     incident_id = api_response['data'][0]['id']
 
     md = '###Incident ' + incident_id + ' has been found###\n'
+    md += 'Code: ' + incident_code
     md += 'Type: ' + incident_type
     md += '\nReason: ' + incident_reason
     md += '\nThe number of messages identified based on the search criteria: ' + incident_identified_messages_amount
@@ -1899,6 +1900,55 @@ def get_mimecast_incident_api_response_to_markdown(api_response):
                           'End date from the remediation incident creation', 'Message ID',
                           'File hash', 'Code provided to restore a message',
                           'Mimecast code used to restore a previously remediated message'])
+
+    return md
+
+
+def serach_file_hash():
+    api_response = create_search_file_hash_request()
+
+    markdown_output = search_file_hash_api_response_to_markdown(api_response)
+    # entry_context = dict()  # type: [str, Any]
+    entry_context = None
+
+    return_outputs(markdown_output, entry_context, api_response)
+
+
+def create_search_file_hash_request():
+    api_endpoint = '/api/ttp/remediation/search-hash'
+    hashes_to_search = demisto.args().get('incident_id').encode('utf-8')
+
+    data = [{
+        'hashes': hashes_to_search
+    }]
+
+    payload = {
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, str(payload))
+    if isinstance(response, dict) and response.get('fail'):
+        return_error(json.dumps(response.get('fail', [{}])[0].get('errors')))
+    return response.content
+
+
+def search_file_hash_api_response_to_markdown(api_response):
+    md = '####Hashes detected:####\n'
+    detected_hashes_list = list()
+    for detected_hash in api_response['data'][0]['hashStatus']:
+        detected_hash_entry = {
+            'Hash': detected_hash['hash'],
+            'Found within the account': detected_hash['detected']
+        }
+
+        detected_hashes_list.append(detected_hash_entry)
+
+    md = tableToMarkdown(md, detected_hashes_list, ['Hash', 'Found within the account'])
+
+    md += '####Hashes that failed verification:####\n'
+
+    failed_hash_list = [failed_hash for failed_hash in api_response['data'][0]['failedHashes']]
+    md += str(failed_hash_list)[1:-1] + '\n'
 
     return md
 
