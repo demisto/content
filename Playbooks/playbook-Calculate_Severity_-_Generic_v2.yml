@@ -1399,7 +1399,7 @@ inputs:
       - operator: uniq
   required: false
   description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
-    script. Possible values are: Pass, Fail, Suspicious, and Undetermined'
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
