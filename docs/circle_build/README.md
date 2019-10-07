@@ -1,5 +1,8 @@
 # Overview
-This article will explain the CircleCI build process.
+Lets start with the basics, CircleCI is the service we use in order to run our tests and to check the integrity of our code.
+
+As you are probably aware, while pushing any code to our repositories it will initiate a build within CircleCI, this build will execute several things, or in the Circle language steps.
+Lets go over our steps to understand what each of them is doing.
 In addition, we'll explain common errors and how to troubleshoot them.
 
 # Build Sections
@@ -33,7 +36,7 @@ In addition, we'll explain common errors and how to troubleshoot them.
 28. [Uploading artifacts](#uploading-artifacts-final)
 
 ## Spin up Environment
-This is a CircleCI step which setup a machine to run the build on.
+Sets up the testing environment before starting the build. This usually involves provisioning a test server, setting access rules, etc.
   
 ## Checkout code
 Download the content source code (clones and checkout to the specific revision).
@@ -48,7 +51,7 @@ Setup workspace:
 - Print build parameters: 
   - `NIGHTLY`: this parameter is set during the build triggered each night.
   - `NON_AMI_RUN`: Indicates whether the build should use predefined AMI (amazon machine image) or not.
-  - `SERVER_BRANCH_NAME`: only relevant in case `NON_AMI_RUN` is set. indicates the demisto server build the current build should work against.  
+  - `SERVER_BRANCH_NAME`: only relevant in case `NON_AMI_RUN` is set. indicates the Demisto server build the current build should work against.  
 
 ## Installing additional ssh keys
 Add ssh keys to circle machine.
@@ -72,6 +75,8 @@ This step runs all unit-test files in the following folders:
 
 ## Validate Files and Yaml
 This step is responsible for the majority of the static validations of the content code.
+- It validates the schema of the yml files you created:
+    - [You can learn more about the YAML structure here](/docs/yaml-file-integration)
 - It checks for backward compatibility issues:
   - docker changes
   - id/name changes
@@ -82,7 +87,8 @@ This step is responsible for the majority of the static validations of the conte
   - content entity schemas
   - argument/parameter conflicts
   - context output standards
- 
+
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Configure Test Filter
@@ -105,9 +111,19 @@ At the moment, this step does not break the build.
 <!-- TODO: add troubleshooting errors -->
 
 ## Common Server Documentation
+This Step generates documentation files used to populate the *Script Helper* menu.
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Create Content Artifacts
+This step creates 3 zip files:
+- `content_new.zip`: Contains all content entities.
+- `content_yml.zip`: **legacy**. Contains all content entities relevant to Demisto 3.4 and below.
+- `content_test.zip`: Contains all entities under `TestPlaybooks` folder.
+
+All 3 zip files can be uploaded manually to Demisto as a content update.
+`content_new.zip` is published in content releases.
+
 <!-- TODO: add troubleshooting errors -->
 
 ## Uploading artifacts
@@ -115,12 +131,14 @@ This will upload all files stored under the artifact folder as a circle build ar
 ![](artifacts_1.png)
 
 ## Run Unit Testing and Lint
+Run all relevant unit tests.
+In master branch or due to changes to *CommonServerPython* all unit-tests will be triggered.
 
 ## Download Artifacts
 **Not relevant for contributors**
 
-This step is relevant only for custom builds that uses a specific demisto server build.
-It will download the demisto installer from the given build number.
+This step is relevant only for custom builds that uses a specific Demisto server build.
+It will download the Demisto installer from the given build number.
 
 ## Download Configuration
 **Not relevant for contributors**
@@ -152,7 +170,7 @@ Same as [Latest GA](#run-tests---latest-ga) except uses two version before the l
 ## Run Tests - Server Master
 **Not relevant for contributors**
 
-Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of demisto server.
+Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of Demisto server.
 
 ## Slack Notifier
 **Not relevant for contributors**
@@ -175,7 +193,7 @@ Configure each integration instance, trigger a `test-module` (test button in ins
 ## Destroy Instances
 **Not relevant for contributors**
 
-This step will download demisto server log and shutdown each server iff relevant "Run Tests" step passed.
+This step will download Demisto server log and shutdown each server iff relevant "Run Tests" step passed.
 
 ## Uploading artifacts final
 Once more, will upload artifact folder (which now also contains serverlogs) as circle build artifacts.
