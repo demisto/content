@@ -1,5 +1,5 @@
 ## [Unreleased]
-Changed integration category to Endpoint
+Updated integration category to *Endpoint*.
 
 
 ## [19.10.0] - 2019-10-03
