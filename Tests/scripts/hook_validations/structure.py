@@ -1,3 +1,5 @@
+import json
+import yaml
 import os
 import re
 import sys
@@ -79,6 +81,7 @@ class StructureValidator(object):
         """
         self.is_valid_scheme()
         self.is_valid_version()
+        self.is_file_id_without_slashes()
 
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
@@ -259,3 +262,43 @@ class StructureValidator(object):
             self._is_valid = False
 
         return self._is_valid
+
+    def load_data_from_file(self):
+        file_type_suffix_to_loading_func = {
+            '.yml': yaml.safe_load,
+            '.json': json.load,
+        }
+
+        file_extension = os.path.splitext(self.file_path)[1]
+        if file_extension not in file_type_suffix_to_loading_func:
+            print_error("An unknown error has occurred. Please retry.")
+
+        load_function = file_type_suffix_to_loading_func[file_extension]
+        with open(self.file_path, 'r') as file_obj:
+            loaded_file_data = load_function(file_obj)
+            return loaded_file_data
+
+    @staticmethod
+    def get_file_id_from_loaded_file_data(loaded_file_data):
+        if 'id' in loaded_file_data:
+            file_id = loaded_file_data.get('id')
+        else:
+            # The else conditions is only for integrations.
+            # In integrations, the id is under 'commonfields'.
+            file_commonfields = loaded_file_data.get('commonfields')
+            file_id = file_commonfields.get('id')
+        return file_id
+
+    def is_file_id_without_slashes(self):
+        """Check if the ID of the file contains any slashes ('/').
+
+        Returns:
+            bool. Whether the file's ID contains slashes or not.
+        """
+        loaded_file_data = self.load_data_from_file()
+        file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
+        if '/' in file_id:
+            self._is_valid = False
+            print_error("File's ID contains slashes - please remove.")
+            return False
+        return True
