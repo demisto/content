@@ -1,7 +1,7 @@
 ## [Unreleased]
 - Added **fetch_time** and **limit** parameters.
 - Fixed an issue in the ***fetch-incidents*** functionality.
-- Added the *limit* and *page* arguments in ***list-alerts*** command.
+- Added the **raw_filter**, **limit** and **page** arguments in ***list-alerts*** command.
 
 ## [19.10.0] - 2019-10-03
 Fixed an issue in the ***fetch incidents*** functionality.

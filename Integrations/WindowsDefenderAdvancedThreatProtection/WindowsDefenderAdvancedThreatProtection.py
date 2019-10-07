@@ -543,10 +543,18 @@ def run_antivirus_scan(machine_id, comment, scan_type):
 
 def list_alerts_command():
     raw_filter = demisto.args().get('raw_filter')
-    page = demisto.args().get('page', 0)
-    limit = demisto.args().get('limit')
+    page = demisto.args().get('page', '0')
+    limit = demisto.args().get('limit', '100')
 
-    alerts = list_alerts(raw_filter, page, limit).get('value', [])
+    params = {
+        '$top': limit,
+        '$skip': page
+    }
+
+    if raw_filter:
+        params['$filter'] = raw_filter
+
+    alerts = list_alerts(params).get('value', [])
 
     severity = demisto.args().get('severity')
     status = demisto.args().get('status')
@@ -583,14 +591,10 @@ def list_alerts_command():
     demisto.results(entry)
 
 
-def list_alerts(raw_filter=None, page=None, limit=None):
-    cmd_url = f'/alerts?$skip={page}'
-    if limit:
-        cmd_url += f'&$top={limit}'
-    if raw_filter:
-        cmd_url += f'&$filter={raw_filter}'
+def list_alerts(params=None):
+    cmd_url = f'/alerts'
 
-    response = http_request('GET', cmd_url)
+    response = http_request('GET', cmd_url, params=params)
     return response
 
 
@@ -807,7 +811,13 @@ def fetch_incidents():
 
     raw_filter = f'{date_filter} and {severity_filter} and {status_filter}'
 
-    alerts = list_alerts(raw_filter, page=0, limit=MAX_FETCH_RESULTS)['value']
+    params = {
+        '$top': MAX_FETCH_RESULTS,
+        '$skip': '0',
+        '$filter': raw_filter
+    }
+
+    alerts = list_alerts(params)['value']
 
     incidents = []
     last_ids = []
