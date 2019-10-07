@@ -180,7 +180,7 @@ def test_module(client, *_):
     if decrypt_message:
         demisto.results('ok')
     else:
-        demisto.results('There might be a problem with one of your keys')
+        demisto.results('Verify that you provided valid keys.')
 
 
 def main():
