@@ -636,7 +636,7 @@ def create_action(client, data_args):
         for param in parameters_condition:
             body['package_spec']['parameters'].append(param)
 
-    group = {}
+    group = {}  # type: ignore
     if group_id:
         group = {'id': group_id}
 
