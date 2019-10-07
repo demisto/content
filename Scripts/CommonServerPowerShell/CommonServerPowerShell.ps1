@@ -30,5 +30,4 @@ Remove empty columns from the table.
 Metadata about the table contents
 #>
 
-    Write-Host 'tableToMarkdown'
 }
