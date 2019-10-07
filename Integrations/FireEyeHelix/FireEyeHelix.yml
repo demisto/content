@@ -45,25 +45,112 @@ script:
     deprecated: false
     description: Returns all alerts.
     execution: false
-    name: helix-list-alerts
+    name: fireeye-helix-list-alerts
     outputs:
-    - contextPath: FireEyeHelix.Event.ID
-      description: The ID of the event.
+    - contextPath: FireEyeHelix.Alert.ID
+      description: Primary ID of alert.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.AlertTypeID
+      description: ID of the alert type.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.AlertTypeName
+      description: Name of the alert type.
       type: String
-    - contextPath: FireEyeHelix.Event.Description
-      description: The description of the event.
+    - contextPath: FireEyeHelix.Alert.AssigneeID
+      description: ID of the assignee.
       type: String
-    - contextPath: FireEyeHelix.Event.Created
-      description: The date/time that the event was created.
+    - contextPath: FireEyeHelix.Alert.AssigneeName
+      description: Assignee display name.
+      type: String
+    - contextPath: FireEyeHelix.Alert.CreatorID
+      description: ID of the user who created the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.CreatorName
+      description: Name of the user who created the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.UpdaterID
+      description: Name of the user who updated the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.UpdaterName
+      description: Name of the user who updated the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.CreatedTime
+      description: Time the alert was created at.
       type: Date
-    - contextPath: FireEyeHelix.Event.IsActive
-      description: Whether the event is active.
-      type: Boolean
-    - contextPath: FireEyeHelix.Event.Assignee.Name
-      description: A list of names of users assigned to the event.
+    - contextPath: FireEyeHelix.Alert.ModifiedTime
+      description: Time the alert was modified at.
+      type: Date
+    - contextPath: FireEyeHelix.Alert.ProcessPath
+      description: Path of the process
       type: String
-    - contextPath: FireEyeHelix.Event.Assignee.ID
-      description: A list of IDs of users assigned to the event.
+    - contextPath: FireEyeHelix.Alert.Confidence
+      description: FireEye helix confidence with the result.
+      type: String
+    - contextPath: FireEyeHelix.Alert.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: FireEyeHelix.Alert.MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Hostname
+      description: Hostname of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.PID
+      description: Process ID.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.EventsCount
+      description: Number of events in alert.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.NotesCount
+      description: Number of notes in alert.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.ClosedState
+      description: State the alert in regards to it being closed.
+      type: String
+    - contextPath: FireEyeHelix.Alert.ClosedReason
+      description: Reason the alert was closed.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Confidence
+      description: Amount of confidence helix has with the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Description
+      description: Description of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.FirstEventTime
+      description: Time of the first event.
+      type: Date
+    - contextPath: FireEyeHelix.Alert.LastEventTime
+      description: Time of the last event.
+      type: Date
+    - contextPath: FireEyeHelix.Alert.ExternalIP
+      description: External IPs for the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.InternalIP
+      description: Internal IPs for the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Message
+      description: Message of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Products
+      description: Source of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Risk
+      description: Risk of the events in the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Severity
+      description: Severity of the events in the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.State
+      description: State of the alert. Can be either Open, Suppressed, Closed, Reopened.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Tag
+      description: Tag of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Type
+      description: Type of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Count
+      description: Number of alerts.
       type: String
   - arguments:
     - default: true
@@ -75,7 +162,7 @@ script:
     deprecated: false
     description: Get alert by id.
     execution: false
-    name: helix-get-alert-by-id
+    name: fireeye-helix-get-alert-by-id
   - arguments:
     - default: true
       description: ID of the alert to update.
@@ -86,7 +173,7 @@ script:
     deprecated: false
     description: Change status, assign, assess, add to case.
     execution: false
-    name: helix-update-alert
+    name: fireeye-helix-update-alert
   - arguments:
     - default: true
       description: ID of the alert the note is created for.
@@ -103,7 +190,7 @@ script:
     deprecated: false
     description: Create an alert note.
     execution: false
-    name: helix-alert-create-note
+    name: fireeye-helix-alert-create-note
   - arguments:
     - default: false
       description: Name of the case to create.
@@ -174,7 +261,7 @@ script:
     deprecated: false
     description: Create a case.
     execution: false
-    name: helix-alert-create-case
+    name: fireeye-helix-alert-create-case
   - arguments:
     - default: true
       description: Alert ID to get event by.
@@ -185,7 +272,7 @@ script:
     deprecated: false
     description: Lists alert events for a specific alert.
     execution: false
-    name: helix-get-events-by-alert
+    name: fireeye-helix-get-events-by-alert
   - arguments:
     - default: true
       description: ID of an alert.
@@ -196,7 +283,7 @@ script:
     deprecated: false
     description: Retrieves a specific alert from an helix endpoint.
     execution: false
-    name: helix-get-endpoints-by-alert
+    name: fireeye-helix-get-endpoints-by-alert
   - arguments:
     - default: true
       description: ID of an alert.
@@ -225,7 +312,7 @@ script:
     deprecated: false
     description: Get cases of an alert.
     execution: false
-    name: helix-get-cases-by-alert
+    name: fireeye-helix-get-cases-by-alert
   - arguments:
     - default: false
       isArray: false
@@ -253,7 +340,7 @@ script:
     deprecated: false
     description: Change case assignee or status.
     execution: false
-    name: helix-update-case
+    name: fireeye-helix-update-case
   - arguments:
     - default: true
       description: ID of an event.
@@ -264,7 +351,7 @@ script:
     deprecated: false
     description: Get an event by an event ID.
     execution: false
-    name: helix-get-event-by-id
+    name: fireeye-helix-get-event-by-id
   - arguments:
     - default: false
       description: Number of results to return per page.
@@ -359,7 +446,7 @@ script:
     deprecated: false
     description: Get lists.
     execution: false
-    name: helix-get-lists
+    name: fireeye-helix-get-lists
   - arguments:
     - default: true
       description: ID of the list.
@@ -370,7 +457,7 @@ script:
     deprecated: false
     description: Get a specific list by an id.
     execution: false
-    name: helix-get-list-by-id
+    name: fireeye-helix-get-list-by-id
   - arguments:
     - default: true
       description: Name of the list.
@@ -445,7 +532,7 @@ script:
     deprecated: false
     description: Create a list.
     execution: false
-    name: helix-create-list
+    name: fireeye-helix-create-list
   - arguments:
     - default: false
       description: Name of the list.
@@ -526,7 +613,7 @@ script:
     deprecated: false
     description: Update a list.
     execution: false
-    name: helix-update-list
+    name: fireeye-helix-update-list
   - arguments:
     - default: true
       description: ID of the list to delete.
@@ -537,7 +624,7 @@ script:
     deprecated: false
     description: Deletes a single list by id.
     execution: false
-    name: helix-delete-list
+    name: fireeye-helix-delete-list
   - arguments:
     - default: false
       description: Max number of results to return per page.
@@ -566,7 +653,7 @@ script:
     deprecated: false
     description: Fetches all sensors.
     execution: false
-    name: helix-list-sensors
+    name: fireeye-helix-list-sensors
   - arguments:
     - default: false
       description: Max number of results to return per page.
@@ -590,7 +677,7 @@ script:
     deprecated: false
     description: Get all rules.
     execution: false
-    name: helix-list-rules
+    name: fireeye-helix-list-rules
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -611,7 +698,7 @@ script:
     deprecated: false
     description: Edit an existing rule.
     execution: false
-    name: helix-edit-rule
+    name: fireeye-helix-edit-rule
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false
@@ -619,3 +706,5 @@ script:
   runonce: false
   script: '-'
   type: python
+tests:
+  - No test - no license

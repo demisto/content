@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Optional, Union, AnyStr, Any
+from typing import Dict, Tuple, List, Optional, Union, Any
 import urllib3
 
 # Disable insecure warnings
@@ -20,16 +20,52 @@ Attributes:
 
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
+
+    ALERTS_TRANS
+        Transformation map for alerts to be used with build_transformed_dict
 """
 INTEGRATION_NAME = 'FireEye Helix'
-# lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'helix'
-# No dividers
+INTEGRATION_COMMAND_NAME = 'fireeye-helix'
 INTEGRATION_CONTEXT_NAME = 'FireEye'
+ALERTS_TRANS = {
+    'id': 'ID',
+    'alert_type.id': 'AlertTypeID',
+    'alert_type.name': 'Name',
+    'assigned_to.id': 'AssigneeID',
+    'assigned_to.name': 'AssigneeName',
+    'created_by.id': 'CreatorID',
+    'created_by.name': 'CreatorName',
+    'updated_by.id': 'UpdaterID',
+    'updated_by.name': 'UpdaterName',
+    'created_at': 'CreatedTime',
+    'updated_at': 'ModifiedTime',
+    'alert_type_details.detail.processpath': 'ProcessPath',
+    'alert_type_details.detail.confidence': 'Confidence',
+    'alert_type_details.detail.sha1': 'SHA1',
+    'alert_type_details.detail.md5': 'MD5',
+    'alert_type_details.detail.hostname': 'Hostname',
+    'alert_type_details.detail.pid': 'PID',
+    'events_count': 'EventsCount',
+    'notes_count': 'NotesCount',
+    'closed_state': 'ClosedState',
+    'closed_reason': 'ClosedReason',
+    'description': 'Description',
+    'first_event_at': 'FirstEventTime',
+    'last_event_at': 'LastEventTime',
+    'external_ips': 'ExternalIP',
+    'internal_ips': 'InternalIP',
+    'message': 'Message',
+    'products': 'Products',
+    'risk': 'Risk',
+    'severity': 'Severity',
+    'state': 'State',
+    'tags': 'Tag',
+    'type': 'Type',
+}
 
 
 class Client(BaseClient):
-    def test_module_request(self) -> Dict:
+    def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
@@ -37,16 +73,12 @@ class Client(BaseClient):
         """
         return self._http_request('GET', '/healthcheck', resp_type='content')
 
-    def list_alerts_request(self, limit: Union[int, str] = None, offset: Union[int, str] = None) -> Dict:
+    def list_alerts(self, limit: Union[int, str] = None, offset: Union[int, str] = None) -> Dict:
         """Returns all alerts by sending a GET request.
 
         Args:
             limit: The maximum number of alerts to return.
             offset: The initial index from which to return the results.
-            # event_created_date_after: Optional[Union[str, datetime]] = None, todo: CHANGE THIS AND BELOW
-            # event_created_date_before: Optional[Union[str, datetime]] = None
-            # event_created_date_after: Returns events created after this date.
-            # event_created_date_before: Returns events created before this date.
 
         Returns:
             Response from API.
@@ -60,7 +92,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
 
-    def get_alert_by_id(self, _id: Union[int, str]) -> Dict:
+    def get_alert_by_id(self, _id: Optional[Any]) -> Dict:
         """Return a single alert by sending a GET request.
 
         Args:
@@ -84,7 +116,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts'
         return self._http_request('POST', suffix, json_data=body)
 
-    def create_alert_note(self, _id: Union[int, str], note: str) -> Dict:
+    def create_alert_note(self, _id: Optional[Any], note: Optional[Any]) -> Dict:
         """Creates a single note for an alert by sending a POST request.
 
         Args:
@@ -98,7 +130,7 @@ class Client(BaseClient):
         body = assign_params(note=note)
         return self._http_request('POST', suffix, json_data=body)
 
-    def create_alert_case(self, alert_id: Union[int, str], name: str, status: str = None,
+    def create_alert_case(self, alert_id: Optional[Any], name: str, status: str = None,
                           severity: Union[int, str] = None, tags: str = None, priority: str = None, state: str = None,
                           info_links: str = None, assigned_to: str = None, total_days_unresolved: str = None,
                           description: str = None, **kwargs) -> Dict:
@@ -135,7 +167,7 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix, json_data=body)
 
-    def get_events_by_alert(self, alert_id: Union[int, str]) -> Dict:
+    def get_events_by_alert(self, alert_id: Optional[Any]) -> Dict:
         """Fetches events for an alert by sending a GET request.
 
         Args:
@@ -147,7 +179,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/events'
         return self._http_request('GET', suffix)
 
-    def get_endpoints_by_alert(self, alert_id: Union[int, str]) -> Dict:
+    def get_endpoints_by_alert(self, alert_id: Optional[Any]) -> Dict:
         """Fetches endpoints for an alert by sending a GET request.
 
         Args:
@@ -159,8 +191,8 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/endpoints'
         return self._http_request('GET', suffix)
 
-    def get_cases_by_alert(self, alert_id: Union[int, str], limit: Union[int, str], offset: Union[int, str],
-                           order_by: str) -> Dict:
+    def get_cases_by_alert(self, alert_id: Optional[Any], limit: Optional[Any], offset: Optional[Any],
+                           order_by: Optional[Any]) -> Dict:
         """Fetches cases for an alert by sending a GET request.
 
         Args:
@@ -180,7 +212,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, json_data=body)
 
-    def update_case(self, case_id: Union[int, str], assigned_to: List, status: str) -> Dict:
+    def update_case(self, case_id: Optional[Any], assigned_to: List, status: Optional[Any]) -> Dict:
         """Updates a case by send a PATCH request.
 
         Args:
@@ -198,7 +230,7 @@ class Client(BaseClient):
         )
         return self._http_request('PATCH', suffix, params=params)
 
-    def get_event_by_id(self, event_id: Union[str, int]) -> Dict:
+    def get_event_by_id(self, event_id: Optional[Any]) -> Dict:
         """Fetches an event by id via a GET request.
 
         Args:
@@ -251,7 +283,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def get_list_by_id(self, list_id: Union[str, int]) -> Dict:
+    def get_list_by_id(self, list_id: Optional[Any]) -> Dict:
         """Get a list by id via a GET request
 
         Args:
@@ -330,7 +362,7 @@ class Client(BaseClient):
         )
         return self._http_request('PATCH', suffix, json_data=body)
 
-    def delete_list(self, list_id: Union[str, int]) -> Dict:
+    def delete_list(self, list_id: Optional[Any]) -> Dict:
         """Deletes a list using DELETE request
 
         Args:
@@ -382,7 +414,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def edit_rule(self, rule_id: Union[int, str], enabled: Union[str, bool]) -> Union:
+    def edit_rule(self, rule_id: Optional[Any], enabled: Union[str, bool]) -> Dict:
         """Edit a single rule using PATCH request
 
         Args:
@@ -464,7 +496,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     Raises:
         DemistoException: If test failed.
     """
-    client.test_module_request()
+    client.test_module()
     return 'ok', {}, {}
 
 
@@ -495,7 +527,8 @@ def fetch_incidents(
     else:
         new_last_run = last_run
     incidents: List = list()
-    raw_response = client.list_alerts_request(event_created_date_after=new_last_run)  # TODO: Adjust this
+    # raw_response = client.list_alerts(event_created_date_after=new_last_run)  # TODO: Adjust this
+    raw_response = client.list_alerts()  # TODO: Adjust this
     events = raw_response.get('event')
     if events:
         # Creates incident entry
@@ -523,17 +556,17 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     limit = args.get('limit')
     offset = args.get('offset')
-    raw_response = client.list_alerts_request(limit=limit, offset=offset)
+    raw_response = client.list_alerts(limit=limit, offset=offset)
     alerts = raw_response.get('results')
     if alerts:
         title = f'{INTEGRATION_NAME} - List alerts:'
-        context_entry = build_transformed_dict(alerts, {})  # TODO: edit this
+        context_entry = build_transformed_dict(alerts, ALERTS_TRANS)
+        count = demisto.get(raw_response, 'meta.count')
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.Count).Count': count
         }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'Description', 'State', 'Severity'])
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
@@ -553,13 +586,11 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     raw_response = client.get_alert_by_id(_id=_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Alert {_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context_entry = build_transformed_dict(raw_response, ALERTS_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry
         }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'Description', 'State', 'Severity'])
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
@@ -987,11 +1018,11 @@ def main():  # pragma: no cover
     }
     try:
         if command == 'fetch-incidents':
-            incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())
+            incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command in commands:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
