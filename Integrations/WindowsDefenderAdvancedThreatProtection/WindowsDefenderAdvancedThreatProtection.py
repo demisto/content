@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 import requests
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
 requests.packages.urllib3.disable_warnings()
 
 if not demisto.params()['proxy']:
@@ -21,8 +22,10 @@ AUTH_AND_TOKEN_URL = demisto.params()['auth_id'].split('@')
 AUTH_ID = AUTH_AND_TOKEN_URL[0]
 ENC_KEY = demisto.params()['enc_key']
 USE_SSL = not demisto.params().get('insecure', False)
-FETCH_SEVERITY = demisto.params()['fetch_severity'].split(',')
-FETCH_STATUS = demisto.params().get('fetch_status').split(',')
+FETCH_SEVERITY = demisto.params()['fetch_severity']
+FETCH_TIME = demisto.params().get('fetch_time')
+MAX_FETCH_RESULTS = demisto.params().get('limit', '100')
+FETCH_STATUS = demisto.params().get('fetch_status')
 if len(AUTH_AND_TOKEN_URL) != 2:
     TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
 else:
@@ -52,6 +55,7 @@ def get_encrypted(content: str, key: str) -> str:
     Returns:
         encrypted timestamp:content
     """
+
     def create_nonce() -> bytes:
         return os.urandom(12)
 
@@ -75,6 +79,7 @@ def get_encrypted(content: str, key: str) -> str:
         data = string.encode()
         ct = aes_gcm.encrypt(nonce, data, None)
         return base64.b64encode(nonce + ct)
+
     now = epoch_seconds()
     encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
     return encrypted
@@ -141,7 +146,6 @@ def get_access_token():
 
 
 def http_request(method, url_suffix, json=None, params=None):
-
     token = get_access_token()
     r = requests.request(
         method,
@@ -184,7 +188,6 @@ def capitalize_first_letter(string):
 
 
 def isolate_machine_command():
-
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     isolation_type = demisto.args().get('isolation_type')
@@ -212,7 +215,6 @@ def isolate_machine_command():
 
 
 def isolate_machine(machine_id, comment, isolation_type):
-
     cmd_url = '/machines/{}/isolate'.format(machine_id)
     json = {
         'Comment': comment
@@ -224,7 +226,6 @@ def isolate_machine(machine_id, comment, isolation_type):
 
 
 def unisolate_machine_command():
-
     machine_id = demisto.args().get('machine_id')
     comment = demisto.args().get('comment')
     response = unisolate_machine(machine_id, comment)
@@ -251,7 +252,6 @@ def unisolate_machine_command():
 
 
 def unisolate_machine(machine_id, comment):
-
     cmd_url = '/machines/{}/unisolate'.format(machine_id)
     json = {
         'Comment': comment
@@ -261,7 +261,6 @@ def unisolate_machine(machine_id, comment):
 
 
 def get_machines_command():
-
     machines = get_machines().get('value', [])
 
     hostname = demisto.args().get('hostname')
@@ -335,14 +334,12 @@ def get_machines_command():
 
 
 def get_machines():
-
     cmd_url = '/machines'
     response = http_request('GET', cmd_url)
     return response
 
 
 def get_file_related_machines_command():
-
     file = demisto.args()['file']
     machines = get_file_related_machines(file).get('value', [])
     if machines:
@@ -404,14 +401,12 @@ def get_file_related_machines_command():
 
 
 def get_file_related_machines(file):
-
     cmd_url = '/files/{}/machines'.format(file)
     response = http_request('GET', cmd_url)
     return response
 
 
 def get_machine_details_command():
-
     machine_id = demisto.args()['machine_id']
     machine = get_machine_details(machine_id)
     if machine:
@@ -470,14 +465,12 @@ def get_machine_details_command():
 
 
 def get_machine_details(machine_id):
-
     cmd_url = '/machines/{}'.format(machine_id)
     response = http_request('GET', cmd_url)
     return response
 
 
 def block_file_command():
-
     file_sha1 = demisto.args().get('sha1')
     comment = demisto.args().get('comment')
     title = demisto.args().get('title')
@@ -489,7 +482,6 @@ def block_file_command():
 
 
 def block_file(file_sha1, comment, title, expiration_time, severity, recommended_actions):
-
     cmd_url = '/tiindicators'
     json = {
         'indicator': file_sha1,
@@ -506,14 +498,12 @@ def block_file(file_sha1, comment, title, expiration_time, severity, recommended
 
 
 def get_user_related_machines(user_id):
-
     cmd_url = '/users/{}/machines'.format(user_id)
     response = http_request('GET', cmd_url)
     return response
 
 
 def stop_and_quarantine_file_command():
-
     machine_id = demisto.args().get('machine_id')
     file_sha1 = demisto.args().get('file')
     comment = demisto.args().get('comment')
@@ -522,7 +512,6 @@ def stop_and_quarantine_file_command():
 
 
 def stop_and_quarantine_file(machine_id, file_sha1, comment):
-
     cmd_url = '/machines/{}/stopAndQuarantineFile'.format(machine_id)
     json = {
         'Comment': comment,
@@ -533,7 +522,6 @@ def stop_and_quarantine_file(machine_id, file_sha1, comment):
 
 
 def run_antivirus_scan_command():
-
     machine_id = demisto.args().get('machine_id')
     scan_type = demisto.args().get('scan_type')
     comment = demisto.args().get('comment')
@@ -544,7 +532,6 @@ def run_antivirus_scan_command():
 
 
 def run_antivirus_scan(machine_id, comment, scan_type):
-
     cmd_url = '/machines/{}/runAntiVirusScan'.format(machine_id)
     json = {
         'Comment': comment,
@@ -555,8 +542,11 @@ def run_antivirus_scan(machine_id, comment, scan_type):
 
 
 def list_alerts_command():
+    raw_filter = demisto.args().get('raw_filter')
+    page = demisto.args().get('page', 0)
+    limit = demisto.args().get('limit')
 
-    alerts = list_alerts().get('value', [])
+    alerts = list_alerts(raw_filter, page, limit).get('value', [])
 
     severity = demisto.args().get('severity')
     status = demisto.args().get('status')
@@ -593,14 +583,18 @@ def list_alerts_command():
     demisto.results(entry)
 
 
-def list_alerts():
-    cmd_url = '/alerts'
+def list_alerts(raw_filter=None, page=None, limit=None):
+    cmd_url = f'/alerts?$skip={page}'
+    if limit:
+        cmd_url += f'&$top={limit}'
+    if raw_filter:
+        cmd_url += f'&$filter={raw_filter}'
+
     response = http_request('GET', cmd_url)
     return response
 
 
 def update_alert_command():
-
     alert_id = demisto.args()['alert_id']
     assigned_to = demisto.args().get('assigned_to')
     status = demisto.args().get('status')
@@ -801,26 +795,28 @@ def get_alert_related_user(alert_id):
 
 def fetch_incidents():
     last_run = demisto.getLastRun()
-
-    if last_run and last_run['last_alert_fetched_time']:
-        last_alert_fetched_time = datetime.strptime(last_run['last_alert_fetched_time'], '%Y-%m-%dT%H:%M:%S.%f')
-    else:
-        last_alert_fetched_time = datetime.now() - timedelta(days=300)
-
+    last_fetch_str = last_run.get('last_alert_fetched_time')
     previous_ids = last_run.get('last_ids', [])
-    latest_creation_time = last_alert_fetched_time
 
-    alerts = list_alerts()['value']
+    if not last_fetch_str:
+        last_fetch_str, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S.%fZ')
+
+    date_filter = f'alertCreationTime gt {last_fetch_str}'
+    severity_filter = f'severity in ({FETCH_SEVERITY})'
+    status_filter = f'status in ({FETCH_STATUS})'
+
+    raw_filter = f'{date_filter} and {severity_filter} and {status_filter}'
+
+    alerts = list_alerts(raw_filter, page=0, limit=MAX_FETCH_RESULTS)['value']
+
     incidents = []
     last_ids = []
 
+    last_fetch = datetime.strptime(last_fetch_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+    latest_creation_time = last_fetch
     for alert in alerts:
-        # Removing 'Z' from timestamp and converting to datetime
-        alert_creation_time = datetime.strptime(alert['alertCreationTime'][:-2], '%Y-%m-%dT%H:%M:%S.%f')
-        alert_status = alert['status']
-        alert_severity = alert['severity']
-        if alert_creation_time >= last_alert_fetched_time and alert_status in FETCH_STATUS and \
-                alert_severity in FETCH_SEVERITY and alert['id'] not in previous_ids:
+        alert_creation_time = datetime.strptime(alert['alertCreationTime'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        if alert_creation_time > last_fetch and alert['id'] not in previous_ids:
             incident = alert_to_incident(alert)
             incidents.append(incident)
             if alert_creation_time == latest_creation_time:
@@ -833,7 +829,7 @@ def fetch_incidents():
         last_ids = previous_ids
 
     demisto.setLastRun({
-        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f'),
+        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%fZ'),
         "last_ids": last_ids
 
     })
@@ -869,7 +865,7 @@ def test_function():
 
 ''' EXECUTION CODE '''
 
-LOG('command is %s' % (demisto.command(), ))
+LOG('command is %s' % (demisto.command(),))
 
 try:
     if demisto.command() == 'test-module':

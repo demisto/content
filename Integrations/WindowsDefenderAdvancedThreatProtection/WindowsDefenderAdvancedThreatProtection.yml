@@ -42,6 +42,16 @@ configuration:
   name: fetch_severity
   required: false
   type: 0
+- defaultvalue: 24 hours
+  display: 'First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)'
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '100'
+  display: 'The maximum number of incidents to be returned by a fetch'
+  name: limit
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -430,6 +440,26 @@ script:
       - New
       - InProgress
       - Resolved
+      required: false
+      secret: false
+    - default: false
+      description: The number of alerts to return in one response (if not specified, returns all alerts)
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: 'A filter for the alerts query, in OData syntax. For example, in order to retrieve all the alerts
+        that were created after 2018-10-20 00:00:00, the input should be "alertCreationTime gt 2018-11-22T00:00:00Z"'
+      isArray: false
+      name: raw_filter
       required: false
       secret: false
     deprecated: false
