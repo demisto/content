@@ -167,7 +167,7 @@ GENERIC_RECORD: str = '''    <tr>
 def get_yaml_obj(entry_id):
     data = {}  # type: dict
     try:
-        yml_file_path = '../../Integrations/AttackIQFireDrill/AttackIQFireDrill.yml'# demisto.getFilePath(entry_id)['path']
+        yml_file_path = demisto.getFilePath(entry_id)['path']
         with open(yml_file_path, 'r') as yml_file:
             data = yaml.safe_load(yml_file)
         if not isinstance(data, dict):
