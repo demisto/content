@@ -45,4 +45,3 @@ def test_decrypt(mocker):
 def test_test_module(mocker):
     mocker.patch.object(demisto, 'results')
     test_module(client)
-
