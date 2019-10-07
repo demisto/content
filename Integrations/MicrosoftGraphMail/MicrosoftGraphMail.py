@@ -216,7 +216,9 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         error = error_parser(res)
         return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
     try:
-        return res.json()
+        if method.lower() != 'delete':  # the DELETE request returns nothing in response
+            return res.json()
+        return {}
     except ValueError:
         return_error('Could not decode response from API')
         return {}  # return_error will exit
@@ -403,24 +405,6 @@ def file_result_creator(raw_response: dict) -> dict:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
-    """
-    Performs basic get request to get item samples
-    """
-    url = BASE_URL + '/me'
-    token = get_access_token()
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    }
-    response = requests.get(url, headers=headers, verify=USE_SSL)
-    if response.status_code == 403:
-        return True
-    else:
-        return_error(error_parser(response))
-
-
 def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str = None) -> Union[dict, list]:
     """Returning all mails from given user
 
@@ -498,9 +482,7 @@ def delete_mail_command():
         removeNull=True
     )
 
-    entry_context = {
-        f'MSGraphMail(val.ID === {message_id}': None
-    }
+    entry_context = {}  # type: ignore
 
     return_outputs(human_readable, entry_context)
 
@@ -632,8 +614,7 @@ def main():
 
     try:
         if command == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
+            get_access_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
             list_mails_command()

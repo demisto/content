@@ -530,7 +530,7 @@ script:
         }
         ec = {
             DBotScore: {
-                Indicator: scan.sha256,
+                Indicator: scan[0].sha256,
                 Type: 'hash',
                 Vendor: 'CrowdStrike Falcon Sandbox',
                 Score: translateScore(scan[0]['threat_level'])
@@ -548,6 +548,7 @@ script:
     function translateScore(score) {
         /* Translates CS threat level to DBot Score */
         var scoreObject = {
+            3: 0,
             2: 3,
             1: 2,
             0: 1

@@ -225,7 +225,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 2120
         }
       }
     note: false
@@ -266,12 +266,12 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f543fcfa-005e-42a8-8440-2237e6c12e20
+    taskid: db4a1a1d-092f-411e-81d5-2e10c7d88313
     type: regular
     task:
-      id: f543fcfa-005e-42a8-8440-2237e6c12e20
+      id: db4a1a1d-092f-411e-81d5-2e10c7d88313
       version: -1
-      name: check email regex
+      name: check email indicator regex (auto enrich)
       description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
@@ -289,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1770
         }
       }
     note: false
@@ -310,7 +310,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "12"
     scriptarguments:
       all:
         simple: "yes"
@@ -359,7 +359,109 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: bbe2736a-4c5a-4e63-8c6d-0d09c10ce00d
+    type: regular
+    task:
+      id: bbe2736a-4c5a-4e63-8c6d-0d09c10ce00d
+      version: -1
+      name: Get Email2
+      description: Check if an email has been compromised as part of past breaches
+      script: Pwned|||email
+      type: regular
+      iscommand: true
+      brand: Pwned
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      email:
+        simple: joe@gmail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e27ac65b-52fc-48ef-8ba6-4d06693b7641
+    type: condition
+    task:
+      id: e27ac65b-52fc-48ef-8ba6-4d06693b7641
+      version: -1
+      name: Check email domains
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Account
+                accessor: Email.Compromised.Reporters
+            iscontext: true
+          right:
+            value:
+              simple: 000webhost
+    view: |-
+      {
+        "position": {
+          "x": 50,
           "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 9042df83-f523-47f1-8492-f03c07f16aec
+    type: regular
+    task:
+      id: 9042df83-f523-47f1-8492-f03c07f16aec
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -372,7 +474,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 2135,
         "width": 380,
         "x": 50,
         "y": 50

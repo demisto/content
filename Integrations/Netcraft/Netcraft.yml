@@ -6,22 +6,26 @@ display: Netcraft
 category: Authentication
 description: An integration for Netcraft, allowing you to open and handle takedown requests.
 configuration:
-- display: Use system proxy
-  name: proxy
-  defaultvalue: ""
-  type: 8
-  required: false
-- display: The maximum number of entries (takedowns/notes) to return. Default
-    is 100.
-  name: limit
-  defaultvalue: "100"
-  type: 0
-  required: false
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
+- display: The maximum number of entries (takedowns/notes) to return. Default is 100.
+  name: limit
+  defaultvalue: "100"
+  type: 0
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
 script:
   script: ''
   type: python

@@ -1,0 +1,145 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CIRCL
+  version: -1
+configuration:
+- defaultvalue: https://www.circl.lu
+  display: Server URL (e.g. https://www.circl.lu)
+  name: url
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+description: |-
+  CIRCL Passive DNS is a database storing historical DNS records from various resources.
+  CIRCL Passive SSL is a database storing historical X.509 certificates seen per IP address. The Passive SSL historical data is indexed per IP address.
+display: CIRCL
+name: CIRCL
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: IP address, hostname, or domain name
+      isArray: false
+      name: queryValue
+      required: true
+      secret: false
+    deprecated: false
+    description: Get DNS records for your query value from CIRCL's Passive DNS.
+    execution: false
+    name: circl-dns-get
+    outputs:
+    - contextPath: CIRCLdns.Query.Value
+      description: Query Value
+      type: string
+    - contextPath: CIRCLdns.Query.Record.Data
+      description: DNS Record or IP Address
+      type: string
+    - contextPath: CIRCLdns.Query.Record.LastTime
+      description: DNS record last recorded time
+      type: date
+  - arguments:
+    - default: false
+      description: IP address or CIDR block
+      isArray: false
+      name: queryValue
+      required: true
+      secret: false
+    deprecated: false
+    description: Query IP address or CIDR blocks (/32 up to /23) for SSL certificates
+      history.
+    execution: false
+    name: circl-ssl-list-certificates
+    outputs:
+    - contextPath: CIRCLssl.IPAddress.Value
+      description: IP address
+      type: string
+    - contextPath: CIRCLssl.IPAddress.Certificate.SHA1
+      description: ' The SHA-1 fingerprint of the certificate'
+      type: string
+    - contextPath: CIRCLssl.IPAddress.Certificate.Subjects
+      description: Certificate subjects
+      type: string
+  - arguments:
+    - default: false
+      description: SHA-1 fingerprint of a certificate
+      isArray: false
+      name: certificate
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Limit the results number (Increasing number can cause browser slowdowns).
+      isArray: false
+      name: limitResults
+      required: false
+      secret: false
+    deprecated: false
+    description: Query a certificate value to get all associated addresses
+    execution: false
+    name: circl-ssl-query-certificate
+    outputs:
+    - contextPath: CIRCLssl.Certificate.SHA1
+      description: ' The SHA-1 fingerprint of the certificate'
+      type: string
+    - contextPath: CIRCLssl.Certificate.Hits
+      description: Number of hits for the certificate (number of associated addresses)
+      type: number
+    - contextPath: CIRCLssl.Certificate.IPAddress
+      description: IP address associated to the certificate
+      type: string
+  - arguments:
+    - default: false
+      description: SHA-1 fingerprint of a certificate
+      isArray: false
+      name: certificate
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the raw certificate and related information.
+    execution: false
+    name: circl-ssl-get-certificate
+    outputs:
+    - contextPath: CIRCLssl.Certificate.SHA1
+      description: The SHA-1 fingerprint of the certificate
+      type: string
+    - contextPath: CIRCLssl.Certificate.Usage
+      description: Extended key usage
+      type: string
+    - contextPath: CIRCLssl.Certificate.Distribution
+      description: CRL distribution points
+      type: string
+    - contextPath: CIRCLssl.Certificate.Issuer
+      description: Certificate issuer
+      type: string
+    - contextPath: CIRCLssl.Certificate.Time
+      description: Certificate issued time (***not_before)
+      type: date
+    - contextPath: CIRCLssl.Certificate.Subject
+      description: Certificate subject
+      type: string
+    - contextPath: CIRCLssl.Certificate.Key
+      description: Certificate public key
+      type: string
+    - contextPath: CIRCLssl.Certificate.Pem
+      description: Certificate in PEM format
+      type: string
+    - contextPath: CIRCLssl.Certificate.Seen
+      description: Number of times the certificate was seen
+      type: number
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- CirclIntegrationTest

@@ -1,0 +1,1 @@
+Allows to parse and extract http flows (requests & responses) from a pcap/pcapng file.

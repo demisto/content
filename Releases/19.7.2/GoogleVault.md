@@ -1,0 +1,1 @@
+- Package Integration, better error handling, use 'proxy' and 'insecure' integration parameters.

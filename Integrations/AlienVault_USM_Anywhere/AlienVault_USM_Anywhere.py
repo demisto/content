@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import dateparser
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -29,10 +30,29 @@ HEADERS = {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
 }
+TIME_FORMAT = demisto.params().get('time_format', 'auto-discovery')
 AUTH_TOKEN = ''
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def parse_time(time_str):
+    if TIME_FORMAT != 'auto-discovery':
+        return TIME_FORMAT
+
+    regex_to_format = {
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z': '%Y-%m-%dT%H:%M:%SZ',
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z': '%Y-%m-%dT%H:%M:%S.%fZ'
+    }
+
+    selected_format = '%Y-%m-%dT%H:%M:%SZ'
+    for regex, date_format in regex_to_format.items():
+        if re.match(regex, time_str):
+            selected_format = date_format
+            break
+
+    return selected_format
 
 
 def http_request(method, url_suffix, params=None, headers=None, data=None, **kwargs):
@@ -69,7 +89,7 @@ def get_token():
                        headers={'Content-Type': 'application/www-form-urlencoded'},
                        auth=basic_auth_credentials)
 
-    return res['access_token']
+    return res.get('access_token')
 
 
 @logger
@@ -151,12 +171,12 @@ def parse_alarms(alarms_data):
             'RuleStrategy': alarm.get('rule_strategy'),
 
             'Source': {
-                'IPAddress': alarm['alarm_source_names'],
-                'Organization': alarm['alarm_source_organisations'],
-                'Country': alarm['alarm_source_countries'],
+                'IPAddress': alarm.get('alarm_source_names') or alarm.get('source_name'),
+                'Organization': alarm.get('alarm_source_organisations') or alarm.get('source_organisation'),
+                'Country': alarm.get('alarm_source_countries') or alarm.get('source_country'),
             },
             'Destination': {
-                'IPAddress': alarm['alarm_destination_names'],
+                'IPAddress': alarm.get('alarm_destination_names') or alarm.get('destination_name'),
             },
             'Event': events
         })
@@ -197,6 +217,22 @@ def parse_events(events_data):
         })
 
     return events
+
+
+def dict_value_to_int(target_dict: Dict, key: str):
+    """
+    :param target_dict: A dictionary which has the key param
+    :param key: The key that we need to convert it's value to integer
+    :return: The integer representation of the key's value in the dict params
+    """
+    try:
+        if target_dict:
+            value = target_dict.get(key)
+            if value:
+                target_dict[key] = int(value)
+                return target_dict[key]
+    except ValueError:
+        raise ValueError(f'The value for {key} must be an integer.')
 
 
 def item_to_incident(item):
@@ -364,23 +400,31 @@ def get_events_by_alarm_command():
 def fetch_incidents():
     last_run = demisto.getLastRun()
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('time')
+    last_fetch = last_run.get('timestamp')
 
     # Handle first time fetch, fetch incidents retroactively
+    # OR
+    # Handle first time after release
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
+        time_field = last_run.get('time')
+        if time_field:
+            last_fetch = date_to_timestamp(time_field, parse_time(time_field))
+        else:
+            last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     incidents = []
-    items = search_alarms(start_time=date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ'), direction='asc')
+    limit = dict_value_to_int(demisto.params(), 'fetch_limit')
+    items = search_alarms(start_time=last_fetch, direction='asc', limit=limit)
     for item in items:
         incident = item_to_incident(item)
         incidents.append(incident)
 
     if incidents:
         #  updating according to latest incident
-        last_fetch = incidents[-1]['occurred']
+        time_str = str(incidents[-1].get('occurred'))
+        last_fetch = str(date_to_timestamp(time_str, date_format=parse_time(time_str)))
 
-    demisto.setLastRun({'time': last_fetch})
+    demisto.setLastRun({'timestamp': last_fetch})
     demisto.incidents(incidents)
 
 

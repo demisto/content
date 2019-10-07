@@ -1,14 +1,14 @@
 id: CrowdStrike Falcon Intel v2
-version: 5
+version: -1
 name: CrowdStrike Falcon Intel v2
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a0ba76ba-e422-4840-8538-1318b29e3b87
+    taskid: 2563b107-8432-4d8f-86d6-cf4b2f74a0a2
     type: start
     task:
-      id: a0ba76ba-e422-4840-8538-1318b29e3b87
+      id: 2563b107-8432-4d8f-86d6-cf4b2f74a0a2
       version: -1
       name: ""
       iscommand: false
@@ -20,17 +20,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 631e22f3-2f4e-47f3-8bed-2ab8a5161a92
+    taskid: a0690b52-40a9-4023-8aba-5202bce9e7e2
     type: regular
     task:
-      id: 631e22f3-2f4e-47f3-8bed-2ab8a5161a92
+      id: a0690b52-40a9-4023-8aba-5202bce9e7e2
       version: -1
       name: Check IP Address
       script: FalconIntel|||ip
@@ -47,17 +49,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 391
+          "x": 50,
+          "y": 370
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 9336fc6c-2cee-41c9-865e-c090a48c0b97
+    taskid: 22f372fd-22f4-45c8-8a56-6b0567d17fbe
     type: regular
     task:
-      id: 9336fc6c-2cee-41c9-865e-c090a48c0b97
+      id: 22f372fd-22f4-45c8-8a56-6b0567d17fbe
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -75,17 +79,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 451,
-          "y": 225
+          "x": 50,
+          "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: e381c0d4-7e42-4fa3-80ad-fdef60037021
+    taskid: 43e08778-21ef-4d20-8ec5-e694ad9b06cc
     type: regular
     task:
-      id: e381c0d4-7e42-4fa3-80ad-fdef60037021
+      id: 43e08778-21ef-4d20-8ec5-e694ad9b06cc
       version: -1
       name: Check File
       script: FalconIntel|||file
@@ -102,17 +108,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 556
+          "x": 50,
+          "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: e687692e-c334-4de7-82ba-7424433d4e9a
+    taskid: 5825a5ef-e623-4b61-8f5d-8d27d54931ac
     type: regular
     task:
-      id: e687692e-c334-4de7-82ba-7424433d4e9a
+      id: 5825a5ef-e623-4b61-8f5d-8d27d54931ac
       version: -1
       name: Check URL
       script: FalconIntel|||url
@@ -129,17 +137,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 709
+          "x": 50,
+          "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 2bd57c60-7aa2-4018-8882-3637dc255b60
+    taskid: bb11d0c5-0478-436e-80e6-8c0b5c819be1
     type: regular
     task:
-      id: 2bd57c60-7aa2-4018-8882-3637dc255b60
+      id: bb11d0c5-0478-436e-80e6-8c0b5c819be1
       version: -1
       name: Check Domain
       script: FalconIntel|||domain
@@ -156,25 +166,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 878
+          "x": 50,
+          "y": 895
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 3d7bf334-e0ff-4867-8615-426acc1edc47
+    taskid: d3f0406d-c132-484c-8f15-40c08022a6c7
     type: condition
     task:
-      id: 3d7bf334-e0ff-4867-8615-426acc1edc47
+      id: d3f0406d-c132-484c-8f15-40c08022a6c7
       version: -1
       name: Test if values exist from API calls
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "8"
       "yes":
       - "13"
     separatecontext: false
@@ -216,17 +226,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1040
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 082c6d81-b48b-4f60-894e-3609540b9400
+    taskid: 4a47d3e9-70c6-47c9-86e9-2a9f37ad7793
     type: title
     task:
-      id: 082c6d81-b48b-4f60-894e-3609540b9400
+      id: 4a47d3e9-70c6-47c9-86e9-2a9f37ad7793
       version: -1
       name: Test playbook finished successfully.
       type: title
@@ -236,47 +248,30 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 114,
-          "y": 1879
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
-  "8":
-    id: "8"
-    taskid: 15f74464-483b-4658-89d2-d6db36f31702
-    type: regular
-    task:
-      id: 15f74464-483b-4658-89d2-d6db36f31702
-      version: -1
-      name: Some value was not found
-      scriptName: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      error:
-        simple: Some value was not found
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 926,
-          "y": 1205
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: d2f007d3-1473-4a40-84cc-e6fc7db7c2d7
+    taskid: d9ae6ec4-2d15-41aa-895e-b3aecc0580e5
     type: regular
     task:
-      id: d2f007d3-1473-4a40-84cc-e6fc7db7c2d7
+      id: d9ae6ec4-2d15-41aa-895e-b3aecc0580e5
       version: -1
       name: Search known actors
-      script: FalconIntel|||cs-actors
+      description: Search known actors based on the given parameters. Dates are formatted
+        as YYYY-MM-DD. Max date is taken automatically looking at end-of-day time.
+        Origins, targetCountries, targetIndustries and motivations can all receive
+        multiple values separated by ",". Offset is 0 based. Sort is field_name.order,
+        field_name.order where order is either asc or desc.
+      script: '|||cs-actors'
       type: regular
       iscommand: true
-      brand: FalconIntel
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -302,23 +297,26 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 101,
-          "y": 1320
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 63c3a8e9-d8d8-4909-88cf-67e887e113db
+    taskid: ef036f00-07eb-497b-8966-7b4e16072881
     type: regular
     task:
-      id: 63c3a8e9-d8d8-4909-88cf-67e887e113db
+      id: ef036f00-07eb-497b-8966-7b4e16072881
       version: -1
       name: Search known indicators
-      script: FalconIntel|||cs-indicators
+      description: Search known indicators based on the given parameters
+      script: '|||cs-indicators'
       type: regular
       iscommand: true
-      brand: FalconIntel
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
@@ -336,23 +334,27 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 531,
-          "y": 1320
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 2ff4a649-1e95-45df-8858-b544ec32399b
+    taskid: 758d2d76-0d38-4750-80a7-1f07ec164d1d
     type: regular
     task:
-      id: 2ff4a649-1e95-45df-8858-b544ec32399b
+      id: 758d2d76-0d38-4750-80a7-1f07ec164d1d
       version: -1
       name: Query CrowdStrike intelligence publications
-      script: FalconIntel|||cs-reports
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+        publications.
+      script: '|||cs-reports'
       type: regular
       iscommand: true
-      brand: FalconIntel
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
@@ -363,7 +365,8 @@ tasks:
       limit:
         simple: "2"
       maxLastModifiedDate: {}
-      minLastModifiedDate: {}
+      minLastModifiedDate:
+        simple: 2019-06-28
       motivations: {}
       name: {}
       offset: {}
@@ -379,17 +382,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 101,
-          "y": 1650
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 9aa5e908-f84f-47aa-8027-71a2b179ccf6
+    taskid: 0c544724-337f-4d80-834f-9ab2d9377449
     type: regular
     task:
-      id: 9aa5e908-f84f-47aa-8027-71a2b179ccf6
+      id: 0c544724-337f-4d80-834f-9ab2d9377449
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -407,25 +412,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 151,
-          "y": 1175
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: dda00278-9b22-4d5e-86c7-4592a6da669f
+    taskid: 177816e5-3a30-45ac-8d8e-42b2296750d2
     type: condition
     task:
-      id: dda00278-9b22-4d5e-86c7-4592a6da669f
+      id: 177816e5-3a30-45ac-8d8e-42b2296750d2
       version: -1
       name: Test if values exist from API calls
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "15"
       "yes":
       - "11"
     separatecontext: false
@@ -467,43 +472,21 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 531,
-          "y": 1495
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
-  "15":
-    id: "15"
-    taskid: 6d121368-aa22-4120-86a1-05dccdfbfe09
-    type: regular
-    task:
-      id: 6d121368-aa22-4120-86a1-05dccdfbfe09
-      version: -1
-      name: Some value was not found
-      scriptName: RaiseError
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      error:
-        simple: Some value was not found
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 926,
-          "y": 1677
-        }
-      }
-    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1894,
-        "width": 1205,
-        "x": 101,
+        "height": 2135,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }

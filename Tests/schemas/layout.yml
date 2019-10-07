@@ -2,15 +2,17 @@ type: map
 mapping:
   typeId:
     type: str
-    required: yes
+    required: True
+  TypeName:
+    type: str
+  version:
+    type: number
   kind:
     type: str
-    required: yes
+    required: True
   fromVersion:
     type: str
   toVersion:
-    type: str
-  releaseNotes:
     type: str
   system:
     type: bool
@@ -19,22 +21,32 @@ mapping:
     mapping:
       id:
         type: str
-        required: yes
+        required: True
+      system:
+        type: bool
+      TypeName:
+        type: str
       version:
         type: number
-        required: yes
+      kind:
+        type: str
+      typeId:
+        type: str
       modified:
         type: str
       name:
         type: str
+      tabs:
+        type: seq
+        sequence:
+          - include: tabs_schema
       sections:
         type: seq
-        required: yes
         sequence:
         - include: section_schema
 
-
-
+schema;tabs_schema:
+  type: any
 
 schema;section_schema:
   type: map

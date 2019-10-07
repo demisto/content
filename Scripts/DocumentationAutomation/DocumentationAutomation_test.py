@@ -10,7 +10,6 @@ def test_get_yaml_obj(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
 
     # sanity
-    print os.getcwd()
     file_path = os.path.join('test_data', 'ANYRUN_yml.txt')
     mocker.patch.object(demisto, 'getFilePath',
                         return_value={'path': file_path})
@@ -80,3 +79,55 @@ def test_extract_command():
     assert len(expected) == len(args)
     for k, v in expected.items():
         assert args[k] == v
+
+
+def test_generate_commands_section():
+    from DocumentationAutomation import generate_commands_section
+
+    yml_data = {
+        'script': {
+            'commands': [
+                {'deprecated': True,
+                 'name': 'deprecated-cmd'},
+                {'deprecated': False,
+                 'name': 'non-deprecated-cmd'}
+            ]
+        }
+    }
+
+    section, errors = generate_commands_section(yml_data, {})
+
+    expected_section = [
+        '## Commands', '---',
+        'You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.',
+        'After you successfully execute a command, a DBot message appears in the War Room with the command details.',
+        '1. non-deprecated-cmd', '### 1. non-deprecated-cmd', '---', ' ', '##### Required Permissions',
+        '**FILL IN REQUIRED PERMISSIONS HERE**', '##### Base Command', '', '`non-deprecated-cmd`', '##### Input', '',
+        'There are no input arguments for this command.', '', '##### Context Output', '',
+        'There is no context output for this command.', '', '##### Command Example', '``` ```', '',
+        '##### Human Readable Output', '', '']
+
+    assert section == expected_section
+
+
+def test_add_lines():
+    from DocumentationAutomation import add_lines
+
+    outputs = [
+        add_lines('this is some free text.'),
+        add_lines('1.this is numbered text.'),
+        add_lines('this is multi line\nwithout numbers'),
+        add_lines('1.this is multi line\n2.with numbers'),
+        add_lines('12.this is multi line\n1234.with large numbers'),
+    ]
+
+    expected_values = [
+        ['this is some free text.'],
+        ['1.this is numbered text.'],
+        ['this is multi line\nwithout numbers'],
+        ['1.this is multi line', '2.with numbers'],
+        ['12.this is multi line', '1234.with large numbers']
+    ]
+
+    for expected, out in zip(expected_values, outputs):
+        assert out == expected

@@ -435,7 +435,7 @@ def query_logs_command():
         if query_status in {'RUNNING', 'JOB_FAILED'}:
             raise Exception(f'Logging query job failed with status: {query_status}')
         result = response_json.get('result', {})
-        pages = result['esResult']['hits']['hits']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
@@ -505,7 +505,7 @@ def get_critical_logs_command():
 
     try:
         result = response.json()['result']
-        pages = result['esResult']['hits']['hits']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
@@ -572,7 +572,7 @@ def get_social_applications_command():
 
     try:
         result = response.json()['result']
-        pages = result['esResult']['hits']['hits']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
@@ -642,7 +642,7 @@ def search_by_file_hash_command():
 
     try:
         result = response.json()['result']
-        pages = result['esResult']['hits']['hits']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1]
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
@@ -728,7 +728,7 @@ def fetch_incidents():
             demisto.incidents([])
             return
         result = response_json.get('result', {})
-        pages = result['esResult']['hits']['hits']
+        pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
     except ValueError:
         raise Exception('Failed to parse the response from Cortex')
 

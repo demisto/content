@@ -156,8 +156,6 @@ mapping:
     required: yes
   toversion:
     type: text
-  releaseNotes:
-    type: str
   tests:
     type: seq
     sequence:
