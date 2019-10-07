@@ -47,7 +47,7 @@ class StructureValidator(object):
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
         INTEGRATION_PS_REGEX,
-        REPUTATION_REGEX
+        REPUTATION_REGEX,
         BETA_INTEGRATION_YML_REGEX
     ]
     REGEXES_TO_SCHEMA_DICT = {
