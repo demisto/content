@@ -40,16 +40,13 @@ def sign_email(client: Client, args: Dict):
     """
     message_body = args.get('message_body', '')
 
-    # Make a MemoryBuffer of the message.
     buf = makebuf(message_body.encode())
-    # Instantiate an SMIME object; set it up; sign the buffer.
+
     client.smime.load_key(client.private_key_file, client.public_key_file)
     p7 = client.smime.sign(buf, SMIME.PKCS7_DETACHED)
 
-    # Recreate buf.
     buf = makebuf(message_body.encode())
 
-    # Output p7 in mail-friendly format.
     out = BIO.MemoryBuffer()
     client.smime.write(out, p7, buf)
 
@@ -77,22 +74,17 @@ def encrypt_email_body(client: Client, args: Dict):
     """
     message_body = args.get('message', '').encode('utf-8')
 
-    # Make a MemoryBuffer of the message.
     buf = makebuf(message_body)
 
-    # Load target cert to encrypt to.
     x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
     sk.push(x509)
     client.smime.set_x509_stack(sk)
 
-    # Set cipher: 3-key triple-DES in CBC mode.
     client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
 
-    # Encrypt the buffer.
     p7 = client.smime.encrypt(buf)
 
-    # Output p7 in mail-friendly format.
     out = BIO.MemoryBuffer()
 
     client.smime.write(out, p7)
@@ -120,19 +112,15 @@ def verify(client: Client, args: Dict):
     """
     signed_message = demisto.getFilePath(args.get('signed_message'))
 
-    # Load the signer's cert.
     x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
     sk.push(x509)
     client.smime.set_x509_stack(sk)
 
-    # Load the signer's CA cert. In this case, because the signer's
-    # cert is self-signed, it is the signer's cert itself.
     st = X509.X509_Store()
     st.load_info(client.public_key_file)
     client.smime.set_x509_store(st)
 
-    # Load the data, verify it.
     p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
     v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
 
@@ -152,13 +140,11 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         encrypt_message = file_path
     else:
         encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
-    # Load private key and cert.
+
     client.smime.load_key(client.private_key_file, client.public_key_file)
 
-    # Load the encrypted data.
     p7, data = SMIME.smime_load_pkcs7(encrypt_message['path'])
 
-    # Decrypt p7.
     out = client.smime.decrypt(p7).decode('utf-8')
     entry_context = {
         'SMIME.Decrypted': {
