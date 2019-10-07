@@ -664,7 +664,9 @@ script:
       secret: false
     - default: false
       description: Free input query to search. This is the WHERE part of the query
-        so an example will be src = '1.1.1.1' OR rule = 'test rule'
+        so an example will be 
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' 
+        AND dst = '192.168.1.2'"
       isArray: false
       name: query
       required: false
@@ -673,6 +675,7 @@ script:
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
+        List of fields can be found 
       isArray: false
       name: fields
       required: false
@@ -900,7 +903,9 @@ script:
       secret: false
     - default: false
       description: Free input query to search. This is the WHERE part of the query.
-        So an example will be src = '1.1.1.1' OR rule = 'test rule'
+        so an example will be 
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' 
+        AND dst = '192.168.1.12'"
       isArray: false
       name: query
       required: false
