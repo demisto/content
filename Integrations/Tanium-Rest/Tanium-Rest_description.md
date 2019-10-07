@@ -1,1 +1,1 @@
- 
+Integration with Tanium with REST api. You can ask questions and get the question results, create actions, saved question and groups, gets packages, groups and sensors information. 

@@ -28,15 +28,15 @@ class Client(BaseClient):
             self.update_session()
 
         res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                 resp_type='response', ok_codes=[200, 403, 404])
+                                 resp_type='response', ok_codes=[200, 400, 403, 404])
 
         if res.status_code == 403:
             self.update_session()
             res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                     ok_codes=[200, 403, 404])
+                                     ok_codes=[200, 400, 403, 404])
             return res
 
-        if res.status_code == 404:
+        if res.status_code == 404 or res.status_code == 400:
             return_error(res.json().get('text'))
 
         return res.json()
