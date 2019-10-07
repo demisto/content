@@ -1,0 +1,2 @@
+!ip ip=8.8.8.8
+!domain domain=demisto.com
