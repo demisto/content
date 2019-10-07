@@ -140,15 +140,18 @@ def verify(client: Client, args: Dict):
     return human_readable, {}
 
 
-def decrypt_email_body(client: Client, args: Dict):
+def decrypt_email_body(client: Client, args: Dict, file_path=None):
     """ Decrypt the message
 
     Args:
         client: Client
         args: Dict
+        file_path: relevant for the test module
     """
-
-    encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+    if file_path:
+        encrypt_message = file_path
+    else:
+        encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
     # Load private key and cert.
     client.smime.load_key(client.private_key_file, client.public_key_file)
 
@@ -167,9 +170,17 @@ def decrypt_email_body(client: Client, args: Dict):
     return human_readable, entry_context
 
 
-def test_module(client):
-    sign_email()
-    demisto.results('ok')
+def test_module(client, *_):
+    message_body = 'testing'
+    encrypt_message = encrypt_email_body(client, {'message': message_body})
+    with open('test.p7', 'wb') as f:
+        f.write(bytes(encrypt_message[0], 'utf-8'))
+
+    decrypt_message = decrypt_email_body(client, {}, file_path={'path': os.path.abspath('test.p7')})
+    if decrypt_message:
+        demisto.results('ok')
+    else:
+        demisto.results('There might be a problem with one of your keys')
 
 
 def main():

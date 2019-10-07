@@ -1,4 +1,4 @@
-from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body
+from SMIME_Messaging import Client, sign_email, encrypt_email_body, verify, decrypt_email_body, test_module
 import demistomock as demisto
 
 
@@ -40,3 +40,9 @@ def test_decrypt(mocker):
 
     decrypted, _ = decrypt_email_body(client, {})
     assert 'Hello world' in decrypted
+
+
+def test_test_module(mocker):
+    mocker.patch.object(demisto, 'results')
+    response = test_module(client)
+    assert 'Hello World' in response
