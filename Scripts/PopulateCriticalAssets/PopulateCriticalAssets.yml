@@ -17,3 +17,5 @@ args:
 scripttarget: 0
 runonce: false
 runas: DBotWeakRole
+tests:
+  - Calculate Severity - Generic v2 - Test
