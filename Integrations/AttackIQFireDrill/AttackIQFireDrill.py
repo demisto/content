@@ -121,10 +121,11 @@ TEST_RESULT_TRANS = {
 
 ''' HELPER FUNCTIONS '''
 
+
 @logger
 def http_request(method, url_suffix, params=None, data=None):
     url = f'{SERVER}/{url_suffix}'
-    LOG(f'attackiq is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)} \n '
+    LOG(f'AttackIQ is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)} \n '
         f'data:\n"{json.dumps(data)}')
     try:
         res = requests.request(
@@ -540,13 +541,13 @@ def list_templates_command():
     for template_group in res.get("results", []):
         for template in template_group.get('project_templates', []):
             template_dict = {
-                            "ID": template.get("id"),
-                            'Name': template.get("template_name"),
-                            'Description': template.get("template_description"),
-                            'ProjectName': template.get('project_name'),
-                            'ProjectDescription': template.get('project_description'),
-                            'Hidden': template.get('hidden')
-                            }
+                "ID": template.get("id"),
+                'Name': template.get("template_name"),
+                'Description': template.get("template_description"),
+                'ProjectName': template.get('project_name'),
+                'ProjectDescription': template.get('project_description'),
+                'Hidden': template.get('hidden')
+            }
             templates.append(template_dict)
     ec = {
         "AttackIQ.Template(val.ID && val.ID === obj.ID)": templates
@@ -580,7 +581,7 @@ def list_assets_command():
         }
         groups = []
         for group in asset.get('asset_groups', []):
-            temp_group ={
+            temp_group = {
                 "ID": group.get('id'),
                 "Name": group.get('name')
             }
@@ -642,8 +643,9 @@ def add_assets_to_assessment():
     try:
         res = http_request('POST', f'/v1/assessments/{assessment_id}/update_defaults', data=json.dumps(data))
         demisto.results(res.get('message', ''))
-    except Exception as e:
+    except Exception:
         raise ValueError("Could not find either the assessment or one of the assets/asset groups.")
+
 
 @logger
 def delete_assessment_command():
