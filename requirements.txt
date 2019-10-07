@@ -1,3 +1,7 @@
+pdf2image
+numpy
+PIL
+selenium
 google
 Google-Search-API
 pyping
