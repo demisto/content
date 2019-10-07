@@ -26,6 +26,11 @@
             "fromversion": "4.1.0"
         },
         {
+
+            "integrations": "AlienVault_OTX_v2",
+            "playbookID": "Alienvault_OTX_v2-test"
+        },
+        {
             "integrations": "AWS - SQS",
             "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },

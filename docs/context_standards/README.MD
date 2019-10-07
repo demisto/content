@@ -69,7 +69,7 @@ The following is the format for an IP entity
         "Vendor": "STRING, The vendor reporting the IP address as malicious.",
         "Description": "STRING, A description explaining why the IP address was reported as malicious."
     },
-    "Address": "STRING, IP address",
+    "Address": "STRING, IP address.",
     "ASN": "STRING, The autonomous system name for the IP address, for example: "AS8948".",
     "Hostname": "STRING, The hostname that is mapped to this IP address.",
     "Geo":{
