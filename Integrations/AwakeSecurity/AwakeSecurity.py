@@ -1,4 +1,4 @@
-from typing import *;import demistomock as demisto
+import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
 import base64

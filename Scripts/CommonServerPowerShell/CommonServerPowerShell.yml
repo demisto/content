@@ -12,6 +12,6 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
   - No test - TODO
