@@ -1,0 +1,963 @@
+commonfields:
+  id: Signal / Sciences / WAF
+  version: -1
+name: Signal Sciences WAF
+display: Signal Sciences WAF
+category: Network Security
+description: Protect your web application using Signal Sciences.
+configuration:
+- display: Email
+  name: Email
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Token
+  name: Token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Corporation Name
+  name: corpName
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Fetch Interval (in minutes)
+  name: fetch_interval
+  defaultvalue: "720"
+  type: 0
+  required: false
+- display: CSV list of sites to fetch from.
+    If no sites are specified, events from all corporation's sites will be fetched.
+  name: sites_to_fetch
+  defaultvalue: ""
+  type: 12
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: sigsci-get-whitelist
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that holds the whitelist you want to get.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
+      description: ID for this particular entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
+      description: IP Address present in the whitelist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
+      description: Expiration Timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
+      description: Note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
+      description: The user who added this source.
+      type: string
+    description: Fetches a site's whitelist, which resides on the Signal Sciences' platform.
+  - name: sigsci-get-blacklist
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that holds the blacklist you wish to get
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
+      description: The IP address on the blacklist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
+      description: The user who added this source.
+      type: string
+    description: Fetches a site's blacklist, which resides on the Signal Sciences' platform.
+  - name: sigsci-whitelist-add-ip
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that holds the whitelist you want to add an IP address to.
+    - name: ip
+      required: true
+      description: The IP address to add to the site's whitelist.
+    - name: note
+      required: true
+      description: The note associated with the tag.
+    - name: expires
+      description: The datetime for the IP address to removed from the site's whitelist (in RFC3339 format). To keep the IP address on the site's whitelist indefinitely, do not specify this argument.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Whitelist.Source
+      description: The IP address on the whitelist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedBy
+      description: The user who added this source.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Whitelist.CreatedDate
+      description: The created date timestamp
+      type: date
+    - contextPath: SigSciences.Corp.Site.Whitelist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+    description: Adds an IP address to a site's whitelist, which resides the Signal Sciences' platform.
+  - name: sigsci-blacklist-add-ip
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that holds the blacklist you wish to add to
+    - name: ip
+      required: true
+      description: The IP address to add to the site's blacklist.
+    - name: note
+      required: true
+      description: The note associated with the tag.
+    - name: expires
+      description: The datetime for the IP address to removed from the site's blacklist (in RFC3339 format). To keep the IP address on the site's blacklist indefinitely, do not specify this argument.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Blacklist.Source
+      description: The IP address on the blacklist.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.Note
+      description: The note associated with the tag.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.ID
+      description: The ID for this entry.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedBy
+      description: The user who added this source.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Blacklist.CreatedDate
+      description: The created date timestamp.
+      type: date
+    - contextPath: SigSciences.Corp.Site.Blacklist.ExpiryDate
+      description: The expiration timestamp.
+      type: date
+    description: Adds an IP to a site's blacklist, which resides on the Signal Sciences' platform.
+  - name: sigsci-whitelist-remove-ip
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that contains the whitelist you want to remove an IP address from.
+    - name: IP
+      required: true
+      description: The IP address entry to remove.
+    description: Removes an IP address from a site's whitelist, which resides on the Signal Sciences' platform.
+  - name: sigsci-blacklist-remove-ip
+    arguments:
+    - name: siteName
+      required: true
+      description: The site that contains the blacklist you want to remove an IP address from.
+    - name: IP
+      required: true
+      description: The IP address entry to remove.
+    description: Removes an IP from a site's blacklist, which resides on the Signal Sciences' platform.
+  - name: sigsci-get-sites
+    arguments: []
+    outputs:
+    - contextPath: SigSciences.Site.Name
+      description: The site name.
+      type: string
+    - contextPath: SigSciences.Site.CreatedDate
+      description: The site creation date.
+      type: date
+    description: Returns all site names from the Signal Sciences platform.
+  - name: sigsci-create-site-list
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site in Signal Sciences you want to add a list to.
+    - name: list_name
+      required: true
+      description: The name of the list to create on Signal Sciences.
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - String
+      - Country
+      - Wildcard
+      description: The type for the list you wish to create on Signal Sciences. Legal
+        types are IP, String, Country or Wildcard
+    - name: entries_list
+      required: true
+      description: A CSV list of values, consistent with the list's type.
+      isArray: true
+    - name: description
+      description: Short text that describes the new list.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list.
+      type: string
+    description: Creates a new list for a given site on the Signal Sciences platform.
+  - name: sigsci-get-site-list
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site in Signal Sciences that the list you're searching
+        for belongs to.
+    - name: list_id
+      required: true
+      description: The ID of the list.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: 'The creator of the list. '
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list.
+    description: Returns all the data about a site list.
+  - name: sigsci-delete-site-list
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site in Signal Sciences you want to delete a list from.
+    - name: list_id
+      required: true
+      description: The ID of the list in Signal Sciences to delete.
+    description: Deletes a site list in Signal Sciences.
+  - name: sigsci-update-site-list
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site in Signal Sciences that the list to update belongs to.
+    - name: list_id
+      required: true
+      description: The ID of the list to update.
+    - name: method
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Add
+      - Remove
+      description: The method to use, must be "Add" or "Remove". The method
+        will determine whether the given entries are added to or removed from the list.
+    - name: entries_list
+      required: true
+      description: A CSV list of values, consistent with the list's type.
+      isArray: true
+    - name: description
+      description: A description for the updated list.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list in Signal Sciences.
+      type: unknown
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list in Signal Sciences. Maximum is 140 characters.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list in Signal Sciences.
+      type: string
+    description: Updates a site list in Signal Sciences.
+  - name: sigsci-add-alert
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to add an alert to.
+    - name: long_name
+      required: true
+      description: A human readable description of the alert. Must be between 3 and
+        25 characters.
+    - name: interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "60"
+      description: The number of minutes of past traffic to examine. Must be 1, 10
+        or 60.
+    - name: tag_name
+      required: true
+      description: The name of the tag whose occurrences the alert is watching. Must
+        match an existing tag.
+    - name: threshold
+      required: true
+      description: ' The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.'
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: A flag to toggle this alert ("True" or "False").
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - info
+      - flagged
+      description: A flag that describes what happens when the alert is triggered.
+        "info" creates an incident in the dashboard. "flagged" creates an incident
+        and blocks traffic for 24 hours.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds that this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+    description: Adds a custom alert to a site in Signal Sciences.
+  - name: sigsci-get-alert
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site the alert you want to get data for belongs to.
+    - name: alert_id
+      required: true
+      description: The ID of the alert to retrieve.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of the event (RFC3339 format).
+      type: date
+    description: Retrieves data for an alert.
+  - name: sigsci-delete-alert
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to delete an alert from.
+    - name: alert_id
+      required: true
+      description: The ID of the alert to delete.
+    description: Deletes an alert from a given site in Signal Sciences.
+  - name: sigsci-update-alert
+    arguments:
+    - name: siteName
+      required: true
+      description: The site of the alert to update.
+    - name: alert_id
+      required: true
+      description: The ID of the alert to update.
+    - name: tag_name
+      required: true
+      description: The name of the tag whose occurrences the alert is watching.
+    - name: long_name
+      required: true
+      description: A human readable description of the alert. Must be between 3 and
+        25 characters.
+    - name: interval
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "10"
+      - "60"
+      description: The number of minutes of past traffic to examine.
+    - name: threshold
+      required: true
+      description: The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.
+    - name: enabled
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: A flag to toggle this alert.
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - info
+      - flagged
+      description: A flag that describes what happens when the alert is triggered.
+        "info" creates an incident in the dashboard. "flagged" creates an incident
+        and blocks traffic for 24 hours.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds that this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotifications
+      description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+    description: Updates the attributes of a given alert.
+  - name: sigsci-get-all-alerts
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of site to get alerts for.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Alert.ID
+      description: The unique ID of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.SiteID
+      description: The ID of the site.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.TagName
+      description: The name of the tag whose occurrences the alert is watching.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.LongName
+      description: A short description of the alert.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.Interval
+      description: The number of minutes of past traffic to examine.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.Threshold
+      description: The number of occurrences of the tag in the specified interval that are required to
+        trigger the alert.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.BlockDurationSeconds
+      description: ' The number of seconds this alert is active.'
+      type: number
+    - contextPath: SigSciences.Corp.Site.Alert.SkipNotification
+      description: A flag to disable external notifications - Slack, webhooks, emails, and so on.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Enabled
+      description: A flag to toggle this alert.
+      type: boolean
+    - contextPath: SigSciences.Corp.Site.Alert.Action
+      description: A flag that describes what happens when the alert is triggered.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Alert.CreatedDate
+      description: The timestamp of event (RFC3339 format).
+      type: date
+    description: Retrieves all alerts for given a site.
+  - name: sigsci-get-all-site-lists
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to retrieve lists for.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.List.Name
+      description: The name of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Type
+      description: The type of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Entries
+      description: The entry list of the list in Signal Sciences.
+    - contextPath: SigSciences.Corp.Site.List.ID
+      description: The ID of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.Description
+      description: The description of the list in Signal Sciences. Maximum is 140 characters.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedBy
+      description: The creator of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.CreatedDate
+      description: The creation date of the list in Signal Sciences.
+      type: string
+    - contextPath: SigSciences.Corp.Site.List.UpdatedDate
+      description: The last update date of the list in Signal Sciences.
+      type: string
+    description: Retrieves all site lists for a given site.
+  - name: sigsci-create-corp-list
+    arguments:
+    - name: list_name
+      required: true
+      description: A name for the new list.
+    - name: list_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - IP
+      - String
+      - Country
+      - Wildcard
+      description: The type for the new list. Legal types are "IP", "String", "Country", or "Wildcard".
+    - name: entries_list
+      required: true
+      description: A CSV list of values, consistent with the list's type.
+      isArray: true
+    - name: description
+      description: Short text that describes the new list.
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+      type: string
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+      type: string
+    description: Creates a new corp list.
+  - name: sigsci-get-corp-list
+    arguments:
+    - name: list_id
+      required: true
+      description: The ID of the list to get data for.
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+    description: Retrieves all data about a given corp list.
+  - name: sigsci-delete-corp-list
+    arguments:
+    - name: list_id
+      required: true
+      description: The ID of the list to delete.
+    description: Deletes a given corp list.
+  - name: sigsci-update-corp-list
+    arguments:
+    - name: list_id
+      required: true
+      description: The ID of the list you wish to update
+    - name: method
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Add
+      - Remove
+      description: The method you wish to use - must be "Add" or "Remove". The method
+        will determine whether the entries you provide are added to the list or removed
+        from it
+    - name: entries_list
+      required: true
+      description: A list of values, consistent with the list's type, separated by
+        commas
+      isArray: true
+    - name: description
+      description: A description for the updated list.
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+    description: Updates (add or delete) entries for a given corp list.
+  - name: sigsci-get-all-corp-lists
+    arguments: []
+    outputs:
+    - contextPath: SigSciences.Corp.List.Name
+      description: The name of the list.
+    - contextPath: SigSciences.Corp.List.Type
+      description: The type of the list.
+    - contextPath: SigSciences.Corp.List.Entries
+      description: The entry list of the list.
+    - contextPath: SigSciences.Corp.List.ID
+      description: The ID of the list.
+    - contextPath: SigSciences.Corp.List.Description
+      description: The description of the list.
+    - contextPath: SigSciences.Corp.List.CreatedBy
+      description: The creator of the list.
+    - contextPath: SigSciences.Corp.List.CreatedDate
+      description: The creation date of the list.
+    - contextPath: SigSciences.Corp.List.UpdatedDate
+      description: The last update date of the list.
+    description: Retrieves data about all lists for the given corp.
+  - name: sigsci-get-events
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to fetch events from.
+    - name: from_time
+      description: The POSIX Unix time to start.
+    - name: until_time
+      description: ' The POSIX Unix time to end. '
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: The sort order ("asc" or "desc").
+    - name: since_id
+      description: The ID of the first object in the set.
+    - name: max_id
+      description: ' The ID of the last object in the set. '
+    - name: limit
+      description: The maximum number of entries to return.
+    - name: page
+      description: The page of the results.
+    - name: action
+      auto: PREDEFINED
+      predefined:
+      - flagged
+      - info
+      description: ' The action to filter by (''flagged'' or ''info''). '
+    - name: tag
+      description: The tag to filter by. Must be a valid tag name.
+    - name: ip
+      description: The ID to filter by.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - active
+      - expired
+      description: The status to filter by ("active" or "expired").
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Event.ID
+      description: The unique ID of the event.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.Timestamp
+      description: ' The timestamp of the event (RFC3339 format).'
+      type: date
+    - contextPath: SigSciences.Corp.Site.Event.Source
+      description: The source information, for example, "IP".
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.RemoteCountryCode
+      description: The country code.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.RemoteHostname
+      description: The remote hostname.
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.UserAgents
+      description: An array of user agents.
+    - contextPath: SigSciences.Corp.Site.Event.Action
+      description: If "flagged", the IP address is flagged and subsequent malicious requests
+        will be blocked. If "info", the IP address is flagged and subsequent requests will be
+        logged.
+    - contextPath: SigSciences.Corp.Site.Event.Reasons
+      description: The reason the event was triggered.
+    - contextPath: SigSciences.Corp.Site.Event.RequestCount
+      description: The total number of requests.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.TagCount
+      description: The total number of tags.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.Window
+      description: The time window (in seconds) when the items were detected.
+      type: number
+    - contextPath: SigSciences.Corp.Site.Event.DateExpires
+      description: The date the event expires (RFC3339 format).
+      type: string
+    - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
+      description: The email address of the user that expired the event (if the event is expired
+        manually).
+      type: string
+    description: Fetches events from Signal Sciences.
+  - name: sigsci-get-event-by-id
+    arguments:
+    - name: siteName
+      required: true
+      description: Name of the site to get the event from
+    - name: event_id
+      required: true
+      description: The ID of the event.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Event.ID
+      description: The unique ID of the event.
+    - contextPath: SigSciences.Corp.Site.Event.Timestamp
+      description: ' The timestamp of the event (RFC3339 format).'
+    - contextPath: SigSciences.Corp.Site.Event.Source
+      description: Source information, for example, "IP".
+    - contextPath: SigSciences.Corp.Site.Event.RemoteCountryCode
+      description: The country code.
+    - contextPath: SigSciences.Corp.Site.Event.RemoteHostname
+      description: The remote hostname.
+    - contextPath: SigSciences.Corp.Site.Event.UserAgents
+      description: An array of user agents.
+    - contextPath: SigSciences.Corp.Site.Event.Action
+      description: If "flagged", the IP address is flagged and subsequent malicious requests
+        will be blocked. If "info", the IP address is flagged and subsequent requests will be
+        logged.
+    - contextPath: SigSciences.Corp.Site.Event.Reasons
+      description: The reason the event was triggered.
+    - contextPath: SigSciences.Corp.Site.Event.RequestCount
+      description: The total number of requests.
+    - contextPath: SigSciences.Corp.Site.Event.TagCount
+      description: The total number of tags.
+    - contextPath: SigSciences.Corp.Site.Event.Window
+      description: The time window (in seconds) when the items were detected.
+    - contextPath: SigSciences.Corp.Site.Event.DateExpires
+      description: The date the event expires (RFC3339 format).
+    - contextPath: SigSciences.Corp.Site.Event.ExpiredBy
+      description: The email address of the user that expired the event (if the event is expired
+        manually).
+    description: Retrieves an event by the event ID.
+  - name: sigsci-expire-event
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to expire an event from.
+    - name: event_id
+      required: true
+      description: The ID of the event to expire.
+    description: Expires a given event.
+  - name: sigsci-get-requests
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to get requests from.
+    - name: page
+      description: The page of the results. Maximum is 1000 requests.
+    - name: limit
+      description: The number of entries to return.
+    - name: q
+      description: The search query, in Signal Sciences syntax. If a query
+        is not supplied, no requests will be returned.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Request.ID
+      description: The unique ID of the request.
+    - contextPath: SigSciences.Corp.Site.Request.ServerHostName
+      description: The server hostname.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteIP
+      description: The remote IP address.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+      description: The remote hostname.
+    - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
+      description: The remote country code.
+    - contextPath: SigSciences.Corp.Site.Request.UserAgent
+      description: ' The user agent of the request.'
+    - contextPath: SigSciences.Corp.Site.Request.Timestamp
+      description: The timestamp (RFC3339 format).
+    - contextPath: SigSciences.Corp.Site.Request.Method
+      description: The HTTP method, for example, "PUT".
+    - contextPath: SigSciences.Corp.Site.Request.ServerName
+      description: The server name.
+    - contextPath: SigSciences.Corp.Site.Request.Protocol
+      description: ' The HTTP protocol, for example, "HTTP/1.1" .'
+    - contextPath: SigSciences.Corp.Site.Request.Path
+      description: The path.
+    - contextPath: SigSciences.Corp.Site.Request.URI
+      description: The URI.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseCode
+      description: The HTTP response code.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseSize
+      description: ' The HTTP response size.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
+      description: ' The response time in millis.'
+    - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
+      description: The agent response code.
+    - contextPath: SigSciences.Corp.Site.Request.Tags
+      description: The array of relevant tags.
+    description: Retrieves requests from a given site according to a search query.
+  - name: sigsci-get-request-by-id
+    arguments:
+    - name: siteName
+      required: true
+      description: The name of the site to get from
+    - name: request_id
+      required: true
+      description: The ID of the request to get.
+    outputs:
+    - contextPath: SigSciences.Corp.Site.Request.ID
+      description: The unique ID of the request.
+    - contextPath: SigSciences.Corp.Site.Request.ServerHostName
+      description: ' Server hostname.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteIP
+      description: ' The remote IP address.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteHostName
+      description: ' The remote hostname.'
+    - contextPath: SigSciences.Corp.Site.Request.RemoteCountryCode
+      description: The remote country code.
+    - contextPath: SigSciences.Corp.Site.Request.UserAgent
+      description: The user agent of the request.
+    - contextPath: SigSciences.Corp.Site.Request.Timestamp
+      description: ' The timestamp RFC3339 date time serverHostname string.'
+    - contextPath: SigSciences.Corp.Site.Request.Method
+      description: The HTTP method, for example, "PUT".
+    - contextPath: SigSciences.Corp.Site.Request.ServerName
+      description: ' The server name.'
+    - contextPath: SigSciences.Corp.Site.Request.Protocol
+      description: ' The HTTP protocol, for example "HTTP/1.1".'
+    - contextPath: SigSciences.Corp.Site.Request.Path
+      description: The path.
+    - contextPath: SigSciences.Corp.Site.Request.URI
+      description: The URI.
+    - contextPath: SigSciences.Corp.Site.Request.ResponseCode
+      description: ' The HTTP response code.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseSize
+      description: ' The HTTP response size.'
+    - contextPath: SigSciences.Corp.Site.Request.ResponseMillis
+      description: The response time in milliseconds.
+    - contextPath: SigSciences.Corp.Site.Request.AgentResponseCode
+      description: The agent response code.
+    - contextPath: SigSciences.Corp.Site.Request.Tags
+      description: An array of relevant tags.
+    description: Retrieves a request by request ID.
+  isfetch: true
+  runonce: false
