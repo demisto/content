@@ -1,3 +1,5 @@
+# Silence Progress STDOUT (e.g. long http request download progress)
+$progressPreference = 'silentlyContinue'
 function tableToMarkdown {
 <#
 .DESCRIPTION
