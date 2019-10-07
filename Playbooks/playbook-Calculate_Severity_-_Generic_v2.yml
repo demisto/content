@@ -78,8 +78,6 @@ tasks:
       blah: {}
       booltest: {}
       bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
