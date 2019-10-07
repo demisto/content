@@ -1426,7 +1426,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
-    if folder_path:
+    if folder_path.lower() == 'inbox':
+        folders = [account.inbox]
+    elif folder_path:
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
