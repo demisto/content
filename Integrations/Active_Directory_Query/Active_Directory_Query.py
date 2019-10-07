@@ -943,7 +943,6 @@ def main():
             if not conn.bind():
                 message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
                     json.dumps(conn.result))
-                demisto.info(message)
                 return_error(message)
                 return
         except Exception as e:
@@ -955,7 +954,6 @@ def main():
                 message = "Failed to access LDAP server. SSL error."
                 if not UNSECURE:
                     message += ' Try using: "Trust any certificate" option.'
-            demisto.info(message)
             return_error(message)
             return
 
@@ -965,7 +963,6 @@ def main():
             message = "Failed to verify the base DN configured for the instance.\n" \
                 "Last connection result: {}\n" \
                 "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
-            demisto.info(message)
             return_error(message)
             return
 
@@ -1035,7 +1032,6 @@ def main():
         if conn:
             message += "\nLast connection result: {}\nLast error from LDAP server: {}".format(
                 json.dumps(conn.result), conn.last_error)
-        demisto.info(message)
         return_error(message)
         return
     finally:
