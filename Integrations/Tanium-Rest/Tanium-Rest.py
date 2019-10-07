@@ -11,11 +11,9 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-group_types = {0: 'Filter-based group',
-              1: 'Action group',
-              2: 'Action policy pair group',
-              3: 'Ad hoc group',
-              4: 'Manual group'}
+group_types = {0: 'Filter-based group', 1: 'Action group', 2: 'Action policy pair group', 3: 'Ad hoc group',
+               4: 'Manual group'}
+
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, domain, **kwargs):
@@ -29,11 +27,13 @@ class Client(BaseClient):
         if not self.session:
             self.update_session()
 
-        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data, resp_type='response', ok_codes = [200, 403,404] )
+        res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
+                                 resp_type='response', ok_codes=[200, 403, 404])
 
         if res.status_code == 403:
             self.update_session()
-            res = self._http_request(method, url_suffix,headers={'session': self.session}, json_data=data, ok_codes=[200, 403, 404])
+            res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
+                                     ok_codes=[200, 403, 404])
             return res
 
         if res.status_code == 404:
@@ -48,7 +48,7 @@ class Client(BaseClient):
             'password': self.password
         }
 
-        res = self._http_request('GET', 'session/login', json_data=body, ok_codes = [200] )
+        res = self._http_request('GET', 'session/login', json_data=body, ok_codes=[200])
 
         self.session = res.get('data').get('session')
 

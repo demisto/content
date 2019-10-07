@@ -81,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1710
+          "y": 1885
         }
       }
     note: false
@@ -241,7 +241,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "27"
     scriptarguments:
       count: {}
     separatecontext: false
@@ -279,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 2060
         }
       }
     note: false
@@ -309,7 +309,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 2235
         }
       }
     note: false
@@ -339,7 +339,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 2410
         }
       }
     note: false
@@ -369,7 +369,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 2585
         }
       }
     note: false
@@ -398,7 +398,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
@@ -448,7 +448,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 1740
         }
       }
     note: false
@@ -477,7 +477,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
@@ -507,7 +507,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3285
+          "y": 3460
         }
       }
     note: false
@@ -537,7 +537,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 3635
         }
       }
     note: false
@@ -567,7 +567,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 3810
         }
       }
     note: false
@@ -587,7 +587,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "28"
     scriptarguments:
       question-id: {}
       question-name:
@@ -597,7 +597,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3810
+          "y": 3985
         }
       }
     note: false
@@ -619,7 +619,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3985
+          "y": 4510
         }
       }
     note: false
@@ -652,7 +652,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3110
+          "y": 3285
         }
       }
     note: false
@@ -685,7 +685,97 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 0dfc1355-93e6-4ef9-849e-5582b85a3323
+    type: regular
+    task:
+      id: 0dfc1355-93e6-4ef9-849e-5582b85a3323
+      version: -1
+      name: Get groups list
+      script: '|||tn-list-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 5638f2ab-6715-4872-803e-e52a1cd9f4b6
+    type: regular
+    task:
+      id: 5638f2ab-6715-4872-803e-e52a1cd9f4b6
+      version: -1
+      name: Get group by id
+      description: Get a group object based on ID or name.
+      script: '|||tn-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      id:
+        simple: "315"
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 53f2175d-5fa3-4129-81e6-9fcb79da38d2
+    type: regular
+    task:
+      id: 53f2175d-5fa3-4129-81e6-9fcb79da38d2
+      version: -1
+      name: Get group by name
+      description: Get a group object based on ID or name.
+      script: '|||tn-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Default
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4335
         }
       }
     note: false
@@ -696,7 +786,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4000,
+        "height": 4525,
         "width": 380,
         "x": 50,
         "y": 50
