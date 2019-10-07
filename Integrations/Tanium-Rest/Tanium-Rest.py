@@ -641,8 +641,8 @@ def create_action(client, data_args):
         group = {'id': group_id}
 
     if group_question:
-        group = client.parse_question(group_question, None)
-        group = group.get('group')
+        group_res = client.parse_question(group_question, None)
+        group = group_res.get('group')
 
         if not group:
             return_error('Failed to parse target group question')
