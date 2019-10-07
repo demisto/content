@@ -645,7 +645,8 @@ def fetch_incidents():
     """
     try:
         update_parameters()
-        if not FREQUENCY:  # Run once
+        minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
+        if not FREQUENCY or minutes_of_generation > FREQUENCY:  # Run once
             last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
 
             num_of_incidents_created, incidents = generate_incidents(last_run)
@@ -654,12 +655,6 @@ def fetch_incidents():
             demisto.setLastRun({'numOfIncidentsCreated': last_run + num_of_incidents_created})
             return
         else:
-            minutes_of_generation = MAX_NUM_OF_INCIDENTS / float(INCIDENTS_PER_MINUTE)
-            if minutes_of_generation > FREQUENCY:
-                err_msg = 'The maximum number of incidents divided by the incidents to generate per minute'
-                err_msg += ' exceeds every how often incidents should be generated. Please increase the value'
-                err_msg += ' entered for how often the integration should generate incidents.'
-                raise Exception(err_msg)
             run_counter = 0 if not demisto.getLastRun() else demisto.getLastRun().get('run_count', 0)
             last_run = 0 if not demisto.getLastRun() else demisto.getLastRun().get('numOfIncidentsCreated', 0)
             should_run = run_counter % FREQUENCY
@@ -941,12 +936,16 @@ COMMANDS = {
 }
 
 
-'''EXECUTION'''
+def main():
+    try:
+        if demisto.command() == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() in COMMANDS.keys():
+            COMMANDS[demisto.command()]()
+    except Exception as e:
+        return_error(str(e))
 
-try:
-    if demisto.command() == 'test-module':
-        demisto.results('ok')
-    elif demisto.command() in COMMANDS.keys():
-        COMMANDS[demisto.command()]()
-except Exception as e:
-    return_error(str(e))
+
+# python2 uses __builtin__ python3 uses builtin s
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
