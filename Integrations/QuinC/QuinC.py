@@ -287,7 +287,7 @@ def main():
         PROXIES = {
             'http': None,
             'https': None
-        }  # type: Dict[str, Optional[str]]
+        }  # type: dict
     else:
         PROXIES = {
             'http': os.environ['http_proxy'] or os.environ['HTTP_PROXY'],

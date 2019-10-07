@@ -7,9 +7,9 @@ category: Forensics & Malware Analysis
 description: Use the Quinc integration to protect against and provide additional
   visibility into phishing and other malicious email attacks.
 configuration:
-- display: Server URL with scheme (FQDN or IP address in https://X.X.X.X format)
+- display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)
   name: server_name
-  defaultvalue: https://server_url
+  defaultvalue: server_url
   type: 0
   required: true
 - display: The token is required to connect to Quinc.
@@ -17,12 +17,12 @@ configuration:
   defaultvalue: 1861a70a-3287-4289-938b-bbab1446e2d2
   type: 0
   required: true
-- display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
