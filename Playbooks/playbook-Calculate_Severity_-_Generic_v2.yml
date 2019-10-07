@@ -1168,7 +1168,7 @@ tasks:
       id: 429d77e2-31e3-4796-8b53-655951abeedf
       version: -1
       name: Set incident severity level to "Unknown"
-      description: Sets the incident severity to "Medium".
+      description: Sets the incident severity to "Unknown".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1398,8 +1398,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Indicates the email authenticity resulting from EmailAuthenticityCheck
-    script.
+  description: Indicates the email authenticity resulting from the EmailAuthenticityCheck
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
