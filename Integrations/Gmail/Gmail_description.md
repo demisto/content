@@ -1,4 +1,5 @@
-This API enables the usage of Google Admin API. In order to enable it, you will need to create an account service private key json file and copy its content.
+This API enables the usage of Google Admin API. In order to enable it, you will need to create an account service private key json file and copy its content to **Password** parameter.
+
 Follow the steps here to create such a private key and authorize the API for usage: [https://developers.google.com/admin-sdk/directory/v1/guides/delegation](https://developers.google.com/admin-sdk/directory/v1/guides/delegation)
 
 It is necessary to authorize the next API's for that service account:
@@ -26,21 +27,21 @@ In order to block email addresses, please authorize this api too:
 [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)
 
 In order to get auto-replay messages from a user, please authorize this api too: 
-https://mail.google.com,
-https://www.googleapis.com/auth/gmail.modify,
-https://www.googleapis.com/auth/gmail.readonly
-and https://www.googleapis.com/auth/gmail.settings.basic
+[https://mail.google.com](https://mail.google.com),
+[https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify),
+[https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly)
+and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)
 
-In order to set auto-replay messages, please authorize this api too: https://www.googleapis.com/auth/gmail.settings.basic
+In order to set auto-replay messages, please authorize this api too: [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic)
 
-In order to hide users from the global directory, please authorize this api too: https://www.googleapis.com/auth/admin.directory.user
+In order to hide users from the global directory, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user)
 
-In order to delegate a user to a mailbox or remove a delegated mail from a mailbox, please authorize this api too: https://www.googleapis.com/auth/gmail.settings.sharing
+In order to delegate a user to a mailbox or remove a delegated mail from a mailbox, please authorize this api too: [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing)
 
-In order to set a user's password, please authorize this api too: https://www.googleapis.com/auth/admin.directory.user
+In order to set a user's password, please authorize this api too: [https://www.googleapis.com/auth/admin.directory.user](https://www.googleapis.com/auth/admin.directory.user)
 
 In order to send mails, please authorize this api too:
-https://www.googleapis.com/auth/gmail.compose and https://www.googleapis.com/auth/gmail.send
+[https://www.googleapis.com/auth/gmail.compose](https://www.googleapis.com/auth/gmail.compose) and [https://www.googleapis.com/auth/gmail.send](https://www.googleapis.com/auth/gmail.send)
 
 For the email user param, please choose a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
 
