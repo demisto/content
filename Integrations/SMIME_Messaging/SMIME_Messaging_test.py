@@ -44,5 +44,5 @@ def test_decrypt(mocker):
 
 def test_test_module(mocker):
     mocker.patch.object(demisto, 'results')
-    response = test_module(client)
-    assert 'Hello World' in response
+    test_module(client)
+
