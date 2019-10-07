@@ -11,8 +11,7 @@ configuration:
   name: private_key
   required: true
   type: 14
-description: S/MIME (Secure Multipurpose Internet Mail Extensions) provides a consistent
-  way to send and receive secure MIME data.
+description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
 script:
@@ -25,7 +24,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Retrieve items from the service.
     execution: false
     name: smime-sign-email
     outputs:
@@ -33,7 +32,7 @@ script:
       description: The signed message body.
       type: String
     - contextPath: SMIME.Signed.Headers
-      description: The s/mime signing headers.
+      description: The S/MIME signing headers.
       type: String
   - arguments:
     - default: false
@@ -56,24 +55,24 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The signed email with p7 ending.
+      description: The signed email with .p7 extension.
       isArray: false
       name: signed_message
       required: true
       secret: false
     deprecated: false
-    description: Verify the signature
+    description: Verifies the signature.
     execution: false
     name: smime-verify-sign
   - arguments:
     - default: false
-      description: The encrypted message with p7 extension
+      description: The encrypted message with .p7 extension.
       isArray: false
       name: encrypt_message
       required: true
       secret: false
     deprecated: false
-    description: Decrypt the message body.
+    description: Decrypts the message body.
     execution: false
     name: smime-decrypt-email-body
     outputs:
