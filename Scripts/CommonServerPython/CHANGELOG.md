@@ -1,5 +1,5 @@
 ## [Unreleased]
- - Added ***is_debug_mode*** wrapper function for checking if debug-mode is enabled. 
+ - Added ***is_debug_mode*** wrapper function for checking if **debug-mode** is enabled. 
  - The ***return_outputs*** function can now return readable_output.
 
 ## [19.10.0] - 2019-10-03
