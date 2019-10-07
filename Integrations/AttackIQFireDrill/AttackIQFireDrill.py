@@ -136,6 +136,8 @@ def http_request(method, url_suffix, params=None, data=None):
             headers=HEADERS
         )
         # Handle error responses gracefully
+        if res.status_code == 204:
+            return ''
         if res.status_code not in {200, 201}:
             error_reason = get_http_error_reason(res)
             raise HTTPError(f'[{res.status_code}] - {error_reason}')
@@ -643,6 +645,18 @@ def add_assets_to_assessment():
     except Exception as e:
         raise ValueError("Could not find either the assessment or one of the assets/asset groups.")
 
+@logger
+def delete_assessment_command():
+    assessment_id = demisto.args().get('assessment_id')
+    try:
+        http_request('DELETE', f'/v1/assessments/{assessment_id}')
+        demisto.results(f"Deleted assessment {assessment_id} successfully.")
+    except Exception as e:
+        if '403' in str(e):
+            raise ValueError(f"Could not find the assessment {assessment_id}")
+        else:
+            raise e
+
 
 def main():
     handle_proxy()
@@ -675,6 +689,8 @@ def main():
             create_assessment_command()
         elif command == 'attackiq-add-assets-to-assessment':
             add_assets_to_assessment()
+        elif command == 'attackiq-delete-assessment':
+            delete_assessment_command()
         else:
             return_error(f'Command {command} is not supported.')
     except HTTPError as e:
