@@ -58,7 +58,7 @@ def sign_email(client: Client, args: Dict):
     headers = signed_message[0].replace(': ', '=').replace('\n', ',')
     body = signed_message[2:]
     context = {
-        'SMIME': {
+        'SMIME.Signed': {
             'Message': body,
             'Headers': headers
         }
@@ -102,7 +102,7 @@ def encrypt_email_body(client: Client, args: Dict):
     new_headers = headers.replace(': ', '=').replace('\n', ',')
 
     entry_context = {
-        'SMIME': {
+        'SMIME.Encrypted': {
             'Message': encrypted_message,
             'Headers': new_headers
         }
@@ -158,16 +158,17 @@ def decrypt_email_body(client: Client, args: Dict):
     # Decrypt p7.
     out = client.smime.decrypt(p7).decode('utf-8')
     entry_context = {
-        'SMIME': {
-            'Message': out,
+        'SMIME.Decrypted': {
+            'Message': out
         }
     }
-    human_readable = f'The encrypted message is: \n{out}'
+    human_readable = f'The decrypted message is: \n{out}'
 
     return human_readable, entry_context
 
 
-def test_module():
+def test_module(client):
+    sign_email()
     demisto.results('ok')
 
 
@@ -180,15 +181,15 @@ def main():
     LOG(f'Command being called is demisto.command()')
     commands = {
         'test-module': test_module,
-        'sign-email': sign_email,
-        'encrypt-email-body': encrypt_email_body,
-        'verify-sign': verify,
-        'decrypt-email-body': decrypt_email_body
+        'smime-sign-email': sign_email,
+        'smime-encrypt-email-body': encrypt_email_body,
+        'smime-verify-sign': verify,
+        'smime-decrypt-email-body': decrypt_email_body
     }
     try:
         command = demisto.command()
         if command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
 
     except Exception as e:
         return_error(str(e))
