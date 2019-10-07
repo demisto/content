@@ -7,7 +7,7 @@ category: Authentication
 description: Gmail API and user management (This integration replaces the Gmail functionality
   in the GoogleApps API and G Suite integration).
 configuration:
-- display: Email of user with admin capabilities
+- display: Email of user with admin capabilities (the Password refers to Service Account private key)
   name: adminEmail
   defaultvalue: ""
   type: 9
@@ -32,12 +32,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
-- display: Use System Proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
