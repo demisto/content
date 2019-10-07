@@ -20,7 +20,7 @@ Periodically polls the status of a process being executed on a remote host, and 
 * **Ids** - list of process IDs to poll (usually will be a previous task output).
 * **PollingCommandName** - Name of the polling command to run.
 * **PollingCommandArgName** - Argument name of the polling command. The argument should be the name of the process identifier (usually will be an ID).
-* **dt** - [Demisto Transform Language](https://support.demisto.com/hc/en-us/articles/115005666907-Demisto-Transform-Language-DT-) filter to be checked against the polling command result. Polling will stop when no results are returned from the DT filter.
+* **dt** - [Demisto Transform Language](https://github.com/demisto/content/blob/master/docs/DT/README.MD) filter to be checked against the polling command result. Polling will stop when no results are returned from the DT filter.
 * **Interval** - Interval between each poll (default is 1 minute).
 * **Timeout** - The amount of time that'll pass until the playbook will stop waiting for the process to finish. After this time has passed the playbook will finish running, even if it didn't get a satisfactory result (the action is done executing).
 * **Additional polling command arguments** - If the polling command has more than a single argument you can add their names via this input, for example: `arg1,arg2,...`. 
