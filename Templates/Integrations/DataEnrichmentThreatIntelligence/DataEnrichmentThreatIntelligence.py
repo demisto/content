@@ -128,6 +128,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix, params=params)
 
 
+@logger
 def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Union[Dict, List]:
     """Formatting results from API to Demisto Context
 
@@ -151,6 +152,7 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
 ''' COMMANDS '''
 
 
+@logger
 def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets results for the API.
 
@@ -186,6 +188,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - No results found for IP: {ip}', {}, raw_response
 
 
+@logger
 def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
 
@@ -220,6 +223,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - No results found for URL: {url}', {}, raw_response
 
 
+@logger
 def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash
     """
@@ -272,6 +276,7 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - No results found for file hash: [{file_hash}', {}, raw_response
 
 
+@logger
 def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
     """
@@ -295,6 +300,7 @@ def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - No results found for domain: {url}', {}, raw_response
 
 
+@logger
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
 
