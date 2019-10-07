@@ -507,7 +507,7 @@ script:
     - contextPath: AttackIQ.Template.Description
       description: The description of the template.
       type: String
-    - contextPath: AttackIQ.Template.ProjectDesctiption
+    - contextPath: AttackIQ.Template.ProjectDescription
       description: The description of the project the template is in.
       type: String
     - contextPath: AttackIQ.Template.Hidden
@@ -677,6 +677,17 @@ script:
     description: Add assets or asset groups to an assesment.
     execution: false
     name: attackiq-add-assets-to-assessment
+  - arguments:
+    - default: false
+      description: The ID of the assessment to be deleted.
+      isArray: false
+      name: assessment_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an assessment
+    execution: false
+    name: attackiq-delete-assessment
   dockerimage: demisto/python3:3.7.4.1502
   isfetch: false
   runonce: false
