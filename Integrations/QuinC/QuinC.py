@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
 
+import os
 import json
 import requests
 from requests.exceptions import HTTPError
@@ -39,7 +40,7 @@ class Client:
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     # """
-    def __init__(self, base_url=None, verify=None, token=None):
+    def __init__(self, base_url=None, verify=None, proxy=None, token=None):
         self.base_url = base_url
         self.verify = verify
         self.headers = {
@@ -47,13 +48,14 @@ class Client:
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         }
+        self.proxy = proxy
 
     def http_request(self, method, url_suffix, body=None, params=None):
         try:
             full_url = self.base_url + url_suffix
             res = requests.request(
                 method, full_url, data=body, headers=self.headers,
-                params=params, verify=self.verify)
+                params=params, proxies=self.proxy, verify=self.verify)
             res.raise_for_status()
             return res.json()
 
@@ -273,15 +275,29 @@ def quinc_read_casefile_command(client, args):
 
 def main():
 
-    use_ssl = not demisto.params().get('Insecure', True)
-    url = demisto.params().get('Scheme', 'http') + '://' + \
-        demisto.params().get('server_name') + ':4443/'
+    use_ssl = not demisto.params().get('insecure', True)
+    url = demisto.params().get('server_name') + ':4443/'
     token = demisto.params()['Token']
+
+    if not demisto.params().get('proxy'):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+        PROXIES = {
+            'http': None,
+            'https': None
+        }  # type: Dict[str, Optional[str]]
+    else:
+        PROXIES = {
+            'http': os.environ['http_proxy'] or os.environ['HTTP_PROXY'],
+            'https': os.environ['https_proxy'] or os.environ['HTTPS_PROXY']
+        }
 
     LOG('Command being called is %s' % (demisto.command()))
 
     try:
-        client = Client(url, use_ssl, token)
+        client = Client(url, use_ssl, PROXIES, token)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
