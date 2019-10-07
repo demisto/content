@@ -1,10 +1,9 @@
 # Overview
-The purpose of standardising our code conventions is to ensure uniformity among all integrations. This section outlines some of the code conventions that we, here at Demisto, use.
+We use standardized code conventions to ensure uniformity across all Demisto integrations. This section outlines some of these code conventions.
 
 
 ## Imports 
-- Defined at the top of the file 
-- Disable insecure warnings
+You define imports and disable insecure warning at the top of the file.
 ```python
 import demistomock as demisto
 from CommonServerPython import *
@@ -19,25 +18,25 @@ requests.packages.urllib3.disable_warnings()
 ```
 
 ## Constants 
-- Defined at the top of the file below the imports. 
-- Don't define here global variables - only constants
+You define constants in the file below the imports. It is important that you do not define global variables in the constants section.
 
 ```python
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 ```
 
-**Please restrain from naming constants as shown below**
+**IMPORTANT**: The example below shows the incorrect way to name constants.
 ```python
 apiVersion = "v1"
 url = demisto.params().get("url")
 ```
 
 ## Main function 
-- Create `main` function and in the main extract all the integration parameters
-- Implement **_command** function for each integration command (e.g. `say_hello_command(client, demisto.args())`)
-- Wrap the commands with try/except in the main, in order to handle the exceptions properly. `return_error()` receives error message and returns error entry back into Demisto. It will also print the full error to the Demisto logs. 
-- For logging use `LOG("write some log here")` function.
+These are the best practices for defining the Main function.
+- Create the `main` function and in the main extract all the integration parameters.
+- Implement the **_command** function for each integration command (e.g., `say_hello_command(client, demisto.args())`)
+- To properly handle exceptions, wrap the commands with try/except in the main. The `return_error()` function receives error message and returns error entry back into Demisto. It will also print the full error to the Demisto logs. 
+- For logging, use the `LOG("write some log here")` function.
 - In the main function, initialize the Client instance, and pass that client to `_command` functions.
 ```python
 def main():
@@ -94,10 +93,11 @@ if __name__ in ['__builtin__', 'builtins']:
 
 
 ## Client class
+These are the best practices for defining the Client class.
 - Client should inherit from **BaseClient**. **BaseClient** defined in **CommonServerPython**.
-- Client is necessary in order to prevent passing arguments from function to function and prevent using global variables
-- Client will contain `_http_request` function
-- Client will implement the 3rd party service API
+- Client is necessary in order to prevent passing arguments from one function to another function, and to prevent using global variables.
+- Client will contain the `_http_request` function.
+- Client will implement the 3rd party service API.
 - Client will contain all the necessary params to establish connection and authentication with the 3rd party API.
 
 ```python
@@ -139,12 +139,13 @@ class Client(BaseClient):
 ```
 
 ## Command Functions
-- Each integration command should have corresponding `_command` function
-- **_command** function should use `Client` class functions
-- **_command** function should be unit testable - it means avoid usage of global functions like `demisto.results()`, `return_error()`, `return_outputs()`
-- **_command** function will receive `client` instance and `args` (`demisto.args()` dictionary)
-- **_command** function will return 3 variables, readable_output, outputs, raw_response
-- In the `main` use `return_outputs(*say_hello_command(client, demisto.args()))` to extract the outputs and return them to warroom.
+These are the best practices for defining the command functions.
+- Each integration command should have a corresponding `_command` function.
+- Eeach **_command** function should use `Client` class functions.
+- Each **_command** function should be unit testable. This means you should avoid using global functions, such as `demisto.results()`, `return_error()`, or `return_outputs()`.
+- The **_command** function will receive `client` instance and `args` (`demisto.args()` dictionary).
+- The **_command** function will return 3 variables: readable_output, outputs, raw_response
+- To extract the outputs and return them to the War Room, in the `main` use `return_outputs(*say_hello_command(client, demisto.args()))`.
 ```python
 def say_hello_command(client: Client, args):
     name = args.get('name')
@@ -188,8 +189,8 @@ def main():
 ```
 
 ## test-module
-- `test-module` will execute when the **Test** button pressed in the integration instance setting page.
-- if test module returns the string `"ok"` then the test will be green success, any other string the test will show red.
+- When users click the **Test** button, the `test-module` will execute when the **Test** button pressed in the integration instance setting page.
+- If the test module returns the string `"ok"` then the test will be green (success). All other string will be red.
 ```python
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration Test button.
@@ -209,11 +210,12 @@ def test_module(client: Client):
 ```
 
 ## fetch-incidents
-- [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) will be executed if `Fetch incidents` checkbox in the integration settings will be enabled. This function will be executed periodically.
-- Must be unit testable
-- Should receive `last_run` param instead of executing `demisto.getLastRun()`
-- Should return `next_run` back to main, instead of executing `demisto.setLastRun()` inside the `fetch_incidents` function
-- Should return `incidents` back to main instead of executing `demisto.incidents()` inside the `fetch_incidents` function
+These are the best practices for defining fetch-incidents.
+- The [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) function will be executed when the `Fetch incidents` checkbox is selected in the integration settings. This function will be executed periodically.
+- The fetch-incidents function must be unit testable.
+- Should receive the `last_run` param instead of executing the `demisto.getLastRun()` function.
+- Should return `next_run` back to main, instead of executing `demisto.setLastRun()` inside the `fetch_incidents` function.
+- Should return `incidents` back to main instead of executing `demisto.incidents()` inside the `fetch_incidents` function.
 ```python
 def fetch_incidents(client, last_run, first_fetch_time):
     """
@@ -275,10 +277,11 @@ def main():
 
 
 ## Exceptions and Errors
-- Since we don't want a surprise to cause an issue, it is important to wrap your command block in a "Try-Catch" as demonstrated below:
-- Raise exceptions anywhere you need in the code, but in the main catch them and use `return_error` - this way you will return nice error message to warroom istead of stack trace.
-- `return_error` second argument is error, you can pass Exception object.
-- You can always `demisto.error("some error message")` log your error
+These are the best practices for defining the exceptions and errors.
+- To avoid unexpected issues, it is important to wrap your command block in a "Try-Catch". See the example below.
+- Raise exceptions in the code where needed, but in the main catch them and use the `return_error` function. This will enable acceptable error messages in the War Room, instead of stack trace.
+- If the `return_error` second argument is error, you can pass Exception object.
+- You can always use `demisto.error("some error message")` to log your error.
 ```python
 def main():
     try:
@@ -297,9 +300,9 @@ def main():
 ## Unit Tests
 Every integration must have unit tests.
 
-- Unit test must be in separate file called the same as the integration but with `_test.py` for example `HelloWorld_test.py`
-- In order to mock http requests use [requests_mock](https://requests-mock.readthedocs.io/en/latest/)
-- For mocks use [mocker](https://github.com/pytest-dev/pytest-mock/)
+- Unit tests must be in a separate file, which should have the same name as the integration but be appended with `_test.py` for example `HelloWorld_test.py`
+- To mock http requests use [requests_mock](https://requests-mock.readthedocs.io/en/latest/).
+- For mocks use [mocker](https://github.com/pytest-dev/pytest-mock/).
 
 For example:
 ```python
@@ -340,25 +343,25 @@ def test_say_hello_over_http(requests_mock):
 ```
 
 ## Variable Naming
-When we name variables, we prefer to keep them named as below:
+When naming variables use the following convention.
 
 ### Do this:
 ```variable_name```
 
-### Not this:
+### Do not do this:
 ```variableName```
 
 ## Outputs
-When naming outputs for context, we use the below format:
+When naming outputs for context use the following convention.
 
 ```Brandname.Object.Property```
 
 For example:
 ```IPInfo.IP.ASN```
 
-Make sure you read and understand [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs) article.
+Make sure you read and understand [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs).
 
-Also adhere to our [context standards](https://github.com/demisto/content/tree/master/docs/context_standards) when naming indicator outputs.
+Make sure you follow our [context standards](https://github.com/demisto/content/tree/master/docs/context_standards) when naming indicator outputs.
 
 #### Linking Context
 Wherever possible, we try to link context together. This will prevent a command from overwriting existing data, or from creating duplicate entries in the context. To do this, observe the following:
@@ -376,9 +379,9 @@ In this instance, the ```val.URL && val.URL == obj.URL``` links together the res
 For more information about the syntax of linking and Demisto Transform Language in general have a look [here](https://github.com/demisto/content/blob/master/docs/context_and_ouputs) 
 
 ## Logging
-In some cases, it may be necessary to pass some information to the logs in order to better assist ourselves with debugging in the future. 
+In some cases, it may be necessary to pass information to the logs to assist future debugging. 
 
-First, we need to ensure that debug level logging is enabled by going to Settings -> About -> Troubleshooting and selecting "Debug" for Log Level.
+First, we need to ensure that the debug level logging is enabled. Go to **Settings -> About -> Troubleshooting** and select **Debug** for Log Level.
  
 To post to the logs, we use the following:
 ```python
@@ -398,7 +401,7 @@ except Exception, ex:
     LOG.print_log() # all the above messages will be printed to logs only when LOG.print_log() executed
 ```
 
-The ```@logger``` decorator is also available for use in Demisto. When the decorator is placed at the top of each function, the logger will print the function name as well as all of the argument values to the ```LOG```.
+You can also use the ```@logger``` decorator in Demisto. When the decorator is placed at the top of each function, the logger will print the function name as well as all of the argument values to the ```LOG```.
 ```python
 @logger
 def get_ip(ip):
@@ -406,12 +409,12 @@ def get_ip(ip):
     return ip_data
 ```
 
-## No Printing Sensitive Data To The Log
-This should go without saying, however when an integration is ready to be used as part of a public release (meaning you are done debugging it) we **always** remove print statements that are not absolutely necessary.
+## Do No Print Sensitive Data to The Log
+This section is critical.When an integration is ready to be used as part of a public release (meaning you are done debugging it), we **ALWAYS** remove print statements that are not absolutely necessary.
 
 
 ## Dates
-We do not use epoch time for customer facing results (Context, Human Readable, etc.). If the API you are working with requires the time format to be in epoch, then convert the date string into epoch as needed. Where possible, use the human readable format of date ```%Y-%m-%dT%H:%M:%S```
+We do not use epoch time for customer facing results (Context, Human Readable, etc.). If the API you are working with requires the time format to be in epoch, then convert the date string into epoch as needed. Where possible, use the human readable format of the date ```%Y-%m-%dT%H:%M:%S```
 
 ```python
 time_epoch = 499137720
@@ -420,13 +423,13 @@ print(formatted_time)
 >>> '1985-10-26T01:22:00'
 ```
 
-**Please note:** If the response returned is in epoch, it is best practices to convert it to ```%Y-%m-%dT%H:%M:%S```
+**Note:** If the response returned is in epoch, it is a best practice to convert it to ```%Y-%m-%dT%H:%M:%S```.
 
 ## Common Server Functions
-Before writing a function that seems like a workaround for something that should already exist, check the script helper to see if a function already exists. Examples of Common Server Functions are as noted below:
+Before writing a function that seems like a workaround for something that should already exist, check the script helper to see if a function already exists. Examples of Common Server Functions are noted below:
 
 ### fileResult
-This will return a file in the War Room by using the syntax below:
+This will return a file to the War Room by using the following syntax:
 
 ```python
 filename = "foo.txt",
@@ -435,11 +438,11 @@ file_content = "hello foo"
 demisto.results(fileResult(filename, file_content))
 ```
 
-File type can be specified, but defaults to "None" when not provided.
+You can specify the file type, but it defaults to "None" when not provided.
 
 
 ### tableToMarkdown
-This surprisingly will transform your JSON, dict or other table into Markdown
+This will transform your JSON, dict, or other table into a Markdown table.
 
 ```python
 name = 'Sample Table'
@@ -454,13 +457,13 @@ The above will create the table seen below:
 | second  |  bar |
 | third  | baz  |
 
-In the War Room, a table would appear as such:
+In the War Room, this is how a table will appear:
 <img width="788" src="https://user-images.githubusercontent.com/42912128/50571324-46846e00-0db0-11e9-9888-ddd9dc275541.png">
 
 You may also use ```headerTransform``` to convert the existing keys into formatted headers.
 
 ### demisto.command()
-```demisto.command()``` is typically used to tie a function to a command in demisto. see the example below:
+```demisto.command()``` is typically used to tie a function to a command in Demisto, for example:
 ```python
     if demisto.command() == 'ip':
         ip_search_command()
@@ -468,7 +471,7 @@ You may also use ```headerTransform``` to convert the existing keys into formatt
 
 
 ### demisto.params()
-```demisto.params()``` returns a dict of parameters for the given integration. This is used to grab global variables in an integration as seen below:
+```demisto.params()``` returns a dict of parameters for the given integration. This is used to grab global variables in an integration, for example:
 
 ```python
     APIKEY = demisto.params().get('apikey')
@@ -478,7 +481,7 @@ You may also use ```headerTransform``` to convert the existing keys into formatt
 ```
 
 ### demisto.args()
-```demisto.args()``` returns a dict of arguments for a given command. We use this to get non-global variables. See below:
+```demisto.args()``` returns a dict of arguments for a given command. We use this to get non-global variables, for example:
 
 ```python
     url = demisto.args().get('url')
@@ -487,17 +490,13 @@ You may also use ```headerTransform``` to convert the existing keys into formatt
  
  <img width="644" src="https://user-images.githubusercontent.com/42912128/50575189-ac4d1600-0e01-11e9-83fc-7a8f6f8ce55a.png">
  
- When the command is executed, we see the arguments in the war room as part of the command. See the example below:
+ After the command is executed, the arguments are displayed in the War Room as part of the command, for example:
  
  <img width="758" src="https://user-images.githubusercontent.com/42912128/50575199-fd5d0a00-0e01-11e9-9d54-944eb7c6f287.png">
 
 
 ### return_outputs
-```return_outputs``` is used to return results to warroom
-    
-See the following examples:
-
-**Note**
+```return_outputs``` is used to return results to the War Room, for example:
 ```python
 def return_outputs(readable_output, outputs, raw_response=None):
     """
@@ -527,13 +526,13 @@ return_outputs("## Some h2 header", {"some": "json into context"}, {"some":"raw 
 return_error(message="error has occured: API Key is incorrect", error=ex)
 ```
 
-Will produce an error in the war room as seen below:
+Will produce an error in the War Room, for example:
 
 <img width="907" src="https://user-images.githubusercontent.com/42912128/50571503-ed6b0900-0db4-11e9-8e9e-dc23f5ff403c.png">
 
 
 ### AutoExtract
-As part of ```demisto.results()``` there is a field called ```IgnoreAutoExtract``` which prevents the built-in autoextract tool from enriching IPs, URLs, Files, and other indicators from the result. To use this, see the example below:
+As part of ```demisto.results()``` there is a field called ```IgnoreAutoExtract```, which prevents the built-in auto-extract tool from enriching IPs, URLs, files, and other indicators from the result. For example:
 
 ```python
 demisto.results({
@@ -547,7 +546,7 @@ demisto.results({
     }
 })
 ```
-**Please Note:** By default, IgnoreAutoExtract is set to ```False```.
+**Note:** By default, IgnoreAutoExtract is set to ```False```.
 
 ## Quality Examples of Integrations
 * [Proofpoint TAP v2](https://github.com/demisto/content/tree/master/Integrations/ProofpointTAP_v2)
