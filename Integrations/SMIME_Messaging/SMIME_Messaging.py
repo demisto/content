@@ -158,15 +158,19 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
 
 def test_module(client, *_):
     message_body = 'testing'
-    encrypt_message = encrypt_email_body(client, {'message': message_body})
-    with open('test.p7', 'wb') as f:
-        f.write(bytes(encrypt_message[0], 'utf-8'))
-
-    decrypt_message = decrypt_email_body(client, {}, file_path={'path': os.path.abspath('test.p7')})
-    if decrypt_message:
-        demisto.results('ok')
-    else:
-        demisto.results('Verify that you provided valid keys.')
+    try:
+        encrypt_message = encrypt_email_body(client, {'message': message_body})
+        test_file = NamedTemporaryFile(delete=False)
+        test_file.write(bytes(encrypt_message[0], 'utf-8'))
+        test_file.close()
+    except Exception:
+        return_error('Verify that you provided valid keys.')
+    try:
+        decrypt_message = decrypt_email_body(client, {}, file_path={'path': test_file.name})
+        if decrypt_message:
+            demisto.results('ok')
+    except Exception:
+        return_error('Verify that you provided valid private key.')
 
 
 def main():
@@ -175,7 +179,7 @@ def main():
     private_key: str = demisto.params().get('private_key', '')
 
     client = Client(private_key, public_key)
-    LOG(f'Command being called is demisto.command()')
+    LOG(f'Command being called is {demisto.command()}')
     commands = {
         'test-module': test_module,
         'smime-sign-email': sign_email,
