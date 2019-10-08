@@ -21,7 +21,7 @@ JOB_KEY = 'Accessdata.Job'
 
 
 def create_jobstate_context(contents):
-    if not 'CaseJobID' in contents:
+    if 'CaseJobID' not in contents:
         return {
             JOB_KEY + '(val.ID == obj.ID)': contents
         }
@@ -29,16 +29,18 @@ def create_jobstate_context(contents):
         JOB_KEY + '(val.CaseJobID == obj.CaseJobID)': contents
     }
 
-def create_contents(caseId, id, caseJobId, state, result = None):
+
+def create_contents(caseId, id, caseJobId, state, result=None):
     ec = {
         'CaseID': caseId,
         'ID': id,
         'CaseJobID': caseJobId,
         'State': state
     }
-    if not result is None:
+    if result is not None:
         ec['Result'] = result
     return ec
+
 
 class Client:
     """
@@ -308,8 +310,10 @@ def test_module(client):
 def quinc_get_jobstatus_command(client, args):
     return client.get_jobstatus(args)
 
+
 def quinc_jobstatus_scan_command(client, args):
     return client.jobstatus_scan(args)
+
 
 def quinc_legacyagent_runvolatilejob_command(client, args):
     return client.legacyagent_runvolatilejob(args)
