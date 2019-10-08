@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -52,8 +53,15 @@ class Client(BaseClient):
 
 def test_module(client):
     """
-    returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+
+    Args:
+        client: HelloWorld client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
+
     result = client.say_hello('DBot')
     if 'Hello DBot' == result:
         return 'ok'
@@ -62,6 +70,20 @@ def test_module(client):
 
 
 def say_hello_command(client, args):
+    """
+    Returns Hello {somename}
+
+    Args:
+        client: HelloWorld client
+        args: all command arguments
+
+    Returns:
+        Hello {someone}
+
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with raw-response=true
+    """
     name = args.get('name')
 
     result = client.say_hello(name)
@@ -99,24 +121,31 @@ def say_hello_over_http_command(client, args):
 
 def fetch_incidents(client, last_run, first_fetch_time):
     """
-    This function will execute each 1 minute.
+    This function will execute each interval (default is 1 minute).
 
-    :return: next_run, list of incidents that will be created in Demisto
+    Args:
+        client: HelloWorld client
+        last_run: The greatest incident created_time we fetched from last fetch
+        first_fetch_time: If last_run is None then fetch all incidents since first_fetch_time
+
+    Returns:
+        next_run: This will be last_run in the next fetch-incidents
+        incidents: Incidents that will be created in Demisto
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
     # Handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(first_fetch_time)
+        last_fetch, _ = dateparser.parse(first_fetch_time)
     else:
-        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
+        last_fetch = dateparser.parse(last_fetch)
 
     latest_created_time = last_fetch
     incidents = []
     items = client.list_incidents()
     for item in items:
-        incident_created_time = datetime.strptime(item['created_time'], DATE_FORMAT)
+        incident_created_time = dateparser.parse(item['created_time'])
         incident = {
             'name': item['description'],
             'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
@@ -146,7 +175,7 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
 
     # How many time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days')
+    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
     proxy = demisto.params().get('proxy', False)
 
