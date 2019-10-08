@@ -1,5 +1,3 @@
-from tempfile import NamedTemporaryFile
-
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -8,6 +6,7 @@ from CommonServerUserPython import *
 
 from M2Crypto import BIO, SMIME, X509
 from typing import Dict
+from tempfile import NamedTemporaryFile
 
 
 ''' HELPER FUNCTIONS '''
