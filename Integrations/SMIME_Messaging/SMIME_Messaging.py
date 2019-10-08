@@ -23,14 +23,13 @@ class Client:
 
         public_key_file = NamedTemporaryFile(delete=False)
         public_key_file.write(bytes(public_key, 'utf-8'))
+        self.public_key_file = public_key_file.name
         public_key_file.close()
 
         private_key_file = NamedTemporaryFile(delete=False)
         private_key_file.write(bytes(private_key, 'utf-8'))
-        private_key_file.close()
-
         self.private_key_file = private_key_file.name
-        self.public_key_file = public_key_file.name
+        private_key_file.close()
 
 
 ''' COMMANDS '''
@@ -192,6 +191,12 @@ def main():
 
     except Exception as e:
         return_error(str(e))
+
+    finally:
+        if client.private_key_file:
+            os.unlink(client.private_key_file)
+        if client.public_key_file:
+            os.unlink(client.public_key_file)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
