@@ -29,6 +29,7 @@ configuration:
   required: false
 script:
   commands:
+  commands:
   - name: accessdata-get-jobstatus
     arguments:
     - name: caseID
@@ -58,8 +59,14 @@ script:
       description: IP address of agent
       defaultValue: locallhost
     outputs:
-    - contextPath: Accessdata.Job(val.Type=="Volatile").ID
+    - contextPath: Accessdata.Job.ID
       description: ID of job
+      type: string
+    - contextPath: Accessdata.Job.CaseID
+      description: Case ID
+      type: string
+    - contextPath: Accessdata.Job.CaseJobID
+      description: Concatenated CaseID and JobID (like "1_800")
       type: string
     description: Return list of process from legacy agent
   - name: accessdata-legacyagent-get-memorydump
@@ -76,6 +83,12 @@ script:
     - contextPath: Accessdata.Job.ID
       description: ID of job
       type: string
+    - contextPath: Accessdata.Job.CaseID
+      description: Case ID
+      type: string
+    - contextPath: Accessdata.Job.CaseJobID
+      description: Concatenated CaseID and JobID (like "1_800")
+      type: string
     description: Creates legacy agent memory dump
   - name: accessdata-read-casefile
     arguments:
@@ -88,6 +101,25 @@ script:
       description: Contents of the file
       type: string
     description: Reads file from case folder and puts its contents to current context
+  - name: accessdata-jobstatus-scan
+    arguments:
+    - name: caseJobID
+      description: Concatenated CaseID and JobID (like "1_800")
+      isArray: true
+    outputs:
+    - contextPath: CaseID
+      description: Case ID
+      type: string
+    - contextPath: ID
+      description: Job ID
+      type: string
+    - contextPath: CaseJobID
+      description: Concatenated CaseID and JobID (like "1_800")
+      type: string
+    - contextPath: State
+      description: State of job's execution
+      type: string
+    description: Checks status of the job
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   script: '-'

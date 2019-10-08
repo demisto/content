@@ -21,19 +21,24 @@ JOB_KEY = 'Accessdata.Job'
 
 
 def create_jobstate_context(contents):
+    if not 'CaseJobID' in contents:
+        return {
+            JOB_KEY + '(val.ID == obj.ID)': contents
+        }
     return {
-        JOB_KEY + '(val.ID == obj.ID)': contents
+        JOB_KEY + '(val.CaseJobID == obj.CaseJobID)': contents
     }
 
-
-def create_contents(id, state, result):
+def create_contents(caseId, id, caseJobId, state, result = None):
     ec = {
+        'CaseID': caseId,
         'ID': id,
-        'State': state,
-        'Result': result
+        'CaseJobID': caseJobId,
+        'State': state
     }
+    if not result is None:
+        ec['Result'] = result
     return ec
-
 
 class Client:
     """
@@ -82,12 +87,15 @@ class Client:
 
     def get_jobstatus(self, args):
 
-        url = 'api/v2/enterpriseapi/core/' + str(args['caseID']) + \
-            '/getjobstatus/' + str(args['jobID'])
+        caseID = args['caseID']
+        jobID = args['jobID']
+        caseJobID = str(caseID) + "_" + str(jobID)
+        url = 'api/v2/enterpriseapi/core/' + str(caseID) + \
+            '/getjobstatus/' + str(jobID)
         res = self.http_request('GET', url)
 
         if 'resultData' not in res:
-            contents = create_contents(args['jobID'], 'Failed', res)
+            contents = create_contents(caseID, jobID, caseJobID, 'Failed', res)
             return {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -98,7 +106,7 @@ class Client:
         resultData = json.loads(res['resultData'])
 
         if 'RealData' not in resultData:
-            contents = create_contents(args['jobID'], 'Failed', resultData)
+            contents = create_contents(caseID, jobID, caseJobID, 'Failed', resultData)
             return {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -109,7 +117,7 @@ class Client:
         RealData = json.loads(resultData['RealData'])
 
         if 'TaskStatusList' not in RealData:
-            contents = create_contents(args['jobID'], 'Failed', RealData)
+            contents = create_contents(caseID, jobID, caseJobID, 'Failed', RealData)
             return {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
@@ -123,7 +131,7 @@ class Client:
         if task is not None:
 
             if task['State'] is None:
-                contents = create_contents(args['jobID'], 'Unknown', task)
+                contents = create_contents(caseID, jobID, caseJobID, 'Unknown', task)
                 return {
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
@@ -132,7 +140,7 @@ class Client:
                     'EntryContext': create_jobstate_context(contents)
                 }
             if task['State'] != 'Success':
-                contents = create_contents(args['jobID'], task['State'], task)
+                contents = create_contents(caseID, jobID, caseJobID, task['State'], task)
                 return {
                     'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
@@ -145,7 +153,7 @@ class Client:
                 res = json.loads(task['Results'][1]['Data'])
                 if result['OperationType'] == 24:  # software inventory
                     contents = create_contents(
-                        args['jobID'], 'Success', res['Applications'])
+                        caseID, jobID, caseJobID, 'Success', res['Applications'])
                     return {
                         'Type': entryTypes['note'],
                         'Contents': contents,
@@ -160,7 +168,7 @@ class Client:
                         'EntryContext': create_jobstate_context(contents)
                     }
                 elif result['OperationType'] == 12:  # volatile data
-                    contents = create_contents(args['jobID'], 'Success', res)
+                    contents = create_contents(caseID, jobID, caseJobID, 'Success', res)
                     return {
                         'Type': entryTypes['note'],
                         'Contents': contents,
@@ -169,7 +177,7 @@ class Client:
                         'EntryContext': create_jobstate_context(contents)
                     }
                 else:
-                    contents = create_contents(args['jobID'], 'Success', task)
+                    contents = create_contents(caseID, jobID, caseJobID, 'Success', task)
                     return {
                         'Type': entryTypes['note'],
                         'ContentsFormat': formats['json'],
@@ -178,13 +186,49 @@ class Client:
                         'EntryContext': create_jobstate_context(contents)
                     }
 
-        contents = create_contents(args['jobID'], 'Unknown', None)
+        contents = create_contents(caseID, jobID, caseJobID, 'Unknown', None)
 
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': contents,
             'HumanReadable': "Job exited unexpectedly",
+            'EntryContext': create_jobstate_context(contents)
+        }
+
+    def jobstatus_scan(self, args):
+        caseJobID = args['caseJobID']
+        preparedParameters = caseJobID.split("_")
+        preparedParameters = {
+            'caseID': preparedParameters[0],
+            'jobID': preparedParameters[1]
+        }
+        url = 'api/v2/enterpriseapi/core/' + str(preparedParameters['caseID']) + \
+            '/getjobstatus/' + str(preparedParameters['jobID'])
+        res = self.http_request('GET', url)
+
+        contents = create_contents(preparedParameters['caseID'],
+                                   preparedParameters['jobID'],
+                                   caseJobID,
+                                   'Unknown')
+        if 'state' not in res:
+            return {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['json'],
+                'Contents': contents,
+                'HumanReadable': "No data in job result",
+                'EntryContext': create_jobstate_context(contents)
+            }
+        state = res['state']
+        contents = create_contents(preparedParameters['caseID'],
+                                   preparedParameters['jobID'],
+                                   caseJobID,
+                                   state)
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': contents,
+            'HumanReadable': "Current job state: " + state,
             'EntryContext': create_jobstate_context(contents)
         }
 
@@ -206,6 +250,8 @@ class Client:
         res = self.http_request('POST', url, json.dumps(data))
         ec = {
             'ID': res,
+            'CaseID': args['caseid'],
+            'CaseJobID': args['caseid'] + "_" + str(res),
             'Type': 'Volatile'
         }
 
@@ -214,7 +260,7 @@ class Client:
             'ContentsFormat': formats['text'],
             'Contents': res,
             'HumanReadable': "JobID: " + str(res),
-            'EntryContext': {JOB_KEY + '(val.ID && val.Type == obj.Type)': ec}
+            'EntryContext': create_jobstate_context(ec)
         }
 
     def legacyagent_runmemoryacquisition(self, args):
@@ -228,6 +274,8 @@ class Client:
         res = self.http_request('POST', url, json.dumps(data))
         ec = {
             'ID': res,
+            'CaseID': args['caseid'],
+            'CaseJobID': args['caseid'] + "_" + str(res),
             'Type': 'LegacyMemoryDump'
         }
 
@@ -236,7 +284,7 @@ class Client:
             'ContentsFormat': formats['json'],
             'Contents': ec,
             'HumanReadable': "JobID: " + str(res),
-            'EntryContext': {JOB_KEY + '(val.ID && val.Type == obj.Type)': ec}
+            'EntryContext': create_jobstate_context(ec)
         }
 
     def read_casefile(self, args):
@@ -260,6 +308,8 @@ def test_module(client):
 def quinc_get_jobstatus_command(client, args):
     return client.get_jobstatus(args)
 
+def quinc_jobstatus_scan_command(client, args):
+    return client.jobstatus_scan(args)
 
 def quinc_legacyagent_runvolatilejob_command(client, args):
     return client.legacyagent_runvolatilejob(args)
@@ -306,6 +356,11 @@ def main():
         if demisto.command() == 'accessdata-get-jobstatus':
             demisto.results(
                 quinc_get_jobstatus_command(
+                    client, demisto.args()))
+
+        if demisto.command() == 'accessdata-jobstatus-scan':
+            demisto.results(
+                quinc_jobstatus_scan_command(
                     client, demisto.args()))
 
         if demisto.command() == 'accessdata-legacyagent-get-processlist':

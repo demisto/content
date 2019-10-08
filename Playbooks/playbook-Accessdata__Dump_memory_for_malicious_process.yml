@@ -8,13 +8,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 99bfc13d-9778-48de-8160-5c7f85e763d2
+    taskid: 203b8134-3542-4f2f-8976-c83227b7991d
     type: start
     task:
-      id: 99bfc13d-9778-48de-8160-5c7f85e763d2
+      id: 203b8134-3542-4f2f-8976-c83227b7991d
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -25,17 +24,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": 10
         }
       }
     note: false
     timertriggers: []
   "1":
     id: "1"
-    taskid: 2dd44568-cb36-41ef-8b90-58f660d49266
+    taskid: f5af4b9d-40aa-4812-84a6-8ccc53722cd5
     type: regular
     task:
-      id: 2dd44568-cb36-41ef-8b90-58f660d49266
+      id: f5af4b9d-40aa-4812-84a6-8ccc53722cd5
       version: -1
       name: Get process list from legacy agent
       description: Call command to get process list from legacy agent
@@ -45,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "15"
     scriptarguments:
       caseid:
         simple: ${inputs.caseid}
@@ -56,20 +55,19 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 290
         }
       }
     note: false
     timertriggers: []
   "7":
     id: "7"
-    taskid: d6f18812-652f-4ea5-81fc-89ec01fba64f
+    taskid: 893960ac-a473-4f23-8176-1840d3dec3c6
     type: title
     task:
-      id: d6f18812-652f-4ea5-81fc-89ec01fba64f
+      id: 893960ac-a473-4f23-8176-1840d3dec3c6
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -78,17 +76,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1715
         }
       }
     note: false
     timertriggers: []
   "8":
     id: "8"
-    taskid: d14035e3-7cd5-4399-8d2a-2c0b73ea5eeb
+    taskid: ec776aab-6bf3-4450-8957-d1bbe81efbb9
     type: regular
     task:
-      id: d14035e3-7cd5-4399-8d2a-2c0b73ea5eeb
+      id: ec776aab-6bf3-4450-8957-d1bbe81efbb9
       version: -1
       name: DeleteContext
       description: Clear current context
@@ -111,50 +109,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-  "9":
-    id: "9"
-    taskid: a1acf413-fcad-437f-8394-cdbf5c7ed963
-    type: regular
-    task:
-      id: a1acf413-fcad-437f-8394-cdbf5c7ed963
-      version: -1
-      name: Wait for "Get process list" job result
-      description: Calls a helper script to wait while the job is running
-      scriptName: AccessDataWaitForJobResult
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      caseid:
-        simple: ${inputs.caseid}
-      execution-timeout:
-        simple: "960"
-      jobid:
-        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
+          "y": 135
         }
       }
     note: false
     timertriggers: []
   "10":
     id: "10"
-    taskid: abfe8f3f-4c6e-4a44-8c4d-f9729ccd7721
+    taskid: fceb95da-a501-4a57-8a77-35b284879da1
     type: regular
     task:
-      id: abfe8f3f-4c6e-4a44-8c4d-f9729ccd7721
+      id: fceb95da-a501-4a57-8a77-35b284879da1
       version: -1
       name: Read snapshot file from case folder
       description: Reads a file from case folder and saves its content in current
@@ -174,17 +139,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 740
         }
       }
     note: false
     timertriggers: []
   "11":
     id: "11"
-    taskid: 2424b8f3-70fd-4a13-8525-ca2025edeb43
+    taskid: e8e2d2d9-e2a4-4d9c-828b-2759e1887152
     type: regular
     task:
-      id: 2424b8f3-70fd-4a13-8525-ca2025edeb43
+      id: e8e2d2d9-e2a4-4d9c-828b-2759e1887152
       version: -1
       name: Check if process exists in process list
       description: Reads contetn of XML file from context, converts it to JSON and
@@ -211,10 +176,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 0b0e6851-bc26-42c8-851e-11bcadcb4f65
+    taskid: 11e4ecae-6fb2-4054-8d45-77f51c9c0cd0
     type: condition
     task:
-      id: 0b0e6851-bc26-42c8-851e-11bcadcb4f65
+      id: 11e4ecae-6fb2-4054-8d45-77f51c9c0cd0
       version: -1
       name: Does the  process exist?
       description: Simple conditional task
@@ -242,17 +207,17 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1050
         }
       }
     note: false
     timertriggers: []
   "13":
     id: "13"
-    taskid: 533fdb26-d5a0-4141-8332-58fdd2c26a3c
+    taskid: c3b4b8c2-486b-49cc-82e9-8dcdbc838a0b
     type: regular
     task:
-      id: 533fdb26-d5a0-4141-8332-58fdd2c26a3c
+      id: c3b4b8c2-486b-49cc-82e9-8dcdbc838a0b
       version: -1
       name: Create memory dump job
       description: Creates legacy agent memory dump
@@ -262,7 +227,7 @@ tasks:
       brand: Quinc
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
     scriptarguments:
       caseid:
         simple: ${inputs.caseid}
@@ -278,35 +243,166 @@ tasks:
       }
     note: false
     timertriggers: []
-  "14":
-    id: "14"
-    taskid: a40ec3c1-54d3-405e-8bd2-bb2dbc634e57
-    type: regular
+  "15":
+    id: "15"
+    taskid: dffa12ec-6f24-4b77-8507-130a4f33260c
+    type: playbook
     task:
-      id: a40ec3c1-54d3-405e-8bd2-bb2dbc634e57
+      id: dffa12ec-6f24-4b77-8507-130a4f33260c
       version: -1
-      name: Wait for "Memory dump" job result
-      description: Calls a helper script to wait while the job is running
-      scriptName: AccessDataWaitForJobResult
-      type: regular
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+      - "16"
+    scriptarguments:
+      Ids:
+        simple: ${Accessdata.Job.CaseJobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: caseJobID
+      PollingCommandName:
+        simple: accessdata-jobstatus-scan
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
+          val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+  "16":
+    id: "16"
+    taskid: f67e6abe-ef41-4a99-81c2-c16eb486b10e
+    type: regular
+    task:
+      id: f67e6abe-ef41-4a99-81c2-c16eb486b10e
+      version: -1
+      name: Get process list job result
+      description: Get status of job
+      script: Quinc|||accessdata-get-jobstatus
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseID:
+        simple: ${inputs.caseid}
+      jobID:
+        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 4d92aa7b-37be-4c6d-8edd-d4e9a593715c
+    type: playbook
+    task:
+      id: 4d92aa7b-37be-4c6d-8edd-d4e9a593715c
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      Ids:
+        simple: ${Accessdata.Job.CaseJobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: caseJobID
+      PollingCommandName:
+        simple: accessdata-jobstatus-scan
+      Timeout:
+        simple: "15"
+      dt:
+        simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
+          val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "18":
+    id: "18"
+    taskid: 2f2bef09-1ffb-4515-8580-ee0d53794bbb
+    type: regular
+    task:
+      id: 2f2bef09-1ffb-4515-8580-ee0d53794bbb
+      version: -1
+      name: Get memory dump job result
+      description: Get status of job
+      script: Quinc|||accessdata-get-jobstatus
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
       - "7"
     scriptarguments:
-      caseid:
+      caseID:
         simple: ${inputs.caseid}
-      execution-timeout:
-        simple: "960"
-      jobid:
+      jobID:
         simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").ID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 350,
-          "y": 1420
+          "y": 1545
         }
       }
     note: false
@@ -316,10 +412,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1610,
+        "height": 1770,
         "width": 680,
         "x": 50,
-        "y": 50
+        "y": 10
       }
     }
   }

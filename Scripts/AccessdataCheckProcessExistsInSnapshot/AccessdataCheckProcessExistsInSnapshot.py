@@ -5,7 +5,7 @@ from CommonServerPython import *
 file_path = demisto.get(demisto.context(), 'Accessdata.Job.Result.SnapshotDetails.File')
 res = demisto.executeCommand('accessdata-read-casefile', {"filepath": file_path})
 data = demisto.get(res[0], 'Contents')
-converted = json.loads(xml2json(data))
+converted = json.loads(xml2json(data.encode("utf-8")))
 
 process_list = [process['Name'] for process in converted['root']['Process']]
 
