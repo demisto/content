@@ -182,26 +182,40 @@ def print_topics():
     """
     Prints available topics in Broker
     """
-    data = KAFKA_CLIENT.topics
-    topics = [k for k in KAFKA_CLIENT.topics.keys()]
-    topics_list = [{'Name': k} for k in topics]
-    ec = {
-        'Kafka.Topic(val.Name === obj.Name)': topics_list
-    }
-    if topics:
-        md = '### Topics from Kafka:'
-        for topic in topics:
-            md += '\n* ' + topic
+
+    kafka_topics = KAFKA_CLIENT.topics.values()
+    if kafka_topics:
+        topics = []
+        for topic in KAFKA_CLIENT.topics.values():
+            partitions = []
+            for partition in topic.partitions.values():
+                partitions.append({
+                    'ID': partition.id,
+                    'EarliestOffset': partition.earliest_available_offset(),
+                    'OldestOffset': partition.latest_available_offset()
+                })
+
+            topics.append({
+                'Name': topic.name,
+                'Partitions': partitions
+            })
+
+        ec = {
+            'Kafka.Topic(val.Name === obj.Name)': topics
+        }
+
+        md = tableToMarkdown('Kafka Topics', topics)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': topics,
+            'ContentsFormat': formats['json'],
+            'HumanReadable': md,
+            'ReadableContentsFormat': formats['markdown'],
+            'EntryContext': ec
+        })
     else:
-        md = 'No topics found in Kafka'
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': data,
-        'ContentsFormat': formats['json'],
-        'HumanReadable': md,
-        'ReadableContentsFormat': formats['markdown'],
-        'EntryContext': ec
-    })
+        demisto.results('No topics found.')
 
 
 def produce_message():
@@ -377,10 +391,10 @@ try:
         fetch_incidents()
 # pykafka exception
 except KafkaException as e:
-    return_error(e.message)
+    return_error(str(e))
 # Log exceptions
 except Exception as e:
-    return_error(e.message)
+    return_error(str(e))
 finally:
     if os.path.isfile('ca.cert'):
         os.remove(os.path.abspath('ca.cert'))

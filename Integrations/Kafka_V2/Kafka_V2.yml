@@ -7,10 +7,6 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -74,7 +70,16 @@ script:
     outputs:
     - contextPath: Kafka.Topic.Name
       description: Kafka topic name
-      type: string
+      type: String
+    - contextPath: Kafka.Topic.Partitions.ID
+      description: Topic partition ID
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.EarliestOffset
+      description: Topic partition earliest offset
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.LatestOffset
+      description: Topic partition latest offset
+      type: Number
   - arguments:
     - default: false
       description: A topic to filter messages by
