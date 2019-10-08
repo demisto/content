@@ -1491,11 +1491,11 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
         demisto.results(readable_output)
-        return
-    elif outputs and raw_response is None:
-        # if raw_response was not provided but outputs were provided then set Contents as outputs
-        return_entry["Contents"] = outputs
-    demisto.results(return_entry)
+    else:
+        if outputs and raw_response is None:
+            # if raw_response was not provided but outputs were provided then set Contents as outputs
+            return_entry["Contents"] = outputs
+        demisto.results(return_entry)
 
 
 def return_error(message, error='', outputs=None):

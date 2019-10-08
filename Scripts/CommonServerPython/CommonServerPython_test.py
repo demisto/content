@@ -951,3 +951,14 @@ def test_return_outputs_only_md(mocker):
     return_outputs(md)
     results = demisto.results.call_args[0][0]
     assert results == md
+
+
+def test_return_outputs_raw_none(mocker):
+    mocker.patch.object(demisto, 'results')
+    md = 'md'
+    outputs = {'Event': 1}
+    return_outputs(md, outputs, None)
+    results = demisto.results.call_args[0][0]
+    assert outputs == results['Contents']
+    assert outputs == results['EntryContext']
+    assert md == results['HumanReadable']
