@@ -1,3 +1,5 @@
+from tempfile import NamedTemporaryFile
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -19,16 +21,16 @@ class Client:
     def __init__(self, private_key, public_key):
         self.smime = SMIME.SMIME()
 
-        f = open('private.pem', 'wb')
-        f.write(bytes(private_key, 'utf-8'))
-        f.flush()
-        f.close()
-        f = open('cert.pem', 'wb')
-        f.write(bytes(public_key, 'utf-8'))
-        f.flush()
-        f.close()
-        self.private_key_file = os.path.abspath('private.pem')
-        self.public_key_file = os.path.abspath('cert.pem')
+        public_key_file = NamedTemporaryFile(delete=False)
+        public_key_file.write(bytes(public_key, 'utf-8'))
+        public_key_file.close()
+
+        private_key_file = NamedTemporaryFile(delete=False)
+        private_key_file.write(bytes(private_key, 'utf-8'))
+        private_key_file.close()
+
+        self.private_key_file = private_key_file.name
+        self.public_key_file = public_key_file.name
 
 
 ''' COMMANDS '''
