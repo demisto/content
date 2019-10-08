@@ -31,7 +31,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix='/hello/' + name
         )
-        return data['result']
+        return data.get('result')
 
     def list_incidents(self):
         """
