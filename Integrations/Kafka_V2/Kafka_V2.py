@@ -5,12 +5,9 @@ from CommonServerPython import *
 import requests
 from pykafka import KafkaClient, SslConfig
 from pykafka.common import OffsetType
-from pykafka.exceptions import KafkaException
-import logging as log
-
-# Enable debug
-if demisto.params().get('enable_debug', False):
-    log.basicConfig(level=log.DEBUG)
+import logging
+from cStringIO import StringIO
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -33,14 +30,24 @@ OFFSET = demisto.params().get('offset')
 TOPIC = demisto.params().get('topic')
 PARTITION = demisto.params().get('partition')
 
-# Remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+# Logging
+log_stream = None
+log_handler = None
 
 ''' HELPER FUNCTIONS '''
+
+
+def start_logging():
+    logging.raiseExceptions = False
+    global log_stream
+    global log_handler
+    if log_stream is None:
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 def check_params(topic, old_offset=None, old_partition=None):
@@ -372,6 +379,8 @@ def fetch_incidents():
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    start_logging()
+
     # Initialize KafkaClient
     if VERIFY_SSL:
         ssl_config = create_certificate()
@@ -392,12 +401,16 @@ try:
         fetch_partitions()
     elif demisto.command() == 'fetch-incidents':
         fetch_incidents()
-# pykafka exception
-except KafkaException as e:
-    return_error(str(e))
-# Log exceptions
+
 except Exception as e:
-    return_error(str(e))
+    debug_log = 'Debug logs:\n\n{0}'.format(log_stream.getvalue() if log_stream else '')
+    error_message = str(e)
+    if demisto.command() != 'test-module':
+        stacktrace = traceback.format_exc()
+        if stacktrace:
+            debug_log += '\nFull stacktrace:\n\n{0}'.format(stacktrace)
+    return_error('{0}\n\n{1}'.format(error_message, debug_log))
+
 finally:
     if os.path.isfile('ca.cert'):
         os.remove(os.path.abspath('ca.cert'))
@@ -405,3 +418,10 @@ finally:
         os.remove(os.path.abspath('client.cert'))
     if os.path.isfile('client_key.key'):
         os.remove(os.path.abspath('client_key.key'))
+    if log_stream:
+        try:
+            logging.getLogger().removeHandler(log_handler)  # type: ignore
+            log_stream.close()
+            log_stream = None
+        except Exception as e:
+            demisto.error('Kafka v2: unexpected exception when trying to remove log handler: {}'.format(e))
