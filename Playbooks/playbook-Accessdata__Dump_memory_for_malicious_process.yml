@@ -14,6 +14,7 @@ tasks:
       id: 203b8134-3542-4f2f-8976-c83227b7991d
       version: -1
       name: ""
+      description: Playbook entry point
       iscommand: false
       brand: ""
     nexttasks:
@@ -68,6 +69,7 @@ tasks:
       id: 893960ac-a473-4f23-8176-1840d3dec3c6
       version: -1
       name: Done
+      description: Playbook exit point
       type: title
       iscommand: false
       brand: ""
