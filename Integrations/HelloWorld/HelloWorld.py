@@ -81,8 +81,10 @@ def say_hello_command(client, args):
         Hello {someone}
 
         readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
-        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the playbook
-        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with raw-response=true
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
     """
     name = args.get('name')
 

@@ -22,3 +22,5 @@ tags:
 - world
 timeout: '0'
 type: python
+subtype: python3
+dockerimage: demisto/python3:3.7.4.2245
