@@ -177,23 +177,23 @@ def create_certificate():
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(client):
     """
     If we got here, the instance is working without any error
     """
-    if KAFKA_CLIENT.topics is not None:
+    if client.topics is not None:
         demisto.results('ok')
 
 
-def print_topics():
+def print_topics(client):
     """
     Prints available topics in Broker
     """
 
-    kafka_topics = KAFKA_CLIENT.topics.values()
+    kafka_topics = client.topics.values()
     if kafka_topics:
         topics = []
-        for topic in KAFKA_CLIENT.topics.values():
+        for topic in kafka_topics:
             partitions = []
             for partition in topic.partitions.values():
                 partitions.append({
@@ -225,7 +225,7 @@ def print_topics():
         demisto.results('No topics found.')
 
 
-def produce_message():
+def produce_message(client):
     """
     Producing message to kafka topic
     """
@@ -239,8 +239,8 @@ def produce_message():
     else:
         partitioning_key = None  # type: ignore
 
-    if topic in KAFKA_CLIENT.topics:
-        kafka_topic = KAFKA_CLIENT.topics[topic]
+    if topic in client.topics:
+        kafka_topic = client.topics[topic]
         with kafka_topic.get_sync_producer() as producer:
             producer.produce(
                 message=str(value),
@@ -251,7 +251,7 @@ def produce_message():
         return_error('Topic {} was not found in Kafka'.format(topic))
 
 
-def consume_message():
+def consume_message(client):
     """
     Consuming one message from topic
     """
@@ -259,8 +259,8 @@ def consume_message():
     offset = demisto.args().get('offset')
     partition = demisto.args().get('partition')
 
-    if topic in KAFKA_CLIENT.topics:
-        kafka_topic = KAFKA_CLIENT.topics[topic]
+    if topic in client.topics:
+        kafka_topic = client.topics[topic]
         offset, partition = check_params(kafka_topic, old_offset=offset, old_partition=partition)
         consumer = kafka_topic.get_simple_consumer(
             auto_offset_reset=offset,
@@ -302,13 +302,13 @@ def consume_message():
         return_error('Topic {} was not found in Kafka'.format(topic))
 
 
-def fetch_partitions():
+def fetch_partitions(client):
     """
     Fetching available partitions in given topic
     """
     topic = demisto.args().get('topic')
-    if topic in KAFKA_CLIENT.topics:
-        kafka_topic = KAFKA_CLIENT.topics[topic]
+    if topic in client.topics:
+        kafka_topic = client.topics[topic]
         partitions = kafka_topic.partitions.keys()
 
         md = tableToMarkdown(
@@ -337,17 +337,17 @@ def fetch_partitions():
         return_error('Topic {} was not found in Kafka'.format(topic))
 
 
-def fetch_incidents():
+def fetch_incidents(client):
     """
     Fetches incidents
     """
     incidents = list()
 
     # Check for topic in Kafka
-    if TOPIC in KAFKA_CLIENT.topics:
+    if TOPIC in client.topics:
         queued_max_messages = int(demisto.params().get('max_messages', 50))
         demisto.info(queued_max_messages)
-        kafka_topic = KAFKA_CLIENT.topics[TOPIC]
+        kafka_topic = client.topics[TOPIC]
         offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
         last_offset = demisto.getLastRun().get('last_offset')
         last_fetch = last_offset if last_offset > offset else offset
@@ -376,52 +376,58 @@ def fetch_incidents():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    start_logging()
+def main():
+    LOG('Command being called is {0}'.format(demisto.command()))
+    global log_stream
+    try:
+        start_logging()
 
-    # Initialize KafkaClient
-    if VERIFY_SSL:
-        ssl_config = create_certificate()
-        KAFKA_CLIENT = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
-    else:
-        KAFKA_CLIENT = KafkaClient(hosts=BROKERS)
+        # Initialize KafkaClient
+        if VERIFY_SSL:
+            ssl_config = create_certificate()
+            client = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
+        else:
+            client = KafkaClient(hosts=BROKERS)
 
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-    elif demisto.command() == 'kafka-print-topics':
-        print_topics()
-    elif demisto.command() == 'kafka-publish-msg':
-        produce_message()
-    elif demisto.command() == 'kafka-consume-msg':
-        consume_message()
-    elif demisto.command() == 'kafka-fetch-partitions':
-        fetch_partitions()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module(client)
+        elif demisto.command() == 'kafka-print-topics':
+            print_topics(client)
+        elif demisto.command() == 'kafka-publish-msg':
+            produce_message(client)
+        elif demisto.command() == 'kafka-consume-msg':
+            consume_message(client)
+        elif demisto.command() == 'kafka-fetch-partitions':
+            fetch_partitions(client)
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents(client)
 
-except Exception as e:
-    debug_log = 'Debug logs:\n\n{0}'.format(log_stream.getvalue() if log_stream else '')
-    error_message = str(e)
-    if demisto.command() != 'test-module':
-        stacktrace = traceback.format_exc()
-        if stacktrace:
-            debug_log += '\nFull stacktrace:\n\n{0}'.format(stacktrace)
-    return_error('{0}\n\n{1}'.format(error_message, debug_log))
+    except Exception as e:
+        debug_log = 'Debug logs:\n\n{0}'.format(log_stream.getvalue() if log_stream else '')
+        error_message = str(e)
+        if demisto.command() != 'test-module':
+            stacktrace = traceback.format_exc()
+            if stacktrace:
+                debug_log += '\nFull stacktrace:\n\n{0}'.format(stacktrace)
+        return_error('{0}\n\n{1}'.format(error_message, debug_log))
 
-finally:
-    if os.path.isfile('ca.cert'):
-        os.remove(os.path.abspath('ca.cert'))
-    if os.path.isfile('client.cert'):
-        os.remove(os.path.abspath('client.cert'))
-    if os.path.isfile('client_key.key'):
-        os.remove(os.path.abspath('client_key.key'))
-    if log_stream:
-        try:
-            logging.getLogger().removeHandler(log_handler)  # type: ignore
-            log_stream.close()
-            log_stream = None
-        except Exception as e:
-            demisto.error('Kafka v2: unexpected exception when trying to remove log handler: {}'.format(e))
+    finally:
+        if os.path.isfile('ca.cert'):
+            os.remove(os.path.abspath('ca.cert'))
+        if os.path.isfile('client.cert'):
+            os.remove(os.path.abspath('client.cert'))
+        if os.path.isfile('client_key.key'):
+            os.remove(os.path.abspath('client_key.key'))
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+                log_stream = None
+            except Exception as e:
+                demisto.error('Kafka v2: unexpected exception when trying to remove log handler: {}'.format(e))
+
+
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
