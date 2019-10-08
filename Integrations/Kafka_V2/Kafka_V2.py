@@ -338,6 +338,8 @@ def fetch_incidents():
 
     # Check for topic in Kafka
     if TOPIC in KAFKA_CLIENT.topics:
+        queued_max_messages = int(demisto.params().get('max_messages', 50))
+        demisto.info(queued_max_messages)
         kafka_topic = KAFKA_CLIENT.topics[TOPIC]
         offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
         last_offset = demisto.getLastRun().get('last_offset')
@@ -348,7 +350,8 @@ def fetch_incidents():
         if latest_offset > last_fetch:
             consumer = kafka_topic.get_simple_consumer(
                 auto_offset_reset=last_fetch,
-                reset_offset_on_start=True
+                reset_offset_on_start=True,
+                queued_max_messages=queued_max_messages
             )
             for i in range(last_fetch, latest_offset):
                 """

@@ -12,7 +12,6 @@ git clone https://github.com/wurstmeister/kafka-docker .
 ```
 docker-compose -f docker-compose-single-broker.yml up
 ```
-host.docker.internal:2181
 
 Setup via shell:
 Run the following to start a shell:
