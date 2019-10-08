@@ -7,13 +7,13 @@ args:
   secret: false
 comment: Hello World Script
 commonfields:
-  id: 579e06da-9776-4706-85f5-639b7b305195
+  id: HelloWorldScript
   version: -1
 enabled: false
 name: HelloWorldScript
 outputs:
 - contextPath: HelloWorld.hello
-  description: 'The result of hello '
+  description: The result of hello
   type: String
 script: '-'
 system: false

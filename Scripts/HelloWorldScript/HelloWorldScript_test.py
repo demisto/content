@@ -2,18 +2,18 @@ from HelloWorldScript import say_hello, say_hello_command
 
 
 def test_say_hello():
-    result = say_hello("DBot")
+    result = say_hello('DBot')
 
-    assert result == "Hello DBot"
+    assert result == 'Hello DBot'
 
 
 def test_say_hello_command():
     args = {
-        "name": "DBot"
+        'name': 'DBot'
     }
 
     readable_output, outputs, raw_response = say_hello_command(args)
 
-    assert readable_output == "**Hello DBot**"
-    assert outputs["HelloWorld"] == "Hello DBot"
-    assert raw_response == "Hello DBot"
+    assert readable_output == '## Hello DBot'
+    assert outputs['HelloWorld'] == 'Hello DBot'
+    assert raw_response == 'Hello DBot'

@@ -10,7 +10,7 @@ import requests
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -20,17 +20,17 @@ class Client(BaseClient):
     """
 
     def say_hello(self, name):
-        return "Hello {}".format(name)
+        return f'Hello {name}'
 
     def say_hello_http_request(self, name):
         """
         initiates a http request to test url
         """
         data = self._http_request(
-            method="GET",
-            url_suffix="/hello/" + name
+            method='GET',
+            url_suffix='/hello/' + name
         )
-        return data["result"]
+        return data['result']
 
     def list_incidents(self):
         """
@@ -38,14 +38,14 @@ class Client(BaseClient):
         """
         return [
             {
-                "incident_id": 1,
-                "description": "Hello incident 1",
-                "created_time": datetime.utcnow().strftime(DATE_FORMAT)
+                'incident_id': 1,
+                'description': 'Hello incident 1',
+                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             },
             {
-                "incident_id": 2,
-                "description": "Hello incident 2",
-                "created_time": datetime.utcnow().strftime(DATE_FORMAT)
+                'incident_id': 2,
+                'description': 'Hello incident 2',
+                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             }
         ]
 
@@ -54,8 +54,8 @@ def test_module(client):
     """
     returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
     """
-    result = client.say_hello("DBot")
-    if "Hello DBot" == result:
+    result = client.say_hello('DBot')
+    if 'Hello DBot' == result:
         return 'ok'
     else:
         return 'Test failed because ......'
@@ -67,9 +67,9 @@ def say_hello_command(client, args):
     result = client.say_hello(name)
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = "{}".format(result)
+    readable_output = f'## {result}'
     outputs = {
-        "hello": result
+        'hello': result
     }
 
     return (
@@ -80,14 +80,14 @@ def say_hello_command(client, args):
 
 
 def say_hello_over_http_command(client, args):
-    name = args.get("name")
+    name = args.get('name')
 
     result = client.say_hello_http_request(name)
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = "## {}".format(result)
+    readable_output = f'## {result}'
     outputs = {
-        "hello": result
+        'hello': result
     }
 
     return (
@@ -116,11 +116,11 @@ def fetch_incidents(client, last_run, first_fetch_time):
     incidents = []
     items = client.list_incidents()
     for item in items:
-        incident_created_time = datetime.strptime(item["created_time"], DATE_FORMAT)
+        incident_created_time = datetime.strptime(item['created_time'], DATE_FORMAT)
         incident = {
-            "name": item["description"],
-            "occurred": incident_created_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "rawJSON": json.dumps(item)
+            'name': item['description'],
+            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'rawJSON': json.dumps(item)
         }
 
         incidents.append(incident)
@@ -129,7 +129,7 @@ def fetch_incidents(client, last_run, first_fetch_time):
         if incident_created_time > latest_created_time:
             latest_created_time = incident_created_time
 
-    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
@@ -150,7 +150,7 @@ def main():
 
     proxy = demisto.params().get('proxy', False)
 
-    LOG('Command being called is %s' % (demisto.command()))
+    LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             base_url=base_url,
@@ -178,8 +178,8 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
