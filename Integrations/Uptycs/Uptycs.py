@@ -1559,8 +1559,20 @@ def uptycs_set_asset_tag():
     http_method = 'get'
     api_call = ('/assets/%s' % demisto.args().get('asset_id'))
     tags = restcall(http_method, api_call).get('tags')
-    tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
-        'tag_value'))
+
+    tag_set = False
+    for tag in tags:
+        if demisto.args().get('tag_key') in tag:
+            temp_tag = tag.split('=')
+            new_tag = temp_tag[0]+'='+temp_tag[1]+', '+demisto.args().get('tag_value')
+            tags.remove(tag)
+            tag_set = True
+
+    if tag_set:
+            tags.append(new_tag)
+    else:
+        tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
+            'tag_value'))
 
     http_method = 'put'
     post_data = {
