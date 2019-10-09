@@ -457,7 +457,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: bücher.de
+        simple: bücher
     separatecontext: false
     view: |-
       {
