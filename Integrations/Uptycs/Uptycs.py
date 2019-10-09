@@ -6,12 +6,12 @@ from CommonServerPython import *
 ###############################################################################
 
 import os
-import sys
 import ast
 import json
 import jwt
 from datetime import datetime, timedelta
 import requests
+from typing import List
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
 # disable insecure warnings
@@ -1992,7 +1992,7 @@ def uptycs_post_threat_source():
     files = {'file': open(filepath.get('path'), 'rb')}
 
     response = requests.post(url, headers=header, data=post_data,
-                             files=files, verify=False)
+                             files=files, verify=VERIFY_CERT)
 
     return response
 
@@ -2211,7 +2211,7 @@ def uptycs_fetch_incidents():
 
     query_results = restcall(http_method, api_call)
 
-    incidents = []
+    incidents = [] # type: List[dict]
     if len(query_results.get('items')) == 0:
         return incidents
     if query_results.get('items') is not None:
