@@ -19,7 +19,7 @@ JOBRESULT_KEY = 'Accessdata.Job.Result'
 JOBSTATE_KEY = 'Accessdata.Job.State'
 JOB_KEY = 'Accessdata.Job'
 
-
+''' HELPERS '''
 def create_jobstate_context(contents):
     if 'CaseJobID' not in contents:
         return {
@@ -30,16 +30,27 @@ def create_jobstate_context(contents):
     }
 
 
-def create_contents(caseId, id, caseJobId, state, result=None):
+def create_contents(caseID, jobID, state=None, result=None):
     ec = {
-        'CaseID': caseId,
-        'ID': id,
-        'CaseJobID': caseJobId,
-        'State': state
+        'CaseID': caseID,
+        'ID': jobID,
+        'CaseJobID': str(caseID) + "_" + str(jobID)
     }
+    if state is not None:
+        ec['State'] = state
     if result is not None:
         ec['Result'] = result
     return ec
+
+
+def wrap_jobstate_context(contents, humanReadableMessage=""):
+    return {
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'HumanReadable': humanReadableMessage,
+        'EntryContext': create_jobstate_context(contents)
+    }
 
 
 class Client:
@@ -88,115 +99,86 @@ class Client:
         return res.lower()
 
     def get_jobstatus(self, args):
-
         caseID = args['caseID']
         jobID = args['jobID']
-        caseJobID = str(caseID) + "_" + str(jobID)
         url = 'api/v2/enterpriseapi/core/' + str(caseID) + \
             '/getjobstatus/' + str(jobID)
         res = self.http_request('GET', url)
 
-        if 'resultData' not in res:
-            contents = create_contents(caseID, jobID, caseJobID, 'Failed', res)
-            return {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
+        if 'resultData' not in res:  # if no data take state from first level of nesting
+            contents = create_contents(caseID, jobID, res['state'], res)
+            return wrap_jobstate_context(contents, "Current job state: " + res['state'])
+
         resultData = json.loads(res['resultData'])
 
-        if 'RealData' not in resultData:
-            contents = create_contents(caseID, jobID, caseJobID, 'Failed', resultData)
-            return {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
+        if 'RealData' not in resultData:  # if no data take state from first level of nesting
+            contents = create_contents(caseID, jobID, res['state'], resultData)
+            return wrap_jobstate_context(contents, "Current job state: " + res['state'])
+
         RealData = json.loads(resultData['RealData'])
 
-        if 'TaskStatusList' not in RealData:
-            contents = create_contents(caseID, jobID, caseJobID, 'Failed', RealData)
-            return {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No task data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
+        if 'TaskStatusList' not in RealData:  # if no data take state from first level of nesting
+            contents = create_contents(caseID, jobID, res['state'], RealData)
+            return wrap_jobstate_context(contents, "Current job state: " + res['state'])
 
         task = RealData['TaskStatusList'][0]
 
         if task is not None:
 
             if task['State'] is None:
-                contents = create_contents(caseID, jobID, caseJobID, 'Unknown', task)
-                return {
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': "Cannot get job state",
-                    'EntryContext': create_jobstate_context(contents)
-                }
+                contents = create_contents(caseID, jobID, 'Unknown', task)
+                return wrap_jobstate_context(contents, "Cannot get job state")
             if task['State'] != 'Success':
-                contents = create_contents(caseID, jobID, caseJobID, task['State'], task)
-                return {
-                    'Type': entryTypes['note'],
-                    'ContentsFormat': formats['json'],
-                    'Contents': contents,
-                    'HumanReadable': "Current job state: " + task['State'],
-                    'EntryContext': create_jobstate_context(contents)
-                }
+                contents = create_contents(caseID, jobID, task['State'], task)
+                return wrap_jobstate_context(contents, "Current job state: " + task['State'])
             else:
                 result = json.loads(task['Results'][0]['Data'])
                 res = json.loads(task['Results'][1]['Data'])
                 if result['OperationType'] == 24:  # software inventory
                     contents = create_contents(
-                        caseID, jobID, caseJobID, 'Success', res['Applications'])
-                    return {
-                        'Type': entryTypes['note'],
-                        'Contents': contents,
-                        'ContentsFormat': formats['json'],
-                        'HumanReadable': tableToMarkdown(
-                            'Applications', res['Applications'],
-                            [
-                                'Name', 'Version', 'Publisher', 'InstallDate',
-                                'InstallLocation', 'InstallSource',
-                                'EstimatedSizeInBytes'
-                            ]),
-                        'EntryContext': create_jobstate_context(contents)
-                    }
+                        caseID, jobID, 'Success', res['Applications'])
+                    return wrap_jobstate_context(contents,
+                                                 tableToMarkdown(
+                                                    'Applications', res['Applications'],
+                                                    [
+                                                        'Name', 'Version', 'Publisher', 'InstallDate',
+                                                        'InstallLocation', 'InstallSource',
+                                                        'EstimatedSizeInBytes'
+                                                    ]))
                 elif result['OperationType'] == 12:  # volatile data
-                    contents = create_contents(caseID, jobID, caseJobID, 'Success', res)
-                    return {
-                        'Type': entryTypes['note'],
-                        'Contents': contents,
-                        'ContentsFormat': formats['json'],
-                        'HumanReadable': "Job completed successfully",
-                        'EntryContext': create_jobstate_context(contents)
-                    }
+                    contents = create_contents(caseID, jobID, 'Success', res)
+                    return wrap_jobstate_context(contents, "Job completed successfully")
                 else:
-                    contents = create_contents(caseID, jobID, caseJobID, 'Success', task)
-                    return {
-                        'Type': entryTypes['note'],
-                        'ContentsFormat': formats['json'],
-                        'Contents': contents,
-                        'HumanReadable': "Job completed successfully",
-                        'EntryContext': create_jobstate_context(contents)
-                    }
+                    contents = create_contents(caseID, jobID, 'Success', task)
+                    return wrap_jobstate_context(contents, "Job completed successfully")
 
-        contents = create_contents(caseID, jobID, caseJobID, 'Unknown', None)
+        contents = create_contents(caseID, jobID, 'Failed', None)
+        return wrap_jobstate_context(contents, "Job exited unexpectedly")
 
-        return {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': contents,
-            'HumanReadable': "Job exited unexpectedly",
-            'EntryContext': create_jobstate_context(contents)
-        }
+    def get_jobstatus_processlist(self, args):
+        jobStatus = self.get_jobstatus(args)
+        contents = jobStatus['Contents']
+        newContents = create_contents(contents['CaseID'], contents['ID'], contents['State'])
+        newContents['Result'] = {}
+
+        message = "(to get path to snapshot job should be finished) "
+
+        if 'Result' not in contents:
+            message += "No Result in response scheme"
+            return wrap_jobstate_context(newContents, message)
+        newContents['Result']['SnapshotDetails'] = {}
+
+        if 'SnapshotDetails' not in contents['Result']:
+            message += "No Result.SnapshotDetails in response scheme"
+            return wrap_jobstate_context(newContents, message)
+        newContents['Result']['SnapshotDetails']['File'] = {}
+
+        if 'File' not in contents['Result']['SnapshotDetails']:
+            message += "No Result.SnapshotDetails.File in response scheme"
+            return wrap_jobstate_context(newContents, message)
+        newContents['Result']['SnapshotDetails']['File'] = contents['Result']['SnapshotDetails']['File']
+
+        return wrap_jobstate_context(newContents, newContents['Result']['SnapshotDetails']['File'])
 
     def jobstatus_scan(self, args):
         caseJobID = args['caseJobID']
@@ -205,34 +187,16 @@ class Client:
             'caseID': preparedParameters[0],
             'jobID': preparedParameters[1]
         }
-        url = 'api/v2/enterpriseapi/core/' + str(preparedParameters['caseID']) + \
-            '/getjobstatus/' + str(preparedParameters['jobID'])
-        res = self.http_request('GET', url)
+        jobStatus = self.get_jobstatus(preparedParameters)
+        contents = jobStatus['Contents']
 
-        contents = create_contents(preparedParameters['caseID'],
-                                   preparedParameters['jobID'],
-                                   caseJobID,
-                                   'Unknown')
-        if 'state' not in res:
-            return {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': contents,
-                'HumanReadable': "No data in job result",
-                'EntryContext': create_jobstate_context(contents)
-            }
-        state = res['state']
-        contents = create_contents(preparedParameters['caseID'],
-                                   preparedParameters['jobID'],
-                                   caseJobID,
-                                   state)
-        return {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': contents,
-            'HumanReadable': "Current job state: " + state,
-            'EntryContext': create_jobstate_context(contents)
-        }
+        newContents = create_contents(preparedParameters['caseID'],
+                                      preparedParameters['jobID'],
+                                      'Unknown')
+        if 'State' not in contents:
+            return wrap_jobstate_context(newContents, "No data in job result")
+        newContents['State'] = contents['State']
+        return wrap_jobstate_context(newContents, "Current job state: " + newContents['State'])
 
     def legacyagent_runvolatilejob(self, args):
 
@@ -249,20 +213,16 @@ class Client:
                 }
             }
         }
-        res = self.http_request('POST', url, json.dumps(data))
-        ec = {
-            'ID': res,
-            'CaseID': args['caseid'],
-            'CaseJobID': args['caseid'] + "_" + str(res),
-            'Type': 'Volatile'
-        }
+        jobID = self.http_request('POST', url, json.dumps(data))
+        contents = create_contents(args['caseid'], jobID)
+        contents['Type'] = 'Volatile'
 
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': res,
-            'HumanReadable': "JobID: " + str(res),
-            'EntryContext': create_jobstate_context(ec)
+            'Contents': contents,
+            'HumanReadable': "JobID: " + str(jobID),
+            'EntryContext': create_jobstate_context(contents)
         }
 
     def legacyagent_runmemoryacquisition(self, args):
@@ -273,33 +233,29 @@ class Client:
             'ips': {'targets': [args['target_ip']]},
             'MemoryAcquistion': {'Operation': 11}
         }
-        res = self.http_request('POST', url, json.dumps(data))
-        ec = {
-            'ID': res,
-            'CaseID': args['caseid'],
-            'CaseJobID': args['caseid'] + "_" + str(res),
-            'Type': 'LegacyMemoryDump'
-        }
+        jobID = self.http_request('POST', url, json.dumps(data))
+        contents = create_contents(args['caseid'], jobID)
+        contents['Type'] = 'LegacyMemoryDump'
 
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': ec,
-            'HumanReadable': "JobID: " + str(res),
-            'EntryContext': create_jobstate_context(ec)
+            'Contents': contents,
+            'HumanReadable': "JobID: " + str(jobID),
+            'EntryContext': create_jobstate_context(contents)
         }
 
     def read_casefile(self, args):
 
         url = 'api/v2/enterpriseapi/core/readfilecontents'
-        data = args['filepath']
-        res = self.http_request('POST', url, json.dumps(data))
+        filepath = args['filepath']
+        data = self.http_request('POST', url, json.dumps(filepath))
 
         return {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['text'],
-            'Contents': res,
-            'EntryContext': {'Accessdata.File.Contents': res}
+            'Contents': data,
+            'EntryContext': {'Accessdata.File.Contents': data}
         }
 
 
@@ -309,6 +265,10 @@ def test_module(client):
 
 def quinc_get_jobstatus_command(client, args):
     return client.get_jobstatus(args)
+
+
+def quinc_get_jobstatus_processlist_command(client, args):
+    return client.get_jobstatus_processlist(args)
 
 
 def quinc_jobstatus_scan_command(client, args):
@@ -360,6 +320,11 @@ def main():
         if demisto.command() == 'accessdata-get-jobstatus':
             demisto.results(
                 quinc_get_jobstatus_command(
+                    client, demisto.args()))
+
+        if demisto.command() == 'accessdata-get-jobstatus-processlist':
+            demisto.results(
+                quinc_get_jobstatus_processlist_command(
                     client, demisto.args()))
 
         if demisto.command() == 'accessdata-jobstatus-scan':

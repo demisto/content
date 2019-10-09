@@ -8,10 +8,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 203b8134-3542-4f2f-8976-c83227b7991d
+    taskid: 8ad54dd6-b579-41ef-81da-1423e2aa8f4f
     type: start
     task:
-      id: 203b8134-3542-4f2f-8976-c83227b7991d
+      id: 8ad54dd6-b579-41ef-81da-1423e2aa8f4f
       version: -1
       name: ""
       description: Playbook entry point
@@ -32,10 +32,10 @@ tasks:
     timertriggers: []
   "1":
     id: "1"
-    taskid: f5af4b9d-40aa-4812-84a6-8ccc53722cd5
+    taskid: 6c822883-2638-48b1-8c41-c09e0eb4a633
     type: regular
     task:
-      id: f5af4b9d-40aa-4812-84a6-8ccc53722cd5
+      id: 6c822883-2638-48b1-8c41-c09e0eb4a633
       version: -1
       name: Get process list from legacy agent
       description: Call command to get process list from legacy agent
@@ -63,10 +63,10 @@ tasks:
     timertriggers: []
   "7":
     id: "7"
-    taskid: 893960ac-a473-4f23-8176-1840d3dec3c6
+    taskid: 15ba3de3-acd0-4849-8f4c-6e9c37a559d2
     type: title
     task:
-      id: 893960ac-a473-4f23-8176-1840d3dec3c6
+      id: 15ba3de3-acd0-4849-8f4c-6e9c37a559d2
       version: -1
       name: Done
       description: Playbook exit point
@@ -85,10 +85,10 @@ tasks:
     timertriggers: []
   "8":
     id: "8"
-    taskid: ec776aab-6bf3-4450-8957-d1bbe81efbb9
+    taskid: f496a274-70f8-4bb7-85dc-6f0973b5e0fc
     type: regular
     task:
-      id: ec776aab-6bf3-4450-8957-d1bbe81efbb9
+      id: f496a274-70f8-4bb7-85dc-6f0973b5e0fc
       version: -1
       name: DeleteContext
       description: Clear current context
@@ -118,10 +118,10 @@ tasks:
     timertriggers: []
   "10":
     id: "10"
-    taskid: fceb95da-a501-4a57-8a77-35b284879da1
+    taskid: a86bc2bd-549d-49fc-8500-cc18f8c37cd0
     type: regular
     task:
-      id: fceb95da-a501-4a57-8a77-35b284879da1
+      id: a86bc2bd-549d-49fc-8500-cc18f8c37cd0
       version: -1
       name: Read snapshot file from case folder
       description: Reads a file from case folder and saves its content in current
@@ -148,10 +148,10 @@ tasks:
     timertriggers: []
   "11":
     id: "11"
-    taskid: e8e2d2d9-e2a4-4d9c-828b-2759e1887152
+    taskid: 82060579-995f-40d1-8f86-59d3449515df
     type: regular
     task:
-      id: e8e2d2d9-e2a4-4d9c-828b-2759e1887152
+      id: 82060579-995f-40d1-8f86-59d3449515df
       version: -1
       name: Check if process exists in process list
       description: Reads contetn of XML file from context, converts it to JSON and
@@ -178,10 +178,10 @@ tasks:
     timertriggers: []
   "12":
     id: "12"
-    taskid: 11e4ecae-6fb2-4054-8d45-77f51c9c0cd0
+    taskid: f3fe6bad-370b-4640-8f4f-90336c9a5cc7
     type: condition
     task:
-      id: 11e4ecae-6fb2-4054-8d45-77f51c9c0cd0
+      id: f3fe6bad-370b-4640-8f4f-90336c9a5cc7
       version: -1
       name: Does the  process exist?
       description: Simple conditional task
@@ -216,10 +216,10 @@ tasks:
     timertriggers: []
   "13":
     id: "13"
-    taskid: c3b4b8c2-486b-49cc-82e9-8dcdbc838a0b
+    taskid: 38356887-dc93-4eee-8a88-13b90c05a5f0
     type: regular
     task:
-      id: c3b4b8c2-486b-49cc-82e9-8dcdbc838a0b
+      id: 38356887-dc93-4eee-8a88-13b90c05a5f0
       version: -1
       name: Create memory dump job
       description: Creates legacy agent memory dump
@@ -247,10 +247,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: dffa12ec-6f24-4b77-8507-130a4f33260c
+    taskid: 925a6043-1df2-4d21-8d0f-b602a82a5906
     type: playbook
     task:
-      id: dffa12ec-6f24-4b77-8507-130a4f33260c
+      id: 925a6043-1df2-4d21-8d0f-b602a82a5906
       version: -1
       name: GenericPolling
       description: |-
@@ -267,7 +267,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "19"
     scriptarguments:
       Ids:
         simple: ${Accessdata.Job.CaseJobID}
@@ -296,43 +296,12 @@ tasks:
       }
     note: false
     timertriggers: []
-  "16":
-    id: "16"
-    taskid: f67e6abe-ef41-4a99-81c2-c16eb486b10e
-    type: regular
-    task:
-      id: f67e6abe-ef41-4a99-81c2-c16eb486b10e
-      version: -1
-      name: Get process list job result
-      description: Get status of job
-      script: Quinc|||accessdata-get-jobstatus
-      type: regular
-      iscommand: true
-      brand: Quinc
-    nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      caseID:
-        simple: ${inputs.caseid}
-      jobID:
-        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
   "17":
     id: "17"
-    taskid: 4d92aa7b-37be-4c6d-8edd-d4e9a593715c
+    taskid: 223b7515-94c0-4291-87af-73b9b2a2f31f
     type: playbook
     task:
-      id: 4d92aa7b-37be-4c6d-8edd-d4e9a593715c
+      id: 223b7515-94c0-4291-87af-73b9b2a2f31f
       version: -1
       name: GenericPolling
       description: |-
@@ -360,7 +329,7 @@ tasks:
       PollingCommandName:
         simple: accessdata-jobstatus-scan
       Timeout:
-        simple: "15"
+        simple: "20"
       dt:
         simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
           val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
@@ -380,10 +349,10 @@ tasks:
     timertriggers: []
   "18":
     id: "18"
-    taskid: 2f2bef09-1ffb-4515-8580-ee0d53794bbb
+    taskid: d90593ce-0302-4593-8a4f-bdf4f8bb9e8f
     type: regular
     task:
-      id: 2f2bef09-1ffb-4515-8580-ee0d53794bbb
+      id: d90593ce-0302-4593-8a4f-bdf4f8bb9e8f
       version: -1
       name: Get memory dump job result
       description: Get status of job
@@ -405,6 +374,37 @@ tasks:
         "position": {
           "x": 350,
           "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 3de887f6-3ffe-4a19-8007-4da5d69cfbb7
+    type: regular
+    task:
+      id: 3de887f6-3ffe-4a19-8007-4da5d69cfbb7
+      version: -1
+      name: Get process list job result
+      description: Get snapshot path from result of the process list job
+      script: Quinc|||accessdata-get-jobstatus-processlist
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseID:
+        simple: ${inputs.caseid}
+      jobID:
+        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
         }
       }
     note: false

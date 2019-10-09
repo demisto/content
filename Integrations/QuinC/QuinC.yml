@@ -29,7 +29,6 @@ configuration:
   required: false
 script:
   commands:
-  commands:
   - name: accessdata-get-jobstatus
     arguments:
     - name: caseID
@@ -104,6 +103,7 @@ script:
   - name: accessdata-jobstatus-scan
     arguments:
     - name: caseJobID
+      required: true
       description: Concatenated CaseID and JobID (like "1_800")
       isArray: true
     outputs:
@@ -120,6 +120,24 @@ script:
       description: State of job's execution
       type: string
     description: Checks status of the job
+  - name: accessdata-get-jobstatus-processlist
+    arguments:
+    - name: caseID
+      required: true
+      description: ID of the case
+      defaultValue: "1"
+    - name: jobID
+      required: true
+      description: ID of the job
+      defaultValue: "1"
+    outputs:
+    - contextPath: State
+      description: Job state
+      type: string
+    - contextPath: Result
+      description: Job result
+      type: string
+    description: Get snapshot path from result of the process list job
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   script: '-'
