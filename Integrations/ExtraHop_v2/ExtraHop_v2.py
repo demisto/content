@@ -17,19 +17,14 @@ requests.packages.urllib3.disable_warnings()
 ''' GLOBALS/PARAMS '''
 
 APIKEY = demisto.params().get('apikey')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else \
-    demisto.params()['url']
+SERVER = SERVER = demisto.params().get('url', '').strip('/')
 USE_SSL = not demisto.params().get('insecure', False)
 BASE_URL = SERVER + '/api/v1/'
 HEADERS = {
     'Accept': 'application/json',
     'Authorization': 'ExtraHop apikey={key}'.format(key=APIKEY)
 }
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy()
 
 
 ''' HELPER FUNCTIONS '''
@@ -576,13 +571,13 @@ def create_alert(apply_all, disabled, name, notify_snmp, refire_interval, severi
         data['interval_length'] = int(interval_length)
         data['operand'] = operand
         data['operator'] = operator
-        if demisto.args().get('field_name2'):
+        if field_name2:
             data['field_name2'] = field_name2
-        if demisto.args().get('field_op'):
+        if field_op:
             data['field_op'] = field_op
-        if demisto.args().get('param'):
+        if param:
             data['param'] = param
-        if demisto.args().get('param2'):
+        if param2:
             data['param2'] = param2
     if alert_id:
         method = 'PATCH'
@@ -638,7 +633,7 @@ def tag_devices(tag, add, remove):
             break
     else:
         if remove and not add:
-            return demisto.results("Warning: tag {} does not exist, nothing to remove.".format(tag))
+            return_warning("Warning: tag {} does not exist, nothing to remove.".format(tag))
         tag_create_res = http_request('POST', 'tags', data={'name': tag}, raw_response=True)
         tag_location = tag_create_res.headers.get('location')
         tag_id = parse_location_header(tag_location)
@@ -720,26 +715,27 @@ def search_packets(output, limit_bytes, limit_search_duration, query_from, query
 
 
 def create_or_edit_alert_command():
-    alert_id = demisto.args().get('alert_id')
-    apply_all = bool(strtobool(demisto.args().get('apply_all', False)))
-    disabled = bool(strtobool(demisto.args().get('disabled', False)))
-    name = demisto.args().get('name')
-    notify_snmp = bool(strtobool(demisto.args().get('notify_snmp', False)))
-    field_name = demisto.args().get('field_name')
-    stat_name = demisto.args().get('stat_name')
-    units = demisto.args().get('units')
-    interval_length = demisto.args().get('interval_length')
-    operand = demisto.args().get('operand')
-    refire_interval = demisto.args().get('refire_interval')
-    severity = demisto.args().get('severity')
-    alert_type = demisto.args().get('type')
-    object_type = demisto.args().get('object_type')
-    protocols = demisto.args().get('protocols')
-    operator = demisto.args().get('operator')
-    field_name2 = demisto.args().get('field_name2')
-    field_op = demisto.args().get('field_op')
-    param = demisto.args().get('param')
-    param2 = demisto.args().get('param2')
+    dargs = demisto.args()
+    alert_id = dargs.get('alert_id')
+    apply_all = bool(strtobool(dargs.get('apply_all', False)))
+    disabled = bool(strtobool(dargs.get('disabled', False)))
+    name = dargs.get('name')
+    notify_snmp = bool(strtobool(dargs.get('notify_snmp', False)))
+    field_name = dargs.get('field_name')
+    stat_name = dargs.get('stat_name')
+    units = dargs.get('units')
+    interval_length = dargs.get('interval_length')
+    operand = dargs.get('operand')
+    refire_interval = dargs.get('refire_interval')
+    severity = dargs.get('severity')
+    alert_type = dargs.get('type')
+    object_type = dargs.get('object_type')
+    protocols = dargs.get('protocols')
+    operator = dargs.get('operator')
+    field_name2 = dargs.get('field_name2')
+    field_op = dargs.get('field_op')
+    param = dargs.get('param')
+    param2 = dargs.get('param2')
     create_alert(apply_all, disabled, name, notify_snmp, refire_interval, severity, alert_type, object_type,
                  protocols, field_name, stat_name, units, interval_length, operand, operator, field_name2, field_op,
                  param, param2, alert_id)
@@ -751,24 +747,26 @@ def get_alerts_command():
 
 
 def edit_watchlist_command():
-    add = demisto.args().get('add')
-    remove = demisto.args().get('remove')
+    dargs = demisto.args()
+    add = dargs.get('add')
+    remove = dargs.get('remove')
     edit_watchlist(add, remove)
 
 
 def query_records_command():
-    query_from = demisto.args().get('query_from')
-    query_until = demisto.args().get('query_until')
-    limit = demisto.args().get('limit')
-    offset = demisto.args().get('offset')
-    field1 = demisto.args().get('field1')
-    operator1 = demisto.args().get('operator1')
-    value1 = demisto.args().get('value1')
-    field2 = demisto.args().get('field2')
-    operator2 = demisto.args().get('operator2')
-    value2 = demisto.args().get('value2')
-    match_type = demisto.args().get('match_type')
-    types = demisto.args().get('types')
+    dargs = demisto.args()
+    query_from = dargs.get('query_from')
+    query_until = dargs.get('query_until')
+    limit = dargs.get('limit')
+    offset = dargs.get('offset')
+    field1 = dargs.get('field1')
+    operator1 = dargs.get('operator1')
+    value1 = dargs.get('value1')
+    field2 = dargs.get('field2')
+    operator2 = dargs.get('operator2')
+    value2 = dargs.get('value2')
+    match_type = dargs.get('match_type')
+    types = dargs.get('types')
     res = query_records(query_from, query_until, limit, offset, field1, operator1, value1,
                         field2, operator2, value2, match_type, types)
     format_records(res)
@@ -783,33 +781,35 @@ def get_watchlist_command():
 
 
 def device_search_command():
-    name = demisto.args().get('name')
-    ip = demisto.args().get('ip')
-    mac = demisto.args().get('mac')
-    role = demisto.args().get('role')
-    software = demisto.args().get('software')
-    vendor = demisto.args().get('vendor')
-    tag = demisto.args().get('tag')
-    discover_time = demisto.args().get('discover_time')
-    vlan = demisto.args().get('vlan')
-    activity = demisto.args().get('activity')
-    operator = demisto.args().get('operator')
-    match_type = demisto.args().get('match_type')
-    active_from = demisto.args().get('active_from')
-    active_until = demisto.args().get('active_until')
-    limit = demisto.args().get('limit')
-    l3_only = bool(strtobool(demisto.args().get('l3_only', True)))
+    dargs = demisto.args()
+    name = dargs.get('name')
+    ip = dargs.get('ip')
+    mac = dargs.get('mac')
+    role = dargs.get('role')
+    software = dargs.get('software')
+    vendor = dargs.get('vendor')
+    tag = dargs.get('tag')
+    discover_time = dargs.get('discover_time')
+    vlan = dargs.get('vlan')
+    activity = dargs.get('activity')
+    operator = dargs.get('operator')
+    match_type = dargs.get('match_type')
+    active_from = dargs.get('active_from')
+    active_until = dargs.get('active_until')
+    limit = dargs.get('limit')
+    l3_only = bool(strtobool(dargs.get('l3_only', True)))
     found_devices = device_search(name, ip, mac, role, software, vendor, tag, discover_time,
                                   vlan, activity, operator, match_type, active_from, active_until, limit, l3_only)
     format_devices(found_devices, get_appliance_uuids())
 
 
 def track_ticket_command():
-    incident_id = demisto.args().get('incident_id')
-    detection_id = demisto.args().get('detection_id')
-    incident_owner = demisto.args().get('incident_owner')
-    incident_status = demisto.args().get('incident_status')
-    incident_close_reason = demisto.args().get('incident_close_reason')
+    dargs = demisto.args()
+    incident_id = dargs.get('incident_id')
+    detection_id = dargs.get('detection_id')
+    incident_owner = dargs.get('incident_owner')
+    incident_status = dargs.get('incident_status')
+    incident_close_reason = dargs.get('incident_close_reason')
     track_ticket(incident_id, detection_id, incident_owner, incident_status, incident_close_reason)
     ec = {
         "ExtraHop": {
@@ -826,38 +826,42 @@ def track_ticket_command():
 
 
 def get_peers_command():
-    ip_or_id = demisto.args().get('ip_or_id')
-    query_from = demisto.args().get('query_from', '-30m')
-    query_until = demisto.args().get('query_until')
-    peer_role = demisto.args().get('peer_role')
-    protocol = demisto.args().get('protocol')
+    dargs = demisto.args()
+    ip_or_id = dargs.get('ip_or_id')
+    query_from = dargs.get('query_from', '-30m')
+    query_until = dargs.get('query_until')
+    peer_role = dargs.get('peer_role')
+    protocol = dargs.get('protocol')
     peer_devices = get_peers(ip_or_id, query_from, query_until, peer_role, protocol)
     format_devices(peer_devices, get_appliance_uuids(), hr_title="{} Peer Device(s) Found",
                    no_results_msg="No Peer Devices were found")
 
 
 def get_protocols_command():
-    ip_or_id = demisto.args().get('ip_or_id')
-    query_from = demisto.args().get('query_from')
-    query_until = demisto.args().get('query_until')
+    dargs = demisto.args()
+    ip_or_id = dargs.get('ip_or_id')
+    query_from = dargs.get('query_from')
+    query_until = dargs.get('query_until')
     device = get_protocols(ip_or_id, query_from, query_until)
     format_device_with_protocols(device, get_appliance_uuids())
 
 
 def tag_devices_command():
-    tag = demisto.args().get('tag')
-    add = demisto.args().get('add')
-    remove = demisto.args().get('remove')
+    dargs = demisto.args()
+    tag = dargs.get('tag')
+    add = dargs.get('add')
+    remove = dargs.get('remove')
     tag_devices(tag, add, remove)
 
 
 def get_activity_map_command():
-    ip_or_id = demisto.args().get('ip_or_id')
-    time_interval = demisto.args().get('time_interval')
-    from_time = demisto.args().get('from_time')
-    until_time = demisto.args().get('until_time')
-    peer_role = demisto.args().get('peer_role')
-    protocol = demisto.args().get('protocol')
+    dargs = demisto.args()
+    ip_or_id = dargs.get('ip_or_id')
+    time_interval = dargs.get('time_interval')
+    from_time = dargs.get('from_time')
+    until_time = dargs.get('until_time')
+    peer_role = dargs.get('peer_role')
+    protocol = dargs.get('protocol')
     activity_map_link = get_activity_map(ip_or_id, time_interval, from_time, until_time, peer_role, protocol)
 
     ec = {
@@ -865,26 +869,21 @@ def get_activity_map_command():
             "ActivityMap": activity_map_link
         }
     }  # type: dict
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': ec,
-        'HumanReadable': "[{}]({})".format("View Live Activity Map in ExtraHop", activity_map_link),
-        'EntryContext': createContext(ec, removeNull=True)
-    })
+    return_outputs('[View Live Activity Map in ExtraHop]({})'.format(activity_map_link), createContext(ec, removeNull=True), ec)
 
 
 def search_packets_command():
-    output = demisto.args().get('output')
-    limit_bytes = demisto.args().get('limit_bytes')
-    limit_search_duration = demisto.args().get('limit_search_duration')
-    query_from = demisto.args().get('query_from')
-    query_until = demisto.args().get('query_until')
-    bpf = demisto.args().get('bpf')
-    ip1 = demisto.args().get('ip1')
-    port1 = demisto.args().get('port1')
-    ip2 = demisto.args().get('ip2')
-    port2 = demisto.args().get('port2')
+    dargs = demisto.args()
+    output = dargs.get('output')
+    limit_bytes = dargs.get('limit_bytes')
+    limit_search_duration = dargs.get('limit_search_duration')
+    query_from = dargs.get('query_from')
+    query_until = dargs.get('query_until')
+    bpf = dargs.get('bpf')
+    ip1 = dargs.get('ip1')
+    port1 = dargs.get('port1')
+    ip2 = dargs.get('ip2')
+    port2 = dargs.get('port2')
 
     res_raw = search_packets(output, limit_bytes, limit_search_duration, query_from, query_until, bpf, ip1, port1, ip2, port2)
     if res_raw.status_code == 204:

@@ -8,15 +8,15 @@ description: Network detection and response. Complete visibility of network comm
   at enterprise scale, real-time threat detections backed by machine learning, and
   guided investigation workflows that simplify response.
 configuration:
-- display: API Key
-  name: apikey
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: URL
   name: url
   defaultvalue: ""
   type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
