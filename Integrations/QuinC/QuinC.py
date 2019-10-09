@@ -20,6 +20,8 @@ JOBSTATE_KEY = 'Accessdata.Job.State'
 JOB_KEY = 'Accessdata.Job'
 
 ''' HELPERS '''
+
+
 def create_jobstate_context(contents):
     if 'CaseJobID' not in contents:
         return {
@@ -137,14 +139,15 @@ class Client:
                 if result['OperationType'] == 24:  # software inventory
                     contents = create_contents(
                         caseID, jobID, 'Success', res['Applications'])
-                    return wrap_jobstate_context(contents,
-                                                 tableToMarkdown(
-                                                    'Applications', res['Applications'],
-                                                    [
-                                                        'Name', 'Version', 'Publisher', 'InstallDate',
-                                                        'InstallLocation', 'InstallSource',
-                                                        'EstimatedSizeInBytes'
-                                                    ]))
+                    return wrap_jobstate_context(
+                        contents,
+                        tableToMarkdown(
+                            'Applications', res['Applications'],
+                            [
+                                'Name', 'Version', 'Publisher', 'InstallDate',
+                                'InstallLocation', 'InstallSource',
+                                'EstimatedSizeInBytes'
+                            ]))
                 elif result['OperationType'] == 12:  # volatile data
                     contents = create_contents(caseID, jobID, 'Success', res)
                     return wrap_jobstate_context(contents, "Job completed successfully")
