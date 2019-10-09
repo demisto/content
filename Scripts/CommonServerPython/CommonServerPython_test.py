@@ -933,32 +933,32 @@ def test_parse_date_range():
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
 
 
-def test_return_outputs(mocker):
-    mocker.patch.object(demisto, 'results')
-    md = 'md'
-    outputs = {'Event': 1}
-    raw_response = {'event': 1}
-    return_outputs(md, outputs, raw_response)
-    results = demisto.results.call_args[0][0]
-    assert raw_response == results['Contents']
-    assert outputs == results['EntryContext']
-    assert md == results['HumanReadable']
+class TestReturnOutputs:
+    def test_return_outputs(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        return_outputs(md, outputs, raw_response)
+        results = demisto.results.call_args[0][0]
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
 
+    def test_return_outputs_only_md(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        return_outputs(md)
+        results = demisto.results.call_args[0][0]
+        assert md == results['HumanReadable']
+        assert 'text' == results['ContentsFormat']
 
-def test_return_outputs_only_md(mocker):
-    mocker.patch.object(demisto, 'results')
-    md = 'md'
-    return_outputs(md)
-    results = demisto.results.call_args[0][0]
-    assert results == md
-
-
-def test_return_outputs_raw_none(mocker):
-    mocker.patch.object(demisto, 'results')
-    md = 'md'
-    outputs = {'Event': 1}
-    return_outputs(md, outputs, None)
-    results = demisto.results.call_args[0][0]
-    assert outputs == results['Contents']
-    assert outputs == results['EntryContext']
-    assert md == results['HumanReadable']
+    def test_return_outputs_raw_none(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        return_outputs(md, outputs, None)
+        results = demisto.results.call_args[0][0]
+        assert outputs == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
