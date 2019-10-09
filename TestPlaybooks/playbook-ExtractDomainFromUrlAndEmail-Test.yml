@@ -81,7 +81,7 @@ tasks:
       - "3"
     scriptarguments:
       input:
-        simple: example@hotmail.com
+        simple: example@hotmail.com  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -169,7 +169,7 @@ tasks:
       - "7"
     scriptarguments:
       input:
-        simple: https://typora.io/, example@macmillan.com
+        simple: https://typora.io/, example@macmillan.com  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -455,14 +455,7 @@ tasks:
       brand: ""
     scriptarguments:
       humanReadableEntryId:
-        complex:
-          root: lastCompletedTaskEntries
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
+        simple: ${lastCompletedTaskEntries}
       substring:
         simple: bücher.de
     separatecontext: false
