@@ -38,7 +38,7 @@ The following is the format for a file.
             "Copyright": "STRING, Copyright information.",
             "Description": "STRING, A description of the signature.",
             "FileVersion": "STRING, The file version.",
-            "InternalName": "STRING, The iInternal name of the file.",
+            "InternalName": "STRING, The internal name of the file.",
             "OriginalName": "STRING, The original name of the file."            
         },
         "Malicious": {
@@ -149,15 +149,15 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
     "Subdomains": "STRING, Subdomains of the domain.",
     "UpdatedDate": "DATE, The date that the domain was last updated.",
     "Admin": {
-        "Country": "STRING, The domain admininistrator's country.",
-        "Email": "STRING, The domain admininistrator's email address.",
-        "Name": "STRING, The domain admininistrator's name.",
-        "Phone": "STRING, The domain admininistrator's phone number."
+        "Country": "STRING, The country of the domain administrator.",
+        "Email": "STRING, The email address of the domain administrator.",
+        "Name": "STRING, The name of the domain administrator.",
+        "Phone": "STRING, The phone number of the domain administrator."
     },
     "Registrant": {
-        "Country": "STRING, The registrant's country.",
-        "Email": "STRING, The registrant's email address.",
-        "Name": "STRING, The registrant's name.",
+        "Country": "STRING, The country of the registrant.",
+        "Email": "STRING, The email address of the registrant.",
+        "Name": "STRING, The name of the registrant.",
         "Phone": "STRING, The phone number for receiving abuse reports.",
         "Email": "STRING, The email address for receiving abuse reports."
     },
@@ -168,19 +168,19 @@ The following is the format for a Domain. Please note that for WHOIS, the entity
         "UpdatedDate": "DATE, The date that the domain was last updated.",
         "ExpirationDate": "DATE, The date that the domain expires.",
         "Registrant": {
-            "Name": "STRING, The registrant's name.",
-            "Email": "STRING, The registrant's email address.",
-            "Phone": "STRING, The registrant's phone number."
+            "Name": "STRING, The name of the registrant.",
+            "Email": "STRING, The email address of the registrant.",
+            "Phone": "STRING, The phone number of the registrant."
         },
         "Registrar": {
-            "Name": "STRING, The registrar's name, for example: "GoDaddy".",
+            "Name": "STRING, The name of the registrar, for example: "GoDaddy".",
             "AbuseEmail": "STRING, The email address of the contact for reporting abuse.",
             "AbusePhone": "STRING, The phone number of contact for reporting abuse."
         },
         "Admin": {
-            "Name": "STRING, The name of the domain admininistrator.",
-            "Email": "STRING, The email address of the domain admininistrator.",
-            "Phone": "STRING, The phone number of the domain admininistrator."
+            "Name": "STRING, The name of the domain administrator.",
+            "Email": "STRING, The email address of the domain administrator.",
+            "Phone": "STRING, The phone number of the domain administrator."
         }
     },
     "WHOIS/History": "List of Whois objects",
@@ -208,10 +208,10 @@ The following is the format for a URL entity.
 The following is the format for a CVE.
 ```python
 "CVE": {
-    "ID": "STRING, ID of the CVE, for example: "CVE-2015-1653".",
+    "ID": "STRING, The ID of the CVE, for example: "CVE-2015-1653".",
     "CVSS": "STRING, The CVSS of the CVE, for example: "10.0".",
-    "Published": "DATE, Timestamp of when the CVE was published",
-    "Modified": "DATE, The timestamp of when the CVE was last modified",
+    "Published": "DATE, The timestamp of when the CVE was published.",
+    "Modified": "DATE, The timestamp of when the CVE was last modified.",
     "Description": "STRING, A description of the CVE."
 }
 ```
@@ -259,7 +259,7 @@ The following is the format for an Event.
     "Type": "STRING, The type of event, for example: "ePO", "Protectwise", "DAM".",
     "ID": "STRING, The unique identifier of the event.",
     "Name": "STRING, The name of the event.",
-    "Sensor": "STRING, Sensor that indicated the event.",
+    "Sensor": "STRING, The sensor that indicated the event.",
     "Rule": "STRING, The rule that triggered the event."
 }
 ```
@@ -268,7 +268,7 @@ The following is the format for an Event.
 The following is the format for a Directory.
 ```python
 "Directory": {
-    "Path": "STRING, The directory path. Can be local or UNC.",
+    "Path": "STRING, The directory path. Can be "local" or "UNC".",
     "Endpoint": "STRING, Whether the directory is found on a specific endpoint."
 }
 ```
@@ -278,7 +278,7 @@ The following is the format for a Service.
 ```python
 "Service": {
     "Name": "STRING, The name of the service.",
-    "BinPath": "STRING, Path of the /bin folder.",
+    "BinPath": "STRING, The path of the /bin folder.",
     "CommandLine": "STRING, The full command line (including arguments).",
     "StartType": "STRING, How the service was started.",
     "State": "STRING, The status of the service."
@@ -289,15 +289,15 @@ The following is the format for a Service.
 The following is the format for a process.
 ```python
 "Process": {
-    "Name": "STRING, Name of the process.",
-    "PID": "STRING, PID of the process.",
-    "Hostname": "STRING, Endpoint on which the process was seen.",
-    "MD5": "STRING, MD5 hash of the process.",
-    "SHA1": "STRING, SHA1 hash of the process.",
-    "CommandLine": "STRING, Full command line (including arguments).",
-    "Path": "STRING, File system path to the binary file.",
-    "Start Time": "DATE, Timestamp of the process start time.",
-    "End Time": "DATE, Timestamp of the process end time.",
+    "Name": "STRING, The name of the process.",
+    "PID": "STRING, The PID of the process.",
+    "Hostname": "STRING, The endpoint on which the process was seen.",
+    "MD5": "STRING, The MD5 hash of the process.",
+    "SHA1": "STRING, The SHA1 hash of the process.",
+    "CommandLine": "STRING, The full command line (including arguments).",
+    "Path": "STRING, The file system path to the binary file.",
+    "Start Time": "DATE, The timestamp of the process start time.",
+    "End Time": "DATE, The timestamp of the process end time.",
     "Parent": "STRING, Parent process objects.",
     "Sibling": "LIST, Sibling process objects.",
     "Child": "LIST, Child process objects."
@@ -308,9 +308,9 @@ The following is the format for a process.
 The following is the format for a host.
 ```python
 "Host": {
-    "Domain": "STRING, Domain of the host.",
-    "Hostname": "STRING, Name of the host.",
-    "BIOVersion": "STRING, BIOS version of the host.",
+    "Domain": "STRING, The domain of the host.",
+    "Hostname": "STRING, The name of the host.",
+    "BIOVersion": "STRING, The BIOS version of the host.",
     "ID": "STRING, The unique ID within the tool retrieving the host.",
     "DHCPServer": "STRING, The DHCP server.",
     "IP": "STRING, The IP address of the host.",
@@ -318,9 +318,9 @@ The following is the format for a host.
     "Memory": "STRING, Memory on the host.",
     "Model": "STRING, The model of the host.",
     "OS": "STRING, Host OS.",
-    "OSVersion": "STRING, Host OS version.",
-    "Processor": "STRING, Host processor.",
-    "Processors": "INT, Number of processors that the host is using.'" 
+    "OSVersion": "STRING, The OS version of the host.",
+    "Processor": "STRING, The processor of the host.",
+    "Processors": "INT, The number of processors that the host is using.'" 
 }
 ```
 ## InfoFile
@@ -329,10 +329,10 @@ The following is the expected format for an InfoFile
 "InfoFile": {
     "Name": "STRING, The file name.",
     "EntryID": "STRING, The ID for locating the file in the War Room.",
-    "Size": "INT, Size of the file (in bytes).",
-    "Type": "STRING, File type, as determined by libmagic (same as displayed in file entries).",
+    "Size": "INT, The size of the file (in bytes).",
+    "Type": "STRING, The file type, as determined by libmagic (same as displayed in file entries).",
     "Extension": "STRING, The file extension.",
-    "Info": "STRING, Basic information of the file."
+    "Info": "STRING, Basic information about the file."
 }
 ```
 
@@ -342,7 +342,7 @@ The following is the format for a DBot Score entry.
 "DBotScore": {
     "Indicator": "The indicator that was tested.",
     "Type": "The indicator type.",
-    "Vendor": "Vendor used to calculate the score.",
+    "Vendor": "The vendor used to calculate the score.",
     "Score": "The actual score."
 }
 ```

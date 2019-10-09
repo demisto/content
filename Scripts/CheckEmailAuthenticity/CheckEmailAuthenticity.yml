@@ -144,7 +144,7 @@ args:
   secret: false
 comment: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
 commonfields:
-  id: 0974bb77-e56c-4a5b-861e-8a4a6d00c3eb
+  id: CheckEmailAuthenticity
   version: -1
 enabled: true
 name: CheckEmailAuthenticity

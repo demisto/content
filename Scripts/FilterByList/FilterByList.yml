@@ -1,0 +1,37 @@
+commonfields:
+  id: FilterByList
+  version: -1
+name: FilterByList
+script: '-'
+type: python
+subtype: python2
+tags:
+- whitelist
+comment: Checks whether the specified item is in a list. The default list is the Demisto
+  Indicators Whitelist.
+enabled: true
+args:
+- name: values
+  default: true
+  description: The item to look for in the list.
+  isArray: true
+- name: listname
+  description: Name of the list against which to check the value. The default is the Indicators Whitelist.
+  defaultValue: Indicators Whitelist
+- name: ignorecase
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Whether to ignore the case of the item for which you are searching. Default is "No".
+  defaultValue: "No"
+outputs:
+- contextPath: List.In
+  description: The list of items in the list.
+- contextPath: List.NotIn
+  description: The list of items not in the list.
+scripttarget: 0
+runonce: false
+tests:
+  - FilterByList - Test
+runas: DBotWeakRole

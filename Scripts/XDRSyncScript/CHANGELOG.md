@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
   - Deprecated the *playbook_to_run* argument. When an incident is updated in XDR and the script updates the incident in Demisto, by default, the playbook is rerun. 
   - The next sync is now rescheduled even if the current sync fails.
 
