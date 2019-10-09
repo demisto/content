@@ -6,12 +6,12 @@ from CommonServerPython import *
 ###############################################################################
 
 import os
+import sys
 import ast
 import json
 import jwt
 from datetime import datetime, timedelta
 import requests
-from typing import List
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE, SIG_DFL)
 # disable insecure warnings
@@ -1559,8 +1559,20 @@ def uptycs_set_asset_tag():
     http_method = 'get'
     api_call = ('/assets/%s' % demisto.args().get('asset_id'))
     tags = restcall(http_method, api_call).get('tags')
-    tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
-        'tag_value'))
+
+    tag_set = False
+    for tag in tags:
+        if demisto.args().get('tag_key') in tag:
+            temp_tag = tag.split('=')
+            new_tag = temp_tag[0]+'='+temp_tag[1]+', '+demisto.args().get('tag_value')
+            tags.remove(tag)
+            tag_set = True
+
+    if tag_set:
+            tags.append(new_tag)
+    else:
+        tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
+            'tag_value'))
 
     http_method = 'put'
     post_data = {
@@ -1980,7 +1992,7 @@ def uptycs_post_threat_source():
     files = {'file': open(filepath.get('path'), 'rb')}
 
     response = requests.post(url, headers=header, data=post_data,
-                             files=files, verify=VERIFY_CERT)
+                             files=files, verify=False)
 
     return response
 
@@ -2199,7 +2211,7 @@ def uptycs_fetch_incidents():
 
     query_results = restcall(http_method, api_call)
 
-    incidents = []  # type: List[dict]
+    incidents = []
     if len(query_results.get('items')) == 0:
         return incidents
     if query_results.get('items') is not None:
