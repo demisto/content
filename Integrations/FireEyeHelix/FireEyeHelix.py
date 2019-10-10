@@ -29,6 +29,9 @@ Attributes:
 
     RULES_TRANS
         Transformation map for rules to be used with build_transformed_dict
+
+    ENDPOINTS_TRANS
+        Transformation map for endpoints to be used with build_transformation_dict
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
@@ -86,6 +89,18 @@ ALERTS_TRANS = {
     'state': 'State',
     'tags': 'Tags',
     'type': 'Type',
+}
+ENDPOINT_TRANS = {
+    'id': 'ID',
+    'customer_id': 'CustomerID',
+    'device_id': 'DeviceID',
+    'domain': 'Domain',
+    'hostname': 'Hostname',
+    'mac_address': 'MACAddress',
+    'operating_system': 'OS',
+    'primary_ip_address': 'IP',
+    'updated_at': 'UpdatedTime',
+    'containment_state': 'ContainmentState'
 }
 LISTS_TRANS = {
     'id': 'ID',
@@ -774,17 +789,19 @@ def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dic
     Returns:
         Outputs
     """
-    alert_id = args.get('id')
+    alert_id = args.get('alert_id')
     raw_response = client.get_endpoints_by_alert(alert_id=alert_id)
     endpoints = demisto.get(raw_response, 'results.endpoints')
     if endpoints:
         title = f'{INTEGRATION_NAME} - Endpoints for alert {alert_id}:'
-        context_entry = build_transformed_dict(endpoints, {})  # TODO: edit this
+        context_entry = build_transformed_dict(endpoints, ENDPOINT_TRANS)
+        count = demisto.get(raw_response, 'meta.count')
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.Count).Count': count
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:

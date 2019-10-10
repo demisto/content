@@ -504,6 +504,40 @@ script:
     description: Retrieves a specific alert from an helix endpoint.
     execution: false
     name: fireeye-helix-get-endpoints-by-alert
+    outputs:
+    - contextPath: FireEyeHelix.Endpoint.ID
+      description: Endpoint ID.
+      type: Number
+    - contextPath: FireEyeHelix.Endpoint.CustomerID
+      description: Customer ID.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.DeviceID
+      description: Device ID.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.Domain
+      description: Domain of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.Hostname
+      description: Hostname of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.MACAddress
+      description: MAC address of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.OS
+      description: Operating system of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.IP
+      description: IP of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.UpdatedTime
+      description: Time the endpoint was last updated.
+      type: Date
+    - contextPath: FireEyeHelix.Endpoint.ContainmentState
+      description: Containment state of the endpoint.
+      type: String
+    - contextPath: FireEyeHelix.Endpoint.Count
+      description: Number of endpoints in total.
+      type: Number
   - arguments:
     - default: true
       description: ID of an alert.
