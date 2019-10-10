@@ -20,7 +20,7 @@ scp $(find ./Beta_Integrations/ -maxdepth 1 -type f) ${USER}@${PUBLIC_IP}:~/Beta
 
 # override exiting content with current
 # rm CommonServer*_4_1 as this was changed and is stuck on 4.1 server
-COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook TrendMicroDDA.yml \
+COPY_CONTENT_COMMAND="ls -l /usr/local/demisto/res && sudo rm -f /usr/local/demisto/res/playbook-Test Playbook TrendMicroDDA.yml \
   sudo rm -f /usr/local/demisto/res/script-CommonServer_4_1.yml \
   /usr/local/demisto/res/script-CommonServerPython_4_1.yml \
   /usr/local/demisto/res/script-FilterByList.yml \
