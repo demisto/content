@@ -124,7 +124,7 @@ def verify(client: Client, args: Dict):
     p7, data = SMIME.smime_load_pkcs7(signed_message['path'])
     v = client.smime.verify(p7, data, flags=SMIME.PKCS7_NOVERIFY)
 
-    human_readable = f'The signature verified\n\n{v}\n{data}'
+    human_readable = f'The signature verified\n\n{v}'
     return human_readable, {}
 
 
