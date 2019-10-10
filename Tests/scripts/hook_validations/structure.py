@@ -48,7 +48,10 @@ class StructureValidator(object):
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
         REPUTATION_REGEX,
-        BETA_INTEGRATION_YML_REGEX
+        BETA_INTEGRATION_YML_REGEX,
+        BETA_INTEGRATION_REGEX,
+        BETA_SCRIPT_REGEX,
+        BETA_PLAYBOOK_REGEX,
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -280,13 +283,14 @@ class StructureValidator(object):
 
     @staticmethod
     def get_file_id_from_loaded_file_data(loaded_file_data):
-        if 'id' in loaded_file_data:
-            file_id = loaded_file_data.get('id')
-        else:
-            # The else conditions is only for integrations.
-            # In integrations, the id is under 'commonfields'.
-            file_commonfields = loaded_file_data.get('commonfields')
-            file_id = file_commonfields.get('id')
+        file_id = loaded_file_data.get('id')
+        if not file_id:
+            # In integrations/scripts, the id is under 'commonfields'.
+            file_id = loaded_file_data.get('commonfields', {}).get('id')
+        if not file_id:
+            # In layout, the id is under 'layout'.
+            file_id = loaded_file_data.get('layout', {}).get('id')
+
         return file_id
 
     def is_file_id_without_slashes(self):
