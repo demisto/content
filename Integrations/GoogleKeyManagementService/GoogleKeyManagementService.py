@@ -22,13 +22,13 @@ RFC3339_DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 class Client:
-    def __init__(self, service_account_string: str, verify: bool, project: str, location: str, key_ring: str, role: str):
-        self.project = project
-        self.location = location
-        self.key_ring = key_ring
-        self.service_account = service_account_string
-        self.role = role
-        if not verify:
+    def __init__(self, params: Dict[str, Any]):
+        self.project = params.get('project')
+        self.location = params.get('location')
+        self.key_ring = params.get('key_ring')
+        self.service_account = params.get('service_account')
+        self.role = params.get('role')
+        if params.get('insecure'):
             disable_tls_verification()
 
         handle_proxy()
@@ -252,6 +252,21 @@ def get_update_mask(args: Dict[str, Any]) -> Dict:
     }
 
 
+def init_dict(body: Dict[str, Any], parent: str, key: str, value: Any):
+    """Creates a new dictionary to be used in update command body.
+
+    Args:
+        body(dict): The update command body dict.
+        parent(str): The key in the body.
+        key(str): The inner key of the sub-dictionary.
+        value(Any): The value to put in the sub-dictionary.
+
+    """
+    body[parent] = {
+        key: value
+    }
+
+
 def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
     """Creates update command request body, in accordance with the updateMask.
 
@@ -267,30 +282,39 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
         if '.' in field:
             split_field = field.split('.')
             if split_field[1] == 'attestation':
-                body[split_field[0]] = {
-                    split_field[1]: arg_dict_creator(args.get(split_field[1]))
-                }
+                if split_field[0] in body.keys():
+                    body[split_field[0]][split_field[1]] = arg_dict_creator(args.get(split_field[1]))
+
+                else:
+                    init_dict(body, split_field[0], split_field[1], arg_dict_creator(args.get(split_field[1])))
 
             elif split_field[1] == 'state':
-                body[split_field[0]] = {
-                    split_field[1]: enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
-                }
+                if split_field[0] in body.keys():
+                    body[split_field[0]][split_field[1]] = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+
+                else:
+                    init_dict(body, split_field[0], split_field[1], enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value)
 
             elif split_field[1] == 'algorithm':
-                body[split_field[0]] = {
-                    split_field[1]: enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
-                }
+                if split_field[0] in body.keys():
+                    body[split_field[0]][split_field[1]] = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+
+                else:
+                    init_dict(body, split_field[0], split_field[1], enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value)
 
             elif split_field[1] == 'protection_level':
-                body[split_field[0]] = {
-                    split_field[1]: enums.ProtectionLevel[args.get('protection_level')].value
-                }
+                if split_field[0] in body.keys():
+                    body[split_field[0]][split_field[1]] = enums.ProtectionLevel[args.get('protection_level')].value
+
+                else:
+                    init_dict(body, split_field[0], split_field[1], enums.ProtectionLevel[args.get('protection_level')].value)
 
             else:
-                body[split_field[0]] = {
-                    split_field[1]: args.get(split_field[1])
-                }
+                if split_field[0] in body.keys():
+                    body[split_field[0]][split_field[1]] = args.get(split_field[1])
 
+                else:
+                    init_dict(body, split_field[0], split_field[1], args.get(split_field[1]))
         else:
             if field == 'labels':
                 body[field] = arg_dict_creator(args.get('labels'))
@@ -298,7 +322,6 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
             elif field == 'next_rotation_time':
                 body[field] = {'seconds': int(datetime.strptime(args.get('next_rotation_time'),
                                                                 RFC3339_DATETIME_FORMAT).timestamp())}
-
             elif field == 'rotation_period':
                 body[field] = {'seconds': int(args.get('rotation_period'))}
 
@@ -688,7 +711,7 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
                     f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.')
 
 
-def restore_key_command(client:Client, args:Dict[str, Any]) -> None:
+def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
     """Restore the primary CryptoKeyVersion of a given CryptoKey scheduled for destruction.
 
     Args:
@@ -728,17 +751,12 @@ def test_function(client: Client) -> None:
 
 
 def main():
-    service_account = demisto.params().get('service_account')
-    verify = demisto.params().get('insecure')
-    location = demisto.params().get('location')
-    key_ring = demisto.params().get('key_ring')
-    project = demisto.params().get('project')
-    role = demisto.params().get('role')
+
 
     command = demisto.command()
     LOG(f'{INTEGRATION_NAME}: command is {command}')
     try:
-        client = Client(service_account, verify, project, location, key_ring, role)
+        client = Client(demisto.params())
 
         if command == 'test-module':
             test_function(client)
