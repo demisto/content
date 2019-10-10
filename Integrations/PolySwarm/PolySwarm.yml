@@ -288,4 +288,4 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python2.7
+  type: python
