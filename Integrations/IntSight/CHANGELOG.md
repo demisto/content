@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Indicators issue fixed - were not extracted correctly in `!intsights-get-iocs`
+- Fixed an issue where indicators were not extracted correctly in ***intsight-get-iocs*** command.
 
 ## [19.9.1] - 2019-09-18
 Improved the error message in cases where the URL address is incorrect.
