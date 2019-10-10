@@ -3,6 +3,9 @@ from CommonServerPython import *
 import requests
 from datetime import datetime
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 URL = demisto.getParam('url')
 if URL[-1] != '/':
     URL += '/'
@@ -13,6 +16,8 @@ if not demisto.getParam('proxy'):
     del os.environ['http_proxy']
     del os.environ['https_proxy']
 
+VERIFY = not demisto.params().get('unsecure', False)
+
 # Standard headers
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 TOKEN = None
@@ -22,7 +27,7 @@ def get_token():
     """
     Retrieve the token using the credentials
     """
-    r = requests.post(URL + 'login', headers=HEADERS, json={
+    r = requests.post(URL + 'login', headers=HEADERS, verify=VERIFY, json={
         'customerName': demisto.getParam('customer') or '',
         'username': demisto.getParam('credentials')['identifier'],
         'password': demisto.getParam('credentials')['password']
@@ -36,7 +41,7 @@ def get_token():
 def req(method, path, data, param_data):
     if not TOKEN:
         get_token()
-    r = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS)
+    r = requests.request(method, URL + path, json=data, params=param_data, headers=HEADERS, verify=VERIFY)
     if r.status_code != requests.codes.ok:
         text = r.text
         if r.headers.get('x-redlock-status'):
