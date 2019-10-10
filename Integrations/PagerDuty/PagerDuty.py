@@ -6,9 +6,12 @@ import json
 import requests
 from datetime import datetime, timedelta
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 ''' GLOBAL VARS '''
 # PagerDuty API works only with secured communication.
-USE_SSL = True
+USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
 API_KEY = demisto.params()['APIKey']
@@ -99,11 +102,11 @@ def http_request(method, url, params_dict=None, data=None):
                                )
         res.raise_for_status()
 
-        return res.json()
+        return unicode_to_str_recur(res.json())
 
     except Exception as e:
         LOG(e)
-        raise(e)
+        raise
 
 
 def translate_severity(sev):
@@ -114,11 +117,24 @@ def translate_severity(sev):
     return 0
 
 
+def unicode_to_str_recur(obj):
+    """Converts unicode elements of obj (incl. dictionary and list) to string recursively"""
+    if IS_PY3:
+        return obj
+    if isinstance(obj, dict):
+        obj = {unicode_to_str_recur(k): unicode_to_str_recur(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        obj = map(unicode_to_str_recur, obj)
+    elif isinstance(obj, unicode):
+        obj = obj.encode('utf-8')
+    return obj
+
+
 def test_module():
     try:
         get_on_call_now_users_command()
     except Exception as e:
-        raise Exception(e.message)
+        return_error(e)
 
     demisto.results('ok')
 
@@ -198,7 +214,7 @@ def extract_on_call_now_user_data(users_on_call_now):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(USERS_ON_CALL_NOW, outputs, USERS_ON_CALL_NOW_HEADERS),
         'EntryContext': {
-            'PagerDutyUser(val.ID==obj.ID)': contexts
+            'PagerDutyUser(val.ID===obj.ID)': contexts
         }
     }
 
@@ -568,11 +584,15 @@ def get_on_call_users_command(scheduleID, since=None, until=None):
     return extract_on_call_user_data(users_on_call.get('users', []))
 
 
-def get_on_call_now_users_command(limit=None):
+def get_on_call_now_users_command(limit=None, escalation_policy_ids=None, schedule_ids=None):
     """Get the list of users that are on call now."""
     param_dict = {}
     if limit is not None:
         param_dict['limit'] = limit
+    if escalation_policy_ids is not None:
+        param_dict['escalation_policy_ids[]'] = argToList(escalation_policy_ids)
+    if schedule_ids is not None:
+        param_dict['schedule_ids[]'] = argToList(schedule_ids)
 
     url = SERVER_URL + ON_CALLS_USERS_SUFFIX
     users_on_call_now = http_request('GET', url, param_dict)
@@ -727,6 +747,4 @@ try:
 
 
 except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+    return_error(e)

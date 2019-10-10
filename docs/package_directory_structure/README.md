@@ -18,10 +18,16 @@ The package is converted into a YAML file, which include all the package compone
 ├── <INTEGRATION-NAME>.yml             // Configuration YAML file.
 ├── <INTEGRATION-NAME>_image.png       // Integration PNG logo (for integrations only).
 ├── <INTEGRATION-NAME>_description.md  // Detailed instructions markdown file (for integrations only)
-├── CHANGELOG.md                       // markdown file which include the script/integration release notes.
+├── CHANGELOG.md                       // Markdown file which include the script/integration release notes.
+├── README.md                          // Integration / automation script documentation.
 ├── Pipfile                            // Can be copied from Tests/scripts/dev_envs/default_python3
 └── Pipfile.lock                       // Can be copied from Tests/scripts/dev_envs/default_python3    
 ```
+   - Integration logo conventions:
+     - Size up to 4KB.
+     - Dimensions of 120x50.
+     - Transparent background.
+     - Dark version of the logo.
    - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3 for the Pipfile.
  
 For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory names PaloAltoNetworksCortex and contain the following files:
@@ -35,6 +41,7 @@ For example, a package of the integration [Palo Alto Networks Cortex](https://gi
 │    ├── PaloAltoNetworksCortex.yml
 │    ├── PaloAltoNetworksCortex_image.png
 │    ├── PaloAltoNetworksCortex_description.md
+│    ├── README.md
 │    ├── Pipfile
 |    └── Pipfile.lock
 ```
@@ -46,5 +53,10 @@ You can extract a package from a YAML file by using the following:
  -  `package_extractor.py` script from the Content repository. 
     - Usage example: `python3 package_extractor.py -i /Integrations/integration-WildFire.yml -o Integrations/WildFire -m`
 
+---
+
+#### Integration logo standard
+
+![integration logos-infographic2](https://user-images.githubusercontent.com/33804640/65389274-33119c80-dd5d-11e9-9d15-5ce8dbd03627.png)
 
 
