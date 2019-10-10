@@ -7,6 +7,9 @@ from google.cloud import kms_v1
 from google.cloud.kms_v1 import enums
 import requests
 import urllib3
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 from json import JSONDecodeError
 import base64
 from typing import Any, Dict, Tuple, List
@@ -399,7 +402,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     )
 
 
-def encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
+def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     """Encrypt plaintext to ciphertext.
 
     Args:
@@ -431,7 +434,7 @@ def encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     return str(base64.b64encode(response.ciphertext))[2:-1]
 
 
-def decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
+def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     """Decrypt ciphertext to plaintext.
 
     Args:
@@ -740,6 +743,58 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
                     f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
 
 
+def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
+    if args.get('use_base64') == 'false':
+        plaintext = base64.b64encode(bytes(args.get('plaintext'), 'utf-8'))
+
+    else:
+        plaintext = base64.b64decode(args.get('plaintext'))
+
+    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
+    crypto_key_version = args.get('crypto_key_version')
+    # Construct the resource name of the CryptoKeyVersion.
+    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                        crypto_key_id, crypto_key_version)
+
+    crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
+    key_algo = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
+    if 'DECRYPT' not in key_algo:
+        return_error(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
+
+    # get public key
+    public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
+    key_txt = public_key_response.pem.encode('ascii')
+    public_key = serialization.load_pem_public_key(key_txt, default_backend())
+    if 'SHA256' in key_algo:
+        # create padding with SHA256
+        pad = padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                           algorithm=hashes.SHA256(),
+                           label=None)
+    else:
+        # create padding with SHA512
+        pad = padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA512()),
+                           algorithm=hashes.SHA512(),
+                           label=None)
+
+    # encrypt plaintext
+    return str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
+
+
+def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
+    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
+    crypto_key_version = args.get('crypto_key_version')
+    # Construct the resource name of the CryptoKeyVersion.
+    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                        crypto_key_id, crypto_key_version)
+    ciphertext = base64.b64decode(args.get('ciphertext'))
+    response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
+    if args.get('use_base64') == 'true':
+        return str(base64.b64encode(response.plaintext))[2:-1]
+
+    else:
+        return str(base64.b64decode(response.plaintext))[2:-1]
+
+
 def test_function(client: Client) -> None:
     """Test's user's input:
         for Encrypter, Decrypter, Encrypter/Decrypter Roles - checks Service account json formatting only.
@@ -770,14 +825,14 @@ def main():
             results = create_crypto_key_command(client, demisto.args())
             return_outputs(*results)
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}decrypt' and client.role in ['Decrypter', 'Encrypter/Decrypter',
+        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt' and client.role in ['Decrypter', 'Encrypter/Decrypter',
                                                                                  'Project-Admin']:
-            results = decrypt_key_command(client, demisto.args())
+            results = symmetric_decrypt_key_command(client, demisto.args())
             demisto.results(f"The text has been decrypted.\nPlaintext: {results}")
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}encrypt' and client.role in ['Encrypter', 'Encrypter/Decrypter',
+        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt' and client.role in ['Encrypter', 'Encrypter/Decrypter',
                                                                                  'Project-Admin']:
-            results = encrypt_key_command(client, demisto.args())
+            results = symmetric_encrypt_key_command(client, demisto.args())
             demisto.results(f"The text has been encrypted.\nCiphertext: {results}")
 
         elif command == f'{INTEGRATION_COMMAND_NAME}get-key':
@@ -815,6 +870,18 @@ def main():
         elif command == f'{INTEGRATION_COMMAND_NAME}list-keys' and client.role in ['Project-Admin', 'KMS-Admin']:
             results = list_keys_command(client, demisto.args())
             return_outputs(*results)
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}asymmetric-encrypt' and client.role in ['Encrypter',
+                                                                                            'Encrypter/Decrypter',
+                                                                                            'Project-Admin']:
+            results = asymmetric_encrypt_command(client, demisto.args())
+            demisto.results(f"The text has been encrypted.\nCiphertext: {results}")
+
+        elif command == f'{INTEGRATION_COMMAND_NAME}asymmetric-decrypt' and client.role in ['Decrypter',
+                                                                                            'Encrypter/Decrypter',
+                                                                                            'Project-Admin']:
+            results = asymmetric_decrypt_command(client, demisto.args())
+            demisto.results(f"The text has been decrypted.\nPlaintext: {results}")
 
         else:
             raise Exception(f"Your Service Account Role does not permit the use of {command} command.")
