@@ -1,12 +1,10 @@
-import sys
-import requests
-import socket
-
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
-
+import requests
+import socket
+import json
 import logging
+
 
 # CONST
 POLYSWARM_DEMISTO_VERSION = '0.1.0'
@@ -15,6 +13,7 @@ ERROR_ENDPOINT = 'Error with endpoint: '
 
 # Set Debug level
 logging.basicConfig(level=logging.ERROR)
+
 
 class PolyswarmAPI:
     # internal version
@@ -41,18 +40,16 @@ class PolyswarmAPI:
 
         :return: tuple (status_code, content)
         """
-        r = None
-
         # set full URL for request
         full_url = '{base_url}{path_url}'.format(base_url=self.config['base_url'],
-                                                  path_url=path_url)
+                                                 path_url=path_url)
 
         logging.debug('[{method}] URL: {full_url} - params/data: {data} - files: {files} - headers: {headers}'.
-                       format(method=method.upper(),
-                              full_url=full_url,
-                              data=data,
-                              files=files,
-                              headers=self.headers))
+                      format(method=method.upper(),
+                             full_url=full_url,
+                             data=data,
+                             files=files,
+                             headers=self.headers))
 
         if method.lower() == "get":
             r = requests.get(full_url,
@@ -66,8 +63,8 @@ class PolyswarmAPI:
         r.raise_for_status()
 
         logging.debug('[Response] Status code: {status_code} - Content: {response}'.
-                       format(status_code=r.status_code,
-                              response=r.content))
+                      format(status_code=r.status_code,
+                             response=r.content))
 
         return (r.status_code, r.content)
 
@@ -127,8 +124,8 @@ class PolyswarmAPI:
         :return: tuple (status_code, response)
         """
         path_url = '/consumer/{polyswarm_community}/uuid/{uuid}'.\
-                    format(polyswarm_community=self.config['polyswarm_community'],
-                           uuid=uuid)
+                   format(polyswarm_community=self.config['polyswarm_community'],
+                          uuid=uuid)
 
         status_code, response = self._http_request('get', path_url)
         window_closed = json.loads(response)['result']['files'][0]['window_closed']
@@ -186,10 +183,10 @@ class PolyswarmAPI:
         """
         path_url = '/consumer/{polyswarm_community}'.format(polyswarm_community=self.config['polyswarm_community'])
 
-        files = { 'file': (file_name, open(file_path, 'rb')) }
+        files = {'file': (file_name, open(file_path, 'rb'))}
         # Force re-scans if file was already submitted
         # params = { 'force': 'true' }
-        params = {}
+        params = {}  # type: Dict[str, str]
 
         status_code, response = self._http_request('post', path_url, params, files)
         uuid = json.loads(response)['result']
@@ -221,36 +218,37 @@ def makehash():
 # Polyswarm-Demisto Interface
 class PolyswarmConnector():
     def __init__(self):
-        self.config = {}
+        self.config = {}  # type: Dict[str,str]
         self.config['polyswarm_api_key'] = demisto.params().get('api_key')
         self.config['base_url'] = demisto.params().get('base_url')
         self.config['polyswarm_community'] = demisto.params().get('polyswarm_community')
 
         self.polyswarm_api = PolyswarmAPI(self.config)
 
-    def _get_results(self, title, total_scans, positives, uuid):
+    def _get_results(self, title, total_scans, positives, uuid, artifact):
         contxt = makehash()
 
         permalink = '{url_results}/{uuid}'.\
-                     format(url_results=POLYSWARM_URL_RESULTS,
-                            uuid=uuid)
+            format(url_results=POLYSWARM_URL_RESULTS,
+                   uuid=uuid)
 
-        contxt['UUID'] = uuid
-        contxt['Total Scans'] = str(total_scans)
+        contxt['Scan_UUID'] = uuid
+        contxt['Total'] = str(total_scans)
         contxt['Positives'] = str(positives)
         contxt['Permalink'] = permalink
+        contxt['Artifact'] = artifact
 
-        data = {'total': contxt['Total Scans'],
-                'permalink': contxt['Permalink'],
-                'positives': contxt['Positives'],
-                'scan_uuid': contxt['UUID']}
+        human_readable = {'Scan_UUID': uuid,
+                          'Total': str(total_scans),
+                          'Positives': str(positives),
+                          'Permalink': permalink}
 
-        ec = {'PolySwarm.Message(val.UUID && val.UUID == obj.UUID)': contxt}
+        ec = {'PolySwarm(val.Scan_UUID && val.Scan_UUID == obj.UUID)': contxt}
 
         return {'Type': entryTypes['note'],
                 'ContentsFormat': formats['markdown'],
-                'Contents': data,
-                'HumanReadable': tableToMarkdown(title, contxt),
+                'Contents': contxt,
+                'HumanReadable': tableToMarkdown(title, human_readable),
                 'EntryContext': ec}
 
     def test_connectivity(self):
@@ -265,7 +263,7 @@ class PolyswarmConnector():
 
         try:
             status_code, response = self.polyswarm_api.search_hash(EICAR_HASH)
-        except requests.exceptions.HTTPError as err:
+        except Exception:
             return False
 
         return True
@@ -292,13 +290,13 @@ class PolyswarmConnector():
             # load json response for iteration
             try:
                 artifact_instances = json.loads(response)['result'][0]['artifact_instances']
-            except:
+            except Exception:
                 return_error('Error in response. Details: {response}'.
-                              format(response=str(response)))
+                             format(response=str(response)))
 
             # TODO: implement rescan logic
             if not artifact_instances[0]['bounty_result']:
-               return_error('Run Rescan for this hash')
+                return_error('Run Rescan for this hash')
 
             uuid = artifact_instances[0]['bounty_result']['uuid']
             assertions = artifact_instances[0]['bounty_result']['files'][0]['assertions']
@@ -310,7 +308,7 @@ class PolyswarmConnector():
                 total_scans += 1
 
             demisto.debug('Positives: {positives} - Total Scans: {total_scans}'.
-                           format(positives=positives, total_scans=total_scans))
+                          format(positives=positives, total_scans=total_scans))
 
         except requests.exceptions.HTTPError as err:
             if err.response.status_code == 404:
@@ -319,11 +317,12 @@ class PolyswarmConnector():
                 pass
             else:
                 return_error('{ERROR_ENDPOINT}{err}'.
-                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                     err=err))
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
         return self._get_results(title, total_scans,
-                                 positives, uuid)
+                                 positives, uuid,
+                                 param['hash'])
 
     def get_file(self, param):
         # Polywarm API Response
@@ -343,8 +342,8 @@ class PolyswarmConnector():
                 return_error('File not found.')
             else:
                 return_error('{ERROR_ENDPOINT}{err}'.
-                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                     err=err))
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
     def detonate_file(self, param):
         title = 'PolySwarm File Detonation for Entry ID: %s' % param['entryID']
@@ -352,8 +351,6 @@ class PolyswarmConnector():
         # default values
         total_scans = 0
         positives = 0
-
-        file_info = None
 
         # Polywarm API Response
         #  HTTP Response
@@ -367,9 +364,9 @@ class PolyswarmConnector():
 
         try:
             file_info = demisto.getFilePath(param['entryID'])
-        except:
+        except Exception:
             return_error('File not found - EntryID: {entryID}'.
-                          format(entryID=param['entryID']))
+                         format(entryID=param['entryID']))
 
         try:
             status_code, response, uuid = self.polyswarm_api.detonate_file(file_info['name'],
@@ -377,9 +374,9 @@ class PolyswarmConnector():
             # load json response for iteration
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
-            except:
+            except Exception:
                 return_error('Error in response. Details: {response}'.
-                              format(response=str(response)))
+                             format(response=str(response)))
 
             # iterate for getting positives and total_scan number
             for assertion in assertions:
@@ -389,12 +386,13 @@ class PolyswarmConnector():
                 total_scans += 1
 
         except requests.exceptions.HTTPError as err:
-                return_error('{ERROR_ENDPOINT}{err}'.
-                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                     err=err))
+            return_error('{ERROR_ENDPOINT}{err}'.
+                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                err=err))
 
         return self._get_results(title, total_scans,
-                                 positives, uuid)
+                                 positives, uuid,
+                                 param['entryID'])
 
     def rescan_file(self, param):
         title = 'PolySwarm Rescan for Hash: %s' % param['hash']
@@ -418,8 +416,8 @@ class PolyswarmConnector():
             # load json response for iteration
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
-            except:
-               return_error('Error in response. Details: {response}'.
+            except Exception:
+                return_error('Error in response. Details: {response}'.
                              format(response=str(response)))
 
             # iterate for getting positives and total_scan number
@@ -437,11 +435,12 @@ class PolyswarmConnector():
             else:
                 # we got another err - report it
                 return_error('{ERROR_ENDPOINT}{err}'.
-                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                     err=err))
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
         return self._get_results(title, total_scans,
-                                 positives, uuid)
+                                 positives, uuid,
+                                 param['hash'])
 
     def url_reputation(self, param, artifact):
         title = 'PolySwarm %s Reputation for: %s' % (artifact.upper(),
@@ -467,7 +466,7 @@ class PolyswarmConnector():
                 socket.inet_aton(param[artifact])
             except socket.error:
                 return_error('Invalid IP Address: {ip}'.
-                              format(ip=param[artifact]))
+                             format(ip=param[artifact]))
 
         try:
             status_code, response, uuid = self.polyswarm_api.search_url(param[artifact])
@@ -475,8 +474,8 @@ class PolyswarmConnector():
             # load json response for iteration
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
-            except:
-               return demisto.results('Error in response. Details: {response}'.
+            except Exception:
+                return demisto.results('Error in response. Details: {response}'.
                                        format(str(response)))
 
             # iterate for getting positives and total_scan number
@@ -488,11 +487,12 @@ class PolyswarmConnector():
 
         except requests.exceptions.HTTPError as err:
             return_error('{ERROR_ENDPOINT}{err}'.
-                          format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                 err=err))
+                         format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                err=err))
 
         return self._get_results(title, total_scans,
-                                 positives, uuid)
+                                 positives, uuid,
+                                 param[artifact])
 
     def get_report(self, param):
         title = 'PolySwarm Report for UUID: %s' % param['scan_uuid']
@@ -514,9 +514,9 @@ class PolyswarmConnector():
             # load json response for iteration
             try:
                 assertions = json.loads(response)['result']['files'][0]['assertions']
-            except:
+            except Exception:
                 return_error('Error in response. Details: {response}'.
-                              format(str(response)))
+                             format(str(response)))
 
             # iterate for getting positives and total_scan number
             for assertion in assertions:
@@ -530,47 +530,54 @@ class PolyswarmConnector():
                 return_error('UUID not found.')
             else:
                 return_error('{ERROR_ENDPOINT}{err}'.
-                              format(ERROR_ENDPOINT=ERROR_ENDPOINT,
-                                     err=err))
+                             format(ERROR_ENDPOINT=ERROR_ENDPOINT,
+                                    err=err))
 
         return self._get_results(title, total_scans,
                                  positives,
+                                 param['scan_uuid'],
                                  param['scan_uuid'])
 
 
-''' EXECUTION '''
-LOG('command is %s' % (demisto.command(),))
-try:
-    polyswarm = PolyswarmConnector()
+def main():
+    ''' EXECUTION '''
+    LOG('command is %s' % (demisto.command(),))
+    try:
+        polyswarm = PolyswarmConnector()
 
-    command = demisto.command()
-    param = demisto.args()
+        command = demisto.command()
+        param = demisto.args()
 
-    if command == 'test-module':
-        if polyswarm.test_connectivity():
-            demisto.results('ok')
-        else: return_error('Connection Failed')
-    elif command == 'file':
-        demisto.results(polyswarm.file_reputation(param))
-    elif command == 'get-file':
-        demisto.results(polyswarm.get_file(param))
-    elif command == 'file-scan':
-        demisto.results(polyswarm.detonate_file(param))
-    elif command == 'file-rescan':
-        demisto.results(polyswarm.rescan_file(param))
-    elif command == 'url':
-        demisto.results(polyswarm.url_reputation(param, 'url'))
-    elif command == 'url-scan':
-        demisto.results(polyswarm.url_reputation(param, 'url'))
-    elif command == 'ip':
-        demisto.results(polyswarm.url_reputation(param, 'ip'))
-    elif command == 'domain':
-        demisto.results(polyswarm.url_reputation(param, 'domain'))
-    elif command == 'ps-get-report':
-        demisto.results(polyswarm.get_report(param))
+        if command == 'test-module':
+            if polyswarm.test_connectivity():
+                demisto.results('ok')
+            else:
+                return_error('Connection Failed')
+        elif command == 'file':
+            demisto.results(polyswarm.file_reputation(param))
+        elif command == 'get-file':
+            demisto.results(polyswarm.get_file(param))
+        elif command == 'file-scan':
+            demisto.results(polyswarm.detonate_file(param))
+        elif command == 'file-rescan':
+            demisto.results(polyswarm.rescan_file(param))
+        elif command == 'url':
+            demisto.results(polyswarm.url_reputation(param, 'url'))
+        elif command == 'url-scan':
+            demisto.results(polyswarm.url_reputation(param, 'url'))
+        elif command == 'ip':
+            demisto.results(polyswarm.url_reputation(param, 'ip'))
+        elif command == 'domain':
+            demisto.results(polyswarm.url_reputation(param, 'domain'))
+        elif command == 'polyswarm-get-report':
+            demisto.results(polyswarm.get_report(param))
 
-# Log exceptions
-except Exception as e:
-    LOG(e.message)
-    LOG.print_log()
-    raise
+    # Log exceptions
+    except Exception as e:
+        LOG(e.message)
+        LOG.print_log()
+        raise
+
+
+if __name__ in ('__builtin__', '__main__'):
+    main()
