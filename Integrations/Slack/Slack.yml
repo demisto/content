@@ -54,11 +54,11 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Bot display name in Slack
+- display: Bot display name in Slack (Demisto Integration by default)
   name: bot_name
   required: false
   type: 0
-- display: Bot icon in Slack(URL to an image)
+- display: Bot icon in Slack - URL Image (Demisto icon by default)
   name: bot_icon
   required: false
   type: 0
