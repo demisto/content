@@ -144,7 +144,7 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
             'nanos': crypto_key.create_time.nanos
 
         },
-        'next_rotation_time':{
+        'next_rotation_time': {
             'seconds': crypto_key.next_rotation_time.seconds,
             'nanos': crypto_key.next_rotation_time.nanos
         },
@@ -290,24 +290,29 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
             elif split_field[1] == 'state':
                 if split_field[0] in body.keys():
-                    body[split_field[0]][split_field[1]] = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+                    val = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+                    body[split_field[0]][split_field[1]] = val
 
                 else:
-                    init_dict(body, split_field[0], split_field[1], enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value)
+                    init_dict(body, split_field[0], split_field[1],
+                              enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value)
 
             elif split_field[1] == 'algorithm':
                 if split_field[0] in body.keys():
-                    body[split_field[0]][split_field[1]] = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+                    val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+                    body[split_field[0]][split_field[1]] = val
 
                 else:
-                    init_dict(body, split_field[0], split_field[1], enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value)
+                    init_dict(body, split_field[0], split_field[1],
+                              enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value)
 
             elif split_field[1] == 'protection_level':
                 if split_field[0] in body.keys():
                     body[split_field[0]][split_field[1]] = enums.ProtectionLevel[args.get('protection_level')].value
 
                 else:
-                    init_dict(body, split_field[0], split_field[1], enums.ProtectionLevel[args.get('protection_level')].value)
+                    init_dict(body, split_field[0], split_field[1],
+                              enums.ProtectionLevel[args.get('protection_level')].value)
 
             else:
                 if split_field[0] in body.keys():
@@ -751,8 +756,6 @@ def test_function(client: Client) -> None:
 
 
 def main():
-
-
     command = demisto.command()
     LOG(f'{INTEGRATION_NAME}: command is {command}')
     try:
