@@ -4,16 +4,11 @@ from CommonServerPython import *
 import requests
 import time
 import trustar
-import os
 import collections
 from trustar.models.indicator import Indicator
 from trustar.models.page import Page
 
-if not demisto.params()['proxy']:
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+handle_proxy()
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -589,7 +584,7 @@ def search_reports(search_term, enclave_ids):
     response = ts.search_reports(search_term, enclave_ids)
     reports = []
     report_context = []
-    for report in response:
+    for i, report in enumerate(response):
         current_report = report.to_dict(remove_nones=True)
         current_report['updated'] = normalize_time(current_report['updated'])
         current_report['created'] = normalize_time(current_report['created'])
@@ -600,7 +595,7 @@ def search_reports(search_term, enclave_ids):
             'id': current_report['id']
         })
         if 'reportBody' in current_report:
-            report_context[0]['reportBody'] = current_report['reportBody']
+            report_context[i]['reportBody'] = current_report['reportBody']
 
     ec = {
         'TruSTAR.Report(val.id && val.id === obj.id)': report_context
@@ -746,7 +741,7 @@ try:
         demisto.results(generic_search_indicator(demisto.args().get('domain'), demisto.params().get('domain_threshold'),
                                                  ('Domain', 'URL',), create_domain_ec))
 
-except Exception, e:
-    LOG(e.message)
+except Exception as e:
+    LOG(str(e))
     LOG.print_log()
-    raise
+    return_error(str(e))
