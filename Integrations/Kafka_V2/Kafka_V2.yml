@@ -7,8 +7,8 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Do not use certificate for SSL connection
-  name: insecure
+- display: Use certificate for SSL connection
+  name: use_ssl
   required: false
   type: 8
 - display: |-
@@ -33,7 +33,7 @@ configuration:
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
     ‎                                        Fetch Incidents Settings
-    CSV list of topics to fetch incidents from (Required for fetch incidents)
+    Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
   type: 0

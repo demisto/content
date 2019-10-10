@@ -17,7 +17,7 @@ requests.packages.urllib3.disable_warnings()
 BROKERS = demisto.params().get('brokers')
 
 # Should we use SSL
-VERIFY_SSL = not demisto.params().get('insecure', False)
+USE_SSL = demisto.params().get('use_ssl', False)
 
 # Certificates
 CA_CERT = demisto.params().get('ca_cert', None)
@@ -336,9 +336,7 @@ def fetch_incidents(client):
     """
     Fetches incidents
     """
-    topics_to_fetch_from = argToList(demisto.params().get('topic', ''))
-    if not topics_to_fetch_from:
-        return_error('No Topic to fetch from was provided')
+    topic = demisto.params().get('topic', '')
     partition_to_fetch_from = argToList(demisto.params().get('partition', ''))
     offset_to_fetch_from = demisto.params().get('offset', -2)
     try:
@@ -352,44 +350,42 @@ def fetch_incidents(client):
         max_messages = 50
 
     last_fetched_partitions_offset = json.loads(demisto.getLastRun().get('last_fetched_partitions_offset', '{}'))
-
     incidents = []
 
     message_counter = 0
 
-    for topic in client.topics.values():
-        if topic.name in topics_to_fetch_from:
-            partitions = topic.partitions.values()
-            for partition in partitions:
+    if topic in client.topics:
+        kafka_topic = client.topics[topic]
+
+        consumer_args = {
+            'consumer_timeout_ms': 1000,
+            'reset_offset_on_start': True
+        }
+
+        if partition_to_fetch_from:
+            partitions = []
+            for partition in kafka_topic.partitions.values():
                 partition_id = str(partition.id)
-                if (partition_to_fetch_from and partition_id in partition_to_fetch_from) or not partition_to_fetch_from:
-                    offset = int(last_fetched_partitions_offset.get(partition_id, offset_to_fetch_from))
-                    max_offset = offset
+                if partition_id in partition_to_fetch_from:
+                    partitions.append(partition)
+            consumer_args['partitions'] = partitions
 
-                    consumer = topic.get_simple_consumer(
-                        auto_offset_reset=offset,
-                        reset_offset_on_start=True,
-                        consumer_timeout_ms=5000,
-                        partitions=[partition]
-                    )
+        consumer = kafka_topic.get_simple_consumer(**consumer_args)
 
-                    for message in consumer:
-                        if message and message.value:
-                            incidents.append(create_incident(message=message, topic=topic.name))
-                            max_offset = max(max_offset, message.offset)
-                            message_counter += 1
-                        if message_counter == max_messages:
-                            last_fetched_partitions_offset[partition_id] = max_offset
-                            consumer.stop()
-                            break
-                    else:
-                        last_fetched_partitions_offset[partition_id] = max_offset
-                        consumer.stop()
-                        continue
-                    break
-            else:
-                continue
-            break
+        offsets = [(p, last_fetched_partitions_offset.get(str(p.id), offset_to_fetch_from)) for p in consumer._partitions]
+        consumer.reset_offsets(offsets)
+
+        for message in consumer:
+            if message and message.value:
+                incidents.append(create_incident(message=message, topic=kafka_topic.name))
+                if message.offset > last_fetched_partitions_offset.get(str(message.partition_id), offset_to_fetch_from):
+                    last_fetched_partitions_offset[str(message.partition_id)] = message.offset
+                message_counter += 1
+            if message_counter == max_messages:
+                break
+        consumer.stop()
+    else:
+        return_error('No such topic \'{}\' to fetch incidents from.'.format(topic))
 
     demisto.setLastRun({'last_fetched_partitions_offset': json.dumps(last_fetched_partitions_offset)})
     demisto.incidents(incidents)
@@ -405,7 +401,7 @@ def main():
         start_logging()
 
         # Initialize KafkaClient
-        if VERIFY_SSL:
+        if USE_SSL:
             ssl_config = create_certificate()
             client = KafkaClient(hosts=BROKERS, ssl_config=ssl_config)
         else:
