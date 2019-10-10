@@ -17,8 +17,7 @@ configuration:
   name: polyswarm_community
   required: true
   type: 0
-description: Real-time threat intelligence from a crowdsourced network of security
-  experts and antivirus companies.
+description: Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.
 display: PolySwarm
 name: PolySwarm
 script:
