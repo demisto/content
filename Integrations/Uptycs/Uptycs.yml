@@ -1395,7 +1395,7 @@ script:
     - contextPath: Uptycs.ProcEvent.cwd
       description: process current working directory
       type: string
-    - contextPath: Uptycs.ProcessEvents.ancestor_list
+    - contextPath: Uptycs.ProcEvent.ancestor_list
       description: list of ancestor processes (parent, grandparent, etc.)
       type: string
   - arguments:
