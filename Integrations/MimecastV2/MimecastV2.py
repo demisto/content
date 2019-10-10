@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
-import os
 import hmac
 import uuid
 import json
@@ -35,13 +34,6 @@ FETCH_IMPERSONATIONS = demisto.params().get('fetchImpersonations')
 EMAIL_ADDRESS = demisto.params().get('email')
 PASSWORD = demisto.params().get('password')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-
-# remove proxy if not set to true in params
-if not demisto.params().get('proxy'):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -1479,17 +1471,17 @@ def download_attachment_request(attachment_id):
     return response.content
 
 
-def get_groups():
-    api_response = create_get_groups_request()
+def find_groups():
+    api_response = create_find_groups_request()
 
-    markdown_output = groups_api_response_to_markdown(api_response)
+    markdown_output = find_groups_api_response_to_markdown(api_response)
     # entry_context = dict()  # type: [str, Any]
     entry_context = None
 
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_groups_request():
+def create_find_groups_request():
     api_endpoint = '/api/directory/find-groups'
     query_string = demisto.args().get('query_string').encode('utf-8')
     query_source = demisto.args().get('query_source').encode('utf-8')
@@ -1519,7 +1511,7 @@ def create_get_groups_request():
     return response.content
 
 
-def groups_api_response_to_markdown(api_response):
+def find_groups_api_response_to_markdown(api_response):
     num_groups_found = api_response['pagination']['pageSize']
     query_string = api_response['data']['query']
     query_source = api_response['data']['source']
@@ -1575,7 +1567,7 @@ def get_group_members():
 
 def create_get_group_members_request():
     api_endpoint = '/api/directory/get-group-members'
-    group_id = demisto.args().get('groupID').encode('utf-8')
+    group_id = demisto.args().get('group_id').encode('utf-8')
     pagination = demisto.args().get('pagination')
 
     meta = dict()  # type: Dict[str, Dict[str, int]]
@@ -1643,7 +1635,7 @@ def add_remove_member_to_group(action_type):
 
 
 def create_add_remove_group_member_request(api_endpoint):
-    group_id = demisto.args().get('groupID').encode('utf-8')
+    group_id = demisto.args().get('group_id').encode('utf-8')
     email = demisto.args().get('email_address').encode('utf-8')
     domain = demisto.args().get('domain_address').encode('utf-8')
 
@@ -1904,7 +1896,7 @@ def get_mimecast_incident_api_response_to_markdown(api_response):
     return md
 
 
-def serach_file_hash():
+def search_file_hash():
     api_response = create_search_file_hash_request()
 
     markdown_output = search_file_hash_api_response_to_markdown(api_response)
@@ -1916,7 +1908,7 @@ def serach_file_hash():
 
 def create_search_file_hash_request():
     api_endpoint = '/api/ttp/remediation/search-hash'
-    hashes_to_search = demisto.args().get('incident_id').encode('utf-8')
+    hashes_to_search = demisto.args().get('hashes_to_search').encode('utf-8')
 
     data = [{
         'hashes': hashes_to_search
@@ -1962,6 +1954,8 @@ if ACCESS_KEY:
     auto_refresh_token()
 
 try:
+    handle_proxy()
+
     if demisto.command() == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
@@ -2004,7 +1998,24 @@ try:
         demisto.results(get_message())
     elif demisto.command() == 'mimecast-download-attachments':
         demisto.results(download_attachment())
-
+    elif demisto.command() == 'mimecast-find-groups':
+        find_groups()
+    elif demisto.command() == 'mimecast-get-group-members':
+        get_group_members()
+    elif demisto.command() == 'mimecast-add-group-member':
+        add_remove_member_to_group('add')
+    elif demisto.command() == 'mimecast-remove-group-member':
+        add_remove_member_to_group('remove')
+    elif demisto.command() == 'mimecast-create-group':
+        create_group()
+    elif demisto.command() == 'mimecast-update-group':
+        update_group()
+    elif demisto.command() == 'mimecast-create-remediation-incident':
+        create_mimecast_incident()
+    elif demisto.command() == 'mimecast-get-remediation-incident':
+        get_mimecast_incident()
+    elif demisto.command() == 'mimecast-search-file-hash':
+        search_file_hash()
 
 except Exception as e:
     LOG(e.message)
