@@ -413,7 +413,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
         The encrypted ciphertext.
     """
     if args.get('use_base64') == 'false':
-        plaintext = base64.b64encode(bytes(str(args.get('plaintext'), 'utf-8')))
+        plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
     else:
         plaintext = base64.b64decode(str(args.get('plaintext')))
@@ -745,7 +745,7 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
 
 def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
     if args.get('use_base64') == 'false':
-        plaintext = base64.b64encode(bytes(str(args.get('plaintext'), 'utf-8')))
+        plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
     else:
         plaintext = base64.b64decode(str(args.get('plaintext')))
@@ -870,8 +870,8 @@ def main():
             enable_key_command(client, demisto.args())
 
         elif command == f'{INTEGRATION_COMMAND_NAME}list-keys' and client.role in ['Project-Admin', 'KMS-Admin']:
-            results = list_keys_command(client, demisto.args())
-            return_outputs(*results)
+            res = list_keys_command(client, demisto.args())
+            return_outputs(*res)
 
         elif command == f'{INTEGRATION_COMMAND_NAME}asymmetric-encrypt' and client.role in ['Encrypter',
                                                                                             'Encrypter/Decrypter',
