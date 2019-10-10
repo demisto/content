@@ -13,14 +13,13 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
 TOKEN = demisto.params().get('token')
 SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
     else demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
+FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
 BASE_URL = SERVER + '/web/api/v2.0/'
 HEADERS = {
     'Authorization': 'ApiToken ' + TOKEN,
@@ -389,8 +388,6 @@ def get_threats_command():
 
     # Parse response into context & content entries
     if threats:
-        title = 'Sentinel One - Getting Threat List \n' + \
-                'Provides summary information and details for all the threats that matched your search criteria.'
         for threat in threats:
             if not rank or (rank and threat.get('rank') >= rank):
                 contents.append({
@@ -436,7 +433,10 @@ def get_threats_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
+                                                                                   'details for all the threats that '
+                                                                                   'matched your search criteria.',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -449,10 +449,10 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
     params = {
         'contentHash': content_hash,
         'mitigationStatus': mitigation_status,
-        'created_at__lt': created_before,
-        'created_at__gt': created_after,
-        'created_at__lte': created_until,
-        'created_at__gte': created_from,
+        'createdAt__lt': created_before,
+        'createdAt__gt': created_after,
+        'createdAt__lte': created_until,
+        'createdAt__gte': created_from,
         'resolved': resolved,
         'displayName__like': display_name,
         'query': query,
@@ -736,7 +736,6 @@ def get_white_list_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     item_ids = argToList(demisto.args().get('item_ids', []))
@@ -749,9 +748,6 @@ def get_white_list_command():
 
     # Parse response into context & content entries
     if exclusion_items:
-        title = 'Sentinel One - Listing exclusion items \n' + \
-                'provides summary information and details for ' \
-                'all the exclusion items that matched your search criteria.'
         for exclusion_item in exclusion_items:
             contents.append({
                 'ID': exclusion_item.get('id'),
@@ -785,7 +781,9 @@ def get_white_list_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Listing exclusion items \n'
+                                         + 'provides summary information and details for all the exclusion items that '
+                                           'matched your search criteria.', contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -896,7 +894,6 @@ def get_sites_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     updated_at = demisto.args().get('updated_at')
@@ -918,8 +915,6 @@ def get_sites_command():
 
     # Parse response into context & content entries
     if sites:
-        title = 'Sentinel One - Gettin List of Sites \n' + \
-                'Provides summary information and details for all sites that matched your search criteria.'
         for site in sites:
             contents.append({
                 'ID': site.get('id'),
@@ -959,7 +954,10 @@ def get_sites_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Gettin List of Sites \n' + 'Provides summary information and '
+                                                                                    'details for all sites that matched'
+                                                                                    ' your search criteria.', contents,
+                                         removeNull=True),
         'EntryContext': context
     })
 
@@ -1191,7 +1189,6 @@ def list_agents_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     active_threats = demisto.args().get('min_active_threats')
@@ -1205,8 +1202,6 @@ def list_agents_command():
 
     # Parse response into context & content entries
     if agents:
-        title = 'Sentinel One - List of Agents \n ' \
-                'Provides summary information and details for all the agents that matched your search criteria'
         for agent in agents:
             contents.append({
                 'ID': agent.get('id'),
@@ -1250,7 +1245,9 @@ def list_agents_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - List of Agents \n Provides summary information and details for'
+                                         ' all the agents that matched your search criteria',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1428,7 +1425,7 @@ def disconnect_agent_from_network():
     agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
-    agents = connect_to_network_request(agents_id)
+    agents = disconnect_from_network_request(agents_id)
     agents_affected = agents.get('data', {}).get('affected', 0)
 
     # Parse response into context & content entries
@@ -1747,12 +1744,17 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     current_fetch = last_fetch
-
     incidents = []
-    threats = get_threats_request()
+    last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
+    threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
     for threat in threats:
+        rank = threat.get('rank')
+        try:
+            rank = int(rank)
+        except TypeError:
+            rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if not FETCH_THREAT_RANK or (FETCH_THREAT_RANK and threat.get('rank') >= FETCH_THREAT_RANK):
+        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
