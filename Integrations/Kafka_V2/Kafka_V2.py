@@ -102,12 +102,14 @@ def create_incident(message, topic):
         'Offset': message.offset,
         'Message': message.value
     }
-    return {
+    incident = {
         'name': 'Kafka {} partition:{} offset:{}'.format(topic, message.partition_id, message.offset),
-        'occurred': timestamp_to_datestring(int(time.time())),
         'details': message.value,
         'rawJSON': json.dumps(raw)
     }
+    if message.timestamp_dt:
+        incident['occurred'] = message.timestamp_dt
+    return incident
 
 
 def check_latest_offset(topic, partition_number=None):
@@ -368,7 +370,7 @@ def fetch_incidents(client):
                 partition_id = str(partition.id)
                 if partition_id in partition_to_fetch_from:
                     partitions.append(partition)
-            consumer_args['partitions'] = partitions
+            consumer_args['partitions'] = partitions  # type: ignore
 
         consumer = kafka_topic.get_simple_consumer(**consumer_args)
 
