@@ -825,13 +825,15 @@ def main():
             results = create_crypto_key_command(client, demisto.args())
             return_outputs(*results)
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt' and client.role in ['Decrypter', 'Encrypter/Decrypter',
-                                                                                 'Project-Admin']:
+        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt' and client.role in ['Decrypter',
+                                                                                           'Encrypter/Decrypter',
+                                                                                           'Project-Admin']:
             results = symmetric_decrypt_key_command(client, demisto.args())
             demisto.results(f"The text has been decrypted.\nPlaintext: {results}")
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt' and client.role in ['Encrypter', 'Encrypter/Decrypter',
-                                                                                 'Project-Admin']:
+        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt' and client.role in ['Encrypter',
+                                                                                           'Encrypter/Decrypter',
+                                                                                           'Project-Admin']:
             results = symmetric_encrypt_key_command(client, demisto.args())
             demisto.results(f"The text has been encrypted.\nCiphertext: {results}")
 
