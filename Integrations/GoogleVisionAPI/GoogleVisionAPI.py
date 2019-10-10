@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
 ''' IMPORTS '''
 
 
@@ -13,6 +12,7 @@ import httplib2
 import urllib.parse
 from apiclient import discovery
 from oauth2client import service_account
+from typing import Dict, List
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -139,8 +139,7 @@ def detect_logos_command(proxies):
     Detects brand logos from a given entry id.
     """
     entry_ids = argToList(demisto.args().get('entry_id'))
-
-    output = {'GoogleVisionAPI': {'Logo': []}}
+    output: Dict[str, Dict[str, List[Dict[str, str]]]] = {'GoogleVisionAPI': {'Logo': []}}
     hit = False
 
     for entry_id in entry_ids:
@@ -157,7 +156,7 @@ def detect_logos_command(proxies):
                             'MID': logo['mid'],
                             'Score': logo['score']
                         }
-                        output.get('GoogleVisionAPI').get('Logo').append(context_logo)
+                        output.get('GoogleVisionAPI', {}).get('Logo', []).append(context_logo)
 
     if hit:
         human_readable = 'Logos found: '
@@ -232,8 +231,7 @@ def test_module(proxies):
         b'v\x14\xfbK8\xf7\xf9j\x8a\xcfW/\xc1\x8b\x8f\xd7\xd2\xfcCb?\x01\xc7\xf5]\n\x11\xa0Y\x98\x00\x00\x00' \
         b'\x00IEND\xaeB`\x82 '
     response = perform_logo_detection_service_request(content, proxies)
-    output = convert_to_output(response)
-    logo_found = output.get('GoogleVisionAPI', {}).get('Logo', [{'description', ''}])[0].get('description', '')
+    logo_found = response.get('responses', [])[0].get('logoAnnotations', [])[0].get('description', '')
     if 'microsoft' in logo_found.lower():
         demisto.results('ok')
     else:
