@@ -588,9 +588,9 @@ def enrich_offense_res_with_source_and_destination_address(response):
                 enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
         else:
             enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
-    except ValueError:
-        pass
-    return response
+    # The function is meant to be safe, so it shouldn't raise any error
+    finally:
+        return response
 
 
 # Helper method: Extracts all source and destination addresses ids from an offense result

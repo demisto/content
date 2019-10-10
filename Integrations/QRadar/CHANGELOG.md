@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Fixed an issue in which ***fetch-incidents*** failed while enriching fetched offenses with source and destination ips.
 
 ## [19.9.1] - 2019-09-18
   - The *note_id* argument is now optional in the ***qradar-get-note*** command. If the *note_id* argument is not specified, the command will return all notes for the the offense.
