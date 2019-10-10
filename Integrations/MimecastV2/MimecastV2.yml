@@ -32,8 +32,7 @@ configuration:
   name: secretKey
   required: false
   type: 4
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -1185,7 +1184,208 @@ script:
     - contextPath: File.MD5
       description: MD5 hash of the file
       type: string
+  - arguments:
+    - default: false
+      description: A string to query for.
+      isArray: false
+      name: query_string
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A group source to filter on, either "cloud" or "ldap".
+      isArray: false
+      name: query_source
+      predefined:
+      - cloud
+      - ' ldap'
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to request.
+      isArray: false
+      name: pagination
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of groups according to specific query.
+    execution: false
+    name: mimecast-find-groups
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group to return.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The number of results to request.
+      isArray: false
+      name: pagination
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the members list for a specific group.
+    execution: false
+    name: mimecast-get-group-members
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group to add to.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The email address of a user to add to a group. Use either email_address
+        or domain_address.
+      isArray: false
+      name: email_address
+      required: false
+      secret: false
+    - default: false
+      description: A domain to add to a group. Use either email_address or domain_address.
+      isArray: false
+      name: domain_address
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a user to a group.
+    execution: false
+    name: mimecast-add-group-member
+  - arguments:
+    - default: false
+      description: The Mimecast ID of the group to remove from.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The email address of a user to remove from a group. Use either
+        email_address or domain_address.
+      isArray: false
+      name: email_address
+      required: false
+      secret: false
+    - default: false
+      description: A domain to remove from a group. Use either email_address or domain_address.
+      isArray: false
+      name: domain_address
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove a user from a group.
+    execution: false
+    name: mimecast-remove-group-member
+  - arguments:
+    - default: false
+      description: The name of the new group.
+      isArray: false
+      name: group_name
+      required: true
+      secret: false
+    - default: false
+      description: The Mimecast ID of the new groups parent. If excluded, the new
+        group will be created at the root level.
+      isArray: false
+      name: parent_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Mimecast group.
+    execution: false
+    name: mimecast-create-group
+  - arguments:
+    - default: false
+      description: If included, updates the group name.
+      isArray: false
+      name: group_name
+      required: false
+      secret: false
+    - default: false
+      description: The Mimecast ID of the group to update.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: If included, updates the groups parent group.
+      isArray: false
+      name: parent_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Update an existing Mimecast group.
+    execution: false
+    name: mimecast-update-group
+  - arguments:
+    - default: false
+      description: The file hash or messageId value.
+      isArray: false
+      name: hash_message_id
+      required: true
+      secret: false
+    - default: false
+      description: The reason for creating the remediation incident
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The message component in which to search by. Must "hash" or "messageId".
+        Default option is hash if not specified.
+      isArray: false
+      name: search_by
+      predefined:
+      - hash
+      - ' messageId'
+      required: false
+      secret: false
+    - default: false
+      description: 'The earliest date of messages to remediate. Default value is one
+        month back. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: 'The most recent date of messages to remediate. Default value is
+        the end of the current day. (Format: yyyy-mm-ddThh:mm:ss+0000)'
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a new Mimecast remediation incident.
+    execution: false
+    name: mimecast-create-remediation-incident
+  - arguments:
+    - default: false
+      description: The Mimecast ID for a remediation incident, provided when an incident
+        is created.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a Mimecast remediation incident.
+    execution: false
+    name: mimecast-get-remediation-incident
+  - arguments:
+    - default: false
+      description: List of file hashes to determine if they have been seen within
+        an account.
+      isArray: true
+      name: hashes_to_search
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for one or multiple (up to 100) file hashes in account.
+    execution: false
+    name: mimecast-search-file-hash
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
