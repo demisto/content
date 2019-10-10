@@ -23,6 +23,12 @@ Attributes:
 
     ALERTS_TRANS
         Transformation map for alerts to be used with build_transformed_dict
+
+    LISTS_TRANS
+        Transformation map for lists to be used with build_transformed_dict
+
+    RULES_TRANS
+        Transformation map for rules to be used with build_transformed_dict
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
@@ -80,6 +86,22 @@ ALERTS_TRANS = {
     'state': 'State',
     'tags': 'Tags',
     'type': 'Type',
+}
+LISTS_TRANS = {
+    'id': 'ID',
+    'short_name': 'ShortName',
+    'name': 'Name',
+    'type': 'Type',
+    'types': 'ContentTypes',
+    'created_by.id': 'CreatorID',
+    'created_by.name': 'CreatorName',
+    'updated_by.id': 'UpdatedByID',
+    'updated_by.name': 'UpdatedByName',
+    'created_at': 'CreatedTime',
+    'updated_at': 'UpdatedTime',
+    'is_internal': 'Internal',
+    'is_protected': 'Protected',
+    'is_active': 'Active',
 }
 RULES_TRANS = {
     'id': 'ID',
@@ -851,15 +873,17 @@ def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     raw_response = client.get_lists(**args)
-    event = raw_response.get('events')
-    if event:
+    lists = raw_response.get('results')
+    if lists:
         title = f'{INTEGRATION_NAME} - Lists:'
-        context_entry = build_transformed_dict(event, {})  # TODO: edit this
+        context_entry = build_transformed_dict(lists, LISTS_TRANS)
+        count = demisto.get(raw_response, 'meta.count')
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.Count).Count': count
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'ContentTypes', 'UpdatedTime'])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
