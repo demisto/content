@@ -32,6 +32,9 @@ Attributes:
 
     ENDPOINTS_TRANS
         Transformation map for endpoints to be used with build_transformation_dict
+
+    EVENTS_TRANS
+        Transformation map for events to be used with build_transformation_dict
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
@@ -101,6 +104,47 @@ ENDPOINT_TRANS = {
     'primary_ip_address': 'IP',
     'updated_at': 'UpdatedTime',
     'containment_state': 'ContainmentState'
+}
+EVENTS_TRANS = {
+    'eventid': 'ID',
+    'eventtype': 'Type',
+    'result': 'Result',
+    'matched_at': 'MatchedAt',
+    'confidence': 'Confidence',
+    'status': 'Status',
+    'eventtime': 'EventTime',
+    'detect_ruleids': 'DetectedRuleID',
+    'pid': 'PID',
+    'process': 'Process',
+    'processpath': 'ProcessPath',
+    'filename': 'FileName',
+    'filepath': 'FilePath',
+    'devicename': 'DeviceName',
+    'bytes': 'Size',
+    'virus': 'Virus',
+    'malwaretype': 'MalwareType',
+    'createdtime': 'CreatedTime',
+    'class': 'Class',
+    'md5': 'MD5',
+    'sha1': 'SHA1',
+    'protocol': 'Protocol',
+    'srcipv4': 'SourceIPv4',
+    'srcipv6': 'SourceIPv6',
+    'srcport': 'SourcePort',
+    'srclongitude': 'SourceLongitude',
+    'dstipv4': 'DestinationIPv4',
+    'srclatitude': 'SourceLatitude',
+    'dstipv6': 'DestinationIPv6',
+    'dstport': 'DestinationPort',
+    'reported_at': 'ReportTime',
+    'is_false_positive': 'FalsePositive',
+    'domain': 'Domain',
+    'mailfrom': 'From',
+    'srcdomain': 'SourceDomain',
+    'srcisp': 'SourceISP',
+    'dstisp': 'DestinationISP',
+    'rcptto': 'To',
+    'attachment': 'Attachment',
 }
 LISTS_TRANS = {
     'id': 'ID',
@@ -762,14 +806,17 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     Returns:
         Outputs
     """
+    # TODO: Add yaml outputs
     alert_id = args.get('id')
     raw_response = client.get_events_by_alert(alert_id=alert_id)
     events = raw_response.get('results')
     if events:
         title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
-        context_entry = build_transformed_dict(events, {})  # TODO: edit this
+        context_entry = build_transformed_dict(events, EVENTS_TRANS)
+        count = demisto.get(raw_response, 'meta.count')
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.Event(val.Count).Count': count
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
