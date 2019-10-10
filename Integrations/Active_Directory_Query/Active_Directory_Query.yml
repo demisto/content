@@ -369,7 +369,7 @@ script:
       predefined:
       - person
       - computer
-      description: 'The type of members to search. Can be: "Person", or "computer".' Default is person.
+      description: 'The type of members to search. Can be: "Person", or "computer". Default is person.'
       defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the
