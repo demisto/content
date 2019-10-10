@@ -12,13 +12,15 @@ sys.path.append(CONTENT_DIR + '/Tests/demistomock')
 
 import demistomock  # noqa: E402
 
+# PrivateFuncs are functions to ignore when running the script
 jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecursive", "string_to_array",
                   "array_to_hex_string", "SHA256_init", "SHA256_write", "SHA256_finalize", "SHA256_hash",
                   "HMAC_SHA256_init", "HMAC_SHA256_write", "HMAC_SHA256_finalize", "HMAC_SHA256_MAC"]
 
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                   "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
-                  "createContextSingle", "IntegrationLogger", "tblToMd"]
+                  "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
+                  "BaseHTTPClient", "DemistoHandler", "DebugLogger"]
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
@@ -33,18 +35,15 @@ def readJsonFile(filepath):
     with open(filepath, 'r') as f:
         out = json.load(f)
         return out
-    return []
 
 
 def readYmlFile(filepath):
     with open(filepath, 'r') as f:
         out = yaml.safe_load(f)
         return out
-    return []
 
 
 def reformatPythonOutput(output, origin, language):
-
     res = []
     isError = False
     for a in output:
@@ -134,7 +133,7 @@ def createPyDocumentation(path, origin, language):
     isErrorPy = False
 
     with open(path, 'r') as file:
-        pyScript = clean_python_code(file.read())
+        pyScript = clean_python_code(file.read(), remove_print_future=False)
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
@@ -146,16 +145,15 @@ def createPyDocumentation(path, origin, language):
         if a != 'demisto' and callable(ns.get(a)) and a not in pyPrivateFuncs:
             docstring = inspect.getdoc(ns.get(a))
             if not docstring:
-                print("docstring for function " + a + " is empty")
+                print("docstring for function {} is empty".format(a))
                 isErrorPy = True
             else:
-                if "tzinfo" not in docstring:
-                    y = parser.parse_docstring(docstring)
-                    y["name"] = a
-                    y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
-                        else pyIrregularFuncs[a]["argList"]
+                y = parser.parse_docstring(docstring)
+                y["name"] = a
+                y["argList"] = list(inspect.getargspec(ns.get(a)))[0] if pyIrregularFuncs.get(a, None) is None \
+                    else pyIrregularFuncs[a]["argList"]
 
-                    x.append(y)
+                x.append(y)
 
     if isErrorPy:
         return None, isErrorPy

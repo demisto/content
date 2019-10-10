@@ -47,11 +47,12 @@ tasks:
       - "2"
       - "6"
       - "13"
-      - "4"
       - "15"
       - "17"
       - "21"
       - "23"
+      - "8"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -251,9 +252,8 @@ tasks:
     task:
       id: 817fbc68-c466-4073-8708-c7e505c782a2
       version: -1
-      description: ""
       name: Get item attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -269,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -298,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 910,
+          "y": 545
         }
       }
     note: false
@@ -311,9 +311,8 @@ tasks:
     task:
       id: cd09ad8e-7075-473a-875c-dff12db7f8d3
       version: -1
-      description: ""
       name: Get file attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -330,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 720
+          "x": 2630,
+          "y": 370
         }
       }
     note: false
@@ -490,7 +489,6 @@ tasks:
     task:
       id: 27bad126-6323-44f2-8633-f472b7259ae6
       version: -1
-      description: ""
       name: Verify folders context key
       scriptName: VerifyContext
       type: regular
