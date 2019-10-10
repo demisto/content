@@ -25,11 +25,6 @@ CLIENT_CERT = demisto.params().get('client_cert', None)
 CLIENT_CERT_KEY = demisto.params().get('client_cert_key', None)
 PASSWORD = demisto.params().get('additional_password', None)
 
-# Incidents configuration
-OFFSET = demisto.params().get('offset')
-TOPIC = demisto.params().get('topic')
-PARTITION = demisto.params().get('partition')
-
 # Logging
 log_stream = None
 log_handler = None
@@ -341,37 +336,61 @@ def fetch_incidents(client):
     """
     Fetches incidents
     """
-    incidents = list()
+    topics_to_fetch_from = argToList(demisto.params().get('topic', ''))
+    partition_to_fetch_from = argToList(demisto.params().get('partition', ''))
+    offset_to_fetch_from = demisto.params().get('offset', -2)
+    try:
+        offset_to_fetch_from = int(offset_to_fetch_from)
+    except ValueError:
+        offset_to_fetch_from = -2
+    max_messages = demisto.params().get('max_messages', 50)
+    try:
+        max_messages = int(max_messages)
+    except ValueError:
+        max_messages = 50
 
-    # Check for topic in Kafka
-    if TOPIC in client.topics:
-        queued_max_messages = int(demisto.params().get('max_messages', 50))
-        demisto.info(queued_max_messages)
-        kafka_topic = client.topics[TOPIC]
-        offset, partition = check_params(kafka_topic, old_offset=OFFSET, old_partition=PARTITION)
-        last_offset = demisto.getLastRun().get('last_offset')
-        last_fetch = last_offset if last_offset > offset else offset
+    last_fetched_partitions_offset = json.loads(demisto.getLastRun().get('last_fetched_partitions_offset', '{}'))
 
-        # If need to fetch
-        latest_offset = check_latest_offset(kafka_topic, partition)
-        if latest_offset > last_fetch:
-            consumer = kafka_topic.get_simple_consumer(
-                auto_offset_reset=last_fetch,
-                reset_offset_on_start=True,
-                queued_max_messages=queued_max_messages
-            )
-            for i in range(last_fetch, latest_offset):
-                """
-                consumer.consume() will consume only one message from the given offset.
-                """
-                message = consumer.consume()
-                incidents.append(create_incident(message=message, topic=TOPIC))
-                if message.offset == latest_offset:
+    incidents = []
+
+    message_counter = 0
+
+    for topic in client.topics.values():
+        if (topics_to_fetch_from and topic.name in topics_to_fetch_from) or not topics_to_fetch_from:
+            partitions = topic.partitions.values()
+            for partition in partitions:
+                partition_id = str(partition.id)
+                if (partition_to_fetch_from and partition_id in partition_to_fetch_from) or not partition_to_fetch_from:
+                    offset = int(last_fetched_partitions_offset.get(partition_id, offset_to_fetch_from))
+                    max_offset = offset
+
+                    consumer = topic.get_simple_consumer(
+                        auto_offset_reset=offset,
+                        reset_offset_on_start=True,
+                        consumer_timeout_ms=5000,
+                        partitions=[partition]
+                    )
+
+                    for message in consumer:
+                        if message and message.value:
+                            incidents.append(create_incident(message=message, topic=topic.name))
+                            max_offset = max(max_offset, message.offset)
+                            message_counter += 1
+                        if message_counter == max_messages:
+                            last_fetched_partitions_offset[partition_id] = max_offset
+                            consumer.stop()
+                            break
+                    else:
+                        last_fetched_partitions_offset[partition_id] = max_offset
+                        consumer.stop()
+                        continue
                     break
-            demisto.setLastRun({'last_offset': latest_offset})
-        demisto.incidents(incidents)
-    else:
-        return_error('No such topic \'{}\' to fetch incidents from.'.format(TOPIC))
+            else:
+                continue
+            break
+
+    demisto.setLastRun({'last_fetched_partitions_offset': json.dumps(last_fetched_partitions_offset)})
+    demisto.incidents(incidents)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

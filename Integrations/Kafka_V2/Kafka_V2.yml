@@ -7,7 +7,7 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Trust any certificate (not secure)
+- display: Do not use certificate for SSL connection
   name: insecure
   required: false
   type: 8
@@ -33,16 +33,15 @@ configuration:
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
     ‎                                        Fetch Incidents Settings
-    Topic to fetch incidents from
+    CSV list of topics to fetch incidents from
   name: topic
   required: false
   type: 0
-- display: Partition to fetch messages from
+- display: CSV list of partitions to fetch messages from
   name: partition
   required: false
   type: 0
-- defaultvalue: '0'
-  display: Offset to fetch messages from
+- display: Offset to fetch messages from
   name: offset
   required: false
   type: 0
@@ -50,7 +49,7 @@ configuration:
   display: Max number of messages to fetch
   name: max_messages
   required: false
-  type: 0
+  type: 50
 - display: Fetch incidents
   name: isFetch
   required: false
