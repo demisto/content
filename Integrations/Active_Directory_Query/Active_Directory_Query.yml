@@ -357,7 +357,7 @@ script:
       description: Groups for which the computer is listed as a member.
     description: 'Retrieves detailed information about a computer account. The computer
       can be specified by name, email address, or as an Active Directory Distinguished Name
-      (DN). If no filters are provided, all computers are returned. '
+      (DN). If no filters are provided, all computers are returned.'
   - name: ad-get-group-members
     arguments:
     - name: group-dn
@@ -386,7 +386,7 @@ script:
       type: string
     description: Retrieves the list of users or computers that are members of the
       specified group.
- - name: ad-create-group
+  - name: ad-create-group
     arguments:
     - name: name
       description: The Active Directory name of the group.
