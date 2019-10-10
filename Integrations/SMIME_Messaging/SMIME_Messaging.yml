@@ -11,7 +11,8 @@ configuration:
   name: private_key
   required: true
   type: 14
-description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration to send and receive secure MIME data.
+description: Use the S/MIME (Secure Multipurpose Internet Mail Extensions) integration
+  to send and receive secure MIME data.
 display: SMIME Messaging
 name: SMIME Messaging
 script:
@@ -21,7 +22,7 @@ script:
       description: The message body to send.
       isArray: false
       name: message_body
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Retrieve items from the service.
@@ -39,7 +40,7 @@ script:
       description: The message body to encrypt.
       isArray: false
       name: message
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Encrypts an email message with S/MIME protocol by using a public
