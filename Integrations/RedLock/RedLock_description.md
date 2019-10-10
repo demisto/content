@@ -1,0 +1,1 @@
+To use Redlock, you must provide credentials with privileges to manage alerts

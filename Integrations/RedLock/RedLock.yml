@@ -5,8 +5,6 @@ name: RedLock
 display: Prisma Cloud (RedLock)
 category: Network Security
 description: Cloud threat defense
-detaileddescription: To use Prisma Cloud, you must provide credentials with privileges
-  to manage alerts
 configuration:
 - display: Server URL
   name: url
