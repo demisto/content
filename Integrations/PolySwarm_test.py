@@ -80,7 +80,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0x",
+                    "author": "0",
                     "bid": 500000000000000000,
                     "engine": "Nucleon",
                     "mask": True,
@@ -173,7 +173,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0xbec683492f5D509e119fB1B60543A1Ca595e0Df9",
+                    "author": "0",
                     "bid": 500000000000000000,
                     "engine": "L",
                     "mask": True,
@@ -207,7 +207,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0x3750266F07E0590aA16e55c32e08e48878010f8f",
+                    "author": "0",
                     "bid": 500000000000000000,
                     "engine": "C",
                     "mask": True,
@@ -372,15 +372,15 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                 "size": 459632,
                                 "votes": [
                                     {
-                                        "arbiter": "0x1f50Cf288b5d19a55ac4c6514e5bA6a704BD03EC",
+                                        "arbiter": "0",
                                         "vote": False
                                     },
                                     {
-                                        "arbiter": "0xdC6a0F9C3AF726Ba05AaC14605Ac9B3b958512d7",
+                                        "arbiter": "0",
                                         "vote": False
                                     },
                                     {
-                                        "arbiter": "0xd8b48Da78188312c5fC079E532afd48De973767E",
+                                        "arbiter": "0",
                                         "vote": True
                                     }
                                 ],
@@ -391,10 +391,10 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                 "assertions": [
                                     {
                                         "mask": True,
-                                        "author": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
-                                                "vendor_version": "3.0.2.0",
+                                                "vendor_version": "1",
                                                 "environment": {
                                                     "operating_system": "Windows",
                                                     "architecture": "AMD64"
@@ -408,7 +408,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     },
                                     {
                                         "verdict": False,
-                                        "author": "0x945Ea13daef7e2Bc91cEcc2171A6f1dDF680606E",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "vendor_version": "",
