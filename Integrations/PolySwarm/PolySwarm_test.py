@@ -26,9 +26,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
         {
             "assertions": [
                 {
-                    "author": "0x2b4C240B376E5406C5e2559C27789d776AE97EFD",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "NanoAV",
+                    "engine": "N",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -45,9 +45,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0xF598F7dA0D00D9AD21fb00663a7D62a19D43Ea61",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Trustlook",
+                    "engine": "T",
                     "mask": True,
                     "metadata": {
                         "malware_family": "Android.PUA.General",
@@ -63,12 +63,12 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0x10A9eE8552f2c6b2787B240CeBeFc4A4BcB96f27",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Alibaba",
+                    "engine": "A",
                     "mask": True,
                     "metadata": {
-                        "malware_family": "TrojanBanker:Android/Basbanke.89a6a78a",
+                        "malware_family": "TrojanBanker",
                         "scanner": {
                             "environment": {
                                 "architecture": "AMD64",
@@ -80,7 +80,7 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0x80Ed773972d8BA0A4FacF2401Aca5CEba52F76dc",
+                    "author": "0",
                     "bid": 500000000000000000,
                     "engine": "Nucleon",
                     "mask": True,
@@ -98,9 +98,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA",
-                    "bid": 412500000000000000,
-                    "engine": "XVirus",
+                    "author": "0",
+                    "bid": 41250000000000000,
+                    "engine": "X",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -109,16 +109,16 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                                 "architecture": "AMD64",
                                 "operating_system": "Windows"
                             },
-                            "vendor_version": "3.0.2.0",
+                            "vendor_version": "1",
                             "version": "0.2.0"
                         }
                     },
                     "verdict": False
                 },
                 {
-                    "author": "0xbE0B3ec289aaf9206659F8214c49D083Dc1a9E17",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "K7",
+                    "engine": "K",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -128,16 +128,16 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                                 "operating_system": "Windows"
                             },
                             "signatures_version": "11.66.31997|12/Sep/2019",
-                            "vendor_version": "15.2.0.42",
+                            "vendor_version": "1",
                             "version": "0.2.0"
                         }
                     },
                     "verdict": False
                 },
                 {
-                    "author": "0xBAFcaF4504FCB3608686b40eB1AEe09Ae1dd2bc3",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "0xBAFcaF4504FCB3608686b40eB1AEe09Ae1dd2bc3",
+                    "engine": "0",
                     "mask": True,
                     "metadata": {
                         "malware_family": "infected with Android.Banker.3074",
@@ -154,9 +154,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0x7839aB10854505aBb712F10D1F66d45F359e6c89",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Ikarus",
+                    "engine": "I",
                     "mask": True,
                     "metadata": {
                         "malware_family": "Trojan.AndroidOS.Agent",
@@ -166,16 +166,16 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                                 "operating_system": "Linux"
                             },
                             "signatures_version": "09.10.2019 12:19:44 (102008)",
-                            "vendor_version": "5.2.9.0",
+                            "vendor_version": "0",
                             "version": "0.2.0"
                         }
                     },
                     "verdict": True
                 },
                 {
-                    "author": "0xbec683492f5D509e119fB1B60543A1Ca595e0Df9",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Lionic",
+                    "engine": "L",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -189,9 +189,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0xdCc9064325c1aa24E08182676AD23B3D78b39E05",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "ZeroCERT",
+                    "engine": "Z",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -207,9 +207,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0x3750266F07E0590aA16e55c32e08e48878010f8f",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "ClamAV",
+                    "engine": "C",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -218,15 +218,15 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                                 "architecture": "x86_64",
                                 "operating_system": "Linux"
                             },
-                            "vendor_version": "ClamAV 0.100.3/25597/Wed Oct  9 08:39:14 2019\n"
+                            "vendor_version": "C"
                         }
                     },
                     "verdict": False
                 },
                 {
-                    "author": "0x1EdF29c0977aF06215032383F93deB9899D90118",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Tachyon",
+                    "engine": "T",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -242,9 +242,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0x45b94B4AFE4E4B5Bd7f70B84919fba20f1FAfB3f",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Qihoo 360",
+                    "engine": "Q",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -258,9 +258,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0xE2911b3c44a0C50b4D0Cfe537a0c1a8b992F6aD0",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Rising",
+                    "engine": "R",
                     "mask": True,
                     "metadata": {
                         "malware_family": "Malware.Strealer/Android!8.5B3",
@@ -274,9 +274,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": True
                 },
                 {
-                    "author": "0xA605715C448f4a2319De2ad01F174cA9c440C4Eb",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Jiangmin",
+                    "engine": "J",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -293,9 +293,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0xA9306463DC64Df02EE4f9eCecc60d947F93Fd9E3",
+                    "author": "0",
                     "bid": 500000000000000000,
-                    "engine": "Quick Heal",
+                    "engine": "Q",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -311,9 +311,9 @@ MOCK_LOOKUP_JSON_RESPOSE = {'result': {
                     "verdict": False
                 },
                 {
-                    "author": "0xb9b1FA288F7b1867AEF6C044CDE12ab2De252113",
+                    "author": "0",
                     "bid": 325000000000000000,
-                    "engine": "VenusEye",
+                    "engine": "V",
                     "mask": True,
                     "metadata": {
                         "malware_family": "",
@@ -372,15 +372,15 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                 "size": 459632,
                                 "votes": [
                                     {
-                                        "arbiter": "0x1f50Cf288b5d19a55ac4c6514e5bA6a704BD03EC",
+                                        "arbiter": "0",
                                         "vote": False
                                     },
                                     {
-                                        "arbiter": "0xdC6a0F9C3AF726Ba05AaC14605Ac9B3b958512d7",
+                                        "arbiter": "0",
                                         "vote": False
                                     },
                                     {
-                                        "arbiter": "0xd8b48Da78188312c5fC079E532afd48De973767E",
+                                        "arbiter": "0",
                                         "vote": True
                                     }
                                 ],
@@ -391,10 +391,10 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                 "assertions": [
                                     {
                                         "mask": True,
-                                        "author": "0x59Af39803354Bd08971Ac8e7C6dB7410a25Ab8DA",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
-                                                "vendor_version": "3.0.2.0",
+                                                "vendor_version": "1",
                                                 "environment": {
                                                     "operating_system": "Windows",
                                                     "architecture": "AMD64"
@@ -408,7 +408,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     },
                                     {
                                         "verdict": False,
-                                        "author": "0x945Ea13daef7e2Bc91cEcc2171A6f1dDF680606E",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "vendor_version": "",
@@ -429,7 +429,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                         "bid": 500000000000000000,
                                         "metadata": {
                                             "scanner": {
-                                                "vendor_version": "15.2.0.42",
+                                                "vendor_version": "2",
                                                 "signatures_version": "11.63.31830|26/Aug/2019",
                                                 "version": "0.2.0",
                                                 "environment": {
@@ -439,12 +439,12 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                             },
                                             "malware_family": "Spyware ( 0054a7d61 )"
                                         },
-                                        "author": "0xbE0B3ec289aaf9206659F8214c49D083Dc1a9E17"
+                                        "author": "0"
                                     },
                                     {
                                         "verdict": True,
                                         "mask": True,
-                                        "author": "0xE2911b3c44a0C50b4D0Cfe537a0c1a8b992F6aD0",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "environment": {
@@ -452,14 +452,14 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                                     "operating_system": "Linux"
                                                 }
                                             },
-                                            "malware_family": "Spyware.Agent/Android!8.3BE"
+                                            "malware_family": "Virus"
                                         },
                                         "bid": 500000000000000000
                                     },
                                     {
                                         "mask": True,
                                         "bid": 500000000000000000,
-                                        "author": "0xF598F7dA0D00D9AD21fb00663a7D62a19D43Ea61",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "vendor_version": "4.1",
@@ -475,7 +475,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     },
                                     {
                                         "mask": True,
-                                        "author": "0x3750266F07E0590aA16e55c32e08e48878010f8f",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "vendor_version": "ClamAV 0.100.3/25574/Mon Sep 16 08:25:07 2019\n",
@@ -502,14 +502,14 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                             },
                                             "malware_family": ""
                                         },
-                                        "author": "0xA605715C448f4a2319De2ad01F174cA9c440C4Eb",
+                                        "author": "0",
                                         "bid": 500000000000000000,
                                         "mask": True,
                                         "verdict": False
                                     },
                                     {
                                         "mask": True,
-                                        "author": "0xA4815D9b8f710e610E8957F4aD13F725a4331cbB",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "version": "0.2.0",
@@ -517,7 +517,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                                     "operating_system": "Linux",
                                                     "architecture": "x86_64"
                                                 },
-                                                "vendor_version": "5.2.7.0",
+                                                "vendor_version": "1",
                                                 "signatures_version": "16.09.2019 18:19:06 (101938)"
                                             },
                                             "malware_family": "Trojan.AndroidOS.Agent"
@@ -527,7 +527,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     },
                                     {
                                         "bid": 500000000000000000,
-                                        "author": "0x10A9eE8552f2c6b2787B240CeBeFc4A4BcB96f27",
+                                        "author": "0",
                                         "metadata": {
                                             "malware_family": "Trojan:Android/Agent.c1ade2d1",
                                             "type": "zip",
@@ -555,13 +555,13 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                             },
                                             "malware_family": "infected with Android.Backdoor.687.origin"
                                         },
-                                        "author": "0x7c6A9f9f9f1a67774999FF0e26ffdBa2c9347eeB",
+                                        "author": "0",
                                         "bid": 500000000000000000,
                                         "mask": True
                                     },
                                     {
                                         "mask": True,
-                                        "author": "0xb9b1FA288F7b1867AEF6C044CDE12ab2De252113",
+                                        "author": "0",
                                         "metadata": {
                                             "malware_family": "",
                                             "scanner": {
@@ -577,7 +577,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     },
                                     {
                                         "mask": True,
-                                        "author": "0x45b94B4AFE4E4B5Bd7f70B84919fba20f1FAfB3f",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "environment": {
@@ -601,7 +601,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                             },
                                             "malware_family": ""
                                         },
-                                        "author": "0x0457C40dBA29166c1D2485F93946688C1FC6Cc58",
+                                        "author": "0",
                                         "bid": 500000000000000000,
                                         "verdict": True
                                     },
@@ -618,7 +618,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                                 }
                                             }
                                         },
-                                        "author": "0xdCc9064325c1aa24E08182676AD23B3D78b39E05",
+                                        "author": "0",
                                         "bid": 500000000000000000,
                                         "verdict": False
                                     },
@@ -636,13 +636,13 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                                 "vendor_version": "1.2.9"
                                             }
                                         },
-                                        "author": "0x8d80CEe474b9004949Cf7e4BfA28460AC8e370a1",
+                                        "author": "0",
                                         "bid": 500000000000000000
                                     },
                                     {
                                         "mask": True,
                                         "bid": 500000000000000000,
-                                        "author": "0x1EdF29c0977aF06215032383F93deB9899D90118",
+                                        "author": "0",
                                         "metadata": {
                                             "scanner": {
                                                 "vendor_version": "2018.11.28.1",
@@ -685,7 +685,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                     "ipv4": []
                 },
                 "hash": {
-                    "ssdeep": "6144:Hpq2wCDTEgxCMFsR22xBymodNJg",
+                    "ssdeep": "g",
                     "tlsh": "58a423cc41ed5bc5e07ff3f1922950649fe641a875b02b27a80a23e46749d933877b8e",
                     "sha512": "98a8854cfd69ea9a5fc60d5966fba5e7e1b60afe114e4abafeeed4310f8fa661bbbf51c2b19694b181",
                     "sha1": "20983fae703dd0d0b26eef39ac8f222050a8aeec",
