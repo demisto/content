@@ -4,15 +4,11 @@ The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integr
 This integration was integrated and tested with version xx of ARIA Packet Intelligece
 </p>
 <h2>ARIA Packet Intelligece Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
+<p>playbook_aria_packet_intelligence_test</p>
 <h2>Use Cases</h2>
-<ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
-</ul><h2>Detailed Description</h2>
-<p>Users need to build and set up their SDSo and deploy Packet Intelligence security software to a SIA. Need to know the IP address or FQDN of the SDSo Node.</p>
-<h2>Fetch Incidents</h2>
-<p>Populate this section with Fetch incidents data</p>
+<p>1.Block Conversation 2. Alert and Record Conversation</p>
+<h2>Detailed Description</h2>
+<p>Users should install SDSo onto a server according to the instructions in Software-Defined Security Installation Guide. During the installation process you can determine the IP address or FQDN of your SDSo instance which is used in the SDSo Base URL. You should also install an SIA according to the Secure Intelligent Adapter Installation Guide. For more information on connecting an SDSo and SIA see the Software-Defined Security Orchestrator User Guide. In addition, you must deploy the PI security service to your SIA, see the Packet Intelligence User Guide for more information.</p>
 <h2>Configure ARIA Packet Intelligece on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -74,12 +70,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-block-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -191,14 +181,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "f913b41a-9305-5076-1638-5678b4bf2d72"
+                    "trid": "786e3798-205b-7365-7da6-2928e9b62784"
                 }
             ],
             "Rule": {
@@ -209,7 +199,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561129
+                "timestamp": 1570722987
             }
         }
     ]
@@ -229,8 +219,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convBlock<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561129</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f913b41a-9305-5076-1638-5678b4bf2d72', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570722987</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '786e3798-205b-7365-7da6-2928e9b62784', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -250,12 +240,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-unblock-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -342,14 +326,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "5b519cea-a043-d6e6-3406-6c3d1cdae12c"
+                    "trid": "5f54a55c-e89b-8fd2-c3af-20922d50cef9"
                 }
             ],
             "Rule": {
@@ -360,7 +344,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561131
+                "timestamp": 1570722990
             }
         }
     ]
@@ -380,8 +364,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561131<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '5b519cea-a043-d6e6-3406-6c3d1cdae12c', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570722990<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '5f54a55c-e89b-8fd2-c3af-20922d50cef9', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -401,12 +385,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-record-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -553,14 +531,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "fa12942e-ae12-9784-f917-3bb7de680a63"
+                    "trid": "f162fe08-07bd-ad1a-03d1-994e064d95fc"
                 }
             ],
             "Rule": {
@@ -571,7 +549,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561139
+                "timestamp": 1570722998
             }
         }
     ]
@@ -591,8 +569,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convRecord<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561139</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'fa12942e-ae12-9784-f917-3bb7de680a63', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570722998</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f162fe08-07bd-ad1a-03d1-994e064d95fc', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -612,12 +590,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-stop-recording-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -704,14 +676,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "4f69cb6a-0643-4481-92c0-9aff7f59ec9d"
+                    "trid": "3d054434-7078-1e53-8ca1-d66d494f83ab"
                 }
             ],
             "Rule": {
@@ -722,7 +694,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561146
+                "timestamp": 1570723007
             }
         }
     ]
@@ -742,8 +714,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561146<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4f69cb6a-0643-4481-92c0-9aff7f59ec9d', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723007<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '3d054434-7078-1e53-8ca1-d66d494f83ab', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -763,12 +735,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-alert-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -905,14 +871,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "ee695aa9-06a7-64db-8fd4-32d267400bf6"
+                    "trid": "42ee40a4-9315-2678-0db7-8a5a06286180"
                 }
             ],
             "Rule": {
@@ -923,7 +889,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561153
+                "timestamp": 1570723015
             }
         }
     ]
@@ -943,8 +909,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convAlert<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561153</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'ee695aa9-06a7-64db-8fd4-32d267400bf6', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723015</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '42ee40a4-9315-2678-0db7-8a5a06286180', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -964,12 +930,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-mute-alert-conversation</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1056,14 +1016,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "72f105cd-c20d-8e8e-e8af-3699441a1144"
+                    "trid": "28e78bfe-2b5e-b5a7-6360-e6a3e4fde148"
                 }
             ],
             "Rule": {
@@ -1074,7 +1034,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561161
+                "timestamp": 1570723024
             }
         }
     ]
@@ -1094,8 +1054,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561161<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '72f105cd-c20d-8e8e-e8af-3699441a1144', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723024<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '28e78bfe-2b5e-b5a7-6360-e6a3e4fde148', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1115,12 +1075,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-block-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1212,14 +1166,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "40c83af1-9801-87f2-788a-fef0c86f3ee0"
+                    "trid": "9c0d0f2b-13d4-65df-e645-3e9a5b10a291"
                 }
             ],
             "Rule": {
@@ -1230,7 +1184,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561169
+                "timestamp": 1570723032
             }
         }
     ]
@@ -1250,8 +1204,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortBlock<br>Definition: 389, 400 - 404: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561169</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '40c83af1-9801-87f2-788a-fef0c86f3ee0', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723032</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9c0d0f2b-13d4-65df-e645-3e9a5b10a291', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1271,12 +1225,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-unblock-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1363,14 +1311,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "2534e9e4-5515-bdfa-185a-dc76db0369b0"
+                    "trid": "c3df6fce-f727-abe5-a596-aad4086a384d"
                 }
             ],
             "Rule": {
@@ -1381,7 +1329,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561177
+                "timestamp": 1570723040
             }
         }
     ]
@@ -1401,8 +1349,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561177<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '2534e9e4-5515-bdfa-185a-dc76db0369b0', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723040<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c3df6fce-f727-abe5-a596-aad4086a384d', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1422,12 +1370,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-record-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1554,14 +1496,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "24b350ae-ca3c-301c-4741-8e44a9dfbc75"
+                    "trid": "8546ba08-ea88-7329-9340-96b42fe6449e"
                 }
             ],
             "Rule": {
@@ -1572,7 +1514,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561185
+                "timestamp": 1570723048
             }
         }
     ]
@@ -1592,8 +1534,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortRecord<br>Definition: 390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561185</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '24b350ae-ca3c-301c-4741-8e44a9dfbc75', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723048</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8546ba08-ea88-7329-9340-96b42fe6449e', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1613,12 +1555,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-stop-recording-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1705,14 +1641,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "badcc934-969a-a59a-4568-b8fe591912f4"
+                    "trid": "740917e5-2152-9229-b592-4392adc37cd9"
                 }
             ],
             "Rule": {
@@ -1723,7 +1659,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561193
+                "timestamp": 1570723056
             }
         }
     ]
@@ -1743,8 +1679,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561193<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'badcc934-969a-a59a-4568-b8fe591912f4', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723056<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '740917e5-2152-9229-b592-4392adc37cd9', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1764,12 +1700,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-alert-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1886,14 +1816,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "6f652067-8d21-f7ed-db9a-5e50affcd835"
+                    "trid": "8fffe721-8c5e-09f8-07ef-467d5c856b18"
                 }
             ],
             "Rule": {
@@ -1904,7 +1834,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561201
+                "timestamp": 1570723064
             }
         }
     ]
@@ -1924,8 +1854,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortAlert<br>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561201</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '6f652067-8d21-f7ed-db9a-5e50affcd835', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723064</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8fffe721-8c5e-09f8-07ef-467d5c856b18', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1945,12 +1875,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-mute-alert-dest-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2037,14 +1961,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "8aeec144-55f8-1ecb-4fb4-460e3558215b"
+                    "trid": "34af0fc9-00b2-c30c-ba0d-980131082358"
                 }
             ],
             "Rule": {
@@ -2055,7 +1979,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561209
+                "timestamp": 1570723072
             }
         }
     ]
@@ -2075,8 +1999,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561209<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8aeec144-55f8-1ecb-4fb4-460e3558215b', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723072<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '34af0fc9-00b2-c30c-ba0d-980131082358', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2096,12 +2020,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-block-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2193,14 +2111,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "f7a2a3aa-d92f-7620-a87f-a59506fb65c4"
+                    "trid": "5f39160c-d4b2-145f-c9cd-a0f892717335"
                 }
             ],
             "Rule": {
@@ -2211,7 +2129,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561216
+                "timestamp": 1570723079
             }
         }
     ]
@@ -2231,8 +2149,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortBlock<br>Definition: 389, 400 - 404: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561216</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f7a2a3aa-d92f-7620-a87f-a59506fb65c4', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723079</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '5f39160c-d4b2-145f-c9cd-a0f892717335', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2252,12 +2170,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-unblock-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2344,14 +2256,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "164af21d-0d10-2146-28ae-2854ab1642cd"
+                    "trid": "9cc13f49-a8b6-59d8-26be-81a0e8956b5d"
                 }
             ],
             "Rule": {
@@ -2362,7 +2274,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561225
+                "timestamp": 1570723086
             }
         }
     ]
@@ -2382,8 +2294,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561225<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '164af21d-0d10-2146-28ae-2854ab1642cd', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723086<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9cc13f49-a8b6-59d8-26be-81a0e8956b5d', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2403,12 +2315,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-record-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2535,14 +2441,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "4740a402-e5b4-4dd7-a7d5-0eb3f4ddc5b0"
+                    "trid": "2a4edffd-9656-e58c-4e22-9a53b3be9099"
                 }
             ],
             "Rule": {
@@ -2553,7 +2459,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561232
+                "timestamp": 1570723095
             }
         }
     ]
@@ -2573,8 +2479,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortRecord<br>Definition: 390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561232</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4740a402-e5b4-4dd7-a7d5-0eb3f4ddc5b0', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723095</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '2a4edffd-9656-e58c-4e22-9a53b3be9099', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2594,12 +2500,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-stop-recording-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2686,14 +2586,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "abf1eb6c-405d-b32b-3e8b-15c94b38c1a0"
+                    "trid": "46f11318-f2da-6d2c-46ca-5eaa3125f05e"
                 }
             ],
             "Rule": {
@@ -2704,7 +2604,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561239
+                "timestamp": 1570723104
             }
         }
     ]
@@ -2724,8 +2624,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561239<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'abf1eb6c-405d-b32b-3e8b-15c94b38c1a0', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723104<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '46f11318-f2da-6d2c-46ca-5eaa3125f05e', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2745,12 +2645,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-alert-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -2867,14 +2761,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "c0760443-c387-ad77-4696-c262c9b7ce08"
+                    "trid": "be8f9fba-ffe7-e262-1d3d-1d83b8c53861"
                 }
             ],
             "Rule": {
@@ -2885,7 +2779,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561246
+                "timestamp": 1570723111
             }
         }
     ]
@@ -2905,8 +2799,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortAlert<br>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561246</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c0760443-c387-ad77-4696-c262c9b7ce08', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723111</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'be8f9fba-ffe7-e262-1d3d-1d83b8c53861', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2926,12 +2820,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-mute-alert-src-port</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3018,14 +2906,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "dc642b15-0d7f-ea4b-3d31-d4025cb4cc5b"
+                    "trid": "6911a14b-ab45-9cd2-67ba-57dda34acc07"
                 }
             ],
             "Rule": {
@@ -3036,7 +2924,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561252
+                "timestamp": 1570723120
             }
         }
     ]
@@ -3056,8 +2944,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561252<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'dc642b15-0d7f-ea4b-3d31-d4025cb4cc5b', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723120<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '6911a14b-ab45-9cd2-67ba-57dda34acc07', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3077,12 +2965,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-block-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3174,14 +3056,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "8daf34ae-be5c-0480-7080-29dcfaf024b1"
+                    "trid": "f056eaec-1d3a-a14d-d65e-790737d06adf"
                 }
             ],
             "Rule": {
@@ -3192,7 +3074,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561260
+                "timestamp": 1570723127
             }
         }
     ]
@@ -3212,8 +3094,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetBlock<br>Definition: 192.168.1.0/24: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561260</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8daf34ae-be5c-0480-7080-29dcfaf024b1', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723127</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f056eaec-1d3a-a14d-d65e-790737d06adf', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3233,12 +3115,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-unblock-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3325,14 +3201,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "d5d61a72-30c6-da87-5205-e1b8550ad82e"
+                    "trid": "1fe8457f-13f9-1989-0c48-5ceed85eb3a9"
                 }
             ],
             "Rule": {
@@ -3343,7 +3219,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561267
+                "timestamp": 1570723136
             }
         }
     ]
@@ -3363,8 +3239,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561267<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'd5d61a72-30c6-da87-5205-e1b8550ad82e', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723136<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '1fe8457f-13f9-1989-0c48-5ceed85eb3a9', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3384,12 +3260,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-record-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3516,14 +3386,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "4545ab14-e8bb-5101-01d9-71ead17f75bf"
+                    "trid": "ee466760-e3d9-9674-3816-04dfacb2b43b"
                 }
             ],
             "Rule": {
@@ -3534,7 +3404,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561274
+                "timestamp": 1570723143
             }
         }
     ]
@@ -3554,8 +3424,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetRecord<br>Definition: 192.168.0.100/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561274</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4545ab14-e8bb-5101-01d9-71ead17f75bf', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723143</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'ee466760-e3d9-9674-3816-04dfacb2b43b', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3575,12 +3445,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-stop-recording-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3667,14 +3531,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "0416bd4b-20aa-1b69-b5f7-28a569b2157b"
+                    "trid": "e7ca730f-301c-9c18-1ee7-eabcd71a375f"
                 }
             ],
             "Rule": {
@@ -3685,7 +3549,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561281
+                "timestamp": 1570723151
             }
         }
     ]
@@ -3705,8 +3569,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561281<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '0416bd4b-20aa-1b69-b5f7-28a569b2157b', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723151<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'e7ca730f-301c-9c18-1ee7-eabcd71a375f', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3726,12 +3590,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-alert-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3848,14 +3706,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "628b9aaf-5299-647a-4a0f-2ed344fb3847"
+                    "trid": "c7a44826-0e87-1349-a118-2d45c66c8878"
                 }
             ],
             "Rule": {
@@ -3866,7 +3724,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561289
+                "timestamp": 1570723158
             }
         }
     ]
@@ -3886,8 +3744,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetAlert<br>Definition: 192.168.1.0/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561289</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '628b9aaf-5299-647a-4a0f-2ed344fb3847', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723158</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c7a44826-0e87-1349-a118-2d45c66c8878', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3907,12 +3765,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-mute-alert-dest-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -3999,14 +3851,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "e5f8daee-0df6-4350-4a92-1a71718a5a0f"
+                    "trid": "c04f3f24-c4e2-04a6-17e5-d78f02a042ac"
                 }
             ],
             "Rule": {
@@ -4017,7 +3869,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561297
+                "timestamp": 1570723166
             }
         }
     ]
@@ -4037,8 +3889,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561297<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'e5f8daee-0df6-4350-4a92-1a71718a5a0f', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723166<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c04f3f24-c4e2-04a6-17e5-d78f02a042ac', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4058,12 +3910,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-block-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4155,14 +4001,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "971ff923-1edb-59b5-d79e-eb2acdb0fb3e"
+                    "trid": "6ad93bd1-6963-f738-9748-54086f9267b2"
                 }
             ],
             "Rule": {
@@ -4173,7 +4019,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561304
+                "timestamp": 1570723175
             }
         }
     ]
@@ -4193,8 +4039,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetBlock<br>Definition: 192.168.1.0/24: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561304</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '971ff923-1edb-59b5-d79e-eb2acdb0fb3e', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723175</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '6ad93bd1-6963-f738-9748-54086f9267b2', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4214,12 +4060,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-unblock-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4306,14 +4146,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "f619ede4-fea5-96d8-d149-1101e56f6ec6"
+                    "trid": "a02d41b7-5e31-1ec3-9dfa-8ba31ad8d645"
                 }
             ],
             "Rule": {
@@ -4324,7 +4164,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561310
+                "timestamp": 1570723183
             }
         }
     ]
@@ -4344,8 +4184,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561310<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f619ede4-fea5-96d8-d149-1101e56f6ec6', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723183<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'a02d41b7-5e31-1ec3-9dfa-8ba31ad8d645', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4365,12 +4205,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-record-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4497,14 +4331,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "03e95e48-161c-5d47-4437-24da46d46454"
+                    "trid": "829b55ab-644e-db17-b8a4-0a1ec825516a"
                 }
             ],
             "Rule": {
@@ -4515,7 +4349,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561319
+                "timestamp": 1570723192
             }
         }
     ]
@@ -4535,8 +4369,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetRecord<br>Definition: 192.168.1.0/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561319</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '03e95e48-161c-5d47-4437-24da46d46454', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723192</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '829b55ab-644e-db17-b8a4-0a1ec825516a', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4556,12 +4390,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-stop-recording-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4648,14 +4476,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "770f5372-1c83-7db0-e282-51345aef84be"
+                    "trid": "eefe605b-4c3a-98af-01db-a7eb9d9f28df"
                 }
             ],
             "Rule": {
@@ -4666,7 +4494,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561327
+                "timestamp": 1570723200
             }
         }
     ]
@@ -4686,8 +4514,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561327<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '770f5372-1c83-7db0-e282-51345aef84be', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723200<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'eefe605b-4c3a-98af-01db-a7eb9d9f28df', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4707,12 +4535,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-alert-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4829,14 +4651,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "a51e71a5-caec-55e1-e73a-f2aa24aa3e39"
+                    "trid": "3a336ed6-9586-b7f0-2c60-9bb358dfb91a"
                 }
             ],
             "Rule": {
@@ -4847,7 +4669,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561334
+                "timestamp": 1570723208
             }
         }
     ]
@@ -4867,8 +4689,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetAlert<br>Definition: 192.168.1.0/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570561334</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'a51e71a5-caec-55e1-e73a-f2aa24aa3e39', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723208</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '3a336ed6-9586-b7f0-2c60-9bb358dfb91a', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4888,12 +4710,6 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <code>aria-mute-alert-src-subnet</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -4980,14 +4796,14 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
         {
             "Endpoints": [
                 {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>",
+                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
                     "IPAddress": "10.6.0.146",
                     "Model": "sia-lx2160",
                     "OS": "GNU/Linux",
                     "Processor": "sia-lx2160",
                     "Processors": 1,
                     "completion": true,
-                    "trid": "f74400e5-e1eb-ebd8-ec49-a6b9efde1853"
+                    "trid": "bf3aa17a-5f74-492d-526c-ad664835612b"
                 }
             ],
             "Rule": {
@@ -4998,7 +4814,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
                 "code": 201,
                 "command_state": "Success",
                 "error_info": "",
-                "timestamp": 1570561341
+                "timestamp": 1570723215
             }
         }
     ]
@@ -5018,8 +4834,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570561341<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b91f99e5-37cd-4150-a780-b408eedb2c6d>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f74400e5-e1eb-ebd8-ec49-a6b9efde1853', 'completion': True}</td>
+      <td>code: 201<br>error_info: <br>timestamp: 1570723215<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '10.6.0.146', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'bf3aa17a-5f74-492d-526c-ad664835612b', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -5030,4 +4846,5 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
  alt="image" width="749" height="412"></a>
  -->
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
+<h2>Additional Information</h2>
+<p>For more information, please see the ARIA_SOAR_Integration_Guide_Demisto.</p>
