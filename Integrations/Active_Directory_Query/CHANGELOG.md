@@ -1,6 +1,7 @@
 ## [Unreleased]
- - Added Create Group command
- - Added Delete Group command
+ - Added 2 commands.
+   - ***ad-create-group*** 
+   - ***ad-delete-group***
 
 
 ## [19.9.1] - 2019-09-18
