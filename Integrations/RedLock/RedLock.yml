@@ -2,10 +2,10 @@ commonfields:
   id: RedLock
   version: -1
 name: RedLock
-display: RedLock
+display: Prisma Cloud (RedLock)
 category: Network Security
 description: Cloud threat defense
-detaileddescription: To use Redlock, you must provide credentials with privileges
+detaileddescription: To use Prisma Cloud, you must provide credentials with privileges
   to manage alerts
 configuration:
 - display: Server URL
@@ -13,7 +13,7 @@ configuration:
   defaultvalue: https://api.redlock.io/
   type: 0
   required: true
-- display: Credentials
+- display: Username
   name: credentials
   defaultvalue: ""
   type: 9
@@ -25,7 +25,7 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch only incidents matching this rule name
@@ -51,6 +51,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: redlock-search-alerts
     arguments:
