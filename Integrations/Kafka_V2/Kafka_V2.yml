@@ -33,7 +33,7 @@ configuration:
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
     ‎                                        Fetch Incidents Settings
-    CSV list of topics to fetch incidents from
+    CSV list of topics to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
   type: 0

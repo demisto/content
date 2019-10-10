@@ -337,6 +337,8 @@ def fetch_incidents(client):
     Fetches incidents
     """
     topics_to_fetch_from = argToList(demisto.params().get('topic', ''))
+    if not topics_to_fetch_from:
+        return_error('No Topic to fetch from was provided')
     partition_to_fetch_from = argToList(demisto.params().get('partition', ''))
     offset_to_fetch_from = demisto.params().get('offset', -2)
     try:
@@ -356,7 +358,7 @@ def fetch_incidents(client):
     message_counter = 0
 
     for topic in client.topics.values():
-        if (topics_to_fetch_from and topic.name in topics_to_fetch_from) or not topics_to_fetch_from:
+        if topic.name in topics_to_fetch_from:
             partitions = topic.partitions.values()
             for partition in partitions:
                 partition_id = str(partition.id)
