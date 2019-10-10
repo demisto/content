@@ -187,10 +187,13 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     return yml_text, script_path
 
 
-def clean_python_code(script_code):
+def clean_python_code(script_code, remove_print_future=True):
     script_code = script_code.replace("import demistomock as demisto", "")
     script_code = script_code.replace("from CommonServerPython import *", "")
     script_code = script_code.replace("from CommonServerUserPython import *", "")
+    # print function is imported in python loop
+    if remove_print_future:  # docs generation requires to leave this
+        script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
 
 
