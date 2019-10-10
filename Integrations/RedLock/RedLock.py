@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 import requests
-from datetime import datetime, timedelta
+from datetime import datetime
 
 URL = demisto.getParam('url')
 if URL[-1] != '/':
@@ -16,18 +16,6 @@ if not demisto.getParam('proxy'):
 # Standard headers
 HEADERS = {'Content-Type': 'application/json', 'Accept': 'application/json'}
 TOKEN = None
-
-
-def return_error(data):
-    """
-    Return error as result and exit
-    """
-    demisto.results({
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': data
-    })
-    sys.exit(0)
 
 
 def get_token():
@@ -53,10 +41,10 @@ def req(method, path, data, param_data):
         text = r.text
         if r.headers.get('x-redlock-status'):
             try:
-                status = json.loads(r.headers.get('x-redlock-status'))
+                status = json.loads(r.headers.get('x-redlock-status'))  # type: ignore
                 for s in status:
                     text += '\n%s [%s]' % (s.get('i18nKey', ''), s.get('subject', ''))
-            except:
+            except Exception:
                 pass
         return_error('Error in API call to RedLock service [%d] - %s' % (r.status_code, text))
     if not r.text:
@@ -122,8 +110,8 @@ def handle_time_filter(payload, baseCase):
     toNow = relative[1:] + ('epoch', 'login')
     if unit:
         if timeFrom or timeTo:
-            return_error('You cannot specify absolute times [time-range-date-from, time-range-date-to] ' +
-                         'with relative times [time-range-unit, time-range-value]')
+            return_error('You cannot specify absolute times [time-range-date-from, time-range-date-to] '
+                         + 'with relative times [time-range-unit, time-range-value]')
         if value:
             if unit not in relative:
                 return_error('Time unit for relative time must be one of the following: ' + ','.join(relative))
@@ -163,7 +151,9 @@ def handle_filters(payload):
     }
     payload['filters'] = []
     for k in demisto.args():
-        if k in ('policy-name', 'policy-label', 'policy-compliance-standard', 'cloud-account', 'cloud-region', 'alert-rule-name', 'resource-id', 'resource-name', 'resource-type', 'alert-status', 'alert-id', 'cloud-type', 'risk-grade', 'policy-type', 'policy-severity') and demisto.getArg(k):
+        if k in ('policy-name', 'policy-label', 'policy-compliance-standard', 'cloud-account', 'cloud-region',
+                 'alert-rule-name', 'resource-id', 'resource-name', 'resource-type', 'alert-status', 'alert-id',
+                 'cloud-type', 'risk-grade', 'policy-type', 'policy-severity') and demisto.getArg(k):
             payload['filters'].append({'name': argsConversion[k], 'operator': '=', 'value': demisto.getArg(k)})
 
 
@@ -224,13 +214,13 @@ def search_alerts():
     """
     Retrieves alerts by filter
     """
-    payload = {}
+    payload = {}  # type: dict
     handle_time_filter(payload, {'type': 'relative', 'value': {'amount': 7, 'unit': 'day'}})
     handle_filters(payload)
     r = req('POST', 'alert', payload, {'detailed': 'true'})
     alerts = []
     context_path = 'Redlock.Alert(val.ID === obj.ID)'
-    ec = {context_path: []}
+    ec = {context_path: []}  # type: dict
     for k in r:
         alerts.append(alert_to_readable(k))
         ec[context_path].append(alert_to_context(k))
@@ -278,8 +268,15 @@ def get_alert_details():
         'ContentsFormat': formats['json'],
         'Contents': r,
         'EntryContext': ec,
-        'HumanReadable': tableToMarkdown('Alert', [alert], ['ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyID', 'PolicyName', 'PolicyType',
-                                                            'PolicySystemDefault', 'PolicyLabels', 'PolicyDescription', 'PolicySeverity', 'PolicyRecommendation', 'PolicyDeleted', 'PolicyRemediable', 'PolicyLastModifiedOn', 'PolicyLastModifiedBy', 'RiskScore', 'RiskRating', 'ResourceName', 'ResourceRRN', 'ResourceID', 'ResourceAccount', 'ResourceAccountID', 'ResourceType', 'ResourceRegionID', 'ResourceApiName', 'ResourceUrl', 'ResourceData', 'ResourceAccessKeyAge', 'ResourceInactiveSinceTs', 'ResourceCloudType'
+        'HumanReadable': tableToMarkdown('Alert', [alert], ['ID', 'Status', 'FirstSeen', 'LastSeen', 'AlertTime', 'PolicyID',
+                                                            'PolicyName', 'PolicyType', 'PolicySystemDefault', 'PolicyLabels',
+                                                            'PolicyDescription', 'PolicySeverity', 'PolicyRecommendation',
+                                                            'PolicyDeleted', 'PolicyRemediable', 'PolicyLastModifiedOn',
+                                                            'PolicyLastModifiedBy', 'RiskScore', 'RiskRating',
+                                                            'ResourceName', 'ResourceRRN', 'ResourceID', 'ResourceAccount',
+                                                            'ResourceAccountID', 'ResourceType',
+                                                            'ResourceRegionID', 'ResourceApiName', 'ResourceUrl', 'ResourceData',
+                                                            'ResourceAccessKeyAge', 'ResourceInactiveSinceTs', 'ResourceCloudType'
                                                             ])
     })
 
@@ -367,11 +364,13 @@ def fetch_incidents():
             }
         }
     }
-    payload['filters'] = [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]
+    payload['filters'] = [{'name': 'alert.status', 'operator': '=', 'value': 'open'}]  # type: ignore
     if demisto.getParam('ruleName'):
-        payload['filters'].append({'name': 'alertRule.name', 'operator': '=', 'value': demisto.getParam('ruleName')})
+        payload['filters'].append({'name': 'alertRule.name', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('ruleName')})
     if demisto.getParam('policySeverity'):
-        payload['filters'].append({'name': 'policy.severity', 'operator': '=', 'value': demisto.getParam('policySeverity')})
+        payload['filters'].append({'name': 'policy.severity', 'operator': '=',  # type: ignore
+                                   'value': demisto.getParam('policySeverity')})
     r = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
     for a in r:
