@@ -160,17 +160,15 @@ def test_module(client, *_):
     message_body = 'testing'
     try:
         encrypt_message = encrypt_email_body(client, {'message': message_body})
-        test_file = NamedTemporaryFile(delete=False)
-        test_file.write(bytes(encrypt_message[0], 'utf-8'))
-        test_file.close()
+        if encrypt_message:
+            test_file = NamedTemporaryFile(delete=False)
+            test_file.write(bytes(encrypt_message[0], 'utf-8'))
+            test_file.close()
+            decrypt_message = decrypt_email_body(client, {}, file_path={'path': test_file.name})
+            if decrypt_message:
+                demisto.results('ok')
     except Exception:
         return_error('Verify that you provided valid keys.')
-    try:
-        decrypt_message = decrypt_email_body(client, {}, file_path={'path': test_file.name})
-        if decrypt_message:
-            demisto.results('ok')
-    except Exception:
-        return_error('Verify that you provided valid private key.')
     finally:
         os.unlink(test_file.name)
 
