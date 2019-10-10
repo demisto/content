@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg
 from CommonServerPython import entryTypes
 import demistomock as demisto
@@ -109,6 +110,10 @@ def test_eml_smtp_type(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
 
 
+def print_args(*args, **kwargs):
+    print(args)
+
+
 def test_eml_contains_eml(mocker):
     def executeCommand(name, args=None):
         if name == 'getFilePath':
@@ -135,7 +140,7 @@ def test_eml_contains_eml(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'results', side_effect=print_args)
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
 
