@@ -352,10 +352,10 @@ def test_email_raw_headers(mocker):
     assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == 'Guy Test <test@test.com>'
-    assert results[0]['EntryContext']['Email']['HeadersMap'][
-               'To'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'
-    assert results[0]['EntryContext']['Email']['HeadersMap'][
-               'CC'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
+                                                                      ', Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
+                                                                      'Guy Test1 <example1@example.com>'
 
 
 def test_eml_contains_eml_with_status(mocker):
