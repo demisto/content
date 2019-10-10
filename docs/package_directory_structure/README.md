@@ -53,5 +53,10 @@ You can extract a package from a YAML file by using the following:
  -  `package_extractor.py` script from the Content repository. 
     - Usage example: `python3 package_extractor.py -i /Integrations/integration-WildFire.yml -o Integrations/WildFire -m`
 
+---
+
+#### Integration logo standard
+
+![integration logos-infographic2](https://user-images.githubusercontent.com/33804640/65389274-33119c80-dd5d-11e9-9d15-5ce8dbd03627.png)
 
 
