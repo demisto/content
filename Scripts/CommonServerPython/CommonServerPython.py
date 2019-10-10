@@ -1492,7 +1492,6 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     if readable_output and not outputs and not raw_response:
         return_entry["Contents"] = readable_output
         return_entry["ContentsFormat"] = formats["text"]
-        demisto.results(return_entry)
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs

@@ -941,6 +941,7 @@ class TestReturnOutputs:
         raw_response = {'event': 1}
         return_outputs(md, outputs, raw_response)
         results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
         assert raw_response == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
@@ -950,6 +951,7 @@ class TestReturnOutputs:
         md = 'md'
         return_outputs(md)
         results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
         assert md == results['HumanReadable']
         assert 'text' == results['ContentsFormat']
 
@@ -959,6 +961,7 @@ class TestReturnOutputs:
         outputs = {'Event': 1}
         return_outputs(md, outputs, None)
         results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
