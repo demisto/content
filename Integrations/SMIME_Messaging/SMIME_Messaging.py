@@ -171,6 +171,8 @@ def test_module(client, *_):
             demisto.results('ok')
     except Exception:
         return_error('Verify that you provided valid private key.')
+    finally:
+        os.unlink(test_file.name)
 
 
 def main():
