@@ -1854,7 +1854,7 @@
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
         },
-                {
+        {
             "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal - Private API"
