@@ -78,7 +78,25 @@ ALERTS_TRANS = {
     'risk': 'Risk',
     'severity': 'Severity',
     'state': 'State',
-    'tags': 'Tag',
+    'tags': 'Tags',
+    'type': 'Type',
+}
+RULES_TRANS = {
+    'id': 'ID',
+    '_rulePack': 'RulePack',
+    'description': 'Description',
+    'internal': 'Internal',
+    'deleted': 'Deleted',
+    'enabled': 'Enabled',
+    'supported': 'Supported',
+    '_createdBy.id': 'CreatorID',
+    '_createdBy.name': 'CreatorName',
+    '_updatedBy.id': 'UpdatedByID',
+    '_updatedBy.name': 'UpdatedByName',
+    'risk': 'Risk',
+    'confidence': 'Confidence',
+    'severity': 'Severity',
+    'tags': 'Tags',
     'type': 'Type',
 }
 
@@ -210,8 +228,8 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/endpoints'
         return self._http_request('GET', suffix)
 
-    def get_cases_by_alert(self, alert_id: Optional[Any], limit: Optional[Any], offset: Optional[Any],
-                           order_by: Optional[Any]) -> Dict:
+    def get_cases_by_alert(self, alert_id: Optional[Any], limit: Optional[Any] = None, offset: Optional[Any] = None,
+                           order_by: Optional[Any] = None) -> Dict:
         """Fetches cases for an alert by sending a GET request.
 
         Args:
@@ -231,7 +249,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, json_data=body)
 
-    def update_case(self, case_id: Optional[Any], assigned_to: List, status: Optional[Any]) -> Dict:
+    def update_case(self, case_id: Optional[Any], assigned_to: List = None, status: Optional[Any] = None) -> Dict:
         """Updates a case by send a PATCH request.
 
         Args:
@@ -261,9 +279,10 @@ class Client(BaseClient):
         suffix = f'/api/v1/events/{event_id}'
         return self._http_request('GET', suffix)
 
-    def get_lists(self, limit: Union[int, str], offset: Union[int, str], created_at: str, description: str,
-                  is_active: Union[str, bool], is_internal: Union[str, bool], is_protected: Union[str, bool], name: str,
-                  short_name: str, type: str, updated_at: str, usage: str, order_by: str, **kwargs) -> Dict:
+    def get_lists(self, limit: Union[int, str] = None, offset: Union[int, str] = None, created_at: str = None,
+                  description: str = None, is_active: Union[str, bool] = None, is_internal: Union[str, bool] = None,
+                  is_protected: Union[str, bool] = None, name: str = None, short_name: str = None, type: str = None,
+                  updated_at: str = None, usage: str = None, order_by: str = None, **kwargs) -> Dict:
         """Fetches lists by a GET request
 
         Args:
@@ -393,7 +412,8 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('DELETE', suffix)
 
-    def list_sensors(self, limit: Union[int, str], offset: Union[int, str], hostname: str, status: str) -> Dict:
+    def list_sensors(self, limit: Union[int, str] = None, offset: Union[int, str] = None, hostname: str = None,
+                     status: str = None) -> Dict:
         """Fetches sensors using GET request
 
         Args:
@@ -414,7 +434,8 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def list_rules(self, limit: Union[int, str], offset: Union[int, str], sort: str, **kwargs) -> Dict:
+    def list_rules(self, limit: Union[int, str] = None, offset: Union[int, str] = None, sort: str = None,
+                   **kwargs) -> Dict:
         """Fetches rules using GET request
 
         Args:
@@ -954,12 +975,13 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     rules = raw_response.get('rules')
     if rules:
         title = f'{INTEGRATION_NAME} - List rules:'
-        context_entry = build_transformed_dict(rules, {})  # TODO: edit this
+        context_entry = build_transformed_dict(rules, RULES_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry,
+                                         ['ID', 'Type', 'Description', 'Risk', 'Confidence', 'Severity'])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
