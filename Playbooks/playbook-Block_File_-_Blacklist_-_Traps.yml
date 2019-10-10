@@ -2,8 +2,8 @@ id: Block File - Blacklist - Traps
 version: -1
 fromversion: 4.5.0
 name: Block File - Blacklist - Traps
-description: This playbook accepts a file SHA256 and adds it to a blacklist using
-  Traps integration.
+description: This playbook accepts a file's SHA256 hash and adds it to a blacklist using
+  the Traps integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -207,7 +207,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Malicious file SHA256.
+  description: Malicious file SHA256 hash.
 outputs: []
 tests:
   - No Test
