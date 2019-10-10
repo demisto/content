@@ -15,11 +15,6 @@ arg_values_geo = [
 ]
 
 
-@pytest.mark.parametrize(argnames=arg_names_geo, argvalues=arg_values_geo)
-def test_geo_by_ec(lat: str, long: str, point_ec: str):
-    assert geo_by_ec(lat, long) == point_ec, f"Geo point wrong convention lat: {lat}, long : {long}"
-
-
 # DBot calculation Test
 arg_names_dbot = "pulse, threshold, score"
 

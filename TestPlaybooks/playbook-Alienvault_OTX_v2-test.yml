@@ -1,14 +1,14 @@
-id: Alienvault_OTX_v2-test
+id: Alienvault_OTX_v2 - Test
 version: -1
-name: Alienvault_OTX_v2-test
+name: Alienvault_OTX_v2 - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b8173d39-f928-4a24-8a5a-79c70fcf0ba8
+    taskid: 2a723507-3675-4e1a-86dc-5efddd5ba097
     type: start
     task:
-      id: b8173d39-f928-4a24-8a5a-79c70fcf0ba8
+      id: 2a723507-3675-4e1a-86dc-5efddd5ba097
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 214c41c5-fca1-4581-8294-0514a8f84c75
+    taskid: 6710564f-ab78-47eb-8726-c15eb9b97c71
     type: regular
     task:
-      id: 214c41c5-fca1-4581-8294-0514a8f84c75
+      id: 6710564f-ab78-47eb-8726-c15eb9b97c71
       version: -1
       name: Delete context
       description: Delete field from context
@@ -63,29 +63,24 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 66d09dda-e7fd-4a09-88a4-26b5751d39d2
+    taskid: 4cf32aa9-9c0e-498d-87dc-f1c2f7e39acb
     type: regular
     task:
-      id: 66d09dda-e7fd-4a09-88a4-26b5751d39d2
+      id: 4cf32aa9-9c0e-498d-87dc-f1c2f7e39acb
       version: -1
       name: ip command
-      description: Query IP in AlienVault OTX
-      script: AlienVault_OTX_v2|||ip
+      description: Queries an IP address in AlienVault OTX.
+      script: AlienVault OTX v2|||ip
       type: regular
       iscommand: true
-      brand: AlienVault_OTX_v2
+      brand: AlienVault OTX v2
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      fullResponse: {}
       ip:
         simple: 8.8.8.8
-      long: {}
-      retries: {}
-      sampleSize: {}
       threshold: {}
-      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -100,10 +95,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: c40bdd7d-a28e-4820-8434-6f2f768b7f64
+    taskid: 2fd514e9-ac33-4c84-8104-bc98f93519f3
     type: condition
     task:
-      id: c40bdd7d-a28e-4820-8434-6f2f768b7f64
+      id: 2fd514e9-ac33-4c84-8104-bc98f93519f3
       version: -1
       name: Validate ip command
       type: condition
@@ -145,10 +140,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: f1258ef0-9b6a-4e33-8888-43c8f3890f68
+    taskid: 2daa7754-05c6-468e-8dee-6a578e440161
     type: regular
     task:
-      id: f1258ef0-9b6a-4e33-8888-43c8f3890f68
+      id: 2daa7754-05c6-468e-8dee-6a578e440161
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -175,10 +170,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: a1b94f4e-694f-40d9-8fed-ab0d2b104683
+    taskid: 61747e41-0c30-4f27-8b5d-2cc442c7d570
     type: regular
     task:
-      id: a1b94f4e-694f-40d9-8fed-ab0d2b104683
+      id: 61747e41-0c30-4f27-8b5d-2cc442c7d570
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -205,29 +200,24 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: a98071e9-ecbd-4190-8f1c-fc626260df9a
+    taskid: 19bfa533-5c66-4229-8603-a4f61fbf0dab
     type: regular
     task:
-      id: a98071e9-ecbd-4190-8f1c-fc626260df9a
+      id: 19bfa533-5c66-4229-8603-a4f61fbf0dab
       version: -1
       name: domain command
-      description: Query domain in AlienVault OTX
-      script: AlienVault_OTX_v2|||domain
+      description: Queries a domain in AlienVault OTX.
+      script: AlienVault OTX v2|||domain
       type: regular
       iscommand: true
-      brand: AlienVault_OTX_v2
+      brand: AlienVault OTX v2
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
       domain:
         simple: rghost.net
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
       threshold: {}
-      wait: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -242,10 +232,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 8d1f8dd1-9110-4f7d-8fb0-4139b366043b
+    taskid: db4166c6-f6ad-4b75-82e1-152548d4a2d6
     type: condition
     task:
-      id: 8d1f8dd1-9110-4f7d-8fb0-4139b366043b
+      id: db4166c6-f6ad-4b75-82e1-152548d4a2d6
       version: -1
       name: Validate domain command
       type: condition
@@ -287,10 +277,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c904969a-c6d7-4a6b-8a96-72226b01524c
+    taskid: a7d5fea7-becd-4e4b-88a1-5dd244166f44
     type: regular
     task:
-      id: c904969a-c6d7-4a6b-8a96-72226b01524c
+      id: a7d5fea7-becd-4e4b-88a1-5dd244166f44
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -316,10 +306,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: a9a97521-b70d-49c4-8fc5-fed8e699f8fb
+    taskid: ec251406-4d5b-44e3-8aa1-10bd524d5078
     type: regular
     task:
-      id: a9a97521-b70d-49c4-8fc5-fed8e699f8fb
+      id: ec251406-4d5b-44e3-8aa1-10bd524d5078
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -345,10 +335,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 063d9c7c-b3bd-45f4-8f53-7a2f028b0deb
+    taskid: b4e08c05-ee29-476a-8699-6f25caafe38f
     type: regular
     task:
-      id: 063d9c7c-b3bd-45f4-8f53-7a2f028b0deb
+      id: b4e08c05-ee29-476a-8699-6f25caafe38f
       version: -1
       name: alienvault-search-ipv6 command
       description: Query IP in AlienVault OTX
@@ -362,6 +352,7 @@ tasks:
     scriptarguments:
       ip:
         simple: 2001:4860:4860::8888
+      threshold: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -376,10 +367,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: f7590fe2-b3ef-400c-8eba-4746c0f2f87a
+    taskid: 37089d86-dced-4944-837f-2463b1c60a0d
     type: condition
     task:
-      id: f7590fe2-b3ef-400c-8eba-4746c0f2f87a
+      id: 37089d86-dced-4944-837f-2463b1c60a0d
       version: -1
       name: Validate alienvault-search-ipv6 command
       type: condition
@@ -421,10 +412,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: a61cce9b-e4a3-4602-85c0-6d9c1c933cf9
+    taskid: 45f6c4f7-51a8-40aa-83b3-be6e61a9f786
     type: regular
     task:
-      id: a61cce9b-e4a3-4602-85c0-6d9c1c933cf9
+      id: 45f6c4f7-51a8-40aa-83b3-be6e61a9f786
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -451,10 +442,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 94e90294-1272-42bb-88a5-32170c14d52a
+    taskid: 42c921a8-26d8-4746-80ed-dd253c7b5d52
     type: regular
     task:
-      id: 94e90294-1272-42bb-88a5-32170c14d52a
+      id: 42c921a8-26d8-4746-80ed-dd253c7b5d52
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -481,10 +472,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: df8056e4-5171-4414-8316-8d6430a40838
+    taskid: 09a1df28-3c3f-47e3-867c-ff7707ededdd
     type: regular
     task:
-      id: df8056e4-5171-4414-8316-8d6430a40838
+      id: 09a1df28-3c3f-47e3-867c-ff7707ededdd
       version: -1
       name: alienvault-search-hostname command
       description: Query hostname in AlienVault OTX
@@ -498,6 +489,7 @@ tasks:
     scriptarguments:
       hostname:
         simple: otx.alienvault.com
+      threshold: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -512,10 +504,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 3fb3e509-6ea8-48a8-8cb0-e7f6adf02373
+    taskid: df08f6a2-1769-48d7-8d38-e74bc341ec9c
     type: condition
     task:
-      id: 3fb3e509-6ea8-48a8-8cb0-e7f6adf02373
+      id: df08f6a2-1769-48d7-8d38-e74bc341ec9c
       version: -1
       name: Validate alienvault-search-hostname
       type: condition
@@ -557,10 +549,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: fd50931b-74c6-470a-89b2-66f694b9a6f8
+    taskid: 0b823dfd-f9a4-44b2-8743-77706b4f0112
     type: regular
     task:
-      id: fd50931b-74c6-470a-89b2-66f694b9a6f8
+      id: 0b823dfd-f9a4-44b2-8743-77706b4f0112
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -587,10 +579,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: b05a7133-0dac-4f4f-8846-4159c5877d67
+    taskid: 31f5b1f3-89cf-4451-88c5-38d1d4b94fe6
     type: regular
     task:
-      id: b05a7133-0dac-4f4f-8846-4159c5877d67
+      id: 31f5b1f3-89cf-4451-88c5-38d1d4b94fe6
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -617,17 +609,17 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: fccb2338-33a1-4442-8ba7-80c0d96bb3a8
+    taskid: 07c48564-4eb6-4304-87fa-fb09e9737302
     type: regular
     task:
-      id: fccb2338-33a1-4442-8ba7-80c0d96bb3a8
+      id: 07c48564-4eb6-4304-87fa-fb09e9737302
       version: -1
       name: file command
-      description: Query file in AlienVault OTX
-      script: AlienVault_OTX_v2|||file
+      description: Query a file in AlienVault OTX.
+      script: AlienVault OTX v2|||file
       type: regular
       iscommand: true
-      brand: AlienVault_OTX_v2
+      brand: AlienVault OTX v2
     nexttasks:
       '#none#':
       - "19"
@@ -652,10 +644,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 72daf801-4925-44ec-806b-4b898f5e3f9b
+    taskid: 876d9e5c-f204-42f7-8612-04ecf3028717
     type: condition
     task:
-      id: 72daf801-4925-44ec-806b-4b898f5e3f9b
+      id: 876d9e5c-f204-42f7-8612-04ecf3028717
       version: -1
       name: Validate file command
       type: condition
@@ -692,10 +684,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: a9cc92d8-6a4f-4b35-8a4a-68d8a4ab6709
+    taskid: 9d1611c9-47c9-4345-8f81-2306586ca3eb
     type: regular
     task:
-      id: a9cc92d8-6a4f-4b35-8a4a-68d8a4ab6709
+      id: 9d1611c9-47c9-4345-8f81-2306586ca3eb
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -722,10 +714,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 3d7b7973-04db-46fc-898e-e4f27d92b153
+    taskid: 6d2d6ec2-7c50-422d-882f-267ab651f669
     type: regular
     task:
-      id: 3d7b7973-04db-46fc-898e-e4f27d92b153
+      id: 6d2d6ec2-7c50-422d-882f-267ab651f669
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -752,10 +744,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: ff3353ef-52df-4e3e-839e-9da19ab1677e
+    taskid: 12318e4e-7770-413e-8e04-9a901d9ef512
     type: regular
     task:
-      id: ff3353ef-52df-4e3e-839e-9da19ab1677e
+      id: 12318e4e-7770-413e-8e04-9a901d9ef512
       version: -1
       name: alienvault-search-cve command
       description: Query CVE in AlienVault OTX
@@ -771,6 +763,7 @@ tasks:
         simple: CVE-2014-0160
       cve_id:
         simple: CVE-2014-0160
+      threshold: {}
     continueonerror: true
     separatecontext: false
     view: |-
@@ -785,10 +778,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: b6302bd5-0ce3-4d17-83e3-99e55730a4d9
+    taskid: 913e4452-dcbf-44ea-87b3-a61fd087bebc
     type: condition
     task:
-      id: b6302bd5-0ce3-4d17-83e3-99e55730a4d9
+      id: 913e4452-dcbf-44ea-87b3-a61fd087bebc
       version: -1
       name: Validate alienvault-search-cve command
       type: condition
@@ -825,10 +818,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 64b791ec-c625-4b32-87ab-4030f78e087c
+    taskid: e57e3749-789c-4f42-8bfe-9bff5ebe34bb
     type: regular
     task:
-      id: 64b791ec-c625-4b32-87ab-4030f78e087c
+      id: e57e3749-789c-4f42-8bfe-9bff5ebe34bb
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -855,10 +848,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: f3d392b7-a2c0-466c-83cc-dafa2f817582
+    taskid: 31218ed1-75f1-45e5-82dc-a6cc6616e377
     type: regular
     task:
-      id: f3d392b7-a2c0-466c-83cc-dafa2f817582
+      id: 31218ed1-75f1-45e5-82dc-a6cc6616e377
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -885,13 +878,13 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 75fdd28a-6db8-48a6-803c-76460491d139
+    taskid: 947b24f4-b231-4fe5-842a-f26796267d78
     type: regular
     task:
-      id: 75fdd28a-6db8-48a6-803c-76460491d139
+      id: 947b24f4-b231-4fe5-842a-f26796267d78
       version: -1
       name: alienvault-get-related-urls-by-indicator command
-      description: URLs analyzed by AlienVault Labs on this indicator
+      description: Returns related URLs by indicator.
       script: '|||alienvault-get-related-urls-by-indicator'
       type: regular
       iscommand: true
@@ -902,8 +895,6 @@ tasks:
     scriptarguments:
       indicator:
         simple: 8.8.8.8
-      indicator-type:
-        simple: IPv4
       indicator_type:
         simple: IPv4
     continueonerror: true
@@ -920,10 +911,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 8ea056a3-fcc0-4db0-8dd4-88457f427cbe
+    taskid: d7f9b205-af65-4550-81a3-6e1016cd9c42
     type: condition
     task:
-      id: 8ea056a3-fcc0-4db0-8dd4-88457f427cbe
+      id: d7f9b205-af65-4550-81a3-6e1016cd9c42
       version: -1
       name: Validate alienvault-get-related-urls-by-indicator command
       type: condition
@@ -938,10 +929,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: AlienVaultOTX.URL.Data
+              simple: AlienVaultOTX.URL
             iscontext: true
     view: |-
       {
@@ -955,10 +946,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 9c944706-03ee-465d-88be-6fb324f9ad9a
+    taskid: 2f4c45a7-0c0e-4ef2-87df-8e47a196f919
     type: regular
     task:
-      id: 9c944706-03ee-465d-88be-6fb324f9ad9a
+      id: 2f4c45a7-0c0e-4ef2-87df-8e47a196f919
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -985,10 +976,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 06a9f382-348d-4f83-8604-b77f30ceb31c
+    taskid: 0b24080d-f138-4a96-84f6-f0f39b9d43c3
     type: regular
     task:
-      id: 06a9f382-348d-4f83-8604-b77f30ceb31c
+      id: 0b24080d-f138-4a96-84f6-f0f39b9d43c3
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -1001,7 +992,7 @@ tasks:
       - "30"
     scriptarguments:
       message:
-        simple: ${#26}
+        simple: ${AlienVaultOTX.URL.Data}
     separatecontext: false
     view: |-
       {
@@ -1015,10 +1006,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: f845653b-6ec8-477c-8e14-51add185c199
+    taskid: 06d7e6e3-6b69-42b9-8a1a-e0fd44ce7234
     type: regular
     task:
-      id: f845653b-6ec8-477c-8e14-51add185c199
+      id: 06d7e6e3-6b69-42b9-8a1a-e0fd44ce7234
       version: -1
       name: alienvault-get-passive-dns-data-by-indicator command
       description: Passive dns records observed by AlienVault Labs pointing to this
@@ -1051,10 +1042,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 4ffa42ce-f359-45df-8a7e-7295af084dc5
+    taskid: 4b2053d0-cf67-44de-80bb-2c75b0f61d3a
     type: condition
     task:
-      id: 4ffa42ce-f359-45df-8a7e-7295af084dc5
+      id: 4b2053d0-cf67-44de-80bb-2c75b0f61d3a
       version: -1
       name: Validate alienvault-get-passive-dns-data-by-indicator command
       type: condition
@@ -1086,10 +1077,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 960dfae7-c165-4c97-8934-59bd2caf5b82
+    taskid: b910a9b2-fc35-4560-87d9-7cecfb699e14
     type: regular
     task:
-      id: 960dfae7-c165-4c97-8934-59bd2caf5b82
+      id: b910a9b2-fc35-4560-87d9-7cecfb699e14
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -1116,10 +1107,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: c1b9b017-1227-44db-892b-81ea78ecc157
+    taskid: c3b9504e-ed49-4358-8873-4957c42f87d9
     type: regular
     task:
-      id: c1b9b017-1227-44db-892b-81ea78ecc157
+      id: c3b9504e-ed49-4358-8873-4957c42f87d9
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -1146,10 +1137,10 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: c6508de1-68ca-4b97-89ca-673436f31aa6
+    taskid: a9d9a0d0-1b60-449e-83f4-0226d151fa8a
     type: regular
     task:
-      id: c6508de1-68ca-4b97-89ca-673436f31aa6
+      id: a9d9a0d0-1b60-449e-83f4-0226d151fa8a
       version: -1
       name: alienvault-search-pulses command
       description: Search for pulses in AlienVault OTX
@@ -1177,10 +1168,10 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: ebba1102-a0d9-4720-869c-d4547632d573
+    taskid: a5eb35a8-f627-4f9c-8057-a040b29684d4
     type: condition
     task:
-      id: ebba1102-a0d9-4720-869c-d4547632d573
+      id: a5eb35a8-f627-4f9c-8057-a040b29684d4
       version: -1
       name: Validate alienvault-search-pulses
       type: condition
@@ -1212,10 +1203,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 6d68e717-233b-47f1-8a06-ee3457efb839
+    taskid: b62ddfa3-c0bb-4e0a-86e4-69495f15e4ef
     type: regular
     task:
-      id: 6d68e717-233b-47f1-8a06-ee3457efb839
+      id: b62ddfa3-c0bb-4e0a-86e4-69495f15e4ef
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -1242,10 +1233,10 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 4715f31f-5496-4ed7-8e49-3f6d72214b61
+    taskid: e6b26d66-b368-41d3-8bc2-c2415ffc3f6d
     type: regular
     task:
-      id: 4715f31f-5496-4ed7-8e49-3f6d72214b61
+      id: e6b26d66-b368-41d3-8bc2-c2415ffc3f6d
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -1272,10 +1263,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 3235451a-6064-47a1-85cd-dbdf2725c10e
+    taskid: 87cf1b93-49e5-4e26-8c93-235cf9993639
     type: regular
     task:
-      id: 3235451a-6064-47a1-85cd-dbdf2725c10e
+      id: 87cf1b93-49e5-4e26-8c93-235cf9993639
       version: -1
       name: alienvault-get-pulse-details command
       description: Get pulse details (pulse are alian vault's entities)
@@ -1305,10 +1296,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 0e3938d9-faf8-4384-8ec1-77c603a6c908
+    taskid: a9978091-9dd8-457f-8695-1ac120056673
     type: condition
     task:
-      id: 0e3938d9-faf8-4384-8ec1-77c603a6c908
+      id: a9978091-9dd8-457f-8695-1ac120056673
       version: -1
       name: Validate alienvault-get-pulse-details command
       type: condition
@@ -1340,10 +1331,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 46735f94-7416-49f2-820a-71a2bca9512b
+    taskid: 181af11c-d300-4eb7-8ead-d14c7bfbfbad
     type: regular
     task:
-      id: 46735f94-7416-49f2-820a-71a2bca9512b
+      id: 181af11c-d300-4eb7-8ead-d14c7bfbfbad
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -1370,10 +1361,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: 61961cbf-b5a0-4dcb-8943-cc73b640b92b
+    taskid: ffc8526a-4ec0-4f25-81f1-2edf11f5383a
     type: regular
     task:
-      id: 61961cbf-b5a0-4dcb-8943-cc73b640b92b
+      id: ffc8526a-4ec0-4f25-81f1-2edf11f5383a
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -1400,17 +1391,17 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: de4c6454-8900-49cf-8aaa-52277c9a0fe0
+    taskid: e7c3a205-89e6-4c43-83a2-f9d2a57b7e48
     type: regular
     task:
-      id: de4c6454-8900-49cf-8aaa-52277c9a0fe0
+      id: e7c3a205-89e6-4c43-83a2-f9d2a57b7e48
       version: -1
       name: url command
-      description: Query url in AlienVault OTX
-      script: AlienVault_OTX_v2|||url
+      description: Queries a URL in AlienVault OTX.
+      script: AlienVault OTX v2|||url
       type: regular
       iscommand: true
-      brand: AlienVault_OTX_v2
+      brand: AlienVault OTX v2
     nexttasks:
       '#none#':
       - "43"
@@ -1437,10 +1428,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: f351f938-cc9a-40ee-8674-3e4d77f781e7
+    taskid: a61d9b4f-03c8-45b3-81bd-d64fb3c5a75f
     type: condition
     task:
-      id: f351f938-cc9a-40ee-8674-3e4d77f781e7
+      id: a61d9b4f-03c8-45b3-81bd-d64fb3c5a75f
       version: -1
       name: Validate url command
       type: condition
@@ -1477,10 +1468,10 @@ tasks:
     ignoreworker: false
   "44":
     id: "44"
-    taskid: fa76eac3-c926-40fe-85e8-49173c30a9dd
+    taskid: fb118b90-e7c6-4704-8bfe-519e1254b1d3
     type: regular
     task:
-      id: fa76eac3-c926-40fe-85e8-49173c30a9dd
+      id: fb118b90-e7c6-4704-8bfe-519e1254b1d3
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -1507,10 +1498,10 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 277c3e8f-8008-4d79-88a3-14c607462fc5
+    taskid: 423e71fe-350d-454f-8bfc-fbe5ad3efa98
     type: regular
     task:
-      id: 277c3e8f-8008-4d79-88a3-14c607462fc5
+      id: 423e71fe-350d-454f-8bfc-fbe5ad3efa98
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -1537,10 +1528,10 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: e2ee18a5-12d6-4346-8b78-9f3e4122af1b
+    taskid: b3bd7e89-35a0-4b50-8846-05b08bc01c1f
     type: regular
     task:
-      id: e2ee18a5-12d6-4346-8b78-9f3e4122af1b
+      id: b3bd7e89-35a0-4b50-8846-05b08bc01c1f
       version: -1
       name: alienvault-get-related-hashes-by-indicator command
       description: Malwares analyzed by AlienVault Labs on this indicator
@@ -1572,10 +1563,10 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: 2d459f2b-5dd6-4691-862b-73788d054283
+    taskid: 9af78846-95de-442a-8a46-ee365de3b445
     type: condition
     task:
-      id: 2d459f2b-5dd6-4691-862b-73788d054283
+      id: 9af78846-95de-442a-8a46-ee365de3b445
       version: -1
       name: Validate alienvault-get-related-hashes-by-indicator command
       type: condition
@@ -1607,10 +1598,10 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: 91a3145b-981c-4453-8b42-205e23c3e500
+    taskid: 9e0e7b63-ff22-43bf-83e9-2da754c8988d
     type: regular
     task:
-      id: 91a3145b-981c-4453-8b42-205e23c3e500
+      id: 9e0e7b63-ff22-43bf-83e9-2da754c8988d
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -1634,10 +1625,10 @@ tasks:
     ignoreworker: false
   "49":
     id: "49"
-    taskid: a6579fe1-895c-4558-80d3-932f14b5024d
+    taskid: e31403c0-f65d-4721-8d65-4534bced52b5
     type: regular
     task:
-      id: a6579fe1-895c-4558-80d3-932f14b5024d
+      id: e31403c0-f65d-4721-8d65-4534bced52b5
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
