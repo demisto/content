@@ -66,4 +66,5 @@ def test_update_command_body():
     assert crypto_key['version_template']['protection_level'] == enums.ProtectionLevel.SOFTWARE.value
     assert crypto_key['labels']['label1'] == 'value1'
     assert crypto_key['rotation_period']['seconds'] == 7776000
-    assert crypto_key['version_template']['algorithm'] == enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm.GOOGLE_SYMMETRIC_ENCRYPTION.value
+    val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm.GOOGLE_SYMMETRIC_ENCRYPTION.value
+    assert crypto_key['version_template']['algorithm'] == val
