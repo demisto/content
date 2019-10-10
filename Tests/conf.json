@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -158,11 +162,6 @@
         },
         {
             "playbookID": "CompareIncidentsLabels-test-playbook"
-        },
-        {
-            "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned test",
-            "nightly": true
         },
         {
             "integrations": "Have I Been Pwned? V2",
@@ -747,7 +746,7 @@
             "integrations": "McAfee ESM-v10",
             "instance_names": "v11.1.3",
             "playbookID": "McAfeeESMTest",
-            "timeout": 500
+            "timeout": 720
         },
         {
             "integrations": "GoogleSafeBrowsing",
@@ -1505,6 +1504,11 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
         },
         {
@@ -1696,6 +1700,10 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1838,6 +1846,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1859,8 +1871,12 @@
         }
     ],
     "skipped_tests": {
+        "FilterByList - Test": "(Issue 19469)",
+        "ThreatQ - Test": "Test fails (Issue 19468)",
+        "VxStream Test": "Failing test (Issue 19439)",
+        "SentinelOne V2 - test": "Failing test (Issue 19361)",
+        "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
         "CheckpointFW-test": "Test is not stable (Issue 18643)",
         "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
         "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
@@ -1915,8 +1931,7 @@
         "CheckPhish-Test": "Test is unstable, requires redesign #19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
-        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235",
-        "ShodanTest": "Test is failing. #19311"
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1934,6 +1949,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "LogRhythmRest": "LogRhythm host is unreachable (Issue 19362)",
         "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
         "Jask": "Returning 401 (issue 18879)",
         "SumoLogic": "No credentials (Issue 18441)",
@@ -1941,7 +1957,6 @@
         "vmray": "VMRay license expired (Issue 18752)",
         "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
         "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
-        "RSA Archer": "Instance does not seem to be working, Arian is checking",
         "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
         "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
         "ArcSight ESM v2": "License expired (issue #18328)",
@@ -1971,6 +1986,7 @@
         "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
         "QRadar": "No license (issue 17794)",
         "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1998,6 +2014,7 @@
         "TruSTAR"
     ],
     "unmockable_integrations": {
+        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
@@ -2038,6 +2055,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Rasterize": "No API calls "
     }
 }
