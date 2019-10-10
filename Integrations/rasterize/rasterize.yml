@@ -16,6 +16,7 @@ configuration:
 description: Rasterize URLs or emails given to it
 display: Rasterize
 name: Rasterize
+fromversion: '5.0.0'
 script:
   commands:
   - arguments:
@@ -99,11 +100,12 @@ script:
     description: Rasterize an image file
     execution: false
     name: rasterize-image
-  dockerimage: demisto/rasterize
+  dockerimage: demisto/chromium:1.0.0.1848
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 defaultEnabled: true
 tests:
   - Rasterize Test
