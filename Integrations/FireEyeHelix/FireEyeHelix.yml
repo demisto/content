@@ -98,6 +98,63 @@ script:
     - contextPath: FireEyeHelix.Alert.PID
       description: Process ID.
       type: Number
+    - contextPath: FireEyeHelix.Alert.Size
+      description: Size of the process in bytes.
+      type: Number
+    - contextPath: FireEyeHelix.Alert.Virues
+      description: Virus name.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Result
+      description: Result of the alert.
+      type: String
+    - contextPath: FireEyeHelix.Alert.MalwareType
+      description: Malware type.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Filename
+      description: Name of the file the contains the virus.
+      type: String
+    - contextPath: FireEyeHelix.Alert.RegPath
+      description: Registry key path.
+      type: String
+    - contextPath: FireEyeHelix.Alert.EventTime
+      description: Time of the event.
+      type: Date
+    - contextPath: FireEyeHelix.Alert.IOCNames
+      description: Indicator of Compromise names.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Process
+      description: Name of the process that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Alert.ParentProcess
+      description: Name of the parent process to the process that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Alert.SourceIPv4
+      description: Source IP of the event (IP v4).
+      type: String
+    - contextPath: FireEyeHelix.Alert.SourceIPv6
+      description: Source IP of the event (IP v6).
+      type: String
+    - contextPath: FireEyeHelix.Alert.DestinationIPv4
+      description: Destination IP of the event (IP v4).
+      type: String
+    - contextPath: FireEyeHelix.Alert.DestinationIPv6
+      description: Destination IP of the event (IP v6).
+      type: String
+    - contextPath: FireEyeHelix.Alert.DestinationPort
+      description: Destination port of the event.
+      type: String
+    - contextPath: FireEyeHelix.Alert.URI
+      description: URI address that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Alert.HttpMethod
+      description: Http method of the that was called.
+      type: String
+    - contextPath: FireEyeHelix.Alert.Domain
+      description: Domain of the URI that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Alert.UserAgent
+      description: User agent related to the event.
+      type: String
     - contextPath: FireEyeHelix.Alert.EventsCount
       description: Number of events in alert.
       type: Number
@@ -163,6 +220,169 @@ script:
     description: Get alert by id.
     execution: false
     name: fireeye-helix-get-alert-by-id
+    outputs:
+      - contextPath: FireEyeHelix.Alert.ID
+        description: Primary ID of alert.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.AlertTypeID
+        description: ID of the alert type.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.AlertTypeName
+        description: Name of the alert type.
+        type: String
+      - contextPath: FireEyeHelix.Alert.AssigneeID
+        description: ID of the assignee.
+        type: String
+      - contextPath: FireEyeHelix.Alert.AssigneeName
+        description: Assignee display name.
+        type: String
+      - contextPath: FireEyeHelix.Alert.CreatorID
+        description: ID of the user who created the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.CreatorName
+        description: Name of the user who created the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.UpdaterID
+        description: Name of the user who updated the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.UpdaterName
+        description: Name of the user who updated the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.CreatedTime
+        description: Time the alert was created at.
+        type: Date
+      - contextPath: FireEyeHelix.Alert.ModifiedTime
+        description: Time the alert was modified at.
+        type: Date
+      - contextPath: FireEyeHelix.Alert.ProcessPath
+        description: Path of the process
+        type: String
+      - contextPath: FireEyeHelix.Alert.Confidence
+        description: FireEye helix confidence with the result.
+        type: String
+      - contextPath: FireEyeHelix.Alert.SHA1
+        description: SHA1 hash of the file.
+        type: String
+      - contextPath: FireEyeHelix.Alert.MD5
+        description: MD5 hash of the file.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Hostname
+        description: Hostname of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.PID
+        description: Process ID.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.Size
+        description: Size of the process in bytes.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.Virues
+        description: Virus name.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Result
+        description: Result of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.MalwareType
+        description: Malware type.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Filename
+        description: Name of the file the contains the virus.
+        type: String
+      - contextPath: FireEyeHelix.Alert.RegPath
+        description: Registry key path.
+        type: String
+      - contextPath: FireEyeHelix.Alert.EventTime
+        description: Time of the event.
+        type: Date
+      - contextPath: FireEyeHelix.Alert.IOCNames
+        description: Indicator of Compromise names.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Process
+        description: Name of the process that created the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.ParentProcess
+        description: Name of the parent process to the process that created the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.SourceIPv4
+        description: Source IP of the event (IP v4).
+        type: String
+      - contextPath: FireEyeHelix.Alert.SourceIPv6
+        description: Source IP of the event (IP v6).
+        type: String
+      - contextPath: FireEyeHelix.Alert.DestinationIPv4
+        description: Destination IP of the event (IP v4).
+        type: String
+      - contextPath: FireEyeHelix.Alert.DestinationIPv6
+        description: Destination IP of the event (IP v6).
+        type: String
+      - contextPath: FireEyeHelix.Alert.DestinationPort
+        description: Destination port of the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.URI
+        description: URI address that created the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.HttpMethod
+        description: Http method of the that was called.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Domain
+        description: Domain of the URI that created the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.UserAgent
+        description: User agent related to the event.
+        type: String
+      - contextPath: FireEyeHelix.Alert.EventsCount
+        description: Number of events in alert.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.NotesCount
+        description: Number of notes in alert.
+        type: Number
+      - contextPath: FireEyeHelix.Alert.ClosedState
+        description: State the alert in regards to it being closed.
+        type: String
+      - contextPath: FireEyeHelix.Alert.ClosedReason
+        description: Reason the alert was closed.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Confidence
+        description: Amount of confidence helix has with the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Description
+        description: Description of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.FirstEventTime
+        description: Time of the first event.
+        type: Date
+      - contextPath: FireEyeHelix.Alert.LastEventTime
+        description: Time of the last event.
+        type: Date
+      - contextPath: FireEyeHelix.Alert.ExternalIP
+        description: External IPs for the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.InternalIP
+        description: Internal IPs for the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Message
+        description: Message of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Products
+        description: Source of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Risk
+        description: Risk of the events in the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Severity
+        description: Severity of the events in the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.State
+        description: State of the alert. Can be either Open, Suppressed, Closed, Reopened.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Tag
+        description: Tag of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Type
+        description: Type of the alert.
+        type: String
+      - contextPath: FireEyeHelix.Alert.Count
+        description: Number of alerts.
+        type: String
   - arguments:
     - default: true
       description: ID of the alert to update.
