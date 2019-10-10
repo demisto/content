@@ -138,7 +138,7 @@ script:
       description: The name of the group for which to add the user.
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
-      is used.
+        is used.
     description: Adds an Active Directory user or computer to a group.
   - name: ad-remove-from-group
     arguments:
@@ -168,7 +168,7 @@ script:
       description: "The value of the attribute for which to change."
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance
-       is used.
+        is used.
     description: Updates attributes of an existing Active Directory user.
   - name: ad-delete-user
     arguments:
@@ -215,7 +215,7 @@ script:
       description: "The username of the account to disable (sAMAccountName)."
     - name: base-dn
       description: Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance
-      is used.
+        is used.
     description: Disables an Active Directory user account.
   - name: ad-enable-account
     arguments:
