@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue where the command ***trustar-search-indicator*** returned an incorrect context output.
+Fixed an issue where the ***trustar-search-indicator*** command returned an incorrect context output.
