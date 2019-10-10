@@ -7,7 +7,7 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Use certificate for SSL connection
+- display: Use TLS for connection
   name: use_ssl
   required: false
   type: 8

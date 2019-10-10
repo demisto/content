@@ -140,27 +140,23 @@ def create_certificate():
     :return certificate:
     :return type: :class: `pykafka.connection.SslConfig`
     """
-    ca_path = 'ca.cert'  # type: ignore
-    client_path = 'client.cert'
-    client_key_path = 'client_key.key'
+    ca_path = None
+    client_path = None
+    client_key_path = None
     if CA_CERT:
+        ca_path = 'ca.cert'  # type: ignore
         with open(ca_path, 'wb') as file:
             file.write(CA_CERT)
             ca_path = os.path.abspath(ca_path)
-        if CLIENT_CERT:
-            with open(client_path, 'wb') as file:
-                file.write(CLIENT_CERT)
-                client_path = os.path.abspath(client_path)
-        else:
-            client_path = None  # type: ignore
-        if CLIENT_CERT_KEY:
-            with open(client_key_path, 'wb') as file:
-                file.write(CLIENT_CERT_KEY)
-        else:
-            client_key_path = None  # type: ignore
-    else:
-        ca_path = None  # type: ignore
-
+    if CLIENT_CERT:
+        client_path = 'client.cert'
+        with open(client_path, 'wb') as file:
+            file.write(CLIENT_CERT)
+            client_path = os.path.abspath(client_path)
+    if CLIENT_CERT_KEY:
+        client_key_path = 'client_key.key'
+        with open(client_key_path, 'wb') as file:
+            file.write(CLIENT_CERT_KEY)
     return SslConfig(
         cafile=ca_path,
         certfile=client_path,
@@ -341,7 +337,8 @@ def fetch_incidents(client):
     offset_to_fetch_from = demisto.params().get('offset', -2)
     try:
         offset_to_fetch_from = int(offset_to_fetch_from)
-    except ValueError:
+    except ValueError as e:
+        demisto.error('Received invalid offset: {}. Using default of -2. Err: {}'.format(offset_to_fetch_from, e))
         offset_to_fetch_from = -2
     max_messages = demisto.params().get('max_messages', 50)
     try:
@@ -358,7 +355,7 @@ def fetch_incidents(client):
         kafka_topic = client.topics[topic]
 
         consumer_args = {
-            'consumer_timeout_ms': 1000,
+            'consumer_timeout_ms': 2000,  # wait max 2 seconds for new messages
             'reset_offset_on_start': True
         }
 
@@ -368,7 +365,7 @@ def fetch_incidents(client):
                 partition_id = str(partition.id)
                 if partition_id in partition_to_fetch_from:
                     partitions.append(partition)
-            consumer_args['partitions'] = partitions
+            consumer_args['partitions'] = partitions  # type: ignore
 
         consumer = kafka_topic.get_simple_consumer(**consumer_args)
 
@@ -398,7 +395,6 @@ def main():
     LOG('Command being called is {0}'.format(demisto.command()))
     global log_stream
     try:
-        start_logging()
 
         # Initialize KafkaClient
         if USE_SSL:
@@ -408,6 +404,7 @@ def main():
             client = KafkaClient(hosts=BROKERS)
 
         if demisto.command() == 'test-module':
+            start_logging()
             # This is the call made when pressing the integration test button.
             test_module(client)
         elif demisto.command() == 'kafka-print-topics':
