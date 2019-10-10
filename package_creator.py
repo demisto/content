@@ -77,7 +77,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_data, found_img_path = get_data(dir_name, package_path, "*png")
-    image_data = IMAGE_PREFIX + base64.b64encode(image_data)
+    image_data = IMAGE_PREFIX + base64.b64encode(image_data).decode('utf-8')
 
     if yml_data.get('image'):
         yml_text = yml_text.replace(yml_data['image'], image_data)
