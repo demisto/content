@@ -1,1 +1,2 @@
-To use Redlock, you must provide credentials with privileges to manage alerts
+## Prisma Cloud
+Use the Prisma Cloud integration to manage alerts from Microsoft Azure, Google Cloud Platform, and AWS.
