@@ -742,6 +742,4 @@ try:
                                                  ('Domain', 'URL',), create_domain_ec))
 
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
     return_error(str(e))
