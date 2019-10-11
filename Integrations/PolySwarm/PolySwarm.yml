@@ -254,6 +254,7 @@ script:
       description: File Extension
       type: String
     - contextPath: PolySwarm.FileID
+      description: File ID
       type: String
   - arguments:
     - default: true
