@@ -247,10 +247,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 629cdd75-1f50-4d0b-81ec-d3e2036c2eda
+    taskid: 11cc66b1-ae41-4139-89cc-49943dfda1eb
     type: playbook
     task:
-      id: 629cdd75-1f50-4d0b-81ec-d3e2036c2eda
+      id: 11cc66b1-ae41-4139-89cc-49943dfda1eb
       version: -1
       name: GenericPolling
       description: |-
@@ -278,10 +278,10 @@ tasks:
       PollingCommandName:
         simple: accessdata-jobstatus-scan
       Timeout:
-        simple: "20"
+        simple: "60"
       dt:
-        simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
-          val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success'
+          && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
     separatecontext: true
     loop:
       iscommand: false
@@ -298,10 +298,10 @@ tasks:
     timertriggers: []
   "17":
     id: "17"
-    taskid: 223b7515-94c0-4291-87af-73b9b2a2f31f
+    taskid: 53865ec2-0f43-4b60-813b-3708fa2bf2da
     type: playbook
     task:
-      id: 223b7515-94c0-4291-87af-73b9b2a2f31f
+      id: 53865ec2-0f43-4b60-813b-3708fa2bf2da
       version: -1
       name: GenericPolling
       description: |-
@@ -329,10 +329,10 @@ tasks:
       PollingCommandName:
         simple: accessdata-jobstatus-scan
       Timeout:
-        simple: "20"
+        simple: "60"
       dt:
-        simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
-          val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success'
+          && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
     separatecontext: true
     loop:
       iscommand: false
