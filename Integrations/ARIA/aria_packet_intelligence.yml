@@ -1,6 +1,6 @@
 commonfields:
   id: ARIA Packet Intelligece
-  version: 1
+  version: -1
 name: ARIA Packet Intelligece
 display: ARIA Packet Intelligece
 category: Network Security

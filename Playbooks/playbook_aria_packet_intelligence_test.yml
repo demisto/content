@@ -1,6 +1,6 @@
-id: 0067dcf7-c06e-4565-8143-8c75eeb2e2f0
-version: 16
-name: playbook_aria_packet_intelligence_test
+id: ARIA Packet Intelligence - Test
+version: -1
+name: ARIA Packet Intelligence - Test
 description: Use for testing the aria_packet_intelligence integration
 starttaskid: "0"
 tasks:
