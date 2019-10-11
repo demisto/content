@@ -247,10 +247,10 @@ tasks:
     timertriggers: []
   "15":
     id: "15"
-    taskid: 925a6043-1df2-4d21-8d0f-b602a82a5906
+    taskid: 629cdd75-1f50-4d0b-81ec-d3e2036c2eda
     type: playbook
     task:
-      id: 925a6043-1df2-4d21-8d0f-b602a82a5906
+      id: 629cdd75-1f50-4d0b-81ec-d3e2036c2eda
       version: -1
       name: GenericPolling
       description: |-
@@ -278,7 +278,7 @@ tasks:
       PollingCommandName:
         simple: accessdata-jobstatus-scan
       Timeout:
-        simple: "15"
+        simple: "20"
       dt:
         simple: Accessdata.Job(val.State == 'Unknown' || val.State == 'Started' ||
           val.State == 'Pending' || val.State == 'Submitted' || val.State == 'InProgress').CaseJobID
@@ -318,7 +318,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "20"
     scriptarguments:
       Ids:
         simple: ${Accessdata.Job.CaseJobID}
@@ -343,37 +343,6 @@ tasks:
         "position": {
           "x": 350,
           "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-  "18":
-    id: "18"
-    taskid: d90593ce-0302-4593-8a4f-bdf4f8bb9e8f
-    type: regular
-    task:
-      id: d90593ce-0302-4593-8a4f-bdf4f8bb9e8f
-      version: -1
-      name: Get memory dump job result
-      description: Get status of job
-      script: Quinc|||accessdata-get-jobstatus
-      type: regular
-      iscommand: true
-      brand: Quinc
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      caseID:
-        simple: ${inputs.caseid}
-      jobID:
-        simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 350,
-          "y": 1545
         }
       }
     note: false
@@ -405,6 +374,37 @@ tasks:
         "position": {
           "x": 50,
           "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 1b7c14cd-cb20-47a6-8a73-56257ee8b393
+    type: regular
+    task:
+      id: 1b7c14cd-cb20-47a6-8a73-56257ee8b393
+      version: -1
+      name: Get memory dump job result
+      description: Get memory dump path from result of the memory dump job
+      script: Quinc|||accessdata-get-jobstatus-memorydump
+      type: regular
+      iscommand: true
+      brand: Quinc
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      caseID:
+        simple: ${inputs.caseid}
+      jobID:
+        simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1545
         }
       }
     note: false

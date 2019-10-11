@@ -29,24 +29,6 @@ configuration:
   required: false
 script:
   commands:
-  - name: accessdata-get-jobstatus
-    arguments:
-    - name: caseID
-      required: true
-      description: ID of case
-      defaultValue: "1"
-    - name: jobID
-      required: true
-      description: ID of job
-      defaultValue: "1"
-    outputs:
-    - contextPath: State
-      description: Job state
-      type: string
-    - contextPath: Result
-      description: Job result
-      type: string
-    description: Get status of job
   - name: accessdata-legacyagent-get-processlist
     arguments:
     - name: caseid
@@ -138,6 +120,24 @@ script:
       description: Job result
       type: string
     description: Get snapshot path from result of the process list job
+  - name: accessdata-get-jobstatus-memorydump
+    arguments:
+    - name: caseID
+      required: true
+      description: ID of the case
+      defaultValue: "1"
+    - name: jobID
+      required: true
+      description: ID of the job
+      defaultValue: "1"
+    outputs:
+    - contextPath: State
+      description: Job state
+      type: string
+    - contextPath: Result
+      description: Job result
+      type: string
+    description: Get memory dump path from result of the memory dump job
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   script: '-'

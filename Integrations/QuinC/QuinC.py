@@ -151,6 +151,10 @@ class Client:
                 elif result['OperationType'] == 12:  # volatile data
                     contents = create_contents(caseID, jobID, 'Success', res)
                     return wrap_jobstate_context(contents, "Job completed successfully")
+                elif result['OperationType'] == 11:  # memory dump
+                    memdumpres = json.loads(task['Results'][2]['Data'])
+                    contents = create_contents(caseID, jobID, 'Success', memdumpres)
+                    return wrap_jobstate_context(contents, "Job completed successfully")
                 else:
                     contents = create_contents(caseID, jobID, 'Success', task)
                     return wrap_jobstate_context(contents, "Job completed successfully")
@@ -182,6 +186,34 @@ class Client:
         newContents['Result']['SnapshotDetails']['File'] = contents['Result']['SnapshotDetails']['File']
 
         return wrap_jobstate_context(newContents, newContents['Result']['SnapshotDetails']['File'])
+
+    def get_jobstatus_memorydump(self, args):
+        jobStatus = self.get_jobstatus(args)
+        contents = jobStatus['Contents']
+        newContents = create_contents(
+            contents['CaseID'],
+            contents['ID'],
+            contents['State'],
+            "No memory dump")
+        contents = contents['Result']
+
+        message = "(to get path to memory dump job should be finished) "
+
+        if 'ResultFiles' not in contents:
+            message += "No ResultFiles in response scheme"
+            return wrap_jobstate_context(newContents, message)
+
+        if not contents['ResultFiles']:
+            message += "ResultFiles is empty"
+            return wrap_jobstate_context(newContents, message)
+        contents = contents['ResultFiles'][0]
+
+        if 'Path' not in contents:
+            message += "No Path in response scheme"
+            return wrap_jobstate_context(newContents, message)
+        newContents['Result'] = contents['Path']
+
+        return wrap_jobstate_context(newContents, newContents['Result'])
 
     def jobstatus_scan(self, args):
         caseJobID = args['caseJobID']
@@ -217,7 +249,7 @@ class Client:
             }
         }
         jobID = self.http_request('POST', url, json.dumps(data))
-        contents = create_contents(args['caseid'], jobID)
+        contents = create_contents(args['caseid'], jobID, 'Unknown')
         contents['Type'] = 'Volatile'
 
         return {
@@ -237,7 +269,7 @@ class Client:
             'MemoryAcquistion': {'Operation': 11}
         }
         jobID = self.http_request('POST', url, json.dumps(data))
-        contents = create_contents(args['caseid'], jobID)
+        contents = create_contents(args['caseid'], jobID, 'Unknown')
         contents['Type'] = 'LegacyMemoryDump'
 
         return {
@@ -272,6 +304,10 @@ def quinc_get_jobstatus_command(client, args):
 
 def quinc_get_jobstatus_processlist_command(client, args):
     return client.get_jobstatus_processlist(args)
+
+
+def quinc_get_jobstatus_memorydump_command(client, args):
+    return client.get_jobstatus_memorydump(args)
 
 
 def quinc_jobstatus_scan_command(client, args):
@@ -320,14 +356,14 @@ def main():
             # This is the call made when pressing the integration Test button.
             demisto.results(test_module(client))
 
-        if demisto.command() == 'accessdata-get-jobstatus':
-            demisto.results(
-                quinc_get_jobstatus_command(
-                    client, demisto.args()))
-
         if demisto.command() == 'accessdata-get-jobstatus-processlist':
             demisto.results(
                 quinc_get_jobstatus_processlist_command(
+                    client, demisto.args()))
+
+        if demisto.command() == 'accessdata-get-jobstatus-memorydump':
+            demisto.results(
+                quinc_get_jobstatus_memorydump_command(
                     client, demisto.args()))
 
         if demisto.command() == 'accessdata-jobstatus-scan':
