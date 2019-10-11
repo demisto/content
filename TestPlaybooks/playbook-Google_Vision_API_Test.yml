@@ -1,6 +1,6 @@
 id: Google Vision API - Test
 version: -1
-name: Google Vision API Test
+name: Google Vision API - Test
 starttaskid: "0"
 tasks:
   "0":
