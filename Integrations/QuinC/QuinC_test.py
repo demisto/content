@@ -1,4 +1,4 @@
-import demistomock as demisto
+# import demistomock as demisto
 from CommonServerPython import *
 from QuinC import Client, create_jobstate_context, create_contents, wrap_jobstate_context
 from test_data.constants import MOCK_URL, FAKE_SITESERVER_TOKEN, JOB_JUST_WITHOUT_CASEJOBID, JOB_JUST_WITH_CASEJOBID
