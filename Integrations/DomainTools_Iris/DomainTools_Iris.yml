@@ -16,11 +16,6 @@ configuration:
   name: risk_threshold
   required: true
   type: 0
-- defaultvalue: '500'
-  display: Pivot Count Threshold
-  name: pivot_count_threshold
-  required: true
-  type: 0
 - defaultvalue: '7'
   display: Young Domain Timeframe (within Days)
   name: young_domain_timeframe
@@ -52,9 +47,6 @@ script:
     execution: false
     name: domain
     outputs:
-    - contextPath: Domain
-      description: All Domain Context
-      type: Unknown
     - contextPath: Domain.Name
       description: Domain Name
       type: String
@@ -91,172 +83,169 @@ script:
     - contextPath: Domain.Malicious.Description
       description: Description of why domain was found to be malicious
       type: Unknown
-    - contextPath: Domain.DomainTools
-      description: All DomainTools Context Data dealing with the Domain
-      type: Unknown
-    - contextPath: Domain.DomainTools.Name
+    - contextPath: DomainTools.Domains.Name
       description: DomainTools Domain Name
       type: String
-    - contextPath: Domain.DomainTools.LastEnriched
+    - contextPath: DomainTools.Domains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: Domain.DomainTools.Analytics
+    - contextPath: DomainTools.Domains.Analytics
       description: Analytics Data about the Domain from DomainTools
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.OverallRiskScore
+    - contextPath: DomainTools.Domains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
-    - contextPath: Domain.DomainTools.Analytics.ProximityRiskScore
+    - contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: Domain.DomainTools.Analytics.ThreatProfileRiskScore
+    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore
       description: DomainTools Threat Profile Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.ThreatProfileRiskScore.RiskScore
+    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
-    - contextPath: Domain.DomainTools.Analytics.ThreatProfileRiskScore.Threats
+    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.ThreatProfileRiskScore.Evidence
+    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.WebsiteResponseCode
+    - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.AlexaRank
+    - contextPath: DomainTools.Domains.Analytics.AlexaRank
       description: Alexa Rank
       type: Unknown
-    - contextPath: Domain.DomainTools.Analytics.Tags
+    - contextPath: DomainTools.Domains.Analytics.Tags
       description: DomainTools Tags
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity
+    - contextPath: DomainTools.Domains.Identity
       description: DomainTools Identity Info about the Domain
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantName
+    - contextPath: DomainTools.Domains.Identity.RegistrantName
       description: Registrant Name
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantOrg
+    - contextPath: DomainTools.Domains.Identity.RegistrantOrg
       description: Registrant Org
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantContact
+    - contextPath: DomainTools.Domains.Identity.RegistrantContact
       description: Registrant Contact Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantContact.Country
+    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country
       description: Registrant Contact Country
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantContact.Email
+    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email
       description: Registrant Contact Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantContact.Name
+    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name
       description: Registrant Contact Name
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.RegistrantContact.Phone
+    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone
       description: Registrant Contact Phone
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.SOAEmail
+    - contextPath: DomainTools.Domains.Identity.SOAEmail
       description: SOA Record Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.SSLCertificateEmail
+    - contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdminContact
+    - contextPath: DomainTools.Domains.Identity.AdminContact
       description: Admin Contact Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdminContact.Country
+    - contextPath: DomainTools.Domains.Identity.AdminContact.Country
       description: Admin Contact Country
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdminContact.Email
+    - contextPath: DomainTools.Domains.Identity.AdminContact.Email
       description: Admin Contact Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdminContact.Name
+    - contextPath: DomainTools.Domains.Identity.AdminContact.Name
       description: Admin Contact Name
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdminContact.Phone
+    - contextPath: DomainTools.Domains.Identity.AdminContact.Phone
       description: Admin Contact Phone
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.TechnicalContact
+    - contextPath: DomainTools.Domains.Identity.TechnicalContact
       description: Technical Contact Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.TechnicalContact.Country
+    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country
       description: Technical Contact Country
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.TechnicalContact.Email
+    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email
       description: Technical Contact Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.TechnicalContact.Name
+    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name
       description: Technical Contact Name
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.TechnicalContact.Phone
+    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone
       description: Technical Contact Phone
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.BillingContact
+    - contextPath: DomainTools.Domains.Identity.BillingContact
       description: Billing Contact Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.BillingContact.Country
+    - contextPath: DomainTools.Domains.Identity.BillingContact.Country
       description: Billing Contact Country
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.BillingContact.Email
+    - contextPath: DomainTools.Domains.Identity.BillingContact.Email
       description: Billing Contact Email
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.BillingContact.Name
+    - contextPath: DomainTools.Domains.Identity.BillingContact.Name
       description: Billing Contact Name
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.BillingContact.Phone
+    - contextPath: DomainTools.Domains.Identity.BillingContact.Phone
       description: Billing Contact Phone
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.EmailDomains
+    - contextPath: DomainTools.Domains.Identity.EmailDomains
       description: Email Domains
       type: Unknown
-    - contextPath: Domain.DomainTools.Identity.AdditionalWhoisEmails
+    - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails
       description: Additional Whois Emails
       type: Unknown
-    - contextPath: Domain.DomainTools.Registration
+    - contextPath: DomainTools.Domains.Registration
       description: DomainTools Registration Info about the Domain
       type: Unknown
-    - contextPath: Domain.DomainTools.Registration.DomainRegistrant
+    - contextPath: DomainTools.Domains.Registration.DomainRegistrant
       description: Domain Registrant
       type: Unknown
-    - contextPath: Domain.DomainTools.Registration.RegistrarStatus
+    - contextPath: DomainTools.Domains.Registration.RegistrarStatus
       description: Reistrar Status
       type: Unknown
-    - contextPath: Domain.DomainTools.Registration.DomainStatus
+    - contextPath: DomainTools.Domains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
-    - contextPath: Domain.DomainTools.Registration.CreateDate
+    - contextPath: DomainTools.Domains.Registration.CreateDate
       description: Create Date
       type: Date
-    - contextPath: Domain.DomainTools.Registration.ExpirationDate
+    - contextPath: DomainTools.Domains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: Domain.DomainTools.Hosting
+    - contextPath: DomainTools.Domains.Hosting
       description: DomainTools Hosting Info about the Domain
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.IPAddresses
+    - contextPath: DomainTools.Domains.Hosting.IPAddresses
       description: IP Addresses Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.IPCountryCode
+    - contextPath: DomainTools.Domains.Hosting.IPCountryCode
       description: IP Country Code
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.MailServers
+    - contextPath: DomainTools.Domains.Hosting.MailServers
       description: Mail Servers Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.SPFRecord
+    - contextPath: DomainTools.Domains.Hosting.SPFRecord
       description: SPF Record Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.NameServers
+    - contextPath: DomainTools.Domains.Hosting.NameServers
       description: Name Servers Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.SSLCertificate
+    - contextPath: DomainTools.Domains.Hosting.SSLCertificate
       description: SSL Certificate Info
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.RedirectsTo
+    - contextPath: DomainTools.Domains.Hosting.RedirectsTo
       description: Domains it Redirects To
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.Domains.Hosting.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
       type: Unknown
-    - contextPath: Domain.DomainTools.Hosting.GoogleAnalyticTrackingCode
+    - contextPath: DomainTools.Domains.Hosting.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
       type: Unknown
   - arguments:
@@ -269,7 +258,7 @@ script:
     deprecated: false
     description: Provides markdown table with DomainTools Analytic data
     execution: false
-    name: domain-analytics
+    name: domaintoolsiris-analytics
   - arguments:
     - default: false
       description: Domain name
@@ -280,7 +269,7 @@ script:
     deprecated: false
     description: Provides markdown table with DomainTools Threat Profile data
     execution: false
-    name: threat-profile
+    name: domaintoolsiris-threat-profile
   - arguments:
     - default: true
       description: IP Address
@@ -319,216 +308,174 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Using one of the arguements allows a use to get back data on domains
+    description: Using one of the arguements allows a user to get back data on domains
       related to IPs, Email Addresses, etc.
     execution: false
-    name: domain-pivot
+    name: domaintoolsiris-pivot
     outputs:
-    - contextPath: PivotedDomains
-      description: All Domain Context
-      type: Unknown
-    - contextPath: PivotedDomains.Name
-      description: Domain Name
-      type: String
-    - contextPath: PivotedDomains.DNS
-      description: Domain DNS
-      type: String
-    - contextPath: PivotedDomains.DomainStatus
-      description: Domain Status
-      type: Boolean
-    - contextPath: PivotedDomains.Vendor
-      description: Domain Vendor
-      type: String
-    - contextPath: PivotedDomains.CreationDate
-      description: Domain Creation Date
-      type: Date
-    - contextPath: PivotedDomains.RiskScore
-      description: Domain RiskScore
-      type: Number
-    - contextPath: PivotedDomains.ExpirationDate
-      description: Domain Expiration Date
-      type: Date
-    - contextPath: PivotedDomains.NameServers
-      description: Domain NameServers
-      type: String
-    - contextPath: PivotedDomains.Registrant
-      description: Domain Registrant
-      type: Unknown
-    - contextPath: PivotedDomains.Malicious
-      description: Is the Domain Malicious
-      type: Unknown
-    - contextPath: PivotedDomains.Malicious.Vendor
-      description: Vendor that saw domain as malicious
-      type: String
-    - contextPath: PivotedDomains.Malicious.Description
-      description: Description of why domain was found to be malicious
-      type: Unknown
-    - contextPath: PivotedDomains.DomainTools
-      description: All DomainTools Context Data dealing with the Domain
-      type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Name
+    - contextPath: DomainTools.PivotedDomains.Name
       description: DomainTools Domain Name
       type: String
-    - contextPath: PivotedDomains.DomainTools.LastEnriched
+    - contextPath: DomainTools.PivotedDomains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: PivotedDomains.DomainTools.Analytics
+    - contextPath: DomainTools.PivotedDomains.Analytics
       description: Analytics Data about the Domain from DomainTools
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.OverallRiskScore
+    - contextPath: DomainTools.PivotedDomains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
-    - contextPath: PivotedDomains.DomainTools.Analytics.ProximityRiskScore
+    - contextPath: DomainTools.PivotedDomains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: PivotedDomains.DomainTools.Analytics.ThreatProfileRiskScore
+    - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore
       description: DomainTools Threat Profile Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.ThreatProfileRiskScore.RiskScore
+    - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
-    - contextPath: PivotedDomains.DomainTools.Analytics.ThreatProfileRiskScore.Threats
+    - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.ThreatProfileRiskScore.Evidence
+    - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.WebsiteResponseCode
+    - contextPath: DomainTools.PivotedDomains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.AlexaRank
+    - contextPath: DomainTools.PivotedDomains.Analytics.AlexaRank
       description: Alexa Rank
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Analytics.Tags
+    - contextPath: DomainTools.PivotedDomains.Analytics.Tags
       description: DomainTools Tags
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity
+    - contextPath: DomainTools.PivotedDomains.Identity
       description: DomainTools Identity Info about the Domain
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantName
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantName
       description: Registrant Name
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantOrg
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantOrg
       description: Registrant Org
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantContact
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact
       description: Registrant Contact Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantContact.Country
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country
       description: Registrant Contact Country
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantContact.Email
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email
       description: Registrant Contact Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantContact.Name
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name
       description: Registrant Contact Name
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.RegistrantContact.Phone
+    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone
       description: Registrant Contact Phone
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.SOAEmail
+    - contextPath: DomainTools.PivotedDomains.Identity.SOAEmail
       description: SOA Record Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.SSLCertificateEmail
+    - contextPath: DomainTools.PivotedDomains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdminContact
+    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact
       description: Admin Contact Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdminContact.Country
+    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country
       description: Admin Contact Country
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdminContact.Email
+    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email
       description: Admin Contact Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdminContact.Name
+    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name
       description: Admin Contact Name
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdminContact.Phone
+    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone
       description: Admin Contact Phone
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.TechnicalContact
+    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact
       description: Technical Contact Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.TechnicalContact.Country
+    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country
       description: Technical Contact Country
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.TechnicalContact.Email
+    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email
       description: Technical Contact Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.TechnicalContact.Name
+    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name
       description: Technical Contact Name
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.TechnicalContact.Phone
+    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone
       description: Technical Contact Phone
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.BillingContact
+    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact
       description: Billing Contact Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.BillingContact.Country
+    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country
       description: Billing Contact Country
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.BillingContact.Email
+    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email
       description: Billing Contact Email
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.BillingContact.Name
+    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name
       description: Billing Contact Name
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.BillingContact.Phone
+    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone
       description: Billing Contact Phone
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.EmailDomains
+    - contextPath: DomainTools.PivotedDomains.Identity.EmailDomains
       description: Email Domains
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Identity.AdditionalWhoisEmails
+    - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails
       description: Additional Whois Emails
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Registration
+    - contextPath: DomainTools.PivotedDomains.Registration
       description: DomainTools Registration Info about the Domain
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Registration.DomainRegistrant
+    - contextPath: DomainTools.PivotedDomains.Registration.DomainRegistrant
       description: Domain Registrant
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Registration.RegistrarStatus
+    - contextPath: DomainTools.PivotedDomains.Registration.RegistrarStatus
       description: Reistrar Status
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Registration.DomainStatus
+    - contextPath: DomainTools.PivotedDomains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
-    - contextPath: PivotedDomains.DomainTools.Registration.CreateDate
+    - contextPath: DomainTools.PivotedDomains.Registration.CreateDate
       description: Create Date
       type: Date
-    - contextPath: PivotedDomains.DomainTools.Registration.ExpirationDate
+    - contextPath: DomainTools.PivotedDomains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: PivotedDomains.DomainTools.Hosting
+    - contextPath: DomainTools.PivotedDomains.Hosting
       description: DomainTools Hosting Info about the Domain
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.IPAddresses
+    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses
       description: IP Addresses Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.IPCountryCode
+    - contextPath: DomainTools.PivotedDomains.Hosting.IPCountryCode
       description: IP Country Code
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.MailServers
+    - contextPath: DomainTools.PivotedDomains.Hosting.MailServers
       description: Mail Servers Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.SPFRecord
+    - contextPath: DomainTools.PivotedDomains.Hosting.SPFRecord
       description: SPF Record Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.NameServers
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers
       description: Name Servers Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.SSLCertificate
+    - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate
       description: SSL Certificate Info
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.RedirectsTo
+    - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo
       description: Domains it Redirects To
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
       type: Unknown
-    - contextPath: PivotedDomains.DomainTools.Hosting.GoogleAnalyticTrackingCode
+    - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
       type: Unknown
   isfetch: false
@@ -537,7 +484,6 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
-- eb5bb557-9de5-4bfc-8dbc-f1bebddd342a
+- DomainTools Iris - Test
 fromversion: 4.1.0
