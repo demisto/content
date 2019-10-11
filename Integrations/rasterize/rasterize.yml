@@ -78,7 +78,7 @@ script:
       predefined:
         - "true"
         - "false"
-      description: When set to True, will block any outgoing communication
+      description: When set to true, will block any outgoing communication
     deprecated: false
     description: Rasterize an email body into an image
     execution: false

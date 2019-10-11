@@ -41,7 +41,7 @@ def init_driver(offline_mode=False):
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
-        with open('log.txt', 'w') as log:
+        with tempfile.TemporaryFile('log.txt') as log:
             sys.stdout = log
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument('--no-sandbox')
@@ -56,9 +56,6 @@ def init_driver(offline_mode=False):
             driver = webdriver.Chrome(options=chrome_options)
             if offline_mode:
                 driver.set_network_conditions(offline=True, latency=5, throughput=500 * 1024)
-
-                # remove log
-                os.remove(os.path.realpath(log.name))
 
     except Exception as ex:
         return_error(str(ex))
@@ -145,9 +142,17 @@ def get_pdf(driver, width: int, height: int):
 
 
 def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bool = False):
+    """
+    Converts a PDF file into a jpeg image
+    :param path: file's path
+    :param max_pages: max pages to render
+    :param password: PDF password
+    :param horizontal: if True, will combine the pages horizontally
+    :return: stream of combined image
+    """
     demisto.debug(f'Loading file at Path: {path}')
-    inputpdf = PdfFileReader(open(path, "rb"))
-    pages = min(max_pages, inputpdf.numPages)
+    input_pdf = PdfFileReader(open(path, "rb"))
+    pages = min(max_pages, input_pdf.numPages)
 
     with tempfile.TemporaryDirectory() as output_folder:
         demisto.debug('Converting PDF')
@@ -164,10 +169,10 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
         demisto.debug('Combining all pages')
         images = []
-        for i in sorted(os.listdir(output_folder)):
-            if os.path.isfile(os.path.join(output_folder, i)) and 'converted_pdf_' in i:
-                images.append(Image.open(os.path.join(output_folder, i)))
-        min_shape = min([(np.sum(i.size), i.size) for i in images])[1]
+        for page in sorted(os.listdir(output_folder)):
+            if os.path.isfile(os.path.join(output_folder, page)) and 'converted_pdf_' in page:
+                images.append(Image.open(os.path.join(output_folder, page)))
+        min_shape = min([(np.sum(page_.size), page_.size) for page_ in images])[1]  # get the minimal width
 
         if horizontal:
             imgs_comb = np.hstack([np.asarray(i.resize(min_shape)) for i in images])
