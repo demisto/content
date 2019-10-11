@@ -252,7 +252,7 @@ class PolyswarmConnector():
                 'EntryContext': ec}
 
     def test_connectivity(self):
-        EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267'
+        EICAR_HASH = '131f95c51cc819465fa1797f6ccacf9d494aaaff46fa3eac73ae63ffbdfd8267' # guardrails-disable-line
 
         # Polywarm API Response
         #  HTTP Response
