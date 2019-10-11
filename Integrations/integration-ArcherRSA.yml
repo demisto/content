@@ -69,6 +69,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: Use European Time format (dd/mm/yyyy) instead of the American one
+  name: useEuropeanTime
+  defaultvalue: "false"
+  type: 8
+  required: false
 script:
   script: |-
     var server = params.server.replace(/\/+$/, "");
@@ -1491,28 +1496,50 @@ script:
 
             // convert 7/18/2017 8:17:49 AM to 2017-07-18T20:17:49-0800
             var dateStr = recordTimeStr.split(' ')[0];
-            var monthStr = dateStr.split('/')[0];
-            var dayStr = dateStr.split('/')[1];
+            var monthStr;
+            var dayStr;
+            if (params.useEuropeanTime){
+                // convert 05/03/2019 09:16:43 to 2019-03-05T09:16:43-0800
+                dayStr = dateStr.split('/')[0];
+                monthStr = dateStr.split('/')[1];
+            } else {
+                // convert 7/18/2017 8:17:49 to 2017-07-18T20:17:49-0800
+                monthStr = dateStr.split('/')[0];
+                dayStr = dateStr.split('/')[1];
+            }
+
             var yearStr = dateStr.split('/')[2];
 
             var timeStr = recordTimeStr.split(' ')[1];
-            var extStr = recordTimeStr.split(' ')[2];
-            var hourInt = Number(timeStr.split(':')[0]);
+            var hourInt;
+            var hourStr;
+            if (params.useEuropeanTime){
+                // convert 05/03/2019 09:16:43 to 2019-03-05T09:16:43-0800
+                hourInt = Number(timeStr.split(':')[0]);
+                hourStr = hourInt + '';
+                if (Number(hourInt) < 10 && hourStr.length === 1) {
+                    hourStr = "0" + hourStr;
+                }
+            } else {
+                // convert 7/18/2017 8:17:49 to 2017-07-18T20:17:49-0800
+                var extStr = recordTimeStr.split(' ')[2];
+                hourInt = Number(timeStr.split(':')[0]);
+                if (extStr == "PM" && hourInt < 12) {
+                    hourInt = hourInt + 12;
+                }
+
+                if (extStr == "AM" && hourInt == 12) {
+                    hourInt = hourInt - 12;
+                }
+
+                hourStr = hourInt + '';
+                if (Number(hourInt) < 10 && hourStr.length === 1) {
+                    hourStr = "0" + hourStr;
+                }
+            }
+
             var minStr = timeStr.split(':')[1];
             var secStr = timeStr.split(':')[2];
-
-            if (extStr == "PM" && hourInt < 12) {
-                hourInt = hourInt + 12;
-            }
-
-            if (extStr == "AM" && hourInt == 12) {
-                hourInt = hourInt - 12;
-            }
-
-            var hourStr = hourInt + '';
-            if (Number(hourInt) < 10 && hourStr.length === 1) {
-                hourStr = "0" + hourStr;
-            }
 
             if (Number(minStr) < 10 && minStr.length === 1) {
                 minStr = "0" + minStr;
@@ -1564,7 +1591,10 @@ script:
             seconds = '0' + seconds;
         }
 
-        // format such: 7/22/2017 3:58 PM
+        // format such: 7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
+        if (params.useEuropeanTime){
+            return day + '/' + month + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
+        }
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
 
@@ -2061,7 +2091,13 @@ script:
                             var recordValues = fieldValue;
                             Object.keys(recordValues).forEach(function(key) {
                                 if (key === "Date Created") {
-                                    lastTime = recordValues[key];
+
+                                    if(params.useEuropeanTime) {
+                                        lastTime = getOccurredTime(recordValues[key], 0);
+
+                                    } else {
+                                        lastTime = recordValues[key];
+                                    }
                                 }
                                 if (recordValues[key] !== null && recordValues[key] !== undefined){
                                     if (Array.isArray(recordValues[key])){ // array of nested objects
@@ -2109,7 +2145,11 @@ script:
                             }
                         }
                         if (fieldName === "Date Created") {
-                            lastTime = fieldValue;
+                            if(params.useEuropeanTime) {
+                                lastTime = getOccurredTime(fieldValue, 0);
+                            } else {
+                                lastTime = fieldValue;
+                            }
                         }
                     }
                 }
@@ -2147,7 +2187,11 @@ script:
                         var recordValues = fieldValue;
                         Object.keys(recordValues).forEach(function(key) {
                             if (key === "Date Created") {
-                                lastTime = recordValues[key];
+                                if(params.useEuropeanTime) {
+                                    lastTime = getOccurredTime(recordValues[key], 0);
+                                } else {
+                                    lastTime = recordValues[key];
+                                }
                             }
                             if (recordValues[key] !== null && recordValues[key] !== undefined){
                                 if (Array.isArray(recordValues[key])){ // array of nested objects
@@ -2195,7 +2239,12 @@ script:
                         }
                     }
                     if (fieldName === "Date Created") {
-                        lastTime = fieldValue;
+                        if(params.useEuropeanTime) {
+                            lastTime = getOccurredTime(fieldValue, 0);
+                        } else {
+                            lastTime = fieldValue;
+                        }
+
                     }
                 }
             }
@@ -2719,7 +2768,7 @@ script:
             fieldIdToSearchOn = JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id);
             dateOperator = "GreaterThan";
             var day = 60 * 1000 * 60 * 24;
-            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 186)));
+            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
         }
 
         var rawResponse = searchSendSoapRequest(
@@ -2851,6 +2900,7 @@ script:
             tz = 0;
         }
         var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
+        offset = tz ? parseInt(tz) : 0;
 
         var cmd = commands.searchRecords;
         var incidentRes = [];
@@ -3692,7 +3742,8 @@ script:
       This command only works for value list fields (type 4).
   - name: archer-reset-cache
     arguments: []
-    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
+    description: Reset Archer's integration cache. Run this command if you change
+      the fields of your Archer application
   isfetch: true
   runonce: false
 tests:
