@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+The *return_outputs* function can now return readable_output.
 
 ## [19.10.0] - 2019-10-03
   - Added requests debugging logger when `debug-mode=true`.
