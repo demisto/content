@@ -47,27 +47,27 @@ def main():
     password = demisto.params().get('credentials').get('password')
 
     # Remove trailing slash to prevent wrong URL path to service
-    base_url = urljoin(demisto.params().get('url'), '/api/v1/suffix')
+    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
 
     verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', True)
 
     # How many time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days')
+    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
-    LOG('Command being called is %s' % (demisto.command()))
+    proxy = demisto.params().get('proxy', False)
 
+    LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url=base_url, 
-            verify=verify_certificate, 
+            base_url=base_url,
+            verify=verify_certificate,
             auth=(username, password),
             proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
-            return_outputs(result, None)
+            demisto.results(result)
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
@@ -84,10 +84,10 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
-if __name__ in ['__builtin__', 'builtins']:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 ```
 
@@ -108,16 +108,16 @@ class Client(BaseClient):
     """
 
     def say_hello(self, name):
-        return 'Hello {}'.format(name)
+        return f'Hello {name}'
 
     def say_hello_http_request(self, name):
         """
         initiates a http request to test url
         """
         data = self._http_request(
-            method='GET', 
-            url_suffix='/hello/' + name)
-            
+            method='GET',
+            url_suffix='/hello/' + name
+        )
         return data.get('result')
 
     def list_incidents(self):
@@ -126,14 +126,14 @@ class Client(BaseClient):
         """
         return [
             {
-                "incident_id": 1,
-                "description": "Hello incident 1",
-                "created_time": datetime.utcnow().strftime(DATE_FORMAT)
+                'incident_id': 1,
+                'description': 'Hello incident 1',
+                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             },
             {
-                "incident_id": 2,
-                "description": "Hello incident 2",
-                "created_time": datetime.utcnow().strftime(DATE_FORMAT)
+                'incident_id': 2,
+                'description': 'Hello incident 2',
+                'created_time': datetime.utcnow().strftime(DATE_FORMAT)
             }
         ]
 ```
@@ -147,21 +147,37 @@ These are the best practices for defining the command functions.
 - The **_command** function will return 3 variables: readable_output, outputs, raw_response
 - To extract the outputs and return them to the War Room, in the `main` use `return_outputs(*say_hello_command(client, demisto.args()))`.
 ```python
-def say_hello_command(client: Client, args):
+def say_hello_command(client, args):
+    """
+    Returns Hello {somename}
+
+    Args:
+        client: HelloWorld client
+        args: all command arguments
+
+    Returns:
+        Hello {someone}
+
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
+    """
     name = args.get('name')
 
     result = client.say_hello(name)
 
     # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = "## {}".format(result)
+    readable_output = f'## {result}'
     outputs = {
-        "hello": result
+        'hello': result
     }
 
     return (
         readable_output,
         outputs,
-        result # raw response - the original response
+        result  # raw response - the original response
     )
 
 
@@ -184,8 +200,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(e)))
-        raise
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 ```
 
 ## test-module
@@ -195,15 +210,22 @@ def main():
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration Test button.
     result = test_module(client)
-    return_outputs(result, None)
+    demisto.results(result)
 ```
 ```python
-def test_module(client: Client):
+def test_module(client):
     """
-    returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+
+    Args:
+        client: HelloWorld client
+
+    Returns:
+        'ok' if test passed, anything else will fail the test
     """
-    result = client.say_hello("DBot")
-    if "Hello DBot" == result:
+
+    result = client.say_hello('DBot')
+    if 'Hello DBot' == result:
         return 'ok'
     else:
         return 'Test failed because ......'
@@ -219,33 +241,44 @@ These are the best practices for defining fetch-incidents.
 ```python
 def fetch_incidents(client, last_run, first_fetch_time):
     """
-    This function will execute each 1 minute.
+    This function will execute each interval (default is 1 minute).
 
-    :return: next_run, list of incidents that will be created in Demisto
+    Args:
+        client: HelloWorld client
+        last_run: The greatest incident created_time we fetched from last fetch
+        first_fetch_time: If last_run is None then fetch all incidents since first_fetch_time
+
+    Returns:
+        next_run: This will be last_run in the next fetch-incidents
+        incidents: Incidents that will be created in Demisto
     """
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
     # Handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT)
+        last_fetch, _ = dateparser.parse(first_fetch_time)
+    else:
+        last_fetch = dateparser.parse(last_fetch)
 
+    latest_created_time = last_fetch
     incidents = []
     items = client.list_incidents()
     for item in items:
-        incident_created_time = item["created_time"]
+        incident_created_time = dateparser.parse(item['created_time'])
         incident = {
-            "name": item["description"],
-            "occurred": datetime.strptime(incident_created_time, "%Y-%m-%dT%H:%M:%SZ"),
-            "rawJSON": json.dumps(item)
+            'name': item['description'],
+            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'rawJSON': json.dumps(item)
         }
 
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > last_fetch:
-            last_fetch = incident_created_time
-            incidents.append(incident)
+        incidents.append(incident)
 
-    next_run = {"last_fetch": last_fetch}
+        # Update last run and add incident if the incident is newer than last fetch
+        if incident_created_time > latest_created_time:
+            latest_created_time = incident_created_time
+
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 def main():
@@ -271,8 +304,7 @@ def main():
 
     # Log exceptions
     except Exception as e:
-        return_error("Failed to execute {} command. Error: {}".format(), e)
-        raise
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 ```
 
 
@@ -293,7 +325,7 @@ def main():
             get_session_command()
     
     except Exception as e:
-        return_error(str(e), e)
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 ```
 
 
