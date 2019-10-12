@@ -1419,6 +1419,11 @@
             "integrations": "Active Directory Query v2"
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "instance_names": "active_directory_query_v2",
+            "integrations": "Active Directory Query v2"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_query_v2_with_port_configuration",
             "playbookID": "Active Directory Query V2 configuration with port"
