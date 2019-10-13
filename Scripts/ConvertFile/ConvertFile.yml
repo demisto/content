@@ -29,11 +29,21 @@ args:
   defaultValue: "no"
 outputs:
 - contextPath: File.Name
-  description: The name of the PDF file.
+  description: The name of the output file.
   type: String
 - contextPath: File.Extension
   description: The file's extension.
   type: String
+- contextPath: File.EntryID
+  description: The Entry ID of the file.
+  type: String
+- contextPath: File.Info
+  description: Additional information about the file.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+
 scripttarget: 0
 subtype: python3
 runonce: false

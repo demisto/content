@@ -11,9 +11,11 @@ from typing import List
 
 
 def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) -> List[str]:
-    run_cmd = ['soffice', '--headless', '-env:UserInstallation=file:///tmp/.config/convertfile',
+    run_cmd = ['soffice', '--headless', '-env:UserInstallation=file:///tmp/convertfile/.config',
                '--convert-to', out_format, file_path, '--outdir', outdir]
-    res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, text=True)
+    env = os.environ.copy()
+    env['HOME'] = '/tmp/converfile'
+    res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, text=True, env=env)
     demisto.debug("completed running: {}. With result: {}".format(run_cmd, res))
     if all_files:
         return glob.glob(outdir + '/*')
@@ -27,12 +29,13 @@ def main():
     all_files = demisto.args().get('all_files', 'no') == 'yes'
     # URLS
     try:
-        result = demisto.executeCommand('getFilePath', {'id': entry_id})
-        if is_error(result):
-            return_error(get_error(result))
-        demisto.debug('going to convert: {}'.format(result[0]['Contents']))
-        file_path = result[0]['Contents']['path']
-        file_name = result[0]['Contents'].get('name')
+        result = demisto.getFilePath(entry_id)
+        if not result:
+            return_error("Couldn't find entry id: {}".format(entry_id))
+        demisto.debug('going to convert: {}'.format(result))
+        file_path = result['path']
+        file_path_name_only = os.path.splitext(os.path.basename(file_path))[0]
+        file_name = result.get('name')
         if file_name:  # remove the extension
             file_name = os.path.splitext(file_name)[0]
         with tempfile.TemporaryDirectory() as outdir:
@@ -45,7 +48,7 @@ def main():
                 shutil.copy(f, demisto.investigation()['id'] + '_' + temp)
                 name = os.path.basename(f)
                 if file_name:
-                    name.replace(os.path.splitext(f)[0], file_name)
+                    name = name.replace(file_path_name_only, file_name)
                 demisto.results({
                     'Contents': '',
                     'ContentsFormat': formats['text'],
