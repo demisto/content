@@ -4,6 +4,8 @@ commonfields:
 name: ConvertFile
 script: ''
 type: python
+subtype: python3
+fromversion: 4.5.0
 tags:
 - Utility
 comment: 'Convert a file from one format to another. Use''s Libre Office convert-to
@@ -43,9 +45,7 @@ outputs:
 - contextPath: File.Type
   description: The file type.
   type: String
-
 scripttarget: 0
-subtype: python3
 runonce: false
 dockerimage: demisto/office-utils:1.0.0.2553
 runas: DBotWeakRole
