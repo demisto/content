@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3
-  display: First fetch interval in days
+  display: First fetch interval (in days)
   name: fetch_time
   required: false
   type: 0
