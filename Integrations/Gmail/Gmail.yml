@@ -7,7 +7,7 @@ category: Authentication
 description: Gmail API and user management (This integration replaces the Gmail functionality
   in the GoogleApps API and G Suite integration).
 configuration:
-- display: Email of user with admin capabilities (the Password refers to Service Account private key)
+- display: Email of user with admin privileges (the Password refers to the Service Account private key)
   name: adminEmail
   defaultvalue: ""
   type: 9
