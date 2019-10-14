@@ -73,12 +73,8 @@ sends contextual message to single user. This command takes a user email address
 | SecurityAdvisor.CoachUser.coaching_score | string | User's coaching score out of 100 | 
 | SecurityAdvisor.CoachUser.context | string | Coaching context | 
 
-
-
-
-
 ##### Command Example
-`coach-end-user user=“track@securityadvisor.io" context=phishing`
+`coach-end-user user="track@securityadvisor.io" context="phishing"`
 
 ##### Context Example
 ```
@@ -93,24 +89,7 @@ sends contextual message to single user. This command takes a user email address
     }
 }
 ```
-
-##### Human Readable Output
 ### SecurityAdvisorBot says...
 |coaching_date|coaching_status|coaching_score|user|context|message|
 |---|---|---|---|---|---|
-|2019-10-04T21:04:19.480425|Pending||“track@securityadvisor.io|phishing|Coaching Sent|
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
-## Possible Errors (DO NOT PUBLISH ON ZENDESK):
-* 'Error in API call [%d] - %s' % (r.status_code, r.reason
-* e.message
+|2019-10-04T21:04:19.480425|Pending||track@securityadvisor.io|phishing|Coaching Sent|
