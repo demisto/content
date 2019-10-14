@@ -1,8 +1,8 @@
 commonfields:
-  id: ARIA Packet Intelligece
+  id: ARIA Packet Intelligence
   version: -1
-name: ARIA Packet Intelligece
-display: ARIA Packet Intelligece
+name: ARIA Packet Intelligence
+display: ARIA Packet Intelligence
 category: Network Security
 description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform
   integrates with Demisto to add robustness when responding to incidents. The combination
