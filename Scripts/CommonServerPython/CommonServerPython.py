@@ -1490,12 +1490,12 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
-        demisto.results(readable_output)
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-    else:
-        demisto.results(return_entry)
+    demisto.results(return_entry)
 
 
 def return_error(message, error='', outputs=None):
@@ -1928,6 +1928,16 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to demisto.debug
@@ -1989,8 +1999,7 @@ class DebugLogger(object):
 
 _requests_logger = None
 try:
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+    if is_debug_mode():
         _requests_logger = DebugLogger()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
