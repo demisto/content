@@ -530,7 +530,7 @@ script:
     deprecated: false
     description: Checks the file reputation of the specified hash.
     execution: false
-    name: file
+    name: vmray-check-file
   dockerimage: demisto/python
   isfetch: false
   longRunning: false

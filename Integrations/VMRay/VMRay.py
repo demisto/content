@@ -1,5 +1,5 @@
 import requests
-from CommonServerPython import *
+
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params()['api_key']
@@ -490,6 +490,56 @@ def get_submission(submission_id):
     response = http_request('GET', url_suffix=suffix)
     return response
 
+def check_file_command():
+    file_hash_input = demisto.args().get('file')
+    file_hashes = file_hash_input.split(',')
+    for file_hash in file_hashes:
+        if len(file_hash) != 32 and len(file_hash) != 40 and len(file_hash) != 64:
+            return_error('Invalid input hash')
+        hash_type = 'md5'
+        if len(file_hash) == 40:
+            hash_type = 'sha1'
+        if len(file_hash) == 64:
+            hash_type = 'sha256'
+
+        raw_response = check_file(file_hash, hash_type)
+        data = raw_response.get('data')
+
+        if len(data) == 0:
+            return_outputs(
+                'No submission found in VMRay for hash : {}'.format(file_hash),
+                {},
+            )
+
+        for item in data:
+
+            entry = dict()
+            entry['SampleID'] = item.get('sample_id')
+            entry['FileName'] = item.get('sample_filename')
+            entry['MD5'] = item.get('sample_md5hash')
+            entry['SHA1'] = item.get('sample_sha1hash')
+            entry['SHA256'] = item.get('sample_sha256hash')
+            entry['SSDeep'] = item.get('sample_ssdeephash')
+            entry['Severity'] = SEVERITY_DICT.get(item.get('sample_severity'))
+            entry['Type'] = item.get('sample_type')
+            entry['Created'] = item.get('sample_created')
+            entry['Classification'] = item.get('sample_classifications')
+            scores = dbot_score_by_hash(entry)
+
+            entry_context = {
+                'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
+                outputPaths.get('dbotscore'): scores,
+            }
+
+            human_readable = tableToMarkdown(
+                'Results for sample id: {} with severity {}'.format(
+                    entry.get('SampleID'), entry.get('Severity')
+                ),
+                entry,
+                headers=['Type', 'MD5', 'SHA1', 'SHA256', 'SSDeep'],
+            )
+            return_outputs(human_readable, entry_context, raw_response=raw_response)
+
 
 def get_sample_command():
     sample_id = demisto.args().get('sample_id')
@@ -524,54 +574,6 @@ def get_sample_command():
     )
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 
-def file_command():
-    file_hash = demisto.args().get('file')
-    if len(file_hash) != 32 and len(file_hash) != 40 and len(file_hash) != 64:
-        return_error('Invalid input hash')
-    hash_type = 'md5'
-    if len(file_hash) == 40:
-        hash_type = 'sha1'
-    if len(file_hash) == 64:
-        hash_type = 'sha256'
-
-    raw_response = file(file_hash, hash_type)
-    data = raw_response.get('data')
-
-    if len(data) == 0:
-        return_outputs(
-            'No submission found in VMRay for hash : {}'.format(file_hash),
-            {},
-        )
-
-    for item in data:
-
-        entry = dict()
-        entry['SampleID'] = item.get('sample_id')
-        entry['FileName'] = item.get('sample_filename')
-        entry['MD5'] = item.get('sample_md5hash')
-        entry['SHA1'] = item.get('sample_sha1hash')
-        entry['SHA256'] = item.get('sample_sha256hash')
-        entry['SSDeep'] = item.get('sample_ssdeephash')
-        entry['Severity'] = SEVERITY_DICT.get(item.get('sample_severity'))
-        entry['Type'] = item.get('sample_type')
-        entry['Created'] = item.get('sample_created')
-        entry['Classification'] = item.get('sample_classifications')
-        scores = dbot_score_by_hash(entry)
-
-        entry_context = {
-            'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
-            outputPaths.get('dbotscore'): scores,
-        }
-
-        human_readable = tableToMarkdown(
-            'Results for sample id: {} with severity {}'.format(
-                entry.get('SampleID'), entry.get('Severity')
-            ),
-            entry,
-            headers=['Type', 'MD5', 'SHA1', 'SHA256', 'SSDeep'],
-        )
-        return_outputs(human_readable, entry_context, raw_response=raw_response)
-
 
 def get_sample(sample_id):
     """building http request for get_sample_command
@@ -586,7 +588,7 @@ def get_sample(sample_id):
     response = http_request('GET', suffix)
     return response
 
-def file(input_hash, hash_type):
+def check_file(input_hash, hash_type):
     """building http request for get_sample_command
 
     Args:
@@ -947,9 +949,9 @@ try:
     if COMMAND == 'test-module':
         # This is the call made when pressing the integration test button.
         test_module()
-    elif COMMAND in ('file'):
-        file_command()
-    elif COMMAND in ('upload_sample', 'vmray-upload-sample'):
+    elif COMMAND in ('vmray-check-file'):
+        check_file_command()
+    elif COMMAND in ('upload_sample', 'vmray-upload-sample', 'file'):
         upload_sample_command()
     elif COMMAND == 'vmray-get-submission':
         get_submission_command()
