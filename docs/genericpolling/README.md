@@ -1,13 +1,14 @@
-When working with certain 3rd party products (detonation, scan, search, etc.) occasionally we'll find ourselves having to wait for a process to finish on the remote host before we can continue. In those cases the playbook should stop and wait for the process to complete on the 3rd party product, and continue once it's done.
+When working with certain 3rd party products (detonation, scan, search, etc.) occasionally we'll find ourselves having to wait for a process to finish on the remote host before we can continue. In those cases, the playbook should stop and wait for the process to complete on the 3rd party product, and continue when it's done.
 
-This is impossible to achieve via integrations or automations due to hardware limitations. One of the ways to achieve this feat is via the `GenericPolling` playbook.
+We can't achieve via integrations or automations due to hardware limitations. One method for achieving this is usingthe `GenericPolling` playbook.
 
 ## What it does
-Periodically polls the status of a process being executed on a remote host, and once the host returns that the process execution is done, the playbooks finishes execution.
+The playbook periodically polls the status of a process being executed on a remote host, and when the host returns that the process execution is done, the playbook finishes execution.
 
 ## How to use
+Follow these instructions to use the `GenericPolling` playbook.
 ### Prerequisites:
-* **Start command** - Command that'll fetch the initial state of the process and save it to the context. This command will usually start the process that should be polled. For example:
+* **Start command** - Command that will fetch the initial state of the process and save it to the context. This command will usually start the process that should be polled. For example:
   * Detonation - `joe-analysis-submit-sample` - Submit a sample for analysis (will be detonated as part of the analysis).
   * Scan - `nexpose-start-assets-scan` - Starts a scan for specified asset IP addresses and host names.
   * Search - `qradar-searches` - Searches in QRadar using AQL.
@@ -17,9 +18,9 @@ Periodically polls the status of a process being executed on a remote host, and 
   * Search - `qradar-get-search` - Gets a specific search id and status.
 
 ### Inputs
-* **Ids** - list of process IDs to poll (usually will be a previous task output).
+* **Ids** - A list of process IDs to poll (usually a previous task output).
 * **PollingCommandName** - Name of the polling command to run.
-* **PollingCommandArgName** - Argument name of the polling command. The argument should be the name of the process identifier (usually will be an ID).
+* **PollingCommandArgName** - Argument name of the polling command. The argument should be the name of the process identifier (usually an ID).
 * **dt** - [Demisto Transform Language](https://github.com/demisto/content/blob/master/docs/DT/README.MD) filter to be checked against the polling command result. Polling will stop when no results are returned from the DT filter.
 * **Interval** - Interval between each poll (default is 1 minute).
 * **Timeout** - The amount of time that'll pass until the playbook will stop waiting for the process to finish. After this time has passed the playbook will finish running, even if it didn't get a satisfactory result (the action is done executing).
