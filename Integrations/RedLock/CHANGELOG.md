@@ -1,3 +1,3 @@
 ## [Unreleased]
- - Updated display name to: *Prisma Cloud (RedLock)*.
- - Added *Trust any certificate* configuration option.
+ - Updated the display name to: *Prisma Cloud (RedLock)*.
+ - Added the *Trust any certificate* configuration parameter.
