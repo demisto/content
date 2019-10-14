@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- When generatung a DOCX reports fails, users receive an error message.
+- Added the *itemsSection* element to DOCX reports (mainly used for investigation reports).
 
 ## [19.10.0] - 2019-10-03
   - Fixed several issues related to tables in reports generated as DOCX files.  
