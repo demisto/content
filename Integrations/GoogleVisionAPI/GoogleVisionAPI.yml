@@ -23,24 +23,24 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The entry ID of the image to be processed
+      description: The entry ID of the image to process.
       isArray: true
       name: entry_id
       required: true
       secret: false
     deprecated: false
-    description: Detects brand logos in the given image
+    description: Detects brand logos in the given image.
     execution: false
     name: google-vision-detect-logos
     outputs:
     - contextPath: GoogleVisionAPI.Logo.Description
-      description: The logo description provided by the Google Vision API
+      description: The logo description provided by the Google Vision API.
       type: Unknown
     - contextPath: GoogleVisionAPI.Logo.MID
-      description: The unique logo MID provided by the Google Vision API
+      description: The unique logo MID provided by the Google Vision API.
       type: Unknown
     - contextPath: GoogleVisionAPI.Logo.Score
-      description: The certainty score provided by the Google Vision API
+      description: The certainty score provided by the Google Vision API.
       type: Unknown
   dockerimage: demisto/google-vision-api:1.0.0.1388
   isfetch: false
