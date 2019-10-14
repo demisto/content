@@ -1,5 +1,5 @@
 ## [Unreleased]
-- Introduced a parameter to control fetch limit with a hard limit of 50
+Added the *Max incidents per fetch* parameter, which specifies the maximum number of incidents to retrieve per fetch. The maximum for this parameter is 50.
 
 ## [19.9.1] - 2019-09-18
 Improved handling of uploaded EMLfiles.
