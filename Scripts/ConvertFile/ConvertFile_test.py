@@ -48,9 +48,10 @@ def test_conver_to_html(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['file']
     assert results[0]['File'] == 'test.html'
-    res_file = glob.glob('./*' + results[0]['FileID'])
-    assert res_file
-    with open(res_file[0], "r") as f:
+    glob_list = glob.glob('./*' + results[0]['FileID'])
+    logging.getLogger().info('glob list for results: {}. list: {}'.format(results[0], glob_list))
+    assert glob_list
+    with open(glob_list[0], "r") as f:
         contents = f.read()
         assert 'Extensions to the Office Open XML' in contents
     # assert the next result is an image
