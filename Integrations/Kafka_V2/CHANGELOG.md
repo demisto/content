@@ -1,9 +1,10 @@
 ## [Unreleased]
-  - Added partitions to ***kafka-print-topic*** command outputs.
-  - Added parameter to set max messages to fetch.
+  - Added partitions outputs to the ***kafka-print-topic*** command.
+  - Added the *Max number of messages to fetch* parameter.
+  - Added the *Use TLS for connection* parameter.
   - Improved debug logging outputs.
-  - Improved fetch incidents implementation (breaks backward compatibility)
-  - Added parameter to set if to certificated to use SSL connection.
+  - Improved fetch incidents implementation (breaks backward compatibility).
+  
 
 
 ## [19.9.1] - 2019-09-18
