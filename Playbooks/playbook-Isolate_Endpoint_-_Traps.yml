@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": -160,
           "y": 50
         }
       }
@@ -79,8 +79,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 180
+          "x": -160,
+          "y": 195
         }
       }
     note: false
@@ -102,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 690
+          "x": -160,
+          "y": 1280
         }
       }
     note: false
@@ -139,8 +139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 350
+          "x": 160,
+          "y": 370
         }
       }
     note: false
@@ -161,7 +161,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     scriptarguments:
       endpoint_id:
         complex:
@@ -170,8 +170,118 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 520
+          "x": 380,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ed98f50d-188c-4323-8f95-73b6b33d6d2a
+    type: regular
+    task:
+      id: ed98f50d-188c-4323-8f95-73b6b33d6d2a
+      version: -1
+      name: Traps - Isolate endpoint status
+      description: Returns the status of the specified endpoint isolate operation.
+      script: Traps|||traps-endpoint-isolate-status
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      operation_id:
+        complex:
+          root: Traps
+          accessor: Isolate.OperationID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 9e4dc3d8-eea9-42c6-8007-cb08582ea62c
+    type: playbook
+    task:
+      id: 9e4dc3d8-eea9-42c6-8007-cb08582ea62c
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Traps.Isolate.OperationID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: operation_id
+      PollingCommandName:
+        simple: traps-endpoint-isolate-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Traps.IsolateResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: b82f3d33-9c95-4f34-8a2b-ef1acb0f8976
+    type: regular
+    task:
+      id: b82f3d33-9c95-4f34-8a2b-ef1acb0f8976
+      version: -1
+      name: Traps - Isolate endpoint status
+      description: Returns the status of the specified endpoint isolate operation.
+      script: Traps|||traps-endpoint-isolate-status
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      operation_id:
+        complex:
+          root: Traps
+          accessor: Isolate.OperationID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 1110
         }
       }
     note: false
@@ -180,14 +290,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_#default#": 0.57,
-      "3_2_#default#": 0.3
+      "1_2_#default#": 0.3,
+      "3_2_#default#": 0.17
     },
     "paper": {
       "dimensions": {
-        "height": 705,
-        "width": 940,
-        "x": 450,
+        "height": 1295,
+        "width": 920,
+        "x": -160,
         "y": 50
       }
     }
