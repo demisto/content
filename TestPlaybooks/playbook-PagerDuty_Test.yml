@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 73dd87a5-8f99-4e67-8715-4d063cb59496
+    taskid: 7d81fe1a-b9e7-4b39-8781-1cd41d351394
     type: start
     task:
-      id: 73dd87a5-8f99-4e67-8715-4d063cb59496
+      id: 7d81fe1a-b9e7-4b39-8781-1cd41d351394
       version: -1
       name: ""
       iscommand: false
@@ -20,17 +20,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 17bdd88c-b6ef-401b-8e13-7b5fd0a6ec76
+    taskid: 0fa77151-6efb-4c01-8b2e-e038eef5f707
     type: regular
     task:
-      id: 17bdd88c-b6ef-401b-8e13-7b5fd0a6ec76
+      id: 0fa77151-6efb-4c01-8b2e-e038eef5f707
       version: -1
       name: Get on call users
       script: '|||PagerDuty-get-users-on-call-now'
@@ -46,23 +48,28 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 340
+          "x": 50,
+          "y": 865
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: da501822-f46a-4e6f-8a8e-c9a46e34b4f0
+    taskid: eb6f57a1-02fa-4d90-8fad-b6fe878fbad4
     type: regular
     task:
-      id: da501822-f46a-4e6f-8a8e-c9a46e34b4f0
+      id: eb6f57a1-02fa-4d90-8fad-b6fe878fbad4
       version: -1
       name: Verify context
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -72,17 +79,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 515
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: fb9acaf6-e92d-4cc5-892d-6a460a572c10
+    taskid: 4da31dfb-f411-4ff4-861c-316ce63b5501
     type: regular
     task:
-      id: fb9acaf6-e92d-4cc5-892d-6a460a572c10
+      id: 4da31dfb-f411-4ff4-861c-316ce63b5501
       version: -1
       name: Get schedules
       script: '|||PagerDuty-get-all-schedules'
@@ -104,18 +113,23 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 27632f44-ee8f-4a36-8f7e-f6ab5c0a8f6b
+    taskid: 71eff7d1-30a4-441e-898f-d96fff862dfc
     type: regular
     task:
-      id: 27632f44-ee8f-4a36-8f7e-f6ab5c0a8f6b
+      id: 71eff7d1-30a4-441e-898f-d96fff862dfc
       version: -1
       name: Verify Context
       scriptName: VerifyContext
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
       expectedValue: {}
       fields: {}
@@ -130,12 +144,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 530b5c9c-731e-4818-89bd-c48ce52c28e1
+    taskid: 12579f84-18d9-4b55-8d05-a0e6d184f312
     type: regular
     task:
-      id: 530b5c9c-731e-4818-89bd-c48ce52c28e1
+      id: 12579f84-18d9-4b55-8d05-a0e6d184f312
       version: -1
       name: 'Get Incidents '
       script: '|||PagerDuty-incidents'
@@ -144,7 +160,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "1"
     scriptarguments:
       since: {}
       sortBy: {}
@@ -154,18 +170,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 340
+          "x": 50,
+          "y": 690
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 7fdf0e18-3eb6-46b6-8da3-d99fbdee35a9
+    taskid: c58f7088-121c-4c60-8898-3b21d4f05a0b
     type: title
     task:
-      id: 7fdf0e18-3eb6-46b6-8da3-d99fbdee35a9
+      id: c58f7088-121c-4c60-8898-3b21d4f05a0b
       version: -1
       name: PagerDuty Commands
       type: title
@@ -174,24 +191,23 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-      - "1"
-      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 195
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 7a2c4ce5-a31d-41e7-8f9f-69a13d13d277
+    taskid: f023b851-5819-4d83-8d96-82b7b48e0cb2
     type: title
     task:
-      id: ef319398-78f9-4c70-8e3a-d846929cb16d
+      id: f023b851-5819-4d83-8d96-82b7b48e0cb2
       version: -1
       name: End of test
       type: title
@@ -201,18 +217,351 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 530
+          "x": 50,
+          "y": 2790
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 6d293021-89d8-4f74-89ea-38fae70b9bab
+    type: regular
+    task:
+      id: 6d293021-89d8-4f74-89ea-38fae70b9bab
+      version: -1
+      name: Get on call users- schedule_ids
+      script: '|||PagerDuty-get-users-on-call-now'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      escalation_policy_ids: {}
+      limit: {}
+      query: {}
+      schedule_ids:
+        simple: PFE1I5O,PO93R76
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 93dc62a3-0833-4e0c-860f-268133e69889
+    type: regular
+    task:
+      id: 93dc62a3-0833-4e0c-860f-268133e69889
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 7353e653-17ad-4303-8f3b-20dc69a94fd6
+    type: condition
+    task:
+      id: 7353e653-17ad-4303-8f3b-20dc69a94fd6
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PagerDutyUser
+                accessor: Email
+            iscontext: true
+          right:
+            value:
+              simple: meir@demisto.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PagerDutyUser
+                accessor: Email
+            iscontext: true
+          right:
+            value:
+              simple: rony@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 6a306912-cbf5-4b8d-86cc-355ea5cf6f0e
+    type: regular
+    task:
+      id: 6a306912-cbf5-4b8d-86cc-355ea5cf6f0e
+      version: -1
+      name: Get on call users-escalation_policy_ids
+      description: Returns the names and details of current on call personnel
+      script: '|||PagerDuty-get-users-on-call-now'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      escalation_policy_ids:
+        simple: PJUYEWG
+      limit: {}
+      schedule_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 7d024e4e-695f-4c6e-8a08-f5a89dc46db7
+    type: condition
+    task:
+      id: 7d024e4e-695f-4c6e-8a08-f5a89dc46db7
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PagerDutyUser
+                accessor: Email
+            iscontext: true
+          right:
+            value:
+              simple: dan@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: b3b8304a-969a-4a94-86b9-32db986aa37d
+    type: regular
+    task:
+      id: b3b8304a-969a-4a94-86b9-32db986aa37d
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 50ac163a-041f-4c84-8abd-138acec6c853
+    type: regular
+    task:
+      id: 50ac163a-041f-4c84-8abd-138acec6c853
+      version: -1
+      name: Set escalation_policy_ids in context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      append: {}
+      key:
+        simple: escalation_policy_ids
+      value:
+        simple: '["P4J5L11","PJUYEWG"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 361cd2e3-89e6-4c51-804c-7b5db7d6188b
+    type: regular
+    task:
+      id: 361cd2e3-89e6-4c51-804c-7b5db7d6188b
+      version: -1
+      name: Get on call users-escalation_policy_ids
+      description: Returns the names and details of current on call personnel
+      script: '|||PagerDuty-get-users-on-call-now'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      escalation_policy_ids:
+        simple: ${escalation_policy_ids}
+      limit: {}
+      schedule_ids: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 04f312ce-bcbc-4010-8f90-694fec5ed81d
+    type: condition
+    task:
+      id: 04f312ce-bcbc-4010-8f90-694fec5ed81d
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PagerDutyUser
+                accessor: Email
+            iscontext: true
+          right:
+            value:
+              simple: dan@demisto.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PagerDutyUser
+                accessor: Email
+            iscontext: true
+          right:
+            value:
+              simple: meir@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 560,
-        "width": 1240,
+        "height": 2805,
+        "width": 380,
         "x": 50,
         "y": 50
       }

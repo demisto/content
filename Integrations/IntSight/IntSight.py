@@ -69,7 +69,7 @@ def req(method, path, json_data=None, params=None, json_response=False):
         except ValueError:
             return_error('Error in API call to IntSights service - check your configured URL address')
 
-    return r.text
+    return r
 
 
 def convert_iso_string_to_python_date(date_in_iso_format):
