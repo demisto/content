@@ -75,7 +75,7 @@ TRAFFIC_FIELDS = [
     'sanctioned-state-of-app', 'inbound_if', 'device_name', 'mptcp_on', 'subtype', 'time_received', 'actionflags',
     'tunnelid_imsi', 'session_end_reason', 'sym_return', 'exported', 'natsrc', 'seqno', 'src', 'start',
     'time_generated', 'outbound_if', 'category-of-app', 'bytes_sent', 'srcloc', 'pkts_sent', 'dstloc',
-    'tunnel_inspected', 'serial', 'bytes', 'vsys_id', 'ui-srcloc', 'to', 'category', 'sport', 'packet_capture',
+    'tunnel_inspected', 'serial', 'bytes', 'vsys_id', 'ui-srcloc', 'to', 'from', 'category', 'sport', 'packet_capture',
     'tunnel', 'ui-dstloc', 'transaction', 'is_phishing'
 ]
 
@@ -566,13 +566,27 @@ def verify_table_fields(fields: str, table_fields: list) -> str:
     :return: the fields string
     """
     fields_list: list = argToList(fields, ',')
-    for field in fields_list:
-        if field == 'all':
+    parsed_fields: str = ''
+
+    for raw_field in fields_list:
+
+        field = raw_field
+        if raw_field == 'all':
             # if fields=all than we don't need to continue
             return '*'
-        if field not in table_fields:
-            raise DemistoException(f'{field} is not a valid field of the query')
-    return fields
+        if raw_field not in table_fields:
+            raise DemistoException(f'{raw_field} is not a valid field of the query')
+        if raw_field == 'from':
+            # if field is from we need to wrap it with '' to prevent confusion of the SQL syntax
+            field = "'from'"
+
+        if not parsed_fields:
+            # handle first field case
+            parsed_fields += field
+        else:
+            parsed_fields += f', {field}'
+
+    return parsed_fields
 
 
 def build_where_clause(args: dict, table_args_dict: dict) -> str:
