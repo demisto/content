@@ -374,12 +374,15 @@ def extract_filtered_tests():
 
 
 def generate_demisto_api_key(c):
-    demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
-    apikey_json = {
-        'name': 'test_apikey',
-        'apikey': demisto_api_key
-    }
-    c.req('POST', '/apikeys', apikey_json)
+    with open("./conf_secret.json", "r") as conf_json:
+        data = json.load(conf_json)
+        demisto_api_key = data['apikeys'][0]['apikey']
+    # demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+    # apikey_json = {
+    #     'name': 'test_apikey',
+    #     'apikey': demisto_api_key
+    # }
+    # c.req('POST', '/apikeys', apikey_json)
     return demisto_api_key
 
 
