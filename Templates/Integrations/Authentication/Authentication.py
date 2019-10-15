@@ -237,9 +237,10 @@ def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     # Make request and get raw response
     raw_response = client.lock_account(username)
     # Get account from raw_response
-    user_object = raw_response.get('account', [{}])[0]
+    accounts = raw_response.get('account')
     # Parse response into context & content entries
-    if user_object.get('username') == username and user_object.get('isLocked') is True:
+    if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is True:
+        user_object = accounts[0]
         title: str = f'{INTEGRATION_NAME} - Account `{username}` has been locked.'
         context_entry = account_response_to_context(user_object)
         context = {
@@ -326,10 +327,9 @@ def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     vault_to_lock = args.get('vault_id')
     raw_response = client.lock_vault(vault_to_lock)
-    vault_obj = raw_response.get('vault', [{}])[0]
-    vault_id = vault_obj.get('vaultId')
-    locked_status = vault_obj.get('isLocked')
-    if vault_id == vault_to_lock and locked_status:
+    vaults = raw_response.get('vault')
+    if vaults and vaults[0].get('vaultId') == vault_to_lock and vaults[0].get('isLocked') is True:
+        vault_obj = vaults[0]
         title = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
         context_entry = build_vaults_context(vault_obj)
         context = {f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry}
@@ -344,10 +344,9 @@ def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     vault_to_lock = args.get('vault_id', '')
     raw_response = client.unlock_vault(vault_to_lock)
-    vault_obj = raw_response.get('vault', [{}])[0]
-    vault_id = vault_obj.get('vaultId')
-    locked_status = vault_obj.get('isLocked')
-    if vault_id == vault_to_lock and not locked_status:
+    vaults = raw_response.get('vault')
+    if vaults and vaults[0].get('vaultId') == vault_to_lock and vaults[0].get('isLocked') is False:
+        vault_obj = vaults[0]
         title = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been unlocked'
         context_entry = build_vaults_context(vault_obj)
         context = {f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry}
