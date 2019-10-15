@@ -130,13 +130,13 @@ script:
     name: kafka-consume-msg
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Name of the topic
+      description: Name of the topic.
       type: string
     - contextPath: Kafka.Topic.Message.Value
-      description: Value of the message
+      description: Value of the message.
       type: string
     - contextPath: Kafka.Topic.Message.Offset
-      description: Offset of the value in the topic
+      description: Offset of the value in the topic.
       type: number
   - arguments:
     - default: false
@@ -151,7 +151,7 @@ script:
     name: kafka-fetch-partitions
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Name of topic
+      description: Name of topic.
       type: string
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.
