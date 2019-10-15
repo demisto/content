@@ -1,0 +1,278 @@
+category: Case Management
+commonfields:
+  id: CaseManagement
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+detaileddescription: ''
+display: CaseManagement
+name: CaseManagement
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: ID of ticket to get
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get ticket from integration
+    execution: false
+    name: case-management-get-ticket
+    outputs:
+    - contextPath: CaseManagement.Ticket.ID
+      description: Ticket ID
+      type: String
+    - contextPath: CaseManagement.Ticket.Title
+      description: Ticket title
+      type: String
+    - contextPath: CaseManagement.Ticket.CreatedAt
+      description: Time of created ticket.
+      type: Date
+    - contextPath: CaseManagement.Ticket.Description
+      description: Description of ticket
+      type: String
+  - deprecated: false
+    description: Lists all tickets
+    execution: false
+    name: case-management-list-tickets
+  - deprecated: false
+    description: Creates a new ticket
+    execution: false
+    name: case-management-create-ticket
+  - deprecated: false
+    description: Closes a ticket
+    execution: false
+    name: case-management-close-ticket
+  - deprecated: false
+    description: Assign ticket to user
+    execution: false
+    name: case-management-assign-ticket
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+    from typing import Any, Dict
+    import json
+    import requests
+    import urllib3
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+    # Setting global params, initiation in main() function
+    TOKEN: str = ''
+    SERVER: str = ''
+    USE_SSL: bool = False
+    BASE_URL: str = ''
+    HEADERS: dict = dict()
+    PROXIES: dict or None = None
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method: str, url_suffix: str, params: dict = None, data: dict = None, proxies: list = None,
+                     headers: dict = None):
+        """Basic HTTP Request wrapper
+
+        Args:
+            method: Method to use: ['GET', 'POST', 'PUT', 'DELETE']
+            url_suffix: suffix to add to SERVER param
+            params: dict to use in url query
+            data: body of request
+            proxies: list of proxies to use
+            headers: dict of headers
+
+        Returns:
+            Response.json
+        """
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        err_msg = 'Error in API call to AnalyticsAndSIEM Integration [{}] - {}'
+        if proxies is None:
+            proxies = PROXIES
+        if headers is None:
+            headers = HEADERS
+
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            data=data,
+            headers=headers,
+            proxies=proxies
+        )
+        # Handle error responses gracefully
+        if res.status_code not in {200}:
+            return_error(err_msg.format(res.status_code, res.reason))
+        try:
+            return res.json()
+        except ValueError as e:
+            return_error(err_msg.format(res.status_code, res.reason), error=str(e))
+
+
+    def item_to_incident(item: dict) -> Dict:
+        incident: dict = dict()
+        # Incident Title
+        incident['name'] = f'AnalyticsAndSIEM Incident: {item.get("name")}'
+        # Incident occurrence time, usually item creation date in service
+        incident['occurred'] = item.get('createdDate')
+        # The raw response from the service, providing full info regarding the item
+        incident['rawJSON'] = json.dumps(item)
+        return incident
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+
+    def test_module():
+        """
+        Performs basic get request to get item samples
+        """
+        http_request('GET', 'items/samples')
+
+
+    def get_event_command():
+        """
+        Gets details about a raw_response using IDs or some other filters
+        """
+        # Initialize main vars
+        context: dict = dict()
+        context_entries: list = list()
+        title: str = ''
+        # Get arguments from user
+        item_ids: list = argToList(demisto.args().get('events_ids', []))
+        is_active: bool = demisto.args().get('is_active') == 'true'
+        # Make request and get raw response
+        raw_response: list = get_events_request(item_ids, is_active)
+        # Parse response into context & content entries
+        if raw_response:
+            title = 'AnalyticsAndSIEM - Getting Items Details'
+
+            context_entries = [
+                {
+                    'ID': item.get('id'),
+                    'Description': item.get('description'),
+                    'Name': item.get('name'),
+                    'CreatedDate': item.get('createdDate')
+                } for item in raw_response
+            ]
+
+            context['AnalyticsAndSIEM.Event(val.ID && val.ID === obj.ID)'] = context_entries
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entries, removeNull=True)
+        # Return data to Demisto
+        return_outputs(human_readable, context, raw_response)
+
+
+    def get_events_request(item_ids: Any[list, str], is_active: Any[bool, None], timestamp: str = None) -> Dict:
+        """
+
+        Args:
+            item_ids: item its to get
+            is_active: is event active
+            timestamp: timestamp to fetch from
+
+        Returns:
+            Dict: response data
+        """
+        # The service endpoint to request from
+        suffix: str = 'items'
+        # Dictionary of params for the request
+        params = {
+            'ids': item_ids,
+            'isActive': is_active,
+            'timeFrom': timestamp
+        }
+        # Send a request using our http_request wrapper
+        response = http_request('GET', suffix, params)
+        # Check if response contains any data to parse
+        if 'data' in response:
+            return response.get('data')
+        # If neither was found, return back empty results
+        return {}
+
+
+    def list_events_command():
+        pass
+
+
+    def create_event_command():
+        pass
+
+
+    def close_event_command():
+        pass
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('Command being called is %s' % (demisto.command()))
+
+
+    def main():
+        # Declare global parameters
+        global TOKEN, SERVER, USE_SSL, BASE_URL, HEADERS, PROXIES
+        TOKEN = demisto.params().get('api_key')
+        # Remove trailing slash to prevent wrong URL path to service
+        SERVER = demisto.params()['url'][:-1] \
+            if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) else demisto.params()['url']
+        # Should we use SSL
+        USE_SSL = not demisto.params().get('insecure', False)
+        # Service base URL
+        BASE_URL = SERVER + '/api/v2.0/'
+        # Headers to be sent in requests
+        HEADERS = {
+            'Authorization': f'Bearer {TOKEN}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+        # Remove proxy if not set to true in params
+        PROXIES = handle_proxy()
+        command: str = demisto.command()
+        try:
+            if command == 'test-module':
+                # This is the call made when pressing the integration test button.
+                test_module()
+                demisto.results('ok')
+            elif command == 'analytics-and-siem-get-event':
+                # An AnalyticsAndSIEM command, fully structured command
+                get_event_command()
+            elif command == 'analytics-and-siem-list-events':
+                list_events_command()
+            elif command == 'analytics-and-siem-create-event':
+                create_event_command()
+            elif command == 'analytics-and-siem-close-event':
+                close_event_command()
+        # Log exceptions
+        except Exception as e:
+            err_msg = f'Error in AnalyticsAndSIEM Integration [{e}]'
+            return_error(err_msg, error=str(e))
+
+
+    if __name__ == '__builtin__':
+        main()
+  type: python
+image: data:image/png;base64,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

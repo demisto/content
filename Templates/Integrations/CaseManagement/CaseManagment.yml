@@ -1,0 +1,74 @@
+category: Case Management
+commonfields:
+  id: CaseManagement
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: token
+  required: true
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: CaseManagement
+name: CaseManagement
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: ID of ticket to get
+      isArray: false
+      name: ticket_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get ticket from integration
+    execution: false
+    name: case-management-get-ticket
+    outputs:
+    - contextPath: CaseManagement.Ticket.ID
+      description: Ticket ID
+      type: String
+    - contextPath: CaseManagement.Ticket.Title
+      description: Ticket title
+      type: String
+    - contextPath: CaseManagement.Ticket.CreatedAt
+      description: Time of created ticket.
+      type: Date
+    - contextPath: CaseManagement.Ticket.Description
+      description: Description of ticket
+      type: String
+  - deprecated: false
+    description: Lists all tickets
+    execution: false
+    name: case-management-list-tickets
+  - deprecated: false
+    description: Creates a new ticket
+    execution: false
+    name: case-management-create-ticket
+  - deprecated: false
+    description: Closes a ticket
+    execution: false
+    name: case-management-close-ticket
+  - deprecated: false
+    description: Assign ticket to user
+    execution: false
+    name: case-management-assign-ticket
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
