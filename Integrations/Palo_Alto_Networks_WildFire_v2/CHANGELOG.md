@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue in which the ***test-module*** command failed.
 
 ## [19.9.1] - 2019-09-18
   - Fixed an issue in which the ***wildfire-report*** command failed for specific hash values.
