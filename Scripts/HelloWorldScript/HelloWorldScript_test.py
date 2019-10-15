@@ -15,5 +15,5 @@ def test_say_hello_command():
     readable_output, outputs, raw_response = say_hello_command(args)
 
     assert readable_output == '## Hello DBot'
-    assert outputs['HelloWorld'] == 'Hello DBot'
+    assert outputs['HelloWorld']['hello'] == 'Hello DBot'
     assert raw_response == 'Hello DBot'
