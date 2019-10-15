@@ -45,7 +45,7 @@ def get_attachments(build_url, env_results_file_name):
 
     with open(env_results_file_name, 'r') as env_results_file_name:
         env_results = json.load(env_results_file_name)
-        instance_dns = env_results['InstanceDNS']
+        instance_dns = env_results[0]['InstanceDNS']
 
     content_team_attachment = [{
         'fallback': title,
