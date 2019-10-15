@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for **debug-mode**, which logs extended information when enabled.
 
 ## [19.9.1] - 2019-09-18
   - Fix an issue in the ***custom-field-data*** argument.
