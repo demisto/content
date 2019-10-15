@@ -438,9 +438,9 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
     """
     filtered_results: list = []
     headers: list = []
-    headers_raw_names: list = []
 
     if fields == '*':
+        headers_raw_names: list = []
         # if the user queried all fields than we have preset headers
         if table_name == 'traffic' or table_name == 'threat':
             headers = ['Source Address', 'Destination Address', 'Application', 'Action', 'Rule', 'Time Generated']
@@ -449,28 +449,63 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
         elif table_name == 'traps' or table_name == 'analytics':
             headers = ['Severity', 'Event Type', 'User', 'Agent Address', 'Agent Name', 'Agent Time']
             headers_raw_names = ['severity', 'eventType', 'userName', 'agentIp', 'deviceName', 'agentTime']
+
+        for result in results:
+            filtered_result = {}
+            for key, value in result.items():
+                if key in headers_raw_names:
+                    if key == 'time_generated':
+                        filtered_result[headers[headers_raw_names.index(key)]] = datetime.fromtimestamp(
+                            value).isoformat()
+                    else:
+                        filtered_result[headers[headers_raw_names.index(key)]] = value
+                elif isinstance(value, dict) and key == 'endPointHeader':
+                    # handle case which headers are in nested dict (1 nest only)
+                    for child_key in value.keys():
+                        if child_key in headers_raw_names:
+                            filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
+            filtered_results.append(filtered_result)
     else:
         # if the user has chosen which fields to query than they will be used as headers
         fields_list: list = argToList(fields)
         headers = fields_list
-        headers_raw_names = fields_list
 
-    for result in results:
-        filtered_result = {}
-        for key, value in result.items():
-            if key in headers_raw_names:
-                if key == 'time_generated':
-                    filtered_result[headers[headers_raw_names.index(key)]] = datetime.fromtimestamp(value).isoformat()
-                else:
-                    filtered_result[headers[headers_raw_names.index(key)]] = value
-            elif isinstance(value, dict) and key == 'endPointHeader':
-                # handle case which headers are in nested dict (1 nest only)
-                for child_key in value:
-                    if child_key in headers_raw_names:
-                        filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
-        filtered_results.append(filtered_result)
+        for result in results:
+            filtered_result = {}
+            for root in result.keys():
+                parsed_tree: dict = parse_tree_by_root_to_leaf_paths(root, result[root])
+                filtered_result.update(parsed_tree)
+            filtered_results.append(filtered_result)
 
     return tableToMarkdown(f'Logs {table_name} table', filtered_results, headers=headers, removeNull=True)
+
+
+def parse_tree_by_root_to_leaf_paths(root: str, body) -> dict:
+    """
+    This function receives a dict (root and a body) and parses it according to the upcoming example:
+    Input: root = 'a', body = {'b': 2, 'c': 3, 'd': {'e': 5, 'f': 6, 'g': {'h': 8, 'i': 9}}}.
+    So the dict is {'a': {'b': 2, 'c': 3, 'd': {'e': 5, 'f': 6, 'g': {'h': 8, 'i': 9}}}}
+    The expected output is {'a.b': 2, 'a.c': 3, 'a.d.e': 5, 'a.d.f': 6, 'a.d.g.h': 8, 'a.d.g.i': 9}
+    Basically what this function does is when it gets a tree it creates a dict from it which it's keys are all
+    root to leaf paths and the corresponding values are the values in the leafs
+    :param root: the root string
+    :param body: the body of the root
+    :return: the parsed tree
+    """
+    parsed_tree: dict = {}
+    help_stack = [(root, body)]
+
+    while help_stack:
+        node = help_stack.pop()
+        root_to_node_path = node[0]
+        body = node[1]
+        if isinstance(body, dict):
+            for key, value in body.items():
+                help_stack.append((root_to_node_path + '.' + key, value))
+        else:
+            parsed_tree[root_to_node_path] = body
+
+    return parsed_tree
 
 
 def parse_processes(processes_list: list) -> list:
