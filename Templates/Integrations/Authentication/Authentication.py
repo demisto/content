@@ -237,7 +237,6 @@ def fetch_credentials(client: Client) -> list:
 
 def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Locks an account by account ID.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -269,7 +268,6 @@ def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Unlocks an account by account ID.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -300,7 +298,6 @@ def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
 
 def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Resets an account by account ID.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -331,7 +328,6 @@ def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Returns credentials to user without passwords.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -358,7 +354,6 @@ def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Locks a vault by vault ID.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
@@ -382,7 +377,6 @@ def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Unlocks a vault by vault ID.
-    
     Args:
         client: Client object
         args: Usually demisto.args()
