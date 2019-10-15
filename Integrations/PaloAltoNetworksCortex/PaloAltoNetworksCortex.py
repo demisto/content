@@ -604,8 +604,11 @@ def build_where_clause(args: dict, table_args_dict: dict) -> str:
                 return args[key].strip()
             else:
                 values_list: list = argToList(args[key])
-                for value in values_list:
+                for raw_value in values_list:
                     for field in table_args_dict[key]:
+                        value = raw_value
+                        if key == 'url':
+                            value = f'*{raw_value}*'
                         if not where_clause:
                             # the beginning of the where part should start without OR
                             where_clause += f"{field}'{value}'"
