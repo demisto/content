@@ -1,4 +1,5 @@
 ## [Unreleased]
+Fixed an issue where ***hybrid-analysis-search*** command returned an error without using the *query* argument.
 
 
 ## [19.9.1] - 2019-09-18
