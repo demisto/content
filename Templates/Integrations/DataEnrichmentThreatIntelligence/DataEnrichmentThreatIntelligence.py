@@ -66,7 +66,7 @@ class Client(BaseClient):
         # Unknown
         return 0
 
-    def test_module(self, *_) -> Dict:
+    def test_module(self) -> Dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
