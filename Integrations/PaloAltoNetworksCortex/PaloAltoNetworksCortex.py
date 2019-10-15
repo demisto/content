@@ -1399,6 +1399,7 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     :param table_context_path: the context path where the parsed data should be located
     :return: the function return's a Demisto's entry
     """
+
     args = demisto.args()
 
     start_time = args.get('startTime')
