@@ -29,6 +29,7 @@ INTEGRATION_CONTEXT_NAME = 'DataEnrichmentAndThreatIntelligence'
 # Setting global params, initiation in main() function
 FILE_HASHES = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 DEFAULT_THRESHOLD = 70
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -189,7 +190,7 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 @logger
 def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Gets a job from the API. Used mostly for polling playbook
+    """Gets a job from the API. Used mostly for polling playbook.
 
     Args:
         client: Client object with request
@@ -224,7 +225,14 @@ def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 @logger
 def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Searching for given file hash
+    """Searching for given file hash.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     file_hash = args.get('file', '')
     try:
@@ -277,7 +285,14 @@ def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 @logger
 def search_domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Gets a job from the API. Used mostly for polling playbook
+    """Gets a job from the API. Used mostly for polling playbook.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     url = args.get('domain')
     raw_response = client.get_domain(url)
@@ -301,17 +316,17 @@ def search_domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 @logger
 def test_module_command(client: Client, *_) -> str:
-    """
+    """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
-        *_: arg to ignore, not needed in test_module.
+        args: Usually demisto.args()
 
     Returns:
-        Response JSON
+        'ok' if test successful.
 
     Raises:
-        DemistoException: If unexpected response turn back from API.
+        DemistoException: If test failed.
     """
     raw_response = client.test_module()
     if raw_response.get('version'):
