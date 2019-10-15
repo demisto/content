@@ -1,21 +1,4 @@
-# -*- coding: utf-8 -*-
-""" ARIA SDS Packet Intelligence Demito Integration
-
-    The ARIA Cybesecurity Solutions Software-Defined Security (SDS) platform integrates with Demisto to add
-    robustness when responding to incidents. The combination of ARIA hardware, in the form of a
-    Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo),
-    provides the elements required to react instantly when an incident is detected. When integrated with the
-    ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules
-    automatically. These rule changes, which take effect immediately, can block conversations, redirect packets
-    to a recorder or VLAN, or perform a variety of other actions.
-"""
-
-
-''' IMPORTS '''
 import sys
-import re
-import base64
-
 # ARIA PacketIntelligence SOAR API #
 import json
 import requests
@@ -374,14 +357,13 @@ class ARIA(object):
         else:
             error_info = response.text
 
-
         if command_state:
             command_state_str = 'Success'
         else:
             command_state_str = 'Failure'
 
         context_data = {
-            'Rule':{
+            'Rule': {
                 'Name': rule_name,
                 'Definition': ''
             },
@@ -391,7 +373,7 @@ class ARIA(object):
                 'timestamp': response_timestamp,
                 'command_state': command_state_str
             },
-            'Endpoints': endpoints # list of endpoints
+            'Endpoints': endpoints  # list of endpoints
         }
 
         return context_data
@@ -454,16 +436,16 @@ class ARIA(object):
 
                 for ep in endpoints:
                     trid = ep['trid']
-                    success = self._wait_for_trid(trid) # check if the request completes successfully
+                    success = self._wait_for_trid(trid)  # check if the request completes successfully
                     ep['completion'] = success
                     if success:
-                        at_least_one_completion = True #Set to True if at least one endpoints complete
+                        at_least_one_completion = True  # Set to True if at least one endpoints complete
                     else:
-                        command_state = False # Set to False if at least one endpoints not complete
+                        command_state = False  # Set to False if at least one endpoints not complete
 
                 response_timestamp = response.json()['timestamp']
 
-                if command_state: # break the loop if all rules successfully complete
+                if command_state:  # break the loop if all rules successfully complete
                     break
                 # if not at least one endpoints return success, finding a free spots to add rules individually for
                 # failed endpoints
@@ -498,7 +480,7 @@ class ARIA(object):
             command_state_str = 'Failure'
 
         context_data = {
-            'Rule':{
+            'Rule': {
                 'Name': rule_name,
                 'Definition': rule
             },
@@ -508,8 +490,8 @@ class ARIA(object):
                 'command_state': command_state_str,
                 'timestamp': response_timestamp
             },
-            'Endpoints': endpoints # list of endpoints
-         }
+            'Endpoints': endpoints  # list of endpoints
+        }
 
         return context_data
 
@@ -662,7 +644,7 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name, '5-tuple', None, label_sia_group, label_sia_name, label_sia_region)
-    
+
     def alert_conversation(self, src_ip: str, target_ip: str, rule_name: str, transport_type: str, tti_index: str,
                            aio_index: str, trigger_type: str, trigger_value: str, src_port: str = None,
                            target_port: str = None, protocol: str = None, label_sia_group: str = None,
@@ -712,7 +694,7 @@ class ARIA(object):
         data = self._generate_named_rule_data(rule_name, '5-tuple', rule, 'add', None,
                                               label_sia_group, label_sia_name, label_sia_region)
         return self._do_request(data, rule_name, rule)
-    
+
     def mute_alert_conversation(self, rule_name: str, label_sia_group: str = None, label_sia_name: str = None,
                                 label_sia_region: str = None) -> dict:
         """ Removes a named rule from the 5-tuple logic block, disabling the alerts.
@@ -903,7 +885,7 @@ class ARIA(object):
         data = self._generate_named_rule_data(rule_name, 'src-port', rule, 'add', None,
                                               label_sia_group, label_sia_name, label_sia_region)
         return self._do_request(data, rule_name, rule)
-    
+
     def unblock_src_port(self, rule_name: str, label_sia_group: str = None, label_sia_name: str = None,
                          label_sia_region: str = None) -> dict:
         """ Removes a named rule from the source port logic block.
@@ -920,7 +902,7 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name, 'src-port', None, label_sia_group, label_sia_name, label_sia_region)
-    
+
     def record_src_port(self, port_range: str, vlan_id: str, rule_name: str, sia_interface: str = None,
                         transport_type: str = None, tti_index: str = None, aio_index: str = None,
                         trigger_type: str = None, trigger_value: str = None, label_sia_group: str = None,
@@ -1361,11 +1343,7 @@ class ARIA(object):
         """
         return self._remove_rule(rule_name, 'src-subnet', None, label_sia_group, label_sia_name, label_sia_region)
 
-
-
-
 ''' HELPER FUNCTIONS '''
-
 
 def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
     """ Helper function used to call different demisto command

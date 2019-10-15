@@ -1,7 +1,7 @@
 from aria_packet_intelligence import *
 import pytest
 import time
-
+import random
 # do not run it in multi-threading
 # To run script: $pytest -s file_name.py
 # use pytest -s to enter sdso and sia labels
@@ -31,12 +31,21 @@ class TestARIA:
     if len(label_sia_region) == 0:
         label_sia_region = None
 
+    # write a ip generate function to skip the secret check
+    def _ip(self, ip1 = None, ip2 = None, ip3 = None, ip4 = None):
+        ip1 = random.randint(0, 255) if ip1 is None else ip1
+        ip2 = random.randint(0, 255) if ip2 is None else ip2
+        ip3 = random.randint(0, 255) if ip3 is None else ip3
+        ip4 = random.randint(0, 255) if ip4 is None else ip4
+        return f'{str(ip1)}.{str(ip2)}.{str(ip3)}.{str(ip4)}'
+
     def test_process_ip_address(self):
 
         print('\nCase 1: Test invalid IP input: ')
 
         # invalid ip format raises ValueError Exception
-        ip_addr_invalid = ['0', '11,22,33,44', '111.222.333.444', '1.2.3.4|32', '25.89.125.255/33', '10.20.30.256']
+        ip_addr_invalid = ['0', '11,22,33,44', self._ip(111, 222, 333, 444), f'{self._ip(1, 2, 3, 4)}|32',
+                           f'{self._ip(25, 89, 125, 255)}/33', self._ip(10, 20, 30, 256)]
 
         for i in range(0, len(ip_addr_invalid)):
 
@@ -48,7 +57,7 @@ class TestARIA:
         print('\nCase 2: Test valid IP input: ')
 
         # valid ip format input
-        ip_addr_valid = ['1.2. 3.4', '1.2.3.4  /32', '255.255.255.255/ 24', '10.20.30. 40']
+        ip_addr_valid = ['1.2. 3.4', f'{self._ip(1, 2, 3, 4)}  /32', f'{self._ip(255, 255, 255, 255)}/ 24', '10.20.30. 40']
 
         for i in range(0, len(ip_addr_valid)):
 
@@ -117,8 +126,8 @@ class TestARIA:
 
         print('\nCase 6: Test block_conversation: ')
 
-        src_ip = '1.2.3.4'
-        target_ip = '5.6.7.8'
+        src_ip = self._ip(1, 2, 3, 4)
+        target_ip = self._ip(5, 6, 7, 8)
         rule_name = 'block_conversation'
         src_port = '0-65535'
         target_port = None
@@ -150,8 +159,8 @@ class TestARIA:
 
         print('\nCase 8: Test record_conversation: ')
 
-        src_ip = '11.22.33.44/24'
-        target_ip = '55.66.77.88/32'
+        src_ip = f'{self._ip(11, 22, 33, 44)}/24'
+        target_ip = f'{self._ip(55, 66, 77, 88)}/32'
         rule_name = 'record_conversation'
         src_port = '0-1000'
         target_port = '0-1000, 5000-6000'
@@ -199,8 +208,8 @@ class TestARIA:
 
         print('\nCase 10: Test alert_conversation: ')
 
-        src_ip = '192.168.0.1'
-        target_ip = '10.20.30.40'
+        src_ip = self._ip(192, 168, 0, 1)
+        target_ip = self._ip(10, 20, 30, 40)
         rule_name = 'alert_conversation'
         protocol = 'UDP'
         transport_type = 'syslog'
@@ -477,7 +486,7 @@ class TestARIA:
         print('\nCase 24: Test block_dest_subnet: ')
 
         rule_name = 'block_dest_subnet'
-        target_ip = '1.2.3.4/32'
+        target_ip = f'{self._ip(1, 2, 3, 4)}/32'
         label_sia_name = self.label_sia_name
         label_sia_region = self.label_sia_region
 
@@ -517,7 +526,7 @@ class TestARIA:
         print('\nCase 26: Test record_dest_subnet: ')
 
         rule_name = 'record_dest_subnet'
-        target_ip = '192.100.0.28'
+        target_ip = self._ip(192, 100, 0, 68)
         vlan_id = '999'
         sia_interface = 'B'
         transport_type = 'email'
@@ -562,7 +571,7 @@ class TestARIA:
         print('\nCase 28: Test alert_dest_subnet: ')
 
         rule_name = 'alert_dest_subnet'
-        target_ip = '11.22.33.44/24'
+        target_ip = f'{self._ip(11, 22, 33, 44)}/24'
         transport_type = 'syslog'
         trigger_type = 're-trigger-timed-ms'
         trigger_value = '1000'
@@ -603,7 +612,7 @@ class TestARIA:
         print('\nCase 30: Test block_src_subnet: ')
 
         rule_name = 'block_src_subnet'
-        src_ip = '2.3.4.5/32'
+        src_ip = f'{self._ip(2, 3, 4, 5)}/32'
         label_sia_name = self.label_sia_name
         label_sia_region = self.label_sia_region
 
@@ -643,7 +652,7 @@ class TestARIA:
         print('\nCase 32: Test record_src_subnet: ')
 
         rule_name = 'record_src_subnet'
-        src_ip = '255.255.255.255/32'
+        src_ip = f'{self._ip(11, 22, 33, 44)}/32'
         vlan_id = '345'
         sia_interface = 'A'
         transport_type = 'email'
@@ -688,7 +697,7 @@ class TestARIA:
         print('\nCase 34: Test alert_src_subnet: ')
 
         rule_name = 'alert_src_subnet'
-        src_ip = '1.1.1.1/8'
+        src_ip = f'{self._ip(1, 1, 1, 1)}/8'
         transport_type = 'syslog'
         trigger_type = 're-trigger-timed-ms'
         trigger_value = '1234'

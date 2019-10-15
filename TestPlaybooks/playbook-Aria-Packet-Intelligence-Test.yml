@@ -81,10 +81,10 @@ tasks:
       sia_interface:
         simple: B
       src_ip:
-        simple: 32.45.78.65
+        simple: 172.0.0.2
       src_port: {}
       target_ip:
-        simple: 152.56.8.69
+        simple: 56.1.1.1
       target_port: {}
       transport_type:
         simple: email
@@ -260,10 +260,10 @@ tasks:
       rule_name:
         simple: alert_conversation
       src_ip:
-        simple: 10.20.30.40/32
+        simple: 255.255.255.255/32
       src_port: {}
       target_ip:
-        simple: 11.22.33.44/24
+        simple: 9.9.9.9/24
       target_port:
         simple: 0-65535
       transport_type:
@@ -517,11 +517,11 @@ tasks:
       rule_name:
         simple: block_conversation
       src_ip:
-        simple: 1.2.3.4
+        simple: 4.4.4.4
       src_port:
         simple: "56"
       target_ip:
-        simple: 33.44.55.66/24
+        simple: 8.8.8.8/24
       target_port:
         simple: "1234"
     separatecontext: false
@@ -745,7 +745,7 @@ tasks:
       rule_name:
         simple: block_dest_subnet
       target_ip:
-        simple: 99.88.77.66
+        simple: 22.22.22.22
     separatecontext: false
     view: |-
       {
@@ -896,7 +896,7 @@ tasks:
         simple: record_dest_subnet
       sia_interface: {}
       target_ip:
-        simple: 154.23.54.89
+        simple: 5.6.7.8
       transport_type:
         simple: email
       trigger_type:
