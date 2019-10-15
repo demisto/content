@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   description: JSON string of the ipPermissions. IpPermissions should have one or
-    more rules which are composed of IpProtocol, FromPort, ToPort, IpRanges. Refer
+    more rules which are composed of IpProtocol, FromPort, ToPort, or IpRanges. Refer
     to aws-ec2-describe-security-groups (https://docs.aws.amazon.com/cli/latest/reference/ec2/describe-security-groups.html)
     for example/reference.
   isArray: true
@@ -27,14 +27,14 @@ args:
   secret: false
 - default: false
   description: Lower bound port range to be checked. If fromPort and toPort are not
-    specified, all port will be included.
+    specified, all ports will be included.
   isArray: false
   name: fromPort
   required: false
   secret: false
 - default: false
   description: Upper bound port range to be checked. If fromPort and toPort are not
-    specified, all port will be included.
+    specified, all ports will be included.
   isArray: false
   name: toPort
   required: false
