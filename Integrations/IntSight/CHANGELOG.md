@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 - Fixed an issue where indicators were not extracted correctly in ***intsight-get-iocs*** command.
 - Improved implementation of the following commands.
   - ***intsights-get-alert-image***
