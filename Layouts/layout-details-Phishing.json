@@ -873,7 +873,7 @@
 						"y": 5
 					},
 					{
-						"description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
+						"description": "Critical assets that were found, at the investigation stage, to be involved in the incident.",
 						"displayType": "ROW",
 						"h": 2,
 						"hideItemTitleOnlyOne": true,
