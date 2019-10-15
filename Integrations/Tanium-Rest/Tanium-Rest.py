@@ -367,8 +367,10 @@ class Client(BaseClient):
 
 
 def test_module(client, data_args):
-    client.do_request('GET', 'system_status')
-    return demisto.results('ok')
+    res = client.do_request('GET', 'system_status')
+    if res.get('data'):
+        return demisto.results('ok')
+    return return_error('Test Tanium integration failed - please check your username and password')
 
 
 def get_system_status(client, data_args):
