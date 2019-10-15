@@ -140,12 +140,21 @@ PANW_ARGS_DICT = {
     'query': []
 }
 
-TMS_ARGS_DICT = {
+TRAPS_ARGS_DICT = {
     'ip': ['endPointHeader.agentIp='],
     'host': ['endPointHeader.deviceName='],
     'user': ['endPointHeader.userName='],
     'category': ['messageData.eventCategory='],
     'hash': ['messageData.files.sha256='],
+    'query': []
+}
+
+ANALYTICS_ARGS_DICT = {
+    'ip': ['endPointHeader.agentIp='],
+    'host': ['endPointHeader.deviceName='],
+    'user': ['endPointHeader.userName='],
+    'category': ['messageData.eventCategory='],
+    'hash': ['messageData.sha256='],
     'query': []
 }
 
@@ -1321,7 +1330,7 @@ def query_traps_logs_command():
     :return: a Demisto's entry with all the parsed data
     """
     table_fields: list = TRAPS_FIELDS
-    table_args: dict = TMS_ARGS_DICT
+    table_args: dict = TRAPS_ARGS_DICT
     query_table_name: str = 'tms.threat'
     context_transformer_function = traps_context_transformer
     table_context_path: str = 'Cortex.Logging.Traps(val.id === obj.id)'
@@ -1335,7 +1344,7 @@ def query_analytics_logs_command():
     :return: a Demisto's entry with all the parsed data
     """
     table_fields: list = ANALYTICS_FIELDS
-    table_args: dict = TMS_ARGS_DICT
+    table_args: dict = ANALYTICS_ARGS_DICT
     query_table_name: str = 'tms.analytics'
     context_transformer_function = analytics_context_transformer
     table_context_path: str = 'Cortex.Logging.Analytics(val.id === obj.id)'
