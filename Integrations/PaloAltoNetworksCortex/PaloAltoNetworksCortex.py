@@ -1459,7 +1459,11 @@ def query_table_logs(table_fields: list, table_args: dict, query_table_name: str
     response = query_loggings(query_data)
 
     try:
-        result = response.json()['result']
+        response_json = response.json()
+        query_status = response_json.get('queryStatus', '')
+        if query_status in {'RUNNING', 'JOB_FAILED'}:
+            raise DemistoException(f'Logging query job failed with status: {query_status}')
+        result = response_json.get('result', {})
         pages = result.get('esResult', {}).get('hits', {}).get('hits', [])
         table_name = result['esQuery']['table'][0].split('.')[1] if query_table_name != 'tms.threat' else 'traps'
     except ValueError:
