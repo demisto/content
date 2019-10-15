@@ -163,8 +163,7 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    ip = args.get('ip', '')
-    threshold = args.get('threshold')
+    ip = args.get('ip')
     try:
         threshold = int(args.get('threshold'))
     except TypeError:
