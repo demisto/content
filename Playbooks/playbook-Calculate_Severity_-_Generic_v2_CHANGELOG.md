@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 Fixed an issue where current incident severity was not always taken into account.
 
 ## [19.9.1] - 2019-09-18
