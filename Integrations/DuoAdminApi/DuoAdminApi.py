@@ -71,8 +71,7 @@ def override_make_request(self, method, uri, body, headers):
 # Utility Methods
 
 def create_api_call():
-    if USE_SSL and not USE_PROXY:
-        # Use of both is not working with the API
+    if USE_SSL:
         client = duo_client.Admin(
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
