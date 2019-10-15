@@ -235,7 +235,7 @@ class Client:
 
     def legacyagent_runvolatilejob(self, args):
 
-        url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + '/volatile'
+        url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + '/volatile'
         data = {
             'ips': {'targets': [args['target_ip']]},
             'Volatile': {
@@ -262,7 +262,7 @@ class Client:
 
     def legacyagent_runmemoryacquisition(self, args):
 
-        url = 'api/v2/enterpriseapi/agent/' + args['caseid'] + \
+        url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + \
             '/memoryacquistion'
         data = {
             'ips': {'targets': [args['target_ip']]},
@@ -333,10 +333,14 @@ def main():
     token = demisto.params()['Token']
 
     if not demisto.params().get('proxy'):
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
+        if 'HTTP_PROXY' in os.environ:
+            del os.environ['HTTP_PROXY']
+        if 'HTTPS_PROXY' in os.environ:
+            del os.environ['HTTPS_PROXY']
+        if 'http_proxy' in os.environ:
+            del os.environ['http_proxy']
+        if 'https_proxy' in os.environ:
+            del os.environ['https_proxy']
         PROXIES = {
             'http': None,
             'https': None
