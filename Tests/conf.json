@@ -98,6 +98,9 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "TestAwsEC2GetPublicSGRules-Test"
+        },
+        {
             "playbookID": "TestParseEmailHeaders"
         },
         {
@@ -741,12 +744,6 @@
             "instance_names": "v10.3.0",
             "playbookID": "McAfeeESMTest",
             "timeout": 500
-        },
-        {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 720
         },
         {
             "integrations": "GoogleSafeBrowsing",
@@ -1415,6 +1412,11 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
+            "integrations": "Active Directory Query v2"
+        },
+        {
+            "playbookID": "AD v2 - debug-mode - Test",
             "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
         },
