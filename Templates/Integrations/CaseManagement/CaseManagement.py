@@ -16,7 +16,27 @@ INTEGRATION_NAME_COMMAND: str = 'case-management'
 INTEGRATION_CONTEXT_NAME: str = 'CaseManagement'
 
 
+def build_raw_tickets_to_context(tickets: Union[dict, list]):
+    if isinstance(tickets, list):
+        return [build_raw_tickets_to_context(ticket) for ticket in tickets]
+    return {
+        'ID': tickets.get('id'),
+        'Name': tickets.get('name'),
+        'Category': tickets.get('category'),
+        'Description': tickets.get('description'),
+        'Timestamp': tickets.get('timestamp'),
+        'IsOpen': tickets.get('isOpen'),
+        'Assignee': [
+            {
+                'ID': assignee.get('id'),
+                'Name': assignee.get('name')
+            } for assignee in tickets.get('assignee', [])
+        ]
+    }
+
+
 class Client(BaseClient):
+
     def __init__(self, base_url, limit=50, *args, **kwargs):
         self._limit = limit
         super().__init__(base_url, *args, **kwargs)
@@ -42,7 +62,7 @@ class Client(BaseClient):
         elif self._limit:
             params['limit'] = limit
         if ticket_id:
-            params['ticketId'] = ticket_id
+            params['id'] = ticket_id
         return self._http_request('GET', suffix, params=params)
 
     def close_ticket(self, ticket_id: AnyStr) -> dict:
@@ -58,7 +78,7 @@ class Client(BaseClient):
         suffix: str = 'ticket/close'
         # Dictionary of params for the request
         params = {
-            'ticketId': ticket_id
+            'id': ticket_id
         }
         return self._http_request('POST', suffix, params=params)
 
@@ -75,7 +95,7 @@ class Client(BaseClient):
         suffix = 'ticket/open'
         # Dictionary of params for the request
         params = {
-            'ticketId': ticket_id
+            'id': ticket_id
         }
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
@@ -93,7 +113,7 @@ class Client(BaseClient):
         suffix = 'ticket/reset'
         # Dictionary of params for the request
         params = {
-            'ticketId': ticket_id
+            'id': ticket_id
         }
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
@@ -124,14 +144,18 @@ class Client(BaseClient):
         params = {'vaultId': vault_id}
         return self._http_request('POST', suffix, params=params)
 
-    def create_ticket(self, name: str, category: str, description: str, assignee: list, timestamp: str):
+    def create_ticket(
+            self, name: str = None, category: str = None, description: str = None,
+            assignee: list = None, timestamp: str = None, is_open: bool = None
+    ):
         suffix = 'ticket'
         params = assign_params(
             name=name,
             category=category,
             description=description,
             assignee=assignee,
-            timestamp=timestamp if timestamp else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+            timestamp=timestamp if timestamp else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+            isOpen=is_open
         )
         return self._http_request('POST', suffix, params=params)
 
@@ -148,7 +172,7 @@ def test_module_command(client: Client, *_) -> str:
     raw_response = client.test_module()
     if raw_response:
         return 'ok'
-    raise DemistoException(f'{INTEGRATION_NAME} - Got unexpected response: {raw_response}')
+    raise DemistoException(f'{INTEGRATION_NAME} - Unexpected response from service: {raw_response}')
 
 
 @logger
@@ -173,9 +197,11 @@ def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     if tickets:
         title = f'{INTEGRATION_NAME} - Ticket ID: `{ticket_to_get}`.'
         context_entry = build_raw_tickets_to_context(tickets)
-        context[f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)'] = context_entry
+        context[f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(
+            title, context_entry, headers=['ID', 'Name', 'Timestamp', 'Description', 'Assignee']
+        )
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -211,13 +237,15 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
         title: str = f'{INTEGRATION_NAME} - Ticket has been successfully created.'
         context_entry = build_raw_tickets_to_context(tickets)
 
-        context[f'{INTEGRATION_CONTEXT_NAME}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+        context[f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(
+            title, context_entry, headers=['ID', 'Name', 'Timestamp', 'Description', 'Assignee']
+        )
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not create new ticket: {raw_response}')
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not create new ticket!\n Response: {raw_response}')
 
 
 @logger
@@ -243,7 +271,9 @@ def assign_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry
         }
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(
+            title, context_entry, headers=['ID', 'Name', 'Timestamp', 'Description', 'Assignee']
+        )
         return human_readable, context, raw_response
     else:
         return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
@@ -278,43 +308,24 @@ def close_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     # Get arguments from user
     ticket_to_lock = args.get('ticket_id', '')
     # Make request and get raw response
-    raw_response = client.reset_ticket(ticket_to_lock)
+    raw_response = client.close_ticket(ticket_to_lock)
     # Parse response into context & content entries
-    ticket_obj = raw_response.get('ticket', [{}])[0]
-    ticket_id = ticket_obj.get('ticketId')
-    closed_status = ticket_obj.get('isClosed')
-    if ticket_id == ticket_to_lock and closed_status:
+    tickets = raw_response.get('ticket')
+    if tickets and tickets[0].get('id') == ticket_to_lock and not tickets[0].get('isOpen'):
+        ticket_obj = tickets[0]
+        ticket_id = ticket_obj.get('id')
         title: str = f'{INTEGRATION_NAME} - Ticket `{ticket_id}` has been closed.'
-        context_entry = {
-            'IsClosed': True,
-            'ID': ticket_to_lock
-        }
-
+        context_entry = build_raw_tickets_to_context(tickets[0])
         context[f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(
+            title, context_entry, headers=['ID', 'Name', 'Timestamp', 'Description', 'Assignee']
+        )
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not reset ticket `{ticket_to_lock}`')
-
-
-def build_raw_tickets_to_context(tickets: Union[dict, list]):
-    if isinstance(tickets, list):
-        return [build_raw_tickets_to_context(ticket) for ticket in tickets]
-    return {
-        'ID': tickets.get('id'),
-        'Name': tickets.get('name'),
-        'Category': tickets.get('category'),
-        'Description': tickets.get('description'),
-        'Timestamp': tickets.get('timestamp'),
-        'Assignee': [
-            {
-                'ID': assignee.get('id'),
-                'Name': assignee.get('name')
-            } for assignee in tickets.get('assignee', [])
-        ]
-    }
+        raise DemistoException(f'{INTEGRATION_NAME} - Could not close'
+                               f' ticket `{ticket_to_lock}`.\nResponse: {raw_response}')
 
 
 @logger
