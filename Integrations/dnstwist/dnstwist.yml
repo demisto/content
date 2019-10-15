@@ -10,7 +10,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The domain name for which to check for variations.
+      description: The domain name for which to check for variations
       isArray: false
       name: domain
       required: true
