@@ -27,7 +27,7 @@ INTEGRATION_COMMAND_NAME = 'data-enrichment-threat-and-intelligence'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'DataEnrichmentAndThreatIntelligence'
 # Setting global params, initiation in main() function
-FILE_HASHES: Tuple = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
+FILE_HASHES = ('md5', 'ssdeep', 'sha1', 'sha256')  # hashes as described in API
 DEFAULT_THRESHOLD = 70
 ''' HELPER FUNCTIONS '''
 
@@ -66,7 +66,7 @@ class Client(BaseClient):
         # Unknown
         return 0
 
-    def test_module_request(self) -> Dict:
+    def test_module(self) -> Dict:
         """Performs basic get request to see if the API is reachable and authentication works.
 
         Returns:
@@ -74,7 +74,7 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def get_ip_request(self, ip: str) -> Dict:
+    def get_ip(self, ip: str) -> Dict:
         """Gets an analysis from the API for given IP.
 
         Args:
@@ -88,7 +88,7 @@ class Client(BaseClient):
         params = {'ip': ip}
         return self._http_request('GET', suffix, params=params)
 
-    def get_url_request(self, url: str) -> Dict:
+    def get_url(self, url: str) -> Dict:
         """Gets an analysis from the API for given URL.
 
         Args:
@@ -101,7 +101,7 @@ class Client(BaseClient):
         params = {'url': url}
         return self._http_request('GET', suffix, params=params)
 
-    def search_file_request(self, file_hash: str) -> Dict:
+    def search_file(self, file_hash: str) -> Dict:
         """Building request for file command
 
         Args:
@@ -114,7 +114,7 @@ class Client(BaseClient):
         params = {'hash': file_hash}
         return self._http_request('GET', suffix, params=params)
 
-    def get_domain_request(self, domain):
+    def get_domain(self, domain):
         """Building request for file command
 
         Args:
@@ -153,7 +153,7 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
 
 
 @logger
-def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets results for the API.
 
     Args:
@@ -169,7 +169,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         threshold = int(args.get('threshold'))
     except TypeError:
         threshold = None
-    raw_response = client.get_ip_request(ip)
+    raw_response = client.get_ip(ip)
     results = raw_response.get('result')
     if results:
         result = results[0]
@@ -189,7 +189,7 @@ def search_ip(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
 
     Args:
@@ -204,7 +204,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         threshold = int(args.get('threshold'))
     except TypeError:
         threshold = None
-    raw_response = client.get_url_request(url)
+    raw_response = client.get_url(url)
     results = raw_response.get('result')
     if results:
         result = results[0]
@@ -224,7 +224,7 @@ def search_url(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash
     """
     file_hash = args.get('file', '')
@@ -232,7 +232,7 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         threshold = int(args.get('threshold'))
     except TypeError:
         threshold = None
-    raw_response = client.search_file_request(file_hash)
+    raw_response = client.search_file(file_hash)
     results = raw_response.get('result')
     if results:
         result = results[0]
@@ -277,11 +277,11 @@ def search_file(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook
     """
-    url = args.get('domain', '')
-    raw_response = client.get_domain_request(url)
+    url = args.get('domain')
+    raw_response = client.get_domain(url)
     results = raw_response.get('result')
     if results:
         result = results[0]
@@ -301,7 +301,7 @@ def search_domain(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module_command(client: Client, *_) -> str:
     """
 
     Args:
@@ -314,9 +314,9 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     Raises:
         DemistoException: If unexpected response turn back from API.
     """
-    raw_response = client.test_module_request()
+    raw_response = client.test_module()
     if raw_response.get('version'):
-        return 'ok', {}, raw_response
+        return 'ok'
     raise DemistoException(f'Test module failed\nraw_response: {raw_response}')
 
 
@@ -325,7 +325,7 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}'/api/v2'"
+    base_url = urljoin(params.get('url'), '/api/v2')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy') == 'true'
     threshold = int(params.get('threshold', DEFAULT_THRESHOLD))
@@ -336,17 +336,17 @@ def main():  # pragma: no cover
         threshold=threshold
     )
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     commands = {
-        'test-module': test_module,
-        f'{INTEGRATION_COMMAND_NAME}-search-ip': search_ip,
-        'ip': search_ip,
-        f'{INTEGRATION_COMMAND_NAME}-search-url': search_url,
-        'url': search_url,
-        f'{INTEGRATION_COMMAND_NAME}-search-file': search_file,
-        'file': search_file,
-        f'{INTEGRATION_COMMAND_NAME}-search-domain': search_domain,
-        'domain': search_domain,
+        'test-module': test_module_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-ip': search_ip_command,
+        'ip': search_ip_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-url': search_url_command,
+        'url': search_url_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-file': search_file_command,
+        'file': search_file_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-domain': search_domain_command,
+        'domain': search_domain_command,
     }
     try:
         if command in commands:
