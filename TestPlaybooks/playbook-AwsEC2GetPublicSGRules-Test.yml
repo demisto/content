@@ -35,7 +35,7 @@ tasks:
       id: 8d3c4f9c-0f5a-4fb2-835a-9926af5a51c6
       version: -1
       name: Set
-      description: Sets a value into the context with the given context key
+      description: Sets a value in Context with the given Context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -76,7 +76,7 @@ tasks:
       id: 8be9f13f-6791-4bec-8700-5b8686674c40
       version: -1
       name: AwsEC2GetPublicSGRules
-      description: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
+      description: Find Security Group rules which allow ::/0 (IPv4) or 0.0.0.0/0.
       scriptName: AwsEC2GetPublicSGRules
       type: regular
       iscommand: false
@@ -269,7 +269,7 @@ tasks:
       id: 9005e094-4c9d-4299-8e55-4a70ae5c6a65
       version: -1
       name: AwsEC2GetPublicSGRules
-      description: Find Security Group rules which allows ::/0 (IPv4) or 0.0.0.0/0.
+      description: Find Security Group rules which allow ::/0 (IPv4) or 0.0.0.0/0.
       scriptName: AwsEC2GetPublicSGRules
       type: regular
       iscommand: false
