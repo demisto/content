@@ -64,7 +64,7 @@ COMMON_HEADERS = [
 ]
 
 TRAFFIC_FIELDS = [
-    'all', 'container', 'risk-of-app', 'logset', 'bytes_received', 'natsport', 'sessionid', 'url_denied',
+    'all', 'action', 'container', 'risk-of-app', 'logset', 'bytes_received', 'natsport', 'sessionid', 'url_denied',
     'type', 'parent_start_time', 'packets', 'characteristic-of-app', 'dg_hier_level_4', 'dg_hier_level_1',
     'dg_hier_level_3', 'dg_hier_level_2', 'parent_session_id', 'repeatcnt', 'app', 'vsys', 'nat',
     'technology-of-app', 'pkts_received', 'chunks_sent', 'pbf_s2c', 'pbf_c2s', 'receive_time', 'non-standard-dport',
