@@ -2,4 +2,5 @@
 
 
 ## [19.10.1] - 2019-10-15
-Added support for European timestamps.
+#### New Incident Field
+Malicious Behavior
