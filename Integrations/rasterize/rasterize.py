@@ -42,7 +42,7 @@ def init_driver(offline_mode=False):
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
         with tempfile.TemporaryFile() as log:
-            sys.stdout = log
+            sys.stdout = log  # type: ignore
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--headless')
@@ -268,13 +268,14 @@ def rasterize_pdf_command():
 
 def test():
     # setting up a mock email file
-    with open('htmlBodyTest.html', 'w') as test_file:
+    with tempfile.NamedTemporaryFile('w+') as test_file:
         test_file.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
                         '</head><body><br>---------- TEST FILE ----------<br></body></html>')
+        test_file.flush()
         file_path = f'file://{os.path.realpath(test_file.name)}'
 
-    # rasterizing the file
-    rasterize(path=file_path, width=250, height=250)
+        # rasterizing the file
+        rasterize(path=file_path, width=250, height=250)
 
     demisto.results('ok')
 
