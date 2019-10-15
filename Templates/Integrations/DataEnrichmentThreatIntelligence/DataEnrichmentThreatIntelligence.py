@@ -158,7 +158,7 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets results for the API.
 
     Args:
-        client: Client object with request
+        client: Client object
         args: Usually demisto.args()
 
     Returns:
@@ -193,7 +193,7 @@ def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook.
 
     Args:
-        client: Client object with request
+        client: Client object
         args: Usually demisto.args()
 
     Returns:
@@ -228,7 +228,7 @@ def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Searching for given file hash.
 
     Args:
-        client: Client object with request
+        client: Client object
         args: Usually demisto.args()
 
     Returns:
@@ -288,7 +288,7 @@ def search_domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Gets a job from the API. Used mostly for polling playbook.
 
     Args:
-        client: Client object with request
+        client: Client object
         args: Usually demisto.args()
 
     Returns:
@@ -319,7 +319,7 @@ def test_module_command(client: Client, *_) -> str:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
-        client: Client object with request
+        client: Client object
         args: Usually demisto.args()
 
     Returns:
