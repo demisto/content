@@ -213,6 +213,7 @@ if proxy:
             handler=handler(proxy),
             host=demisto.params()['host'],
             port=demisto.params()['port'],
+            app=demisto.params()['app'],
             username=demisto.params()['authentication']['identifier'],
             password=demisto.params()['authentication']['password'],
             verify=VERIFY_CERTIFICATE)
@@ -225,6 +226,7 @@ else:
     service = client.connect(
         host=demisto.params()['host'],
         port=demisto.params()['port'],
+        app=demisto.params()['app'],
         username=demisto.params()['authentication']['identifier'],
         password=demisto.params()['authentication']['password'],
         verify=VERIFY_CERTIFICATE)
@@ -282,7 +284,8 @@ if demisto.command() == 'splunk-search':
         if not isinstance(res[0], dict):
             headers = "results"
 
-    human_readable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
+    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
+                                     res, headers)
 
     demisto.results({
         "Type": 1,
@@ -342,8 +345,11 @@ if demisto.command() == 'fetch-incidents':
         t = t - timedelta(minutes=10)
         lastRun = t.strftime(SPLUNK_TIME_FORMAT)
 
-    kwargs_oneshot = {"index_earliest": lastRun,
-                      "index_latest": now, "count": FETCH_LIMIT, 'offset': search_offset}
+    earliest_fetch_time_fieldname = demisto.params().get("earliest_fetch_time_fieldname", "index_earliest")
+    latest_fetch_time_fieldname = demisto.params().get("latest_fetch_time_fieldname", "index_latest")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: lastRun,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
 
     searchquery_oneshot = demisto.params()['fetchQuery']
 
