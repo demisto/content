@@ -342,6 +342,31 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
     return body
 
 
+def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str, crypto_key_id: str,
+                            client: Client) -> str:
+    """ Return primary CryptoKeyVersion of a given CryptoKey.
+
+    Args:
+        project_id(str): Project of the CryptoKey.
+        location_id(str): Location the CryptoKey is assigned to.
+        key_ring_id(str): Key Ring in which the CryptoKey exists.
+        crypto_key_id(str): The CryptoKey id.
+        client(Client): User's Client.
+
+    Returns:
+        A string with the full path to the primary CryptoKeyVersion
+    """
+    # The resource name of the CryptoKey.
+    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
+
+    # Get the CryptoKey - extract it's primary version path.
+    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
+    if crypto_key.primary.name is None:
+        return_error(f"CryptoKey {crypto_key_name} has no primary CryptoKeyVersion")
+
+    return str(crypto_key.primary.name)
+
+
 """GENERAL FUNCTIONS"""
 
 
@@ -489,7 +514,7 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
     )
 
 
-def disable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
+def disable_key_command(client: Client, args: Dict[str, Any]) -> None:
     """Disable a given CryptoKeyVersion.
 
     Args:
@@ -498,9 +523,14 @@ def disable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
+
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
 
     # Use the KMS API to disable the CryptoKeyVersion.
     new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.DISABLED
@@ -513,7 +543,7 @@ def disable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
                     f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
 
 
-def enable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
+def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
     """Enable a CryptoKeyVersion.
 
     Args:
@@ -522,9 +552,13 @@ def enable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
+
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
 
     # Use the KMS API to disable the CryptoKeyVersion.
     new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED
@@ -537,7 +571,7 @@ def enable_key_version_command(client: Client, args: Dict[str, Any]) -> None:
                     f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
 
 
-def destroy_key_version_command(client: Client, args: Dict[str, Any]) -> None:
+def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
     """Schedule the destruction of a given CryptoKeyVersion.
 
     Args:
@@ -546,10 +580,13 @@ def destroy_key_version_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
 
     # Use the KMS API to mark the CryptoKeyVersion for destruction.
     response = client.kms_client.destroy_crypto_key_version(crypto_key_version_name)
@@ -559,7 +596,7 @@ def destroy_key_version_command(client: Client, args: Dict[str, Any]) -> None:
                     f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.')
 
 
-def restore_key_version_command(client: Client, args: Dict[str, Any]) -> None:
+def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
     """Restores a CryptoKeyVersion scheduled for destruction.
 
     Args:
@@ -568,10 +605,13 @@ def restore_key_version_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
 
     # Use the KMS API to restore the CryptoKeyVersion.
     response = client.kms_client.restore_crypto_key_version(crypto_key_version_name)
@@ -641,108 +681,6 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     )
 
 
-def disable_key_command(client: Client, args: Dict[str, Any]) -> None:
-    """Disable the primary CryptoKeyVersion of a given CryptoKey.
-
-    Args:
-        client(Client): User Client.
-        args(Dict): Demisto arguments.
-
-    """
-    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
-
-    # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
-
-    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
-    crypto_key_primary_version_name = crypto_key.primary.name
-
-    # Use the KMS API to disable the CryptoKeyVersion.
-    new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.DISABLED
-    version = {'name': crypto_key_primary_version_name, 'state': new_state}
-    update_mask = {'paths': ["state"]}
-
-    # Print results
-    response = client.kms_client.update_crypto_key_version(version, update_mask)
-    demisto.results(f'CryptoKeyVersion {crypto_key_primary_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
-
-
-def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
-    """Enables the primary CroptoKeyVersion of a given CryptoKey.
-
-    Args:
-        client(Client): User Client.
-        args(Dict): Demisto arguments.
-
-    """
-    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
-
-    # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
-
-    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
-    crypto_key_primary_version_name = crypto_key.primary.name
-
-    # Use the KMS API to disable the CryptoKeyVersion.
-    new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED
-    version = {'name': crypto_key_primary_version_name, 'state': new_state}
-    update_mask = {'paths': ["state"]}
-
-    # Print results
-    response = client.kms_client.update_crypto_key_version(version, update_mask)
-    demisto.results(f'CryptoKeyVersion {crypto_key_primary_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
-
-
-def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
-    """Destroy the primary CryptoKeyVersion of a given CryptoKey.
-
-    Args:
-        client(Client): User Client.
-        args(Dict): Demisto arguments.
-
-    """
-    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
-
-    # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
-
-    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
-    crypto_key_primary_version_name = crypto_key.primary.name
-
-    # Use the KMS API to mark the CryptoKeyVersion for destruction.
-    response = client.kms_client.destroy_crypto_key_version(crypto_key_primary_version_name)
-
-    # Print results
-    demisto.results(f'CryptoKeyVersion {crypto_key_primary_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.')
-
-
-def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
-    """Restore the primary CryptoKeyVersion of a given CryptoKey scheduled for destruction.
-
-    Args:
-        client(Client): User Client
-        args(Dict): Demisto arguments.
-
-    """
-    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
-
-    # The resource name of the CryptoKey.
-    crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
-
-    crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
-    crypto_key_primary_version_name = crypto_key.primary.name
-
-    # Use the KMS API to restore the CryptoKeyVersion.
-    response = client.kms_client.restore_crypto_key_version(crypto_key_primary_version_name)
-
-    # Print results
-    demisto.results(f'CryptoKeyVersion {crypto_key_primary_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
-
-
 def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
     if args.get('use_base64') == 'false':
         plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
@@ -752,9 +690,13 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
+
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
 
     crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
     key_algo = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
@@ -783,9 +725,13 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    # Construct the resource name of the CryptoKeyVersion.
-    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                        crypto_key_id, crypto_key_version)
+    if crypto_key_version == 'default':
+        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
+
+    else:
+        # Construct the resource name of the CryptoKeyVersion.
+        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                            crypto_key_id, crypto_key_version)
     ciphertext = base64.b64decode(str(args.get('ciphertext')))
     response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
     if args.get('use_base64') == 'true':
@@ -844,18 +790,6 @@ def main():
         elif command == f'{INTEGRATION_COMMAND_NAME}update-key' and client.role in ['Project-Admin', 'KMS-Admin']:
             results = update_key_command(client, demisto.args())
             return_outputs(*results)
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}destroy-key-version' and client.role in ['Project-Admin', 'KMS-Admin']:
-            destroy_key_version_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}restore-key-version'and client.role in ['Project-Admin', 'KMS-Admin']:
-            restore_key_version_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}disable-key-version' and client.role in ['Project-Admin', 'KMS-Admin']:
-            disable_key_version_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}enable-key-version' and client.role in ['Project-Admin', 'KMS-Admin']:
-            enable_key_version_command(client, demisto.args())
 
         elif command == f'{INTEGRATION_COMMAND_NAME}destroy-key' and client.role in ['Project-Admin', 'KMS-Admin']:
             destroy_key_command(client, demisto.args())
