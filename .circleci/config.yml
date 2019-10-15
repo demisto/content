@@ -231,7 +231,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
           name: Validate Docker Images
