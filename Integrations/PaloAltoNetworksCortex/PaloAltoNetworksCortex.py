@@ -584,7 +584,7 @@ def verify_table_fields(fields: str, table_fields: list) -> str:
             # handle first field case
             parsed_fields += field
         else:
-            parsed_fields += f', {field}'
+            parsed_fields += f',{field}'
 
     return parsed_fields
 
