@@ -1,12 +1,8 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import cast, Any, Dict, Tuple, List, AnyStr, Optional
-from xml.etree import ElementTree
+from typing import Dict, Tuple, List, AnyStr, Optional, Union
 
-import requests
 import urllib3
 
 # Disable insecure warnings
@@ -33,7 +29,7 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_tickets(self, limit: Optional[AnyStr]) -> dict:
+    def list_tickets(self, ticket_id: Optional[AnyStr] = None, limit: Optional[AnyStr] = None) -> dict:
         """Gets all credentials from API.
 
         Returns:
@@ -45,6 +41,8 @@ class Client(BaseClient):
             params['limit'] = limit
         elif self._limit:
             params['limit'] = limit
+        if ticket_id:
+            params['ticketId'] = ticket_id
         return self._http_request('GET', suffix, params=params)
 
     def close_ticket(self, ticket_id: AnyStr) -> dict:
@@ -126,66 +124,92 @@ class Client(BaseClient):
         params = {'vaultId': vault_id}
         return self._http_request('POST', suffix, params=params)
 
+    def create_ticket(self, name: str, category: str, description: str, assignee: list, timestamp: str):
+        suffix = 'ticket'
+        params = assign_params(
+            name=name,
+            category=category,
+            description=description,
+            assignee=assignee,
+            timestamp=timestamp if timestamp else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+        )
+        return self._http_request('POST', suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
 ''' COMMANDS '''
 
 
-def test_module(client: Client) -> str:
-    """
-    Performs basic get request to get item samples
+@logger
+def test_module_command(client: Client, *_) -> str:
+    """Performs basic get request to get item samples.
     """
     raw_response = client.test_module()
     if raw_response:
         return 'ok'
+    raise DemistoException(f'{INTEGRATION_NAME} - Got unexpected response: {raw_response}')
 
 
+@logger
 def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
-    """
-    Gets details about a raw_response using IDs or some other filters
+    """Gets details about a raw_response using IDs or some other filters.
+
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     # Initialize main vars
-    context: Dict = dict()
+    context = dict()
     # Get arguments from user
     ticket_to_get = args.get('ticket_id')
     # Make request and get raw response
-    raw_response = client.close_ticket(ticket_to_get)
+    raw_response = client.list_tickets(ticket_id=ticket_to_get)
     # Parse response into context & content entries
-    ticket_obj = raw_response.get('ticket', [{}])[0]
-    ticket_id = ticket_obj.get('ticketId')
-    if ticket_id == ticket_to_get:
-        title = f'{INTEGRATION_NAME} - Account `{ticket_to_get}` has been locked.'
-        context_entry = {
-            'IsLocked': True,
-            'ID': ticket_to_get
-        }
-        context[f'{INTEGRATION_CONTEXT_NAME}.Account(val.ID && val.ID === obj.ID)'] = context_entry
+    tickets = raw_response.get('ticket')
+    if tickets:
+        title = f'{INTEGRATION_NAME} - Ticket ID: `{ticket_to_get}`.'
+        context_entry = build_raw_tickets_to_context(tickets)
+        context[f'{INTEGRATION_CONTEXT_NAME}(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock account `{ticket_to_get}`')
+        return f'{INTEGRATION_NAME} - Could not find ticket ID: `{ticket_to_get}`', {}, {}
 
 
-def create_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
-    """
-    Gets details about a raw_response using IDs or some other filters
+@logger
+def create_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+    """Gets details about a raw_response using IDs or some other filters.
+
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
     # Initialize main vars
-    context: Dict = dict()
+    context = dict()
     # Get arguments from user
-    account_to_unlock = args.get('account_id', '')
+    name = args.get('name')
+    description = args.get('description')
+    assignee = argToList(args.get('assignee'))
+    category = args.get('category')
+    timestamp = args.get('timestamp')
     # Make request and get raw response
-    unlocked_account: str = client.reopen_ticket(account_to_unlock)
+    raw_response = client.create_ticket(
+        name=name, category=category, description=description, assignee=assignee, timestamp=timestamp
+    )
+    tickets = raw_response.get('ticket')
     # Parse response into context & content entries
-    if unlocked_account == account_to_unlock:
-        title: str = f'{INTEGRATION_NAME} - Account `{unlocked_account}` has been unlocked.'
-        context_entry = {
-            'IsLocked': False,
-            'ID': account_to_unlock
-        }
+    if tickets:
+        title: str = f'{INTEGRATION_NAME} - Ticket has been successfully created.'
+        context_entry = build_raw_tickets_to_context(tickets)
 
         context[f'{INTEGRATION_CONTEXT_NAME}.Account(val.ID && val.ID === obj.ID)'] = context_entry
         # Creating human readable for War room
@@ -193,11 +217,22 @@ def create_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not unlock account `{account_to_unlock}`')
+        return_error(f'{INTEGRATION_NAME} - Could not create new ticket: {raw_response}')
 
 
-def assign_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
-    vault_to_lock: str = demisto.args().get('vault', '')
+@logger
+def assign_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+    """
+
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+
+    """
+    vault_to_lock = args.get('vault', '')
     raw_response = client.lock_vault(vault_to_lock)
     if 'is_locked' in raw_response and raw_response['is_locked'] is True:
         title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
@@ -214,7 +249,8 @@ def assign_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
         return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
 
 
-def list_users(client: Client, args: dict) -> Tuple[str, dict, dict]:
+@logger
+def list_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     vault_to_lock: str = demisto.args().get('vault', '')
     raw_response = client.unlock_vault(vault_to_lock)
     if 'is_locked' in raw_response and raw_response['is_locked'] is True:
@@ -232,7 +268,8 @@ def list_users(client: Client, args: dict) -> Tuple[str, dict, dict]:
         return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
 
 
-def close_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
+@logger
+def close_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """
     Gets details about a raw_response using IDs or some other filters
     """
@@ -262,52 +299,60 @@ def close_ticket(client: Client, args: dict) -> Tuple[str, dict, dict]:
         return_error(f'{INTEGRATION_NAME} - Could not reset ticket `{ticket_to_lock}`')
 
 
-def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
-    limit: Optional[str] = demisto.args().get('limit')
-    raw_response: Dict = client.list_tickets(limit)
-    tickets: List[Dict] = raw_response.get('tickets', [])
-    if tickets:
-        title: str = f'{INTEGRATION_NAME} - Tickets list'
-        context_entry = [
+def build_raw_tickets_to_context(tickets: Union[dict, list]):
+    if isinstance(tickets, list):
+        return [build_raw_tickets_to_context(ticket) for ticket in tickets]
+    return {
+        'ID': tickets.get('id'),
+        'Name': tickets.get('name'),
+        'Category': tickets.get('category'),
+        'Description': tickets.get('description'),
+        'Timestamp': tickets.get('timestamp'),
+        'Assignee': [
             {
-                'ID': ticket.get('id'),
-                'Name': ticket.get('name'),
-                'Category': ticket.get('category'),
-                'Assignee': [
-                    {
-                        'ID': assignee.get('id'),
-                        'Name': assignee.get('name')
-                    } for assignee in ticket.get('assignee', [])
-                ]
-            } for ticket in tickets
+                'ID': assignee.get('id'),
+                'Name': assignee.get('name')
+            } for assignee in tickets.get('assignee', [])
         ]
+    }
+
+
+@logger
+def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+    limit = args.get('limit')
+    raw_response = client.list_tickets(limit=limit)
+    tickets = raw_response.get('ticket')
+    if tickets:
+        title = f'{INTEGRATION_NAME} - Tickets list:'
+        context_entry = build_raw_tickets_to_context(tickets)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.Name ==== obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return_warning(f'{INTEGRATION_NAME} - Could not find any tickets.')
+        return f'{INTEGRATION_NAME} - Could not find any tickets.', {}, raw_response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
-    server: str = demisto.params().get('url')
-    use_ssl: bool = not demisto.params().get('insecure', False)
-    proxy: Optional[bool] = demisto.params().get('proxy')
-    client: Client = Client(server, use_ssl=use_ssl, proxy=proxy)
-    command: str = demisto.command()
-    demisto.info(f'Command being called is {command}')
-    commands: Dict = {
-        'test-module': test_module,
+    params = demisto.params()
+    server = params.get('url')
+    use_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy') == 'true'
+    client = Client(server, use_ssl=use_ssl, proxy=proxy)
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
+    commands = {
+        'test-module': test_module_command,
         f'{INTEGRATION_NAME_COMMAND}-list-tickets': list_tickets_command,
         f'{INTEGRATION_NAME_COMMAND}-get-ticket': get_ticket_command,
-        f'{INTEGRATION_NAME_COMMAND}-create-ticket': create_ticket,
-        f'{INTEGRATION_NAME_COMMAND}-close-ticket': close_ticket,
-        f'{INTEGRATION_NAME_COMMAND}-assign-ticket': assign_ticket,
-        f'{INTEGRATION_NAME_COMMAND}-list-users': list_users
+        f'{INTEGRATION_NAME_COMMAND}-create-ticket': create_ticket_command,
+        f'{INTEGRATION_NAME_COMMAND}-close-ticket': close_ticket_command,
+        f'{INTEGRATION_NAME_COMMAND}-assign-ticket': assign_ticket_command,
+        f'{INTEGRATION_NAME_COMMAND}-list-users': list_users_command
     }
     try:
         if command in commands:
