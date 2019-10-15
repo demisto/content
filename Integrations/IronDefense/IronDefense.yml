@@ -1,0 +1,155 @@
+category: Network Security
+commonfields:
+  id: IronDefense
+  version: -1
+configuration:
+- display: IronAPI Host/IP
+  name: ironAPIHost
+  required: true
+  type: 0
+- defaultvalue: '6942'
+  display: IronAPI Port
+  name: ironAPIPort
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: '60'
+  display: Request Timeout (Sec)
+  name: requestTimeout
+  required: false
+  type: 0
+description: Integrates with IronDefense
+display: IronDefense
+name: IronDefense
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The ID of the IronDefense alert
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The severity rating of this alert
+      isArray: false
+      name: severity
+      predefined:
+      - Undecided
+      - Benign
+      - Suspicious
+      - Malicious
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Was this rating expected? Use "Unknown" if the rating is undecided
+      isArray: false
+      name: expectation
+      predefined:
+      - Unknown
+      - Expected
+      - Unexpected
+      required: true
+      secret: false
+    - default: false
+      description: Explain the rating of this alert
+      isArray: false
+      name: comments
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Shares the provided comment with IronDome
+      isArray: false
+      name: share_comment_with_irondome
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: Rates an IronDefense alert.
+    execution: false
+    name: irondefense-rate-alert
+  - arguments:
+    - default: false
+      description: The ID of the IronDefense alert
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      description: Text of comment
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Shares the provided comment with IronDome
+      isArray: false
+      name: share_comment_with_irondome
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds a comment to an IronDefense alert
+    execution: false
+    name: irondefense-comment-alert
+  - arguments:
+    - default: false
+      description: The ID of the IronDefense alert
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The alert status to set
+      isArray: false
+      name: status
+      predefined:
+      - Awaiting Review
+      - Under Review
+      - Closed
+      required: true
+      secret: false
+    - default: false
+      description: Explain the status of this alert
+      isArray: false
+      name: comments
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Shares the provided comment with IronDome
+      isArray: false
+      name: share_comment_with_irondome
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets the status of an IronDefense alert
+    execution: false
+    name: irondefense-set-alert-status
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
