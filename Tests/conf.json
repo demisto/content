@@ -90,6 +90,9 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "TestAwsEC2GetPublicSGRules-Test"
+        },
+        {
             "playbookID": "TestParseEmailHeaders"
         },
         {
