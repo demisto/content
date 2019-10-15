@@ -42,6 +42,7 @@ args:
   - Fail
   - Suspicious
   - Undetermined
+  - Pass
   required: false
   secret: false
 - auto: PREDEFINED
