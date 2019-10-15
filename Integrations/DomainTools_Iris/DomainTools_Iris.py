@@ -46,7 +46,7 @@ def http_request(method, path, other_params=None):
         demisto.error(json_error)
 
     if not res.ok:
-        error_message = res_json.get('error').get('message')
+        error_message = res_json.get('error', {}).get('message')
         txt = 'error in URL {} status code: {} reason: {}'.format(url, res.status_code, error_message)
         demisto.error(txt)
 
@@ -64,7 +64,7 @@ def get_dbot_score(proximity_score, age, threat_profile_score):
     Returns: DBot Score
 
     """
-    if proximity_score > RISK_THRESHOLD or threat_profile_score > RISK_THRESHOLD:
+    if proximity_score >= RISK_THRESHOLD or threat_profile_score >= RISK_THRESHOLD:
         return 'Bad'
     elif age < YOUNG_DOMAIN_TIMEFRAME and (proximity_score < RISK_THRESHOLD or threat_profile_score < RISK_THRESHOLD):
         return 'Suspicious'
@@ -133,8 +133,8 @@ def create_domain_context_outputs(domain_result):
     """
     domain = domain_result.get('domain')
     ip_addresses = ', '.join([x.get('address').get('value') for x in domain_result.get('ip')])
-    create_date = domain_result.get('create_date').get('value')
-    expiration_date = domain_result.get('expiration_date').get('value')
+    create_date = domain_result.get('create_date', {}).get('value')
+    expiration_date = domain_result.get('expiration_date', {}).get('value')
     domain_name_servers = ', '.join([x.get('host').get('value') for x in domain_result.get('name_server')])
     name_servers = domain_result.get('name_server')
     domain_status = domain_result.get('active')
@@ -144,9 +144,9 @@ def create_domain_context_outputs(domain_result):
     threat_profile_threats = ''
     threat_profile_evidence = ''
 
-    overall_risk_score = domain_result.get('domain_risk').get('risk_score')
-    risk_components = domain_result.get('domain_risk').get('components')
-    if len(risk_components):
+    overall_risk_score = domain_result.get('domain_risk', {}).get('risk_score')
+    risk_components = domain_result.get('domain_risk', {}).get('components')
+    if risk_components:
         proximity_data = get_threat_component(risk_components, 'proximity')
         blacklist_data = get_threat_component(risk_components, 'blacklist')
         if proximity_data:
@@ -160,13 +160,13 @@ def create_domain_context_outputs(domain_result):
             threat_profile_evidence = ', '.join(threat_profile_data.get('evidence', []))
 
     website_response = domain_result.get('website_response')
-    google_adsense = domain_result.get('adsense').get('value')
-    google_analytics = domain_result.get('google_analytics').get('value')
+    google_adsense = domain_result.get('adsense', {}).get('value')
+    google_analytics = domain_result.get('google_analytics', {}).get('value')
     alexa_rank = domain_result.get('alexa')
     tags = domain_result.get('tags')
 
-    registrant_name = domain_result.get('registrant_name').get('value')
-    registrant_org = domain_result.get('registrant_org').get('value')
+    registrant_name = domain_result.get('registrant_name', {}).get('value')
+    registrant_org = domain_result.get('registrant_org', {}).get('value')
     domain_registrant_contact = {
         'Country': domain_result.get('registrant_contact').get('country').get('value'),
         'Email': ', '.join([x.get('value') for x in domain_result.get('registrant_contact').get('email')]),
@@ -202,12 +202,12 @@ def create_domain_context_outputs(domain_result):
     ssl_email = [x.get('value') for x in domain_result.get('ssl_email')]
     email_domains = [x.get('value') for x in domain_result.get('email_domain')]
     additional_whois_emails = domain_result.get('additional_whois_email')
-    domain_registrant = domain_result.get('registrar').get('value') if isinstance(domain_result.get('registrar'),
+    domain_registrant = domain_result.get('registrar', {}).get('value') if isinstance(domain_result.get('registrar'),
                                                                                   dict) else domain_result.get(
         'registrar')
     registrar_status = domain_result.get('registrar_status')
     ip_data = domain_result.get('ip')
-    ip_country_code = domain_result.get('ip')[0] if len(domain_result.get('ip')) else ''
+    ip_country_code = domain_result.get('ip')[0] if domain_result.get('ip') else ''
     mx_servers = domain_result.get('mx')
     spf_info = domain_result.get('spf_info')
     ssl_certificates = domain_result.get('ssl_info')
