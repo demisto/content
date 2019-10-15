@@ -130,15 +130,16 @@ def test_get_encrypted():
 class TestParseFunctions:
     def test_verify_table_fields(self):
         from PaloAltoNetworksCortex import verify_table_fields
-        table_fields = ['risk-of-app', 'all', 'aaa', 'config_ver', '3dx', 'users']
+        table_fields = ['risk-of-app', 'all', 'aaa', 'config_ver', '3dx', 'users', 'from']
         fields_list_all_input = 'risk-of-app,config_ver,all,users'
         fields_list_negative_input = 'xyz,risk-of-app'
-        fields_list_positive_input = 'risk-of-app,config_ver,users'
+        fields_list_positive_input = 'risk-of-app,config_ver,users,from'
+        fields_list_positive_output = "risk-of-app,config_ver,users,'from'"
         fields_list_all_output = '*'
         # All test
         assert fields_list_all_output == verify_table_fields(fields_list_all_input, table_fields)
-        # Positive test - input is equal to output
-        assert fields_list_positive_input == verify_table_fields(fields_list_positive_input, table_fields)
+        # Positive test
+        assert fields_list_positive_output == verify_table_fields(fields_list_positive_input, table_fields)
         # Raising exception test
         with raises(DemistoException, match='xyz is not a valid field of the query'):
             verify_table_fields(fields_list_negative_input, table_fields)
