@@ -41,7 +41,7 @@ def init_driver(offline_mode=False):
     """
     demisto.debug(f'Creating chrome driver. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
     try:
-        with tempfile.TemporaryFile('log.txt') as log:
+        with tempfile.TemporaryFile() as log:
             sys.stdout = log
             chrome_options = webdriver.ChromeOptions()
             chrome_options.add_argument('--no-sandbox')
@@ -202,11 +202,11 @@ def rasterize_command():
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h)
-    file = fileResult(filename=filename, data=output)
+    res = fileResult(filename=filename, data=output)
     if r_type == 'png':
-        file['Type'] = entryTypes['image']
+        res['Type'] = entryTypes['image']
 
-    demisto.results(file)
+    demisto.results(res)
 
 
 def rasterize_image_command():
@@ -221,10 +221,10 @@ def rasterize_image_command():
         data = base64.b64encode(f.read()).decode('utf-8')
         image.write(data)
         output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h)
-        file = fileResult(filename=filename, data=output)
-        file['Type'] = entryTypes['image']
+        res = fileResult(filename=filename, data=output)
+        res['Type'] = entryTypes['image']
 
-        demisto.results(file)
+        demisto.results(res)
 
 
 def rasterize_email_command():
@@ -240,11 +240,11 @@ def rasterize_email_command():
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline)
-    file = fileResult(filename=filename, data=output)
+    res = fileResult(filename=filename, data=output)
     if r_type == 'png':
-        file['Type'] = entryTypes['image']
+        res['Type'] = entryTypes['image']
 
-    demisto.results(file)
+    demisto.results(res)
 
 
 def rasterize_pdf_command():
@@ -260,10 +260,10 @@ def rasterize_pdf_command():
     with open(file_path, 'rb') as f:
         output = convert_pdf_to_jpeg(path=os.path.realpath(f.name), max_pages=max_pages, password=password,
                                      horizontal=horizontal)
-        file = fileResult(filename=filename, data=output)
-        file['Type'] = entryTypes['image']
+        res = fileResult(filename=filename, data=output)
+        res['Type'] = entryTypes['image']
 
-        demisto.results(file)
+        demisto.results(res)
 
 
 def test():
