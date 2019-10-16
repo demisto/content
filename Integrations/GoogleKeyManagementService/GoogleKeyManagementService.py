@@ -690,13 +690,10 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    if crypto_key_version == 'default':
-        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
-    else:
-        # Construct the resource name of the CryptoKeyVersion.
-        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                            crypto_key_id, crypto_key_version)
+    # Construct the resource name of the CryptoKeyVersion.
+    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                        crypto_key_id, crypto_key_version)
 
     crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
     key_algo = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
@@ -725,13 +722,10 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
-    if crypto_key_version == 'default':
-        crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
-    else:
-        # Construct the resource name of the CryptoKeyVersion.
-        crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
-                                                                            crypto_key_id, crypto_key_version)
+    # Construct the resource name of the CryptoKeyVersion.
+    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                        crypto_key_id, crypto_key_version)
     ciphertext = base64.b64decode(str(args.get('ciphertext')))
     response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
     if args.get('use_base64') == 'true':

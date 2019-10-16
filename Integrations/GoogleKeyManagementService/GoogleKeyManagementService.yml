@@ -873,7 +873,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The CryptoKeyVersion to use
+      description: The CryptoKeyVersion to use.
       isArray: false
       name: crypto_key_version
       required: true
@@ -930,7 +930,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The CryptoKeyVersion to use
+      description: The CryptoKeyVersion to use.
       isArray: false
       name: crypto_key_version
       required: true
@@ -956,7 +956,7 @@ script:
     description: Decrypt using an asymmetric CryptoKey
     execution: false
     name: google-kms-asymmetric-decrypt
-  dockerimage: devdemisto/google-kms:1.0.0.2636
+  dockerimage: demisto/google-kms:1.0.0.2689
   isfetch: false
   longRunning: false
   longRunningPort: false
