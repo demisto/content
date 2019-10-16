@@ -161,6 +161,7 @@ ANALYTICS_ARGS_DICT = {
 # This dictionary transforms number values into string representation. The number is correspondent
 # to the index in the list. For example VALUE_TRANSFORM_DICT['traps']['messageData']['block'][0] matches the string:
 # "File was not blocked".
+
 VALUE_TRANSFORM_DICT: Dict[object, Dict[object, Dict]] = {
     'traps': {
         'messageData': {
@@ -310,17 +311,17 @@ def traps_context_transformer(row_content: dict) -> dict:
         'AgentID': row_content.get('agentId'),
         'EndPointHeader': {
             'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')]
-            if end_point_header.get('osType') and
-            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])
+            if end_point_header.get('osType')
+            and 1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])
             else '',
             'IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
-            if end_point_header.get('isVdi') and
-            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'])
+            if end_point_header.get('isVdi')
+            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'])
             else '',
             'OSVersion': end_point_header.get('osVersion'),
             'Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
-            if end_point_header.get('is64') and
-            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'])
+            if end_point_header.get('is64')
+            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'])
             else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
@@ -354,8 +355,8 @@ def traps_context_transformer(row_content: dict) -> dict:
             [message_data.get('terminate')] if message_data.get('terminate') else '',
             'Verdict': message_data.get('verdict'),
             'Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['block'][message_data.get('blocked')]
-            if message_data.get('blocked') and
-            0 <= message_data.get('blocked') <= len(VALUE_TRANSFORM_DICT['traps']['messageData']['block'])
+            if message_data.get('blocked')
+            and 0 <= message_data.get('blocked') <= len(VALUE_TRANSFORM_DICT['traps']['messageData']['block'])
             else '',
             'TargetProcessIdx': message_data.get('targetProcessIdx'),
             'ModuleCategory': message_data.get('moduleCategory'),
@@ -391,17 +392,17 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'AgentID': row_content.get('agentId'),
         'EndPointHeader': {
             'OsType': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType'][end_point_header.get('osType')]
-            if end_point_header.get('osType') and
-            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType'])
-            else '',
+            if end_point_header.get('osType')
+            and 1 <= end_point_header.get('osType')
+            <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType']) else '',
             'IsVdi': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
-            if end_point_header.get('isVdi') and
-            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
+            if end_point_header.get('isVdi')
+            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
             else '',
             'OSVersion': end_point_header.get('osVersion'),
             'Is64': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'][end_point_header.get('is64')]
-            if end_point_header.get('is64') and
-            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
+            if end_point_header.get('is64')
+            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
             else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
@@ -435,9 +436,9 @@ def analytics_context_transformer(row_content: dict) -> dict:
                 'Publishers': local_analysis_result.get('publishers'),
                 'TrustedID': VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']
                 [local_analysis_result.get('trustedId')]
-                if local_analysis_result.get('trustedId') and
-                0 <= local_analysis_result.get('trustedId') <=
-                len(VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']) else ''
+                if local_analysis_result.get('trustedId')
+                and 0 <= local_analysis_result.get('trustedId')
+                <= len(VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']) else ''
             },
             'ExecutionCount': message_data.get('executionCount'),
             'LastSeen': message_data.get('lastSeen')
@@ -680,8 +681,9 @@ def get_context_standards_outputs(results: list) -> dict:
             'Domain': end_point_header.get('deviceDomain'),
             'OSVersion': end_point_header.get('osVersion'),
             'OS': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')]
-            if end_point_header.get('osType') and
-            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])
+            if end_point_header.get('osType')
+            and 1 <= end_point_header.get('osType')  # type: ignore
+            <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])  # type: ignore
             else '',
             'ID': result.get('agentId')
         }
