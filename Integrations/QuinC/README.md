@@ -1,11 +1,11 @@
 ## Overview
 ---
-Use the Quinc integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+Use the QuinC integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 This integration was integrated and tested with version 20190926 of QuinC
-## Quinc Playbook
+## QuinC Playbook
 ---
-
-## Configure Quinc on Demisto
+For example, you can look at "Accessdata: Dump memory for malicious process" playbook to understand how to use this integration.
+## Configure QuinC on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -13,7 +13,7 @@ This integration was integrated and tested with version 20190926 of QuinC
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)__
-    * __The token is required to connect to Quinc.__
+    * __The token is required to connect to QuinC.__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
