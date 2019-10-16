@@ -579,8 +579,7 @@ def create_instance_profile(args):
         'InstanceProfileName': instanceProfile['InstanceProfileName'],
         'InstanceProfileId': instanceProfile['Path'],
         'Arn': instanceProfile['Arn'],
-        'CreateDate': datetime.strftime(instanceProfile['CreateDate'],
-                                                 '%Y-%m-%dT%H:%M:%S'),
+        'CreateDate': datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
     })
 
     ec = {'AWS.IAM.InstanceProfiles': data}
@@ -679,8 +678,7 @@ def list_instance_profiles_for_role(args):
                 'Path': instanceProfile['Path'],
                 'InstanceProfileName': instanceProfile['InstanceProfileName'],
                 'InstanceProfileId': instanceProfile['InstanceProfileId'],
-                'CreateDate': datetime.strftime(instanceProfile['CreateDate'],
-                                                         '%Y-%m-%dT%H:%M:%S'),
+                'CreateDate': datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
                 'Arn': instanceProfile['Arn'],
             })
             output.append(instanceProfile)
@@ -703,8 +701,7 @@ def get_instance_profile(args):
         'Path': instanceProfile['Path'],
         'InstanceProfileName': instanceProfile['InstanceProfileName'],
         'InstanceProfileId': instanceProfile['InstanceProfileId'],
-        'CreateDate': datetime.strftime(instanceProfile['CreateDate'],
-                                                 '%Y-%m-%dT%H:%M:%S'),
+        'CreateDate': datetime.strftime(instanceProfile['CreateDate'], '%Y-%m-%dT%H:%M:%S'),
     })
 
     raw = json.loads(json.dumps(instanceProfile, cls=DatetimeEncoder))
