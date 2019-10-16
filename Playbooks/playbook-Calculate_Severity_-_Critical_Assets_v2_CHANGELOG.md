@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 Added a task that sets all found critical assets to a new incident field.
 
 ## [19.9.1] - 2019-09-18
