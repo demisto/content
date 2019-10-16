@@ -54,7 +54,7 @@ def get_attachments(build_url, env_results_file_name):
         'title': title,
         'title_link': build_url,
         "author_name": "Demisto AWS Machine",
-        "author_link": "https://{instance_dns}".format(instance_dns),
+        "author_link": "https://{0}".format(instance_dns),
         "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
     }]
