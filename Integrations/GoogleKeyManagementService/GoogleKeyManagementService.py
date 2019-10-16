@@ -2,6 +2,17 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+"""
+For further information about the API used in the integration see:
+
+1) Google KMS API Client libraries information: 
+    https://cloud.google.com/kms/docs/reference/libraries
+    
+2) Git resource with some API use examples: 
+    https://github.com/GoogleCloudPlatform/python-docs-samples/tree/master/kms/api-client
+    
+"""
+
 '''IMPORTS'''
 from google.cloud import kms_v1
 from google.cloud.kms_v1 import enums
@@ -43,7 +54,7 @@ class Client:
             raise Exception("Service Account json is not formatted well please re-enter it.")
 
     def _init_kms_client(self):
-        """Creates the Python API client for Google Cloud KMS.
+        """Creates the Python API client for Google Cloud KMS using service account credentials.
         """
         cur_directory_path = os.getcwd()
         credentials_file_name = demisto.uniqueFile() + '.json'
@@ -87,6 +98,7 @@ def arg_dict_creator(string: str):
     """
     if string is None or len(string) == 0:
         return None
+
     split_string = string.split(',')
     arg_dict = {}
     for section in split_string:
@@ -117,7 +129,9 @@ def key_context_creation(res: Any) -> Dict:
             'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.version_template.algorithm).name,
         }
     }
-    if res.primary:
+    # if primary CryptoKeyVersion exists and is returned create context for it.
+    # Note: As part of the API - Asymmetric keys do not return primary CryptoKeyVersion info.
+    if res.primary and res.primary.name and len(res.primary.name) > 0:
         key_context['PrimaryCryptoKeyVersion'] = {
             'Name': res.primary.name,
             'State': enums.CryptoKeyVersion.CryptoKeyVersionState(res.primary.state).name,
@@ -160,6 +174,7 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
             'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.version_template.algorithm).name,
         }
     }
+
     if crypto_key.primary:
         key_json['primary'] = {
             'name': crypto_key.primary.name,
@@ -201,18 +216,6 @@ def demisto_args_extract(client: Client, args: Dict[str, Any]) -> Tuple[str, str
 
     crypto_key_id = args.get('crypto_key_id')
     return str(project_id), str(location_id), str(key_ring_id), str(crypto_key_id)
-
-
-def count_rings(key_ring_iterable: Any) -> int:
-    """ Counts the amount of key rings given from the iterable given.
-
-    Args:
-        key_ring_iterable: An iterable of :class:`~google.cloud.kms_v1.types.KeyRing` instances.
-
-    Returns:
-        The number of key rings in the project.
-    """
-    return sum(1 for ring in key_ring_iterable)
 
 
 def get_update_mask(args: Dict[str, Any]) -> Dict:
@@ -323,6 +326,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
                 else:
                     init_dict(body, split_field[0], split_field[1], args.get(split_field[1]))
+
         else:
             if field == 'labels':
                 body[field] = arg_dict_creator(str(args.get('labels')))
@@ -359,10 +363,10 @@ def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str,
     # The resource name of the CryptoKey.
     crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
-    # Get the CryptoKey - extract it's primary version path.
+    # Get the CryptoKey and extract it's primary version path.
     crypto_key = client.kms_client.get_crypto_key(crypto_key_name)
     if crypto_key.primary.name is None:
-        return_error(f"CryptoKey {crypto_key_name} has no primary CryptoKeyVersion")
+        raise Exception(f"CryptoKey {crypto_key_name} has no primary CryptoKeyVersion")
 
     return str(crypto_key.primary.name)
 
@@ -378,16 +382,24 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
         args(Dict): Demisto arguments.
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
-    # Creates an API client for the KMS API.
 
     # The resource name of the KeyRing associated with the CryptoKey.
     key_ring_name = client.kms_client.key_ring_path(project_id, location_id, key_ring_id)
+
     if args.get('next_rotation_time'):
-        next_rotation_time = {
-            'seconds': int(datetime.strptime(str(args.get('next_rotation_time')), RFC3339_DATETIME_FORMAT).timestamp())
-        }
+        # change next_rotation time from date to timestamp if needed.
+        if not str(args.get('next_rotation_time')).isdigit():
+            next_rotation_time = {
+                'seconds': int(datetime.strptime(str(args.get('next_rotation_time')), RFC3339_DATETIME_FORMAT).timestamp())
+            }
+
+        else:
+            next_rotation_time = {
+                'seconds': int(str(args.get('next_rotation_time')))
+            }
 
     else:
+        # if not next rotation time given - set it to 90 days from now (default by Google)
         next_rotation_time = {
             'seconds': int((datetime.now() + timedelta(days=90)).timestamp())
         }
@@ -401,6 +413,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
             'seconds': int(str(args.get('rotation_period')))
         },
     }
+
     # Additional info in case CryptoKeyVersion is created
     if not args.get('skip_initial_version_creation') == 'true':
         crypto_key['primary'] = {
@@ -428,7 +441,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
 
 
 def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
-    """Encrypt plaintext to ciphertext.
+    """Encrypt plaintext to ciphertext using a symmetric key.
 
     Args:
         client(Client): User Client.
@@ -437,6 +450,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     Returns:
         The encrypted ciphertext.
     """
+    # handle given plaintext - revert it to base 64.
     if args.get('use_base64') == 'false':
         plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
@@ -456,11 +470,12 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     response = client.kms_client.encrypt(crypto_key_name, plaintext,
                                          additional_authenticated_data=additional_authenticated_data)
 
+    # return the created ciphertext cleaned from additional characters.
     return str(base64.b64encode(response.ciphertext))[2:-1]
 
 
 def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
-    """Decrypt ciphertext to plaintext.
+    """Decrypt ciphertext to plaintext using a symmetric key.
 
     Args:
         client(Client): User Client.
@@ -478,9 +493,12 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
 
     # The resource name of the CryptoKey.
     crypto_key_name = client.kms_client.crypto_key_path_path(project_id, location_id, key_ring_id, crypto_key_id)
+
     # Use the KMS API to decrypt the data.
     response = client.kms_client.decrypt(crypto_key_name, ciphertext,
                                          additional_authenticated_data=additional_authenticated_data)
+
+    # handle the resulting plain text if it supposed to be in base64 and clean added characters.
     if args.get('use_base64') == 'true':
         return str(base64.b64encode(response.plaintext))[2:-1]
 
@@ -525,12 +543,17 @@ def disable_key_command(client: Client, args: Dict[str, Any]) -> None:
     crypto_key_version = args.get('crypto_key_version')
 
     if crypto_key_version == 'default':
+        # if no CryptoKeyVersion given extract the primary CryptoKeyVersion.
         crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
     else:
         # Construct the resource name of the CryptoKeyVersion.
         crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                             crypto_key_id, crypto_key_version)
+
+    # if not CryptoKeyVersion is given nor was is extracted from the CryptoKey - raise error to the user.
+    if crypto_key_version_name is None or len(crypto_key_version_name) == 0:
+        raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to disable the CryptoKeyVersion.
     new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.DISABLED
@@ -552,7 +575,9 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
+
     if crypto_key_version == 'default':
+        # if no CryptoKeyVersion given extract the primary CryptoKeyVersion.
         crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
     else:
@@ -560,7 +585,11 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
         crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                             crypto_key_id, crypto_key_version)
 
-    # Use the KMS API to disable the CryptoKeyVersion.
+    # if not CryptoKeyVersion is given nor was is extracted from the CryptoKey - raise error to the user.
+    if crypto_key_version_name is None or len(crypto_key_version_name) == 0:
+        raise Exception("Please insert primary CryptoKeyVersion ID")
+
+    # Use the KMS API to enable the CryptoKeyVersion.
     new_state = enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED
     version = {'name': crypto_key_version_name, 'state': new_state}
     update_mask = {'paths': ["state"]}
@@ -580,13 +609,19 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
+
     if crypto_key_version == 'default':
+        # if no CryptoKeyVersion given extract the primary CryptoKeyVersion.
         crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
     else:
         # Construct the resource name of the CryptoKeyVersion.
         crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                             crypto_key_id, crypto_key_version)
+
+    # if not CryptoKeyVersion is given nor was is extracted from the CryptoKey - raise error to the user.
+    if crypto_key_version_name is None or len(crypto_key_version_name) == 0:
+        raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to mark the CryptoKeyVersion for destruction.
     response = client.kms_client.destroy_crypto_key_version(crypto_key_version_name)
@@ -605,13 +640,19 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
     """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
+
     if crypto_key_version == 'default':
+        # if no CryptoKeyVersion given extract the primary CryptoKeyVersion.
         crypto_key_version_name = get_primary_key_version(project_id, location_id, key_ring_id, crypto_key_id, client)
 
     else:
         # Construct the resource name of the CryptoKeyVersion.
         crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                             crypto_key_id, crypto_key_version)
+
+    # if not CryptoKeyVersion is given nor was is extracted from the CryptoKey - raise error to the user.
+    if crypto_key_version_name is None or len(crypto_key_version_name) == 0:
+        raise Exception("Please insert primary CryptoKeyVersion ID")
 
     # Use the KMS API to restore the CryptoKeyVersion.
     response = client.kms_client.restore_crypto_key_version(crypto_key_version_name)
@@ -633,11 +674,14 @@ def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     # The resource name of the CryptoKey.
     crypto_key_name = client.kms_client.crypto_key_path(project_id, location_id, key_ring_id, crypto_key_id)
 
+    # create a list of fields to be updated using the command - the field is called update mask in the API.
     update_mask = get_update_mask(args)
 
+    # create the body of the update request.
     crypto_key = get_update_command_body(args=args, update_mask=update_mask['paths'])
     crypto_key['name'] = crypto_key_name
 
+    # update command using the KMS API.
     response = client.kms_client.update_crypto_key(crypto_key=crypto_key, update_mask=update_mask)
 
     context = key_context_creation(response)
@@ -660,8 +704,10 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     """
     project_id, location_id, key_ring_id, _ = demisto_args_extract(client, args)
 
+    # Get the full path to the KeyRing in which to list the keys.
     key_ring_name = client.kms_client.key_ring_path(project_id, location_id, key_ring_id)
 
+    # if needed add state filter.
     filter_state = args.get('key_state', None)
 
     response = client.kms_client.list_crypto_keys(key_ring_name, filter_=filter_state)
@@ -682,6 +728,16 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
 
 
 def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
+    """Encrypt plainttext using an asymmetric key.
+
+    Args:
+        client(Client): User's client.
+        args(dict): Demisto arguments.
+
+    Returns:
+        The encrypted ciphertext.
+    """
+    # handle the plaintext - convert to base64
     if args.get('use_base64') == 'false':
         plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
@@ -694,16 +750,20 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
     # Construct the resource name of the CryptoKeyVersion.
     crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                         crypto_key_id, crypto_key_version)
-
+    # get the CryptoKeyVersion info and check it's algorithm.
     crypto_key_version_info = client.kms_client.get_crypto_key_version(crypto_key_version_name)
     key_algo = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key_version_info.algorithm).name
-    if 'DECRYPT' not in key_algo:
-        return_error(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
 
-    # get public key
+    # Algorithm must be a "DECRYPT" type asymmetric algorithm - if not, raise an error to the user.
+    if 'DECRYPT' not in key_algo:
+        raise Exception(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
+
+    # get public key of the asymmetric encryption.
     public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
     key_txt = public_key_response.pem.encode('ascii')
     public_key = serialization.load_pem_public_key(key_txt, default_backend())
+
+    # using the CryptoKeyVersion algorithm - create the necessary padding for the encryption.
     if 'SHA256' in key_algo:
         # create padding with SHA256
         pad = padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()),
@@ -715,19 +775,32 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
                            algorithm=hashes.SHA512(),
                            label=None)
 
-    # encrypt plaintext
+    # encrypt plaintext and return the cipertext without added characters.
     return str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
 
 
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
+    """Decrypt chipertext to plaintext using asymmetric key.
+
+    Args:
+        client(Client): User's Client.
+        args(dict): Demisto arguments.
+
+    Returns:
+        The decrypted plaintext.
+    """
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
 
     # Construct the resource name of the CryptoKeyVersion.
     crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                         crypto_key_id, crypto_key_version)
+
     ciphertext = base64.b64decode(str(args.get('ciphertext')))
+
     response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
+
+    # handle the created plaintext back to base64 if needed and clear added characters.
     if args.get('use_base64') == 'true':
         return str(base64.b64encode(response.plaintext))[2:-1]
 
@@ -743,11 +816,16 @@ def test_function(client: Client) -> None:
     Args:
         client(Client): User Client.
     """
+    # if the user role is Encrypt/Decrypt related then no additional checks are possible.
     if client.role in ['Project-Admin', 'KMS-Admin']:
+        # listing the KeyRings in order to check responses from the API.
         location_path = client.kms_client.location_path(client.project, client.location)
+        # the response is a iterable containing the KeyRings info.
         response = client.kms_client.list_key_rings(location_path)
-        if count_rings(response) == 0:
-            return_error("No response - please check Project in Google Cloud KMS and Default Location")
+
+        # Count the number of existing KeyRings.
+        if sum(1 for ring in response) == 0:
+            raise Exception("No response - please check Project in Google Cloud KMS and Default Location")
 
 
 def main():

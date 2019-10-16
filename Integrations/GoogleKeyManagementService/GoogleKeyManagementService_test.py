@@ -61,7 +61,6 @@ def test_update_command_body():
     from GoogleKeyManagementService import get_update_command_body, get_update_mask
     update_mask = get_update_mask(MOCK_ARGS_FULL)
     crypto_key = get_update_command_body(args=MOCK_ARGS_FULL, update_mask=update_mask['paths'])
-    print(crypto_key['version_template'])
     assert crypto_key['primary']['state'] == enums.CryptoKeyVersion.CryptoKeyVersionState.ENABLED.value
     assert crypto_key['version_template']['protection_level'] == enums.ProtectionLevel.SOFTWARE.value
     assert crypto_key['labels']['label1'] == 'value1'
