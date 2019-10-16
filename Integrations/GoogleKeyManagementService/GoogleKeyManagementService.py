@@ -13,6 +13,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from json import JSONDecodeError
 import base64
 from typing import Any, Dict, Tuple, List
+import grpc
 
 """
 For further information about the API used in the integration see:
@@ -45,17 +46,14 @@ class Client:
 
         # Creates an API client for the KMS API.
         try:
-            self.kms_client = self._init_kms_client()
+            self.kms_client = self._init_kms_client(params.get('insecure'))
 
         except JSONDecodeError:
             raise Exception("Service Account json is not formatted well please re-enter it.")
 
-        if params.get('insecure'):
-            disable_tls_verification()
-
         handle_proxy()
 
-    def _init_kms_client(self):
+    def _init_kms_client(self, insecure):
         """Creates the Python API client for Google Cloud KMS using service account credentials.
         """
         cur_directory_path = os.getcwd()
@@ -66,27 +64,15 @@ class Client:
             json_object = json.loads(self.service_account)
             json.dump(json_object, creds_file)
 
-        return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
+        if insecure:
+            channel = grpc.insecure_channel("cloudkms.googleapis.com:443")
+            return kms_v1.KeyManagementServiceClient(channel=channel).from_service_account_json(credentials_file_path)
+
+        else:
+            return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
 
 
 """HELPER FUNCTIONS"""
-
-
-def disable_tls_verification() -> None:
-    """Disables TLS verification allowing Insecure session.
-
-    """
-    original_method = requests.Session.merge_environment_settings
-
-    def merge_environment_settings(self, url, proxies, stream, verify, cert):
-        settings = original_method(self, url, proxies, stream, verify, cert)
-        settings['verify'] = False
-        return settings
-
-    # noinspection PyTypeHints
-    requests.Session.merge_environment_settings = merge_environment_settings  # type: ignore
-
-    urllib3.disable_warnings(category=urllib3.exceptions.InsecureRequestWarning)
 
 
 def arg_dict_creator(string: str):
