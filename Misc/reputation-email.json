@@ -7,7 +7,7 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "\\b[A-Za-z0-9._%=+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}\\b",
+  "regex": "\\b[A-Za-z0-9._%=+\\p{L}-]+@[A-Za-z0-9\\p{L}.-]+\\.[A-Za-z]{2,}\\b",
   "details": "Email",
   "prevDetails": "Email",
   "reputationScriptName": "",

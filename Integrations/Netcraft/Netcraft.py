@@ -51,10 +51,6 @@ TAKEDOWN_INFO_TITLE = "Takedowns information found:"
 REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
 
 
-# Remove proxy if not set to true in params
-handle_proxy()
-
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -503,6 +499,8 @@ def test_module():
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    # Remove proxy if not set to true in params
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_module()
     elif demisto.command() == 'netcraft-report-attack':
@@ -519,6 +517,4 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
     return_error(str(e))

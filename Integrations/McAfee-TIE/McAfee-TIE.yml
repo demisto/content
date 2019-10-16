@@ -1,0 +1,157 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: McAfee Threat Intelligence Exchange
+  version: -1
+configuration:
+- display: Broker CA certificates content (see `brokercerts.crt` in Integration Tips)
+  name: broker_ca_bundle
+  required: true
+  type: 12
+- display: Client certificates content (see `client.crt` in Integration Tips)
+  name: cert_file
+  required: true
+  type: 12
+- display: Client private key path (e.g., /usr/config/client.key)
+  name: private_key
+  required: true
+  type: 14
+- display: 'A CSV list of broker URLs in the format:  [ssl://]<hostname>[:port]) Get
+    the hostname and port from the `brokerlist.properties` file (in instructions).
+    The broker should be reachable from Demisto server.'
+  name: broker_urls
+  required: true
+  type: 0
+description: Connect to McAfee TIE using the McAfee DXL client.
+display: McAfee Threat Intelligence Exchange
+name: McAfee Threat Intelligence Exchange
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: '  Hash of the file to query. Supports MD5 SHA1 & SHA256'
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the reputations for the specified hash. Can be "MD5", "SHA1",
+      or "SHA256".
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: ' The MD5 hash of the file.'
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.TrustLevel
+      description: File lowest trust level.
+      type: String
+    - contextPath: File.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: ' The indicator that was tested.'
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: Hash of the file for which to set the reputation. Can be "MD5",
+        "SHA1", or "SHA256".
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new trust level for the file.
+      isArray: false
+      name: trust_level
+      predefined:
+      - NOT_SET
+      - KNOWN_MALICIOUS
+      - MOST_LIKELY_MALICIOUS
+      - MIGHT_BE_MALICIOUS
+      - UNKNOWN
+      - MIGHT_BE_TRUSTED
+      - MOST_LIKELY_TRUSTED
+      - KNOWN_TRUSTED
+      - KNOWN_TRUSTED_INSTALLER
+      required: true
+      secret: false
+    - default: false
+      description: A file name to associate with the file.
+      isArray: false
+      name: filename
+      required: false
+      secret: false
+    - default: false
+      description: A comment to associate with the file.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Sets the “Enterprise” reputation (trust level) of a specified file.
+      Permissions are required to invoke this method. See the 'How-to' in instance
+      instruction.
+    execution: false
+    name: tie-set-file-reputation
+  - arguments:
+    - default: true
+      description: '  Hash of the file for which to search. Can be "MD5", "SHA1",
+        or "SHA256".'
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the set of systems which have referenced (typically executed)
+      the specified file.
+    execution: false
+    name: tie-file-references
+    outputs:
+    - contextPath: File.MD5
+      description: MD5 hash of the file (if supplied).
+      type: Unknown
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file (if supplied).
+      type: Unknown
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file (if supplied).
+      type: Unknown
+    - contextPath: File.References.AgentGuid
+      description: The GUID of the system that referenced the file.
+      type: Unknown
+    - contextPath: File.References.Date
+      description: The time the system first referenced the file.
+      type: Unknown
+  dockerimage: demisto/dxl
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- McAfee-TIE Test

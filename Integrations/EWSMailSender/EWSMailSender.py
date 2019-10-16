@@ -7,24 +7,50 @@ import warnings
 import traceback
 
 import getpass
-getpass_getuser = getpass.getuser
 
 
 # work arround for bug in exchangelib: https://github.com/ecederstrand/exchangelib/issues/448
-def getuser_no_fail():
-    try:
-        user = getpass_getuser()
-    except KeyError:
-        # getuser() fails on some systems. Provide a sane default.
-        user = 'exchangelib'
-    return user
+class FixGetPass(object):
+    def __init__(self):
+        self.getpass_getuser_org = getpass.getuser
+
+        def getuser_no_fail():
+            # getuser() fails on some systems. Provide a sane default.
+            user = 'ews'
+            try:
+                if self.getpass_getuser_org:
+                    user = self.getpass_getuser_org()
+            except KeyError:
+                pass
+            return user
+        getpass.getuser = getuser_no_fail
+
+    def __del__(self):
+        if self.getpass_getuser_org and getpass:
+            getpass.getuser = self.getpass_getuser_org
 
 
-getpass.getuser = getuser_no_fail
+_fix_getpass = FixGetPass()
 
 warnings.filterwarnings("ignore")
-log_stream = StringIO()
-logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+
+# LOGGING
+log_stream = None
+log_handler = None
+
+
+def start_logging():
+    logging.raiseExceptions = False
+    global log_stream
+    global log_handler
+    if log_stream is None:
+        log_stream = StringIO()
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
+
 
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter  # noqa: E402
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, \
@@ -36,7 +62,7 @@ IS_TEST_MODULE = False
 
 # load arguments
 USE_PROXY = demisto.params().get('proxy', False)
-NON_SECURE = demisto.params().get('insecure', True)
+NON_SECURE = demisto.params().get('insecure', False)
 AUTH_METHOD_STR = demisto.params().get('authType', 'Basic').lower()
 EWS_SERVER = demisto.params().get('ewsServer', 'https://outlook.office365.com/EWS/Exchange.asmx/')
 VERSION_STR = demisto.params().get('defaultServerVersion', '2013')
@@ -233,7 +259,7 @@ config = None  # type: ignore
 
 
 def main():
-    global USERNAME, PASSWORD, ACCOUNT_EMAIL
+    global USERNAME, PASSWORD, ACCOUNT_EMAIL, log_stream
     USERNAME = demisto.params()['credentials']['identifier']
     PASSWORD = demisto.params()['credentials']['password']
     ACCOUNT_EMAIL = demisto.params().get('mailbox', None)
@@ -242,11 +268,12 @@ def main():
             ACCOUNT_EMAIL = USERNAME
     if ACCOUNT_EMAIL is None:
         raise Exception("Provide a valid email address in the mailbox field")
-    global config
-    config = prepare()
-    args = prepare_args(demisto.args())
 
     try:
+        start_logging()
+        global config
+        config = prepare()
+        args = prepare_args(demisto.args())
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'send-mail':
@@ -263,7 +290,7 @@ def main():
         import time
 
         time.sleep(2)
-        debug_log = log_stream.getvalue()
+        debug_log = "=== DEBUG LOG ===\n" + (log_stream.getvalue() if log_stream else "")
         error_message = ""
         if "Status code: 401" in debug_log:
             error_message = ("Got unauthorized from the server. "
@@ -287,6 +314,14 @@ def main():
             demisto.results(error_message)
         else:
             return_error(error_message + '\n' + debug_log)
+    finally:
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+                log_stream = None
+            except Exception as ex:
+                demisto.error("EWS Mail Sender: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
 # python2 uses __builtin__ python3 uses builtins
