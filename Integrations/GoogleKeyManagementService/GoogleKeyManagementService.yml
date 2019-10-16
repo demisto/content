@@ -89,15 +89,15 @@ script:
 
         Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted.
 
-        A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
 
-        Leave empty to set in 90 days
+        Leave empty to set in 90 days.
       isArray: false
       name: next_rotation_time
       required: false
       secret: false
     - default: false
-      description: Output only. Statement that was generated and signed by the HSM
+      description: Statement that was generated and signed by the HSM
         at key creation time. Use this statement to verify attributes of the key as
         stored on the HSM, independently of Google. Only provided for key versions
         with protectionLevel HSM.
@@ -139,11 +139,10 @@ script:
       secret: false
     - default: false
       defaultValue: '7776000'
-      description: nextRotationTime will be advanced by this period when the service
+      description: next_rotation_time will be advanced by this period when the service
         automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours.  If rotationPeriod is set, nextRotationTime must also be set.  Keys
-        with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
-        field must be omitted.  A duration in seconds.
+        hours. Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
+        field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
       required: true
@@ -151,8 +150,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GOOGLE_SYMMETRIC_ENCRYPTION
-      description: Algorithm to use when creating a CryptoKeyVersion based on this
-        template.
+      description: Algorithm to use when creating a CryptoKeyVersion based on this template.
       isArray: false
       name: algorithm
       predefined:
@@ -177,8 +175,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: SOFTWARE
-      description: ProtectionLevel to use when creating a CryptoKeyVersion based on
-        this template. Immutable. Defaults to SOFTWARE.
+      description: protection_level to use when creating a CryptoKeyVersion. Defaults to SOFTWARE.
       isArray: false
       name: protection_level
       predefined:
@@ -191,8 +188,7 @@ script:
       default: false
       defaultValue: 'true'
       description: If set to true, the request will create a CryptoKey without any
-        CryptoKeyVersions. You must manually call cryptoKeyVersions.create or cryptoKeyVersions.import
-        before you can use this CryptoKey.
+        CryptoKeyVersions. You will have to create the CryptoKeyVersion in order to use this key.
       isArray: false
       name: skip_initial_version_creation
       predefined:
@@ -206,7 +202,7 @@ script:
     name: google-kms-create-key
     outputs:
     - contextPath: GoogleKMS.CryptoKey.Name
-      description: The resource name for this CryptoKeyץ
+      description: The resource name for this CryptoKey.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Purpose
       description: The immutable purpose of this CryptoKey.
@@ -407,7 +403,7 @@ script:
     name: google-kms-get-key
     outputs:
     - contextPath: GoogleKMS.CryptoKey.Name
-      description: The resource name for this CryptoKeyץ
+      description: The resource name for this CryptoKey.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Purpose
       description: The immutable purpose of this CryptoKey.
@@ -493,7 +489,7 @@ script:
 
         Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted.
 
-        A timestamp in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
       isArray: false
       name: next_rotation_time
       required: false
@@ -538,11 +534,11 @@ script:
       required: false
       secret: false
     - default: false
-      description: nextRotationTime will be advanced by this period when the service
+      description: next_rotation_time will be advanced by this period when the service
         automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours.  If rotationPeriod is set, nextRotationTime must also be set.  Keys
+        hours. If rotation_period is set, next_rotation_time must also be set.  Keys
         with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
-        field must be omitted.  A duration in seconds.
+        field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
       required: false
@@ -551,8 +547,6 @@ script:
       default: false
       description: |-
         Algorithm to use when creating a CryptoKeyVersion based on this template.
-
-        For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and CryptoKey.purpose is ENCRYPT_DECRYPT.
       isArray: false
       name: algorithm
       predefined:
@@ -576,8 +570,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ProtectionLevel to use when creating a CryptoKeyVersion based on
-        this template. Immutable. Defaults to SOFTWARE.
+      description: protection_level to use when creating a CryptoKeyVersion based on
+        this template.
       isArray: false
       name: protection_level
       predefined:
@@ -826,7 +820,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Show only keys with primary CryptoKeyVersion state. Leave empty
+      description: Show only keys with this primary CryptoKeyVersion state. Leave empty
         to show all.
       isArray: false
       name: key_state
