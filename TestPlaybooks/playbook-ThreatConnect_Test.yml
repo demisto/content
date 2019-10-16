@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 03b84b51-cd02-4081-8a63-29db9d46451d
+    taskid: 502bb7d9-3032-4158-8af1-26001c5670fc
     type: start
     task:
-      id: 03b84b51-cd02-4081-8a63-29db9d46451d
+      id: 502bb7d9-3032-4158-8af1-26001c5670fc
       version: -1
       name: ""
       iscommand: false
@@ -26,12 +26,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 278e828b-e39e-400b-8950-668046e8e6f9
+    taskid: 8f63f01a-590d-4ec0-8612-7db1faed9194
     type: regular
     task:
-      id: 278e828b-e39e-400b-8950-668046e8e6f9
+      id: 8f63f01a-590d-4ec0-8612-7db1faed9194
       version: -1
       name: check owners
       script: '|||tc-owners'
@@ -51,12 +52,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: c347758d-b569-4c35-829f-c9428089077b
+    taskid: d60ce9da-d2f5-4d08-80de-b8f8277309f7
     type: title
     task:
-      id: c347758d-b569-4c35-829f-c9428089077b
+      id: d60ce9da-d2f5-4d08-80de-b8f8277309f7
       version: -1
       name: Group Creations
       description: |-
@@ -69,7 +71,6 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
       - "5"
       - "6"
     separatecontext: false
@@ -82,45 +83,13 @@ tasks:
       }
     note: false
     timertriggers: []
-  "3":
-    id: "3"
-    taskid: d845635d-5601-42bb-878f-5650f87154d8
-    type: regular
-    task:
-      id: d845635d-5601-42bb-878f-5650f87154d8
-      version: -1
-      name: Create Event
-      script: '|||tc-create-event'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      description: {}
-      eventDate: {}
-      name:
-        simple: TestEvent
-      owner: {}
-      status: {}
-      tag: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 515
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 9e23f67e-b319-4334-89e5-8a5eaf44d751
+    taskid: e9ea1475-244d-491a-8475-7b43def9a9e1
     type: title
     task:
-      id: 9e23f67e-b319-4334-89e5-8a5eaf44d751
+      id: e9ea1475-244d-491a-8475-7b43def9a9e1
       version: -1
       name: Fetch commands
       type: title
@@ -141,12 +110,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 6dcc75d2-abb7-4b09-8336-cf92a6604a51
+    taskid: b51a4fe2-cbec-4989-89bc-de80544ea64f
     type: regular
     task:
-      id: 6dcc75d2-abb7-4b09-8336-cf92a6604a51
+      id: b51a4fe2-cbec-4989-89bc-de80544ea64f
       version: -1
       name: Create Campaign
       script: '|||tc-create-campaign'
@@ -175,12 +145,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 36424d4c-db97-4d33-8306-cdd285a0634b
+    taskid: 5dc0dbce-1710-499d-812d-25a1188835fa
     type: regular
     task:
-      id: 36424d4c-db97-4d33-8306-cdd285a0634b
+      id: 5dc0dbce-1710-499d-812d-25a1188835fa
       version: -1
       name: Create Threat
       script: '|||tc-create-threat'
@@ -203,12 +174,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 7fa08a5b-5b6b-4ced-8685-a23e5ac85eca
+    taskid: f6cc6e15-598f-4014-8cef-a12a88ffb141
     type: regular
     task:
-      id: 7fa08a5b-5b6b-4ced-8685-a23e5ac85eca
+      id: f6cc6e15-598f-4014-8cef-a12a88ffb141
       version: -1
       name: Delete Threat
       script: '|||tc-delete-group'
@@ -230,12 +202,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: ae81b413-0139-4e08-8b36-749d4bd35122
+    taskid: f0e1e590-51bc-4a01-85be-9f657462cfed
     type: regular
     task:
-      id: ae81b413-0139-4e08-8b36-749d4bd35122
+      id: f0e1e590-51bc-4a01-85be-9f657462cfed
       version: -1
       name: Delete Campaign
       script: '|||tc-delete-group'
@@ -257,39 +230,13 @@ tasks:
       }
     note: false
     timertriggers: []
-  "9":
-    id: "9"
-    taskid: 1196058e-e13e-4327-883e-e1e841155600
-    type: regular
-    task:
-      id: 1196058e-e13e-4327-883e-e1e841155600
-      version: -1
-      name: Delete Event
-      script: '|||tc-delete-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      groupID:
-        simple: ${TC.Event.ID}
-      type:
-        simple: Events
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 690
-        }
-      }
-    note: false
-    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 26787546-74e5-4d45-8569-efae8b580b25
+    taskid: 399ffe06-6c23-4831-8f4c-4c08292d4119
     type: regular
     task:
-      id: 26787546-74e5-4d45-8569-efae8b580b25
+      id: 399ffe06-6c23-4831-8f4c-4c08292d4119
       version: -1
       name: Get Tags
       script: '|||tc-get-tags'
@@ -309,14 +256,16 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: 79904295-bc96-4517-85c8-2f5a83944011
+    taskid: 931b6bac-2fe2-460d-8268-e7273810acb0
     type: regular
     task:
-      id: 79904295-bc96-4517-85c8-2f5a83944011
+      id: 931b6bac-2fe2-460d-8268-e7273810acb0
       version: -1
       name: Create Indicator
+      description: Adds a new indicator to ThreatConnect.
       script: '|||tc-add-indicator'
       type: regular
       iscommand: true
@@ -329,6 +278,7 @@ tasks:
         simple: "87"
       indicator:
         simple: 9.9.4.4
+      owner: {}
       rating:
         simple: "2"
     separatecontext: false
@@ -341,12 +291,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: 47463027-6be0-4347-8ef1-b12837c15a34
+    taskid: 118834d6-7096-4f1e-8c9c-622d2106cfc8
     type: regular
     task:
-      id: 47463027-6be0-4347-8ef1-b12837c15a34
+      id: 118834d6-7096-4f1e-8c9c-622d2106cfc8
       version: -1
       name: Start Clean
       scriptName: DeleteContext
@@ -357,6 +308,7 @@ tasks:
       '#none#':
       - "2"
       - "13"
+      - "27"
     scriptarguments:
       all:
         simple: "yes"
@@ -374,12 +326,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: c4de84bd-6e33-4017-8894-bfac78cc4f9d
+    taskid: d6f29135-72da-4260-8943-4371cb0869aa
     type: title
     task:
-      id: c4de84bd-6e33-4017-8894-bfac78cc4f9d
+      id: d6f29135-72da-4260-8943-4371cb0869aa
       version: -1
       name: Main Test - indicators
       type: title
@@ -388,6 +341,7 @@ tasks:
     nexttasks:
       '#none#':
       - "11"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -398,12 +352,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: 080db36b-f635-4e33-8278-99bd718ff4c1
+    taskid: a5eeb2a9-9d46-4b92-8aca-a4082563721e
     type: regular
     task:
-      id: 080db36b-f635-4e33-8278-99bd718ff4c1
+      id: a5eeb2a9-9d46-4b92-8aca-a4082563721e
       version: -1
       name: Create Incident
       script: '|||tc-create-incident'
@@ -431,12 +386,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: 3bee11cb-a3a4-4fce-8874-87e9a3deca7e
+    taskid: e9e6bbb5-cd87-45a8-82fe-c6ef03833b78
     type: regular
     task:
-      id: 3bee11cb-a3a4-4fce-8874-87e9a3deca7e
+      id: e9e6bbb5-cd87-45a8-82fe-c6ef03833b78
       version: -1
       name: Update Indicator (1)
       script: '|||tc-update-indicator'
@@ -474,12 +430,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 76166e38-4068-46fb-8845-b29f13bf71ec
+    taskid: 191b03ee-b8b8-49c3-8cf3-50e68511c504
     type: regular
     task:
-      id: 76166e38-4068-46fb-8845-b29f13bf71ec
+      id: 191b03ee-b8b8-49c3-8cf3-50e68511c504
       version: -1
       name: Update Indicator (2)
       script: '|||tc-tag-indicator'
@@ -505,12 +462,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: 312b1bd8-8226-4147-8742-74c10dda2f61
+    taskid: 981dd090-6682-4e7a-8f94-9a8be04df17c
     type: regular
     task:
-      id: 312b1bd8-8226-4147-8742-74c10dda2f61
+      id: 981dd090-6682-4e7a-8f94-9a8be04df17c
       version: -1
       name: Associate Indicator To Incident
       script: '|||tc-incident-associate-indicator'
@@ -538,12 +496,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: a83ce305-4018-4a89-805d-c90e48321878
+    taskid: 0084218b-f6fb-46b8-810a-a37bb968d3d0
     type: regular
     task:
-      id: a83ce305-4018-4a89-805d-c90e48321878
+      id: 0084218b-f6fb-46b8-810a-a37bb968d3d0
       version: -1
       name: Remove Indicator Tag
       script: '|||tc-delete-indicator-tag'
@@ -568,12 +527,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: 97a133db-eea8-464e-859b-0511109a754e
+    taskid: 1b13250d-daf9-4365-8789-5e69fce9b422
     type: regular
     task:
-      id: 97a133db-eea8-464e-859b-0511109a754e
+      id: 1b13250d-daf9-4365-8789-5e69fce9b422
       version: -1
       name: Add temp Tag
       script: '|||tc-tag-indicator'
@@ -599,12 +559,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 068889a1-75e2-4491-8da3-1d2f59e58434
+    taskid: 718d86af-7b87-4b4a-812d-04426bc7c03d
     type: regular
     task:
-      id: 068889a1-75e2-4491-8da3-1d2f59e58434
+      id: 718d86af-7b87-4b4a-812d-04426bc7c03d
       version: -1
       name: Delete Test Indicator
       script: '|||tc-delete-indicator'
@@ -627,12 +588,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: ad483c3f-5707-4504-8628-6a3b1495948a
+    taskid: e884fd12-498d-4ff0-8cd7-9ceb1c648c83
     type: regular
     task:
-      id: ad483c3f-5707-4504-8628-6a3b1495948a
+      id: e884fd12-498d-4ff0-8cd7-9ceb1c648c83
       version: -1
       name: Get Indicator
       script: '|||tc-get-indicator'
@@ -657,12 +619,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
-    taskid: eedec65f-e9c7-4c2e-8898-88094147fa63
+    taskid: dc23e096-149b-47b8-87e4-880c8b4943fa
     type: regular
     task:
-      id: eedec65f-e9c7-4c2e-8898-88094147fa63
+      id: dc23e096-149b-47b8-87e4-880c8b4943fa
       version: -1
       name: Fetch Incidents
       script: '|||tc-fetch-incidents'
@@ -683,12 +646,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
-    taskid: 5c4adb03-4081-4cc4-8521-8ea76204a733
+    taskid: 8406fb9d-b00d-45b6-8cd8-da1b09d7daeb
     type: regular
     task:
-      id: 5c4adb03-4081-4cc4-8521-8ea76204a733
+      id: 8406fb9d-b00d-45b6-8cd8-da1b09d7daeb
       version: -1
       name: Get Indicators of Incident
       script: '|||tc-get-incident-associate-indicators'
@@ -712,12 +676,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
-    taskid: d86bbd7d-54ed-4b32-865a-d72c791c5793
+    taskid: 6a06a559-05ca-45d6-8596-ee6f0f98399a
     type: regular
     task:
-      id: d86bbd7d-54ed-4b32-865a-d72c791c5793
+      id: 6a06a559-05ca-45d6-8596-ee6f0f98399a
       version: -1
       name: Get Indicators with Tag
       script: '|||tc-get-indicators-by-tag'
@@ -737,12 +702,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
-    taskid: d37c5bb6-875f-4afe-878b-120c947151ed
+    taskid: a9b51018-6ba0-4c6b-8fe5-776b80961197
     type: regular
     task:
-      id: d37c5bb6-875f-4afe-878b-120c947151ed
+      id: a9b51018-6ba0-4c6b-8fe5-776b80961197
       version: -1
       name: Get Indicators with limit
       script: '|||tc-indicators'
@@ -763,12 +729,13 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
-    taskid: a16c4879-2eec-46ee-8cf6-78e322b7e421
+    taskid: 67a3735a-633f-4839-813d-be385ee4c909
     type: regular
     task:
-      id: a16c4879-2eec-46ee-8cf6-78e322b7e421
+      id: 67a3735a-633f-4839-813d-be385ee4c909
       version: -1
       name: Delete Incident
       script: '|||tc-delete-group'
@@ -793,14 +760,657 @@ tasks:
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: ae67bc25-2e5a-4013-8d01-a3fbdcc564e7
+    type: title
+    task:
+      id: ae67bc25-2e5a-4013-8d01-a3fbdcc564e7
+      version: -1
+      name: Group Actions
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 7da46a46-bf6b-41c7-8f3d-f90c1a234be5
+    type: regular
+    task:
+      id: 7da46a46-bf6b-41c7-8f3d-f90c1a234be5
+      version: -1
+      name: Get Groups
+      description: Returns all groups by group type.
+      script: '|||tc-get-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+      - "40"
+    scriptarguments:
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: dc841e39-37d7-46c1-83d0-5579155e7fa9
+    type: regular
+    task:
+      id: dc841e39-37d7-46c1-83d0-5579155e7fa9
+      version: -1
+      name: Get Indicator types
+      description: Returns all indicator types available on your instance of ThreatConnect.
+      script: '|||tc-get-indicator-types'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1830,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 065c9f67-3ba7-4df9-8ead-42211174824e
+    type: regular
+    task:
+      id: 065c9f67-3ba7-4df9-8ead-42211174824e
+      version: -1
+      name: Create Event Group
+      description: Creates a ThreatConnect group from type Event.
+      script: '|||tc-create-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+      - "33"
+      - "32"
+      - "34"
+      - "43"
+    scriptarguments:
+      description: {}
+      eventDate: {}
+      name:
+        simple: MyTest
+      owner: {}
+      status: {}
+      tag: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 25c405d1-a2fe-4c5b-8787-03f990a5aa5d
+    type: regular
+    task:
+      id: 25c405d1-a2fe-4c5b-8787-03f990a5aa5d
+      version: -1
+      name: Associate Group Attribute
+      description: Adds an attribute to a specific group.
+      script: '|||tc-add-group-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      attribute_type:
+        simple: External ID
+      attribute_value:
+        simple: "123456789"
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 089184e3-e67f-4f0a-82f9-b493b500e457
+    type: regular
+    task:
+      id: 089184e3-e67f-4f0a-82f9-b493b500e457
+      version: -1
+      name: Add Security Label
+      description: Add security label to a specific group
+      script: '|||tc-add-group-security-label'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+      security_label_name:
+        simple: TLP:GREEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: bbec9dc1-eb9a-44a3-8312-7270226adcca
+    type: regular
+    task:
+      id: bbec9dc1-eb9a-44a3-8312-7270226adcca
+      version: -1
+      name: Add Group tag
+      description: Add tags to specific group
+      script: '|||tc-add-group-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+      tag_name:
+        simple: testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 8f6cc708-08c0-4f95-82d8-b9f3e73177d9
+    type: regular
+    task:
+      id: 8f6cc708-08c0-4f95-82d8-b9f3e73177d9
+      version: -1
+      name: Associate Indicator
+      description: Associate an Indicator to a Group
+      script: '|||tc-group-associate-indicator'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+      indicator:
+        simple: a@a.co.il
+      indicator_type:
+        simple: emailAddresses
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "35":
+    id: "35"
+    taskid: cdbee6a0-fe1d-41da-89bf-4c78854751c2
+    type: regular
+    task:
+      id: cdbee6a0-fe1d-41da-89bf-4c78854751c2
+      version: -1
+      name: Delete Group
+      description: Delete a Group from ThreatConnect (Incident, Event, Campaign, Threat)
+      script: '|||tc-delete-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      groupID:
+        simple: ${TC.Event.ID}
+      type:
+        simple: Events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: fb41a848-dd78-4fff-8a57-f22cb2e76582
+    type: condition
+    task:
+      id: fb41a848-dd78-4fff-8a57-f22cb2e76582
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.GroupID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Indicator
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 12ec7570-b4c6-4b82-8b3d-615fe675ba3a
+    type: condition
+    task:
+      id: 12ec7570-b4c6-4b82-8b3d-615fe675ba3a
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: 46089b14-8478-4b6d-8bc9-af4387d0f9fb
+    type: regular
+    task:
+      id: 46089b14-8478-4b6d-8bc9-af4387d0f9fb
+      version: -1
+      name: Get Group
+      description: Retrieve a single Group
+      script: '|||tc-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      group_id:
+        simple: "4114024"
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -420,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: 0fd05e1d-9881-4e17-884d-cffa271cb586
+    type: regular
+    task:
+      id: 0fd05e1d-9881-4e17-884d-cffa271cb586
+      version: -1
+      name: Get Group Tags
+      description: Retrieve the Tags for a Group
+      script: '|||tc-get-group-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: ddf33d38-8d34-437a-88a1-3cef568ebaf5
+    type: regular
+    task:
+      id: ddf33d38-8d34-437a-88a1-3cef568ebaf5
+      version: -1
+      name: Get group indicators
+      description: View Indicators associated with a given Group
+      script: '|||tc-get-group-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: bee433b2-b08c-4083-8c33-783ba8644f07
+    type: regular
+    task:
+      id: bee433b2-b08c-4083-8c33-783ba8644f07
+      version: -1
+      name: Associate Group to Group
+      description: Associate one Group with another.
+      script: '|||tc-associate-group-to-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      associated_group_id:
+        simple: "3594873"
+      associated_group_type:
+        simple: campaigns
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 713e67e2-b1b2-466c-82b7-f902d43f7bad
+    type: regular
+    task:
+      id: 713e67e2-b1b2-466c-82b7-f902d43f7bad
+      version: -1
+      name: Get associated groups
+      description: View Indicators associated with a given Group
+      script: '|||tc-get-associated-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: 1241fdaf-2e87-4503-89f3-f3ad74c8173c
+    type: regular
+    task:
+      id: 1241fdaf-2e87-4503-89f3-f3ad74c8173c
+      version: -1
+      name: Get Group Security Labels
+      description: Retrieve a Group’s Security Labels
+      script: '|||tc-get-group-security-labels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: 08c1119f-94b5-4a80-8727-38321f379a44
+    type: regular
+    task:
+      id: 08c1119f-94b5-4a80-8727-38321f379a44
+      version: -1
+      name: Get Group Attribute
+      description: Retrieve a Group’s Attributes
+      script: '|||tc-get-group-attributes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      group_id:
+        simple: ${TC.Event.ID}
+      group_type:
+        simple: events
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: d5077562-4d6b-4437-893a-a2ebf0498620
+    type: condition
+    task:
+      id: d5077562-4d6b-4437-893a-a2ebf0498620
+      version: -1
+      name: 'Is all tasks finished? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Attribute.AttributeID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.SecurityLabel.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.AssociatedGroup.GroupID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Indicator.IndicatorID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: TC.Group.Tag.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2805,
-        "width": 1885,
-        "x": 50,
+        "width": 4340,
+        "x": -2130,
         "y": 50
       }
     }

@@ -37,9 +37,10 @@
   "name": "Associated File Names",
   "ownerOnly": false,
   "required": false,
-  "modified": "2019-07-23T15:34:36.820496653Z",
+  "modified": "2019-07-29T10:37:51.853697006Z",
   "fieldCalcScript": "",
   "selectValues": [],
   "validationRegex": "",
-  "sla": 0
+  "sla": 0,
+  "fromVersion": "5.0.0"
 }

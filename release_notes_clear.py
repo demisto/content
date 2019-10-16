@@ -1,129 +1,123 @@
-# remove all releaseNotes from files in: Itegrations, Playbooks, Reports and Scripts.
-# Note: using yaml will destroy the file structures so filtering as regular text-file.\
-# Note2: file must be run from root directory with 4 sub-directories: Integration, Playbook, Reports, Scripts
-# Usage: python release_notes_clear.py
 import os
-import glob
-import sys
-import yaml
 import json
-import re
+import argparse
+from datetime import datetime
+import yaml
 
-from Tests.test_utils import server_version_compare
-from Tests.test_utils import print_error
-
-
-def yml_remove_releaseNote_record(file_path, current_server_version):
-    """
-    locate and remove release notes from a yaml file.
-    :param file_path: path of the file
-    :param current_server_version: current server GA version
-    :return: True if file was changed, otherwise False.
-    """
-    with open(file_path, 'r') as f:
-        yml_text = f.read()
-        f.seek(0)
-        yml_data = yaml.safe_load(f)
-
-    v = yml_data.get('fromversion') or yml_data.get('fromVersion')
-    if v and server_version_compare(current_server_version, str(v)) < 0:
-        print('keeping release notes for ({})\nto be published on {} version release'.format(
-            file_path,
-            current_server_version
-        ))
-        return False
-
-    rn = yml_data.get('releaseNotes')
-    if rn:
-        yml_text = re.sub(r'\n?releaseNotes: [\'"]?{}[\'"]?'.format(re.escape(rn).replace(r'\ ', r'\s+')), '', yml_text)
-        with open(file_path, 'w') as f:
-            f.write(yml_text)
-
-        return True
-
-    return False
+from Tests.scripts.constants import UNRELEASE_HEADER, INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,\
+    DASHBOARDS_DIR, WIDGETS_DIR, INCIDENT_FIELDS_DIR, LAYOUTS_DIR, CLASSIFIERS_DIR, MISC_DIR
+from Tests.test_utils import server_version_compare, run_command, get_release_notes_file_path, print_warning
+from Tests.scripts.validate_files import FilesValidator
+from release_notes import LAYOUT_TYPE_TO_NAME
 
 
-def json_remove_releaseNote_record(file_path, current_server_version):
-    """
-    locate and remove release notes from a json file.
-    :param file_path: path of the file
-    :param current_server_version: current server GA version
-    :return: True if file was changed, otherwise False.
-    """
-    with open(file_path, 'r') as f:
-        json_text = f.read()
-        f.seek(0)
-        json_data = json.load(f)
+CHANGE_LOG_FORMAT = UNRELEASE_HEADER + '\n\n## [{version}] - {date}\n'
 
-    v = json_data.get('fromversion') or json_data.get('fromVersion')
-    if v and server_version_compare(current_server_version, str(v)) < 0:
-        print('keeping release notes for ({})\nto be published on {} version release'.format(
-            file_path,
-            current_server_version
-        ))
-        return False
-
-    rn = json_data.get('releaseNotes')
-    if rn:
-        # try to remove with preceding comma
-        json_text = re.sub(r'\s*"releaseNotes"\s*:\s*"{}",'.format(re.escape(rn)), '', json_text)
-        # try to remove with leading comma (last value in json)
-        json_text = re.sub(r',\s*"releaseNotes"\s*:\s*"{}"'.format(re.escape(rn)), '', json_text)
-        with open(file_path, 'w') as f:
-            f.write(json_text)
-
-        return True
-
-    return False
-
-
-FILE_EXTRACTER_DICT = {
-    '*.yml': yml_remove_releaseNote_record,
-    '*.json': json_remove_releaseNote_record,
+FILE_TYPE_DICT = {
+    '.yml': yaml.safe_load,
+    '.json': json.load,
 }
 
 
-def remove_releaseNotes_folder(folder_path, files_extension,
-                               current_server_version="0.0.0"):
+def get_changed_content_entities(modified_files, added_files):
+    # when renaming a file, it will appear as a tuple of (old path, new path) under modified_files
+    return added_files.union([(file_path[1] if isinstance(file_path, tuple) else file_path)
+                              for file_path in modified_files])
+
+
+def get_file_data(file_path):
+    extension = os.path.splitext(file_path)[1]
+    if extension not in FILE_TYPE_DICT:
+        return False
+
+    load_function = FILE_TYPE_DICT[extension]
+    with open(file_path, 'r') as file_obj:
+        data = load_function(file_obj)
+
+    return data
+
+
+def should_clear(file_path, current_server_version="0.0.0"):
     """
     scan folder and remove all references to release notes
-    :param folder_path: path of the folder
-    :param files_extension: type of file to look for (json or yml)
+    :param file_path: path of the yml/json file
     :param current_server_version: current server version
     """
-    scan_files = glob.glob(os.path.join(folder_path, files_extension))
-    # support packages (subdirectories)
-    scan_files += glob.glob(os.path.join(folder_path, '*', files_extension))
+    data = get_file_data(file_path)
 
-    count = 0
-    for path in scan_files:
-        if FILE_EXTRACTER_DICT[files_extension](path, current_server_version):
-            count += 1
+    version = data.get('fromversion') or data.get('fromVersion')
+    if version and server_version_compare(current_server_version, str(version)) < 0:
+        print_warning('keeping release notes for ({})\nto be published on {} version release'.format(file_path,
+                                                                                                     version))
+        return False
 
-    print('--> Changed {} out of {} files'.format(count, len(scan_files)))
+    return True
 
 
-def main(argv):
-    if len(argv) < 2:
-        print_error("<Server version>")
-        sys.exit(1)
+def get_new_header(file_path):
+    data = get_file_data(file_path)
+    mapping = {
+        # description
+        INTEGRATIONS_DIR: ('Integration', data.get('description', '')),
+        PLAYBOOKS_DIR: ('Playbook', data.get('description', '')),
+        REPORTS_DIR: ('Report', data.get('description', '')),
+        DASHBOARDS_DIR: ('Dashboard', data.get('description', '')),
+        WIDGETS_DIR: ('Widget', data.get('description', '')),
 
-    root_dir = argv[0]
-    current_server_version = argv[1]
+        # comment
+        SCRIPTS_DIR: ('Script', data.get('comment', '')),
 
-    yml_folders_to_scan = ['Integrations', 'Playbooks', 'Scripts', 'TestPlaybooks']  # yml
-    json_folders_to_scan = ['Reports', 'Misc', 'Dashboards', 'Widgets',
-                            'Classifiers', 'Layouts', 'IncidentFields']  # json
+        # custom
+        LAYOUTS_DIR: ('Layout', '{} - {}'.format(data.get('typeId'), LAYOUT_TYPE_TO_NAME.get(data.get('kind', '')))),
 
-    for folder in yml_folders_to_scan:
-        print('Scanning directory: "{}"'.format(folder))
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.yml', current_server_version)
+        # should have RN when added
+        INCIDENT_FIELDS_DIR: ('Incident Field', data.get('name', '')),
+        CLASSIFIERS_DIR: ('Classifier', data.get('brandName', '')),
+        MISC_DIR: ('Reputation', data.get('id', data.get('name', ''))),  # reputations.json has name at first layer
+    }
 
-    for folder in json_folders_to_scan:
-        print('Scanning directory: "{}"'.format(folder))
-        remove_releaseNotes_folder(os.path.join(root_dir, folder), '*.json', current_server_version)
+    for entity_dir in mapping:
+        if entity_dir in file_path:
+            entity_type, description = mapping[entity_dir]
+            return '#### New {}\n{}'.format(entity_type, description)
+
+    # should never get here
+    return '#### New Content File'
+
+
+def main():
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('version', help='Release version')
+    arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')
+    arg_parser.add_argument('server_version', help='Server version')
+    arg_parser.add_argument('-d', '--date', help='release date in the format %Y-%m-%d', required=False)
+    args = arg_parser.parse_args()
+
+    date = args.date if args.date else datetime.now().strftime('%Y-%m-%d')
+
+    # get changed yaml/json files (filter only relevant changed files)
+    files_validator = FilesValidator()
+    change_log = run_command('git diff --name-status {}'.format(args.git_sha1))
+    modified_files, added_files, _, _ = files_validator.get_modified_files(change_log)
+
+    for file_path in get_changed_content_entities(modified_files, added_files):
+        if not should_clear(file_path, args.server_version):
+            continue
+        rn_path = get_release_notes_file_path(file_path)
+        if os.path.isfile(rn_path):
+            # if file exist, mark the current notes as release relevant
+            with open(rn_path, 'r+') as rn_file:
+                text = rn_file.read()
+                rn_file.seek(0)
+                text = text.replace(UNRELEASE_HEADER, CHANGE_LOG_FORMAT.format(version=args.version, date=date))
+                rn_file.write(text)
+        else:
+            # if file doesn't exist, create it with new header
+            with open(rn_path, 'w') as rn_file:
+                text = CHANGE_LOG_FORMAT.format(version=args.version, date=date) + get_new_header(file_path)
+                rn_file.write(text)
+            run_command('git add {}'.format(rn_path))
 
 
 if __name__ == '__main__':
-    main([os.path.dirname(__file__)] + sys.argv[1:])
+    main()
