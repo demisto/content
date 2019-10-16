@@ -1,20 +1,14 @@
 commonfields:
-  id: FirstArrayElement
+  id: LastArrayElement
   version: -1
-name: FirstArrayElement
-script: |-
-  VALUE = demisto.args()['value']
-
-  if type(VALUE) is list and len(VALUE) > 0:
-      VALUE = VALUE[0]
-
-  demisto.results(VALUE)
+name: LastArrayElement
+script: ''
 type: python
 tags:
 - general
 - transformer
 - entirelist
-comment: Returns the first element of an array.  If not passed an array, it returns
+comment: Returns the last element of an array.  If not passed an array, it returns
   the original value.
 enabled: true
 args:
