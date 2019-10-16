@@ -189,7 +189,7 @@ class TestParseFunctions:
         assert tableToMarkdown(f'Logs {table_name} table', filtered_results_all, headers=headers_all) \
             == logs_human_readable_output_generator(fields_all_input, table_name, raw_results)
         # General case test
-        assert tableToMarkdown(f'Logs {table_name} table', filtered_results_gc, headers=headers_gc) \
+        assert tableToMarkdown(f'Logs {table_name} table', filtered_results_gc, headers=headers_gc, removeNull=True) \
             == logs_human_readable_output_generator(fields_gc_input, table_name, raw_results)
 
     def test_build_where_clause(self):

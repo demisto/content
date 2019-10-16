@@ -488,19 +488,22 @@ def parse_tree_by_root_to_leaf_paths(root: str, body) -> dict:
     The expected output is {'a.b': 2, 'a.c': 3, 'a.d.e': 5, 'a.d.f': 6, 'a.d.g.h': 8, 'a.d.g.i': 9}
     Basically what this function does is when it gets a tree it creates a dict from it which it's keys are all
     root to leaf paths and the corresponding values are the values in the leafs
+    Please note that the implementation is similar to DFS on trees (which means we don't have to check for visited
+    nodes because there are no cycles)
     :param root: the root string
     :param body: the body of the root
     :return: the parsed tree
     """
     parsed_tree: dict = {}
-    help_stack = [(root, body)]
+    help_stack: list = [(root, body)]
 
     while help_stack:
-        node = help_stack.pop()
-        root_to_node_path = node[0]
+        node: tuple = help_stack.pop()
+        root_to_node_path: str = node[0]
         body = node[1]
         if isinstance(body, dict):
             for key, value in body.items():
+                # for each node we append a tuple of it's body and the path from the root to it
                 help_stack.append((root_to_node_path + '.' + key, value))
         else:
             parsed_tree[root_to_node_path] = body
