@@ -17,10 +17,10 @@ from typing import Any, Dict, Tuple, List
 """
 For further information about the API used in the integration see:
 
-1) Google KMS API Client libraries information: 
+1) Google KMS API Client libraries information:
     https://cloud.google.com/kms/docs/reference/libraries
 
-2) Git resource with some API use examples: 
+2) Git resource with some API use examples:
     https://github.com/GoogleCloudPlatform/python-docs-samples/tree/master/kms/api-client
 
 """
