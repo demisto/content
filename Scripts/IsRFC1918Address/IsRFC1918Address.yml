@@ -2,13 +2,7 @@ commonfields:
   id: IsRFC1918Address
   version: -1
 name: IsRFC1918Address
-script: |-
-  ADDRESS = demisto.args()['value']
-  RANGES = '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16'
-
-  res = demisto.executeCommand('IsInCidrRanges', { 'value': ADDRESS, 'cidr_ranges': RANGES } )[0]
-
-  demisto.results(res['Contents'])
+script: ''
 type: python
 tags:
 - filter
