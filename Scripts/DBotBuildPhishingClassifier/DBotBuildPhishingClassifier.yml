@@ -1,88 +1,77 @@
 args:
 - default: false
-  description: JSON file entry id.
+  description: The incidents query
   isArray: false
-  name: entryId
-  required: true
-  secret: false
-- default: false
-  defaultValue: text
-  description: The text field in the JSON file.
-  isArray: false
-  name: textFields
+  name: query
   required: false
   secret: false
 - default: false
-  defaultValue: tag
-  description: The tag field in the JSON file.
+  defaultValue: Phishing
+  description: Filter by incidents types, comma-separated value
   isArray: false
-  name: tagField
+  name: incidentTypes
   required: false
   secret: false
 - default: false
-  description: Hash words with seed
+  description: Filter by from date
   isArray: false
-  name: hashSeed
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: nlp
-  description: Pre-process to input text
-  isArray: false
-  name: preProcessType
+  name: fromDate
   predefined:
-  - nlp
-  - none
+  - ''
   required: false
   secret: false
 - default: false
-  description: Model name to store in the system
+  description: Filter by to date
   isArray: false
-  name: modelName
-  required: true
+  name: toDate
+  required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'true'
-  description: Do we want to store the model in Demisto?
+- default: false
+  defaultValue: '3000'
+  description: Maximum number of incidents to fetch
   isArray: false
-  name: storeModel
-  predefined:
-  - 'true'
-  - 'false'
+  name: limit
   required: false
   secret: false
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: If model with the same name exist - override model.
+  description: Fetch incident context
   isArray: false
-  name: overrideExistingModel
+  name: includeContext
   predefined:
   - 'true'
   - 'false'
   required: false
   secret: false
-- default: false
-  defaultValue: '0.3'
-  description: Maximum number of samples we allow below threshold to achieve target
-    accuracy
+- auto: PREDEFINED
+  default: false
+  defaultValue: created
   isArray: false
-  name: maxBelowThreshold
+  name: timeField
+  predefined:
+  - created
+  - modified
   required: false
   secret: false
 - default: false
-  defaultValue: '0.8'
+  description: The tag field in the JSON file.
   isArray: false
-  name: targetAccuracy
+  name: tagField
+  required: true
+  secret: false
+- default: false
+  defaultValue: emailsubject|name,emailbody|emailbodyhtml
+  description: The text fields, comma-separated value, with |
+  isArray: false
+  name: emailContentFields
   required: false
   secret: false
 - default: false
   defaultValue: '15'
   description: Remove emails with text shorter then this threshold (number of words)
   isArray: false
-  name: removeShortEmailsThreshold
+  name: removeShortTextThreshold
   required: false
   secret: false
 - default: false
@@ -93,34 +82,43 @@ args:
   name: dedupThreshold
   required: false
   secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: json
-  description: The input file type
+- default: false
+  description: Hash function seed (hash every word)
   isArray: false
-  name: fileType
-  predefined:
-  - json
-  - pickle
-  - csv
+  name: hashSeed
   required: false
   secret: false
 - default: false
-  defaultValue: created
-  description: Sort data by this field (if exist)
+  description: The model name
   isArray: false
-  name: sortBy
+  name: modelName
   required: false
   secret: false
-comment: 'Create '
+- default: false
+  defaultValue: '*'
+  description: 'Comma-separated values of email tags values and mapping. The script
+    going to consider only the tags specify in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
+    4 values in email tag: malicious, credentials harvesting, inner communitcation,
+    external legit email, unclassified. While training, we want to ignore "unclassified"
+    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
+    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  isArray: false
+  name: PhishingLabels
+  required: false
+  secret: false
+comment: Create a phishing classifier
 commonfields:
-  id: DBotTrainTextClassifierV2
+  id: DBotBuildPhihsingClassifier
   version: -1
 enabled: false
-name: DBotTrainTextClassifierV2
+name: DBotBuildPhihsingClassifier
 script: '-'
 system: false
-timeout: 1h
+tags:
+- ml
+timeout: 12µs
 type: python
-dockerimage: demisto/dl:1.3
 fromversion: 4.5.0
