@@ -1,5 +1,4 @@
-<h1>JsonWhoIs Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
+<h1>JsonWhoIs Integration</h1>
 <h2>Use Cases</h2>
 <ul>
 <li>Research on malicious url.</li>
