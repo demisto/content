@@ -553,6 +553,34 @@ script:
 
     }
 
+    function epoMoveSystem() {
+        var pArgs = {
+            'names': args.names,
+            'parentGroupId': args.parentGroupId
+        };
+
+        var result;
+        result = callEpo('system.move', pArgs);
+
+        if (result === true) {
+            result = 'System ' + args.names + ' moved successfully to GroupId ' + args.parentGroupId;
+            return {
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsFormat: formats.text,
+                HumanReadable: result
+            };
+        } else {
+            result = 'System ' + args.names + ' failed to move to GroupId ' + args.parentGroupId;
+            return {
+                Type: entryTypes.error,
+                Contents: result,
+                ContentsFormat: formats.text,
+                HumanReadable: result
+              };
+        }
+    }
+
     function parseCommandArgs(command, commandArgs) {
         //commandArgs should be in the format of:  keyName1:keyValue1, keyName2:KeyValue2
         if (!commandArgs) {
@@ -652,6 +680,10 @@ script:
         case 'epo-get-version':
             return epoGetVersion();
 
+        case 'epo-move-system':
+            return epoMoveSystem();
+
+
         case 'epo-command':
             if (!args.command) {
                 throw 'ePO error: command argument is missing';
@@ -677,269 +709,263 @@ script:
     arguments:
     - name: search
       default: true
-      description: String to search in help
+      description: String to search for in help.
     - name: command
-      description: Command to get help on
-    description: print help on ePO commands
+      description: Command for which to print help.
+    description: Prints help (information) for ePO commands. If no command argument is specified, returns all ePO commands.
   - name: epo-get-latest-dat
     arguments: []
     outputs:
     - contentPath: mcAfeeLatestDatVersion
       contextPath: McAfee.ePO.latestDAT
-      description: Latest McAfee DAT file version
+      description: Latest McAfee DAT file version.
       type: number
-    description: Check the latest DAT file in McAfee repository
+    description: Checks the latest DAT file in the McAfee repository.
   - name: epo-get-current-dat
     arguments: []
     outputs:
     - contextPath: McAfee.ePO.epoDAT
       description: Current McAfee DAT file in ePO repository
       type: number
-    description: check the existing DAT file version in ePO
+    description: Checks the existing DAT file version in ePO.
   - name: epo-update-client-dat
     arguments:
     - name: systems
       required: true
-      description: IP or system name. Can be comma separated list or system names
-        or IP addresses
+      description: A CSV list of IP addresses or system names.
     - name: retryAttempts
       description: Number of times the server will attempt to send the task to the
-        client. Defaults to 1.
+        client. Default is 1 retry.
     - name: retryIntervalInSeconds
-      description: Retry interval in seconds. Defaults to 30.
+      description: Retry interval in seconds. Default is 30.
     - name: abortAfterMinutes
-      description: Maximum number of minutes before aborting all attempts. Defaults
-        to 5.
+      description: The threshold (in minutes) after which attempts to send the task to the client are aborted. Default is 5.
     - name: stopAfterMinutes
-      description: Maximum duration in minutes the client task is allowed to run.
+      description: The threshold (in minutes) that the client task is allowed to run.
         Defaults to 20.
     - name: randomizationInterval
-      description: Duration in minutes over which to randomly spread task execution.
-        Defaults to 0 (execute on all clients immediately).
-    description: Run client task to update the DAT file
+      description: Duration (in minutes) over which to randomly spread task execution.
+        Default is 0 (executes on all clients immediately).
+    description: Runs a client task to update the DAT file.
   - name: epo-update-repository
     arguments: []
-    description: Trigger a Server Task in specific ePO servers to pull latest signatures
-      from update server
+    description: Triggers a server task in specific ePO servers to retrieve the latest signatures from the update server.
   - name: epo-get-system-tree-group
     arguments:
     - name: search
-      description: Search string for system tree group
+      description: String to search for in the system tree group.
     outputs:
     - contextPath: McAfee.ePO.SystemTreeGroups.groupId
-      description: System Tree group ID
+      description: System tree group ID.
       type: number
     - contextPath: McAfee.ePO.SystemTreeGroups.groupPath
-      description: System Tree group path
+      description: System tree group path.
       type: string
-    description: Get System Tree groups
+    description: Returns system tree groups.
   - name: epo-find-systems
     arguments:
     - name: groupId
       required: true
-      description: System Tree Group ID
+      description: System tree group ID.
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Print all system data
+      description: Whether to return all system data. 
     outputs:
     - contextPath: Endpoint.Name
       description: Endpoint name
       type: string
     - contextPath: Endpoint.Domain
-      description: Endpoint domain
+      description: Endpoint domain.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Endpoint hostname
+      description: Endpoint hostname.
       type: string
     - contextPath: Endpoint.IPAddress
-      description: Endpoint IP address
+      description: Endpoint IP address.
       type: string
     - contextPath: Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint OS.
       type: string
     - contextPath: Endpoint.OSVersion
-      description: Endpoint operation system version
+      description: Endpoint OS version.
       type: string
     - contextPath: Endpoint.Processor
-      description: 'Model of the processor '
+      description: Processor model.
       type: string
     - contextPath: Endpoint.Processors
-      description: Number of processors
+      description: Number of processors.
       type: number
     - contextPath: Endpoint.Memory
-      description: 'Amount of memory on this endpoint '
+      description: 'Endpoint memory.'
       type: number
     - contextPath: McAfee.ePO.Endpoint.Name
-      description: Endpoint name
+      description: Endpoint name.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Domain
-      description: Endpoint domain
+      description: Endpoint domain.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Hostname
-      description: Endpoint hostname
+      description: Endpoint hostname.
       type: string
     - contextPath: McAfee.ePO.Endpoint.IPAddress
-      description: Endpoint IP address
+      description: Endpoint IP address.
       type: string
     - contextPath: McAfee.ePO.Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint OS.
       type: string
     - contextPath: McAfee.ePO.Endpoint.OSVersion
-      description: Endpoint operation system version
+      description: Endpoint OS version.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Processor
-      description: Model of the processor
+      description: Processor model.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Processors
-      description: Number of processors
+      description: Number of processors.
       type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: 'Amount of memory on this endpoint '
+      description: Endpoint memory.
       type: number
-    description: Find computers within a given group in the ePO tree
+    description: Finds computers within a specified group in the ePO tree.
   - name: epo-command
     arguments: []
-    description: Execute ePO command. Receives mandatory 'command' argument and other
-      specific commands other arguments - Run 'epo-help' command to see a list available
-      commands. You can also specify 'headers' argument  to filter tables headers.
-      e.g. '!epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName'
+    description: Executes the ePO command. Receives the mandatory ''command'' argument, and other
+      optional arguments. Run the ''epo-help'' command to get a list of available commands. You can also specify the ''headers'' argument to filter table headers.
+      Example/:/ !epo-command command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName
   - name: epo-advanced-command
     arguments:
     - name: command
       required: true
-      description: Command to execute. Run a core.help command or !epo-help to identify
-        all possible commands.
+      description: The command to execute. Run either th core.help command or the !epo-help to get all available commands.
     - name: commandArgs
       required: true
-      description: Comma separated key value pairs as additional arguments to pass.  E.g.
-        argName1:argValue1,argName2:argValue2
-    description: 'Execute ePO command. Run ''epo-help'' command to see a list available
-      commands. e.g:  !epo-advanced-command command="clienttask.find" commandArgs="searchText:On-demand".
-      You can also specify ''headers'' argument  to filter tables headers. e.g: ''!epo-command
-      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName''. '
+      description: CSV list of key value pairs as additional arguments to pass, for example, "argName1:argValue1,argName2:argValue2".
+    description: Executes the ePO command. Run the ''epo-help'' command to get a list of available
+      commands. For example/:/  !epo-advanced-command command=clienttask.find commandArgs=searchText:On-demand.
+      You can also specify the ''headers'' argument to filter table headers, for example/:/ !epo-command
+      command=system.find searchText=10.0.0.1 headers=EPOBranchNode.AutoID,EPOComputerProperties.ComputerName.
   - name: epo-wakeup-agent
     arguments:
     - name: names
       required: true
-      description: Agent hostname
-    description: Wakeup an agent
+      description: Agent hostname.
+    description: Wakes up an agent.
   - name: epo-apply-tag
     arguments:
     - name: names
       required: true
-      description: Hostnames to apply tags on
+      description: Hostnames on which to apply tags.
     - name: tagName
       required: true
-      description: Tag name
-    description: Applies a tag
+      description: Tag name.
+    description: Applies a tag to hostnames.
   - name: epo-clear-tag
     arguments:
     - name: names
       required: true
-      description: Hostnames to clear tags from
+      description: Hostnames from which to clear tags.
     - name: tagName
       required: true
-      description: Tag name
-    description: Clears a tag
+      description: Tag name.
+    description: Clears a tag from hostnames.
   - name: epo-query-table
     arguments:
     - name: target
       required: true
       description: Table name
     - name: select
-      description: 'Which columns to select. Please use SQUID syntax. Example: "(select
+      description: 'The columns to select, in SQUID syntax. Example: "(select
         EPOEvents.AutoID EPOEvents.DetectedUTC EPOEvents.ReceivedUTC)"'
     - name: where
-      description: 'Filter results. Please use SQUID syntax. Example: "(where ( eq
+      description: 'Filter results, in SQUID syntax. Example: "(where ( eq
         ( OrionTaskLogTask .UserName "ga" )))"'
     - name: order
-      description: 'Order the results. Please use SQUID syntax. Example: "(order (asc
+      description: 'Order in which to return the results, in SQUID syntax. Example: "(order (asc
         OrionTaskLogTask.StartDate) )")'
     - name: group
-      description: 'Group the results. Please use SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
+      description: 'Group the results, in SQUID Syntax. Example: "(group EPOBranchNode.NodeName)"'
     - name: joinTables
-      description: Perform join. Please use SQUID Syntax.
+      description: Perform join, in SQUID syntax.
     - name: query_name
       description: Name for the query to appear in the context
     outputs:
     - contextPath: McAfee.ePO.Query
-      description: Query result
-    description: Queries an ePO table
+      description: Query result.
+    description: Queries an ePO table.
   - name: epo-get-tables
     arguments:
     - name: table
-      description: Name of the table
-    description: Get an ePO table
+      description: Name of the table.
+    description: Returns an ePO table.
   - name: epo-find-system
     arguments:
     - name: searchText
-      description: Hostname to search
+      description: Hostname to search.
     - name: verbose
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Print all system data
+      description: Whether to print all system data.
       isArray: true
     outputs:
     - contextPath: Endpoint.Name
-      description: Endpoint name
+      description: Endpoint name.
       type: string
     - contextPath: Endpoint.Domain
-      description: Endpoint domain
+      description: Endpoint domain.
       type: string
     - contextPath: Endpoint.Hostname
-      description: Endpoint hostname
+      description: Endpoint hostname.
       type: string
     - contextPath: Endpoint.IPAddress
-      description: Endpoint IP address
+      description: Endpoint IP address.
       type: string
     - contextPath: Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint OS.
       type: string
     - contextPath: Endpoint.OSVersion
-      description: Endpoint operation system version
+      description: Endpoint OS version.
       type: string
     - contextPath: Endpoint.Processor
-      description: Model of the processor
+      description: Processor model.
       type: string
     - contextPath: Endpoint.Processors
-      description: Number of processors
+      description: Number of processors.
       type: number
     - contextPath: Endpoint.Memory
-      description: 'Amount of memory on this endpoint '
+      description: Endpoint memory. '
       type: number
     - contextPath: McAfee.ePO.Endpoint.Name
-      description: Endpoint name
+      description: Endpoint name.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Domain
-      description: Endpoint domain
+      description: Endpoint domain.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Hostname
-      description: Endpoint hostname
+      description: Endpoint hostname.
       type: string
     - contextPath: McAfee.ePO.Endpoint.IPAddress
-      description: Endpoint IP address
+      description: Endpoint IP address.
       type: string
     - contextPath: McAfee.ePO.Endpoint.OS
-      description: Endpoint operation system
+      description: Endpoint OS
       type: string
     - contextPath: McAfee.ePO.Endpoint.OSVersion
-      description: Endpoint operation system version
+      description: Endpoint OS version
       type: string
     - contextPath: McAfee.ePO.Endpoint.Processor
-      description: Model of the processor
+      description: Processor model.
       type: string
     - contextPath: McAfee.ePO.Endpoint.Processors
-      description: Number of processors
+      description: Number of processors.
       type: number
     - contextPath: McAfee.ePO.Endpoint.Memory
-      description: 'Amount of memory on this endpoint '
+      description: 'Endpoint memory.'
       type: number
-    description: Finds systems in the System Tree
+    description: Finds systems in the system tree.
   - name: epo-get-version
     arguments: []
     outputs:
@@ -947,6 +973,15 @@ script:
       description: ePO version
       type: string
     description: Gets the ePO version. This requires global admin permissions.
+  - name: epo-move-system
+    arguments:
+    - name: names
+      required: true
+      description: Asset name.
+    - name: parentGroupId
+      required: true
+      description: Group ID.
+    description: Moves a system to a different group.
   runonce: false
 tests:
 - Test Playbook McAfee ePO

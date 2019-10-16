@@ -1,8 +1,10 @@
 import os
-import yaml
-import requests
 
-from Tests.test_utils import print_error, get_yaml
+import requests
+import yaml
+
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -18,9 +20,8 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-    CONTENT_GIT_HUB_LINK = "https://raw.githubusercontent.com/demisto/content/master/"
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
 
         self.file_path = file_path
@@ -28,17 +29,19 @@ class IntegrationValidator(object):
             self.current_integration = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(self.CONTENT_GIT_HUB_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
                 file_content = requests.get(git_hub_path, verify=False).content
                 self.old_integration = yaml.safe_load(file_content)
             else:
                 try:
-                    file_path_from_master = os.path.join(self.CONTENT_GIT_HUB_LINK, file_path).replace("\\", "/")
-                    self.old_integration = yaml.safe_load(requests.get(file_path_from_master, verify=False).content)
+                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
+                        "\\", "/")
+                    res = requests.get(file_path_from_old_branch, verify=False)
+                    res.raise_for_status()
+                    self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
-                    print(str(e))
-                    print_error("Could not find the old integration please make sure that you did not break "
-                                "backward compatibility")
+                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                                  "backward compatibility".format(str(e)))
                     self.old_integration = None
 
     def is_backward_compatible(self):
@@ -52,8 +55,238 @@ class IntegrationValidator(object):
         self.is_changed_command_name_or_arg()
         self.is_there_duplicate_args()
         self.is_there_duplicate_params()
+        self.is_changed_subtype()
+
+        # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
+        self.is_outputs_for_reputations_commands_valid()
 
         return self._is_valid
+
+    def is_valid_integration(self):
+        """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_valid_subtype()
+        self.is_default_arguments()
+        self.is_proxy_configured_correctly()
+        self.is_insecure_configured_correctly()
+        self.is_valid_category()
+
+        return self._is_valid
+
+    def is_valid_beta_integration(self, is_new=False):
+        """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_default_arguments()
+        self.is_valid_beta(is_new)
+        return self._is_valid
+
+    def is_valid_param(self, param_name, param_display):
+        """Check if the given parameter has the right configuration."""
+        err_msgs = []
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            configuration_param_name = configuration_param['name']
+            if configuration_param_name == param_name:
+                if configuration_param['display'] != param_display:
+                    err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
+                                                                                                   param_display))
+                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue', '') != '':
+                    err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
+
+                elif configuration_param.get('required', False):
+                    err_msgs.append('The required field of the {} parameter should be False'.format(param_name))
+
+                elif configuration_param.get('type') != 8:
+                    err_msgs.append('The type field of the {} parameter should be 8'.format(param_name))
+
+        if err_msgs:
+            print_error('Received the following error for {} validation:\n{}'.format(param_name, '\n'.join(err_msgs)))
+            self._is_valid = False
+            return False
+
+        return True
+
+    def is_proxy_configured_correctly(self):
+        """Check that if an integration has a proxy parameter that it is configured properly."""
+        return self.is_valid_param('proxy', 'Use system proxy settings')
+
+    def is_insecure_configured_correctly(self):
+        """Check that if an integration has a insecure parameter that it is configured properly."""
+        insecure_field_name = ''
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            if configuration_param['name'] == 'insecure' or configuration_param['name'] == 'unsecure':
+                insecure_field_name = configuration_param['name']
+
+        if insecure_field_name:
+            return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
+
+    def is_valid_category(self):
+        """Check that the integration category is in the schema."""
+        category = self.current_integration.get('category', None)
+        if not category or category not in INTEGRATION_CATEGORIES:
+            self._is_valid = False
+            print_error("The category '{}' is not in the integration schemas, the valid options are:\n{}".format(
+                category, '\n'.join(INTEGRATION_CATEGORIES)))
+
+        return self._is_valid
+
+    def is_default_arguments(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has a default non required argument with the same name
+
+        Returns:
+            bool. Whether a reputation command hold a valid argument
+        """
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            for arg in command.get('arguments', []):
+                arg_name = arg.get('name')
+                if ((command_name == 'file' and arg_name == 'file')
+                        or (command_name == 'email' and arg_name == 'email')
+                        or (command_name == 'domain' and arg_name == 'domain')
+                        or (command_name == 'url' and arg_name == 'url')
+                        or (command_name == 'ip' and arg_name == 'ip')):
+                    if arg.get('default') is False:
+                        self._is_valid = False
+                        print_error("The argument '{}' of the command '{}' is not configured as default"
+                                    .format(arg_name, command_name))
+        return self._is_valid
+
+    def is_outputs_for_reputations_commands_valid(self):
+        """Check if a reputation command (domain/email/file/ip/url)
+            has the correct DBotScore outputs according to the context standard
+            https://github.com/demisto/content/blob/master/docs/context_standards/README.MD
+
+        Returns:
+            bool. Whether a reputation command holds valid outputs
+        """
+        context_standard = "https://github.com/demisto/content/blob/master/docs/context_standards/README.MD"
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            # look for reputations commands
+            if command_name in ['domain', 'email', 'file', 'ip', 'url']:
+                context_outputs_paths = set()
+                context_outputs_descriptions = set()
+                for output in command.get('outputs', []):
+                    context_outputs_paths.add(output.get('contextPath'))
+                    context_outputs_descriptions.add(output.get('description'))
+
+                # validate DBotScore outputs and descriptions
+                DBot_Score = {
+                    'DBotScore.Indicator': 'The indicator that was tested.',
+                    'DBotScore.Type': 'The indicator type.',
+                    'DBotScore.Vendor': 'The vendor used to calculate the score.',
+                    'DBotScore.Score': 'The actual score.'
+                }
+                missing_outputs = set()
+                missing_descriptions = set()
+                for DBot_Score_output in DBot_Score:
+                    if DBot_Score_output not in context_outputs_paths:
+                        missing_outputs.add(DBot_Score_output)
+                        self._is_valid = False
+                    else:  # DBot Score output path is in the outputs
+                        if DBot_Score.get(DBot_Score_output) not in context_outputs_descriptions:
+                            missing_descriptions.add(DBot_Score_output)
+                            # self._is_valid = False - Do not fail build over wrong description
+
+                if missing_outputs:
+                    print_error("The DBotScore outputs of the reputation command {} aren't valid. Missing: {}."
+                                " Fix according to context standard {} "
+                                .format(command_name, missing_outputs, context_standard))
+                if missing_descriptions:
+                    print_warning("The DBotScore description of the reputation command {} aren't valid. Missing: {}."
+                                  " Fix according to context standard {} "
+                                  .format(command_name, missing_descriptions, context_standard))
+
+                # validate the IOC output
+                command_to_output = {
+                    'domain': {'Domain.Name'},
+                    'file': {'File.MD5', 'File.SHA1', 'File.SHA256'},
+                    'ip': {'IP.Address'},
+                    'url': {'URL.Data'}
+                }
+                reputation_output = command_to_output.get(command_name)
+                if reputation_output and not reputation_output.intersection(context_outputs_paths):
+                    self._is_valid = False
+                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
+                                "Fix according to context standard {} "
+                                .format(command_name, reputation_output, context_standard))
+
+        return self._is_valid
+
+    def is_valid_subtype(self):
+        """Validate that the subtype is python2 or python3."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if subtype not in PYTHON_SUBTYPES:
+                print_error("The subtype for our yml files should be either python2 or python3, "
+                            "please update the file {}.".format(self.current_integration.get('name')))
+                self._is_valid = False
+
+        return self._is_valid
+
+    def is_changed_subtype(self):
+        """Validate that the subtype was not changed."""
+        type_ = self.current_integration.get('script', {}).get('type')
+        if type_ == 'python':
+            subtype = self.current_integration.get('script', {}).get('subtype')
+            if self.old_integration:
+                old_subtype = self.old_integration.get('script', {}).get('subtype', "")
+                if old_subtype and old_subtype != subtype:
+                    print_error("Possible backwards compatibility break, You've changed the subtype"
+                                " of the file {}".format(self.file_path))
+                    self._is_valid = False
+
+        return self._is_valid
+
+    def is_valid_beta(self, is_new=False):
+        """Validate that that beta integration has correct beta attributes"""
+
+        if not all([self._is_display_contains_beta(), self._has_beta_param()]):
+            self._is_valid = False
+        if is_new:
+            if not all([self._id_has_no_beta_substring(), self._name_has_no_beta_substring()]):
+                self._is_valid = False
+
+    def _id_has_no_beta_substring(self):
+        """Checks that 'id' field dose not include the substring 'beta'"""
+        common_fields = self.current_integration.get('commonfields', {})
+        integration_id = common_fields.get('id', '')
+        if 'beta' in integration_id.lower():
+            print_error(
+                "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
+                "please change the id in the file {}".format(self.file_path))
+            return False
+        return True
+
+    def _name_has_no_beta_substring(self):
+        """Checks that 'name' field dose not include the substring 'beta'"""
+        name = self.current_integration.get('name', '')
+        if 'beta' in name.lower():
+            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+            "please change the id in the file {}".format(self.file_path)
+            return False
+        return True
+
+    def _has_beta_param(self):
+        """Checks that integration has 'beta' field with value set to true"""
+        beta = self.current_integration.get('beta', False)
+        if not beta:
+            print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
+                        " in the file {}".format(self.file_path))
+        return beta
+
+    def _is_display_contains_beta(self):
+        """Checks that 'display' field includes the substring 'beta'"""
+        display = self.current_integration.get('display', '')
+        if 'beta' not in display.lower():
+            print_error(
+                "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
+                " in the file {}".format(self.file_path))
+            return False
+        return True
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once
@@ -182,7 +415,11 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
-                context_list.append(output['contextPath'])
+                command_name = command['name']
+                try:
+                    context_list.append(output['contextPath'])
+                except KeyError:
+                    print('Invalid context output for command {}. Output is {}'.format(command_name, output))
 
             command_to_context_list[command['name']] = sorted(context_list)
 
@@ -218,7 +455,7 @@ class IntegrationValidator(object):
             dict. Field name to its required status.
         """
         field_to_required = {}
-        configuration = integration_json.get('configuration')
+        configuration = integration_json.get('configuration', [])
         for field in configuration:
             field_to_required[field.get('name')] = field.get('required', False)
 
@@ -241,11 +478,13 @@ class IntegrationValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the Docker image was changed or not."""
-        if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                self.current_integration.get('script', {}).get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            self._is_valid = False
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_integration.get('script', {}).get('dockerimage', "") != \
+                    self.current_integration.get('script', {}).get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                self._is_valid = False
+                return True
 
         return False
