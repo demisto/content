@@ -614,7 +614,7 @@ def list_instance_profiles(args):
                 'Path': instanceProfile['Path'],
                 'InstanceProfileName': instanceProfile['InstanceProfileName'],
                 'InstanceProfileId': instanceProfile['InstanceProfileId'],
-                'CreateDate': datetime.datetime.strftime(instanceProfile['CreateDate'],
+                'CreateDate': datetime.strftime(instanceProfile['CreateDate'],
                                                          '%Y-%m-%dT%H:%M:%S'),
             })
             output.append(instanceProfile)
