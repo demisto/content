@@ -45,7 +45,7 @@ def get_attachments(build_url, env_results_file_name):
 
     with open(env_results_file_name, 'r') as env_results_file_name:
         env_results = json.load(env_results_file_name)
-        instance_dns = env_results['InstanceDNS']
+        instance_dns = env_results[0]['InstanceDNS']
 
     content_team_attachment = [{
         'fallback': title,
@@ -53,7 +53,7 @@ def get_attachments(build_url, env_results_file_name):
         'title': title,
         'title_link': build_url,
         "author_name": "Demisto AWS Machine",
-        "author_link": "https://{instance_dns}".format(instance_dns),
+        "author_link": "https://{0}".format(instance_dns),
         "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
     }]
