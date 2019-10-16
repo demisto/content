@@ -525,6 +525,9 @@ def parse_tree_by_root_to_leaf_paths(root: str, body) -> dict:
             for key, value in body.items():
                 # for each node we append a tuple of it's body and the path from the root to it
                 help_stack.append((root_to_node_path + '.' + key, value))
+        elif isinstance(body, list):
+            for element in body:
+                help_stack.append((root_to_node_path, element))
         else:
             parsed_tree[root_to_node_path] = body
 
