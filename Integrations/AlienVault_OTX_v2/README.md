@@ -1,6 +1,6 @@
+<h1>AlienVault OTX integration</h1>
 <p>
 Query Indicators of Compromise in AlienVault OTX.
-
 This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 </p>
 <h2>Use Cases</h2>
