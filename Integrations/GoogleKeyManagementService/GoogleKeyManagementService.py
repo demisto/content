@@ -5,15 +5,12 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 from google.cloud import kms_v1
 from google.cloud.kms_v1 import enums
-import requests
-import urllib3
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from json import JSONDecodeError
 import base64
 from typing import Any, Dict, Tuple, List
-import grpc
 
 """
 For further information about the API used in the integration see:
@@ -46,14 +43,14 @@ class Client:
 
         # Creates an API client for the KMS API.
         try:
-            self.kms_client = self._init_kms_client(params.get('insecure'))
+            self.kms_client = self._init_kms_client()
 
         except JSONDecodeError:
             raise Exception("Service Account json is not formatted well please re-enter it.")
 
         handle_proxy()
 
-    def _init_kms_client(self, insecure):
+    def _init_kms_client(self):
         """Creates the Python API client for Google Cloud KMS using service account credentials.
         """
         cur_directory_path = os.getcwd()
@@ -64,12 +61,7 @@ class Client:
             json_object = json.loads(self.service_account)
             json.dump(json_object, creds_file)
 
-        if insecure:
-            channel = grpc.insecure_channel("cloudkms.googleapis.com:443")
-            return kms_v1.KeyManagementServiceClient(channel=channel).from_service_account_json(credentials_file_path)
-
-        else:
-            return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
+        return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
 
 
 """HELPER FUNCTIONS"""
