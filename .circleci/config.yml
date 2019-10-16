@@ -132,8 +132,11 @@ jobs:
               then
                 if [ -n "${NIGHTLY}" ] ;
                   then
-                    export IFRA_ENV_TYPE=Content-Master
-
+                    if[ -n "${ASYNC}" ]
+                      then
+                        export IFRA_ENV_TYPE=Content-Async-Env
+                      else
+                        export IFRA_ENV_TYPE=Content-Master
                   else
                     export IFRA_ENV_TYPE=Content-Env
                 fi
