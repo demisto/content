@@ -4,12 +4,12 @@ from CommonServerUserPython import *
 import os
 import json
 import requests
+import traceback
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -18,7 +18,9 @@ USERNAME = CREDENTIALS['identifier'] if CREDENTIALS else ''
 PASSWORD = CREDENTIALS['password'] if CREDENTIALS else ''
 TOKEN = demisto.params().get('token')
 USE_SSL = not demisto.params().get('insecure', False)
-AUTH_HEADERS = {'SEC': str(TOKEN), 'Content-Type': 'application/json'}
+AUTH_HEADERS = {'Content-Type': 'application/json'}
+if TOKEN:
+    AUTH_HEADERS['SEC'] = str(TOKEN)
 OFFENSES_PER_CALL = int(demisto.params().get('offensesPerCall', 50))
 OFFENSES_PER_CALL = 50 if OFFENSES_PER_CALL > 50 else OFFENSES_PER_CALL
 
@@ -199,7 +201,15 @@ def dict_values_to_comma_separated_string(dic):
 # Sends request to the server using the given method, url, headers and params
 def send_request(method, url, headers=AUTH_HEADERS, params=None):
     try:
-        res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+        log_hdr = deepcopy(headers)
+        log_hdr.pop('SEC', None)
+        LOG('qradar is attempting {method} request sent to {url} with headers:\n{headers}\nparams:\n{params}'
+            .format(method=method, url=url, headers=json.dumps(log_hdr, indent=4), params=json.dumps(params, indent=4)))
+        if TOKEN:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
+        else:
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+                                   auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
@@ -210,7 +220,7 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
             err_msg = err_msg + 'Error: {0}.\n'.format(err_json['http_response'])
         if 'code' in err_json:
             err_msg = err_msg + 'QRadar Error Code: {0}'.format(err_json['code'])
-        return_error(err_msg)
+        raise Exception(err_msg)
     return res.json()
 
 
@@ -363,13 +373,16 @@ def get_offense_types():
     url = '{0}/api/siem/offense_types'.format(SERVER)
     # Due to a bug in QRadar, this functions does not work if username/password was not provided
     if USERNAME and PASSWORD:
-        return send_request('GET', url, headers=None)
+        return send_request('GET', url)
     return {}
 
 
 # Returns the result of a get note request
 def get_note(offense_id, note_id, fields):
-    url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    if note_id:
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    else:
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
     params = {'fields': fields} if fields else {}
     return send_request('GET', url, AUTH_HEADERS, params=params)
 
@@ -467,7 +480,9 @@ def fetch_incidents():
     raw_offenses = get_offenses(_range='0-{0}'.format(OFFENSES_PER_CALL), _filter=fetch_query)
     if len(raw_offenses) >= OFFENSES_PER_CALL:
         last_offense_pos = find_last_page_pos(fetch_query)
-        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos))
+        raw_offenses = get_offenses(_range='{0}-{1}'.format(last_offense_pos - OFFENSES_PER_CALL + 1, last_offense_pos),
+                                    _filter=fetch_query)
+    raw_offenses = unicode_to_str_recur(raw_offenses)
     incidents = []
     enrich_offense_res_with_source_and_destination_address(raw_offenses)
     for offense in raw_offenses:
@@ -662,7 +677,7 @@ def update_offense_command():
     args = demisto.args()
     if 'closing_reason_name' in args:
         args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-    elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+    elif 'CLOSED' == args.get('status') and not args.get('closing_reason_id'):
         raise ValueError(
             'Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to '
             'get them) to close offense')
@@ -698,7 +713,7 @@ def get_search_results_command():
     search_id = demisto.args().get('search_id')
     raw_search_results = get_search_results(search_id, demisto.args().get('range'))
     result_key = raw_search_results.keys()[0]
-    title = 'QRadar Search Results from ' + result_key
+    title = 'QRadar Search Results from {}'.format(convert_to_str(result_key))
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
@@ -858,10 +873,14 @@ def get_note_command():
         'create_time': 'CreateTime',
         'username': 'CreatedBy'
     }
-    note = replace_keys(raw_note, note_names_map)
-    if 'CreateTime' in note:
-        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-    return get_entry_for_object('QRadar note created successfully', note, raw_note, demisto.args().get('headers'),
+    notes = replace_keys(raw_note, note_names_map)
+    if not isinstance(notes, list):
+        notes = [notes]
+    for note in notes:
+        if 'CreateTime' in note:
+            note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+    return get_entry_for_object('QRadar note for offense: {0}'.format(str(demisto.args().get('offense_id'))), notes,
+                                raw_note, demisto.args().get('headers'),
                                 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
 
@@ -1047,5 +1066,12 @@ try:
     elif demisto.command() == 'qradar-get-domain-by-id':
         demisto.results(get_domains_by_id_command())
 except Exception as e:
-    return_error('Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e),
-                                                                                            message=e.message))
+    message = e.message if hasattr(e, 'message') else convert_to_str(e)
+    error = 'Error has occurred in the QRadar Integration: {error}\n {message}'.format(error=type(e), message=message)
+    LOG(traceback.format_exc())
+    if demisto.command() == 'fetch-incidents':
+        LOG(error)
+        LOG.print_log()
+        raise Exception(error)
+    else:
+        return_error(error)

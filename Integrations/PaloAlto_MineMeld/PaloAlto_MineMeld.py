@@ -9,7 +9,6 @@ import os.path
 import os
 import time
 import re
-from urlparse import urljoin  # type: ignore
 
 # globals and constants
 IPV4_CLASS = 'minemeld.ft.local.YamlIPv4FT'
@@ -63,7 +62,7 @@ class APIClient(object):
         if headers is None:
             headers = {}
 
-        api_url = urljoin(self.url, uri)
+        api_url = ''.join([self.url, uri])
         api_request = urllib2.Request(api_url, headers=headers)
         basic_authorization = base64.b64encode('{}:{}'.format(self.username, self.password))
         api_request.add_header(
@@ -73,7 +72,6 @@ class APIClient(object):
 
         if method is not None:
             api_request.get_method = lambda: method  # type: ignore
-
         try:
             result = urllib2.urlopen(
                 api_request,
@@ -87,9 +85,9 @@ class APIClient(object):
             result.close()
 
         except urllib2.HTTPError, e:
-            demisto.debug(json.dumps(e))
+            demisto.debug(e.reason)
             if e.code != 400:
-                raise
+                return_error('{0}: {1} \nCheck you Minmeld instance.'.format(e.reason, e.code))
             content = '{ "result":[] }'
 
         return content

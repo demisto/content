@@ -3,6 +3,38 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
+            "integrations": "AutoFocus V2",
+            "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
+            "fromversion": "4.5.0",
+            "timeout": 500
+        },
+        {
+            "integrations": "ThreatQ v2",
+            "playbookID": "ThreatQ - Test"
+        },
+        {
+            "integrations": "AttackIQFireDrill",
+            "playbookID": "AttackIQ - Test"
+        },
+        {
+            "integrations": "ZeroFox",
+            "playbookID": "ZeroFox-Test",
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "AWS - SQS",
+            "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
+        },
+        {
+            "integrations": "SlackV2",
+            "playbookID": "Slack Test Playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"
@@ -20,6 +52,10 @@
         {
             "integrations": "Cloaken",
             "playbookID": "Cloaken-Test"
+        },
+        {
+            "integrations": "Uptycs",
+            "playbookID": "TestUptycs"
         },
         {
             "integrations": "ThreatX",
@@ -62,6 +98,9 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "TestAwsEC2GetPublicSGRules-Test"
+        },
+        {
             "playbookID": "TestParseEmailHeaders"
         },
         {
@@ -86,6 +125,9 @@
             "playbookID": "RegPathReputationBasicLists_test"
         },
         {
+            "playbookID": "EmailDomainSquattingReputation-Test"
+        },
+        {
             "playbookID": "RandomStringGenerateTest"
         },
         {
@@ -107,6 +149,10 @@
             "playbookID": "Fidelis-Test"
         },
         {
+            "integrations": "AWS - ACM",
+            "playbookID": "ACM-Test"
+        },
+        {
             "integrations": "Thinkst Canary",
             "playbookID": "CanaryTools Test"
         },
@@ -121,9 +167,8 @@
             "playbookID": "CompareIncidentsLabels-test-playbook"
         },
         {
-            "integrations": "Pwned",
-            "playbookID": "Pwned test",
-            "nightly": true
+            "integrations": "Have I Been Pwned? V2",
+            "playbookID": "Pwned v2 test"
         },
         {
             "integrations": "Alexa Rank Indicator",
@@ -142,15 +187,16 @@
             "playbookID": "ConvertKeysToTableFieldFormat_Test"
         },
         {
-            "playbookID": "ParseCSVnullbytesTest"
-        },
-        {
             "integrations": "CVE Search",
             "playbookID": "cveReputation Test"
         },
         {
             "integrations": "HashiCorp Vault",
             "playbookID": "hashicorp_test"
+        },
+        {
+            "integrations": "AWS - Athena - Beta",
+            "playbookID": "Beta-Athena-Test"
         },
         {
             "integrations": "BeyondTrust Password Safe",
@@ -270,6 +316,13 @@
         },
         {
             "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "playbookID": "Panorama Query Logs - Test",
+            "timeout": 1000,
+            "nightly": true
+        },
+        {
+            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "palo_alto_firewall_test_pb",
             "timeout": 1000,
@@ -321,12 +374,41 @@
             "integrations": "Luminate"
         },
         {
+            "playbookID": "Palo Alto Networks - Malware Remediation Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "SumoLogic-Test",
             "integrations": "SumoLogic",
             "fromversion": "4.1.0"
         },
         {
             "playbookID": "ParseEmailFiles-test"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP and URL - External Dynamic List Test",
+            "integrations": "palo_alto_networks_pan_os_edl_management",
+            "fromversion": "4.0.0"
+
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Custom Block Rule Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block IP - Static Address Group Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
+        },
+        {
+            "playbookID": "PAN-OS - Block URL - Custom URL Category Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "fromversion": "4.0.0"
         },
         {
             "playbookID": "ParseExcel-test"
@@ -348,7 +430,7 @@
         },
         {
             "integrations": "SentinelOne V2",
-            "playbookID": "SentinelOne Beta Test"
+            "playbookID": "SentinelOne V2 - test"
         },
         {
             "integrations": "InfoArmor VigilanteATI",
@@ -539,10 +621,11 @@
             "integrations": "Gmail"
         },
         {
-            "playbookID": "TestParseCSV"
+            "playbookID": "reputations.json Test"
         },
         {
-            "playbookID": "reputations.json Test"
+            "playbookID": "Test IP Indicator Fields",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Shodan",
@@ -663,12 +746,6 @@
             "timeout": 500
         },
         {
-            "integrations": "McAfee ESM-v10",
-            "instance_names": "v11.1.3",
-            "playbookID": "McAfeeESMTest",
-            "timeout": 500
-        },
-        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
@@ -696,6 +773,7 @@
         },
         {
             "playbookID": "process_email_-_generic_-_test",
+            "integrations": "Rasterize",
             "timeout": 240
         },
         {
@@ -828,6 +906,10 @@
             "playbookID": "listExecutedCommands-Test"
         },
         {
+            "integrations": "AWS - Lambda",
+            "playbookID": "AWS-Lambda-Test (Read-Only)"
+        },
+        {
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
@@ -874,6 +956,10 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test"
+        },
+        {
+            "integrations": "remedy_sr_beta",
+            "playbookID": "remedy_sr_test_pb"
         },
         {
 
@@ -1120,6 +1206,10 @@
             "playbookID": "AlphaSOC-Wisdom-Test"
         },
         {
+            "integrations": "carbonblack-v2",
+            "playbookID": "CBFindIP - Test"
+        },
+        {
             "integrations": "Jask",
             "playbookID": "Jask_Test",
             "fromversion": "4.1.0"
@@ -1264,7 +1354,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1276,7 +1366,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1288,7 +1378,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1300,7 +1390,7 @@
             "nightly": true,
             "integrations": [
                 "EWS Mail Sender",
-                "Pwned",
+                "Have I Been Pwned? V2",
                 "Demisto REST API",
                 "Palo Alto Minemeld",
                 "Rasterize"
@@ -1311,7 +1401,8 @@
             "playbookID": "DUO Test Playbook"
         },
         {
-            "playbookID": "SLA Scripts - Test"
+            "playbookID": "SLA Scripts - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "PcapHTTPExtractor-Test"
@@ -1321,6 +1412,11 @@
         },
         {
             "playbookID": "Active Directory Test",
+            "instance_names": "active_directory_query_v2",
+            "integrations": "Active Directory Query v2"
+        },
+        {
+            "playbookID": "AD v2 - debug-mode - Test",
             "instance_names": "active_directory_query_v2",
             "integrations": "Active Directory Query v2"
         },
@@ -1341,8 +1437,8 @@
             "integrations": "Active Directory Query v2"
         },
         {
-            "integrations": "Phishme Intelligence",
-            "playbookID": "Test - PhishMe Intelligence",
+            "integrations": "Cofense Intelligence",
+            "playbookID": "Test - Cofense Intelligence",
             "timeout": 500
         },
         {
@@ -1355,13 +1451,28 @@
             "nightly": true
         },
         {
+            "integrations": "Google Cloud Storage",
+            "playbookID": "GCS - Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "playbookID": "Calculate Severity - Generic v2 - Test",
+            "integrations": [
+                "Palo Alto Minemeld",
+                "Active Directory Query v2"
+            ],
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Freshdesk",
             "playbookID": "Freshdesk-Test",
             "timeout": 500,
             "nightly": true
         },
         {
-            "playbookID": "Autoextract - Test"
+            "playbookID": "Autoextract - Test",
+            "fromversion": "4.1.0"
         },
         {
             "playbookID": "FilterByList - Test",
@@ -1395,7 +1506,17 @@
             "playbookID": "DuoAdmin API test playbook"
         },
         {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
+        },
+        {
             "playbookID": "TestShowScheduledEntries"
+        },
+        {
+            "playbookID": "Calculate Severity - Standard - Test",
+            "integrations": "Palo Alto Minemeld",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Symantec Advanced Threat Protection",
@@ -1424,7 +1545,8 @@
         },
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
-            "integrations": "Image OCR"
+            "integrations": "Image OCR",
+            "timeout": 300
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2 - Test",
@@ -1448,7 +1570,7 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Pwned"
+            "integrations": "Have I Been Pwned? V2"
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -1460,6 +1582,18 @@
         {
             "playbookID": "PAN OS EDL Management - Test",
             "integrations": "palo_alto_networks_pan_os_edl_management"
+        },
+        {
+            "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS EDL Setup Test",
+            "integrations": ["Panorama","palo_alto_networks_pan_os_edl_management"],
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
         },
         {
             "integrations": "Snowflake",
@@ -1566,6 +1700,10 @@
         {
             "integrations": "DomainTools",
             "playbookID": "DomainTools-Test"
+        },
+        {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
         },
         {
             "integrations": "Cisco Spark",
@@ -1694,16 +1832,55 @@
             "playbookID": "MailListener-POP3 - Test"
         },
         {
+            "playbookID": "sumList - Test"
+        },
+        {
             "integrations": "VulnDB",
             "playbookID": "Test-VulnDB"
+        },
+        {
+            "integrations": "Shodan_v2",
+            "playbookID": "Test-Shodan_v2",
+            "timeout": 1000
+        },
+        {
+            "integrations": "Threat Crowd",
+            "playbookID": "ThreatCrowd - Test"
+        },
+        {
+            "playbookID": "Request Debugging - Test",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "Hybrid Analysis",
+            "playbookID": "HybridAnalysis-Test",
+            "timeout": 500,
+            "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v7",
+            "playbookID": "Elasticsearch_v2_test"
+        },
+        {
+            "integrations": "Elasticsearch v2",
+            "instance_names": "es_v6",
+            "playbookID": "Elasticsearch_v2_test-v6"
         }
     ],
     "skipped_tests": {
-        "reputations.json Test": "Reverting the fqdn indicator due to glichtman request, will handled next release(end july 19)",
-        "Cybereason Test": "Integration instance being disabled in the middle of test playbook (issue 17394)",
-        "LogRhythmRest": "Unstable environment Adi is checking",
+        "FilterByList - Test": "(Issue 19469)",
+        "VxStream Test": "Failing test (Issue 19439)",
+        "SentinelOne V2 - test": "Failing test (Issue 19361)",
+        "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
+        "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
+        "CheckpointFW-test": "Test is not stable (Issue 18643)",
+        "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
+        "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
+        "Autoextract - Test": "See issue #18343 for further information",
+        "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
+        "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
         "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "process_email_-_generic_-_test": "Fails due to missing data (issue 17283)",
         "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
         "Forescout-Test": "Should be skipped (issue 17016)",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
@@ -1725,6 +1902,7 @@
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
         "DomainTools-Test": "No instance",
+        "Beta-Athena-Test": "Beta integration & test is expensive to run",
         "Remedy-On-Demand-Test": "No instance",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Skipped pending PR",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Skipped pending PR",
@@ -1739,7 +1917,18 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "old test, needs to check if relevant",
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Intezer Testing": "Old test for old version of inteze"
+        "Intezer Testing": "Old test for old version of inteze",
+        "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
+        "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
+        "nexpose_test": "Failed to create site (issue 18694)",
+        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
+        "IntSights Mssp Test": "Account Expired (issue #16351)",
+        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Pwned test": "API Deprecated, use Pwned test v2 instead",
+        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
+        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
+        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1748,14 +1937,28 @@
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
-        "EclecticIQ Platform": "Instance Issues",
         "Google Cloud Compute": "Can't test yet",
         "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
+        "remedy_sr_beta": "No instance",
+        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "ThreatX": "Partner instance has issue (Issue 19551)",
+        "LogRhythmRest": "LogRhythm host is unreachable (Issue 19362)",
+        "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
+        "Jask": "Returning 401 (issue 18879)",
+        "SumoLogic": "No credentials (Issue 18441)",
+        "Lastline": "Temporally moved to skipped in order to not fail nightly",
+        "vmray": "VMRay license expired (Issue 18752)",
+        "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
+        "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
+        "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
+        "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
+        "ArcSight ESM v2": "License expired (issue #18328)",
+        "AlienVault USM Anywhere": "License expired (issue #18273)",
         "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
@@ -1768,7 +1971,6 @@
         "Threat Grid": "instance problem (issue 16197)",
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "No access (issue 15948)",
-        "IntSights": "Account Expired (issue #16351)",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
         "RedLock": "Credentials and API problems (issue 15493)",
@@ -1778,9 +1980,11 @@
         "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense",
+        "Cisco Spark": "No instance (Issue 18940)",
+        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
+        "QRadar": "No license (issue 17794)",
+        "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Exabeam": "Can not connect to instance from remote (Issue 19371)",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -1789,10 +1993,13 @@
         "Tenable.io": "Unstable instance (issue 16115)",
 
       "_comment": "~~~ OTHER ~~~",
+        "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
+        "Pwned": "Old API is deprecated",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #16247)",
+        "BitDam": "Changes in service (issue #17247)",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "MailListener - POP3": "Failing test module (issue 18580)",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1802,9 +2009,13 @@
     },
     "nigthly_integrations": [
         "Lastline",
-        "TruSTAR"
+        "TruSTAR",
+        "SlackV2"
     ],
     "unmockable_integrations": {
+        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
+        "mysql": "Does not use http",
+        "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
         "Panorama": "Exception: Proxy process took to long to go up. https://circleci.com/gh/demisto/content/24826",
         "Image OCR": "Does not perform network traffic",
@@ -1814,19 +2025,14 @@
         "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
-        "AWS - S3": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
         "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
-        "Symantec Advanced Threat Protection": "Checking",
         "ReversingLabs A1000": "Checking",
         "Check Point": "Checking",
-        "WhatsMyBrowser": "Checking",
-        "jira": "Checking",
         "okta": "Test Module failing, suspect it requires SSL",
         "Awake Security": "Checking",
-        "Cylance Protect v2": "Checking",
         "ArcSight ESM v2": "Checking",
         "Phish.AI": "Checking",
         "Intezer": "Nightly - Checking",
@@ -1835,24 +2041,20 @@
         "RSA Archer": "Nightly - Checking",
         "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
-        "Phishme Intelligence": "Proxy has a non empty default value, will require fixing and merging",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "carbonblackliveresponse": "Pending check: issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
-        "Cybereason": "Insecure has a non empty default value, will require fixing and merging",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
-        "Netcraft": "SSL failure",
-        "AWS - EC2": "SSL Validation fails for STS",
         "Recorded Future": "might be dynamic test",
-        "Cylance Protect": "Test module issue",
         "AlphaSOC Wisdom": "Test module issue",
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "Rasterize": "No API calls "
     }
 }

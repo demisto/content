@@ -1,0 +1,1 @@
+Fixed issue when fetching incidents with an unknown indicator.

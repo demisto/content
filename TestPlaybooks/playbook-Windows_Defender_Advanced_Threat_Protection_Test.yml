@@ -5,17 +5,17 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7def0c02-a346-4ab6-87d2-0991f39bd19b
+    taskid: 4b344474-2291-49d7-8ef4-c24531926d66
     type: start
     task:
-      id: 7def0c02-a346-4ab6-87d2-0991f39bd19b
+      id: 4b344474-2291-49d7-8ef4-c24531926d66
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "24"
     separatecontext: false
     view: |-
       {
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 075c4197-8293-4cae-8c7d-dbeda2e5f51b
+    taskid: 346a2a95-f1f7-48ab-821f-a98356dcc89b
     type: regular
     task:
-      id: 075c4197-8293-4cae-8c7d-dbeda2e5f51b
+      id: 346a2a95-f1f7-48ab-821f-a98356dcc89b
       version: -1
       name: Get ATP list alerts
       script: '|||microsoft-atp-list-alerts'
@@ -59,10 +59,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 527f628e-e20e-471a-8419-f225ca5f7229
+    taskid: 3b2479bc-d882-4e17-8179-63d97a28cf60
     type: condition
     task:
-      id: 527f628e-e20e-471a-8419-f225ca5f7229
+      id: 3b2479bc-d882-4e17-8179-63d97a28cf60
       version: -1
       name: Assert an alert was fetched
       type: condition
@@ -92,41 +92,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 05fa31d4-fb07-470a-8a56-6ad84c587cc7
-    type: regular
-    task:
-      id: 05fa31d4-fb07-470a-8a56-6ad84c587cc7
-      version: -1
-      name: Get machine related to file
-      script: '|||microsoft-atp-get-file-related-machines'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      file:
-        simple: fc0250ce9de08fbd0853fea81e44e305f7c1e383
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "5":
     id: "5"
-    taskid: 677bfbca-7ee3-4248-8f1f-f9e8f47b27ac
+    taskid: 3bd0bb96-0076-4dc3-8a08-03d57d4334e9
     type: condition
     task:
-      id: 677bfbca-7ee3-4248-8f1f-f9e8f47b27ac
+      id: 3bd0bb96-0076-4dc3-8a08-03d57d4334e9
       version: -1
       name: Assert right machine was fetched
       type: condition
@@ -161,10 +132,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: aee55ee5-312a-402e-8a4f-d57f7047175b
+    taskid: 3b5d9165-2653-474d-8fe6-dbaaa859abd1
     type: title
     task:
-      id: aee55ee5-312a-402e-8a4f-d57f7047175b
+      id: 3b5d9165-2653-474d-8fe6-dbaaa859abd1
       version: -1
       name: Done
       type: title
@@ -183,10 +154,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: eb09acb1-b1c7-4e90-8494-e10fa285fdfc
+    taskid: a386893a-17b3-4bff-80d1-776e79f39832
     type: condition
     task:
-      id: eb09acb1-b1c7-4e90-8494-e10fa285fdfc
+      id: a386893a-17b3-4bff-80d1-776e79f39832
       version: -1
       name: Assert machine was fetched and isolated
       type: condition
@@ -209,16 +180,6 @@ tasks:
           right:
             value:
               simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: MicrosoftATP
-                accessor: Machine.ComputerDNSName
-            iscontext: true
-          right:
-            value:
-              simple: desktop-tf35b9b
       - - operator: isTrue
           left:
             value:
@@ -238,10 +199,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 58e3502b-453d-40bd-8dee-81d0f3011599
+    taskid: 05306c2f-3ae8-47a5-8f54-e8b089e0209b
     type: regular
     task:
-      id: 58e3502b-453d-40bd-8dee-81d0f3011599
+      id: 05306c2f-3ae8-47a5-8f54-e8b089e0209b
       version: -1
       name: Isolate machine
       script: '|||microsoft-atp-isolate-machine'
@@ -270,10 +231,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 74024a06-bbc8-4348-8424-7af43bf1029a
+    taskid: 8cfb0afe-e5b7-48e7-8cd8-34557780c6a1
     type: regular
     task:
-      id: 74024a06-bbc8-4348-8424-7af43bf1029a
+      id: 8cfb0afe-e5b7-48e7-8cd8-34557780c6a1
       version: -1
       name: Unisolate machine
       script: '|||microsoft-atp-unisolate-machine'
@@ -303,10 +264,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 1bbdaeef-3a5f-4569-88a8-d523a6ad6d17
+    taskid: 2e6ada37-daa6-4377-8477-4b80c8c205d3
     type: regular
     task:
-      id: 1bbdaeef-3a5f-4569-88a8-d523a6ad6d17
+      id: 2e6ada37-daa6-4377-8477-4b80c8c205d3
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -336,10 +297,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: b8a6ff17-69a7-42cb-8237-2509bef1930d
+    taskid: bc5a51c4-5b58-4021-8b1e-a1ec24571180
     type: regular
     task:
-      id: b8a6ff17-69a7-42cb-8237-2509bef1930d
+      id: bc5a51c4-5b58-4021-8b1e-a1ec24571180
       version: -1
       name: Get machines by health status
       script: '|||microsoft-atp-get-machines'
@@ -368,10 +329,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 3fd8d315-5e3d-4675-8580-8b8932204973
+    taskid: 4bc92fce-9891-47eb-8c4b-c164382ee5fb
     type: condition
     task:
-      id: 3fd8d315-5e3d-4675-8580-8b8932204973
+      id: 4bc92fce-9891-47eb-8c4b-c164382ee5fb
       version: -1
       name: Assert isolation doesn't exist
       type: condition
@@ -403,10 +364,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 229ca4a0-af70-41e0-8a9d-d944e47d5236
+    taskid: 1ffa5718-3245-4295-8eaa-227823697ffe
     type: regular
     task:
-      id: 229ca4a0-af70-41e0-8a9d-d944e47d5236
+      id: 1ffa5718-3245-4295-8eaa-227823697ffe
       version: -1
       name: Create alert with time as name
       script: '|||microsoft-atp-create-alert'
@@ -470,10 +431,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: fe9edb72-c5be-48de-8f84-54be851aa552
+    taskid: f64df7b9-d2f8-46a7-8a18-5df9859e7e33
     type: condition
     task:
-      id: fe9edb72-c5be-48de-8f84-54be851aa552
+      id: f64df7b9-d2f8-46a7-8a18-5df9859e7e33
       version: -1
       name: Assert alert created
       type: condition
@@ -505,10 +466,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 2a75c4c4-a7da-462b-80b1-0ae3e89fd93d
+    taskid: 43a5dfcb-1e70-4a15-8357-bd36b88a3f32
     type: regular
     task:
-      id: 2a75c4c4-a7da-462b-80b1-0ae3e89fd93d
+      id: 43a5dfcb-1e70-4a15-8357-bd36b88a3f32
       version: -1
       name: Advance query
       script: '|||microsoft-atp-advanced-hunting'
@@ -534,10 +495,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 59ce0a3c-5c0c-4d3d-8717-28c9ec5ac12f
+    taskid: a1ee8452-9944-4cd5-80b7-45f855f95f17
     type: condition
     task:
-      id: 59ce0a3c-5c0c-4d3d-8717-28c9ec5ac12f
+      id: a1ee8452-9944-4cd5-80b7-45f855f95f17
       version: -1
       name: Assert query results
       type: condition
@@ -572,10 +533,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 36398b48-9061-442d-83bb-1765c72a762b
+    taskid: f6d4acfc-9490-4039-861d-df2f96c32db5
     type: regular
     task:
-      id: 36398b48-9061-442d-83bb-1765c72a762b
+      id: f6d4acfc-9490-4039-861d-df2f96c32db5
       version: -1
       name: Wait for isolation to complete
       description: Sleep for X seconds
@@ -602,10 +563,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 2b238441-2f6e-4540-8812-cbad96657d86
+    taskid: e55ceab6-9e11-4201-874a-97b70114a2b3
     type: regular
     task:
-      id: 2b238441-2f6e-4540-8812-cbad96657d86
+      id: e55ceab6-9e11-4201-874a-97b70114a2b3
       version: -1
       name: Wait before starting isolation
       description: Sleep for X seconds
@@ -625,6 +586,36 @@ tasks:
         "position": {
           "x": 50,
           "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 538d0a1b-b00d-4510-8452-aa134128c257
+    type: regular
+    task:
+      id: 538d0a1b-b00d-4510-8452-aa134128c257
+      version: -1
+      name: Get machine related to file
+      description: Get a collection of machines related to a given file hash.
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: 5f64053acfaa68ee579e2b468d8b0cb8c2f75eac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
         }
       }
     note: false

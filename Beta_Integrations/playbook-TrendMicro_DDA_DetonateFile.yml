@@ -1,6 +1,6 @@
-id: Detonate File - Trend Micro Deep Discovery Analyzer
+id: Detonate File - Trend Micro Deep Discovery Analyzer Beta
 version: -1
-name: Detonate File - Trend Micro Deep Discovery Analyzer
+name: Detonate File - Trend Micro Deep Discovery Analyzer Beta
 fromversion: 4.0.0
 description: "Detonates a File using the Trend Micro Deep Discovery Analyzer sandbox.\nDeep
   Discovery Analyzer(version 6.0.0) supports the following File Types:\nbat, cell,
@@ -448,5 +448,6 @@ outputs:
 - contextPath: IP.Address
   description: IPs relevant to the submission
   type: string
+beta: true
 tests:
 - No Test - run "Test Playbook TrendMicroDDA" manually

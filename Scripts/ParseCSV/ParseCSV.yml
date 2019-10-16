@@ -1,0 +1,91 @@
+args:
+- default: true
+  description: The war room entryID of the file.
+  isArray: false
+  name: entryID
+  required: false
+  secret: false
+- default: false
+  description: The name of the file. The file must be uploaded to the War Room.
+  isArray: false
+  name: file
+  required: false
+  secret: false
+  deprecated: true
+- default: false
+  description: The column number that contains IP Addresses. (First column is column
+    0)
+  isArray: false
+  name: ips
+  required: false
+  secret: false
+- default: false
+  description: The column number that contains domains. (First column is column 0)
+  isArray: false
+  name: domains
+  required: false
+  secret: false
+- default: false
+  description: The column number that contains file hashes. (First column is column
+    0)
+  isArray: false
+  name: hashes
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'yes'
+  description: parses and converts all the rows in csv into json and puts into context.
+  isArray: false
+  name: parseAll
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- default: false
+  defaultValue: utf-8
+  description: The codec type used to parse the file (some character sets are not
+    UTF-8 supported)
+  isArray: false
+  name: codec
+  required: false
+  secret: false
+comment: This script will parse a CSV file and place the unique IPs, Domains and Hashes
+  into the context.
+commonfields:
+  id: ParseCSV
+  version: -1
+enabled: true
+name: ParseCSV
+outputs:
+- contextPath: IP.Address
+  description: IP address found in parsed file
+  type: Unknown
+- contextPath: Domain.Name
+  description: Domain found in parsed file
+  type: Unknown
+- contextPath: File.MD5
+  description: MD5 found in parsed file
+  type: Unknown
+- contextPath: File.SHA1
+  description: SHA1 found in parsed file
+  type: Unknown
+- contextPath: File.SHA256
+  description: SHA256 found in parsed file
+  type: Unknown
+- contextPath: ParseCSV.ParsedCSV
+  description: Parsed csv in form of JSON array
+  type: Unknown
+script: '-'
+system: false
+tags:
+- file
+- csv
+- Utility
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+tests:
+- No tests
