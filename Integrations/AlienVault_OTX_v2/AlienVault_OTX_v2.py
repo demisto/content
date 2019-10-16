@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Optional, Union, AnyStr
+from typing import Dict, Tuple, Union
 import urllib3
 
 """Example for Analytics and SIEM integration
@@ -68,24 +68,25 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_dbot_score(pulse_info: dict, threshold: str = None) -> int:
+def calculate_dbot_score(pulse_info: Union[dict, None]) -> float:
     """
     calculate DBot score for query
     :param pulse_info: returned from general section as dictionary
-    :param threshold: threshold for malicious score
     :return: score - good (if 0), bad (if grater than default), suspicious if between
     """
-    default_threshold = int(threshold or DEFAULT_THRESHOLD)
-    count = pulse_info.get('count')
-    if isinstance(count, int) and count >= 0:
-        if count == 0:
-            return dbotscores['Low']
+    default_threshold = int(DEFAULT_THRESHOLD)
+    if isinstance(pulse_info, dict):
+        count = int(pulse_info.get('count', '0'))
+        if count and count >= 0:
+            if count == 0:
+                return dbotscores['Low']
 
-        if 0 < count < default_threshold:
-            return dbotscores['Medium']
+            if 0 < count < default_threshold:
+                return dbotscores['Medium']
 
-        if count >= default_threshold:
-            return dbotscores['High']
+            if count >= default_threshold:
+                return dbotscores['High']
+    return 0
 
 
 def create_list_by_ec(list_entries: list, list_type: str) -> list:
@@ -172,7 +173,7 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                                 argument=query_dict.get('ip_address'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for {query_dict.get("ip_version")} query'
-        context_entry = {
+        context_entry: dict = {
             'IP': {
                 'Address': raw_response.get('indicator'),
                 'ASN': raw_response.get('asn'),
@@ -182,7 +183,7 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                 }
             }
         }
-        context = {
+        context: dict = {
             f'IP(val.IP.Address === obj.IP.Address)': context_entry.get('IP'),
             'AlienVaultOTX': {
                 'IP': {
@@ -192,14 +193,14 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             },
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
                 'Type': query_dict.get('ip_version'),
                 'Vendor': 'AlienVault OTX v2'
             }
         }
-        human_readable = tableToMarkdown(t={**context_entry.get('IP'),
-                                            **{'Reputation': context_entry.get('AlienVaultOTX', {}).get('IP', {})
-                                         .get('Reputation')}},
+
+        human_readable = tableToMarkdown(t={**context.get('IP', {}),
+                                            **context.get('AlienVaultOTX', {}).get('IP', {}).get('Reputation', {})},
                                          name=title)
         return human_readable, context, raw_response
     else:
@@ -222,12 +223,12 @@ def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                                 argument=query_dict.get('domain'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Domain query'
-        context_entry = {
+        context_entry: dict = {
             'Domain': {
                 'Name': raw_response.get('indicator'),
             }
         }
-        context = {
+        context: dict = {
             f'Domain(val.Domain.Name === obj.Domain.Name)': context_entry.get('Domain'),
             'AlienVaultOTX': {
                 'Domain': {
@@ -237,13 +238,13 @@ def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             },
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
                 'Type': 'domain',
                 'Vendor': 'AlienVault OTX v2'
             }
         }
-        human_readable = tableToMarkdown(t={**context_entry.get('Domain'),
-                                            **context.get('AlienVaultOTX', {}).get('Domain')},
+        human_readable = tableToMarkdown(t={**context_entry.get('Domain', {}),
+                                            **context.get('AlienVaultOTX', {}).get('Domain', {})},
                                          name=title)
 
         return human_readable, context, raw_response
@@ -271,7 +272,7 @@ def file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if raw_response_analysis and raw_response_general:
         title = f'{INTEGRATION_NAME} - Results for File hash query'
         shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
-        context_entry = {
+        context_entry: dict = {
             'File': {
                 'MD5': shortcut.get('md5'),
                 'SHA1': shortcut.get('sha1'),
@@ -280,15 +281,15 @@ def file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                 'Size': shortcut.get('filesize'),
                 'Type': shortcut.get('file_type'),
                 'Malicious': {
-                    'PulseIDs': raw_response_general.get('pulse_info').get('pulses')
+                    'PulseIDs': raw_response_general.get('pulse_info', {}).get('pulses')
                 }
             }
         }
-        context = {
+        context: dict = {
             f'File(val.File.MD5  === obj.File.MD5)': context_entry.get('File'),
             'DBotScore': {
                 'Indicator': raw_response_general.get('indicator'),
-                'Score': calculate_dbot_score(raw_response_general.get('pulse_info')),
+                'Score': calculate_dbot_score(raw_response_general.get('pulse_info', {})),
                 'Type': 'file',
                 'Vendor': 'AlienVault OTX v2'
             }
@@ -299,7 +300,6 @@ def file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return human_readable, context, {**raw_response_general, **raw_response_analysis}
     else:
         return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
-
 
 
 @logger
@@ -318,12 +318,12 @@ def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                                 argument=query_dict.get('url'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for url query'
-        context_entry = {
+        context_entry: dict = {
             'URL': {
                 'Data': raw_response.get('indicator')
             }
         }
-        context = {
+        context: dict = {
             f'URL(val.URL.Data === obj.URL.Data)': context_entry.get('URL'),
             'AlienVaultOTX': {
                 'URL': {
@@ -336,12 +336,13 @@ def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             },
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(raw_response.get('pulse_info')),
+                'Score': str(calculate_dbot_score(raw_response.get('pulse_info'))),
                 'Type': 'url',
                 'Vendor': 'AlienVault OTX v2'
             }
         }
-        human_readable = tableToMarkdown(t=context.get('AlienVaultOTX', {}).get('URL'),
+        table = context.get('AlienVaultOTX', {}).get('URL')
+        human_readable = tableToMarkdown(t=table,
                                          name=title)
 
         return human_readable, context, raw_response
@@ -365,7 +366,7 @@ def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str,
                                 argument=query_dict.get('hostname'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
-        context_entry = {
+        context_entry: dict = {
             'Endpoint': {
                 'Hostname': raw_response.get('indicator'),
                 'AlienVaultOTX': {
@@ -374,7 +375,7 @@ def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str,
                 }
             }
         }
-        context = {
+        context: dict = {
             f'Endpoint(val.Endpoint.Hostname === obj.Endpoint.Hostname)': context_entry.get('Endpoint'),
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
@@ -409,7 +410,7 @@ def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict
                                 argument=query_dict.get('cve_id'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
-        context_entry = {
+        context_entry: dict = {
             'CVE': {
                 'ID': raw_response.get('indicator'),
                 'CVSS': raw_response.get('cvss', {}).get('Score') if raw_response.get('cvss') else None,
@@ -418,7 +419,7 @@ def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict
                 'Description': raw_response.get('description')
             }
         }
-        context = {
+        context: dict = {
             f'CVE(val.CVE.ID && val.CVE.Modified === obj.Endpoint.Hostname)': context_entry.get('CVE'),
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
@@ -452,9 +453,9 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, args: Dict)
                                 sub_section='url_list')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
-        context = {
+        context: dict = {
             'AlienVaultOTX': {
-                'URL': create_list_by_ec(list_entries=raw_response.get('url_list'), list_type='url_list')
+                'URL': create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
             }
         }
         human_readable = tableToMarkdown(t=context.get('URL'),
@@ -482,9 +483,9 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, args: Dic
                                 sub_section='malware')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
-        context = {
+        context: dict = {
             'AlienVaultOTX': {
-                'File': create_list_by_ec(list_entries=raw_response.get('data'), list_type='hash_list')
+                'File': create_list_by_ec(list_entries=raw_response.get('data', {}), list_type='hash_list')
             }
         }
         human_readable = tableToMarkdown(t=context.get('File'),
@@ -512,9 +513,9 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, args: D
                                 sub_section='passive_dns')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
-        context = {
+        context: dict = {
             'AlienVaultOTX': {
-                'PassiveDNS': create_list_by_ec(list_entries=raw_response.get('passive_dns'), list_type='passive_dns')
+                'PassiveDNS': create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
             }
         }
         human_readable = tableToMarkdown(t=context.get('PassiveDNS'),
@@ -542,9 +543,9 @@ def alienvault_search_pulses_command(client: Client, args: Dict) -> Tuple[str, D
                                 params={'page': query_dict.get('page')})
     if raw_response:
         title = f'{INTEGRATION_NAME} - pulse page {query_dict.get("page")}'
-        context = {
+        context: dict = {
             'AlienVaultOTX': {
-                'Pulses': [create_pulse_by_ec(entry) for entry in raw_response.get('results')]
+                'Pulses': [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
             }
         }
         human_readable = tableToMarkdown(t=context.get('Pulses'),
@@ -571,7 +572,7 @@ def alienvault_get_pulse_details_command(client: Client, args: Dict) -> Tuple[st
                                 argument=query_dict.get('pulse_id'))
     if raw_response:
         title = f'{INTEGRATION_NAME} - pulse id details'
-        context = {
+        context: dict = {
             'AlienVaultOTX': {
                 'Pulses': {
                     'Description': raw_response.get('description'),
@@ -643,4 +644,3 @@ def main():
 
 if __name__ == 'builtins':
     main()
-
