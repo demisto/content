@@ -1,0 +1,99 @@
+args:
+- default: false
+  description: The input file entry ID or json string
+  isArray: false
+  name: input
+  required: true
+  secret: false
+- default: false
+  defaultValue: phishing_model
+  description: The model name to store in the system
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether to store the model in the system
+  isArray: false
+  name: storeModel
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Override existing model if model with the same name exist
+  isArray: false
+  name: overrideExistingModel
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.82'
+  description: The target accuracy we would like to achieve. Value in range 0-1
+  isArray: false
+  name: targetAccuracy
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.33'
+  description: Maximum nubmer of samples below threshold, for the target accuracy
+  isArray: false
+  name: maxBelowThreshold
+  required: false
+  secret: false
+- default: false
+  description: The field name with the label
+  isArray: false
+  name: tagField
+  required: true
+  secret: false
+- default: false
+  defaultValue: dbot_processed_text
+  description: The field name with the text to train
+  isArray: false
+  name: textField
+  required: false
+  secret: false
+- default: false
+  defaultValue: '*'
+  isArray: false
+  name: phishingLabels
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: filename
+  description: "The input type\t"
+  isArray: false
+  name: inputType
+  predefined:
+  - json
+  - json_string
+  - filename
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.05'
+  description: Minimum score of a word to consider as keyword, value 0-1
+  isArray: false
+  name: keywordMinScore
+  required: false
+  secret: false
+commonfields:
+  id: d7105a84-8fd8-45a4-b2d7-2b0c01062871
+  version: -1
+enabled: false
+name: DBotTrainTextClassifierV2
+script: '-'
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/dl:1.4
+fromversion: "4.5.0"

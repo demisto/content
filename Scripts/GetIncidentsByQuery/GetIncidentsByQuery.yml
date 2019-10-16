@@ -1,0 +1,76 @@
+args:
+- default: false
+  description: The incidents query
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  description: Filter by incidents types, comma-separated value
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  description: Filter by from date
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  description: Filter by to date
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: Maximum number of incidents to fetch
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Fetch incident context
+  isArray: false
+  name: includeContext
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: created
+  isArray: false
+  name: timeField
+  predefined:
+  - created
+  - modified
+  required: false
+  secret: false
+- default: false
+  description: Filter incidents with non-empty value in those field, comma-separated  values
+  isArray: false
+  name: NonEmptyFields
+  required: false
+  secret: false
+commonfields:
+  id: 1db1214a-4f87-4867-98ab-0c2dd3171733
+  version: -1
+enabled: false
+name: GetIncidentsByQuery
+outputs:
+- contextPath: GetIncidentsByQuery.Filename
+  description: The output filename
+  type: String
+- contextPath: GetIncidentsByQuery.FileFormat
+  description: "The output file format\t"
+  type: String
+script: '-'
+system: false
+timeout: 60µs
+type: python
+dockerimage: demisto/dateutil

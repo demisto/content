@@ -1,0 +1,105 @@
+args:
+- default: false
+  description: Input file entry id or file content as string
+  isArray: false
+  name: input
+  required: true
+  secret: false
+- default: false
+  defaultValue: '15'
+  description: Remove samples shorter then this number of words
+  isArray: false
+  name: removeShortTextThreshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.99'
+  description: Remove emails with similarity greater then this threshold, range 0-1,
+    where 1 is completly identical.
+  isArray: false
+  name: dedupThreshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailsubject|name,emailbody|emailbodyhtml
+  description: The text fields
+  isArray: false
+  name: textFields
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: json
+  description: The input file type
+  isArray: false
+  name: inputType
+  predefined:
+  - json
+  - pickle
+  - csv
+  - json_string
+  - pickle_string
+  - csv_string
+  - json_b64_string
+  - pickle_b64_string
+  - csv_b64_string
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: nlp
+  description: Text pre-processing type
+  isArray: false
+  name: preProcessType
+  predefined:
+  - nlp
+  - none
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Remove HTML tags
+  isArray: false
+  name: cleanHTML
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  description: Filter only these fields inside the json, comma-separated value.
+  isArray: false
+  name: whitelistFields
+  required: false
+  secret: false
+- default: false
+  description: If non-empty, hash every word with this seed
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+comment: Pre-process text data for machine learning text classifier
+commonfields:
+  id: DBotPreProcessTextData
+  version: -1
+enabled: false
+name: DBotPreProcessTextData
+outputs:
+- contextPath: DBotPreProcessTextData.Filename
+  description: The output filename
+  type: String
+- contextPath: DBotPreProcessTextData.TextField
+  description: The original text field inside the file
+  type: String
+- contextPath: DBotPreProcessTextData.TextFieldProcessed
+  description: The processed text field inside the json file
+  type: String
+script: '-'
+system: false
+tags:
+- ml
+timeout: 12µs
+type: python
+dockerimage: demisto/dl:1.4
+runonce: true
