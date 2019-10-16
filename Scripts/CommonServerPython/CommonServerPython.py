@@ -1928,6 +1928,16 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to demisto.debug
@@ -1989,8 +1999,7 @@ class DebugLogger(object):
 
 _requests_logger = None
 try:
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+    if is_debug_mode():
         _requests_logger = DebugLogger()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will
