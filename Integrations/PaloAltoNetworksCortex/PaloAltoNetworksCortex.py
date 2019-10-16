@@ -646,6 +646,7 @@ def get_context_standards_outputs(results: list) -> dict:
     processes: list = []
     ips: list = []
     domains: list = []
+    outputs: dict = {}
 
     for result in results:
 
@@ -664,10 +665,15 @@ def get_context_standards_outputs(results: list) -> dict:
             'ID': result.get('agentId')
         }
         delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
+        if endpoints and hosts:
+            outputs['Endpoint(val.IPAddress === obj.IPAddress)'] = endpoints
+            outputs['Host(val.IPAddress === obj.IPAddress)'] = hosts
 
         # Domain
         domain_data = {'Name': result.get('url_domain')}
         delete_empty_value_dict_and_append_to_lists(domain_data, [domains])
+        if domains:
+            outputs[outputPaths['domain']] = domains
 
         # IP
         ip_fields = ['src', 'dst', 'natsrc', 'natdst']
@@ -676,6 +682,8 @@ def get_context_standards_outputs(results: list) -> dict:
                 'Address': result.get(field)
             }
             delete_empty_value_dict_and_append_to_lists(ip_data, [ips])
+        if ips:
+            outputs[outputPaths['ip']] = ips
 
         # File
         raw_files: list = message_data.get('files', [])
@@ -707,6 +715,8 @@ def get_context_standards_outputs(results: list) -> dict:
                     'Company': raw_file.get('companyName')
                 }
                 delete_empty_value_dict_and_append_to_lists(file_data, [files])
+        if files:
+            outputs[outputPaths['file']] = files
 
         # Process
         raw_processes: list = message_data.get('processes', [])
@@ -729,16 +739,9 @@ def get_context_standards_outputs(results: list) -> dict:
                     'CommandLine': raw_process.get('commandLine'),
                 }
                 delete_empty_value_dict_and_append_to_lists(process_data, [processes])
+        if processes:
+            outputs['Process(val.PID === obj.PID)'] = processes
 
-    outputs: dict = {
-        outputPaths['file']: files,
-        'Endpoint(val.IPAddress === obj.IPAddress)': endpoints,
-        'Host(val.IPAddress === obj.IPAddress)': hosts,
-        'Process(val.PID === obj.PID)': processes,
-        outputPaths['ip']: ips,
-        outputPaths['domain']: domains
-    }
-    outputs = {key: value for key, value in outputs.items() if value}
     return outputs
 
 
