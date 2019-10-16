@@ -8,12 +8,24 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
-INTEGRATION_NAME: str = 'Case Management Integration'
-# lowercase with `-` dividers
-INTEGRATION_NAME_COMMAND: str = 'case-management'
-# No dividers
-INTEGRATION_CONTEXT_NAME: str = 'CaseManagement'
+"""GLOBALS/PARAMS
+Attributes:
+    INTEGRATION_NAME:
+        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+    INTEGRATION_COMMAND_NAME:
+        Command names should be written in all lower-case letters,
+        and each word separated with a hyphen, for example: msgraph-user.
+
+    INTEGRATION_CONTEXT_NAME:
+        Context output names should be written in camel case, for example: MSGraphUser.
+"""
+INTEGRATION_NAME = 'Case Management Integration'
+INTEGRATION_NAME_COMMAND = 'case-management'
+INTEGRATION_CONTEXT_NAME = 'CaseManagement'
+
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DEFAULT_FETCH_TIME = '3 days'
 
 
 def build_raw_tickets_to_context(tickets: Union[dict, list]):
@@ -49,7 +61,9 @@ class Client(BaseClient):
         """
         return self._http_request('GET', 'version')
 
-    def list_tickets(self, ticket_id: Optional[AnyStr] = None, limit: Optional[AnyStr] = None) -> dict:
+    def list_tickets(self, ticket_id: Optional[AnyStr] = None,
+                     limit: Optional[AnyStr] = None, from_time: Optional[datetime] = None
+                     ) -> dict:
         """Gets all credentials from API.
 
         Returns:
@@ -61,15 +75,18 @@ class Client(BaseClient):
             params['limit'] = limit
         elif self._limit:
             params['limit'] = limit
-        if ticket_id:
-            params['id'] = ticket_id
+        params.update(
+            assign_params(
+                id=ticket_id,
+                fromTime=from_time.strftime(TIME_FORMAT) if from_time else None
+            ))
         return self._http_request('GET', suffix, params=params)
 
     def close_ticket(self, ticket_id: AnyStr) -> dict:
         """Gets events from given IDS
 
         Args:
-            ticket_id: account to lock
+            ticket_id:  to lock
 
         Returns:
             locked account
@@ -129,7 +146,7 @@ class Client(BaseClient):
             Response JSON
         """
         suffix = 'ticket/assign'
-        params = {'ticketId': ticket_id}
+        params = {'id': ticket_id}
         body = {'users': users}
         return self._http_request('POST', suffix, params=params, json_data=body)
 
@@ -143,7 +160,7 @@ class Client(BaseClient):
             category=category,
             description=description,
             assignee=assignee,
-            timestamp=timestamp if timestamp else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
+            timestamp=timestamp if timestamp else datetime.now().strftime(TIME_FORMAT),
             isOpen=is_open
         )}
         return self._http_request('POST', suffix, json_data=body)
@@ -287,7 +304,7 @@ def list_users_command(client: Client, *_) -> Tuple[str, dict, dict]:
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.User(val.ID && val.ID === obj.ID)': context_entry
         }
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headers=['Username', 'ID'])
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any users.', {}, {}
@@ -343,6 +360,25 @@ def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
+def fetch_incidents_command(client: Client, last_fetch: dict, fetch_time: str) -> Tuple[list, dict]:
+    if last_fetch:
+        last_fetch_datetime = datetime.strptime(last_fetch.get('timestamp'), TIME_FORMAT)
+    else:
+        last_fetch_datetime, _ = parse_date_range(fetch_time if fetch_time else DEFAULT_FETCH_TIME)
+    raw_response = client.list_tickets(from_time=last_fetch_datetime)
+    tickets = raw_response.get('ticket')
+    incidents = list()
+    for ticket in tickets:
+        incidents.append({
+            'name': f'{INTEGRATION_NAME} - ticket number: {ticket.get("id")}',
+            'rawJSON': json.dumps(ticket)
+        })
+        new_time = datetime.strptime(ticket.get('timestamp'), TIME_FORMAT)
+        if last_fetch_datetime < new_time:
+            last_fetch_datetime = new_time
+    return incidents, {'timestamp': last_fetch_datetime.strftime(TIME_FORMAT)}
+
+
 def main():
     params = demisto.params()
     server = params.get('url')
@@ -358,9 +394,14 @@ def main():
         f'{INTEGRATION_NAME_COMMAND}-create-ticket': create_ticket_command,
         f'{INTEGRATION_NAME_COMMAND}-close-ticket': close_ticket_command,
         f'{INTEGRATION_NAME_COMMAND}-assign-user': assign_users_command,
-        f'{INTEGRATION_NAME_COMMAND}-list-users': list_users_command
+        f'{INTEGRATION_NAME_COMMAND}-list-users': list_users_command,
+        'fetch-incidents': fetch_incidents_command,
     }
     try:
+        if command == 'fetch-incidents':
+            incidents, last_run = fetch_incidents_command(client, demisto.getLastRun(), params.get('fetch_time'))
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))
     # Log exceptions

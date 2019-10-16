@@ -1,7 +1,10 @@
+import json
+
 import pytest
 import copy
 from CaseManagement import Client
 from pytest import raises
+import demistomock as demisto
 
 from CommonServerPython import urljoin, DemistoException
 
@@ -86,6 +89,15 @@ class TestInputs:
         (USER_LIST, 'Users list', EXCEPTED_CONTEXT_USER_LIST),
         ({}, 'Could not find', {})
     ]
+    INCIDENT = [{
+        'name': f'Case Management Integration - ticket number: 111',
+        'rawJSON': json.dumps(TICKET_MOCK)
+    }]
+    FETCH_INCIDENTS_INPUT = [
+        (TICKET_MOCK, {'timestamp': '2010-01-01T00:00:00'}, '3 days', INCIDENT),
+        (TICKET_MOCK, None, None, INCIDENT),
+        ({'ticket': []}, None, None, [])
+    ]
 
 
 class TestTickets:
@@ -157,3 +169,15 @@ class TestTickets:
         human_readable, context, _ = list_users_command(client, {'ticket_id': '111', 'users': ['user1, user2']})
         assert expected_md in human_readable
         assert expected_context == context
+
+
+class TestFetchIncidents:
+    @pytest.mark.parametrize('req_input,last_run,fetch_time,incidents', TestInputs.FETCH_INCIDENTS_INPUT)
+    def test_fetch_incidents(self, requests_mock, req_input, last_run, fetch_time, incidents):
+        from CaseManagement import fetch_incidents_command
+        requests_mock.get(urljoin(url, 'ticket'), json=req_input)
+        incidents_res, timestamp = fetch_incidents_command(client, last_run, fetch_time)
+        if incidents:
+            assert incidents_res[0].get('name') == incidents[0].get('name')
+        else:
+            assert not incidents and not incidents_res
