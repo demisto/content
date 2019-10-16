@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 - Added the *app* parameter, which is the app context of the namespace.
 - Prettified the human readable of the search command.
 
