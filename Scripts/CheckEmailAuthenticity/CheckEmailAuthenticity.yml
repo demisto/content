@@ -258,8 +258,7 @@ outputs:
   description: Email sender IP address.
   type: String
 - contextPath: Email.DKIM.Message-ID
-  description: Validation result. Possible values are "None", "Pass", "Fail", "Policy",
-    "Neutral", "Temperror", and "Permerror".
+  description: DKIM ID.
   type: String
 - contextPath: Email.DKIM.Reason
   description: DKIM reason (if found).
@@ -291,6 +290,10 @@ outputs:
   type: Unknown
 - contextPath: Email.DMARC
   description: DMARC information extracted from the email.
+  type: Unknown
+- contextPath: Email.DKIM.Validation-Result
+  description: Validation result. Possible values are "None", "Pass", "Fail", "Policy",
+    "Neutral", "Temperror", and "Permerror".
   type: Unknown
 script: '-'
 system: false
