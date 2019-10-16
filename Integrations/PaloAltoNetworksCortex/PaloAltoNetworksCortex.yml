@@ -665,8 +665,7 @@ script:
     - default: false
       description: Free input query to search. This is the WHERE part of the query
         so an example will be 
-        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' 
-        AND dst = '192.168.1.2'"
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
       isArray: false
       name: query
       required: false
@@ -675,7 +674,7 @@ script:
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
-        List of fields can be found 
+        List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -774,8 +773,8 @@ script:
       description: IP protocol associated with the session.
       type: String
     - contextPath: Cortex.Logging.Traffic.TunneledApp
-      description: TBD
-      type: Unknown
+      description: Is application tunnled.
+      type: String
     - contextPath: Cortex.Logging.Traffic.Natdport
       description: Post-NAT destination port.
       type: String
@@ -804,8 +803,8 @@ script:
       description: 'Traffic log subtype. Values are: start, end, drop, deny.'
       type: String
     - contextPath: Cortex.Logging.Traffic.TimeReceived
-      description: TBD
-      type: Unknown
+      description: Time the log was received at the management plane.
+      type: String
     - contextPath: Cortex.Logging.Traffic.SessionEndReason
       description: The reason a session terminated. If the termination had multiple
         causes. This field displays only the highest priority reason.
@@ -859,8 +858,8 @@ script:
       description: Type of tunnel.
       type: String
     - contextPath: Cortex.Logging.Traffic.IsPhishing
-      description: TBD
-      type: Unknown
+      description: Detected enterprise credential submission by an end user.
+      type: String
     - contextPath: IP.Address
       description: IP address
       type: String
@@ -912,8 +911,9 @@ script:
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be all
+      description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -1047,7 +1047,7 @@ script:
       description: Post-NAT source port.
       type: String
     - contextPath: Cortex.Logging.Threat.URLDenied
-      description: TBD
+      description: Session was denied due to a URL filtering rule.
       type: String
     - contextPath: Cortex.Logging.Threat.CharacteristicOfApp
       description: Identifies the behaviorial characteristic of the application associated
@@ -1092,8 +1092,8 @@ script:
       description: Subtype of the threat log.
       type: String
     - contextPath: Cortex.Logging.Threat.TimeReceived
-      description: TBD
-      type: Unknown
+      description: Time the log was received at the management plane.
+      type: String
     - contextPath: Cortex.Logging.Threat.Direction
       description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
       type: String
@@ -1132,7 +1132,7 @@ script:
       description: Source port utilized by the session.
       type: String
     - contextPath: Cortex.Logging.Threat.IsPhishing
-      description: TBD
+      description: Detected enterprise credential submission by an end user.
       type: Unknown
     - contextPath: IP.Address
       description: IP address
@@ -1190,8 +1190,9 @@ script:
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be all
+      description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -1287,8 +1288,8 @@ script:
       description: The Traps agent status.
       type: String
     - contextPath: Cortex.Logging.Traps.RecordType
-      description: TBD
-      type: Unknown
+      description: Record type associated with the event.
+      type: String
     - contextPath: Cortex.Logging.Traps.TrapsID
       description: Tenant external ID.
       type: String
@@ -1539,8 +1540,9 @@ script:
       secret: false
     - default: false
       defaultValue: all
-      description: The fields that are selected in the query. Selection can be all
+      description: The fields that are selected in the query. Selection can be "all"
         (same as *) or listing of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
       required: false
@@ -1642,8 +1644,8 @@ script:
       description: Tenant external ID.
       type: String
     - contextPath: Cortex.Logging.Analytics.EventType
-      description: TBD
-      type: Unknown
+      description: Subtype of event.
+      type: String
     - contextPath: Cortex.Logging.Analytics.UUID
       description: Event unique ID.
       type: String
