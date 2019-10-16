@@ -81,7 +81,7 @@ def tokenize_text(text):
             continue
         else:
             if LEMMATIZER and token.lemma_ != '-PRON-':
-                words.append(token.lemma_.lower())
+                words.append(token.lemma_)
             else:
                 words.append(token.lower_)
     hashed_words = []
