@@ -1870,7 +1870,6 @@
     ],
     "skipped_tests": {
         "FilterByList - Test": "(Issue 19469)",
-        "ThreatQ - Test": "Test fails (Issue 19468)",
         "VxStream Test": "Failing test (Issue 19439)",
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
         "CuckooTest": "Cuckoo fails to complete tasks (Issue 19425)",
