@@ -158,6 +158,9 @@ ANALYTICS_ARGS_DICT = {
     'query': []
 }
 
+# This dictionary transforms number values into string representation. The number is correspondent
+# to the index in the list. For example VALUE_TRANSFORM_DICT['traps']['messageData']['block'][0] matches the string:
+# "File was not blocked".
 VALUE_TRANSFORM_DICT: Dict[object, Dict[object, Dict]] = {
     'traps': {
         'messageData': {
@@ -306,13 +309,19 @@ def traps_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'AgentID': row_content.get('agentId'),
         'EndPointHeader': {
-            'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
-            [end_point_header.get('osType')] if end_point_header.get('osType') else '',
+            'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')]
+            if end_point_header.get('osType') and
+            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])
+            else '',
             'IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
-            if end_point_header.get('isVdi') else '',
-            'OsVersion': end_point_header.get('osVersion'),
+            if end_point_header.get('isVdi') and
+            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi'])
+            else '',
+            'OSVersion': end_point_header.get('osVersion'),
             'Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
-            if end_point_header.get('is64') else '',
+            if end_point_header.get('is64') and
+            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'])
+            else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
             'DeviceDomain': end_point_header.get('deviceDomain'),
@@ -328,7 +337,7 @@ def traps_context_transformer(row_content: dict) -> dict:
         'ServerHost': row_content.get('serverHost'),
         'GeneratedTime': row_content.get('generatedTime'),
         'ServerComponentVersion': row_content.get('serverComponentVersion'),
-        'RegionID': VALUE_TRANSFORM_DICT['traps']['regionId'][row_content.get('regionId')]
+        'RegionID': VALUE_TRANSFORM_DICT['traps']['regionId'].get(row_content.get('regionId'))
         if row_content.get('regionId') else '',
         'CustomerID': row_content.get('customerId'),
         'ServerTime': row_content.get('serverTime'),
@@ -344,8 +353,10 @@ def traps_context_transformer(row_content: dict) -> dict:
             'Terminate': VALUE_TRANSFORM_DICT['traps']['messageData']['terminate']
             [message_data.get('terminate')] if message_data.get('terminate') else '',
             'Verdict': message_data.get('verdict'),
-            'Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['blocked'][message_data.get('blocked')]
-            if message_data.get('blocked') else '',
+            'Blocked': VALUE_TRANSFORM_DICT['traps']['messageData']['block'][message_data.get('blocked')]
+            if message_data.get('blocked') and
+            0 <= message_data.get('blocked') <= len(VALUE_TRANSFORM_DICT['traps']['messageData']['block'])
+            else '',
             'TargetProcessIdx': message_data.get('targetProcessIdx'),
             'ModuleCategory': message_data.get('moduleCategory'),
             'PreventionMode': message_data.get('preventionMode'),
@@ -379,13 +390,19 @@ def analytics_context_transformer(row_content: dict) -> dict:
     return {
         'AgentID': row_content.get('agentId'),
         'EndPointHeader': {
-            'OsType': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType']
-            [end_point_header.get('osType')] if end_point_header.get('osType') else '',
-            'IsVdi': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['isVdi']
-            [end_point_header.get('isVdi')] if end_point_header.get('isVdi') else '',
-            'OsVersion': end_point_header.get('osVersion'),
-            'Is64': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['is64'][end_point_header.get('is64')]
-            if end_point_header.get('is64') else '',
+            'OsType': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType'][end_point_header.get('osType')]
+            if end_point_header.get('osType') and
+            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType'])
+            else '',
+            'IsVdi': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
+            if end_point_header.get('isVdi') and
+            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
+            else '',
+            'OSVersion': end_point_header.get('osVersion'),
+            'Is64': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'][end_point_header.get('is64')]
+            if end_point_header.get('is64') and
+            0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
+            else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
             'DeviceDomain': end_point_header.get('deviceDomain'),
@@ -400,7 +417,7 @@ def analytics_context_transformer(row_content: dict) -> dict:
         'Severity': row_content.get('severity'),
         'UUID': row_content.get('uuid'),
         'GeneratedTime': row_content.get('generatedTime'),
-        'RegionID': VALUE_TRANSFORM_DICT['analytics']['regionId'][row_content.get('regionId')]
+        'RegionID': VALUE_TRANSFORM_DICT['analytics']['regionId'].get(row_content.get('regionId'))
         if row_content.get('regionId') else '',
         'OriginalAgentTime': row_content.get('originalAgentTime'),
         'Facility': row_content.get('facility'),
@@ -417,7 +434,10 @@ def analytics_context_transformer(row_content: dict) -> dict:
                 'Trusted': local_analysis_result.get('trusted'),
                 'Publishers': local_analysis_result.get('publishers'),
                 'TrustedID': VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']
-                [local_analysis_result.get('trustedId')] if local_analysis_result.get('trustedId') else ''
+                [local_analysis_result.get('trustedId')]
+                if local_analysis_result.get('trustedId') and
+                0 <= local_analysis_result.get('trustedId') <=
+                len(VALUE_TRANSFORM_DICT['analytics']['messageData']['localAnalysisResult']['trustedId']) else ''
             },
             'ExecutionCount': message_data.get('executionCount'),
             'LastSeen': message_data.get('lastSeen')
@@ -466,7 +486,7 @@ def logs_human_readable_output_generator(fields: str, table_name: str, results: 
                             filtered_result[headers[headers_raw_names.index(child_key)]] = value[child_key]
             filtered_results.append(filtered_result)
     else:
-        # if the user has chosen which fields to query than they will be used as headers
+        # if the user has chosen which fields to query then they will be used as headers
         fields_list: list = argToList(fields)
         headers = fields_list
 
@@ -620,17 +640,13 @@ def build_where_clause(args: dict, table_args_dict: dict) -> str:
     return where_clause
 
 
-def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists_to_append: list):
+def delete_empty_value_dict(raw_dict: dict):
     """
     This function filters all items of raw_dict that has empty value (e.g. null/none/''...)
-    and appends the filtered dict to each list in the list_of_lists_to_append
     :param raw_dict: the dict to be filtered
-    :param list_of_lists_to_append: a list of lists that the filtered dict should be added to each one of the lists
     """
-    filtered_dict = {key: value for key, value in raw_dict.items() if value}
-    if filtered_dict:
-        for input_list in list_of_lists_to_append:
-            input_list.append(filtered_dict)
+    parsed_dict = {key: value for key, value in raw_dict.items() if value}
+    return parsed_dict if parsed_dict else None
 
 
 def get_context_standards_outputs(results: list) -> dict:
@@ -654,41 +670,54 @@ def get_context_standards_outputs(results: list) -> dict:
         message_data: dict = result.get('messageData', {})
         end_point_header: dict = result.get('endPointHeader', {})
 
-        # Endpoint & Host
-        endpoint_data = {
+        # Endpoint
+        raw_endpoint_data = {
             'Hostname': end_point_header.get('deviceName'),
             'IPAddress': end_point_header.get('agentIp'),
             'Domain': end_point_header.get('deviceDomain'),
             'OSVersion': end_point_header.get('osVersion'),
             'OS': VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'][end_point_header.get('osType')]
-            if end_point_header.get('osType') else '',
+            if end_point_header.get('osType') and
+            1 <= end_point_header.get('osType') <= len(VALUE_TRANSFORM_DICT['traps']['endPointHeader']['osType'])
+            else '',
             'ID': result.get('agentId')
         }
-        delete_empty_value_dict_and_append_to_lists(endpoint_data, [endpoints, hosts])
-        if endpoints and hosts:
+        endpoint_data = delete_empty_value_dict(raw_endpoint_data)
+        if endpoint_data:
+            endpoints.append(endpoint_data)
+        if endpoints:
             outputs['Endpoint(val.IPAddress === obj.IPAddress)'] = endpoints
-            outputs['Host(val.IPAddress === obj.IPAddress)'] = hosts
+
+        # Host
+        if endpoint_data:
+            endpoint_data['IP'] = end_point_header.get('agentIp')
+            del endpoint_data['IPAddress']
+        endpoint_data = delete_empty_value_dict(raw_endpoint_data)
+        if endpoint_data:
+            hosts.append(endpoint_data)
+        if hosts:
+            outputs['Host(val.IP === obj.IP)'] = hosts
 
         # Domain
-        domain_data = {'Name': result.get('url_domain')}
-        delete_empty_value_dict_and_append_to_lists(domain_data, [domains])
+        domain_data = delete_empty_value_dict({'Name': result.get('url_domain')})
+        if domain_data:
+            domains.append(domain_data)
         if domains:
             outputs[outputPaths['domain']] = domains
 
         # IP
         ip_fields = ['src', 'dst', 'natsrc', 'natdst']
         for field in ip_fields:
-            ip_data = {
-                'Address': result.get(field)
-            }
-            delete_empty_value_dict_and_append_to_lists(ip_data, [ips])
+            ip_data = delete_empty_value_dict({'Address': result.get(field)})
+            if ip_data:
+                ips.append(ip_data)
         if ips:
             outputs[outputPaths['ip']] = ips
 
         # File
         raw_files: list = message_data.get('files', [])
         if message_data:
-            file_data = {
+            raw_file_data = {
                 'Name': message_data.get('fileName'),
                 'Type': message_data.get('type'),
                 'Path': message_data.get('filePath'),
@@ -696,17 +725,21 @@ def get_context_standards_outputs(results: list) -> dict:
                 'SHA256': message_data.get('sha256'),
                 'DigitalSignature.Publisher': message_data.get('localAnalysisResult', {}).get('publishers')
             }
-            delete_empty_value_dict_and_append_to_lists(file_data, [files])
+            file_data = delete_empty_value_dict(raw_file_data)
+            if file_data:
+                files.append(file_data)
         if subtype and subtype.lower() == 'wildfire':
-            file_data = {
+            raw_file_data = {
                 'SHA256': result.get('filedigest'),
                 'Name': result.get('misc'),
                 'Type': result.get('filetype')
             }
-            delete_empty_value_dict_and_append_to_lists(file_data, [files])
+            file_data = delete_empty_value_dict(raw_file_data)
+            if file_data:
+                files.append(file_data)
         if raw_files:
             for raw_file in raw_files:
-                file_data = {
+                raw_file_data = {
                     'Name': raw_file.get('fileName'),
                     'Path': raw_file.get('rawFullPath'),
                     'SHA256': raw_file.get('sha256'),
@@ -714,7 +747,9 @@ def get_context_standards_outputs(results: list) -> dict:
                     'DigitalSignature.Publisher': raw_file.get('signers'),
                     'Company': raw_file.get('companyName')
                 }
-                delete_empty_value_dict_and_append_to_lists(file_data, [files])
+                file_data = delete_empty_value_dict(raw_file_data)
+                if file_data:
+                    files.append(file_data)
         if files:
             outputs[outputPaths['file']] = files
 
@@ -722,7 +757,7 @@ def get_context_standards_outputs(results: list) -> dict:
         raw_processes: list = message_data.get('processes', [])
         source_process: dict = message_data.get('sourceProcess', {})
         if message_data and source_process:
-            process_data = {
+            raw_process_data = {
                 'PID': source_process.get('pid'),
                 'Parent': source_process.get('parentId'),
                 'SHA256': source_process.get('sha256'),
@@ -730,15 +765,19 @@ def get_context_standards_outputs(results: list) -> dict:
                 'Path': source_process.get('rawFullPath'),
                 'CommandLine': source_process.get('commandLine')
             }
-            delete_empty_value_dict_and_append_to_lists(process_data, [processes])
+            process_data = delete_empty_value_dict(raw_process_data)
+            if process_data:
+                processes.append(process_data)
         if message_data and raw_processes:
             for raw_process in raw_processes:
-                process_data = {
+                raw_process_data = {
                     'PID': raw_process.get('pid'),
                     'Parent': raw_process.get('parentId'),
                     'CommandLine': raw_process.get('commandLine'),
                 }
-                delete_empty_value_dict_and_append_to_lists(process_data, [processes])
+                process_data = delete_empty_value_dict(raw_process_data)
+                if process_data:
+                    processes.append(process_data)
         if processes:
             outputs['Process(val.PID === obj.PID)'] = processes
 

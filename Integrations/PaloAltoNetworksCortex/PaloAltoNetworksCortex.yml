@@ -1133,7 +1133,7 @@ script:
       type: String
     - contextPath: Cortex.Logging.Threat.IsPhishing
       description: Detected enterprise credential submission by an end user.
-      type: Unknown
+      type: Boolean
     - contextPath: IP.Address
       description: IP address
       type: String
@@ -1258,7 +1258,7 @@ script:
       description: Indicates whether the endpoint is a virtual desktop infrastructure
         (VDI).
       type: String
-    - contextPath: Cortex.Logging.Traps.EndPointHeader.OsVersion
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.OSVersion
       description: Full version number of the operating system running on the endpoint.
         For example, 6.1.7601.19135.
       type: String
@@ -1433,7 +1433,7 @@ script:
     - contextPath: Endpoint.Domain
       description: The domain of the endpoint.
       type: String
-    - contextPath: Endpoint.osVersion
+    - contextPath: Endpoint.OSVersion
       description: OS version.
       type: String
     - contextPath: Endpoint.OS
@@ -1451,7 +1451,7 @@ script:
     - contextPath: Host.Domain
       description: The domain of the host.
       type: String
-    - contextPath: Host.osVersion
+    - contextPath: Host.OSVersion
       description: The OS version of the host.
       type: String
     - contextPath: Host.OS
@@ -1605,7 +1605,7 @@ script:
       description: Indicates whether the endpoint is a virtual desktop infrastructure
         (VDI).
       type: String
-    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OsVersion
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OSVersion
       description: Full version number of the operating system running on the endpoint.
         For example, 6.1.7601.19135.
       type: String
@@ -1714,7 +1714,7 @@ script:
     - contextPath: Endpoint.Domain
       description: The domain of the endpoint.
       type: String
-    - contextPath: Endpoint.osVersion
+    - contextPath: Endpoint.OSVersion
       description: OS version.
       type: String
     - contextPath: Endpoint.OS
@@ -1732,7 +1732,7 @@ script:
     - contextPath: Host.Domain
       description: The domain of the host.
       type: String
-    - contextPath: Host.osVersion
+    - contextPath: Host.OSVersion
       description: The OS version of the host.
       type: String
     - contextPath: Host.OS
