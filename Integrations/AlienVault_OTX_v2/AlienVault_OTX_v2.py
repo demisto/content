@@ -352,7 +352,7 @@ def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 @logger
 def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for hostname details
 
     Args:
         client: Client object with request
@@ -396,7 +396,7 @@ def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str,
 
 @logger
 def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for cve by id
 
     Args:
         client: Client object with request
@@ -438,7 +438,7 @@ def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict
 
 @logger
 def alienvault_get_related_urls_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for related url by indicator
 
     Args:
         client: Client object with request
@@ -468,7 +468,7 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, args: Dict)
 
 @logger
 def alienvault_get_related_hashes_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for related file hashes by indicator
 
     Args:
         client: Client object with request
@@ -498,7 +498,7 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, args: Dic
 
 @logger
 def alienvault_get_passive_dns_data_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for related passive dns date by indicator
 
     Args:
         client: Client object with request
@@ -558,7 +558,7 @@ def alienvault_search_pulses_command(client: Client, args: Dict) -> Tuple[str, D
 
 @logger
 def alienvault_get_pulse_details_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """get pulse details
 
     Args:
         client: Client object with request
