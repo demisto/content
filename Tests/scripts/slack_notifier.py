@@ -10,6 +10,7 @@ from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/07/Demisto-Icon-Dark.png'
 
+
 def http_request(url, params_dict=None):
     try:
         res = requests.request("GET",
