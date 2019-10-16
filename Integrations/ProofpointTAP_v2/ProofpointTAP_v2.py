@@ -163,7 +163,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    incidents = []
+    incidents: list = []
     fetch_times = get_fetch_times(last_fetch)
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
