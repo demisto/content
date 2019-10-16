@@ -42,16 +42,18 @@ class Client:
         self.key_ring = params.get('key_ring')
         self.service_account = params.get('service_account')
         self.role = params.get('role')
-        if params.get('insecure'):
-            disable_tls_verification()
 
-        handle_proxy()
         # Creates an API client for the KMS API.
         try:
             self.kms_client = self._init_kms_client()
 
         except JSONDecodeError:
             raise Exception("Service Account json is not formatted well please re-enter it.")
+
+        if params.get('insecure'):
+            disable_tls_verification()
+
+        handle_proxy()
 
     def _init_kms_client(self):
         """Creates the Python API client for Google Cloud KMS using service account credentials.
