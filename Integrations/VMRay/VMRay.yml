@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: vmray v2
+  id: vmray
   version: -1
 configuration:
 - defaultvalue: https://cloud.vmray.com
@@ -22,7 +22,7 @@ configuration:
   type: 8
 description: Ransomware analysis sandboxing.
 display: VMRay
-name: vmray v2
+name: vmray
 script:
   commands:
   - arguments:
