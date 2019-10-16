@@ -17,6 +17,16 @@ configuration:
   name: frequency
   required: false
   type: 0
+- defaultvalue: ""
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: ""
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 description: 'Creates mock email incidents using one of two randomly selected HTML
   templates. Textual content is randomly generated and defined to include some text
   (100 random words) and the following data (at least 5 of each data type): IP addresses,
@@ -205,5 +215,6 @@ script:
   dockerimage: demisto/faker:0.1  
   isfetch: true
   runonce: false
+  subtype: python2
 tests:
   - No Tests

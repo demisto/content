@@ -117,7 +117,7 @@ script:
     };
 
     var login = function() {
-        var url = baseUrl + '/api/jwt/login/';
+        var url = baseUrl + '/api/jwt/login';
 
         var body = {
             username: params.credentials.identifier,

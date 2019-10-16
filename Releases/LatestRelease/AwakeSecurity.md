@@ -1,1 +1,0 @@
-The `Trust any certificate` parameter now works as expected.

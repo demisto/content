@@ -1,0 +1,1131 @@
+category: Vulnerability Management
+commonfields:
+  id: Tenable.sc
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
+    months, 1 year)
+  name: fetch_time
+  required: false
+  type: 0
+description: With Tenable.sc (formerly SecurityCenter) you get a real-time, continuous
+  assessment of your security posture so you can find and fix vulnerabilities faster.
+display: Tenable.sc
+name: Tenable.sc
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable scans. Returns both usable and
+        manageable scans by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Tenable.sc existing scans
+    execution: false
+    name: tenable-sc-list-scans
+    outputs:
+    - contextPath: TenableSC.Scan.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.Scan.ID
+      description: Scan ID
+      type: number
+    - contextPath: TenableSC.Scan.Description
+      description: Scan description
+      type: string
+    - contextPath: TenableSC.Scan.Policy
+      description: Scan policy name
+      type: string
+    - contextPath: TenableSC.Scan.Group
+      description: Scan policy owner group name
+      type: string
+    - contextPath: TenableSC.Scan.Owner
+      description: Scan policy owner user name
+      type: string
+  - arguments:
+    - default: false
+      description: Scan ID, can be retrieved from list-scans command
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    - default: false
+      description: Valid IP/Hostname of a specific target to scan. Must be provided
+        with diagnosticPassword.
+      isArray: false
+      name: diagnostic_target
+      required: false
+      secret: false
+    - default: false
+      description: Non empty string password
+      isArray: false
+      name: diagnostic_password
+      required: false
+      secret: false
+    deprecated: false
+    description: Launch an existing scan from Tenable.sc
+    execution: false
+    name: tenable-sc-launch-scan
+    outputs:
+    - contextPath: TenableSC.ScanResults.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan Results ID
+      type: string
+    - contextPath: TenableSC.ScanResults.OwnerID
+      description: Scan owner ID
+      type: string
+    - contextPath: TenableSC.ScanResults.JobID
+      description: Job ID
+      type: string
+    - contextPath: TenableSC.ScanResults.Status
+      description: Scan status
+      type: string
+  - arguments:
+    - default: false
+      description: Vulnerability ID from the scan-report command
+      isArray: false
+      name: vulnerability_id
+      required: true
+      secret: false
+    - default: false
+      description: Scan results ID from the scan-report command
+      isArray: false
+      name: scan_results_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of objects to return in one response (maximum limit
+        is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Get details about a given vulnerability from a given Tenable.sc scan
+    execution: false
+    name: tenable-sc-get-vulnerability
+    outputs:
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan results ID
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.ID
+      description: Vulnerability plugin ID
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.Name
+      description: Vulnerability name
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Description
+      description: Vulnerability description
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Type
+      description: Vulnerability type
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Severity
+      description: Vulnerability Severity
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Synopsis
+      description: Vulnerability Synopsis
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Solution
+      description: Vulnerability Solution
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Published
+      description: Vulnerability publish date
+      type: date
+    - contextPath: TenableSC.ScanResults.Vulnerability.CPE
+      description: Vulnerability CPE
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.CVE
+      description: Vulnerability CVE
+      type: Unknown
+    - contextPath: TenableSC.ScanResults.Vulnerability.ExploitAvailable
+      description: Vulnerability exploit available
+      type: boolean
+    - contextPath: TenableSC.ScanResults.Vulnerability.ExploitEase
+      description: Vulnerability exploit ease
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.RiskFactor
+      description: Vulnerability risk factor
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.CVSSBaseScore
+      description: Vulnerability CVSS base score
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.CVSSTemporalScore
+      description: Vulnerability CVSS temporal score
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.CVSSVector
+      description: Vulnerability CVSS vector
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.PluginDetails
+      description: Vulnerability plugin details
+      type: Unknown
+    - contextPath: CVE.ID
+      description: CVE ID
+      type: Unknown
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.IP
+      description: Vulnerability Host IP
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.MAC
+      description: Vulnerability Host MAC
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.Port
+      description: Vulnerability Host Port
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.Host.Protocol
+      description: Vulnerability Host Protocol
+      type: string
+  - arguments:
+    - default: false
+      description: Scan results ID from the launch-scan command
+      isArray: true
+      name: scan_results_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the status of a specific scan in Tenable.sc
+    execution: false
+    name: tenable-sc-get-scan-status
+    outputs:
+    - contextPath: TenableSC.ScanResults.Status
+      description: Scan status
+      type: string
+    - contextPath: TenableSC.ScanResults.Name
+      description: Scan Name
+      type: string
+    - contextPath: TenableSC.ScanResults.Description
+      description: Scan description
+      type: Unknown
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan results ID
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Scan results ID
+      isArray: false
+      name: scan_results_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Critical,High,Medium,Low,Info
+      description: Comma separated list of severity values of vulnerabilities to retrieve
+      isArray: true
+      name: vulnerability_severity
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a single report with Tenable.sc scan results
+    execution: false
+    name: tenable-sc-get-scan-report
+    outputs:
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan results ID
+      type: number
+    - contextPath: TenableSC.ScanResults.Name
+      description: Scan name
+      type: string
+    - contextPath: TenableSC.ScanResults.Status
+      description: Scan status
+      type: string
+    - contextPath: TenableSC.ScanResults.ScannedIPs
+      description: Scan number of scanned IPs
+      type: number
+    - contextPath: TenableSC.ScanResults.StartTime
+      description: Scan start time
+      type: date
+    - contextPath: TenableSC.ScanResults.EndTime
+      description: Scan end time
+      type: date
+    - contextPath: TenableSC.ScanResults.Checks
+      description: Scan completed checks
+      type: number
+    - contextPath: TenableSC.ScanResults.RepositoryName
+      description: Scan repository name
+      type: string
+    - contextPath: TenableSC.ScanResults.Description
+      description: Scan description
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.ID
+      description: Scan vulnerability ID
+      type: number
+    - contextPath: TenableSC.ScanResults.Vulnerability.Name
+      description: Scan vulnerability Name
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Family
+      description: Scan vulnerability family
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Severity
+      description: Scan vulnerability severity
+      type: string
+    - contextPath: TenableSC.ScanResults.Vulnerability.Total
+      description: Scan vulnerability total hosts
+      type: number
+    - contextPath: TenableSC.ScanResults.Policy
+      description: Scan policy
+      type: string
+    - contextPath: TenableSC.ScanResults.Group
+      description: Scan owner group name
+      type: string
+    - contextPath: TenableSC.ScanResults.Owner
+      description: Scan owner user name
+      type: string
+    - contextPath: TenableSC.ScanResults.Duration
+      description: Scan duration in minutes
+      type: number
+    - contextPath: TenableSC.ScanResults.ImportTime
+      description: Scan import time
+      type: date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable scan credentials. Returns both
+        usable and manageable by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Tenable.sc credentials
+    execution: false
+    name: tenable-sc-list-credentials
+    outputs:
+    - contextPath: TenableSC.Credential.Name
+      description: Credential name
+      type: string
+    - contextPath: TenableSC.Credential.ID
+      description: Credential ID
+      type: number
+    - contextPath: TenableSC.Credential.Description
+      description: Credential description
+      type: string
+    - contextPath: TenableSC.Credential.Type
+      description: Credential type
+      type: string
+    - contextPath: TenableSC.Credential.Tag
+      description: Credential tag
+      type: string
+    - contextPath: TenableSC.Credential.Group
+      description: Credential owner group name
+      type: string
+    - contextPath: TenableSC.Credential.Owner
+      description: Credential owner user name
+      type: string
+    - contextPath: TenableSC.Credential.LastModified
+      description: Credential last modified time
+      type: date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable scan policies. Returns both usable
+        and manageable by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Tenable.sc scan policies
+    execution: false
+    name: tenable-sc-list-policies
+    outputs:
+    - contextPath: TenableSC.ScanPolicy.Name
+      description: Scan policy name
+      type: string
+    - contextPath: TenableSC.ScanPolicy.ID
+      description: Scan policy ID
+      type: number
+    - contextPath: TenableSC.ScanPolicy.Description
+      description: Scan policy description
+      type: string
+    - contextPath: TenableSC.ScanPolicy.Tag
+      description: Scan policy tag
+      type: string
+    - contextPath: TenableSC.ScanPolicy.Group
+      description: Scan policy owner group name
+      type: string
+    - contextPath: TenableSC.ScanPolicy.Owner
+      description: Scan policy owner user name
+      type: string
+    - contextPath: TenableSC.ScanPolicy.LastModified
+      description: Scan policy last modified time
+      type: date
+    - contextPath: TenableSC.ScanPolicy.Type
+      description: Scan policy type
+      type: string
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable reports. Returns both usable
+        and manageable by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Tenable.sc report definitions
+    execution: false
+    name: tenable-sc-list-report-definitions
+    outputs:
+    - contextPath: TenableSC.ReportDefinition.Name
+      description: Report definition name
+      type: string
+    - contextPath: TenableSC.ReportDefinition.ID
+      description: Report definition ID
+      type: number
+    - contextPath: TenableSC.ReportDefinition.Description
+      description: Report definition description
+      type: string
+    - contextPath: TenableSC.ReportDefinition.Type
+      description: Report definition type
+      type: string
+    - contextPath: TenableSC.ReportDefinition.Group
+      description: Report definition owner group name
+      type: string
+    - contextPath: TenableSC.ReportDefinition.Owner
+      description: Report definition owner user name
+      type: string
+  - deprecated: false
+    description: Get a list of Tenable.sc scan repositories
+    execution: false
+    name: tenable-sc-list-repositories
+    outputs:
+    - contextPath: TenableSC.ScanRepository.Name
+      description: Scan Repository name
+      type: string
+    - contextPath: TenableSC.ScanRepository.ID
+      description: Scan Repository ID
+      type: number
+    - contextPath: TenableSC.ScanRepository.Description
+      description: Scan Repository
+      type: string
+  - deprecated: false
+    description: Get a list of Tenable.sc scan zones
+    execution: false
+    name: tenable-sc-list-zones
+    outputs:
+    - contextPath: TenableSC.ScanZone.Name
+      description: Scan Zone name
+      type: string
+    - contextPath: TenableSC.ScanZone.ID
+      description: Scan Zone ID
+      type: number
+    - contextPath: TenableSC.ScanZone.Description
+      description: Scan Zone description
+      type: string
+    - contextPath: TenableSC.ScanZone.IPList
+      description: Scan Zone IP list
+      type: unknown
+    - contextPath: TenableSC.ScanZone.ActiveScanners
+      description: Scan Zone active scanners
+      type: number
+  - arguments:
+    - default: false
+      description: Scan name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Policy ID, can be retrieved from list-policies command
+      isArray: false
+      name: policy_id
+      required: true
+      secret: false
+    - default: false
+      description: Scan description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Scan Repository ID, can be retrieved from list-repositories command
+      isArray: false
+      name: repository_id
+      required: true
+      secret: false
+    - default: false
+      description: Scan zone ID (default is all zones), can be retrieved from list-zones
+        command
+      isArray: false
+      name: zone_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Schedule for the scan
+      isArray: false
+      name: schedule
+      predefined:
+      - dependent
+      - ical
+      - never
+      - rollover
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Either all assets or comma separated asset IDs to scan, can be
+        retrieved from list-assets command
+      isArray: true
+      name: asset_ids
+      predefined:
+      - All
+      - AllManageable
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to includes virtual hosts, default false
+      isArray: false
+      name: scan_virtual_hosts
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated IPs to scan e.g 10.0.0.1,10.0.0.2
+      isArray: false
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of report definition IDs to create post-scan,
+        can be retrieved from list-report-definitions command
+      isArray: true
+      name: report_ids
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated credentials IDs to use, can be retrieved from list-credentials
+        command
+      isArray: true
+      name: credentials
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Scan timeout action, default is import
+      isArray: false
+      name: timeout_action
+      predefined:
+      - discard
+      - import
+      - rollover
+      required: false
+      secret: false
+    - default: false
+      description: Maximum scan run time in hours, default is 1
+      isArray: false
+      name: max_scan_time
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Track hosts which have been issued new IP address, (e.g. DHCP)
+      isArray: false
+      name: dhcp_tracking
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Scan rollover type
+      isArray: false
+      name: rollover_type
+      predefined:
+      - nextDay
+      required: false
+      secret: false
+    - default: false
+      description: Dependent scan ID in case of a dependent schedule, can be retrieved
+        from list-scans command
+      isArray: false
+      name: dependent_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a scan on Tenable.sc
+    execution: false
+    name: tenable-sc-create-scan
+    outputs:
+    - contextPath: TenableSC.Scan.ID
+      description: Scan ID
+      type: string
+    - contextPath: TenableSC.Scan.CreatorID
+      description: Scan's creator ID
+      type: string
+    - contextPath: TenableSC.Scan.Name
+      description: Scan Name
+      type: string
+    - contextPath: TenableSC.Scan.Type
+      description: Scan type
+      type: string
+    - contextPath: TenableSC.Scan.CreatedTime
+      description: Scan creation time
+      type: date
+    - contextPath: TenableSC.Scan.OwnerName
+      description: Scan owner Username
+      type: string
+    - contextPath: TenableSC.Scan.Reports
+      description: Scan report defintion IDs
+      type: unknown
+  - arguments:
+    - default: false
+      description: Scan ID, can be. retrieved from the list-scans command
+      isArray: false
+      name: scan_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a scan in Tenable.sc
+    execution: false
+    name: tenable-sc-delete-scan
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable assets. Returns both usable and
+        manageable by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Tenable.sc Assets
+    execution: false
+    name: tenable-sc-list-assets
+    outputs:
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: string
+    - contextPath: TenableSC.Asset.Name
+      description: Asset Name
+      type: string
+    - contextPath: TenableSC.Asset.HostCount
+      description: Asset host IPs count
+      type: number
+    - contextPath: TenableSC.Asset.Type
+      description: Asset type
+      type: string
+    - contextPath: TenableSC.Asset.Tag
+      description: Asset tag
+      type: string
+    - contextPath: TenableSC.Asset.Owner
+      description: Asset owner username
+      type: string
+    - contextPath: TenableSC.Asset.Group
+      description: Asset group
+      type: string
+    - contextPath: TenableSC.Asset.LastModified
+      description: Asset last modified time
+      type: date
+  - arguments:
+    - default: false
+      description: Asset Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Asset description
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Asset owner ID, default is the Session User ID, can be retrieved
+        from the list-users command
+      isArray: false
+      name: owner_id
+      required: false
+      secret: false
+    - default: false
+      description: 'Asset tag '
+      isArray: true
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of IPs to include in the asset, e.g 10.0.0.2,10.0.0.4
+      isArray: false
+      name: ip_list
+      required: true
+      secret: false
+    deprecated: false
+    description: Create an Asset in Tenable.sc with provided IP addresses
+    execution: false
+    name: tenable-sc-create-asset
+    outputs:
+    - contextPath: TenableSC.Asset.Name
+      description: Asset Name
+      type: string
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: string
+    - contextPath: TenableSC.Asset.OwnerName
+      description: Asset owner name
+      type: string
+    - contextPath: TenableSC.Asset.Tags
+      description: Asset tags
+      type: string
+  - arguments:
+    - default: false
+      description: Asset ID that can be retrieved from the list-assets command
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details for a given asset in Tenable.sc
+    execution: false
+    name: tenable-sc-get-asset
+    outputs:
+    - contextPath: TenableSC.Asset.ID
+      description: Asset ID
+      type: number
+    - contextPath: TenableSC.Asset.Name
+      description: Asset name
+      type: string
+    - contextPath: TenableSC.Asset.Description
+      description: Asset description
+      type: string
+    - contextPath: TenableSC.Asset.Tag
+      description: Asset tag
+      type: string
+    - contextPath: TenableSC.Asset.Modified
+      description: Asset last modified time
+      type: date
+    - contextPath: TenableSC.Asset.Owner
+      description: Asset owner user name
+      type: string
+    - contextPath: TenableSC.Asset.Group
+      description: Asset owner group
+      type: string
+    - contextPath: TenableSC.Asset.IPs
+      description: Asset viewable IPs
+      type: unknown
+  - arguments:
+    - default: false
+      description: Asset ID
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete the Asset with the given ID from Tenable.sc
+    execution: true
+    name: tenable-sc-delete-asset
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to return only manageable alerts. Returns both usable and
+        manageable by default.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts from Tenable.sc
+    execution: false
+    name: tenable-sc-list-alerts
+    outputs:
+    - contextPath: TenableSC.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: TenableSC.Alert.Name
+      description: Alert name
+      type: string
+    - contextPath: TenableSC.Alert.Description
+      description: Alert description
+      type: string
+    - contextPath: TenableSC.Alert.State
+      description: Alert state
+      type: string
+    - contextPath: TenableSC.Alert.Actions
+      description: Alert Actions
+      type: string
+    - contextPath: TenableSC.Alert.LastTriggered
+      description: Alert last triggered time
+      type: date
+    - contextPath: TenableSC.Alert.LastEvaluated
+      description: Alert last evaluated time
+      type: date
+    - contextPath: TenableSC.Alert.Group
+      description: Alert owner group name
+      type: string
+    - contextPath: TenableSC.Alert.Owner
+      description: Alert owner user name
+      type: string
+  - arguments:
+    - default: false
+      description: Alert ID, can be retrieved from list-alerts command
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get information about a given alert in Tenable.sc
+    execution: false
+    name: tenable-sc-get-alert
+    outputs:
+    - contextPath: TenableSC.Alert.ID
+      description: Alert ID
+      type: string
+    - contextPath: TenableSC.Alert.Name
+      description: Alert name
+      type: string
+    - contextPath: TenableSC.Alert.Description
+      description: Alert description
+      type: string
+    - contextPath: TenableSC.Alert.State
+      description: Alert state
+      type: string
+    - contextPath: TenableSC.Alert.Condition.Trigger
+      description: Alert trigger
+      type: string
+    - contextPath: TenableSC.Alert.LastTriggered
+      description: Alert last triggered time
+      type: date
+    - contextPath: TenableSC.Alert.Condition.Query
+      description: Alert query name
+      type: string
+    - contextPath: TenableSC.Alert.Condition.Filter.Name
+      description: Alert query filter name
+      type: string
+    - contextPath: TenableSC.Alert.Condition.Filter.Values
+      description: Alert query filter values
+      type: Unknown
+    - contextPath: TenableSC.Alert.Action.Type
+      description: Alert action type
+      type: string
+    - contextPath: TenableSC.Alert.Action.Values
+      description: Alert action values
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A valid IP address of a device
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: DNS name of a device
+      isArray: false
+      name: dns_name
+      required: false
+      secret: false
+    - default: false
+      description: Repository ID to get the device from, can be retrieved from list-repositories
+        command
+      isArray: false
+      name: repository_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the specified device information
+    execution: false
+    name: tenable-sc-get-device
+    outputs:
+    - contextPath: TenableSC.Device.IP
+      description: Device IP address
+      type: string
+    - contextPath: TenableSC.Device.UUID
+      description: Device UUID
+      type: string
+    - contextPath: TenableSC.Device.RepositoryID
+      description: Device repository ID
+      type: string
+    - contextPath: TenableSC.Device.MacAddress
+      description: Device Mac address
+      type: string
+    - contextPath: TenableSC.Device.NetbiosName
+      description: Device Netbios name
+      type: string
+    - contextPath: TenableSC.Device.DNSName
+      description: Device DNS name
+      type: string
+    - contextPath: TenableSC.Device.OS
+      description: Device Operating System
+      type: string
+    - contextPath: TenableSC.Device.OsCPE
+      description: Device Common Platform Enumeration
+      type: string
+    - contextPath: TenableSC.Device.LastScan
+      description: Device's last scan time
+      type: date
+    - contextPath: TenableSC.Device.RepositoryName
+      description: Device repository name
+      type: string
+    - contextPath: TenableSC.Device.TotalScore
+      description: Device total threat score
+      type: number
+    - contextPath: TenableSC.Device.LowSeverity
+      description: Device total threat scores with low severity
+      type: number
+    - contextPath: TenableSC.Device.MediumSeverity
+      description: Device total threat scores with medium severity
+      type: number
+    - contextPath: TenableSC.Device.HighSeverity
+      description: Device total threat scores with high severity
+      type: number
+    - contextPath: TenableSC.Device.CriticalSeverity
+      description: Device total threat scores with critical severity
+      type: number
+    - contextPath: Endpoint.IPAddress
+      description: Endpoint IP address
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Endpoint DNS name
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint mac address
+      type: string
+    - contextPath: Endpoint.OS
+      description: Endpoint OS
+      type: string
+  - arguments:
+    - default: false
+      description: Filter by user ID
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Filter by user username
+      isArray: false
+      name: username
+      required: false
+      secret: false
+    - default: false
+      description: Filter by user email address
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    deprecated: false
+    description: List users in Tenable.sc
+    execution: false
+    name: tenable-sc-list-users
+    outputs:
+    - contextPath: TenableSC.User.ID
+      description: User ID
+      type: string
+    - contextPath: TenableSC.User.Username
+      description: Username
+      type: string
+    - contextPath: TenableSC.User.FirstName
+      description: User first name
+      type: string
+    - contextPath: TenableSC.User.LastName
+      description: User last name
+      type: string
+    - contextPath: TenableSC.User.Title
+      description: User title
+      type: string
+    - contextPath: TenableSC.User.Email
+      description: User email address
+      type: string
+    - contextPath: TenableSC.User.Created
+      description: The creation time of the user
+      type: date
+    - contextPath: TenableSC.User.Modified
+      description: Last modification time of the user
+      type: date
+    - contextPath: TenableSC.User.Login
+      description: User last login
+      type: date
+    - contextPath: TenableSC.User.Role
+      description: User role name
+      type: string
+  - deprecated: false
+    description: Retrieve licensing information from Tenable.sc
+    execution: false
+    name: tenable-sc-get-system-licensing
+    outputs:
+    - contextPath: TenableSC.Status.ActiveIPS
+      description: Number of active IP addresses
+      type: number
+    - contextPath: TenableSC.Status.LicensedIPS
+      description: Number of licensed IP addresses
+      type: Unknown
+    - contextPath: TenableSC.Status.License
+      description: License status
+      type: Unknown
+  - deprecated: false
+    description: Get the system information and diagnostics from Tenable.sc
+    execution: false
+    name: tenable-sc-get-system-information
+    outputs:
+    - contextPath: TenableSC.System.Version
+      description: System version
+      type: string
+    - contextPath: TenableSC.System.BuildID
+      description: System build ID
+      type: string
+    - contextPath: TenableSC.System.ReleaseID
+      description: System release ID
+      type: string
+    - contextPath: TenableSC.System.License
+      description: System license status
+      type: string
+    - contextPath: TenableSC.System.JavaStatus
+      description: Server java status
+      type: boolean
+    - contextPath: TenableSC.System.RPMStatus
+      description: Server RPM status
+      type: boolean
+    - contextPath: TenableSC.System.DiskStatus
+      description: Server disk status
+      type: boolean
+    - contextPath: TenableSC.System.DiskThreshold
+      description: System left space on disk
+      type: number
+    - contextPath: TenableSC.System.LastCheck
+      description: System last check time
+      type: date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: |-
+        Filter only manageable alerts. By default, returns both usable and
+                manageable alerts.
+      isArray: false
+      name: manageable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page to return, starting from 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The number of objects to return in one response (maximum limit
+        is 200).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all scan results in Tenable.sc.
+    execution: false
+    name: tenable-sc-get-all-scan-results
+    outputs:
+    - contextPath: TenableSC.ScanResults.ID
+      description: Scan ID.
+      type: Number
+    - contextPath: TenableSC.ScanResults.Name
+      description: Scan name.
+      type: string
+    - contextPath: TenableSC.ScanResults.Status
+      description: Scan status.
+      type: string
+    - contextPath: TenableSC.ScanResults.Description
+      description: Scan description.
+      type: string
+    - contextPath: TenableSC.ScanResults.Policy
+      description: Scan policy.
+      type: string
+    - contextPath: TenableSC.ScanResults.Group
+      description: Scan group name.
+      type: string
+    - contextPath: TenableSC.ScanResults.Checks
+      description: Scan completed number of checks.
+      type: number
+    - contextPath: TenableSC.ScanResults.StartTime
+      description: Scan results start time.
+      type: date
+    - contextPath: TenableSC.ScanResults.EndTime
+      description: Scan results end time.
+      type: date
+    - contextPath: TenableSC.ScanResults.Duration
+      description: Scan duration in minutes.
+      type: number
+    - contextPath: TenableSC.ScanResults.ImportTime
+      description: Scan import time.
+      type: date
+    - contextPath: TenableSC.ScanResults.ScannedIPs
+      description: Number of scanned IPs.
+      type: number
+    - contextPath: TenableSC.ScanResults.Owner
+      description: Scan owner name.
+      type: string
+    - contextPath: TenableSC.ScanResults.RepositoryName
+      description: Scan repository name.
+      type: string
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- tenable-sc-test

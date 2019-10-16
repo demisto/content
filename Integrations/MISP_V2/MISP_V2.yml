@@ -294,12 +294,12 @@ script:
       description: Description of the object
       type: String
   - arguments:
-    - default: false
+    - default: true
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
         can pass CSV values to retrieve multiple responses.
       isArray: false
       name: file
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks the file reputation of the given hash.
@@ -307,38 +307,38 @@ script:
     name: file
     outputs:
     - contextPath: File.MD5
-      description: Bad hash found
-      type: Unknown
+      description: The MD5 hash of the file.
+      type: String
     - contextPath: File.SHA1
-      description: Bad hash SHA-1
-      type: Unknown
+      description: The SHA1 hash of the file.
+      type: String
     - contextPath: File.SHA256
-      description: Bad hash SHA-256
-      type: Unknown
+      description: The SHA256 hash of the file.
+      type: String
     - contextPath: File.Malicious.Vendor
-      description: For malicious files, the vendor that made the decision
-      type: Unknown
+      description: The vendor that reported the file as malicious.
+      type: String
     - contextPath: File.Malicious.Description
-      description: For malicious files, the reason that the vendor made the decision
-      type: Unknown
+      description: A description explaining why the file was determined to be malicious.
+      type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
-      type: Unknown
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: Unknown
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: Unknown
+      description: Vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score
-      type: Unknown
+      type: Number
   - arguments:
-    - default: false
+    - default: true
       description: URL to check
       isArray: false
       name: url
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks if the URL is in MISP events.
@@ -346,32 +346,32 @@ script:
     name: url
     outputs:
     - contextPath: URL.Data
-      description: Bad URLs found
-      type: Unknown
+      description: The URL
+      type: String
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
-      type: Unknown
+      description: The vendor reporting the URL as malicious.
+      type: String
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
-      type: Unknown
+      description: A description of the malicious URL.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: Unknown
+      description: The indicator type
+      type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
-      type: Unknown
+      description: Vendor used to calculate the score.
+      type: String
     - contextPath: DBotScore.Score
-      description: The actual score
-      type: Unknown
+      description: The actual score.
+      type: String
   - arguments:
-    - default: false
+    - default: true
       description: IP address to check
       isArray: false
       name: ip
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Checks the reputation of an IP address
@@ -379,26 +379,26 @@ script:
     name: ip
     outputs:
     - contextPath: IP.Address
-      description: Bad IP address found
-      type: Unknown
+      description: IP address
+      type: String
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IPs, the vendor that made the decision
-      type: Unknown
+      description: The vendor reporting the IP address as malicious.
+      type: String
     - contextPath: IP.Malicious.Description
-      description: For malicious IPs, the reason that the vendor made the decision
-      type: Unknown
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
-      description: Indicator type
-      type: Unknown
+      description: The indicator type
+      type: String
     - contextPath: DBotScore.Vendor
       description: Vendor used to calculate the score
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score
-      type: Unknown
+      type: Number
   - arguments:
     - default: false
       description: Event type of the new event
@@ -1837,7 +1837,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Adds an IP Object to MISP event. The following arguments are optional, but at least one must be supplied for the command to run successfully: "ip", "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
+    description: 'Adds an IP Object to MISP event. The following arguments are optional,
+      but at least one must be supplied for the command to run successfully: "ip",
+      "dst_port", "src_port", "domain", "hostname", "ip_src", and "ip_dst".'
     execution: false
     name: misp-add-ip-object
     outputs:
@@ -1924,5 +1926,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - MISP V2 Test
