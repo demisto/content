@@ -494,14 +494,9 @@ def check_file_command():
     file_hash_input = demisto.args().get('file')
     file_hashes = file_hash_input.split(',')
     for file_hash in file_hashes:
-        if len(file_hash) != 32 and len(file_hash) != 40 and len(file_hash) != 64:
+        hash_type = get_hash_type(file_hash)
+        if hash_type == 'Unknown':
             return_error('Invalid input hash')
-        hash_type = 'md5'
-        if len(file_hash) == 40:
-            hash_type = 'sha1'
-        if len(file_hash) == 64:
-            hash_type = 'sha256'
-
         raw_response = check_file(file_hash, hash_type)
         data = raw_response.get('data')
 
