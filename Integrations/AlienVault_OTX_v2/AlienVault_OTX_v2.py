@@ -200,7 +200,7 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         }
 
         human_readable = tableToMarkdown(t={**context.get('IP', {}),
-                                            **context.get('AlienVaultOTX', {}).get('IP', {}).get('Reputation', {})},
+                                            'Reputation': context.get('AlienVaultOTX', {}).get('IP', {}).get('Reputation')},
                                          name=title)
         return human_readable, context, raw_response
     else:
@@ -243,7 +243,7 @@ def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                 'Vendor': 'AlienVault OTX v2'
             }
         }
-        human_readable = tableToMarkdown(t={**context_entry.get('Domain', {}),
+        human_readable = tableToMarkdown(t={'Domain': context_entry.get('Domain', {}).get('Name'),
                                             **context.get('AlienVaultOTX', {}).get('Domain', {})},
                                          name=title)
 
@@ -528,11 +528,11 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, args: D
 
 @logger
 def alienvault_search_pulses_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+    """Search for pulses
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        args:  demisto.args()
 
     Returns:
         Outputs
@@ -562,7 +562,7 @@ def alienvault_get_pulse_details_command(client: Client, args: Dict) -> Tuple[st
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        args:  demisto.args()
 
     Returns:
         Outputs
