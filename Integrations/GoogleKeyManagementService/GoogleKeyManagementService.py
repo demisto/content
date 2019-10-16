@@ -2,17 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-"""
-For further information about the API used in the integration see:
-
-1) Google KMS API Client libraries information: 
-    https://cloud.google.com/kms/docs/reference/libraries
-    
-2) Git resource with some API use examples: 
-    https://github.com/GoogleCloudPlatform/python-docs-samples/tree/master/kms/api-client
-    
-"""
-
 '''IMPORTS'''
 from google.cloud import kms_v1
 from google.cloud.kms_v1 import enums
@@ -24,6 +13,17 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from json import JSONDecodeError
 import base64
 from typing import Any, Dict, Tuple, List
+
+"""
+For further information about the API used in the integration see:
+
+1) Google KMS API Client libraries information: 
+    https://cloud.google.com/kms/docs/reference/libraries
+
+2) Git resource with some API use examples: 
+    https://github.com/GoogleCloudPlatform/python-docs-samples/tree/master/kms/api-client
+
+"""
 
 INTEGRATION_NAME = 'Google Key Management System'
 # lowercase with `-` dividers
