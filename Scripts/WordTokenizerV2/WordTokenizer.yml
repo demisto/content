@@ -149,7 +149,7 @@ outputs:
 - contextPath: WordTokenizeOutput
   description: Output text
   type: Unknown
-script: '-'
+script: ''
 system: false
 tags:
 - phishing
