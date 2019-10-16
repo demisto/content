@@ -64,18 +64,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.block_conversation.Rule
+    - contextPath: Aria.BlockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.block_conversation.Status
+      type: string
+    - contextPath: Aria.BlockConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.block_conversation.Endpoints
+      type: string
+    - contextPath: Aria.BlockConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
-      type: Unknown
+      type: string
     description: Creates a rule that drops all packets matching the specified 5-tuple
       values.
   - name: aria-unblock-conversation
@@ -99,17 +99,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.unblock_conversation.Rule
+    - contextPath: Aria.UnblockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.unblock_conversation.Status
+      type: string
+    - contextPath: Aria.UnblockConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.unblock_conversation.Endpoints
+      type: string
+    - contextPath: Aria.UnblockConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Deletes a named rule from the 5-tuple logic block. This allows the
       previously blocked conversation to resume.
   - name: aria-record-conversation
@@ -195,17 +196,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.record_conversation.Rule
+    - contextPath: Aria.RecordConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.record_conversation.Status
+      type: string
+    - contextPath: Aria.RecordConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.record_conversation.Endpoints
+      type: string
+    - contextPath: Aria.RecordConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that redirects a conversation matching 5-tuple values
       to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-conversation
@@ -229,17 +231,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.stop_recording_conversation.Rule
+    - contextPath: Aria.StopRecordingConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.stop_recording_conversation.Status
+      type: string
+    - contextPath: Aria.StopRecordingConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.stop_recording_conversation.Endpoints
+      type: string
+    - contextPath: Aria.StopRecordingConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes the named rule from the 5-tuple block. This stops redirecting
       traffic to the Packet Recorder.
   - name: aria-alert-conversation
@@ -319,17 +322,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.alert_conversation.Rule
+    - contextPath: Aria.AlertConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.alert_conversation.Status
+      type: string
+    - contextPath: Aria.AlertConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.alert_conversation.Endpoints
+      type: string
+    - contextPath: Aria.AlertConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that generates an alert when a conversation matching
       the specified 5-tuple values is detected.
   - name: aria-mute-alert-conversation
@@ -353,17 +357,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.mute_alert_conversation.Rule
+    - contextPath: Aria.MuteAlertConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.mute_alert_conversation.Status
+      type: string
+    - contextPath: Aria.MuteAlertConversation.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.mute_alert_conversation.Endpoints
+      type: string
+    - contextPath: Aria.MuteAlertConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the 5-tuple logic block, disabling the
       alerts.
   - name: aria-block-dest-port
@@ -391,17 +396,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.block_dest_port.Rule
+    - contextPath: Aria.BlockDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.block_dest_port.Status
+      type: string
+    - contextPath: Aria.BlockDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.block_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.BlockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that blocks packets destined for one or more specific
       ports.
   - name: aria-unblock-dest-port
@@ -425,17 +431,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.unblock_dest_port.Rule
+    - contextPath: Aria.UnblockDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.unblock_dest_port.Status
+      type: string
+    - contextPath: Aria.UnblockDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.unblock_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.UnblockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination port logic block. This
       allows the previously blocked traffic to resume.
   - name: aria-record-dest-port
@@ -511,17 +518,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.record_dest_port.Rule
+    - contextPath: Aria.RecordDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.record_dest_port.Status
+      type: string
+    - contextPath: Aria.RecordDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.record_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.RecordDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that redirects traffic destined for one or more ports
       to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-dest-port
@@ -545,17 +553,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.stop_recording_dest_port.Rule
+    - contextPath: Aria.StopRecordingDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.stop_recording_dest_port.Status
+      type: string
+    - contextPath: Aria.StopRecordingDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.stop_recording_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.StopRecordingDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination port logic block. This
       stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-dest-port
@@ -625,17 +634,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.alert_dest_port.Rule
+    - contextPath: Aria.AlertDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.alert_dest_port.Status
+      type: string
+    - contextPath: Aria.AlertDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.alert_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.AlertDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that generates an alert when traffic destined for
       one or more ports is detected.
   - name: aria-mute-alert-dest-port
@@ -659,17 +669,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.mute_alert_dest_port.Rule
+    - contextPath: Aria.MuteAlertDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.mute_alert_dest_port.Status
+      type: string
+    - contextPath: Aria.MuteAlertDestPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.mute_alert_dest_port.Endpoints
+      type: string
+    - contextPath: Aria.MuteAlertDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination port logic block, disabling
       the alerts.
   - name: aria-block-src-port
@@ -697,17 +708,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.block_src_port.Rule
+    - contextPath: Aria.BlockSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.block_src_port.Status
+      type: string
+    - contextPath: Aria.BlockSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.block_src_port.Endpoints
+      type: string
+    - contextPath: Aria.BlockSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that blocks packets originating from one or more specific
       ports.
   - name: aria-unblock-src-port
@@ -731,17 +743,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.unblock_src_port.Rule
+    - contextPath: Aria.UnblockSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.unblock_src_port.Status
+      type: string
+    - contextPath: Aria.UnblockSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.unblock_src_port.Endpoints
+      type: string
+    - contextPath: Aria.UnblockSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source port logic block. This allows
       the previously blocked traffic to resume.
   - name: aria-record-src-port
@@ -817,17 +830,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.record_src_port.Rule
+    - contextPath: Aria.RecordSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.record_src_port.Status
+      type: string
+    - contextPath: Aria.RecordSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.record_src_port.Endpoints
+      type: string
+    - contextPath: Aria.RecordSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that redirects traffic originating from one or more ports
       to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-src-port
@@ -851,17 +865,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.stop_recording_src_port.Rule
+    - contextPath: Aria.StopRecordingSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.stop_recording_src_port.Status
+      type: string
+    - contextPath: Aria.StopRecordingSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.stop_recording_src_port.Endpoints
+      type: string
+    - contextPath: Aria.StopRecordingSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source port logic block. This stops
       redirecting traffic to the Packet Recorder.
   - name: aria-alert-src-port
@@ -931,17 +946,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.alert_src_port.Rule
+    - contextPath: Aria.AlertSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.alert_src_port.Status
+      type: string
+    - contextPath: Aria.AlertSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.alert_src_port.Endpoints
+      type: string
+    - contextPath: Aria.AlertSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that generates an alert when traffic originating from
       one or more ports is detected.
   - name: aria-mute-alert-src-port
@@ -965,17 +981,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.mute_alert_src_port.Rule
+    - contextPath: Aria.MuteAlertSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.mute_alert_src_port.Status
+      type: string
+    - contextPath: Aria.MuteAlertSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.mute_alert_src_port.Endpoints
+      type: string
+    - contextPath: Aria.MuteAlertSrcPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source port logic block, disabling
       the alerts.
   - name: aria-block-dest-subnet
@@ -1003,17 +1020,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.block_dest_subnet.Rule
+    - contextPath: Aria.BlockDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.block_dest_subnet.Status
+      type: string
+    - contextPath: Aria.BlockDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.block_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.BlockDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that blocks packets destined for a specific IP address
       or range of IP addresses.
   - name: aria-unblock-dest-subnet
@@ -1037,17 +1055,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.unblock_dest_subnet.Rule
+    - contextPath: Aria.UnblockDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.unblock_dest_subnet.Status
+      type: string
+    - contextPath: Aria.UnblockDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.unblock_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.UnblockDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination subnet logic block. This
       allows the previously blocked traffic to resume.
   - name: aria-record-dest-subnet
@@ -1123,17 +1142,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.record_dest_subnet.Rule
+    - contextPath: Aria.RecordDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.record_dest_subnet.Status
+      type: string
+    - contextPath: Aria.RecordDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.record_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.RecordDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that redirects traffic destined for a specific IP
       address or range of IP addresses to the Packet Recorder. Packets are tagged
       with the VID specified in the instance.
@@ -1158,17 +1178,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.stop_recording_dest_subnet.Rule
+    - contextPath: Aria.StopRecordingDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.stop_recording_dest_subnet.Status
+      type: string
+    - contextPath: Aria.StopRecordingDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.stop_recording_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.StopRecordingDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination subnet logic block. This
       stops redirecting traffic to the Packet Recorder.
   - name: aria-alert-dest-subnet
@@ -1238,17 +1259,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.alert_dest_subnet.Rule
+    - contextPath: Aria.AlertDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.alert_dest_subnet.Status
+      type: string
+    - contextPath: Aria.AlertDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.alert_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.AlertDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that generates an alert when traffic destined for
       a specific IP address or range of IP addresses is detected.
   - name: aria-mute-alert-dest-subnet
@@ -1272,17 +1294,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.mute_alert_dest_subnet.Rule
+    - contextPath: Aria.MuteAlertDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.mute_alert_dest_subnet.Status
+      type: string
+    - contextPath: Aria.MuteAlertDestSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.mute_alert_dest_subnet.Endpoints
+      type: string
+    - contextPath: Aria.MuteAlertDestSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the destination subnet logic block, disabling
       the alerts.
   - name: aria-block-src-subnet
@@ -1310,17 +1333,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.block_src_subnet.Rule
+    - contextPath: Aria.BlockSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.block_src_subnet.Status
+      type: string
+    - contextPath: Aria.BlockSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.block_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.BlockSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that blocks packets originating from a specific IP address
       or range of IP addresses.
   - name: aria-unblock-src-subnet
@@ -1344,17 +1368,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.unblock_src_subnet.Rule
+    - contextPath: Aria.UnblockSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.unblock_src_subnet.Status
+      type: string
+    - contextPath: Aria.UnblockSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.unblock_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.UnblockSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source subnet logic block. This allows
       the previously blocked traffic to resume.
   - name: aria-record-src-subnet
@@ -1430,17 +1455,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.record_src_subnet.Rule
+    - contextPath: Aria.RecordSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.record_src_subnet.Status
+      type: string
+    - contextPath: Aria.RecordSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.record_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.RecordSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Creates a rule that redirects traffic originating from one or more
       specific IP addresses to the Packet Recorder. Packets are tagged with the VID
       specified in the instance.
@@ -1465,17 +1491,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.stop_recording_src_subnet.Rule
+    - contextPath: Aria.StopRecordingSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.stop_recording_src_subnet.Status
+      type: string
+    - contextPath: Aria.StopRecordingSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.stop_recording_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.StopRecordingSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source subnet logic block. This stops
       redirecting traffic to the Packet Recorder.
   - name: aria-alert-src-subnet
@@ -1545,17 +1572,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is added to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.alert_src_subnet.Rule
+    - contextPath: Aria.AlertSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.alert_src_subnet.Status
+      type: string
+    - contextPath: Aria.AlertSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.alert_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.AlertSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Adds a rule that generates an alert when traffic originating from
       a specific IP address or range of IP addresses is detected.
   - name: aria-mute-alert-src-subnet
@@ -1579,17 +1607,18 @@ script:
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted to every SIA attached to the SDSo.'
     outputs:
-    - contextPath: aria.mute_alert_src_subnet.Rule
+    - contextPath: Aria.MuteAlertSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
-      type: Unknown
-    - contextPath: aria.mute_alert_src_subnet.Status
+      type: string
+    - contextPath: Aria.MuteAlertSrcSubnet.Status
       description: 'Returns the response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
-      type: Unknown
-    - contextPath: aria.mute_alert_src_subnet.Endpoints
+      type: string
+    - contextPath: Aria.MuteAlertSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
+      type: string
     description: Removes a named rule from the source subnet logic block, disabling
       the alerts.
   dockerimage: demisto/python3:3.7.4.1502

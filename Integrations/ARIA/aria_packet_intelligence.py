@@ -1368,8 +1368,10 @@ def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
 
     table_header = ['Rule', 'Status', 'Endpoints']
 
+    context_name = func_name.title().replace('_', '')
+
     ec = {
-        'aria.' + func_name + '(val.name && val.name == obj.name)': cont
+        'Aria.' + context_name + '(val.name && val.name == obj.name)': cont
     }
 
     LOG(json.dumps(context_entry))
