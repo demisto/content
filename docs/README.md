@@ -16,6 +16,8 @@ After you have done the above, we will look at Demisto and get started on your f
 
 [Understanding the YAML file structure](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD)
 
+[Understanding the package directory](https://github.com/demisto/content/blob/master/docs/package_directory_structure/README.MD)
+
 [Updating Release Notes](https://github.com/demisto/content/blob/master/docs/release_notes/README.MD)
 
 [Creating playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD)
@@ -43,7 +45,7 @@ In some cases, it will be necessary to create a docker image to enable your inte
 ## Contributing
 Finally, you have tested your code, it's working the way you'd like, and you made sure that your integration is not going to sneak any "surprise features" into Demisto. You are ready to push your code.
 
-[Learn about sending your code through the Demisto Gauntlet](https://github.com/demisto/content/blob/master/docs/contributing/README.MD)
+[Learn about sending your code through the Demisto Gauntlet](https://github.com/demisto/content/blob/master/CONTRIBUTING.md)
 
 # Master Directory
 
@@ -51,10 +53,11 @@ Finally, you have tested your code, it's working the way you'd like, and you mad
 | --- | ---|
 | [Tutorial Video](https://github.com/demisto/content/blob/master/docs/tutorial-video/README.md) | A step-by-step introduction to creating an integration |
 | [Getting Started](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD) | A brief explanation of the Demisto IDE |
+| [Package directory](https://github.com/demisto/content/blob/master/docs/package_directory_structure/README.MD) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD) | Our Code Conventions |
 | [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) | Brief overview of Context and Outputs |
 | [Context Conventions](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD) | Conventions for the Demisto Standard Context |
-| [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
+| [Contributing](https://github.com/demisto/content/blob/master/CONTRIBUTING.md) | How to contribute to the Content Repo |
 | [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
 | [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
 | [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |
@@ -62,3 +65,9 @@ Finally, you have tested your code, it's working the way you'd like, and you mad
 | [Fetching Incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) | How to Fetch Incidents |
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
+| [Testing](https://github.com/demisto/content/blob/master/docs/tests/README.md) | The Demisto Content Repo Testing Methods |
+| [CircleCI](https://github.com/demisto/content/blob/master/docs/docs/circleci/README.MD) | How we test using CircleCI |
+| [Mocks](https://github.com/demisto/content/blob/master/docs/tests/mocks/README.MD) | Explanation of how to test using mocked data |
+| [Unit Testing](https://github.com/demisto/content/blob/master/docs/tests/unit-testing/README.md) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
+| [GenericPolling Playbook](https://github.com/demisto/content/blob/master/docs/tests/genericpolling/README.md) | Explanation of how and when to use the GenericPolling playbook |
+

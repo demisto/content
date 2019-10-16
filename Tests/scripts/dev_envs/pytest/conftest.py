@@ -49,4 +49,4 @@ def check_std_out_err(capfd):
     if out:
         pytest.fail("Found output in stdout: [{}]".format(out.strip()))
     if err:
-        pytest.fail("Found output in stderr: [{}]", format(err.strip()))
+        pytest.fail("Found output in stderr: [{}]".format(err.strip()))

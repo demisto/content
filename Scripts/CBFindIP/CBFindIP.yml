@@ -1,0 +1,54 @@
+args:
+- default: true
+  description: CSV list of IP addresses to identify.
+  isArray: false
+  name: ip
+  required: true
+  secret: false
+comment: Search Carbon Black for connection to specified IP addresses.
+commonfields:
+  id: CBFindIP
+  version: -1
+enabled: true
+name: CBFindIP
+outputs:
+- contextPath: Process.Path
+  description: Process path.
+  type: String
+- contextPath: Process.PID
+  description: Process PID.
+  type: Number
+- contextPath: Process.MD5
+  description: Process MD5 hash.
+  type: String
+- contextPath: Process.Hostname
+  description: Process hostname.
+  type: String
+- contextPath: Process.Name
+  description: Process name.
+  type: String
+- contextPath: Process.CbSegmentID
+  description: Carbon Black "segment" where this process instance is stored. Required to fetch
+    additional information for a process.
+  type: String
+- contextPath: Process.CbID
+  description: Carbon Black unique ID for this process instance. Required (together with CbSegmentID)
+    to fetch additional information for a process.
+  type: String
+- contextPath: Process.Endpoint
+  description: The endpoint of the process.
+  type: String
+script: '-'
+system: false
+tags:
+- carbon-black
+- endpoint
+- enhancement
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false
+tests:
+- CBFindIP - Test
+dependson:
+  must: []
