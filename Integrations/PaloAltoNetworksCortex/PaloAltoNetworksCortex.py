@@ -623,7 +623,7 @@ def build_where_clause(args: dict, table_args_dict: dict) -> str:
 def delete_empty_value_dict_and_append_to_lists(raw_dict: dict, list_of_lists_to_append: list):
     """
     This function filters all items of raw_dict that has empty value (e.g. null/none/''...)
-    and appends the filtered dict to each list in the list_of_lists
+    and appends the filtered dict to each list in the list_of_lists_to_append
     :param raw_dict: the dict to be filtered
     :param list_of_lists_to_append: a list of lists that the filtered dict should be added to each one of the lists
     """
