@@ -1,7 +1,4 @@
-<p>
-  Overview description in this section without a header.
-</p>
-<h2>JsonWhoIs Playbook</h2>
+<h1>JsonWhoIs Playbook</h2>
 <p>Populate this section with relevant playbook names.</p>
 <h2>Use Cases</h2>
 <ul>
