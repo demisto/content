@@ -2010,7 +2010,8 @@
     },
     "nigthly_integrations": [
         "Lastline",
-        "TruSTAR"
+        "TruSTAR",
+        "SlackV2"
     ],
     "unmockable_integrations": {
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
