@@ -29,11 +29,6 @@ configuration:
   name: key_ring
   required: false
   type: 0
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -97,10 +92,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Statement that was generated and signed by the HSM
-        at key creation time. Use this statement to verify attributes of the key as
-        stored on the HSM, independently of Google. Only provided for key versions
-        with protectionLevel HSM.
+      description: Statement that was generated and signed by the HSM at key creation
+        time. Use this statement to verify attributes of the key as stored on the
+        HSM, independently of Google. Only provided for key versions with protectionLevel
+        HSM.
       isArray: true
       name: attestation
       required: false
@@ -141,8 +136,8 @@ script:
       defaultValue: '7776000'
       description: next_rotation_time will be advanced by this period when the service
         automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours. Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
-        field must be omitted. A duration in seconds.
+        hours. Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other
+        keys, this field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
       required: true
@@ -150,7 +145,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: GOOGLE_SYMMETRIC_ENCRYPTION
-      description: Algorithm to use when creating a CryptoKeyVersion based on this template.
+      description: Algorithm to use when creating a CryptoKeyVersion based on this
+        template.
       isArray: false
       name: algorithm
       predefined:
@@ -175,7 +171,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: SOFTWARE
-      description: protection_level to use when creating a CryptoKeyVersion. Defaults to SOFTWARE.
+      description: protection_level to use when creating a CryptoKeyVersion. Defaults
+        to SOFTWARE.
       isArray: false
       name: protection_level
       predefined:
@@ -188,7 +185,8 @@ script:
       default: false
       defaultValue: 'true'
       description: If set to true, the request will create a CryptoKey without any
-        CryptoKeyVersions. You will have to create the CryptoKeyVersion in order to use this key.
+        CryptoKeyVersions. You will have to create the CryptoKeyVersion in order to
+        use this key.
       isArray: false
       name: skip_initial_version_creation
       predefined:
@@ -545,8 +543,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Algorithm to use when creating a CryptoKeyVersion based on this template.
+      description: Algorithm to use when creating a CryptoKeyVersion based on this
+        template.
       isArray: false
       name: algorithm
       predefined:
@@ -570,8 +568,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: protection_level to use when creating a CryptoKeyVersion based on
-        this template.
+      description: protection_level to use when creating a CryptoKeyVersion based
+        on this template.
       isArray: false
       name: protection_level
       predefined:
@@ -820,8 +818,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Show only keys with this primary CryptoKeyVersion state. Leave empty
-        to show all.
+      description: Show only keys with this primary CryptoKeyVersion state. Leave
+        empty to show all.
       isArray: false
       name: key_state
       predefined:
