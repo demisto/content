@@ -118,49 +118,40 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def unlock_vault(self, vault_id) -> Dict:
-        """Unlocks vault
-
-        Args:
-            vault_id: vault to lock
-
-        Returns:
-            locked state
-        """
-        suffix = 'vault/unlock'
-        params = {'vaultId': vault_id}
-        return self._http_request('POST', suffix, params=params)
-
-    def lock_vault(self, vault_id: AnyStr) -> Dict:
+    def assign_ticket(self, ticket_id: AnyStr, users: List[str]) -> Dict:
         """Locks vault
 
         Args:
-            vault_id: vault to lock
+            ticket_id: vault to lock
+            users: A list of users' id
 
         Returns:
-            locked state
+            Response JSON
         """
-        suffix = 'vault/lock'
-        params = {'vaultId': vault_id}
-        return self._http_request('POST', suffix, params=params)
+        suffix = 'ticket/assign'
+        params = {'ticketId': ticket_id}
+        body = {'users': users}
+        return self._http_request('POST', suffix, params=params, json_data=body)
 
     def create_ticket(
             self, name: str = None, category: str = None, description: str = None,
             assignee: list = None, timestamp: str = None, is_open: bool = None
     ):
         suffix = 'ticket'
-        params = assign_params(
+        body = {'ticket': assign_params(
             name=name,
             category=category,
             description=description,
             assignee=assignee,
             timestamp=timestamp if timestamp else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ'),
             isOpen=is_open
-        )
-        return self._http_request('POST', suffix, params=params)
+        )}
+        return self._http_request('POST', suffix, json_data=body)
 
+    def list_users(self):
+        suffix = 'user'
+        return self._http_request('GET', suffix)
 
-''' HELPER FUNCTIONS '''
 
 ''' COMMANDS '''
 
@@ -249,7 +240,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 
 @logger
-def assign_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """
 
     Args:
@@ -260,42 +251,46 @@ def assign_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
         Outputs
 
     """
-    vault_to_lock = args.get('vault', '')
-    raw_response = client.lock_vault(vault_to_lock)
-    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
-        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
-        context_entry = {
-            'ID': vault_to_lock,
-            'IsLocked': True
-        }
+    ticket_id = args.get('ticket_id')
+    users = argToList(args.get('users'))
+    raw_response = client.assign_ticket(ticket_id, users)
+    tickets = raw_response.get('ticket')
+    if tickets:
+        title = f'{INTEGRATION_NAME} - Users has been assigned to {ticket_id}.'
+        context_entry = build_raw_tickets_to_context(tickets)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.ID === obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(
             title, context_entry, headers=['ID', 'Name', 'Timestamp', 'Description', 'Assignee']
         )
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
+        return f'{INTEGRATION_NAME} - Could not assign users to ticket ID: {ticket_id}', {}, raw_response
+
+
+def build_raw_users_to_context(users: Union[list, dict]):
+    if isinstance(users, list):
+        return [build_raw_users_to_context(user) for user in users]
+    return {
+        'ID': users.get('id'),
+        'Username': users.get('username')
+    }
 
 
 @logger
-def list_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
-    vault_to_lock: str = demisto.args().get('vault', '')
-    raw_response = client.unlock_vault(vault_to_lock)
-    if 'is_locked' in raw_response and raw_response['is_locked'] is True:
-        title: str = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been unlocked'
-        context_entry = {
-            'ID': vault_to_lock,
-            'IsLocked': True
-        }
+def list_users_command(client: Client, *_) -> Tuple[str, dict, dict]:
+    raw_response = client.list_users()
+    if raw_response:
+        title = f'{INTEGRATION_NAME} - Users list:'
+        context_entry = build_raw_users_to_context(raw_response.get('user', []))
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.User(val.ID && val.ID === obj.ID)': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
-        return_error(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
+        return f'{INTEGRATION_NAME} - Could not find any users.', {}, {}
 
 
 @logger
@@ -362,7 +357,7 @@ def main():
         f'{INTEGRATION_NAME_COMMAND}-get-ticket': get_ticket_command,
         f'{INTEGRATION_NAME_COMMAND}-create-ticket': create_ticket_command,
         f'{INTEGRATION_NAME_COMMAND}-close-ticket': close_ticket_command,
-        f'{INTEGRATION_NAME_COMMAND}-assign-ticket': assign_ticket_command,
+        f'{INTEGRATION_NAME_COMMAND}-assign-user': assign_users_command,
         f'{INTEGRATION_NAME_COMMAND}-list-users': list_users_command
     }
     try:
