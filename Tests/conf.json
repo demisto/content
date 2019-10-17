@@ -1991,6 +1991,7 @@
         "Tanium": "Instance is not stable (issue 15497)",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
+        "SlackV2": "(Issue 19558)",
 
       "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
