@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed an issue in which the ***test-module*** command failed.
+Fixed an issue in which testing the integration instance failed.
 
 ## [19.9.1] - 2019-09-18
   - Fixed an issue in which the ***wildfire-report*** command failed for specific hash values.
