@@ -7,8 +7,6 @@ from CommonServerUserPython import *
 from typing import Dict, Tuple, Union
 import urllib3
 
-"""Example for Analytics and SIEM integration
-"""
 # Disable insecure warnings
 urllib3.disable_warnings()
 
