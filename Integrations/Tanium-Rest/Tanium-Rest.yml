@@ -17,11 +17,11 @@ configuration:
   type: 8
 - display: Domain
   name: domain
-  required: false
+  required: true
   type: 0
 - display: Credentials
   name: credentials
-  required: false
+  required: true
   type: 9
 description: Tanium endpoint security and systems management
 display: Tanium Rest
@@ -1396,6 +1396,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Tanium Rest Test
