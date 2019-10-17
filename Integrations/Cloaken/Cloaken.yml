@@ -55,14 +55,14 @@ script:
     arguments:
     - name: url
       required: true
-      description: Url
+      description: The URL for which to take a screenshot.
     outputs:
     - contextPath: CloakenScreenshot.Url
       description: Url
       type: string
     - contextPath: CloakenScreenshot.Status
-      description: Status of screenshot
+      description: Status of the screenshot.
       type: string
-    description: create a screenshot from a url
+    description: Creates a screenshot of the specified URL.
   dockerimage: demisto/cloaken:1.0.0.1787
   runonce: false
