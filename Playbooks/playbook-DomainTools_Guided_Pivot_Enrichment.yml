@@ -1,5 +1,5 @@
 id: DomainTools_Guided_Pivot_Enrichment
-version: 4
+version: -1
 name: DomainTools_Guided_Pivot_Enrichment
 starttaskid: "0"
 tasks:
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "16"
@@ -39,6 +40,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -69,6 +71,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -91,6 +94,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -135,6 +139,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -169,6 +174,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -203,6 +209,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -237,6 +244,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -271,6 +279,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -305,6 +314,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "2"
@@ -338,6 +348,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -381,6 +392,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -424,6 +436,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -467,6 +480,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -510,6 +524,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -554,6 +569,7 @@ tasks:
       type: regular
       iscommand: true
       brand: DomainTools Iris
+      description: ""
     nexttasks:
       '#none#':
       - "12"
@@ -595,3 +611,6 @@ inputs:
   required: false
   description: ""
 outputs: []
+tests:
+- DomainTools Iris - Test
+fromversion: 4.1.0

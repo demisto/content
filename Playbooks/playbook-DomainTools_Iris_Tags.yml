@@ -1,5 +1,5 @@
 id: DomainTools_Iris_Tags
-version: 9
+version: -1
 name: DomainTools_Iris_Tags
 starttaskid: "0"
 tasks:
@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -45,8 +46,6 @@ tasks:
       '#none#':
       - "2"
     scriptarguments:
-      bad_tags:
-        simple: ${lists.tags}
       domain:
         simple: ${inputs.domain}
       domain_tags:
@@ -54,8 +53,6 @@ tasks:
       incident_id:
         simple: ${incident.id}
       malicious_tags:
-        simple: ${lists.tags}
-      tags:
         simple: ${lists.tags}
     separatecontext: false
     view: |-
@@ -101,6 +98,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -142,3 +140,6 @@ outputs:
 - contextPath: domain
   description: domain
   type: unknown
+tests:
+- DomainTools Iris - Test
+fromversion: 4.1.0

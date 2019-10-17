@@ -281,7 +281,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15798,
-                            "value": "185.136.96.66"
+                            "value": "a136.96.66"
                         }
                     ]
                 },
@@ -297,7 +297,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15276,
-                            "value": "185.136.97.66"
+                            "value": "a136.97.66"
                         }
                     ]
                 },
@@ -313,7 +313,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12976,
-                            "value": "185.136.98.66"
+                            "value": "a136.98.66"
                         }
                     ]
                 },
@@ -329,7 +329,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12705,
-                            "value": "185.136.99.66"
+                            "value": "a136.99.66"
                         }
                     ]
                 }
@@ -342,7 +342,7 @@ Get a complete profile of the domain provided.
                 "Email": [
                     {
                         "count": 1,
-                        "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                        "value": "whoisguard.com"
                     }
                 ],
                 "Name": {
@@ -396,7 +396,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 13,
-                            "value": "mxa-00169c01.gslb.pphosted.com"
+                            "value": "ma"
                         },
                         "ip": [
                             {
@@ -413,7 +413,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 12,
-                            "value": "mxb-00169c01.gslb.pphosted.com"
+                            "value": "mb"
                         },
                         "ip": [
                             {
@@ -437,7 +437,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15798,
-                                "value": "185.136.96.66"
+                                "value": "a136.96.66"
                             }
                         ]
                     },
@@ -453,7 +453,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15276,
-                                "value": "185.136.97.66"
+                                "value": "a136.97.66"
                             }
                         ]
                     },
@@ -469,7 +469,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12976,
-                                "value": "185.136.98.66"
+                                "value": "a136.98.66"
                             }
                         ]
                     },
@@ -485,7 +485,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12705,
-                                "value": "185.136.99.66"
+                                "value": "a136.99.66"
                             }
                         ]
                     }
@@ -518,7 +518,7 @@ Get a complete profile of the domain provided.
                 "AdditionalWhoisEmails": [
                     {
                         "count": 18465843,
-                        "value": "abuse@namecheap.com"
+                        "value": "namecheap.com"
                     }
                 ],
                 "AdminContact": {
@@ -529,7 +529,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -554,7 +554,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -569,7 +569,7 @@ Get a complete profile of the domain provided.
                 "RegistrantName": "WhoisGuard Protected",
                 "RegistrantOrg": "WhoisGuard, Inc",
                 "SOAEmail": [
-                    "support@cloudns.net"
+                    "support_cloudns.net"
                 ],
                 "TechnicalContact": {
                     "Country": {
@@ -579,7 +579,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -609,7 +609,7 @@ Get a complete profile of the domain provided.
 ```
 
 ##### Human Readable Output
-##### DomainTools Domain Profile for demisto.com.\n|Name|Last Enriched|Overall Risk Score|Proximity Risk Score|Threat Profile Risk Score|Threat Profile Threats|Threat Profile Evidence|Website Response Code|Alexa Rank|Tags|Registrant Name|Registrant Org|Registrant Contact|SOA Email|SSL Certificate Email|Admin Contact|Technical Contact|Billing Contact|Email Domains|Additional Whois Emails|Domain Registrant|Registrar Status|Domain Status|Create Date|Expiration Date|IP Addresses|IP Country Code|Mail Servers|SPF Record|Name Servers|SSL Certificate|Redirects To|Google Adsense Tracking Code|Google Analytic Tracking Code|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|demisto.com|2019-10-10|33|33|0|||500|326569||WhoisGuard Protected|WhoisGuard, Inc|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|support@cloudns.net||Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect@whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": null, \"count\": 0}<br>Email: null<br>Name: {\"value\": null, \"count\": 0}<br>Phone: {\"value\": null, \"count\": 0}|cloudns.net,<br>namecheap.com,<br>whoisguard.com|{'value': 'abuse@namecheap.com', 'count': 18388844}|NAMECHEAP INC,NAMECHEAP, INC|clientTransferProhibited|true|2015-01-16|2026-01-16|{'address': {'value': '104.196.188.170', 'count': 121}, 'asn': [{'value': 15169, 'count': 13931803}], 'country_code': {'value': 'us', 'count': 295509125}, 'isp': {'value': 'Google Inc.', 'count': 2092359}}|address: {\"value\": \"104.196.188.170\", \"count\": 121}<br>asn: {'value': 15169, 'count': 13931803}<br>country_code: {\"value\": \"us\", \"count\": 295509125}<br>isp: {\"value\": \"Google Inc.\", \"count\": 2092359}|{'host': {'value': 'mxa-00169c01.gslb.pphosted.com', 'count': 13}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.148.124', 'count': 10}], 'priority': 10},<br>{'host': {'value': 'mxb-00169c01.gslb.pphosted.com', 'count': 12}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.156.123', 'count': 12}], 'priority': 10}|v=spf1 mx include:spf.protection.outlook.com include:spf.autopilothq.com include:sendgrid.net -all|{'host': {'value': 'pns31.cloudns.net', 'count': 10798}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': '185.136.96.66', 'count': 15398}]},<br>{'host': {'value': 'pns32.cloudns.net', 'count': 10323}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': '185.136.97.66', 'count': 14881}]},<br>{'host': {'value': 'pns33.cloudns.net', 'count': 9776}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': '185.136.98.66', 'count': 12689}]},<br>{'host': {'value': 'pns34.cloudns.net', 'count': 9736}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': '185.136.99.66', 'count': 12410}]}|{'hash': {'value': '7fed20410a1eb258c540f9c08ac7d361a9abd505', 'count': 1}, 'subject': {'value': 'CN=www.demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None},<br>{'hash': {'value': '36cbf4ec8b46e8baadaf4a9895d7dec7af7f138e', 'count': 1}, 'subject': {'value': 'CN=demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None}|value: null<br>count: 0|||\n
+##### DomainTools Domain Profile for demisto.com.\n|Name|Last Enriched|Overall Risk Score|Proximity Risk Score|Threat Profile Risk Score|Threat Profile Threats|Threat Profile Evidence|Website Response Code|Alexa Rank|Tags|Registrant Name|Registrant Org|Registrant Contact|SOA Email|SSL Certificate Email|Admin Contact|Technical Contact|Billing Contact|Email Domains|Additional Whois Emails|Domain Registrant|Registrar Status|Domain Status|Create Date|Expiration Date|IP Addresses|IP Country Code|Mail Servers|SPF Record|Name Servers|SSL Certificate|Redirects To|Google Adsense Tracking Code|Google Analytic Tracking Code|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|demisto.com|2019-10-10|33|33|0|||500|326569||WhoisGuard Protected|WhoisGuard, Inc|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|support_cloudns.net||Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": null, \"count\": 0}<br>Email: null<br>Name: {\"value\": null, \"count\": 0}<br>Phone: {\"value\": null, \"count\": 0}|cloudns.net,<br>namecheap.com,<br>whoisguard.com|{'value': 'abuse_namecheap.com', 'count': 18388844}|NAMECHEAP INC,NAMECHEAP, INC|clientTransferProhibited|true|2015-01-16|2026-01-16|{'address': {'value': '104.196.188.170', 'count': 121}, 'asn': [{'value': 15169, 'count': 13931803}], 'country_code': {'value': 'us', 'count': 295509125}, 'isp': {'value': 'Google Inc.', 'count': 2092359}}|address: {\"value\": \"104.196.188.170\", \"count\": 121}<br>asn: {'value': 15169, 'count': 13931803}<br>country_code: {\"value\": \"us\", \"count\": 295509125}<br>isp: {\"value\": \"Google Inc.\", \"count\": 2092359}|{'host': {'value': 'ma', 'count': 13}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.148.124', 'count': 10}], 'priority': 10},<br>{'host': {'value': 'mb', 'count': 12}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.156.123', 'count': 12}], 'priority': 10}|v=spf1 mx include:spf.protection.outlook.com include:spf.autopilothq.com include:sendgrid.net -all|{'host': {'value': 'pns31.cloudns.net', 'count': 10798}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.96.66', 'count': 15398}]},<br>{'host': {'value': 'pns32.cloudns.net', 'count': 10323}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.97.66', 'count': 14881}]},<br>{'host': {'value': 'pns33.cloudns.net', 'count': 9776}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.98.66', 'count': 12689}]},<br>{'host': {'value': 'pns34.cloudns.net', 'count': 9736}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.99.66', 'count': 12410}]}|{'hash': {'value': '7fed20410a1eb258c540f9c08ac7d361a9abd505', 'count': 1}, 'subject': {'value': 'CN=www.demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None},<br>{'hash': {'value': '36cbf4ec8b46e8baadaf4a9895d7dec7af7f138e', 'count': 1}, 'subject': {'value': 'CN=demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None}|value: null<br>count: 0|||\n
 
 ### 2. domaintoolsiris-analytics
 ---
@@ -860,7 +860,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15798,
-                            "value": "185.136.96.66"
+                            "value": "a136.96.66"
                         }
                     ]
                 },
@@ -876,7 +876,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15276,
-                            "value": "185.136.97.66"
+                            "value": "a136.97.66"
                         }
                     ]
                 },
@@ -892,7 +892,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12976,
-                            "value": "185.136.98.66"
+                            "value": "a136.98.66"
                         }
                     ]
                 },
@@ -908,7 +908,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12705,
-                            "value": "185.136.99.66"
+                            "value": "a136.99.66"
                         }
                     ]
                 }
@@ -921,7 +921,7 @@ Get a complete profile of the domain provided.
                 "Email": [
                     {
                         "count": 1,
-                        "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                        "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                     }
                 ],
                 "Name": {
@@ -975,7 +975,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 13,
-                            "value": "mxa-00169c01.gslb.pphosted.com"
+                            "value": "ma"
                         },
                         "ip": [
                             {
@@ -992,7 +992,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 12,
-                            "value": "mxb-00169c01.gslb.pphosted.com"
+                            "value": "mb"
                         },
                         "ip": [
                             {
@@ -1016,7 +1016,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15798,
-                                "value": "185.136.96.66"
+                                "value": "a136.96.66"
                             }
                         ]
                     },
@@ -1032,7 +1032,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15276,
-                                "value": "185.136.97.66"
+                                "value": "a136.97.66"
                             }
                         ]
                     },
@@ -1048,7 +1048,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12976,
-                                "value": "185.136.98.66"
+                                "value": "a136.98.66"
                             }
                         ]
                     },
@@ -1064,7 +1064,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12705,
-                                "value": "185.136.99.66"
+                                "value": "a136.99.66"
                             }
                         ]
                     }
@@ -1097,7 +1097,7 @@ Get a complete profile of the domain provided.
                 "AdditionalWhoisEmails": [
                     {
                         "count": 18465843,
-                        "value": "abuse@namecheap.com"
+                        "value": "abuse_namecheap.com"
                     }
                 ],
                 "AdminContact": {
@@ -1108,7 +1108,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1133,7 +1133,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1148,7 +1148,7 @@ Get a complete profile of the domain provided.
                 "RegistrantName": "WhoisGuard Protected",
                 "RegistrantOrg": "WhoisGuard, Inc",
                 "SOAEmail": [
-                    "support@cloudns.net"
+                    "support_cloudns.net"
                 ],
                 "TechnicalContact": {
                     "Country": {
@@ -1158,7 +1158,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1438,7 +1438,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15798,
-                            "value": "185.136.96.66"
+                            "value": "a136.96.66"
                         }
                     ]
                 },
@@ -1454,7 +1454,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 15276,
-                            "value": "185.136.97.66"
+                            "value": "a136.97.66"
                         }
                     ]
                 },
@@ -1470,7 +1470,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12976,
-                            "value": "185.136.98.66"
+                            "value": "a136.98.66"
                         }
                     ]
                 },
@@ -1486,7 +1486,7 @@ Get a complete profile of the domain provided.
                     "ip": [
                         {
                             "count": 12705,
-                            "value": "185.136.99.66"
+                            "value": "a136.99.66"
                         }
                     ]
                 }
@@ -1499,7 +1499,7 @@ Get a complete profile of the domain provided.
                 "Email": [
                     {
                         "count": 1,
-                        "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                        "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                     }
                 ],
                 "Name": {
@@ -1553,7 +1553,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 13,
-                            "value": "mxa-00169c01.gslb.pphosted.com"
+                            "value": "ma"
                         },
                         "ip": [
                             {
@@ -1570,7 +1570,7 @@ Get a complete profile of the domain provided.
                         },
                         "host": {
                             "count": 12,
-                            "value": "mxb-00169c01.gslb.pphosted.com"
+                            "value": "mb"
                         },
                         "ip": [
                             {
@@ -1594,7 +1594,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15798,
-                                "value": "185.136.96.66"
+                                "value": "a136.96.66"
                             }
                         ]
                     },
@@ -1610,7 +1610,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 15276,
-                                "value": "185.136.97.66"
+                                "value": "a136.97.66"
                             }
                         ]
                     },
@@ -1626,7 +1626,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12976,
-                                "value": "185.136.98.66"
+                                "value": "a136.98.66"
                             }
                         ]
                     },
@@ -1642,7 +1642,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 12705,
-                                "value": "185.136.99.66"
+                                "value": "a136.99.66"
                             }
                         ]
                     }
@@ -1675,7 +1675,7 @@ Get a complete profile of the domain provided.
                 "AdditionalWhoisEmails": [
                     {
                         "count": 18465843,
-                        "value": "abuse@namecheap.com"
+                        "value": "abuse_namecheap.com"
                     }
                 ],
                 "AdminContact": {
@@ -1686,7 +1686,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1711,7 +1711,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1726,7 +1726,7 @@ Get a complete profile of the domain provided.
                 "RegistrantName": "WhoisGuard Protected",
                 "RegistrantOrg": "WhoisGuard, Inc",
                 "SOAEmail": [
-                    "support@cloudns.net"
+                    "support_cloudns.net"
                 ],
                 "TechnicalContact": {
                     "Country": {
@@ -1736,7 +1736,7 @@ Get a complete profile of the domain provided.
                     "Email": [
                         {
                             "count": 1,
-                            "value": "5be9245893ff486d98c3640879bb2657.protect@whoisguard.com"
+                            "value": "5be9245893ff486d98c3640879bb2657.protect_whoisguard.com"
                         }
                     ],
                     "Name": {
@@ -1921,7 +1921,7 @@ Get a complete profile of the domain provided.
 | DomainTools.PivotedDomains.Hosting.GoogleAdsenseTrackingCode | Unknown | Google Adsense Tracking Code | 
 | DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode | Unknown | Google Analytics Tracking Code | 
 ##### Command Example
-`!domaintoolsiris-pivot ip=104.196.188.170`
+`!domaintoolsiris-pivot nameserver_host=demisto.com`
 
 ##### Context Example
 ```
@@ -1940,7 +1940,7 @@ Get a complete profile of the domain provided.
                         {
                             "address": {
                                 "count": 122,
-                                "value": "104.196.188.170"
+                                "value": "a196.188.170"
                             },
                             "asn": [
                                 {
@@ -1960,7 +1960,7 @@ Get a complete profile of the domain provided.
                         {
                             "address": {
                                 "count": 99,
-                                "value": "185.56.85.186"
+                                "value": "a56.85.186"
                             },
                             "asn": [
                                 {
@@ -1992,7 +1992,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 862144,
-                                    "value": "204.141.42.121"
+                                    "value": "a141.42.121"
                                 }
                             ],
                             "priority": 10
@@ -2009,7 +2009,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 755176,
-                                    "value": "204.141.32.121"
+                                    "value": "a141.32.121"
                                 }
                             ],
                             "priority": 20
@@ -2026,7 +2026,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 424379,
-                                    "value": "204.141.42.52"
+                                    "value": "a141.42.52"
                                 }
                             ],
                             "priority": 50
@@ -2045,7 +2045,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 91063,
-                                    "value": "217.160.81.75"
+                                    "value": "a160.81.75"
                                 }
                             ]
                         },
@@ -2061,7 +2061,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 91207,
-                                    "value": "217.160.82.75"
+                                    "value": "a160.82.75"
                                 }
                             ]
                         },
@@ -2077,7 +2077,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 91493,
-                                    "value": "217.160.80.75"
+                                    "value": "a160.80.75"
                                 }
                             ]
                         },
@@ -2093,7 +2093,7 @@ Get a complete profile of the domain provided.
                             "ip": [
                                 {
                                     "count": 90920,
-                                    "value": "217.160.83.75"
+                                    "value": "a160.83.75"
                                 }
                             ]
                         }
@@ -2126,7 +2126,7 @@ Get a complete profile of the domain provided.
                     "AdditionalWhoisEmails": [
                         {
                             "count": 4947783,
-                            "value": "abuse@ionos.com"
+                            "value": "abuse_ionos.com"
                         }
                     ],
                     "AdminContact": {
@@ -2137,7 +2137,7 @@ Get a complete profile of the domain provided.
                         "Email": [
                             {
                                 "count": 1226106,
-                                "value": "privacy@1and1.com"
+                                "value": "privacy_1and1.com"
                             }
                         ],
                         "Name": {
@@ -2157,7 +2157,7 @@ Get a complete profile of the domain provided.
                         "Email": [
                             {
                                 "count": 1226084,
-                                "value": "privacy@1and1.com"
+                                "value": "1and1.com"
                             }
                         ],
                         "Name": {
@@ -2172,7 +2172,7 @@ Get a complete profile of the domain provided.
                     "RegistrantName": "Oneandone Private Registration",
                     "RegistrantOrg": "1&1 Internet Inc",
                     "SOAEmail": [
-                        "hostmaster@1and1.com"
+                        "1and1.com"
                     ],
                     "TechnicalContact": {
                         "Country": {
@@ -2182,7 +2182,7 @@ Get a complete profile of the domain provided.
                         "Email": [
                             {
                                 "count": 1226096,
-                                "value": "privacy@1and1.com"
+                                "value": "1and1.com"
                             }
                         ],
                         "Name": {
@@ -2208,7 +2208,7 @@ Get a complete profile of the domain provided.
 ```
 
 ##### Human Readable Output
-##### Domains for IP: 104.196.188.170.\n|Domains|\n|---|\n|8lock.co|\n|8lock.io|\n|9thcircuitcriminalcases.com|\n|abclawcenters.com|\n|abogadoayudany.com|\n|abqnorthstorage.com|\n|aclassmegastorage.com|\n|actua.pe|\n|adfconverter.com|\n|agmednet.com|\n|alabamatortlaw.com|\n|alliioop.com|\n|americanaddictionfoundation.com|\n|americanrotors.com|\n|apmlawyers.com|\n|archstonelaw.com|\n|arthurbayrvpark.com|\n|auraexperiences.com|\n|babcocklegal.com|\n|balancednutritionwny.com|\n|batchesmke.com|\n|bigroomstudios.com|\n|bila.ca|\n|bilac.ca|\n|birthinjuryexperts.com|\n|brr-law.com|\n|capandkudler.com|\n|carlaleader.com|\n|carsonfootwear.com|\n|charlotteinsurance.com|\n|cincinnatieducationlaw.com|\n|cooperagemke.com|\n|crownasset.com|\n|crucialpointllc.com|\n|ctovision.com|\n|customhroservices.com|\n|dandanmke.com|\n|decaleco.com|\n|demisto.com|\n|demysto.com|\n|dewshilaw.ca|\n|directfuel.net|\n|diversifiedauto.com|\n|donaldsonlaw.com|\n|dovermiller.com|\n|dstlintelligence.com|\n|eleanoramagazine.com|\n|esterev.com|\n|evergreenredbarn.com|\n|federalforfeitureguide.com|\n|finlayllc.com|\n|forecite.com|\n|happydragonthriftshop.org|\n|hempcocanada.com|\n|jameseducationcenter.com|\n|jamespublishing.com|\n|jamestoolbox.com|\n|joinappa.com|\n|kaelfoods.com|\n|kissmetricshq.com|\n|kristaliney.com|\n|kycriminaldefense.com|\n|lloydjonescapital.com|\n|lloydjonesinvest.com|\n|lloydjonesinvestments.com|\n|lloydjonesllc.com|\n|lutco.com|\n|makeithome.net|\n|marcellaallison.com|\n|marylandfamiliesengage.org|\n|mccormickkennedy.com|\n|motherson-ossia.com|\n|mothersonossia.com|\n|nanadecals.com|\n|nikolanews.com|\n|noizchain.com|\n|ocpmgmt.com|\n|oheleanora.com|\n|omnisole.com|\n|orthopediccarepartners.com|\n|pacificmedicallaw.ca|\n|parentalguidance.com|\n|portsideautorepair.com|\n|portsidetruckrepair.com|\n|precisionmedicalbilling.com|\n|proautotran.com|\n|productengagementstack.com|\n|proficientautotransport.com|\n|proficientautotransport.net|\n|pspp.org|\n|rdairways.com|\n|rengalaxy.com|\n|rivetinc.org|\n|segalaslawfirm.com|\n|sentencingcases.com|\n|shariaportfolio.ca|\n|shariaportfolio.com|\n|shikistitches.com|\n|simonbrosroofing.com|\n|skihouseswap.com|\n|spacepencil.com|\n|stuffmadein.com|\n|stuffmadeinct.com|\n|stuffmadeinma.com|\n|stuffmadeinme.com|\n|stuffmadeinnh.com|\n|theargyle.org|\n|therawragency.com|\n|thingscyber.com|\n|threatbrief.com|\n|tinrx.com|\n|toi-health.com|\n|unicornthrift.com|\n|unicornthriftshop.com|\n|upconstructionllc.com|\n|upliftfs.org|\n|vroom.training|\n|washingtondcsouth.com|\n|weddingrings.com.ph|\n|welleryou.com|\n|youngamericatrading.com|\n
+##### Domains for NameServer Host Name: demisto.com.\n|Domains|\n|---|\n|8lock.co|\n|8lock.io|\n|9thcircuitcriminalcases.com|\n|abclawcenters.com|\n|abogadoayudany.com|\n|abqnorthstorage.com|\n|aclassmegastorage.com|\n|actua.pe|\n|adfconverter.com|\n|agmednet.com|\n|alabamatortlaw.com|\n|alliioop.com|\n|americanaddictionfoundation.com|\n|americanrotors.com|\n|apmlawyers.com|\n|archstonelaw.com|\n|arthurbayrvpark.com|\n|auraexperiences.com|\n|babcocklegal.com|\n|balancednutritionwny.com|\n|batchesmke.com|\n|bigroomstudios.com|\n|bila.ca|\n|bilac.ca|\n|birthinjuryexperts.com|\n|brr-law.com|\n|capandkudler.com|\n|carlaleader.com|\n|carsonfootwear.com|\n|charlotteinsurance.com|\n|cincinnatieducationlaw.com|\n|cooperagemke.com|\n|crownasset.com|\n|crucialpointllc.com|\n|ctovision.com|\n|customhroservices.com|\n|dandanmke.com|\n|decaleco.com|\n|demisto.com|\n|demysto.com|\n|dewshilaw.ca|\n|directfuel.net|\n|diversifiedauto.com|\n|donaldsonlaw.com|\n|dovermiller.com|\n|dstlintelligence.com|\n|eleanoramagazine.com|\n|esterev.com|\n|evergreenredbarn.com|\n|federalforfeitureguide.com|\n|finlayllc.com|\n|forecite.com|\n|happydragonthriftshop.org|\n|hempcocanada.com|\n|jameseducationcenter.com|\n|jamespublishing.com|\n|jamestoolbox.com|\n|joinappa.com|\n|kaelfoods.com|\n|kissmetricshq.com|\n|kristaliney.com|\n|kycriminaldefense.com|\n|lloydjonescapital.com|\n|lloydjonesinvest.com|\n|lloydjonesinvestments.com|\n|lloydjonesllc.com|\n|lutco.com|\n|makeithome.net|\n|marcellaallison.com|\n|marylandfamiliesengage.org|\n|mccormickkennedy.com|\n|motherson-ossia.com|\n|mothersonossia.com|\n|nanadecals.com|\n|nikolanews.com|\n|noizchain.com|\n|ocpmgmt.com|\n|oheleanora.com|\n|omnisole.com|\n|orthopediccarepartners.com|\n|pacificmedicallaw.ca|\n|parentalguidance.com|\n|portsideautorepair.com|\n|portsidetruckrepair.com|\n|precisionmedicalbilling.com|\n|proautotran.com|\n|productengagementstack.com|\n|proficientautotransport.com|\n|proficientautotransport.net|\n|pspp.org|\n|rdairways.com|\n|rengalaxy.com|\n|rivetinc.org|\n|segalaslawfirm.com|\n|sentencingcases.com|\n|shariaportfolio.ca|\n|shariaportfolio.com|\n|shikistitches.com|\n|simonbrosroofing.com|\n|skihouseswap.com|\n|spacepencil.com|\n|stuffmadein.com|\n|stuffmadeinct.com|\n|stuffmadeinma.com|\n|stuffmadeinme.com|\n|stuffmadeinnh.com|\n|theargyle.org|\n|therawragency.com|\n|thingscyber.com|\n|threatbrief.com|\n|tinrx.com|\n|toi-health.com|\n|unicornthrift.com|\n|unicornthriftshop.com|\n|upconstructionllc.com|\n|upliftfs.org|\n|vroom.training|\n|washingtondcsouth.com|\n|weddingrings.com.ph|\n|welleryou.com|\n|youngamericatrading.com|\n
 
 ## Additional Information
 ---
