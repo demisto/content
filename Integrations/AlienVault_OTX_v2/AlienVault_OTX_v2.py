@@ -95,7 +95,7 @@ def create_list_by_ec(list_entries: list, list_type: str) -> list:
             return ({
                 'Hostname': entry.get('hostname'),
                 'IP': entry.get('address'),
-                'Type:': entry.get('asset_type'),
+                'Type': entry.get('asset_type'),
                 'FirstSeen': entry.get('first'),
                 'LastSeen': entry.get('last')
             })
@@ -158,21 +158,21 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 
 
 @logger
-def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for IP details
+def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, Dict, Dict]:
+    """ Enrichment for IPv4/IPv6
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        ip_address: ip address
+        ip_version: IPv4 or IPv6
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
-    raw_response = client.query(section=query_dict.get('ip_version'),
-                                argument=query_dict.get('ip_address'))
+    raw_response = client.query(section=ip_version,
+                                argument=ip_address)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - Results for {query_dict.get("ip_version")} query'
+        title = f'{INTEGRATION_NAME} - Results for {ip_version} query'
         context_entry: dict = {
             'IP': {
                 'Address': raw_response.get('indicator'),
@@ -188,18 +188,18 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             'AlienVaultOTX': {
                 'IP': {
                     'Reputation': raw_response.get('reputation'),
-                    'IP': query_dict.get('ip_address')
+                    'IP': ip_address
                 }
             },
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
-                'Type': query_dict.get('ip_version'),
+                'Type': ip_version,
                 'Vendor': 'AlienVault OTX v2'
             }
         }
 
-        human_readable = tableToMarkdown(t={**context.get('IP', {}),
+        human_readable = tableToMarkdown(t={**context_entry.get('IP', {}),
                                             'Reputation': context.get('AlienVaultOTX', {}).get('IP', {}).get('Reputation')},
                                          name=title)
         return human_readable, context, raw_response
@@ -208,8 +208,8 @@ def ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for domain details
+def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Dict]:
+    """Enrichment for domain
 
     Args:
         client: Client object with request
@@ -218,9 +218,8 @@ def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='domain',
-                                argument=query_dict.get('domain'))
+                                argument=domain)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Domain query'
         context_entry: dict = {
@@ -253,22 +252,21 @@ def domain_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for file hash details
+def file_command(client: Client, file: str) -> Tuple[str, Dict, Dict]:
+    """Enrichment for file hash MD5/SHA1/SHA256
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        file: File hash MD5/SHA1/SHA256
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response_analysis = client.query(section='file',
-                                         argument=query_dict.get('file'),
+                                         argument=file,
                                          sub_section='analysis')
     raw_response_general = client.query(section='file',
-                                        argument=query_dict.get('file'))
+                                        argument=file)
     if raw_response_analysis and raw_response_general:
         title = f'{INTEGRATION_NAME} - Results for File hash query'
         shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
@@ -303,19 +301,18 @@ def file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for url details
+def url_command(client: Client, url: str) -> Tuple[str, Dict, Dict]:
+    """Enrichment for url
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        url:  url address
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='url',
-                                argument=query_dict.get('url'))
+                                argument=url)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for url query'
         context_entry: dict = {
@@ -327,7 +324,7 @@ def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             f'URL(val.URL.Data === obj.URL.Data)': context_entry.get('URL'),
             'AlienVaultOTX': {
                 'URL': {
-                    'Url': query_dict.get('url'),
+                    'Url': url,
                     'Hostname': raw_response.get('hostname'),
                     'Domain': raw_response.get('domain'),
                     'Alexa': raw_response.get('alexa'),
@@ -351,19 +348,18 @@ def url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 @logger
-def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[str, Dict, Dict]:
     """Search for hostname details
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        hostname: hostname address
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='hostname',
-                                argument=query_dict.get('hostname'))
+                                argument=hostname)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
@@ -395,25 +391,24 @@ def alienvault_search_hostname_command(client: Client, args: Dict) -> Tuple[str,
 
 
 @logger
-def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for cve by id
+def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dict, Dict]:
+    """Get Common Vulnerabilities and Exposures by id
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        cve_id: CVE id
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='cve',
-                                argument=query_dict.get('cve_id'))
+                                argument=cve_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context_entry: dict = {
             'CVE': {
                 'ID': raw_response.get('indicator'),
-                'CVSS': raw_response.get('cvss', {}).get('Score') if raw_response.get('cvss') else None,
+                'CVSS': raw_response.get('cvss', {}).get('Score'),
                 'Published': raw_response.get('date_created'),
                 'Modified': raw_response.get('date_modified'),
                 'Description': raw_response.get('description')
@@ -437,19 +432,20 @@ def alienvault_search_cve_command(client: Client, args: Dict) -> Tuple[str, Dict
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for related url by indicator
+def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+        -> Tuple[str, Dict, Dict]:
+    """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        indicator_type: IPv4,IPv6,domain,hostname,url
+        indicator: indicator its self (google.com)
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
-    raw_response = client.query(section=query_dict.get('indicator_type'),
-                                argument=query_dict.get('indicator'),
+    raw_response = client.query(section=indicator_type,
+                                argument=indicator,
                                 sub_section='url_list')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
@@ -467,19 +463,20 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, args: Dict)
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for related file hashes by indicator
+def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+        -> Tuple[str, Dict, Dict]:
+    """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
+       Args:
+           client: Client object with request
+           indicator_type: IPv4,IPv6,domain,hostname
+           indicator: indicator its self (google.com)
 
-    Returns:
-        Outputs
-    """
-    query_dict = assign_params(**args)
-    raw_response = client.query(section=query_dict.get('indicator_type'),
-                                argument=query_dict.get('indicator'),
+       Returns:
+           Outputs
+       """
+    raw_response = client.query(section=indicator_type,
+                                argument=indicator,
                                 sub_section='malware')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
@@ -497,28 +494,30 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, args: Dic
 
 
 @logger
-def alienvault_get_passive_dns_data_by_indicator_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for related passive dns date by indicator
+def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str)\
+        -> Tuple[str, Dict, Dict]:
+    """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
+       Args:
+           client: Client object with request
+           indicator_type: IPv4,IPv6,domain,hostname
+           indicator: indicator its self (google.com)
 
-    Returns:
-        Outputs
-    """
-    query_dict = assign_params(**args)
-    raw_response = client.query(section=query_dict.get('indicator_type'),
-                                argument=query_dict.get('indicator'),
+       Returns:
+           Outputs
+       """
+    raw_response = client.query(section=indicator_type,
+                                argument=indicator,
                                 sub_section='passive_dns')
     if raw_response:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
         context: dict = {
             'AlienVaultOTX': {
-                'PassiveDNS': create_list_by_ec(list_entries=raw_response.get('passive_dns', {}), list_type='passive_dns')
+                'PassiveDNS': create_list_by_ec(list_entries=raw_response.get('passive_dns', {}),
+                                                list_type='passive_dns')
             }
         }
-        human_readable = tableToMarkdown(t=context.get('PassiveDNS'),
+        human_readable = tableToMarkdown(t=context.get('AlienVaultOTX', {}).get('PassiveDNS'),
                                          name=title)
 
         return human_readable, context, raw_response
@@ -527,22 +526,21 @@ def alienvault_get_passive_dns_data_by_indicator_command(client: Client, args: D
 
 
 @logger
-def alienvault_search_pulses_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Search for pulses
+def alienvault_search_pulses_command(client: Client, page: str) -> Tuple[str, Dict, Dict]:
+    """Get pulse page by number of the page
 
     Args:
         client: Client object with request
-        args:  demisto.args()
+        page: pulse page number
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='search',
                                 sub_section='pulses',
-                                params={'page': query_dict.get('page')})
+                                params={'page': page})
     if raw_response:
-        title = f'{INTEGRATION_NAME} - pulse page {query_dict.get("page")}'
+        title = f'{INTEGRATION_NAME} - pulse page {page}'
         context: dict = {
             'AlienVaultOTX': {
                 'Pulses': [create_pulse_by_ec(entry) for entry in raw_response.get('results', {})]
@@ -557,19 +555,18 @@ def alienvault_search_pulses_command(client: Client, args: Dict) -> Tuple[str, D
 
 
 @logger
-def alienvault_get_pulse_details_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """get pulse details
+def alienvault_get_pulse_details_command(client: Client, pulse_id: str) -> Tuple[str, Dict, Dict]:
+    """Get pulse by ID
 
     Args:
         client: Client object with request
-        args:  demisto.args()
+        pulse_id: pulse ID
 
     Returns:
         Outputs
     """
-    query_dict = assign_params(**args)
     raw_response = client.query(section='pulses',
-                                argument=query_dict.get('pulse_id'))
+                                argument=pulse_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - pulse id details'
         context: dict = {
@@ -628,13 +625,15 @@ def main():
     }
     try:
         if command == f'{INTEGRATION_COMMAND_NAME}-search-ipv6':
-            readable_output, outputs, raw_response = commands[command](client, {'ip_address': demisto.args().get('ip'),
-                                                                                'ip_version': 'IPv6'})
+            readable_output, outputs, raw_response = commands[command](client=client,
+                                                                       ip_address=demisto.args().get('ip'),
+                                                                       ip_version='IPv6')
         elif command == 'ip':
-            readable_output, outputs, raw_response = commands[command](client, {'ip_address': demisto.args().get('ip'),
-                                                                                'ip_version': 'IPv4'})
+            readable_output, outputs, raw_response = commands[command](client=client,
+                                                                       ip_address=demisto.args().get('ip'),
+                                                                       ip_version='IPv4')
         else:
-            readable_output, outputs, raw_response = commands[command](client, demisto.args())
+            readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
         return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
