@@ -429,8 +429,8 @@ def users_to_entry(title, response, nex_page_token=None):
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
     if nex_page_token:
-        human_readable = human_readable + "\nTo get further results, rerun the command with this page-token:\n" + \
-                         nex_page_token
+        human_readable = human_readable \
+                         + "\nTo get further results, rerun the command with this page-token:\n" + nex_page_token
 
     return {
         'ContentsFormat': formats['json'],
@@ -913,22 +913,14 @@ def get_user_tokens(user_id):
 
 
 def search_all_mailboxes():
-    next_page_token = 1
+    next_page_token = None
     service = get_service('admin', 'directory_v1')
-    while next_page_token is not None:
-        # first run - no nextPageToken in args
-        if next_page_token == 1:
-            command_args = {
-                'maxResults': 100,
-                'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            }
-
-        else:
-            command_args = {
-                'maxResults': 100,
-                'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-                'pageToken': next_page_token
-            }
+    while True:
+        command_args = {
+            'maxResults': 100,
+            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
+            'pageToken': next_page_token
+        }
 
         result = service.users().list(**command_args).execute()
         next_page_token = result.get('nextPageToken')
