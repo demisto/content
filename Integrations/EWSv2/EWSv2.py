@@ -1438,7 +1438,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     if selected_all_fields:
         restricted_fields = list(map(lambda x: x.name, Message.FIELDS))
     else:
-        restricted_fields = set(argToList(selected_fields))
+        restricted_fields = set(argToList(selected_fields))  # type: set
         restricted_fields.update(['id', 'message_id'])
 
     for folder in folders:
