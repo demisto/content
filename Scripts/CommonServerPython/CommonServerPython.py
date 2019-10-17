@@ -2380,7 +2380,138 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
+    class BaseClientSession(BaseClient):
+        def __init__(self, base_url, *args, **kwargs):
+            self._session = requests.Session()
+            super().__init__(base_url, *args, **kwargs)
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None,
+                          auth=None, json_data=None, params=None, data=None, files=None,
+                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+            """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+            :type auth: ``tuple``
+            :param auth:
+                The authorization tuple (usually username/password) to enable Basic/Digest/Custom HTTP Auth.
+                if None, will use self._auth.
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+            :type json_data: ``dict``
+            :param json_data: The dictionary to send in a 'POST' request.
+
+            :type files: ``dict``
+            :param files: The file data to send in a 'POST' request.
+
+            :type timeout: ``float``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use self._ok_codes.
+
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``requests.Response``
+            """
+            try:
+                # Replace params if supplied
+                address = full_url if full_url else self._base_url + url_suffix
+                headers = headers if headers else self._headers
+                auth = auth if auth else self._auth
+                # Execute
+                res = self._session.request(
+                    method,
+                    address,
+                    verify=self._verify,
+                    params=params,
+                    data=data,
+                    json=json_data,
+                    files=files,
+                    headers=headers,
+                    auth=auth,
+                    timeout=timeout,
+                    proxies=self._proxies,
+                    **kwargs
+                )
+                # Handle error responses gracefully
+                if not self._is_status_code_valid(res, ok_codes):
+                    err_msg = 'Error in API call [{}] - {}' \
+                        .format(res.status_code, res.reason)
+                    try:
+                        # Try to parse json error response
+                        error_entry = res.json()
+                        err_msg += '\n{}'.format(error_entry)
+                        raise DemistoException(err_msg)
+                    except ValueError as exception:
+                        raise DemistoException(err_msg, exception)
+
+                resp_type = resp_type.lower()
+                try:
+                    if resp_type == 'json':
+                        return res.json()
+                    if resp_type == 'text':
+                        return res.text
+                    if resp_type == 'content':
+                        return res.content
+                    if resp_type == 'xml':
+                        ET.parse(res.text)
+                    return res
+                except ValueError as exception:
+                    raise DemistoException('Failed to parse json object from response: {}'
+                                           .format(res.content), exception)
+            except requests.exceptions.ConnectTimeout as exception:
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.SSLError as exception:
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ProxyError as exception:
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ConnectionError as exception:
+                # Get originating Exception in Exception chain
+                error_class = str(exception.__class__)
+                err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+                err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                          'Verify that the server URL parameter' \
+                          ' is correct and that you have access to the server from your host.' \
+                    .format(err_type, exception.errno, exception.strerror)
+                raise DemistoException(err_msg, exception)
+
 
 
 class DemistoException(Exception):
     pass
+
+
