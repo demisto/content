@@ -1,9 +1,9 @@
 import sys
-# ARIA PacketIntelligence SOAR API #
+import demistomock as demisto
+from CommonServerPython import *
 import json
 import requests
 import time
-
 
 class ParameterError(Exception):
     """ Raised when the function parameters do not meet requirements """
@@ -12,54 +12,9 @@ class ParameterError(Exception):
 
 class ARIA(object):
 
-    def __init__(self):
-        self._sdso_url = ""
-        self._api_token = ""
+    def __init__(self, sdso_url: str):
+        self.sdso_url = sdso_url
         self.time_out = 20
-
-    @property
-    def sdso_url(self) -> str:
-        """ Getter function of property sdso_url
-
-        Returns:
-            String of sdso_url.
-
-        """
-        return self._sdso_url
-
-    @property
-    def api_token(self) -> str:
-        """ Getter function of property api_token
-
-        Returns:
-            String of api_token.
-
-        """
-        return self._api_token
-
-    @sdso_url.setter
-    def sdso_url(self, url: str):
-        """ Setter function of property sdso_url
-
-        Args:
-            url: SDSo endpoint url.
-
-        Returns:
-
-        """
-        self._sdso_url = url
-
-    @api_token.setter
-    def api_token(self, key: str):
-        """ Setter function of property api_token
-
-        Args:
-            key: API authentication token.
-
-        Returns:
-
-        """
-        self._api_token = key
 
     """HELPER FUNCTION"""
 
@@ -130,17 +85,17 @@ class ARIA(object):
         if not port_range:
             port_range = '0-65535'  # default port_range value
 
-        arr = port_range.replace(' ', '').split(',')
+        split_port_range = port_range.replace(' ', '').split(',')
 
         res = ''
 
-        for i in arr:
-            if len(res) != 0:
+        for port in split_port_range:
+            if res:
                 res = res + ', '
 
-            if '-' in i:
-                beg = i.replace(' ', '').split('-')[0]
-                end = i.replace(' ', '').split('-')[1]
+            if '-' in port:
+
+                beg, end = port.replace(' ', '').split('-')
 
                 for j in beg, end:
                     if int(j) < 0 or int(j) > 65535:
@@ -149,11 +104,11 @@ class ARIA(object):
                 if int(beg) > int(end):
                     raise ValueError('Wrong port range format!')
 
-                res = res + beg + ' - ' + end
+                res += beg + ' - ' + end
             else:
-                if int(i) < 0 or int(i) > 65535:
+                if int(port) < 0 or int(port) > 65535:
                     raise ValueError('Port must be in 0-65535!')
-                res = res + i
+                res += port
 
         return res
 
@@ -176,19 +131,18 @@ class ARIA(object):
         ip_str = ip.replace(' ', '')
 
         if '/' in ip_str:
-            netmask = ip_str.split('/')[1]
-            ip_addr = ip_str.split('/')[0]
+            ip_addr, netmask = ip_str.split('/')
         else:
             ip_addr = ip_str
 
         if int(netmask) > 32 or int(netmask) < 1:
             raise ValueError('Subnet mask must be in range [1, 32].')
 
-        arr = ip_addr.split('.')
-        for i in arr:
-            if int(i) < 0 or int(i) > 255:
+        ip_addr_split = ip_addr.split('.')
+        for syllable in ip_addr_split:
+            if int(syllable) < 0 or int(syllable) > 255:
                 raise ValueError('Wrong IP format!')
-        if len(arr) != 4:
+        if len(ip_addr_split) != 4:
             raise ValueError('Wrong IP format!')
         res = ip_addr + '/' + netmask
         return res
@@ -260,6 +214,9 @@ class ARIA(object):
             instance_id_type = 'all'
             instance_id = ''
 
+        if action == 'remove':
+            rule = ''
+
         named_rule = f'\"name\": \"{rule_name}\", \"logic_block\": \"{logic_block}\", \"rule\": \"{rule}\"'
 
         data = {
@@ -288,6 +245,8 @@ class ARIA(object):
         # url to valid the request
         trid_url = self.sdso_url + f'/packetClassification/completion/transaction?PC_TRID={trid}'
 
+        # Use trid of transaction to get if a transaction success
+
         t0 = time.perf_counter()
 
         delta = time.perf_counter() - t0
@@ -297,14 +256,17 @@ class ARIA(object):
 
             delta = time.perf_counter() - t0
 
-            if res:
-                info = res.json()
-                for tcl_entry in info['tclList']:
+            if res.ok:
+                try:
+                    tcl_list = res.json().get('tclList')
+                except json.JSONDecodeError:
+                    raise
+
+                for tcl_entry in tcl_list:
                     if 'SUCCESS' in tcl_entry['status']:
                         return True
                     elif 'FAILURE' in tcl_entry['status']:
                         return False
-
             time.sleep(0.1)
 
         return False
@@ -329,7 +291,7 @@ class ARIA(object):
 
         headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-        data = self._generate_named_rule_data(rule_name, logic_block, '', 'remove', instance_id,
+        data = self._generate_named_rule_data(rule_name, logic_block, 'no_rule', 'remove', instance_id,
                                               label_sia_group, label_sia_name, label_sia_region)
 
         response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out)
@@ -345,15 +307,20 @@ class ARIA(object):
 
             command_state = True
 
-            endpoints = response.json()['endpoints']
+            try:
+                response_json = response.json()
+            except json.JSONDecodeError:
+                raise
+
+            endpoints = response_json.get('endpoints')
 
             for ep in endpoints:
-                trid = ep['trid']
+                trid = ep.get('trid')
                 success = self._wait_for_trid(trid)
                 ep['completion'] = success
                 if not success:
                     command_state = False
-            response_timestamp = response.json()['timestamp']
+            response_timestamp = response_json.get('timestamp')
         else:
             error_info = response.text
 
@@ -362,7 +329,7 @@ class ARIA(object):
         else:
             command_state_str = 'Failure'
 
-        context_data = {
+        data = {
             'Rule': {
                 'Name': rule_name,
                 'Definition': ''
@@ -376,7 +343,7 @@ class ARIA(object):
             'Endpoints': endpoints  # list of endpoints
         }
 
-        return context_data
+        return data
 
     def _do_request(self, data: dict, rule_name: str, rule: str) -> dict:
         """ Send a request to ARIA PI Reaper to create a rule
@@ -426,16 +393,21 @@ class ARIA(object):
 
             if response.ok:
 
+                try:
+                    response_json = response.json()
+                except json.JSONDecodeError:
+                    raise
+
                 error_info = ''
 
-                endpoints = response.json()['endpoints']
+                endpoints = response_json.get('endpoints')
 
                 command_state = True
 
                 at_least_one_completion = False
 
                 for ep in endpoints:
-                    trid = ep['trid']
+                    trid = ep.get('trid')
                     success = self._wait_for_trid(trid)  # check if the request completes successfully
                     ep['completion'] = success
                     if success:
@@ -443,28 +415,35 @@ class ARIA(object):
                     else:
                         command_state = False  # Set to False if at least one endpoints not complete
 
-                response_timestamp = response.json()['timestamp']
+                response_timestamp = response_json.get('timestamp')
 
                 if command_state:  # break the loop if all rules successfully complete
                     break
                 # if not at least one endpoints return success, finding a free spots to add rules individually for
                 # failed endpoints
                 if at_least_one_completion:
-                    for j, ep in enumerate(endpoints):
-                        for k in range(i + 1, instance_number):
+                    for ep_index, ep in enumerate(endpoints):
+                        for instance_index in range(i + 1, instance_number):
                             if ep['completion']:
                                 continue
-                            data['selector']['instance_ID'] = str(k)
+                            data['selector']['instance_ID'] = str(instance_index)
                             data['selector']['label_query']['label1']['SIA_label_type'] = 'group'
-                            data['selector']['label_query']['label1']['SIA_label'] = ep['Group']
+                            data['selector']['label_query']['label1']['SIA_label'] = ep.get('Group')
                             data['selector']['label_query']['label2']['SIA_label_type'] = 'name'
-                            data['selector']['label_query']['label2']['SIA_label'] = ep['Name']
+                            data['selector']['label_query']['label2']['SIA_label'] = ep.get('Name')
+
                             response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out)
-                            endpoints[j] = response.json()['endpoints'][0]
-                            trid = ep['trid']
+                            try:
+                                response_json = response.json()
+                            except json.JSONDecodeError:
+                                raise
+
+                            endpoints[ep_index] = response_json.get('endpoints')[0]
+
+                            trid = ep.get('trid')
                             success = self._wait_for_trid(trid)
-                            endpoints[j]['completion'] = success
-                            if endpoints[j]['completion']:
+                            endpoints[ep_index]['completion'] = success
+                            if endpoints[ep_index]['completion']:
                                 break
                     for ep in endpoints:
                         if not ep['completion']:
@@ -479,7 +458,7 @@ class ARIA(object):
         else:
             command_state_str = 'Failure'
 
-        context_data = {
+        data = {
             'Rule': {
                 'Name': rule_name,
                 'Definition': rule
@@ -493,7 +472,7 @@ class ARIA(object):
             'Endpoints': endpoints  # list of endpoints
         }
 
-        return context_data
+        return data
 
     """SOAR API"""
     def block_conversation(self, src_ip: str, target_ip: str, rule_name: str, src_port: str = None,
@@ -1342,7 +1321,6 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name, 'src-subnet', None, label_sia_group, label_sia_name, label_sia_region)
-
 ''' HELPER FUNCTIONS '''
 
 def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
@@ -1371,7 +1349,7 @@ def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
     context_name = func_name.title().replace('_', '')
 
     ec = {
-        'Aria.' + context_name + '(val.name && val.name == obj.name)': cont
+        f'Aria.{context_name}(val.name && val.name == obj.name)': cont
     }
 
     LOG(json.dumps(context_entry))
@@ -1382,17 +1360,13 @@ def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
     if context_entry['Status']['command_state'] != 'Success':
         LOG.print_log()
         output_type = 'error'
+        if context_entry['Status']['code'] != 201:
+            return_error('Failed to send a request to SDSo Node!')
+        else:
+            endpoints_str = json.dumps(context_entry['Endpoints'])
+            return_error(f'One or more endpoints fail to create/remove rules. Please see {endpoints_str}')
 
-    res = {
-        'Type': entryTypes[output_type],
-        'ContentsFormat': formats['json'],
-        'Contents': cont,
-        'EntryContext': ec,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(command_name, cont, table_header)
-    }
-
-    demisto.results(res)
+    return_outputs(tableToMarkdown(command_name, cont, table_header), ec)
 
 
 ''' COMMAND FUNCTION '''
@@ -1572,10 +1546,9 @@ def main():
     # IP address or FQDN of your SDSo node
     SDSO = demisto.params().get('sdso')
 
-    aria = ARIA()
-
     sdso_url = f'{SDSO}/Aria/SS/1.0.0/PBaaS/server'
-    aria.sdso_url = sdso_url
+
+    aria = ARIA(sdso_url)
 
     commnds_dict = {
         'aria-block-conversation': block_conversation_command,
@@ -1614,18 +1587,17 @@ def main():
     LOG('ARIA: command is %s' % (command,))
 
     if demisto.command() == 'test-module':
+
         # Test if the ARIA PI Reaper is ready
         url = sdso_url + '/endPoint'
-
-        res = requests.get(url, timeout=20)
-
-        size = len(json.loads(res.text))
-
-        if res.ok and size != 0:
-            demisto.results('ok')
-            sys.exit(0)
-        else:
-            demisto.results('Fail to Connect to SDSo or no PacketIntelligence Service!')
+        try:
+            res = requests.get(url, timeout = 20)
+            size = len(json.loads(res.text))
+            if res.ok and size != 0:
+                demisto.results('ok')
+                sys.exit(0)
+        except:
+            return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
             sys.exit(1)
 
     if demisto.command() == 'fetch-incidents':
