@@ -69,6 +69,55 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
         return None
 
 
+def segment_max_extract(tags, segment_number):
+    max_segment = -1
+    for tag in tags:
+        tag_seg = tag.split('.')
+        if len(tag_seg) < segment_number + 1:
+            continue
+
+        else:
+            tag_seg = tag_seg[segment_number]
+
+        if tag_seg.isdigit():
+            if int(tag_seg) > max_segment:
+                max_segment = int(tag_seg)
+
+    return max_segment
+
+
+def clear_older_tags(tags, max_segment, segment_number):
+    cleared_tag_list = []  # type:List
+    for tag in tags:
+        tag_seg = tag.split('.')
+        if len(tag_seg) < segment_number + 1:
+            continue
+
+        else:
+            tag_seg = tag_seg[segment_number]
+
+        if tag_seg.isdigit():
+            if int(tag_seg) == max_segment:
+                cleared_tag_list.append(tag)
+
+    return cleared_tag_list
+
+
+def find_latest_tag(tags):
+    segment_number = 0
+    while True:
+        segment_max = segment_max_extract(tags, segment_number)
+        # no tags
+        if segment_max == -1:
+            return 'latest'
+
+        tags = clear_older_tags(tags, segment_max, segment_number)
+        if len(tags) == 1:
+            return tags[0]
+
+        segment_number = segment_number + 1
+
+
 def main():
     if demisto.args().get('use_system_proxy') == 'no':
         del os.environ['HTTP_PROXY']
@@ -97,12 +146,7 @@ def main():
         # returns tags in lexical order. See: https://docs.docker.com/registry/spec/api/#listing-image-tags
         tags = res.json().get('tags', [])
         if tags:
-            if tags[-1] != 'latest':
-                tag = tags[-1]
-            elif len(tags) > 1:  # skip latest case
-                tag = tags[-2]
-        else:
-            tag = 'latest'
+            tag = find_latest_tag(tags)
         demisto.results(tag)
     except Exception as ex:
         return_error("Failed getting tag for: {}. Err: {}".format(docker_full_name, str(ex)))
