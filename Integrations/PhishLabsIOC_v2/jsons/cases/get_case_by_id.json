@@ -1,0 +1,185 @@
+{
+    "header": {
+        "id": "aac1b3c6-f0dd-11e9-96d0-0efb1918365c",
+        "queryParams": {
+            "format": "json"
+        },
+        "requestDate": "2019-10-17T12:57:25.477070907Z",
+        "returnResult": 1,
+        "totalResult": 1,
+        "user": "api.ioc.umg"
+    },
+    "data": [
+        {
+            "caseId": "dcd3ea68-20c6-11e8-9e8e-0ee0a3f3cb1c",
+            "title": "Loader: PDF. Att: Flora Bela currículo 911570512",
+            "description": "We are analyzing the Phishing Threat Monitoring Item number #87152 within this case.\r\n\r\nFurther updates will be posted within this case as they become available.\r\n\r\n\r\n\r\n====================================================\r\n\r\n\r\n\r\n\r\n\r\nWe reviewed an email submitted for analysis by Universal Music Group. This email contained a link pointing to a malicious web page. When the user clicks on this page, a ZIP archive is downloaded. Once the user opens the ZIP archive and executes the Windows Executable, the victim's machine is infected with a Banloader. A Banloader is a malware family used as a first stage of the infection chain. A Banload typically loads and executes additional payloads, such as Banking Trojans. This particular payload completes the second stage of the infection when the victim's IP address matches with a Brazilian IP range.\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Case Artifacts & Indicators\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\n..::Network Artifacts::.\r\n\r\nBanload Download URLs - OFFLINE\r\n===========================\r\nhttps://goo.gl/Dpq3ED (redirect)\r\nhttp://myquinapauxcv.info/jOqRzYnP.php\r\n\r\nBanload DLL Download URL - OFFLINE\r\n===============================\r\nhttp://54.39.13.241/info.php?id=0\r\n\r\nBanload Command & Control\r\n===================================\r\nhttp://54.39.13.241/index.php\r\nhttp://cxworkdxxxeo.loginto.me (69.162.68.69)\r\n\r\n..::Email Artifacts::.\r\n\r\nFrom: \"sakata@mgsfoods.com.br\" <sakata@mgsfoods.com.br>\r\nTo: \"holandapaulo@bol.com.br\" <holandapaulo@bol.com.br>\r\nSubject: PDF.  Att: Flora Bela currículo 911570512 Data: 05/03/2018\r\nDate: Mon, 5 Mar 2018 18:49:44 +0000\r\nOriginating IP: 191.252.30.149 (Brazil)",
+            "caseNumber": 723559,
+            "createdBy": {
+                "id": "8b8c50ac-e23d-11e5-badf-002590f3fec2",
+                "name": "mickert",
+                "displayName": "Max I."
+            },
+            "brand": "Universal Music Group T2 A&M",
+            "caseType": "Other",
+            "resolutionStatus": "Threat Offline",
+            "caseStatus": "Closed",
+            "dateCreated": "2018-03-05T22:45:11Z",
+            "dateClosed": "2018-03-13T14:49:37Z",
+            "dateModified": "2018-03-13T14:49:37Z",
+            "customer": "Universal Music Group",
+            "attachments": [
+                {
+                    "id": "30f27901-25f3-11e8-9a53-0ad24386a0d6",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:45:27Z",
+                    "fileName": "5aa6764dcb817.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/30f27901-25f3-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "3b51f9d0-2217-11e8-9a53-0ad24386a0d6",
+                    "type": "Malware Sample",
+                    "description": "password: infected123",
+                    "dateAdded": "2018-03-07T14:53:04Z",
+                    "fileName": "Payloads.zip",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/3b51f9d0-2217-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "3d77d4fe-25f3-11e8-ba0f-0eb92493f786",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:45:27Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/3d77d4fe-25f3-11e8-ba0f-0eb92493f786"
+                },
+                {
+                    "id": "3fe5e0f4-25f3-11e8-9a53-0ad24386a0d6",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:45:32Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/3fe5e0f4-25f3-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "48a0d985-2217-11e8-9a53-0ad24386a0d6",
+                    "type": "File",
+                    "description": "Network Traffic Capture",
+                    "dateAdded": "2018-03-07T14:53:26Z",
+                    "fileName": "723559.pcapng",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/48a0d985-2217-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "5340e3f9-2217-11e8-ba0f-0eb92493f786",
+                    "type": "File",
+                    "description": "Indicators of Compromise",
+                    "dateAdded": "2018-03-07T14:53:41Z",
+                    "fileName": "IOCs.txt",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/5340e3f9-2217-11e8-ba0f-0eb92493f786"
+                },
+                {
+                    "id": "544bd8a1-25f3-11e8-9a53-0ad24386a0d6",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:46:08Z",
+                    "fileName": "5aa67689516fd.eml",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/544bd8a1-25f3-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "547f5462-25f3-11e8-ba0f-0eb92493f786",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:46:06Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/547f5462-25f3-11e8-ba0f-0eb92493f786"
+                },
+                {
+                    "id": "55f3e530-25f3-11e8-ba0f-0eb92493f786",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:46:09Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/55f3e530-25f3-11e8-ba0f-0eb92493f786"
+                },
+                {
+                    "id": "5cc6d6a2-2217-11e8-ba0f-0eb92493f786",
+                    "type": "T2 A&M Incident Report",
+                    "description": "Phishing Threat Forensic Report",
+                    "dateAdded": "2018-03-07T14:53:58Z",
+                    "fileName": "PL-723559.pdf",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/5cc6d6a2-2217-11e8-ba0f-0eb92493f786"
+                },
+                {
+                    "id": "9bdbe837-25f3-11e8-9a53-0ad24386a0d6",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-12T12:48:06Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/9bdbe837-25f3-11e8-9a53-0ad24386a0d6"
+                },
+                {
+                    "id": "9e549914-2219-11e8-ba0f-0eb92493f786",
+                    "type": "File",
+                    "description": "Attachment from CaseTracker email",
+                    "dateAdded": "2018-03-07T15:10:06Z",
+                    "fileName": ".",
+                    "fileURL": "https://caseapi.phishlabs.com/v1/data/attachment/9e549914-2219-11e8-ba0f-0eb92493f786"
+                }
+            ],
+            "notes": [
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Web Hosting.",
+                    "dateCreated": "2018-03-12T12:44:53Z",
+                    "dateModified": "2018-03-12T12:44:53Z",
+                    "author": "wwilson"
+                },
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Network Provider.",
+                    "dateCreated": "2018-03-07T15:14:40Z",
+                    "dateModified": "2018-03-07T15:14:40Z",
+                    "author": "aray"
+                },
+                {
+                    "note": "::::::::::::::::::::::::::::::::::::::\r\n[+] Analysis Notes\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\nCase #: 723559\r\nSeverity: Malicious\r\nClassification: Banloader\r\n\r\nAnalyzed Item: CurricsEqQ5mH3h7id.exe\r\nMD5: a0821c0167c69e7c01ed57ac055af09f\r\nSHA1: c5b897ff138aefb4cd67db7677b8c15f62b042e3\r\nSHA256: e4ea31ca36f27a38924efa5ef5ff70add4085ae74f6b4866cd7b4607cbbeb26f\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Metadata\r\n::::::::::::::::::::::::::::::::::::::\r\nFile Name                       : CurricsEqQ5mH3h7id.exe\r\nFile Size                       : 5.0 MB\r\nFile Modification Date/Time     : 2018:03:05 14:37:04-03:00\r\nFile Type                       : Win32 EXE\r\nFile Type Extension             : exe\r\nMIME Type                       : application/octet-stream\r\nMachine Type                    : Intel 386 or later, and compatibles\r\nTime Stamp                      : 2018:03:05 14:31:36-03:00\r\nPE Type                         : PE32\r\nLinker Version                  : 2.25\r\nCode Size                       : 4105728\r\nInitialized Data Size           : 1178112\r\nUninitialized Data Size         : 0\r\nEntry Point                     : 0x3ebcf4\r\nOS Version                      : 5.0\r\nImage Version                   : 0.0\r\nSubsystem Version               : 5.0\r\nSubsystem                       : Windows GUI\r\nFile Version Number             : 1.0.0.0\r\nProduct Version Number          : 1.0.0.0\r\nFile Flags Mask                 : 0x003f\r\nFile Flags                      : (none)\r\nFile OS                         : Win32\r\nObject File Type                : Executable application\r\nFile Subtype                    : 0\r\nLanguage Code                   : English (U.S.)\r\nCharacter Set                   : Windows, Latin1\r\nFile Version                    : 1.0.0.0\r\nProduct Version                 : 1.0.0.0\r\n\r\n..:: PE Sections ..::\r\n\r\n\r\nSection Name: .text\r\nSHA256: 8645c68da3f3972bbb5a6df782a6dda28a279bc14fcfd525b8689a0aaacbf988\r\n\r\nSection Name: .itext\r\nSHA256: 395474fc84005e5f24ab736a04d9ba4d304d1f1657aa53c5f45a0fd2234a1d30\r\n\r\nSection Name: .data\r\nSHA256: 6982776b27d95fe8ffb130b1471b546dc9b096898c05896e7dc42bfed77f1f7f\r\n\r\nSection Name: .bss\r\nSHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\r\n\r\nSection Name: .idata\r\nSHA256: 3973cb92e32d9eb4ab9665610e13c4b64e61ef4e15e227f743f92cdfe0abec06\r\n\r\nSection Name: .didata\r\nSHA256: 31cde87df269184442d4f84f5f4a22479b6ed07115f99b7399c3135c8c69097d\r\n\r\nSection Name: .edata\r\nSHA256: ad80ca3c25a2a30b24dbd52edc9756628d6daa11a485e51acfda37821ec201e0\r\n\r\nSection Name: .tls\r\nSHA256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\r\n\r\nSection Name: .rdata\r\nSHA256: 5ed11ccb9998d19df6d299ae88d915b922fd0a20bbf887a252527a21655cc821\r\n\r\nSection Name: .reloc\r\nSHA256: f0be8f42b5520a570378e4b1addf2c93c5e00c319ddb40ca5b49ff47a2349a6f\r\n\r\nSection Name: .rsrc\r\nSHA256: d752e549731e45275a06afce45bf984955e0200ea7f02723f372a807c39e2cb4\r\n\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Synopsis\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\nWe reviewed an email submitted for analysis by Universal Music Group. This email contained a link pointing to a malicious web page. When the user clicks on this page, a ZIP archive is downloaded. Once the user opens the ZIP archive and executes the Windows Executable, the victim's machine is infected with a Banloader. A Banloader is a malware family used as a first stage of the infection chain. A Banload typically loads and executes additional payloads, such as Banking Trojans. This particular payload completes the second stage of the infection when the victim's IP address matches with a Brazilian IP range.\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Case Artifacts & Indicators\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\n..::Network Artifacts::.\r\n\r\nBanload Download URLs\r\n===========================\r\nhttps://goo.gl/Dpq3ED (redirect)\r\nhttp://myquinapauxcv.info/jOqRzYnP.php\r\n\r\nBanload DLL Download URL\r\n===============================\r\nhttp://54.39.13.241/info.php?id=0\r\n\r\nBanload Command & Control\r\n===================================\r\nhttp://54.39.13.241/index.php\r\nhttp://cxworkdxxxeo.loginto.me (69.162.68.69)\r\n\r\n..::Email Artifacts::.\r\n\r\nFrom: \"sakata@mgsfoods.com.br\" <sakata@mgsfoods.com.br>\r\nTo: \"holandapaulo@bol.com.br\" <holandapaulo@bol.com.br>\r\nSubject: PDF.  Att: Flora Bela currículo 911570512 Data: 05/03/2018\r\nDate: Mon, 5 Mar 2018 18:49:44 +0000\r\nOriginating IP: 191.252.30.149 (Brazil)\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Case Attachments\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\n1) 723559.pcap - Network Traffic Capture\r\n\r\n2) payloads.zip - Malicious Payloads (Password: infected123)\r\n\r\n3) PL-723559.pdf - Phishing Threat Forensic Report\r\n\r\n4) IOCs.txt - Indicators of Compromise\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Recommendations\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\nWe recommend applying the network indicators above to any network endpoint blocks. If any nodes on your network exhibit the indicators stated above, you should begin your internal incident response procedure.\r\n\r\n::::::::::::::::::::::::::::::::::::::\r\n[+] Additional Analysis Links\r\n::::::::::::::::::::::::::::::::::::::\r\n\r\n..:: Virus Total - CurricsEqQ5mH3h7id.exe ::..\r\nResults: 11/67\r\nFirst Seen: 2018-03-06 20:28:02\r\nhttps://www.virustotal.com/en/file/e4ea31ca36f27a38924efa5ef5ff70add4085ae74f6b4866cd7b4607cbbeb26f/analysis/",
+                    "dateCreated": "2018-03-07T14:54:21Z",
+                    "dateModified": "2018-03-07T14:54:21Z",
+                    "author": "mwanderlei"
+                },
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Network Provider.",
+                    "dateCreated": "2018-03-12T12:46:56Z",
+                    "dateModified": "2018-03-12T12:46:56Z",
+                    "author": "wwilson"
+                },
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Web Hosting.",
+                    "dateCreated": "2018-03-07T15:09:07Z",
+                    "dateModified": "2018-03-07T15:09:07Z",
+                    "author": "aray"
+                },
+                {
+                    "note": "The sample submitted is currently still under analysis by our research, analysis, and intelligence department. We will update the case with our findings shortly.",
+                    "dateCreated": "2018-03-06T17:55:56Z",
+                    "dateModified": "2018-03-06T17:55:56Z",
+                    "author": "mwanderlei"
+                },
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Email Provider.",
+                    "dateCreated": "2018-03-09T20:01:26Z",
+                    "dateModified": "2018-03-09T20:01:26Z",
+                    "author": "mtwitty"
+                },
+                {
+                    "note": "The SOC has contacted the following authorities regarding this case: Web Hosting.",
+                    "dateCreated": "2018-03-12T12:43:38Z",
+                    "dateModified": "2018-03-12T12:43:38Z",
+                    "author": "wwilson"
+                }
+            ],
+            "formReceiver": false,
+            "brandAbuseFlag": false,
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": false
+        }
+    ]
+}

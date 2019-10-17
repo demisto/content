@@ -1,0 +1,78 @@
+{
+    "metadata": {
+        "count": 1
+    },
+    "incidents": [
+        {
+            "id": "INC0528925",
+            "service": "EIR",
+            "title": "Deploymentliste release 10.0 in PROD am 15.10.2019",
+            "description": "",
+            "status": "Closed",
+            "details": {
+                "caseType": "Response",
+                "classification": "No Threat Detected",
+                "subClassification": "No Threat Detected",
+                "severity": null,
+                "emailReportedBy": "\"Diaz, Andrea\" <Andrea.Diaz@umusic.com>",
+                "submissionMethod": "Attachment",
+                "sender": "\"Rigorth, Norbert\" <Norbert.Rigorth@umusic.com>",
+                "emailBody": "\"<html>\\r\\n<head>\\r\\n<meta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=utf-8\\\">\\r\\n<meta content=\\\"text/html; charset=utf-8\\\">\\r\\n<meta name=\\\"Generator\\\" content=\\\"Microsoft Word 15 (filtered medium)\\\">\\r\\n<style>\\r\\n<!--\\r\\n@font-face\\r\\n\\t{font-family:\\\"Cambria Math\\\"}\\r\\n@font-face\\r\\n\\t{font-family:Calibri}\\r\\np.MsoNormal, li.MsoNormal, div.MsoNormal\\r\\n\\t{margin:0cm;\\r\\n\\tmargin-bottom:.0001pt;\\r\\n\\tfont-size:12.0pt;\\r\\n\\tfont-family:\\\"Calibri\\\",sans-serif}\\r\\na:link, span.MsoHyperlink\\r\\n\\t{color:#0563C1;\\r\\n\\ttext-decoration:underline}\\r\\na:visited, span.MsoHyperlinkFollowed\\r\\n\\t{color:#954F72;\\r\\n\\ttext-decoration:underline}\\r\\nspan.E-MailFormatvorlage17\\r\\n\\t{font-family:\\\"Calibri\\\",sans-serif;\\r\\n\\tcolor:windowtext}\\r\\n.MsoChpDefault\\r\\n\\t{font-family:\\\"Calibri\\\",sans-serif}\\r\\n@page WordSection1\\r\\n\\t{margin:70.85pt 70.85pt 2.0cm 70.85pt}\\r\\ndiv.WordSection1\\r\\n\\t{}\\r\\n-->\\r\\n</style>\\r\\n</head>\\r\\n<body lang=\\\"DE\\\" link=\\\"#0563C1\\\" vlink=\\\"#954F72\\\">\\r\\n<div class=\\\"WordSection1\\\">\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">Hallo Sigrid, </span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">&nbsp;</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">anbei die Deploymentliste des Andromeda Sprint 10.0 &nbsp;mit 2 zusätzlichen CHANGES für Produktion.</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">&nbsp;</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">Bitte prüfen ob die auf die Merge Request Zugriff hast .</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">&nbsp;</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">&nbsp;</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">&nbsp;</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">Gruß</span></p>\\r\\n<p class=\\\"MsoNormal\\\"><span style=\\\"font-size:11.0pt\\\">Norbert </span></p>\\r\\n</div>\\r\\n</body>\\r\\n</html>\\r\\n\"",
+                "urls": [
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/558",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/554",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/526",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/505",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/555",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/550",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/566",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/563",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    },
+                    {
+                        "url": "https://gitlab-berlin.global.umusic.net/database/db-objects/merge_requests/543",
+                        "malicious": false,
+                        "maliciousDomain": false
+                    }
+                ],
+                "attachments": [],
+                "furtherReviewReason": null,
+                "offlineUponReview": false
+            },
+            "created": "2019-10-15T16:31:08Z",
+            "modified": "2019-10-15T16:31:09Z",
+            "closed": "2019-10-15T16:31:09Z",
+            "duration": 0
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "header": {
+        "id": "007deea1-f0de-11e9-93d9-0a8e0de89b4e",
+        "queryParams": {
+            "caseStatus": [
+                "New",
+                "Pending Input",
+                "Assigned"
+            ],
+            "format": "json"
+        },
+        "requestDate": "2019-10-17T12:59:49.316986795Z",
+        "returnResult": 0,
+        "totalResult": 0,
+        "user": "api.ioc.umg"
+    },
+    "data": []
+}
