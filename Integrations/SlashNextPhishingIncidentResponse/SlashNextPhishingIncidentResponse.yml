@@ -41,700 +41,693 @@ script:
     arguments:
     - name: ip
       required: true
-      description: IPv4 address which to be looked up in SlashNext Threat Intelligence database.
+      description: IPv4 address to look up in the SlashNext Threat Intelligence database.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Address
-      description: IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision
+      description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision
+      description: For malicious IP addresses, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.IP.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.IP.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of the IoC.
       type: string
     - contextPath: SlashNext.IP.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.IP.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
-    description: Lookup an IP address indicator in SlashNext Threat Intelligence database.
+    description: Looks up an IP address indicator in the SlashNext Threat Intelligence database.
   - name: domain
     arguments:
     - name: domain
       required: true
-      description: FQDN which to be looked up in SlashNext Threat Intelligence database.
+      description: The FQDN to look up in the SlashNext Threat Intelligence database.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domain names, the vendor that made the decision
+      description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision
+      description: For malicious domain names, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.Domain.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.Domain.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of the IoC.
       type: string
     - contextPath: SlashNext.Domain.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.Domain.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
-    description: Lookup a FQDN indicator in SlashNext Threat Intelligence database.
+    description: Looks up a Fully Qualified Domain Name (FQDN) indicator in the SlashNext Threat Intelligence database.
   - name: slashnext-host-reputation
     arguments:
     - name: host
       required: true
-      description: host can either be a domain name or an IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision
+      description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision
+      description: For malicious IP addresses, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.IP.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.IP.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of the IoC.
       type: string
     - contextPath: SlashNext.IP.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.IP.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domain names, the vendor that made the decision
+      description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision
+      description: For malicious domain names, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.Domain.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.Domain.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of IoC.
       type: string
     - contextPath: SlashNext.Domain.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.Domain.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
-    description: Search in SlashNext Cloud database and retrieve reputation of a host.
+    description: Queries the SlashNext Cloud database and retrieves the reputation of a host.
   - name: slashnext-host-report
     arguments:
     - name: host
       required: true
-      description: host can either be a domain name or IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database. Can be either a domain name or an IPv4 address.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: For malicious IP addresses, the vendor that made the decision
+      description: For malicious IP addresses, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
-      description: For malicious IP addresses, the reason that the vendor made the decision
+      description: For malicious IP addresses, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.IP.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.IP.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of the IoC.
       type: string
     - contextPath: SlashNext.IP.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.IP.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.IP.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: Domain.Name
-      description: Domain name
+      description: Domain name.
       type: string
     - contextPath: Domain.Malicious.Vendor
-      description: For malicious domain names, the vendor that made the decision
+      description: For malicious domain names, the vendor that made the decision.
       type: string
     - contextPath: Domain.Malicious.Description
-      description: For malicious domain names, the reason that the vendor made the decision
+      description: For malicious domain names, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.Domain.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.Domain.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of the IoC.
       type: string
     - contextPath: SlashNext.Domain.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.Domain.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.Domain.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
-    description: Search in SlashNext Cloud database and retrieve a detailed report
+    description: Queries the SlashNext Cloud database and retrieves a detailed report
       for a host and associated URL.
   - name: slashnext-host-urls
     arguments:
     - name: host
       required: true
-      description: host can either be a domain name or IPv4 address.
+      description: The host to look up in the SlashNext Threat Intelligence database, for which to return a list of associated URLs. Can be either a domain name or an IPv4 address.
     - name: limit
-      description: maximum number of URL records to fetch.
+      description: The maximum number of URL records to fetch. Default is "10".
       defaultValue: "10"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Data
-      description: URL reported
+      description: URL reported.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.URL.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.URL.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of IoC.
       type: string
     - contextPath: SlashNext.URL.ScanID
-      description: Scan ID to be used to get the IoC forensics data for further investigation
+      description: Scan ID to be used to get the IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value in case original IoC is a redirector to same domain
+      description: Final IoC value (in case original IoC is a redirector to the same domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
-      description: Type of the final IoC
+      description: Type of the final IoC.
       type: string
     - contextPath: SlashNext.URL.Final.Verdict
-      description: SlashNext Phishing Incident Response verdict on the final IoC
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value in case original IoC is a redirector to different domain
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
-      description: Type of the landing IoC
+      description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation
+      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
-      description: SlashNext Phishing Incident Response verdict on the landing IoC
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatStatus
-      description: Threat status of the landing IoC
+      description: Threat status of the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatName
-      description: Name of the threat posed by the landing IoC
+      description: Name of the threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatType
-      description: Type of the threat posed by the landing IoC
+      description: Type of threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.FirstSeen
-      description: Time when the landing IoC was first observed
+      description: Time when the landing IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.Landing.LastSeen
-      description: Time when the landing IoC was last observed
+      description: Time when the landing IoC was last observed.
       type: date
-    description: Search in SlashNext Cloud database and retrieve list of all URLs
+    description: Queries the SlashNext Cloud database and retrieves a list of all URLs
       associated with the specified host.
   - name: slashnext-url-scan
     arguments:
     - name: url
       required: true
-      description: The URL that needs to be scanned.
+      description: The URL to scan.
     - name: extended_info
-      description: If extented_info is set ‘true’ the system along with URL reputation
-        also downloads forensics data like screenshot, HTML and rendered text. If
-        this parameter is not filled, the system will consider this as 'false'.
+      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Data
-      description: URL reported
+      description: URL reported.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.URL.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.URL.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of IoC.
       type: string
     - contextPath: SlashNext.URL.ScanID
-      description: Scan ID to be used to get the IoC forensics data for further investigation
+      description: Scan ID to be used to get the IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value in case original IoC is a redirector to same domain
+      description: Final IoC value (in case original IoC is a redirector to the same domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
-      description: Type of the final IoC
+      description: Type of the final IoC.
       type: string
     - contextPath: SlashNext.URL.Final.Verdict
-      description: SlashNext Phishing Incident Response verdict on the final IoC
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value in case original IoC is a redirector to different domain
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
-      description: Type of the landing IoC
+      description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation
+      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
-      description: SlashNext Phishing Incident Response verdict on the landing IoC
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatStatus
-      description: Threat status of the landing IoC
+      description: Threat status of the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatName
-      description: Name of the threat posed by the landing IoC
+      description: Name of the threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatType
-      description: Type of the threat posed by the landing IoC
+      description: Type of the threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.FirstSeen
-      description: Time when the landing IoC was first observed
+      description: Time when the landing IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.Landing.LastSeen
-      description: Time when the landing IoC was last observed
+      description: Time when the landing IoC was last observed.
       type: date
-    description: Perform a real-time URL reputation scan with SlashNext cloud-based
+    description: Performs a real-time URL reputation scan with SlashNext cloud-based
       SEER Engine. If the specified URL already exists in the cloud database, scan
-      results will get returned immediately. If not, this command will submit a URL
-      scan request and return with ‘check back later’ message along with a unique
-      Scan ID. User can check results of this scan with ‘slashnext-scan-report’ command
-      after 60 seconds or later using the retuned Scan ID
+      results will be returned immediately. If not, this command will submit a URL
+      scan request and return with the message "check back later" and include a unique
+      Scan ID. You can check the results of this scan using the "slashnext-scan-report" command anytime 
+      after 60 seconds using the retuned Scan ID.
   - name: slashnext-url-scan-sync
     arguments:
     - name: url
       required: true
-      description: The URL that needs to be scanned.
+      description: The URL to scan.
     - name: timeout
       description: A timeout value in seconds. If the system is unable to complete
-        a scan within the specified timeout, a timeout error will be returned. User
-        may try again with a different timeout. If no timeout value is specified,
-        a default value of 60 seconds will be used.
+        a scan within the specified timeout, a timeout error will be returned. You can run the command again with a different timeout. If no timeout value is specified,
+        a default timeout value is 60 seconds.
       defaultValue: "60"
     - name: extended_info
-      description: If extented_info is set ‘true’ the system along with URL reputation
-        also downloads forensics data like screenshot, HTML and rendered text. If
-        this parameter is not filled, the system will consider this as 'false'.
+      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Data
-      description: URL reported
+      description: URL reported.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.URL.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.URL.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of IoC.
       type: string
     - contextPath: SlashNext.URL.ScanID
-      description: Scan ID to be used to get the IoC forensics data for further investigation
+      description: Scan ID to be used to get the IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value in case original IoC is a redirector to same domain
+      description: Final IoC value (in case original IoC is a redirector to the same domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
-      description: Type of the final IoC
+      description: Type of the final IoC.
       type: string
     - contextPath: SlashNext.URL.Final.Verdict
-      description: SlashNext Phishing Incident Response verdict on the final IoC
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value in case original IoC is a redirector to different domain
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
-      description: Type of the landing IoC
+      description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation
+      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
-      description: SlashNext Phishing Incident Response verdict on the landing IoC
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatStatus
-      description: Threat status of the landing IoC
+      description: Threat status of the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatName
-      description: Name of the threat posed by the landing IoC
+      description: Name of the threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatType
-      description: Type of the threat posed by the landing IoC
+      description: Type of threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.FirstSeen
-      description: Time when the landing IoC was first observed
+      description: Time when the landing IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.Landing.LastSeen
-      description: Time when the landing IoC was last observed
+      description: Time when the landing IoC was last observed.
       type: date
-    description: Perform a real-time URL scan with SlashNext cloud-based SEER Engine
+    description: Performs a real-time URL scan with SlashNext cloud-based SEER Engine
       in a blocking mode. If the specified URL already exists in the cloud database,
-      scan result will get returned immediately. If not, this command will submit
+      scan result will be returned immediately. If not, this command will submit
       a URL scan request and wait for the scan to finish. The scan may take up to
       60 seconds to finish.
   - name: slashnext-scan-report
     arguments:
     - name: scanid
       required: true
-      description: Scan ID returned by an earlier call to ‘slashnext-url-scan’ or ‘slashnext-url-scan-sync’
+      description: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" command or "slashnext-url-scan-sync" command.
         commands.
     - name: extended_info
-      description: If extented_info is set ‘true’ the system along with URL reputation
-        also downloads forensics data like screenshot, HTML and rendered text. If
-        this parameter is not filled, the system will consider this as 'false'.
+      description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: Indicator type
+      description: Indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: Vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
       type: number
     - contextPath: URL.Data
-      description: URL reported
+      description: URL reported.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason that the vendor made the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: SlashNext.URL.Value
-      description: Value of the Indicator of Compromise (IoC)
+      description: Value of the IoC.
       type: string
     - contextPath: SlashNext.URL.Type
-      description: Type of the Indicator of Compromise (IoC)
+      description: Type of IoC.
       type: string
     - contextPath: SlashNext.URL.ScanID
-      description: Scan ID to be used to get the IoC forensics data for further investigation
+      description: Scan ID to be used to get the IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Verdict
-      description: SlashNext Phishing Incident Response verdict on the IoC
+      description: SlashNext Phishing Incident Response verdict on the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatStatus
-      description: Threat status of the IoC
+      description: Threat status of the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatName
-      description: Name of the threat posed by the IoC
+      description: Name of the threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.ThreatType
-      description: Type of the threat posed by the IoC
+      description: Type of threat posed by the IoC.
       type: string
     - contextPath: SlashNext.URL.FirstSeen
-      description: Time when the IoC was first observed
+      description: Time when the IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.LastSeen
-      description: Time when the IoC was last observed
+      description: Time when the IoC was last observed.
       type: date
     - contextPath: SlashNext.URL.Final.Value
-      description: Final IoC value in case original IoC is a redirector to same domain
+      description: Final IoC value (in case original IoC is a redirector to same the domain).
       type: string
     - contextPath: SlashNext.URL.Final.Type
-      description: Type of the final IoC
+      description: Type of the final IoC.
       type: string
     - contextPath: SlashNext.URL.Final.Verdict
-      description: SlashNext Phishing Incident Response verdict on the final IoC
+      description: SlashNext Phishing Incident Response verdict on the final IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.Value
-      description: Landing IoC value in case original IoC is a redirector to different domain
+      description: Landing IoC value (in case original IoC is a redirector to a different domain).
       type: string
     - contextPath: SlashNext.URL.Landing.Type
-      description: Type of the landing IoC
+      description: Type of landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ScanID
-      description: Scan ID to be used to get the landing IoC forensics data for further investigation
+      description: Scan ID to be used to get the landing IoC forensics data for further investigation.
       type: string
     - contextPath: SlashNext.URL.Landing.Verdict
-      description: SlashNext Phishing Incident Response verdict on the landing IoC
+      description: SlashNext Phishing Incident Response verdict on the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatStatus
-      description: Threat status of the landing IoC
+      description: Threat status of the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatName
-      description: Name of the threat posed by the landing IoC
+      description: Name of the threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.ThreatType
-      description: Type of the threat posed by the landing IoC
+      description: Type of threat posed by the landing IoC.
       type: string
     - contextPath: SlashNext.URL.Landing.FirstSeen
-      description: Time when the landing IoC was first observed
+      description: Time when the landing IoC was first observed.
       type: date
     - contextPath: SlashNext.URL.Landing.LastSeen
-      description: Time when the landing IoC was last observed
+      description: Time when the landing IoC was last observed.
       type: date
-    description: Retrieve URL scan results against a previous Scan request. If the
-      scan is finished, result will be retuned immediately; otherwise a ‘check back
-      later’ message will be returned.
+    description: Retrieves the results of a URL scan against a previous scan request. If the
+      scan is finished, results will be retuned immediately; otherwise the message "check back
+      later" will be returned.
   - name: slashnext-download-screenshot
     arguments:
     - name: scanid
       required: true
-      description: Scan ID returned by an earlier call to ‘slashnext-url-scan’ or ‘slashnext-url-scan-sync’
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
         command.
     - name: resolution
-      description: Resolution of the webpage screenshot. Currently only 'high' and 'medium' resolutions are supported.
+      description: Resolution of the web page screenshot. Can be "high" or "medium". Default is "high".
       defaultValue: "high"
-    description: Download webpage screenshot against a previous URL Scan request.
+    description: Downloads a screenshot of a web page against a previous URL scan request.
   - name: slashnext-download-html
     arguments:
     - name: scanid
       required: true
-      description: Scan ID returned by an earlier call to ‘slashnext-url-scan’ or ‘slashnext-url-scan-sync’
+      description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
         command.
-    description: Download webpage HTML against a previous URL Scan request.
+    description: Downloads a web page HTML against a previous URL scan request.
   - name: slashnext-download-text
     arguments:
     - name: scanid
       required: true
-      description: Scan ID returned by an earlier call to ‘slashnext-url-scan’ or ‘slashnext-url-scan-sync’
+      description:  Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
         command.
-    description: Download  webpage text against a previous URL Scan request.
+    description: Downloads the text of a web page against a previous URL scan request.
   runonce: false
