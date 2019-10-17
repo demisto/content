@@ -2519,5 +2519,3 @@ if 'requests' in sys.modules:
 
 class DemistoException(Exception):
     pass
-
-
