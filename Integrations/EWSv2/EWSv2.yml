@@ -419,7 +419,7 @@ script:
       secret: false
     - default: false
       defaultValue: all
-      description: A CSV list if fields to retrieve.
+      description: A CSV list of fields to retrieve.
       isArray: true
       name: selected-fields
       predefined:
