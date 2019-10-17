@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added cloaken-screenshot-url command
+Added the ***cloaken-screenshot-url*** command.
