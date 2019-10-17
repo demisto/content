@@ -2380,7 +2380,12 @@ if 'requests' in sys.modules:
             if status_codes:
                 return response.status_code in status_codes
             return response.ok
-    class BaseClientSession(BaseClient):
+
+    class BaseSessionClient(BaseClient):
+        '''
+        This class is the same as BaseClient only that it keeps a session open -
+        meaning it saves the cookies if needed.
+        '''
         def __init__(self, base_url, *args, **kwargs):
             self._session = requests.Session()
             super().__init__(base_url, *args, **kwargs)
@@ -2389,6 +2394,7 @@ if 'requests' in sys.modules:
                           auth=None, json_data=None, params=None, data=None, files=None,
                           timeout=10, resp_type='json', ok_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
+                Same as in BaseClient only uses requests.session.request instead of requests.request.
 
             :type method: ``str``
             :param method: The HTTP method, for example: GET, POST, and so on.
