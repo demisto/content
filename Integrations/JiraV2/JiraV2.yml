@@ -75,7 +75,7 @@ configuration:
 - display: API token
   name: APItoken
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 script:
   script: ''
