@@ -905,9 +905,7 @@ def keys_to_camel_case(value):
 
     if value is None:
         return None
-    if isinstance(value, list):
-        return map(keys_to_camel_case, value)
-    if isinstance(value, set):
+    if isinstance(value, (list, set)):
         return map(keys_to_camel_case, value)
     if isinstance(value, dict):
         return dict((keys_to_camel_case(k),
@@ -1435,12 +1433,12 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
-    restricted_fields = list(
-        map(lambda x: x.name, Message.FIELDS)) if selected_fields == 'all' else argToList(selected_fields)
     selected_all_fields = (selected_fields == 'all')
 
-    if not selected_all_fields:
-        restricted_fields = set(restricted_fields)
+    if selected_all_fields:
+        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))
+    else:
+        restricted_fields = set(argToList(selected_fields))
         restricted_fields.update(['id', 'message_id'])
 
     for folder in folders:
@@ -1453,16 +1451,13 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
-    items = items[:limit]
 
-    if selected_all_fields:
-        searched_items_result = map(
-            lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-            items)
-    else:
-        searched_items_result = map(
-            lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=False),
-            items)
+    items = items[:limit]
+    searched_items_result = map(
+        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                        compact_fields=selected_all_fields), items)
+
+    if not selected_all_fields:
         searched_items_result = [
             {k: v for (k, v) in i.iteritems()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
@@ -1881,9 +1876,6 @@ def get_item_as_eml(item_id, target_mailbox=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     item = get_item_from_mailbox(account, item_id)
 
-    if not isinstance(item, Message):
-        return_error(item)
-
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
@@ -2070,7 +2062,7 @@ def main():
         if demisto.command() == 'fetch-incidents':
             raise
         if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
-            return_error("Selected invalid field, please specify valid field name.")
+            return_error("Selected invalid field, please specify valid field name. {}".format(e))
         if IS_TEST_MODULE:
             demisto.results(error_message_simple)
         else:
