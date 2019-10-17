@@ -66,10 +66,10 @@ tasks:
       name: ExtraHop Get Peers
       description: Get the list of all of the peers that communicated with the given
         host in the specified time range.
-      script: 'ExtraHop v2|||extrahop-get-peers'
+      script: '|||extrahop-get-peers'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -129,10 +129,10 @@ tasks:
       name: ExtraHop Device Search
       description: Search for the device within ExtraHop using the provided name,
         IP address, and MAC address.
-      script: 'ExtraHop v2|||extrahop-device-search'
+      script: '|||extrahop-device-search'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
@@ -317,10 +317,10 @@ tasks:
       name: ExtraHop Get Activity Map
       description: Get a link to a live activity map for the given device in the specified
         time range.
-      script: 'ExtraHop v2|||extrahop-get-activity-map'
+      script: '|||extrahop-get-activity-map'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "2"

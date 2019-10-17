@@ -42,10 +42,10 @@ tasks:
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
         uses the ExtraHop ticket tracking functionality to properly display ticket
         status within ExtraHop.
-      script: 'ExtraHop v2|||extrahop-track-ticket'
+      script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -442,10 +442,10 @@ tasks:
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
         uses the ExtraHop ticket tracking functionality to properly display ticket
         status within ExtraHop.
-      script: 'ExtraHop v2|||extrahop-track-ticket'
+      script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
