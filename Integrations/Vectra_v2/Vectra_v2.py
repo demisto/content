@@ -76,7 +76,7 @@ class Client:
         except Exception:
             raise ValueError(f"Failed to parse http response to JSON format. Original response body: \n{res.text}")
 
-    def fetch_incidents(self, last_run, fetch_params=''):
+    def fetch_incidents(self, last_run: Dict, t_score_gte: int, c_score_gte: int):
         """
         Fetches Detections from Vectra into Demisto Incidents
 
@@ -90,17 +90,21 @@ class Client:
             'min_id': min_id,
             'page_size': self.fetch_size,
             'page': 1,
-            'ordering': 'last_timestamp'
+            'ordering': 'last_timestamp',
+            't_score_gte': t_score_gte,
+            'c_score_gte': c_score_gte
         }
         raw_response = self.http_request(params=params, url_suffix='detections')
 
         # Detections -> Incidents, if exists
         incidents = []
         if 'results' in raw_response:
-            res = raw_response.get('results')
+            count = raw_response.get('count')
+            res = raw_response.get('results')  # type: ignore
+            detections: List[Dict] = [res] if count == 1 else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
             try:
-                for detection in res:
+                for detection in detections:
                     incidents.append(create_incident_from_detection(detection))
                     min_id = max(min_id, int(detection.get('id', 0)))  # update last fetched id
 
@@ -477,8 +481,8 @@ def main():
     # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.getParam('server').rstrip('/')
 
-    # Fetch only detections that
-    fetch_params = demisto.params().get('fetch_params')  # todo: https://github.com/demisto/etc/issues/17196
+    # Fetch only detections that have greater or equal Certainty and Threat scores
+    c_score_gte, t_score_gte = demisto.params().get('c_score_gte', 0), demisto.params().get('t_score_gte', 0)
 
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
@@ -503,7 +507,11 @@ def main():
             demisto.results(results)
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = client.fetch_incidents(last_run=demisto.getLastRun(), fetch_params=fetch_params)
+            next_run, incidents = client.fetch_incidents(
+                last_run=demisto.getLastRun(),
+                c_score_gte=int(c_score_gte),
+                t_score_gte=int(t_score_gte)
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
