@@ -2062,7 +2062,7 @@ def main():
         if demisto.command() == 'fetch-incidents':
             raise
         if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
-            return_error("Selected invalid field, please specify valid field name. {}".format(e))
+            return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:
             demisto.results(error_message_simple)
         else:
