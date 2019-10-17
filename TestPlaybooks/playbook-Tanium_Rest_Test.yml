@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: dd103302-64b8-43c2-821a-d62c7fd7d087
+    taskid: 7174996b-ad8b-44e4-870f-a71846cfdc5b
     type: start
     task:
-      id: dd103302-64b8-43c2-821a-d62c7fd7d087
+      id: 7174996b-ad8b-44e4-870f-a71846cfdc5b
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 6ea91083-6122-49db-823e-d38c68156825
+    taskid: 23c058ae-ee08-4f2a-8c0a-98e353e6b584
     type: regular
     task:
-      id: 6ea91083-6122-49db-823e-d38c68156825
+      id: 23c058ae-ee08-4f2a-8c0a-98e353e6b584
       version: -1
       name: Clear context
       description: Delete field from context
@@ -43,6 +43,8 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
+      - "30"
+      - "31"
     scriptarguments:
       all:
         simple: "yes"
@@ -54,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
@@ -63,10 +65,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: a35a1bdb-ca87-4f3c-85ba-1449d1174a72
+    taskid: a29b052b-eb35-4667-8e28-b2091a143ff2
     type: regular
     task:
-      id: a35a1bdb-ca87-4f3c-85ba-1449d1174a72
+      id: a29b052b-eb35-4667-8e28-b2091a143ff2
       version: -1
       name: Get system status
       script: '|||tn-get-system-status'
@@ -81,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1885
+          "y": 515
         }
       }
     note: false
@@ -89,10 +91,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 4380d493-001b-43d9-8fce-f7b8cf9995d9
+    taskid: e24efd02-955c-4b64-82d4-b51d99b278f5
     type: regular
     task:
-      id: 4380d493-001b-43d9-8fce-f7b8cf9995d9
+      id: e24efd02-955c-4b64-82d4-b51d99b278f5
       version: -1
       name: Get packages list
       script: '|||tn-list-packages'
@@ -108,7 +110,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 515
         }
       }
@@ -117,10 +119,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: b89b5037-135d-4850-813a-d100fd3140d2
+    taskid: 43de96fe-4688-4318-8a99-5df8c208a5f3
     type: regular
     task:
-      id: b89b5037-135d-4850-813a-d100fd3140d2
+      id: 43de96fe-4688-4318-8a99-5df8c208a5f3
       version: -1
       name: Get sensors list
       script: '|||tn-list-sensors'
@@ -136,7 +138,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 690
         }
       }
@@ -145,10 +147,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 3f09eced-4cc5-409b-871a-a5bba11d53a8
+    taskid: e43793ea-11c8-476e-87eb-78a415202b6f
     type: regular
     task:
-      id: 3f09eced-4cc5-409b-871a-a5bba11d53a8
+      id: e43793ea-11c8-476e-87eb-78a415202b6f
       version: -1
       name: Get saved questions list
       script: '|||tn-list-saved-questions'
@@ -164,7 +166,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 865
         }
       }
@@ -173,10 +175,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: f17305eb-db61-4473-8070-8dc40f77b4d4
+    taskid: 7e17dca1-4c5b-4c96-8ec9-11539fab9230
     type: regular
     task:
-      id: f17305eb-db61-4473-8070-8dc40f77b4d4
+      id: 7e17dca1-4c5b-4c96-8ec9-11539fab9230
       version: -1
       name: Get actions list
       script: '|||tn-list-saved-actions'
@@ -192,7 +194,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1040
         }
       }
@@ -201,10 +203,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 50d67653-9479-4ce0-82ce-20737c0c70af
+    taskid: 4335ab92-c942-46a3-81e2-6d237c1182f3
     type: regular
     task:
-      id: 50d67653-9479-4ce0-82ce-20737c0c70af
+      id: 4335ab92-c942-46a3-81e2-6d237c1182f3
       version: -1
       name: Get saved actions list
       script: '|||tn-list-saved-actions'
@@ -220,7 +222,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1215
         }
       }
@@ -229,10 +231,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d4cb5b0b-1044-474d-8d73-10185d4d4d12
+    taskid: db84241c-d63c-4c16-82d5-e664ffb9266a
     type: regular
     task:
-      id: d4cb5b0b-1044-474d-8d73-10185d4d4d12
+      id: db84241c-d63c-4c16-82d5-e664ffb9266a
       version: -1
       name: Get saved actions pending list
       script: '|||tn-list-saved-actions-pending-approval'
@@ -248,7 +250,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1390
         }
       }
@@ -257,10 +259,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 54beaf01-ff5b-42e9-8eac-92c84cb489e5
+    taskid: 9a4c2279-10b4-4e23-8f24-7489243556b7
     type: regular
     task:
-      id: 54beaf01-ff5b-42e9-8eac-92c84cb489e5
+      id: 9a4c2279-10b4-4e23-8f24-7489243556b7
       version: -1
       name: Get package by id
       script: '|||tn-get-package'
@@ -279,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 690
         }
       }
     note: false
@@ -287,10 +289,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 96c2e361-9e48-4a7c-8cc0-a11f4466a5e5
+    taskid: 8cf0da35-b13d-4ba2-85df-f4296a91977c
     type: regular
     task:
-      id: 96c2e361-9e48-4a7c-8cc0-a11f4466a5e5
+      id: 8cf0da35-b13d-4ba2-85df-f4296a91977c
       version: -1
       name: Get package by name
       script: '|||tn-get-package'
@@ -309,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2235
+          "y": 865
         }
       }
     note: false
@@ -317,10 +319,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: ad1af552-5b36-4d80-8755-28d0fb1a5804
+    taskid: 43910b60-0a4d-4da2-873a-78bbe43a35b8
     type: regular
     task:
-      id: ad1af552-5b36-4d80-8755-28d0fb1a5804
+      id: 43910b60-0a4d-4da2-873a-78bbe43a35b8
       version: -1
       name: Get sensor by id
       script: '|||tn-get-sensor'
@@ -339,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2410
+          "y": 1040
         }
       }
     note: false
@@ -347,10 +349,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 5744ded3-a91c-46f4-830b-4f1ce22d3c51
+    taskid: f9d303d6-40e9-4f40-8d8d-1559417ebe49
     type: regular
     task:
-      id: 5744ded3-a91c-46f4-830b-4f1ce22d3c51
+      id: f9d303d6-40e9-4f40-8d8d-1559417ebe49
       version: -1
       name: Get sensor by name
       script: '|||tn-get-sensor'
@@ -369,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2585
+          "y": 1215
         }
       }
     note: false
@@ -377,10 +379,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 5b93faaf-460d-4bf9-8072-a4b6ab8d190e
+    taskid: 0cbc676f-2ddf-4109-80bf-fbb11eb08f54
     type: regular
     task:
-      id: 5b93faaf-460d-4bf9-8072-a4b6ab8d190e
+      id: 0cbc676f-2ddf-4109-80bf-fbb11eb08f54
       version: -1
       name: Get action by id
       script: '|||tn-get-action'
@@ -398,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 1390
         }
       }
     note: false
@@ -406,10 +408,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 9420e021-906a-43ca-8646-244f4c11d512
+    taskid: cada4028-52a5-4369-8c7f-db649caec5ed
     type: title
     task:
-      id: 9420e021-906a-43ca-8646-244f4c11d512
+      id: cada4028-52a5-4369-8c7f-db649caec5ed
       version: -1
       name: Query lists commands
       type: title
@@ -422,33 +424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: dbdcd63d-e824-43ad-8f9e-a0ed6f1d2a44
-    type: title
-    task:
-      id: dbdcd63d-e824-43ad-8f9e-a0ed6f1d2a44
-      version: -1
-      name: Get objects commands
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1740
         }
       }
     note: false
@@ -456,10 +433,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 2c6b9cb1-91b3-4aca-8785-50ee1756416e
+    taskid: 22c25622-e92a-46ff-84d6-575ead278537
     type: regular
     task:
-      id: 2c6b9cb1-91b3-4aca-8785-50ee1756416e
+      id: 22c25622-e92a-46ff-84d6-575ead278537
       version: -1
       name: Get question metadata
       script: '|||tn-get-question-metadata'
@@ -468,7 +445,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "18"
     scriptarguments:
       question-id:
         simple: "20750"
@@ -477,7 +454,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2935
+          "y": 1565
         }
       }
     note: false
@@ -485,10 +462,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: a27e9d6c-9e3d-4524-88af-b4382821cacf
+    taskid: be37cfb7-b38f-4eb0-8583-b1d1481a158f
     type: regular
     task:
-      id: a27e9d6c-9e3d-4524-88af-b4382821cacf
+      id: be37cfb7-b38f-4eb0-8583-b1d1481a158f
       version: -1
       name: Get saved action by id
       script: '|||tn-get-saved-action'
@@ -507,7 +484,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3460
+          "y": 1740
         }
       }
     note: false
@@ -515,10 +492,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 9956d8a0-35dc-4061-8dda-85eed59d988f
+    taskid: b89a5781-49b8-4a72-8e4a-631e52f20a98
     type: regular
     task:
-      id: 9956d8a0-35dc-4061-8dda-85eed59d988f
+      id: b89a5781-49b8-4a72-8e4a-631e52f20a98
       version: -1
       name: Get saved action by name
       script: '|||tn-get-saved-action'
@@ -537,7 +514,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3635
+          "y": 1915
         }
       }
     note: false
@@ -545,10 +522,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: c39dab20-bb8c-4257-8b22-fafed26c5d6a
+    taskid: 07737c74-475c-4989-854a-d8d91b8684dd
     type: regular
     task:
-      id: c39dab20-bb8c-4257-8b22-fafed26c5d6a
+      id: 07737c74-475c-4989-854a-d8d91b8684dd
       version: -1
       name: Get saved question metadata by id
       script: '|||tn-get-saved-question-metadata'
@@ -567,7 +544,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3810
+          "y": 2090
         }
       }
     note: false
@@ -575,10 +552,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 7e3d2e77-5d5e-4631-8709-1e2958537045
+    taskid: 7ab31fd5-e1a6-4888-8b69-a81df7309f5b
     type: regular
     task:
-      id: 7e3d2e77-5d5e-4631-8709-1e2958537045
+      id: 7ab31fd5-e1a6-4888-8b69-a81df7309f5b
       version: -1
       name: Get saved question metadata by name
       script: '|||tn-get-saved-question-metadata'
@@ -597,7 +574,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3985
+          "y": 2265
         }
       }
     note: false
@@ -605,10 +582,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: e246bf70-bc56-454d-88db-f2f13824c422
+    taskid: 0c936334-0ac6-4fa2-873b-9f6e930c62e0
     type: title
     task:
-      id: e246bf70-bc56-454d-88db-f2f13824c422
+      id: 0c936334-0ac6-4fa2-873b-9f6e930c62e0
       version: -1
       name: Done
       type: title
@@ -619,7 +596,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4510
+          "y": 2790
         }
       }
     note: false
@@ -627,10 +604,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: e4ad7896-bd80-463a-8904-7cb4b407cdd9
+    taskid: 6192de06-90ec-4685-8cf7-37b5ce7e2057
     type: condition
     task:
-      id: e4ad7896-bd80-463a-8904-7cb4b407cdd9
+      id: 6192de06-90ec-4685-8cf7-37b5ce7e2057
       version: -1
       name: Validate output
       type: condition
@@ -638,7 +615,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "18"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -648,11 +625,19 @@ tasks:
             value:
               simple: Tanium.SavedQuestionResult.Results
             iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Tanium.SavedQuestionResult.SavedQuestionID
+            iscontext: true
+          right:
+            value:
+              simple: "313"
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3285
+          "x": 910,
+          "y": 690
         }
       }
     note: false
@@ -660,10 +645,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 923e4479-0e72-407b-89b0-0c49415c927f
+    taskid: bf1680a0-85ca-4f05-84f9-4c2f49f69494
     type: playbook
     task:
-      id: 923e4479-0e72-407b-89b0-0c49415c927f
+      id: bf1680a0-85ca-4f05-84f9-4c2f49f69494
       version: -1
       name: Tanium - Get saved question result
       playbookName: Tanium - Get saved question result
@@ -684,8 +669,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3110
+          "x": 910,
+          "y": 515
         }
       }
     note: false
@@ -705,14 +690,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "32"
     scriptarguments:
       count: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1565
         }
       }
@@ -744,7 +729,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4160
+          "y": 2440
         }
       }
     note: false
@@ -775,7 +760,101 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4335
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b3e6e015-077d-401b-8cb8-62f6e897b660
+    type: title
+    task:
+      id: b3e6e015-077d-401b-8cb8-62f6e897b660
+      version: -1
+      name: Get object commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: fedddd83-acda-47e4-8c7e-3e3ca472e58b
+    type: title
+    task:
+      id: fedddd83-acda-47e4-8c7e-3e3ca472e58b
+      version: -1
+      name: Get saved question result playbook
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 02f50b76-ba21-4d95-83a7-cb4bfcdde65c
+    type: title
+    task:
+      id: 02f50b76-ba21-4d95-83a7-cb4bfcdde65c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: c4610f6b-e6ce-4e3e-85c8-128bc5bbecaa
+    type: title
+    task:
+      id: c4610f6b-e6ce-4e3e-85c8-128bc5bbecaa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 880
         }
       }
     note: false
@@ -786,8 +865,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4525,
-        "width": 380,
+        "height": 2805,
+        "width": 1240,
         "x": 50,
         "y": 50
       }
