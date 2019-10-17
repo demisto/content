@@ -24,7 +24,7 @@ def test_set_indicator_table(mocker):
             'IPAddresses': [
                 {
                     'address': {
-                        'value': '104.196.188.170',
+                        'value': '104',
                         'count': 122
                     },
                     'asn': [
@@ -47,7 +47,7 @@ def test_set_indicator_table(mocker):
             'MailServers': [
                 {
                     'host': {
-                        'value': 'mxa-00169c01.gslb.pphosted.com',
+                        'value': 'ma',
                         'count': 13
                     },
                     'domain': {
@@ -56,7 +56,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '67.231.148.124',
+                            'value': '67',
                             'count': 10
                         }
                     ],
@@ -64,7 +64,7 @@ def test_set_indicator_table(mocker):
                 },
                 {
                     'host': {
-                        'value': 'mxb-00169c01.gslb.pphosted.com',
+                        'value': 'mb',
                         'count': 12
                     },
                     'domain': {
@@ -73,7 +73,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '67.231.156.123',
+                            'value': '1',
                             'count': 9
                         }
                     ],
@@ -93,7 +93,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '185.136.96.66',
+                            'value': '185',
                             'count': 15798
                         }
                     ]
@@ -109,7 +109,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '185.136.97.66',
+                            'value': '185',
                             'count': 15276
                         }
                     ]
@@ -125,7 +125,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '185.136.98.66',
+                            'value': '18',
                             'count': 12976
                         }
                     ]
@@ -141,7 +141,7 @@ def test_set_indicator_table(mocker):
                     },
                     'ip': [
                         {
-                            'value': '185.136.99.66',
+                            'value': '185',
                             'count': 12705
                         }
                     ]
@@ -181,12 +181,12 @@ def test_set_indicator_table(mocker):
             ],
         },
         'Identity': {
-            'SOAEmail': ['support@cloudns.net'],
+            'SOAEmail': ['cloudns.net'],
             'SSLCertificateEmail': [],
             'EmailDomains': ['cloudns.net', 'namecheap.com', 'whoisguard.com'],
             'AdditionalWhoisEmails': [
                 {
-                    'value': 'abuse@namecheap.com',
+                    'value': 'namecheap.com',
                     'count': 18465843
                 }
             ],

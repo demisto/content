@@ -12,7 +12,6 @@ def main():
         domaintools_analytics_data = domaintools_data.get('Analytics', {})
         create_date = domaintools_data.get('Registration', {}).get('CreateDate')
         domain_age = 0
-        reputation = ''
         if create_date:
             response = demisto.executeCommand('CalculateAge', {'create_date': create_date})
             domain_age = response[0]['Contents'].get('age')
@@ -24,7 +23,7 @@ def main():
                                                                                'threat_profile_score': threat_profile_score,
                                                                                'domain_name': domain_name})
             reputation = response[0]['Contents'].get('reputation')
-        except Exception as e:
+        except Exception:
             reputation = 'Unknown'
         demisto_indicator = {
             'type': 'Domain',

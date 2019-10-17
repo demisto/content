@@ -2,6 +2,7 @@ id: DomainTools_Iris_Tags
 version: -1
 name: DomainTools_Iris_Tags
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
@@ -76,6 +77,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {

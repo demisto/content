@@ -247,7 +247,7 @@ Get a complete profile of the domain provided.
                 {
                     "address": {
                         "count": 122,
-                        "value": "104.196.188.170"
+                        "value": "a196.188.170"
                     },
                     "asn": [
                         {
@@ -369,7 +369,7 @@ Get a complete profile of the domain provided.
                     {
                         "address": {
                             "count": 122,
-                            "value": "104.196.188.170"
+                            "value": "a196.188.170"
                         },
                         "asn": [
                             {
@@ -401,7 +401,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 10,
-                                "value": "67.231.148.124"
+                                "value": "a231.148.124"
                             }
                         ],
                         "priority": 10
@@ -418,7 +418,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 9,
-                                "value": "67.231.156.123"
+                                "value": "a231.156.123"
                             }
                         ],
                         "priority": 10
@@ -609,7 +609,7 @@ Get a complete profile of the domain provided.
 ```
 
 ##### Human Readable Output
-##### DomainTools Domain Profile for demisto.com.\n|Name|Last Enriched|Overall Risk Score|Proximity Risk Score|Threat Profile Risk Score|Threat Profile Threats|Threat Profile Evidence|Website Response Code|Alexa Rank|Tags|Registrant Name|Registrant Org|Registrant Contact|SOA Email|SSL Certificate Email|Admin Contact|Technical Contact|Billing Contact|Email Domains|Additional Whois Emails|Domain Registrant|Registrar Status|Domain Status|Create Date|Expiration Date|IP Addresses|IP Country Code|Mail Servers|SPF Record|Name Servers|SSL Certificate|Redirects To|Google Adsense Tracking Code|Google Analytic Tracking Code|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|demisto.com|2019-10-10|33|33|0|||500|326569||WhoisGuard Protected|WhoisGuard, Inc|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|support_cloudns.net||Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": null, \"count\": 0}<br>Email: null<br>Name: {\"value\": null, \"count\": 0}<br>Phone: {\"value\": null, \"count\": 0}|cloudns.net,<br>namecheap.com,<br>whoisguard.com|{'value': 'abuse_namecheap.com', 'count': 18388844}|NAMECHEAP INC,NAMECHEAP, INC|clientTransferProhibited|true|2015-01-16|2026-01-16|{'address': {'value': '104.196.188.170', 'count': 121}, 'asn': [{'value': 15169, 'count': 13931803}], 'country_code': {'value': 'us', 'count': 295509125}, 'isp': {'value': 'Google Inc.', 'count': 2092359}}|address: {\"value\": \"104.196.188.170\", \"count\": 121}<br>asn: {'value': 15169, 'count': 13931803}<br>country_code: {\"value\": \"us\", \"count\": 295509125}<br>isp: {\"value\": \"Google Inc.\", \"count\": 2092359}|{'host': {'value': 'ma', 'count': 13}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.148.124', 'count': 10}], 'priority': 10},<br>{'host': {'value': 'mb', 'count': 12}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': '67.231.156.123', 'count': 12}], 'priority': 10}|v=spf1 mx include:spf.protection.outlook.com include:spf.autopilothq.com include:sendgrid.net -all|{'host': {'value': 'pns31.cloudns.net', 'count': 10798}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.96.66', 'count': 15398}]},<br>{'host': {'value': 'pns32.cloudns.net', 'count': 10323}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.97.66', 'count': 14881}]},<br>{'host': {'value': 'pns33.cloudns.net', 'count': 9776}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.98.66', 'count': 12689}]},<br>{'host': {'value': 'pns34.cloudns.net', 'count': 9736}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.99.66', 'count': 12410}]}|{'hash': {'value': '7fed20410a1eb258c540f9c08ac7d361a9abd505', 'count': 1}, 'subject': {'value': 'CN=www.demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None},<br>{'hash': {'value': '36cbf4ec8b46e8baadaf4a9895d7dec7af7f138e', 'count': 1}, 'subject': {'value': 'CN=demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None}|value: null<br>count: 0|||\n
+##### DomainTools Domain Profile for demisto.com.\n|Name|Last Enriched|Overall Risk Score|Proximity Risk Score|Threat Profile Risk Score|Threat Profile Threats|Threat Profile Evidence|Website Response Code|Alexa Rank|Tags|Registrant Name|Registrant Org|Registrant Contact|SOA Email|SSL Certificate Email|Admin Contact|Technical Contact|Billing Contact|Email Domains|Additional Whois Emails|Domain Registrant|Registrar Status|Domain Status|Create Date|Expiration Date|IP Addresses|IP Country Code|Mail Servers|SPF Record|Name Servers|SSL Certificate|Redirects To|Google Adsense Tracking Code|Google Analytic Tracking Code|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n|demisto.com|2019-10-10|33|33|0|||500|326569||WhoisGuard Protected|WhoisGuard, Inc|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|support_cloudns.net||Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": \"pa\", \"count\": 19786098}<br>Email: {'value': '5be9245893ff486d98c3640879bb2657.protect_whoisguard.com', 'count': 1}<br>Name: {\"value\": \"WhoisGuard Protected\", \"count\": 8625643}<br>Phone: {\"value\": \"5078365503\", \"count\": 10343154}|Country: {\"value\": null, \"count\": 0}<br>Email: null<br>Name: {\"value\": null, \"count\": 0}<br>Phone: {\"value\": null, \"count\": 0}|cloudns.net,<br>namecheap.com,<br>whoisguard.com|{'value': 'abuse_namecheap.com', 'count': 18388844}|NAMECHEAP INC,NAMECHEAP, INC|clientTransferProhibited|true|2015-01-16|2026-01-16|{'address': {'value': 'a196.188.170', 'count': 121}, 'asn': [{'value': 15169, 'count': 13931803}], 'country_code': {'value': 'us', 'count': 295509125}, 'isp': {'value': 'Google Inc.', 'count': 2092359}}|address: {\"value\": \"a196.188.170\", \"count\": 121}<br>asn: {'value': 15169, 'count': 13931803}<br>country_code: {\"value\": \"us\", \"count\": 295509125}<br>isp: {\"value\": \"Google Inc.\", \"count\": 2092359}|{'host': {'value': 'ma', 'count': 13}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': 'a231.148.124', 'count': 10}], 'priority': 10},<br>{'host': {'value': 'mb', 'count': 12}, 'domain': {'value': 'pphosted.com', 'count': 90310}, 'ip': [{'value': 'a231.156.123', 'count': 12}], 'priority': 10}|v=spf1 mx include:spf.protection.outlook.com include:spf.autopilothq.com include:sendgrid.net -all|{'host': {'value': 'pns31.cloudns.net', 'count': 10798}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.96.66', 'count': 15398}]},<br>{'host': {'value': 'pns32.cloudns.net', 'count': 10323}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.97.66', 'count': 14881}]},<br>{'host': {'value': 'pns33.cloudns.net', 'count': 9776}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.98.66', 'count': 12689}]},<br>{'host': {'value': 'pns34.cloudns.net', 'count': 9736}, 'domain': {'value': 'cloudns.net', 'count': 227179}, 'ip': [{'value': 'a136.99.66', 'count': 12410}]}|{'hash': {'value': '7fed20410a1eb258c540f9c08ac7d361a9abd505', 'count': 1}, 'subject': {'value': 'CN=www.demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None},<br>{'hash': {'value': '36cbf4ec8b46e8baadaf4a9895d7dec7af7f138e', 'count': 1}, 'subject': {'value': 'CN=demisto.com', 'count': 1}, 'organization': {'value': None, 'count': 0}, 'email': None}|value: null<br>count: 0|||\n
 
 ### 2. domaintoolsiris-analytics
 ---
@@ -826,7 +826,7 @@ Get a complete profile of the domain provided.
                 {
                     "address": {
                         "count": 122,
-                        "value": "104.196.188.170"
+                        "value": "a196.188.170"
                     },
                     "asn": [
                         {
@@ -948,7 +948,7 @@ Get a complete profile of the domain provided.
                     {
                         "address": {
                             "count": 122,
-                            "value": "104.196.188.170"
+                            "value": "a196.188.170"
                         },
                         "asn": [
                             {
@@ -980,7 +980,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 10,
-                                "value": "67.231.148.124"
+                                "value": "a231.148.124"
                             }
                         ],
                         "priority": 10
@@ -997,7 +997,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 9,
-                                "value": "67.231.156.123"
+                                "value": "a231.156.123"
                             }
                         ],
                         "priority": 10
@@ -1404,7 +1404,7 @@ Get a complete profile of the domain provided.
                 {
                     "address": {
                         "count": 122,
-                        "value": "104.196.188.170"
+                        "value": "a196.188.170"
                     },
                     "asn": [
                         {
@@ -1526,7 +1526,7 @@ Get a complete profile of the domain provided.
                     {
                         "address": {
                             "count": 122,
-                            "value": "104.196.188.170"
+                            "value": "a196.188.170"
                         },
                         "asn": [
                             {
@@ -1558,7 +1558,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 10,
-                                "value": "67.231.148.124"
+                                "value": "a231.148.124"
                             }
                         ],
                         "priority": 10
@@ -1575,7 +1575,7 @@ Get a complete profile of the domain provided.
                         "ip": [
                             {
                                 "count": 9,
-                                "value": "67.231.156.123"
+                                "value": "a231.156.123"
                             }
                         ],
                         "priority": 10

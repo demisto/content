@@ -2,6 +2,7 @@ id: DomainTools_Guided_Pivot_Enrichment
 version: -1
 name: DomainTools_Guided_Pivot_Enrichment
 starttaskid: "0"
+description: ""
 tasks:
   "0":
     id: "0"
