@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - New command to rasterize pdf files into images (rasterize-pdf).
-  - Rasterize email/html file now available in offline mode. 
+  - Added the `rasterize-pdf` command, which converts a PDF file to an image file.
+  - `rasterize-email` now available in offline mode. 
   
 ## [19.10.1] - 2019-10-15
   - Updated to use Chrome driver instead of phantomJS (requires Demisto 5.0).
