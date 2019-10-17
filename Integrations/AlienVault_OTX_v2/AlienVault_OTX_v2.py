@@ -246,9 +246,9 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Dict]:
             f'DBotScore({outputPaths.get("dbotscore")})': context_entry.get('DBotScore'),
             f'Domain({outputPaths.get("domain")})': context_entry.get('Domain'),
             f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-            f'val.Whois && val.Whois === obj.Whois)': context_entry.get('AlienVaultOTX').get('Domain')
+            f'val.Whois && val.Whois === obj.Whois)': context_entry.get('AlienVaultOTX', {}).get('Domain')
         }
-        human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX').get('Domain'),
+        human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX', {}).get('Domain'),
                                          name=title)
 
         return human_readable, context, raw_response
@@ -344,7 +344,7 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Dict]:
         context: dict = {
             f'URL({outputPaths.get("url")})': context_entry.get('URL'),
             f'DBotScore({outputPaths.get("dbotscore")})': context_entry.get('DBotScore'),
-            f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': context_entry.get('AlienVaultOTX').get('URL')
+            f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': context_entry.get('AlienVaultOTX', {}).get('URL')
         }
         human_readable = tableToMarkdown(t=context_entry.get('AlienVaultOTX', {}).get('URL'),
                                          name=title)
