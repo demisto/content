@@ -122,7 +122,6 @@ TEST_RESULT_TRANS = {
 ''' HELPER FUNCTIONS '''
 
 
-@logger
 def http_request(method, url_suffix, params=None, data=None):
     url = f'{SERVER}/{url_suffix}'
     LOG(f'AttackIQ is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)} \n '
@@ -136,9 +135,9 @@ def http_request(method, url_suffix, params=None, data=None):
             data=data,
             headers=HEADERS
         )
-        # Handle error responses gracefully
         if res.status_code == 204:
             return ''
+        # Handle error responses gracefully
         if res.status_code not in {200, 201}:
             error_reason = get_http_error_reason(res)
             raise HTTPError(f'[{res.status_code}] - {error_reason}')
@@ -616,14 +615,11 @@ def create_assessment_command():
         raise ValueError(f"Could not create an assessment. Specifically: {str(e)}")
 
     assessment_id = res.get('project_id')
-    try:
-        raw_assessments = get_assessments(assessment_id=assessment_id)
-        assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
-        hr = tableToMarkdown(f'Created Assessment: {assessment_id} successfully.', assessments_res,
-                             headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
-        return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
-    except HTTPError as e:
-        return_error(create_invalid_id_err_msg(str(e), ['403']))
+    raw_assessments = get_assessments(assessment_id=assessment_id)
+    assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
+    hr = tableToMarkdown(f'Created Assessment: {assessment_id} successfully.', assessments_res,
+                         headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
+    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
 
 
 @logger
@@ -643,8 +639,11 @@ def add_assets_to_assessment():
     try:
         res = http_request('POST', f'/v1/assessments/{assessment_id}/update_defaults', data=json.dumps(data))
         demisto.results(res.get('message', ''))
-    except Exception:
-        raise ValueError("Could not find either the assessment or one of the assets/asset groups.")
+    except Exception as e:
+        if '403' in str(e):
+            raise ValueError("Could not find either the assessment or one of the assets/asset groups.")
+        else:
+            raise
 
 
 @logger
@@ -657,7 +656,7 @@ def delete_assessment_command():
         if '403' in str(e):
             raise ValueError(f"Could not find the assessment {assessment_id}")
         else:
-            raise e
+            raise
 
 
 def main():
