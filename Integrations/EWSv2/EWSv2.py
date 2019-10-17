@@ -1436,10 +1436,10 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
     selected_all_fields = (selected_fields == 'all')
 
     if selected_all_fields:
-        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))
+        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))  # type: ignore
     else:
-        restricted_fields = set(argToList(selected_fields))  # mypy: ignore
-        restricted_fields.update(['id', 'message_id'])  # mypy: ignore
+        restricted_fields = set(argToList(selected_fields))  # type: ignore
+        restricted_fields.update(['id', 'message_id'])  # type: ignore
 
     for folder in folders:
         if Message not in folder.supported_item_models:
@@ -1758,7 +1758,7 @@ def get_compliance_search(search_name):
 
     # Get search status
     stdout = stdout[len(PASSWORD):]
-    stdout = stdout.split('\n', 1)
+    stdout = stdout.split('\n', 1)  # type: ignore
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
