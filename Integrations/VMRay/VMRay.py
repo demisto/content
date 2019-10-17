@@ -505,35 +505,34 @@ def check_file_command():
                 'No submission found in VMRay for hash : {}'.format(file_hash),
                 {},
             )
+        else:
+            for item in data:
+                entry = dict()
+                entry['SampleID'] = item.get('sample_id')
+                entry['FileName'] = item.get('sample_filename')
+                entry['MD5'] = item.get('sample_md5hash')
+                entry['SHA1'] = item.get('sample_sha1hash')
+                entry['SHA256'] = item.get('sample_sha256hash')
+                entry['SSDeep'] = item.get('sample_ssdeephash')
+                entry['Severity'] = SEVERITY_DICT.get(item.get('sample_severity'))
+                entry['Type'] = item.get('sample_type')
+                entry['Created'] = item.get('sample_created')
+                entry['Classification'] = item.get('sample_classifications')
+                scores = dbot_score_by_hash(entry)
 
-        for item in data:
+                entry_context = {
+                    'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
+                    outputPaths.get('dbotscore'): scores,
+                }
 
-            entry = dict()
-            entry['SampleID'] = item.get('sample_id')
-            entry['FileName'] = item.get('sample_filename')
-            entry['MD5'] = item.get('sample_md5hash')
-            entry['SHA1'] = item.get('sample_sha1hash')
-            entry['SHA256'] = item.get('sample_sha256hash')
-            entry['SSDeep'] = item.get('sample_ssdeephash')
-            entry['Severity'] = SEVERITY_DICT.get(item.get('sample_severity'))
-            entry['Type'] = item.get('sample_type')
-            entry['Created'] = item.get('sample_created')
-            entry['Classification'] = item.get('sample_classifications')
-            scores = dbot_score_by_hash(entry)
-
-            entry_context = {
-                'VMRay.Sample(var.SampleID === obj.SampleID)': entry,
-                outputPaths.get('dbotscore'): scores,
-            }
-
-            human_readable = tableToMarkdown(
-                'Results for sample id: {} with severity {}'.format(
-                    entry.get('SampleID'), entry.get('Severity')
-                ),
-                entry,
-                headers=['Type', 'MD5', 'SHA1', 'SHA256', 'SSDeep'],
-            )
-            return_outputs(human_readable, entry_context, raw_response=raw_response)
+                human_readable = tableToMarkdown(
+                    'Results for sample id: {} with severity {}'.format(
+                        entry.get('SampleID'), entry.get('Severity')
+                    ),
+                    entry,
+                    headers=['Type', 'MD5', 'SHA1', 'SHA256', 'SSDeep'],
+                )
+                return_outputs(human_readable, entry_context, raw_response=raw_response)
 
 
 def get_sample_command():
