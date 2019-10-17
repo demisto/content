@@ -2382,10 +2382,35 @@ if 'requests' in sys.modules:
             return response.ok
 
     class BaseSessionClient(BaseClient):
-        '''
-        This class is the same as BaseClient only that it keeps a session open -
-        meaning it saves the cookies if needed.
-        '''
+        """Client to use in integrations with powerful _http_request
+            Same as BaseClient, only keeps a session open with the server.
+            :type base_url: ``str``
+            :param base_url: Base server address with suffix, for example: https://example.com/api/v2/.
+
+            :type verify: ``bool``
+            :param verify: Whether the request should verify the SSL certificate.
+
+            :type proxy: ``bool``
+            :param proxy: Whether to run the integration using the system proxy.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204).
+                If you specify "None", will use requests.Response.ok
+
+            :type headers: ``dict``
+            :param headers:
+                The request headers, for example: {'Accept`: `application/json`}.
+                Can be None.
+
+            :type auth: ``dict`` or ``tuple``
+            :param auth:
+                The request authorization, for example: (username, password).
+                Can be None.
+
+            :return: No data returned
+            :rtype: ``None``
+            """
         def __init__(self, base_url, *args, **kwargs):
             self._session = requests.Session()
             super().__init__(base_url, *args, **kwargs)
