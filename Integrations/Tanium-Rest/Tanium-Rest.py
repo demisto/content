@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import json
-import urllib3
 
 
 ''' GLOBALS/PARAMS '''
