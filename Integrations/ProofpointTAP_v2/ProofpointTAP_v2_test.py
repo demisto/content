@@ -244,7 +244,7 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
+    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "1111@evil.zz"
 
 
 @patch("ProofpointTAP_v2.get_now", get_mocked_time)
@@ -269,11 +269,39 @@ def test_next_fetch(requests_mock):
         first_fetch_time="3 month",
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
-        threat_type=""
+        threat_type="",
+        limit=50
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
+    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "1111@evil.zz"
+
+
+def test_fetch_limit(requests_mock):
+    mock_date = "2010-01-01T00:00:00Z"
+    requests_mock.get(MOCK_URL + '/v2/siem/all', json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": mock_date},
+        first_fetch_time="3 month",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=3
+    )
+
+    assert len(incidents) == 3
+    assert next_run == '2010-01-30T00:01:00Z'
 
 
 def test_get_fetch_times():

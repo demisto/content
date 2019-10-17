@@ -7,9 +7,10 @@ from CommonServerPython import *
 from datetime import datetime, timedelta
 import json
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ALL_EVENTS = "All"
 ISSUES_EVENTS = "Issues"
@@ -156,7 +157,7 @@ def get_events_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status):
+def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
 
@@ -167,8 +168,6 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     fetch_times = get_fetch_times(last_fetch)
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
-        if len(incidents) > 50:
-            break
         if index > 5:
             break
         if index < fetch_time_count - 1:
@@ -182,8 +181,6 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
         message_delivered = raw_events.get("messagesDelivered", [])
         for raw_event in message_delivered:
-            if len(incidents) > 50:
-                break
             raw_event["type"] = "messages delivered"
             event_guid = raw_events.get("GUID", "")
             incident = {
@@ -192,19 +189,19 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             }
             if raw_event["messageTime"] > last_fetch:
                 last_fetch = raw_event["messageTime"]
+            last_event_fetch = raw_event["messageTime"]
 
             threat_info_map = raw_event.get("threatsInfoMap", [])
-
             for threat in threat_info_map:
                 if threat["threatTime"] > last_fetch:
                     last_fetch = threat["threatTime"]
-
+                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
+                        "threatTime"]
+            incident['Occurred'] = last_event_fetch
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
         for raw_event in message_blocked:
-            if len(incidents) > 50:
-                break
             raw_event["type"] = "messages blocked"
             event_guid = raw_events.get("GUID", "")
             incident = {
@@ -215,19 +212,20 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             if raw_event["messageTime"] > last_fetch:
                 last_fetch = raw_event["messageTime"]
 
+            last_event_fetch = raw_event["messageTime"]
+
             threat_info_map = raw_event.get("threatsInfoMap", [])
             for threat in threat_info_map:
-                if len(incidents) > 50:
-                    break
                 if threat["threatTime"] > last_fetch:
                     last_fetch = threat["threatTime"]
+                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
+                        "threatTime"]
 
+            incident['Occurred'] = last_event_fetch
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
         for raw_event in clicks_permitted:
-            if len(incidents) > 50:
-                break
             raw_event["type"] = "clicks permitted"
             event_guid = raw_events.get("GUID", "")
             incident = {
@@ -240,13 +238,12 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
             if raw_event["threatTime"] > last_fetch:
                 last_fetch = raw_event["threatTime"]
-
+            incident['Occurred'] = raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else \
+                raw_event["threatTime"]
             incidents.append(incident)
 
         clicks_blocked = raw_events.get("clicksBlocked", [])
         for raw_event in clicks_blocked:
-            if len(incidents) > 50:
-                break
             raw_event["type"] = "clicks blocked"
             event_guid = raw_events.get("GUID", "")
             incident = {
@@ -259,11 +256,19 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
             if raw_event["threatTime"] > fetch_time:
                 last_fetch = raw_event["threatTime"]
-
+            incident['Occurred'] = raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else \
+                raw_event["threatTime"]
             incidents.append(incident)
+
     last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
+    last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
+    last_fetch = (last_fetch_datetime + timedelta(seconds=1)).strftime(DATE_FORMAT)
     next_run = {'last_fetch': last_fetch}
 
+    # limit incidents to the limit given
+    incidents.sort(key=lambda a: a.get('Occurred'))
+    if len(incidents) > limit:
+        incidents = incidents[:limit]
     return next_run, incidents
 
 
@@ -293,6 +298,7 @@ def main():
 
     event_type_filter = demisto.params().get('events_type')
 
+    fetch_limit = 50
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
 
@@ -312,7 +318,8 @@ def main():
                 first_fetch_time=fetch_time,
                 event_type_filter=event_type_filter,
                 threat_status=threat_status,
-                threat_type=threat_type
+                threat_type=threat_type,
+                limit=fetch_limit
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
