@@ -156,7 +156,7 @@ def search_potential_secrets(secrets_file_paths):
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
         # Validate if is integration file
-        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,string=file_path)
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX, string=file_path, flags=re.IGNORECASE)
         # if py/js file, search for yml in order to retrieve temp white list
         if file_extension in {'.py', '.js'} or integration_readme:
             yml_file_contents = retrieve_related_yml(file_dir_path_temp)
