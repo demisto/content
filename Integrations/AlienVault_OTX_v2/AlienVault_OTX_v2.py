@@ -58,6 +58,11 @@ class Client(BaseClient):
         else:
             suffix = f'{section}/{sub_section}'
         # Send a request using our http_request wrapper
+        if sub_section == 'passive_dns':
+            return self._http_request('GET',
+                                      url_suffix=suffix,
+                                      params=params,
+                                      timeout=30)
         return self._http_request('GET',
                                   url_suffix=suffix,
                                   params=params)
