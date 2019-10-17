@@ -982,6 +982,14 @@ def upload_file_command():
     ticket_id = args['id']
     file_id = args['file_id']
     file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
+
+    # in case of info file
+    if not file_name:
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+
+    if not file_name:
+        return_error('Could not find the file')
+
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
     res = upload_file(ticket_id, file_id, file_name, ticket_type)
@@ -1457,6 +1465,9 @@ def fetch_incidents():
 
 
 def test_module():
+    # Validate fetch_time parameter is valid (if not, parse_date_range will raise the error message)
+    parse_date_range(FETCH_TIME, '%Y-%m-%d %H:%M:%S')
+
     path = 'table/' + TICKET_TYPE + '?sysparm_limit=1'
     res = send_request(path, 'GET')
     if 'result' not in res:

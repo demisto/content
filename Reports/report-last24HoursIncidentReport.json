@@ -416,15 +416,15 @@
     },
     "incident.status.0": {
       "type": "string",
-      "value": "Not Assigned"
+      "value": "Pending"
     },
     "incident.status.1": {
       "type": "string",
-      "value": "Assigned"
+      "value": "Active"
     },
     "incident.status.2": {
       "type": "string",
-      "value": "Done"
+      "value": "Closed"
     },
     "incident.status.3": {
       "type": "string",
