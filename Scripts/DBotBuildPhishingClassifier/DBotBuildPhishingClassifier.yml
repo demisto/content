@@ -47,6 +47,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
+  description: The time field to consider in the incident query
   isArray: false
   name: timeField
   predefined:
