@@ -143,59 +143,62 @@ class Client(BaseClient):
         return obj
 
     def get_package_item(self, package):
-        item = {}  # type: ignore
-        item['ContentSet'] = {}
-        item['ModUser'] = {}
-        item['Command'] = package.get('command')
-        item['CommandTimeout'] = package.get('command_timeout')
+        item = {
+            'ContentSet': {},
+            'ModUser': {},
+            'Command': package.get('command'),
+            'CommandTimeout': package.get('command_timeout'),
+            'CreationTime': package.get('creation_time'),
+            'DisplayName': package.get('display_name'),
+            'ExpireSeconds': package.get('expire_seconds'),
+            'ID': package.get('id'),
+            'LastModifiedBy': package.get('last_modified_by'),
+            'LastUpdate': package.get('last_update'),
+            'ModificationTime': package.get('modification_time'),
+            'Name': package.get('name'),
+            'SourceId': package.get('source_id'),
+            'VerifyExpireSeconds': package.get('verify_expire_seconds'),
+            'Parameters': self.get_parameter_item(package)
+        }
+
         content_set = package.get('content_set')
         if content_set:
             item['ContentSet']['Id'] = content_set.get('id')
             item['ContentSet']['Name'] = content_set.get('name')
 
-        item['CreationTime'] = package.get('creation_time')
-        item['DisplayName'] = package.get('display_name')
-        item['ExpireSeconds'] = package.get('expire_seconds')
-        item['ID'] = package.get('id')
-        item['LastModifiedBy'] = package.get('last_modified_by')
-        item['LastUpdate'] = package.get('last_update')
         mod_user = package.get('ModUser')
         if mod_user:
             item['ModUser']['Domain'] = mod_user.get('domain')
             item['ModUser']['Id'] = mod_user.get('id')
             item['ModUser']['Name'] = mod_user.get('name')
 
-        item['ModificationTime'] = package.get('modification_time')
-        item['Name'] = package.get('name')
-        item['SourceId'] = package.get('source_id')
-        item['VerifyExpireSeconds'] = package.get('verify_expire_seconds')
-        item['Parameters'] = self.get_parameter_item(package)
-
         files = package.get('files')
         files_list = []
         if files:
             for file in files:
-                tmp = {}
-                tmp['Id'] = file.get('id')
-                tmp['Hash'] = file.get('hash')
-                tmp['Name'] = file.get('name')
-                files_list.append(tmp)
+                files_list.append({
+                    'ID': file.get('id'),
+                    'Hash': file.get('hash'),
+                    'Name': file.get('name')
+                })
 
         item['Files'] = files_list
         return item
 
     def get_question_item(self, question):
-        item = {}
-        item['ID'] = question.get('id')
-        item['Expiration'] = question.get('expiration')
-        item['ExpireSeconds'] = question.get('expire_seconds')
-        item['ForceComputerIdFlag'] = question.get('force_computer_id_flag')
-        item['IsExpired'] = question.get('is_expired')
-        item['QueryText'] = question.get('query_text')
+        item = {
+            'ID': question.get('id'),
+            'Expiration': question.get('expiration'),
+            'ExpireSeconds': question.get('expire_seconds'),
+            'ForceComputerIdFlag': question.get('force_computer_id_flag'),
+            'IsExpired': question.get('is_expired'),
+            'QueryText': question.get('query_text')
+        }
 
         saved_question_id = question.get('saved_question').get('id')
         if saved_question_id:
             item['SavedQuestionId'] = saved_question_id
+
         user = question.get('user')
         if user:
             item['UserId'] = user.get('id')
@@ -203,28 +206,28 @@ class Client(BaseClient):
         return item
 
     def get_saved_question_item(self, question):
-        item = {}
-        item['ArchiveEnabledFlag'] = question.get('archive_enabled_flag')
-        item['ArchiveOwner'] = question.get('archive_owner')
-        item['ExpireSeconds'] = question.get('expire_seconds')
-        item['ID'] = question.get('id')
-        item['IssueSeconds'] = question.get('issue_seconds')
-        item['IssueSecondsNeverFlag'] = question.get('issue_seconds_never_flag')
-        item['KeepSeconds'] = question.get('keep_seconds')
-        item['ModTime'] = question.get('mod_time')
+        item = {
+            'ArchiveEnabledFlag': question.get('archive_enabled_flag'),
+            'ArchiveOwner': question.get('archive_owner'),
+            'ExpireSeconds': question.get('expire_seconds'),
+            'ID': question.get('id'),
+            'IssueSeconds': question.get('issue_seconds'),
+            'IssueSecondsNeverFlag': question.get('issue_seconds_never_flag'),
+            'KeepSeconds': question.get('keep_seconds'),
+            'ModTime': question.get('mod_time'),
+            'MostRecentQuestionId': question.get('most_recent_question_id'),
+            'Name': question.get('name'),
+            'QueryText': question.get('query_text'),
+            'QuestionId': question.get('question').get('id'),
+            'RowCountFlag': question.get('row_count_flag'),
+            'SortColumn': question.get('sort_column'),
+        }
 
         mod_user = question.get('ModUser')
         if mod_user:
             item['ModUserDomain'] = mod_user.get('domain')
             item['ModUserId'] = mod_user.get('id')
             item['ModUserName'] = mod_user.get('name')
-
-        item['MostRecentQuestionId'] = question.get('most_recent_question_id')
-        item['Name'] = question.get('name')
-        item['QueryText'] = question.get('query_text')
-        item['QuestionId'] = question.get('question').get('id')
-        item['RowCountFlag'] = question.get('row_count_flag')
-        item['SortColumn'] = question.get('sort_column')
 
         user = question.get('user')
         if user:
@@ -233,30 +236,33 @@ class Client(BaseClient):
         return item
 
     def get_sensor_item(self, sensor):
-        item = {}
-        item['Category'] = sensor.get('category')
+        item = {
+            'Category': sensor.get('category'),
+            'CreationTime': sensor.get('creation_time'),
+            'Description': sensor.get('description'),
+            'Hash': sensor.get('hash'),
+            'ID': sensor.get('id'),
+            'IgnoreCaseFlag': sensor.get('ignore_case_flag'),
+            'KeepDuplicatesFlag': sensor.get('keep_duplicates_flag'),
+            'LastModifiedBy': sensor.get('last_modified_by'),
+            'MaxAgeSeconds': sensor.get('max_age_seconds'),
+            'ModificationTime': sensor.get('modification_time'),
+            'Name': sensor.get('name'),
+            'SourceId': sensor.get('source_id'),
+            'Parameters': self.get_parameter_item(sensor)
+        }
+
         content_set = sensor.get('content_set')
         if content_set:
             item['ContentSetId'] = content_set.get('id')
             item['ContentSetName'] = content_set.get('name')
-        item['CreationTime'] = sensor.get('creation_time')
-        item['Description'] = sensor.get('description')
-        item['Hash'] = sensor.get('hash')
-        item['ID'] = sensor.get('id')
-        item['IgnoreCaseFlag'] = sensor.get('ignore_case_flag')
-        item['KeepDuplicatesFlag'] = sensor.get('keep_duplicates_flag')
-        item['LastModifiedBy'] = sensor.get('last_modified_by')
-        item['MaxAgeSeconds'] = sensor.get('max_age_seconds')
 
         mod_user = sensor.get('mod_user')
         if mod_user:
             item['ModUserDomain'] = mod_user.get('domain')
             item['ModUserId'] = mod_user.get('id')
             item['ModUserName'] = mod_user.get('name')
-        item['ModificationTime'] = sensor.get('modification_time')
-        item['Name'] = sensor.get('name')
-        item['SourceId'] = sensor.get('source_id')
-        item['Parameters'] = self.get_parameter_item(sensor)
+
         return item
 
     def get_parameter_item(self, sensor):
@@ -268,35 +274,36 @@ class Client(BaseClient):
             except ValueError:
                 return {'Value': parameters}
             for param in parameters:
-                tmp = {}
-                tmp['key'] = param.get('key')
-                tmp['Label'] = param.get('label')
-                tmp['Values'] = param.get('values')
-                tmp['ParameterType'] = param.get('parameterType')
-                params_list.append(tmp)
+                params_list.append({
+                    'Key': param.get('key'),
+                    'Label': param.get('label'),
+                    'Values': param.get('values'),
+                    'ParameterType': param.get('parameterType')
+                })
+
         return params_list
 
     def get_action_item(self, action):
-        item = {}
-
-        item['ActionGroupId'] = action.get('action_group').get('id')
-        item['ActionGroupName'] = action.get('action_group').get('name')
-        item['ApproverId'] = action.get('approver').get('id')
-        item['ApproverName'] = action.get('approver').get('name')
-        item['CreationTime'] = action.get('creation_time')
-        item['ExpirationTime'] = action.get('expiration_time')
-        item['ExpireSeconds'] = action.get('expire_seconds')
-        item['HistorySavedQuestionId'] = action.get('history_saved_question').get('id')
-        item['ID'] = action.get('id')
-        item['Name'] = action.get('name')
-        item['PackageId'] = action.get('package_spec').get('id')
-        item['PackageName'] = action.get('package_spec').get('name')
-        item['SavedActionId'] = action.get('saved_action').get('id')
-        item['StartTime'] = action.get('start_time')
-        item['Status'] = action.get('status')
-        item['StoppedFlag'] = action.get('stopped_flag')
-        item['TargetGroupId'] = action.get('target_group').get('id')
-        item['TargetGroupName'] = action.get('target_group').get('name')
+        item = {
+            'ActionGroupId': action.get('action_group').get('id'),
+            'ActionGroupName': action.get('action_group').get('name'),
+            'ApproverId': action.get('approver').get('id'),
+            'ApproverName': action.get('approver').get('name'),
+            'CreationTime': action.get('creation_time'),
+            'ExpirationTime': action.get('expiration_time'),
+            'ExpireSeconds': action.get('expire_seconds'),
+            'HistorySavedQuestionId': action.get('history_saved_question').get('id'),
+            'ID': action.get('id'),
+            'Name': action.get('name'),
+            'PackageId': action.get('package_spec').get('id'),
+            'PackageName': action.get('package_spec').get('name'),
+            'SavedActionId': action.get('saved_action').get('id'),
+            'StartTime': action.get('start_time'),
+            'Status': action.get('status'),
+            'StoppedFlag': action.get('stopped_flag'),
+            'TargetGroupId': action.get('target_group').get('id'),
+            'TargetGroupName': action.get('target_group').get('name')
+        }
 
         user = action.get('user')
         if user:
@@ -306,61 +313,62 @@ class Client(BaseClient):
         return item
 
     def get_saved_action_item(self, action):
-        item = {}
-        item['ActionGroupId'] = action.get('action_group_id')
-        item['ApprovedFlag'] = action.get('approved_flag')
-        item['ApproverId'] = action.get('approver').get('id')
-        item['ApproverName'] = action.get('approver').get('name')
-        item['CreationTime'] = action.get('creation_time')
-        item['EndTime'] = action.get('end_time')
-        item['ExpireSeconds'] = action.get('expire_seconds')
-        item['ID'] = action.get('id')
-        item['LastActionId'] = action.get('last_action').get('id')
-        item['LastActionStartTime'] = action.get('last_action').get('start_time')
-        item['TargetGroupId'] = action.get('target_group').get('id')
-        item['LastStartTime'] = action.get('last_start_time')
-        item['Name'] = action.get('name')
-        item['NextStartTime'] = action.get('next_start_time')
+        item = {
+            'ActionGroupId': action.get('action_group_id'),
+            'ApprovedFlag': action.get('approved_flag'),
+            'ApproverId': action.get('approver').get('id'),
+            'ApproverName': action.get('approver').get('name'),
+            'CreationTime': action.get('creation_time'),
+            'EndTime': action.get('end_time'),
+            'ExpireSeconds': action.get('expire_seconds'),
+            'ID': action.get('id'),
+            'LastActionId': action.get('last_action').get('id'),
+            'LastActionStartTime': action.get('last_action').get('start_time'),
+            'TargetGroupId': action.get('target_group').get('id'),
+            'LastStartTime': action.get('last_start_time'),
+            'Name': action.get('name'),
+            'NextStartTime': action.get('next_start_time'),
+            'StartTime': action.get('start_time'),
+            'Status': action.get('status'),
+            'UserId': action.get('user').get('id'),
+            'UserName': action.get('user').get('name')
+        }
 
         package_spec = action.get('package_spec')
         if package_spec:
             item['PackageId'] = package_spec.get('id')
             item['PackageName'] = package_spec.get('name')
             item['PackageSourceHash'] = package_spec.get('source_hash')
-        item['StartTime'] = action.get('start_time')
-        item['Status'] = action.get('status')
-        item['UserId'] = action.get('user').get('id')
-        item['UserName'] = action.get('user').get('name')
+
         return item
 
     def get_saved_action_pending_item(self, action):
-        item = {}
-        item['ApprovedFlag'] = action.get('approved_flag')
-        item['ID'] = action.get('id')
-        item['Name'] = action.get('name')
-        item['OwnerUserId'] = action.get('owner_user_id')
-        return item
+        return {
+            'ApprovedFlag': action.get('approved_flag'),
+            'ID': action.get('id'),
+            'Name': action.get('name'),
+            'OwnerUserId': action.get('owner_user_id')
+        }
 
     def get_host_item(self, client):
-        item = {}
-        item['ComputerId'] = client.get('computer_id')
-        item['FullVersion'] = client.get('full_version')
-        item['HostName'] = client.get('host_name')
-        item['IpAddressClient'] = client.get('ipaddress_client')
-        item['IpAddressServer'] = client.get('ipaddress_server')
-        item['LastRegistration'] = client.get('last_registration')
-        item['Status'] = client.get('status')
-        return item
+        return {
+            'ComputerId': client.get('computer_id'),
+            'FullVersion': client.get('full_version'),
+            'HostName': client.get('host_name'),
+            'IpAddressClient': client.get('ipaddress_client'),
+            'IpAddressServer': client.get('ipaddress_server'),
+            'LastRegistration': client.get('last_registration'),
+            'Status': client.get('status')
+        }
 
     def get_group_item(self, group):
-        item = {}
-        item['ID'] = group.get('id')
-        item['Name'] = group.get('name')
-        item['Deleted'] = group.get('deleted_flag')
-        item['Text'] = group.get('text')
-        type = group.get('type')
-        item['Type'] = group_types[type]
-        return item
+        return {
+            'ID': group.get('id'),
+            'Name': group.get('name'),
+            'Deleted': group.get('deleted_flag'),
+            'Text': group.get('text'),
+            'Type': group_types[group.get('type')]
+        }
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
