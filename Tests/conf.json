@@ -1848,6 +1848,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "integrations": "GoogleDocs",
+            "playbookID": "GoogleDocs-test"
+        },
+        {
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
         },
