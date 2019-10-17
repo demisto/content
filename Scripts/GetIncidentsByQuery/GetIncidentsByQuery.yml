@@ -51,12 +51,14 @@ args:
   - modified
   required: false
   secret: false
+  description: The time field to consider in the incident query
 - default: false
   description: Filter incidents with non-empty value in those field, comma-separated  values
   isArray: false
   name: NonEmptyFields
   required: false
   secret: false
+comment: Get incidents and output in a json file based on an incident query
 commonfields:
   id: 1db1214a-4f87-4867-98ab-0c2dd3171733
   version: -1
@@ -71,6 +73,8 @@ outputs:
   type: String
 script: '-'
 system: false
+tags:
+- ''
 timeout: 60µs
 type: python
 dockerimage: demisto/dateutil
