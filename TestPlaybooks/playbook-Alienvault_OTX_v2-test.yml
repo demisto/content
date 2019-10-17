@@ -1023,7 +1023,7 @@ tasks:
       - "31"
     scriptarguments:
       indicator:
-        simple: 8.8.8.8
+        simple: 192.168.0.1
       indicator-type:
         simple: IPv4
       indicator_type:
