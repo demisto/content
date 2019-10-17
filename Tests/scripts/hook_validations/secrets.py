@@ -148,18 +148,19 @@ def search_potential_secrets(secrets_file_paths):
         high_entropy_strings = []
         secrets_found_with_regex = []
         yml_file_contents = None
-        file_path_temp, file_extension = os.path.splitext(file_path)
-        file_dir_path_temp = os.path.dirname(file_path)
+        _, file_extension = os.path.splitext(file_path)
         skip_secrets = False
 
         secrets_white_list = set(conf_secrets_white_list)
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-        # Validate if it is integration file
-        integration_readme = re.match(pattern=INTEGRATION_README_REGEX, string=file_path, flags=re.IGNORECASE)
+        # Validate if it is integration documentation file
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
+                                      string=file_path,
+                                      flags=re.IGNORECASE)
         # if py/js file, search for yml in order to retrieve temp white list
         if file_extension in {'.py', '.js'} or integration_readme:
-            yml_file_contents = retrieve_related_yml(file_dir_path_temp)
+            yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
         # Add all context output paths keywords to whitelist temporary
         if file_extension == '.yml' or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
@@ -209,9 +210,9 @@ def create_temp_white_list(file_contents):
     return temp_white_list
 
 
-def retrieve_related_yml(file_dir_path_temp):
+def retrieve_related_yml(integration_path):
     matching_yml_file_contents = None
-    yml_file = file_dir_path_temp + '/' + file_dir_path_temp.split('/')[-1] + '.yml'
+    yml_file = os.path.join(integration_path, os.path.basename(integration_path) + '.yml')
     if os.path.exists(yml_file):
         with io.open('./' + yml_file, mode="r", encoding="utf-8") as matching_yml_file:
             matching_yml_file_contents = matching_yml_file.read()
