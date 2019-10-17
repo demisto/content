@@ -147,6 +147,9 @@ def main():
         tags = res.json().get('tags', [])
         if tags:
             tag = find_latest_tag(tags)
+
+        else:
+            tag = 'latest'
         demisto.results(tag)
     except Exception as ex:
         return_error("Failed getting tag for: {}. Err: {}".format(docker_full_name, str(ex)))
