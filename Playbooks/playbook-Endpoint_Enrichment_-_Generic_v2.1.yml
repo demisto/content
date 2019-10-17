@@ -823,10 +823,10 @@ tasks:
       version: -1
       name: Get host information from ExtraHop Reveal(x)
       description: Get host information from ExtraHop Reveal(x).
-      script: 'ExtraHop v2|||extrahop-device-search'
+      script: '|||extrahop-device-search'
       type: regular
       iscommand: true
-      brand: ExtraHop v2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -918,9 +918,85 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
-- contextPath: ExtraHop.Device
-  description: The device information about the hostname that was enriched using ExtraHop
-    Reveal(x).
-  type: unknown
+- contextPath: ExtraHop.Device.Macaddr
+  description: The MAC Address of the device.
+  type: String
+- contextPath: ExtraHop.Device.DeviceClass
+  description: The class of the device.
+  type: String
+- contextPath: ExtraHop.Device.UserModTime
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.AutoRole
+  description: The role automatically detected by the ExtraHop.
+  type: String
+- contextPath: ExtraHop.Device.ParentId
+  description: The ID of the parent device.
+  type: Number
+- contextPath: ExtraHop.Device.Vendor
+  description: The device vendor.
+  type: String
+- contextPath: ExtraHop.Device.Analysis
+  description: The level of analysis preformed on the device.
+  type: string
+- contextPath: ExtraHop.Device.DiscoveryId
+  description: The UUID given by the Discover appliance.
+  type: String
+- contextPath: ExtraHop.Device.DefaultName
+  description: The default name of the device.
+  type: String
+- contextPath: ExtraHop.Device.DisplayName
+  description: The display name of device.
+  type: String
+- contextPath: ExtraHop.Device.OnWatchlist
+  description: Whether the device is on the advanced analysis whitelist.
+  type: Boolean
+- contextPath: ExtraHop.Device.ModTime
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.IsL3
+  description: Indicates whether the device is a Layer 3 device.
+  type: Boolean
+- contextPath: ExtraHop.Device.Role
+  description: The role of the device.
+  type: String
+- contextPath: ExtraHop.Device.DiscoverTime
+  description: The time that the device was discovered.
+  type: Number
+- contextPath: ExtraHop.Device.Id
+  description: The ID of the device.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr4
+  description: The IPv4 address of the device.
+  type: String
+- contextPath: ExtraHop.Device.Vlanid
+  description: The ID of VLan.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr6
+  description: The IPv6 address of the device.
+  type: string
+- contextPath: ExtraHop.Device.NodeId
+  description: The Node ID of the Discover appliance.
+  type: number
+- contextPath: ExtraHop.Device.Description
+  description: A user customizable description of the device.
+  type: string
+- contextPath: ExtraHop.Device.DnsName
+  description: The DNS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.DhcpName
+  description: The DHCP name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.CdpName
+  description: The Cisco Discovery Protocol name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.NetbiosName
+  description: The NetBIOS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.Url
+  description: Link to the device details page in ExtraHop.
+  type: string
 tests:
   - Endpoint Enrichment - Generic v2.1 - Test

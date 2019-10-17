@@ -659,7 +659,7 @@ def get_activity_map(ip_or_id, time_interval, from_time, until_time, peer_role, 
             start = from_time
             end = until_time
         else:
-            return_error("Error when using a fixed time range both from_time and until_time timestamps need to be provided.")
+            raise ValueError("When using a fixed time range both from_time and until_time timestamps need to be provided.")
     else:
         start, interval = time_intervals.get(time_interval, (30, 'MIN'))
         end = 0
@@ -903,7 +903,6 @@ def search_packets_command():
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-LOG('Command being called is {command}'.format(command=demisto.command()))
 try:
     if demisto.command() == 'test-module':
         test_module()
@@ -937,6 +936,4 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    return_error('Failed to execute {} command. Error: {}'.format(demisto.command(), str(e)))
