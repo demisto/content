@@ -1693,7 +1693,7 @@
         },
         {
             "integrations": "DomainTools_Iris",
-            "playbookID": "eb5bb557-9de5-4bfc-8dbc-f1bebddd342a",
+            "playbookID": "DomainTools Iris - Test",
             "fromversion": "4.1.0"
         },
         {

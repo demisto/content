@@ -6,21 +6,22 @@ args:
   required: true
   secret: false
 - default: false
-  description: String of tags in the form of 'tag1,tag2,tag3'
+  description: 'Array of tags in the form of [{''label'': ''tag1''},{''label'': ''tag2''},{''label'':
+    ''tag3''}]'
   isArray: true
   name: domain_tags
   required: true
   secret: false
 - default: false
-  description: Array of tags ['tag1','tag2','tag3']
-  isArray: false
-  name: bad_tags
+  description: Array of tags in the form of ["tag1","tag2","tag3"]
+  isArray: true
+  name: malicious_tags
   required: true
   secret: false
 comment: Check DomainTools domain tags and if a tag is found mark incident as high
   severity
 commonfields:
-  id: 0f7c406e-112a-4563-8b39-e63ad1bce29c
+  id: CheckTags
   version: -1
 enabled: false
 name: CheckTags

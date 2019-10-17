@@ -1,6 +1,6 @@
-id: eb5bb557-9de5-4bfc-8dbc-f1bebddd342a
+id: DomainTools Iris - Test
 version: -1
-name: DomainToolsTestPlaybook
+name: DomainTools Iris - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -67,7 +67,7 @@ tasks:
       id: 92a0f809-f9e4-4e19-8902-21574950c0e8
       version: -1
       name: Get Analytics Data for Domain
-      script: DomainTools Iris|||domain-analytics
+      script: DomainTools Iris|||domaintoolsiris-analytics
       type: regular
       iscommand: true
       brand: DomainTools Iris
@@ -96,7 +96,7 @@ tasks:
       id: c8cedd50-d4ac-4861-8378-14d88d6feeb0
       version: -1
       name: Get Threat Profile for Domain
-      script: DomainTools Iris|||threat-profile
+      script: DomainTools Iris|||domaintoolsiris-threat-profile
       type: regular
       iscommand: true
       brand: DomainTools Iris
@@ -125,7 +125,7 @@ tasks:
       id: c326acce-7fa6-4aca-89b9-030b2f24359f
       version: -1
       name: Pivot on IP Addresses
-      script: DomainTools Iris|||domain-pivot
+      script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
       brand: DomainTools Iris
@@ -135,7 +135,7 @@ tasks:
     scriptarguments:
       email: {}
       ip:
-        simple: ${Domain.DomainTools.Hosting.IPAddresses.address.value}
+        simple: ${DomainTools.Domains.Hosting.IPAddresses.address.value}
       mailserver_host: {}
       nameserver_host: {}
       nameserver_ip: {}
@@ -188,7 +188,7 @@ view: |-
 inputs:
 - key: domain
   value:
-    simple: ${Domain.Name}
+    simple: "demisto.com"
   required: true
   description: ""
 outputs: []

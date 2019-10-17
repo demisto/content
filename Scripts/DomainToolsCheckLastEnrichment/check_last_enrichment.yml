@@ -7,7 +7,7 @@ args:
   secret: false
 comment: Check if DomainTools Data is in Need of Enrichment
 commonfields:
-  id: 106f0fc3-eefd-4a72-bc07-91a9a33c725e
+  id: CheckLastEnrichment
   version: -1
 enabled: false
 name: CheckLastEnrichment

@@ -47,7 +47,7 @@ args:
   secret: false
 comment: Calculates the indicator's reputation.
 commonfields:
-  id: 4661bbc0-b5a8-482a-9778-7e36ce586b64
+  id: CalculateIndicatorReputation
   version: -1
 enabled: false
 name: CalculateIndicatorReputation

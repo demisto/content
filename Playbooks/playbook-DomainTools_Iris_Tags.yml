@@ -1,20 +1,18 @@
-id: 07d67398-c9c2-4060-8050-e20835f2572d
-version: -1
-name: IrisTags
+id: DomainTools_Iris_Tags
+version: 9
+name: DomainTools_Iris_Tags
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
-    taskid: 9a881d0c-3b56-4d44-80c3-c9561eac4708
+    taskid: 15a9780b-4480-4304-8908-16a5e8b8563b
     type: start
     task:
-      id: 9a881d0c-3b56-4d44-80c3-c9561eac4708
+      id: 15a9780b-4480-4304-8908-16a5e8b8563b
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "3"
@@ -31,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 152c9203-dc5a-4bb0-8c9a-0988402debec
+    taskid: d70682ce-8615-4999-8295-1baeb9e31383
     type: regular
     task:
-      id: 152c9203-dc5a-4bb0-8c9a-0988402debec
+      id: d70682ce-8615-4999-8295-1baeb9e31383
       version: -1
       name: CheckTags
       description: Check DomainTools domain tags and if a tag is found mark incident
@@ -52,9 +50,11 @@ tasks:
       domain:
         simple: ${inputs.domain}
       domain_tags:
-        simple: ${Domain.DomainTools.Analytics.Tags}
+        simple: ${DomainTools.Domains.Analytics.Tags}
       incident_id:
         simple: ${incident.id}
+      malicious_tags:
+        simple: ${lists.tags}
       tags:
         simple: ${lists.tags}
     separatecontext: false
@@ -70,16 +70,15 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: c6c1e22a-674e-4fa7-8de6-e973c60c92ee
+    taskid: 67a6fbed-af34-434f-8b6e-6c7088e8cafe
     type: title
     task:
-      id: c6c1e22a-674e-4fa7-8de6-e973c60c92ee
+      id: 67a6fbed-af34-434f-8b6e-6c7088e8cafe
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -93,16 +92,15 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: b5359def-f6af-49d6-8f1d-6ff547ff3ef0
+    taskid: 11f91fd6-1b9b-4230-8035-4689fa484d80
     type: condition
     task:
-      id: b5359def-f6af-49d6-8f1d-6ff547ff3ef0
+      id: 11f91fd6-1b9b-4230-8035-4689fa484d80
       version: -1
       name: Check Domain has Tags
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "2"
@@ -115,7 +113,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ${Domain.DomainTools.Analytics.Tags}
+              simple: ${DomainTools.Domains.Analytics.Tags}
             iscontext: true
     view: |-
       {
@@ -139,14 +137,8 @@ view: |-
       }
     }
   }
-inputs:
-- key: domain
-  value:
-    simple: ${Domain.Name}
-  required: false
-  description: ""
+inputs: []
 outputs:
 - contextPath: domain
   description: domain
   type: unknown
-fromversion: 4.1.0

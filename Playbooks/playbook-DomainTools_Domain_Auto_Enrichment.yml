@@ -1,6 +1,6 @@
-id: cde43cd1-28a5-40e7-891e-52e1d82075ed
+id: DomainTools_Domain_Auto_Enrichment
 version: -1
-name: AutoEnrichment
+name: DomainTools_Domain_Auto_Enrichment
 starttaskid: "0"
 description: ""
 tasks:
@@ -49,7 +49,7 @@ tasks:
       - "4"
     scriptarguments:
       last_enrichment:
-        simple: ${Domain.DomainTools.LastEnriched}
+        simple: ${DomainTools.Domains.LastEnriched}
     separatecontext: false
     view: |-
       {
@@ -79,9 +79,9 @@ tasks:
       - "5"
     scriptarguments:
       domain:
-        simple: ${Domain.DomainTools}
+        simple: ${DomainTools.Domains}
       domaintools_data:
-        simple: ${Domain.DomainTools}
+        simple: ${DomainTools.Domains}
     separatecontext: false
     view: |-
       {
@@ -165,4 +165,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- DomainTools Iris - Test
 fromversion: 4.1.0
