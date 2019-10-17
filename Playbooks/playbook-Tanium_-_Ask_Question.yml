@@ -1,7 +1,7 @@
-id: Tanium - Ask question
+id: Tanium - Ask Question
 version: -1
 fromversion: ""
-name: Tanium - Ask question
+name: Tanium - Ask Question
 description: 'This playbook used generic polling to gets question result.'
 starttaskid: "0"
 tasks:
@@ -48,9 +48,11 @@ tasks:
       - "2"
     scriptarguments:
       parameters:
-        simple: ${inputs.parameters}
+        complex:
+          root: inputs.parameters
       question-text:
-        simple: ${inputs.question-text}
+        complex:
+          root: inputs.question-text
     separatecontext: false
     view: |-
       {

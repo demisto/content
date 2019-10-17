@@ -1,7 +1,7 @@
-id: Tanium - Get saved question result
+id: Tanium - Get Saved Question Result
 version: -1
 fromversion: ""
-name: Tanium - Get saved question result
+name: Tanium - Get Saved Question Result
 description: 'This playbook used generic polling to gets saved question result.'
 starttaskid: "0"
 tasks:
@@ -57,7 +57,8 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${inputs.saved-question-id}
+        complex:
+          root: inputs.saved-question-id
       Interval:
         simple: "1"
       PollingCommandArgName:
