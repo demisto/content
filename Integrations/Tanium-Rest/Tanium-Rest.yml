@@ -7,14 +7,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Domain
   name: domain
   required: true
@@ -23,6 +15,14 @@ configuration:
   name: credentials
   required: true
   type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Tanium endpoint security and systems management
 display: Tanium Rest
 name: Tanium-Rest
@@ -42,7 +42,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a package object based on name or ID.
+    description: Get a package object based on name or ID. Package ID or package name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-package
     outputs:
@@ -245,7 +245,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a sensor object based on name or ID.
+    description: Get a sensor object based on name or ID. Sensor ID or sensor name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-sensor
     outputs:
@@ -353,7 +353,7 @@ script:
     name: tn-list-saved-questions
     outputs:
     - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
-      description: If value is 1, archiving is enabled.
+      description: If value is true, archiving is enabled.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.ArchiveOwner
       description: The user that owns the archive. Archives can be shared between
@@ -402,7 +402,7 @@ script:
       description: The id of the question from which to create the saved question.
       type: Number
     - contextPath: Tanium.SavedQuestion.RowCountFlag
-      description: If the value is 1, only the row count data is saved when archiving
+      description: If the value is true, only the row count data is saved when archiving
         this question.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.SortColumn
@@ -435,7 +435,7 @@ script:
       type: Unknown
     - contextPath: Tanium.SavedQuestionResult.Status
       description: Status of the question request - Completed or Pending.
-      type: Unknown
+      type: String
   - deprecated: false
     description: Gets all clients.
     execution: false
@@ -660,7 +660,7 @@ script:
       description: The id of the group of clients to target.
       type: Number
     - contextPath: Tanium.SavedAction.ApprovedFlag
-      description: Value is 1 if the saved action is approved, 0 if not approved.
+      description: Value is true if the saved action is approved, false if not approved.
       type: Boolean
     - contextPath: Tanium.SavedAction.ApproverId
       description: The id of the user to approve the saved action.
@@ -738,7 +738,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a saved action object based on name or ID.
+    description: Get a saved action object based on name or ID. Action ID or action name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-saved-action
     outputs:
@@ -746,7 +746,7 @@ script:
       description: The id of the group of clients to target.
       type: Number
     - contextPath: Tanium.SavedAction.ApprovedFlag
-      description: Value is 1 if the saved action is approved, 0 if not approved.
+      description: Value is true if the saved action is approved, false if not approved.
       type: Boolean
     - contextPath: Tanium.SavedAction.ApproverId
       description: The id of the user to approve the saved action.
@@ -824,12 +824,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a saved question object based on name or ID.
+    description: Get a saved question object based on name or ID. Question ID or question name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-saved-question-metadata
     outputs:
     - contextPath: Tanium.SavedQuestion.ArchiveEnabledFlag
-      description: If value is 1, archiving is enabled.
+      description: If value is true, archiving is enabled.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.ArchiveOwner
       description: The user that owns the archive. Archives can be shared between
@@ -878,7 +878,7 @@ script:
       description: The id of the question from which to create the saved question.
       type: Number
     - contextPath: Tanium.SavedQuestion.RowCountFlag
-      description: If the value is 1, only the row count data is saved when archiving
+      description: If the value is true, only the row count data is saved when archiving
         this question.
       type: Boolean
     - contextPath: Tanium.SavedQuestion.SortColumn
@@ -919,7 +919,7 @@ script:
       description: The id of the group of clients to target.
       type: Number
     - contextPath: Tanium.SavedAction.ApprovedFlag
-      description: Value is 1 if the saved action is approved, 0 if not approved.
+      description: Value is true if the saved action is approved, false if not approved.
       type: Boolean
     - contextPath: Tanium.SavedAction.ApproverId
       description: The id of the user to approve the saved action.
@@ -1015,7 +1015,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create action object based on package name or package ID.
+    description: Create action object based on package name or package ID. Group ID or group question is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-create-action
     outputs:
@@ -1069,7 +1069,7 @@ script:
       type: String
     - contextPath: Tanium.Action.StoppedFlag
       description: Whether an action stop has been issued for this action. A value
-        of 1 indicates an action stop was issued.
+        of true indicates an action stop was issued.
       type: Boolean
     - contextPath: Tanium.Action.TargetGroupId
       description: The id of the group of machines to target.
@@ -1149,7 +1149,7 @@ script:
       type: String
     - contextPath: Tanium.Action.StoppedFlag
       description: Whether an action stop has been issued for this action. A value
-        of 1 indicates an action stop was issued.
+        of true indicates an action stop was issued.
       type: Boolean
     - contextPath: Tanium.Action.TargetGroupId
       description: The id of the group of machines to target.
@@ -1228,7 +1228,7 @@ script:
       type: String
     - contextPath: Tanium.Action.StoppedFlag
       description: Whether an action stop has been issued for this action. A value
-        of 1 indicates an action stop was issued.
+        of true indicates an action stop was issued.
       type: Boolean
     - contextPath: Tanium.Action.TargetGroupId
       description: The id of the group of machines to target.
@@ -1259,7 +1259,7 @@ script:
     name: tn-list-saved-actions-pending-approval
     outputs:
     - contextPath: Tanium.PendingSavedAction.ApprovedFlag
-      description: Value is 1 if the saved action is approved, 0 if not approved.
+      description: Value is true if the saved action is approved, false if not approved.
       type: Boolean
     - contextPath: Tanium.PendingSavedAction.ID
       description: The unique ID of the saved_action object.
@@ -1284,7 +1284,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a group object based on ID or name.
+    description: Get a group object based on ID or name. Group ID or group name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-group
     outputs:
@@ -1332,7 +1332,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: ' Text filter-based computer group, For example - operating system
+      description: 'Text filter-based computer group, For example - operating system
         contains windows'
       isArray: false
       name: text-filter
