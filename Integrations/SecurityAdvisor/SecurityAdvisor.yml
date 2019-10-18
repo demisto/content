@@ -53,4 +53,4 @@ script:
     description: sends contextual message to single user
   runonce: false
   tests:
-  - SecurityAdvisor_test
+  - SecurityAdvisor-Test
