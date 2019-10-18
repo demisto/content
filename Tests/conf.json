@@ -1130,6 +1130,10 @@
             "playbookID": "Remedy AR Test"
         },
         {
+            "integrations": "AWS - IAM",
+            "playbookID": "AWS - IAM Test Playbook"
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test",
             "timeout": 700
