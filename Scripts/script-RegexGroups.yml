@@ -34,7 +34,7 @@ script: |-
 
       demisto.results(matches)
 
-  except Exception, e:
+  except Exception:
       raise
 type: python
 tags:
@@ -61,6 +61,7 @@ args:
     supported) e.g. article,noun
 scripttarget: 0
 runonce: false
+dockerimage: demisto/python3:latest
 tests:
   - RegexGroups Test
 
