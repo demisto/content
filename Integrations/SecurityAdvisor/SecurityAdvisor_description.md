@@ -53,6 +53,8 @@ sends contextual message to single user. This command takes a user email address
 3. ransomware: Coach user on ransomware
 4. spam: Coach user on avoiding spam.
 
+To view most up to date coaching status of a user or users by context training log on to your account at www.securityadvisor.io
+
 ##### Base Command
 
 `coach-end-user`
