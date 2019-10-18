@@ -14,6 +14,8 @@ detaileddescription: |-
   3) Paste this value into the ip_address parameter in the integration
   4) Copy the API key to the clipboard from Help --> About
   5) Paste this value into the apiKey parameter in the integration
+
+  Note: This is a beta Integration, which lets you implement and test pre-release software. Since the integration is beta, it might contain bugs. Updates to the integration during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the integration to help us identify issues, fix them, and continually improve.
 configuration:
 - display: DDA Server and Port  (e.g https://192.168.0.1:<port>)
   name: server
