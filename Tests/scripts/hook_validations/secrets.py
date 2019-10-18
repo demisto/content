@@ -4,11 +4,9 @@ import re
 import math
 import json
 import string
-from bs4 import BeautifulSoup
-import glob
-import PyPDF2
 
 from Tests.test_utils import run_command, print_error
+from Tests.scripts.constants import *
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -150,15 +148,19 @@ def search_potential_secrets(secrets_file_paths):
         high_entropy_strings = []
         secrets_found_with_regex = []
         yml_file_contents = None
-        file_path_temp, file_extension = '/'.join(file_path.split('/')[:-1]), os.path.splitext(file_path)[1]
+        _, file_extension = os.path.splitext(file_path)
         skip_secrets = False
 
         secrets_white_list = set(conf_secrets_white_list)
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
+        # Validate if it is integration documentation file
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
+                                      string=file_path,
+                                      flags=re.IGNORECASE)
         # if py/js file, search for yml in order to retrieve temp white list
-        if file_extension in {'.py', '.js', '.md'}:
-            yml_file_contents = retrieve_related_yml(file_path_temp)
+        if file_extension in {'.py', '.js'} or integration_readme:
+            yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
         # Add all context output paths keywords to whitelist temporary
         if file_extension == '.yml' or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
@@ -208,19 +210,9 @@ def create_temp_white_list(file_contents):
     return temp_white_list
 
 
-def retrieve_related_yml(file_path_temp):
+def retrieve_related_yml(integration_path):
     matching_yml_file_contents = None
-    # Get integration file name
-    py_file = set()
-    yml_file = set()
-    for file in glob.glob("{}/*.yml".format(file_path_temp)):
-        yml_file.add(file.split('.')[0])
-    for file in glob.glob("{}/*.py".format(file_path_temp)):
-        py_file.add(file.split('.')[0])
-    file_to_scan = ''
-    if py_file.intersection(yml_file):
-        file_to_scan = py_file.intersection(yml_file).pop().split('/')[-1]
-    yml_file = "{}/{}.yml".format(file_path_temp, file_to_scan)
+    yml_file = os.path.join(integration_path, os.path.basename(integration_path) + '.yml')
     if os.path.exists(yml_file):
         with io.open('./' + yml_file, mode="r", encoding="utf-8") as matching_yml_file:
             matching_yml_file_contents = matching_yml_file.read()
@@ -297,7 +289,7 @@ def get_white_list():
         ioc_white_list = []
         files_while_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
-        for name, white_list in secrets_white_list_file.items():
+        for name, white_list in secrets_white_list_file.iteritems():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
@@ -315,8 +307,6 @@ def get_file_contents(file_path, file_extension):
         # if pdf file, parse text
         if file_extension == '.pdf':
             file_contents = extract_text_from_pdf(file_path)
-        elif file_extension == '.md':
-            file_contents = extract_text_from_md(file_path)
         else:
             # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
             with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
@@ -345,28 +335,6 @@ def extract_text_from_pdf(file_path):
         file_contents += pdf_page.extractText()
 
     return file_contents
-
-
-def extract_text_from_md(file_path):
-    with open(file_path, mode='r') as f:
-        html = f.read()
-    soup = BeautifulSoup(html, features="html.parser")
-
-    # kill all script and style elements
-    for script in soup(["script", "style"]):
-        script.extract()  # rip it out
-
-    # get text
-    text = soup.get_text()
-
-    # break into lines and remove leading and trailing space on each
-    lines = (line.strip() for line in text.splitlines())
-    # break multi-headlines into a line each
-    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
-    # drop blank lines
-    text = '\n'.join(chunk for chunk in chunks if chunk)
-
-    return text
 
 
 def remove_false_positives(line):
