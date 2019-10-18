@@ -1772,6 +1772,10 @@
             "integrations": "Threat Crowd",
             "playbookID": "ThreatCrowd - Test"
         }
+	{
+            "integrations": "ARIA Packet Intelligence",
+            "playbookID": "ARIA Packet Intelligence - Test"
+        }
     ],
     "skipped_tests": {
         "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",

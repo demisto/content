@@ -1,24 +1,24 @@
 <p>
-The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions. 
+The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
 
-This integration was integrated and tested with version xx of ARIA Packet Intelligece
+This integration was integrated and tested with version xx of ARIA Packet Intelligence
 </p>
-<h2>ARIA Packet Intelligece Playbook</h2>
-<p>playbook_aria_packet_intelligence_test</p>
+<h2>ARIA Packet Intelligence Playbook</h2>
+<p>playbook-Aria-Packet-Intelligence-Test</p>
 <h2>Use Cases</h2>
 <p>1.Block Conversation 2. Alert and Record Conversation</p>
 <h2>Detailed Description</h2>
-<p>Users should install SDSo onto a server according to the instructions in Software-Defined Security Installation Guide. During the installation process you can determine the IP address or FQDN of your SDSo instance which is used in the SDSo Base URL. You should also install an SIA according to the Secure Intelligent Adapter Installation Guide. For more information on connecting an SDSo and SIA see the Software-Defined Security Orchestrator User Guide. In addition, you must deploy the PI security service to your SIA, see the Packet Intelligence User Guide for more information.</p>
-<h2>Configure ARIA Packet Intelligece on Demisto</h2>
+<p>Populate this section with the .md file contents for detailed description.</p>
+<h2>Configure ARIA Packet Intelligence on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for ARIA Packet Intelligece.</li>
+  <li>Search for ARIA Packet Intelligence.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>SDSo Base URL</strong></li>
+   <li><strong>SDSo Base URL (e.g. http://&lt;IP address or FQDN of SDSo Node>:7443&gt;</strong></li>
     </ul>
   </li>
   <li>
@@ -152,18 +152,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.block_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.BlockConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.block_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.BlockConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.block_conversation.Endpoints</td>
-      <td>Unknown</td>
+      <td>Aria.BlockConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -172,37 +172,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-block-conversation src_ip="192.168.0.100" src_port="389" target_ip="192.168.0.101" target_port="390" protocol="tcp" rule_name="convBlock" label_sia_name="sia17"</code>
+  <code>!aria-block-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convBlock" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.block_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "786e3798-205b-7365-7da6-2928e9b62784"
-                }
-            ],
-            "Rule": {
-                "Definition": "192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : DROP, END",
-                "Name": "convBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570722987
+    "Aria.BlockConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "aa5395d0-be3b-b76d-b2c3-58f4fccb115b"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : DROP, END",
+            "Name": "convBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420423
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -218,9 +215,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: convBlock<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570722987</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '786e3798-205b-7365-7da6-2928e9b62784', 'completion': True}</td>
+      <td>Name: convBlock<br>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : DROP, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420423</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'aa5395d0-be3b-b76d-b2c3-58f4fccb115b', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -297,18 +294,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.unblock_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.unblock_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.unblock_conversation.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.UnblockConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -322,32 +319,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.unblock_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "5f54a55c-e89b-8fd2-c3af-20922d50cef9"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "convBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570722990
+    "Aria.UnblockConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "92bf73e5-c899-f2fa-76bb-a959cf053b61"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "convBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420426
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -364,8 +358,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570722990<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '5f54a55c-e89b-8fd2-c3af-20922d50cef9', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420426<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '92bf73e5-c899-f2fa-76bb-a959cf053b61', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -502,18 +496,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.record_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.RecordConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.record_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.RecordConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.record_conversation.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.RecordConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -522,37 +516,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-record-conversation src_ip="192.168.0.100" src_port="389" target_ip="192.168.0.101" target_port="390" protocol="tcp" rule_name="convRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
+  <code>!aria-record-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.record_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "f162fe08-07bd-ad1a-03d1-994e064d95fc"
-                }
-            ],
-            "Rule": {
-                "Definition": "192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
-                "Name": "convRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570722998
+    "Aria.RecordConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "7fc5d306-9d8e-65b5-8465-2e1fb8fb347e"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
+            "Name": "convRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420435
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -568,9 +559,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: convRecord<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570722998</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f162fe08-07bd-ad1a-03d1-994e064d95fc', 'completion': True}</td>
+      <td>Name: convRecord<br>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420435</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '7fc5d306-9d8e-65b5-8465-2e1fb8fb347e', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -647,18 +638,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.stop_recording_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_conversation.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.StopRecordingConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -672,32 +663,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.stop_recording_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "3d054434-7078-1e53-8ca1-d66d494f83ab"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "convRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723007
+    "Aria.StopRecordingConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "806b7df1-142a-7b1d-73ba-e3409b3ae1b7"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "convRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420445
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -714,8 +702,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723007<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '3d054434-7078-1e53-8ca1-d66d494f83ab', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420445<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '806b7df1-142a-7b1d-73ba-e3409b3ae1b7', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -842,18 +830,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.alert_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.AlertConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.alert_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.AlertConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.alert_conversation.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.AlertConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -862,37 +850,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-alert-conversation src_ip="192.168.0.100" src_port="389" target_ip="192.168.0.101" target_port="390" protocol="tcp" rule_name="convAlert" transport_type="email" tti_index="2" aio_index="4" trigger_type="re-trigger-count" trigger_value="1000" label_sia_group="Engineering"</code>
+  <code>!aria-alert-conversation src_ip="192.168.10.23" src_port="389" target_ip="192.168.0.1" target_port="390" protocol="tcp" rule_name="convAlert" transport_type="email" tti_index="2" aio_index="4" trigger_type="re-trigger-count" trigger_value="1000" label_sia_group="Engineering"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.alert_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "42ee40a4-9315-2678-0db7-8a5a06286180"
-                }
-            ],
-            "Rule": {
-                "Definition": "192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END",
-                "Name": "convAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723015
+    "Aria.AlertConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "4bb24d36-09d1-200c-dbe0-a22704846484"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END",
+            "Name": "convAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420453
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -908,9 +893,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: convAlert<br>Definition: 192.168.0.101/32 @ 390 & 192.168.0.100/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723015</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '42ee40a4-9315-2678-0db7-8a5a06286180', 'completion': True}</td>
+      <td>Name: convAlert<br>Definition: 192.168.0.1/32 @ 390 & 192.168.10.23/32 @ 389 <> TCP : ALERT email 2 4 re-trigger-count 1000, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420453</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4bb24d36-09d1-200c-dbe0-a22704846484', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -987,18 +972,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.mute_alert_conversation.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertConversation.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_conversation.Status</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertConversation.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_conversation.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.MuteAlertConversation.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1012,32 +997,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.mute_alert_conversation": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "28e78bfe-2b5e-b5a7-6360-e6a3e4fde148"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "convAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723024
+    "Aria.MuteAlertConversation": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "a00c637c-4811-45e0-ae55-fab9cab8c10a"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "convAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420460
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1054,8 +1036,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: convAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723024<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '28e78bfe-2b5e-b5a7-6360-e6a3e4fde148', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420460<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'a00c637c-4811-45e0-ae55-fab9cab8c10a', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1137,18 +1119,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.block_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.BlockDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.block_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.BlockDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.block_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.BlockDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1162,32 +1144,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.block_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "9c0d0f2b-13d4-65df-e645-3e9a5b10a291"
-                }
-            ],
-            "Rule": {
-                "Definition": "389, 400 - 404: DROP, END",
-                "Name": "destPortBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723032
+    "Aria.BlockDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "b7bfd2a3-51d1-e9ba-b5bf-d8b4d5f21b8f"
             }
+        ],
+        "Rule": {
+            "Definition": "389, 400 - 404: DROP, END",
+            "Name": "destPortBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420469
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1204,8 +1183,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortBlock<br>Definition: 389, 400 - 404: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723032</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9c0d0f2b-13d4-65df-e645-3e9a5b10a291', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420469</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'b7bfd2a3-51d1-e9ba-b5bf-d8b4d5f21b8f', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1282,18 +1261,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.unblock_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.unblock_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.unblock_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.UnblockDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1307,32 +1286,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.unblock_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "c3df6fce-f727-abe5-a596-aad4086a384d"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destPortBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723040
+    "Aria.UnblockDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "8c1e5ab0-1e77-1b27-68d7-cab420fdf8c3"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destPortBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420477
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1349,8 +1325,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723040<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c3df6fce-f727-abe5-a596-aad4086a384d', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420477<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8c1e5ab0-1e77-1b27-68d7-cab420fdf8c3', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1467,18 +1443,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.record_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.RecordDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.record_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.RecordDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.record_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.RecordDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1492,32 +1468,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.record_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "8546ba08-ea88-7329-9340-96b42fe6449e"
-                }
-            ],
-            "Rule": {
-                "Definition": "390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
-                "Name": "destPortRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723048
+    "Aria.RecordDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "4361c6ed-042c-502f-a329-06d4e2c4b4a1"
             }
+        ],
+        "Rule": {
+            "Definition": "390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
+            "Name": "destPortRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420486
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1534,8 +1507,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortRecord<br>Definition: 390, 420, 421: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723048</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8546ba08-ea88-7329-9340-96b42fe6449e', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420486</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4361c6ed-042c-502f-a329-06d4e2c4b4a1', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1612,18 +1585,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.stop_recording_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.StopRecordingDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1637,32 +1610,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.stop_recording_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "740917e5-2152-9229-b592-4392adc37cd9"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destPortRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723056
+    "Aria.StopRecordingDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "9cb30bff-fb0f-eb7b-2790-6942e7585548"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destPortRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420494
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1679,8 +1649,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723056<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '740917e5-2152-9229-b592-4392adc37cd9', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420494<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9cb30bff-fb0f-eb7b-2790-6942e7585548', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1787,18 +1757,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.alert_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.AlertDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.alert_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.AlertDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.alert_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.AlertDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1812,32 +1782,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.alert_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "8fffe721-8c5e-09f8-07ef-467d5c856b18"
-                }
-            ],
-            "Rule": {
-                "Definition": "389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
-                "Name": "destPortAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723064
+    "Aria.AlertDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "f1858475-74b5-cdd9-e427-763ddb897211"
             }
+        ],
+        "Rule": {
+            "Definition": "389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
+            "Name": "destPortAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420503
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1854,8 +1821,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortAlert<br>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723064</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8fffe721-8c5e-09f8-07ef-467d5c856b18', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420503</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f1858475-74b5-cdd9-e427-763ddb897211', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -1932,18 +1899,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.mute_alert_dest_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertDestPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_dest_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertDestPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_dest_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.MuteAlertDestPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -1957,32 +1924,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.mute_alert_dest_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "34af0fc9-00b2-c30c-ba0d-980131082358"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destPortAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723072
+    "Aria.MuteAlertDestPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "f034b7f4-258a-49ab-0226-7bc651c34e10"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destPortAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420511
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1999,8 +1963,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destPortAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723072<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '34af0fc9-00b2-c30c-ba0d-980131082358', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420511<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f034b7f4-258a-49ab-0226-7bc651c34e10', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2082,18 +2046,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.block_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.BlockSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.block_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.BlockSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.block_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.BlockSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2107,32 +2071,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.block_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "5f39160c-d4b2-145f-c9cd-a0f892717335"
-                }
-            ],
-            "Rule": {
-                "Definition": "389, 400 - 404: DROP, END",
-                "Name": "srcPortBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723079
+    "Aria.BlockSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "93ad5260-f138-ed0c-6ac0-e1a6f721747e"
             }
+        ],
+        "Rule": {
+            "Definition": "389, 400 - 404: DROP, END",
+            "Name": "srcPortBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420518
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2149,8 +2110,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortBlock<br>Definition: 389, 400 - 404: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723079</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '5f39160c-d4b2-145f-c9cd-a0f892717335', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420518</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '93ad5260-f138-ed0c-6ac0-e1a6f721747e', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2227,18 +2188,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.unblock_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.unblock_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.unblock_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.UnblockSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2252,32 +2213,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.unblock_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "9cc13f49-a8b6-59d8-26be-81a0e8956b5d"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcPortBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723086
+    "Aria.UnblockSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "344f83ed-ff1f-1e54-3d82-e59530b02ae6"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcPortBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420526
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2294,8 +2252,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723086<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9cc13f49-a8b6-59d8-26be-81a0e8956b5d', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420526<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '344f83ed-ff1f-1e54-3d82-e59530b02ae6', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2412,18 +2370,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.record_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.RecordSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.record_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.RecordSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.record_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.RecordSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2437,32 +2395,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.record_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "2a4edffd-9656-e58c-4e22-9a53b3be9099"
-                }
-            ],
-            "Rule": {
-                "Definition": "390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END",
-                "Name": "srcPortRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723095
+    "Aria.RecordSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "b133454a-d7b9-50dd-fb9b-3cc769c49396"
             }
+        ],
+        "Rule": {
+            "Definition": "390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END",
+            "Name": "srcPortRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420533
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2479,8 +2434,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortRecord<br>Definition: 390, 420: REDIRECT-VLAN B 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723095</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '2a4edffd-9656-e58c-4e22-9a53b3be9099', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420533</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'b133454a-d7b9-50dd-fb9b-3cc769c49396', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2557,18 +2512,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.stop_recording_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.StopRecordingSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2582,32 +2537,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.stop_recording_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "46f11318-f2da-6d2c-46ca-5eaa3125f05e"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcPortRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723104
+    "Aria.StopRecordingSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "42ef11aa-5655-0b42-15e1-e94bdd966058"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcPortRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420541
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2624,8 +2576,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723104<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '46f11318-f2da-6d2c-46ca-5eaa3125f05e', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420541<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '42ef11aa-5655-0b42-15e1-e94bdd966058', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2732,18 +2684,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.alert_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.AlertSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.alert_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.AlertSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.alert_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.AlertSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2757,32 +2709,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.alert_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "be8f9fba-ffe7-e262-1d3d-1d83b8c53861"
-                }
-            ],
-            "Rule": {
-                "Definition": "389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
-                "Name": "srcPortAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723111
+    "Aria.AlertSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "c07dc77e-d661-9a09-2266-ad5d341e8e63"
             }
+        ],
+        "Rule": {
+            "Definition": "389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
+            "Name": "srcPortAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420549
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2799,8 +2748,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortAlert<br>Definition: 389 - 400: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723111</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'be8f9fba-ffe7-e262-1d3d-1d83b8c53861', 'completion': True}</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420549</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c07dc77e-d661-9a09-2266-ad5d341e8e63', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -2877,18 +2826,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.mute_alert_src_port.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertSrcPort.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_src_port.Status</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertSrcPort.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_src_port.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.MuteAlertSrcPort.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -2902,32 +2851,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.mute_alert_src_port": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "6911a14b-ab45-9cd2-67ba-57dda34acc07"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcPortAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723120
+    "Aria.MuteAlertSrcPort": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "9a31502b-40db-98e9-ea12-b0b512045b4d"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcPortAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420558
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -2944,8 +2890,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcPortAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723120<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '6911a14b-ab45-9cd2-67ba-57dda34acc07', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420558<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '9a31502b-40db-98e9-ea12-b0b512045b4d', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3027,18 +2973,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.block_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.BlockDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.block_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.BlockDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.block_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.BlockDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3047,37 +2993,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-block-dest-subnet target_ip="11.20.33.40/24" rule_name="destSubnetBlock" label_sia_region="US"</code>
+  <code>!aria-block-dest-subnet target_ip="192.168.1.2/24" rule_name="destSubnetBlock" label_sia_region="US"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.block_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "f056eaec-1d3a-a14d-d65e-790737d06adf"
-                }
-            ],
-            "Rule": {
-                "Definition": "11.20.33.40/24: DROP, END",
-                "Name": "destSubnetBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723127
+    "Aria.BlockDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "4609e8c0-55a4-ec06-3548-71cc5b5a67be"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.1.2/24: DROP, END",
+            "Name": "destSubnetBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420567
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3093,9 +3036,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: destSubnetBlock<br>Definition: 11.20.33.40/24: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723127</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'f056eaec-1d3a-a14d-d65e-790737d06adf', 'completion': True}</td>
+      <td>Name: destSubnetBlock<br>Definition: 192.168.1.2/24: DROP, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420567</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '4609e8c0-55a4-ec06-3548-71cc5b5a67be', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3172,18 +3115,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.unblock_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.unblock_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.unblock_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.UnblockDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3197,32 +3140,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.unblock_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "1fe8457f-13f9-1989-0c48-5ceed85eb3a9"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destSubnetBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723136
+    "Aria.UnblockDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "deba7913-d38b-08bd-263c-7e00dd5765a7"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destSubnetBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420574
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3239,8 +3179,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723136<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '1fe8457f-13f9-1989-0c48-5ceed85eb3a9', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420574<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'deba7913-d38b-08bd-263c-7e00dd5765a7', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3357,18 +3297,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.record_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.RecordDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.record_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.RecordDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.record_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.RecordDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3377,37 +3317,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-record-dest-subnet target_ip="192.168.0.100/32" rule_name="destSubnetRecord" vlan_id="1234"  transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
+  <code>!aria-record-dest-subnet target_ip="192.168.10.23/32" rule_name="destSubnetRecord" vlan_id="1234"  transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.record_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "ee466760-e3d9-9674-3816-04dfacb2b43b"
-                }
-            ],
-            "Rule": {
-                "Definition": "192.168.0.100/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
-                "Name": "destSubnetRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723143
+    "Aria.RecordDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "d832ae22-cb14-18e4-2e3f-8c08333feb0f"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.10.23/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
+            "Name": "destSubnetRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420583
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3423,9 +3360,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: destSubnetRecord<br>Definition: 192.168.0.100/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723143</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'ee466760-e3d9-9674-3816-04dfacb2b43b', 'completion': True}</td>
+      <td>Name: destSubnetRecord<br>Definition: 192.168.10.23/32: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420583</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'd832ae22-cb14-18e4-2e3f-8c08333feb0f', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3502,18 +3439,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.stop_recording_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.StopRecordingDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3527,32 +3464,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.stop_recording_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "e7ca730f-301c-9c18-1ee7-eabcd71a375f"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destSubnetRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723151
+    "Aria.StopRecordingDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "1e6d1679-8652-13f8-f3e7-41a0e10c1335"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destSubnetRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420591
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3569,8 +3503,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723151<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'e7ca730f-301c-9c18-1ee7-eabcd71a375f', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420591<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '1e6d1679-8652-13f8-f3e7-41a0e10c1335', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3677,18 +3611,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.alert_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.AlertDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.alert_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.AlertDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.alert_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.AlertDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3697,37 +3631,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-alert-dest-subnet target_ip="11.20.33.40/24" rule_name="destSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" label_sia_name="sia17"</code>
+  <code>!aria-alert-dest-subnet target_ip="192.168.1.2/24" rule_name="destSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.alert_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "c7a44826-0e87-1349-a118-2d45c66c8878"
-                }
-            ],
-            "Rule": {
-                "Definition": "11.20.33.40/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
-                "Name": "destSubnetAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723158
+    "Aria.AlertDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "d53a30dd-f6b8-b2c1-9f5c-4cd2e455bcc9"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
+            "Name": "destSubnetAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420599
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3743,9 +3674,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: destSubnetAlert<br>Definition: 11.20.33.40/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723158</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c7a44826-0e87-1349-a118-2d45c66c8878', 'completion': True}</td>
+      <td>Name: destSubnetAlert<br>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420599</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'd53a30dd-f6b8-b2c1-9f5c-4cd2e455bcc9', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3822,18 +3753,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.mute_alert_dest_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertDestSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_dest_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertDestSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_dest_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.MuteAlertDestSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3847,32 +3778,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.mute_alert_dest_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "c04f3f24-c4e2-04a6-17e5-d78f02a042ac"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "destSubnetAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723166
+    "Aria.MuteAlertDestSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "8b23a582-25b6-a2d9-7d76-39b3e1ce1584"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "destSubnetAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420608
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -3889,8 +3817,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: destSubnetAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723166<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c04f3f24-c4e2-04a6-17e5-d78f02a042ac', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420608<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8b23a582-25b6-a2d9-7d76-39b3e1ce1584', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -3972,18 +3900,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.block_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.BlockSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.block_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.BlockSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.block_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.BlockSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -3992,37 +3920,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-block-src-subnet src_ip="11.20.33.40/24" rule_name="srcSubnetBlock" label_sia_region="US"</code>
+  <code>!aria-block-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetBlock" label_sia_region="US"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.block_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "6ad93bd1-6963-f738-9748-54086f9267b2"
-                }
-            ],
-            "Rule": {
-                "Definition": "11.20.33.40/24: DROP, END",
-                "Name": "srcSubnetBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723175
+    "Aria.BlockSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "a8916b20-5d9a-0337-23ce-1c399922df05"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.1.2/24: DROP, END",
+            "Name": "srcSubnetBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420616
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4038,9 +3963,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: srcSubnetBlock<br>Definition: 11.20.33.40/24: DROP, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723175</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '6ad93bd1-6963-f738-9748-54086f9267b2', 'completion': True}</td>
+      <td>Name: srcSubnetBlock<br>Definition: 192.168.1.2/24: DROP, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420616</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'a8916b20-5d9a-0337-23ce-1c399922df05', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4117,18 +4042,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.unblock_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.unblock_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.UnblockSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.unblock_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.UnblockSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -4142,32 +4067,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.unblock_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "a02d41b7-5e31-1ec3-9dfa-8ba31ad8d645"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcSubnetBlock"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723183
+    "Aria.UnblockSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "c7405878-aa74-9301-7422-b91ae84be8eb"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcSubnetBlock"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420624
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4184,8 +4106,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetBlock<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723183<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'a02d41b7-5e31-1ec3-9dfa-8ba31ad8d645', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420624<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'c7405878-aa74-9301-7422-b91ae84be8eb', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4302,18 +4224,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.record_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.RecordSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.record_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.RecordSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.record_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.RecordSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -4322,37 +4244,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-record-src-subnet src_ip="11.20.33.40/24" rule_name="srcSubnetRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
+  <code>!aria-record-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetRecord" vlan_id="1234" transport_type="email" tti_index="2" aio_index="4" trigger_type="one-shot" trigger_value="1" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.record_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "829b55ab-644e-db17-b8a4-0a1ec825516a"
-                }
-            ],
-            "Rule": {
-                "Definition": "11.20.33.40/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
-                "Name": "srcSubnetRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723192
+    "Aria.RecordSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "7bc02e02-c6d5-2b80-5423-1a6fc245c3f9"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.1.2/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END",
+            "Name": "srcSubnetRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420632
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4368,9 +4287,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: srcSubnetRecord<br>Definition: 11.20.33.40/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723192</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '829b55ab-644e-db17-b8a4-0a1ec825516a', 'completion': True}</td>
+      <td>Name: srcSubnetRecord<br>Definition: 192.168.1.2/24: REDIRECT-VLAN A 1234, ALERT email 2 4 one-shot 1, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420632</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '7bc02e02-c6d5-2b80-5423-1a6fc245c3f9', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4447,18 +4366,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.stop_recording_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.StopRecordingSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.stop_recording_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.StopRecordingSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -4472,32 +4391,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.stop_recording_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "eefe605b-4c3a-98af-01db-a7eb9d9f28df"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcSubnetRecord"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723200
+    "Aria.StopRecordingSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "52dc6968-2269-ae46-7dfc-accbda8973e5"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcSubnetRecord"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420640
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4514,8 +4430,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetRecord<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723200<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'eefe605b-4c3a-98af-01db-a7eb9d9f28df', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420640<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '52dc6968-2269-ae46-7dfc-accbda8973e5', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4622,18 +4538,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.alert_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.AlertSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.alert_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.AlertSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.alert_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.AlertSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -4642,37 +4558,34 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!aria-alert-src-subnet src_ip="11.20.33.40/24" rule_name="srcSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" label_sia_name="sia17"</code>
+  <code>!aria-alert-src-subnet src_ip="192.168.1.2/24" rule_name="srcSubnetAlert" transport_type="syslog" tti_index="2" aio_index="4" trigger_type="re-trigger-timed-sec" trigger_value="200" label_sia_name="sia17"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.alert_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "3a336ed6-9586-b7f0-2c60-9bb358dfb91a"
-                }
-            ],
-            "Rule": {
-                "Definition": "11.20.33.40/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
-                "Name": "srcSubnetAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723208
+    "Aria.AlertSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "8a0d8a84-3248-aadb-db11-dbe96562d1ef"
             }
+        ],
+        "Rule": {
+            "Definition": "192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END",
+            "Name": "srcSubnetAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420648
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4688,9 +4601,9 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>Name: srcSubnetAlert<br>Definition: 11.20.33.40/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
-      <td>code: 201<br>error_info: <br>command_state: Success<br>timestamp: 1570723208</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '3a336ed6-9586-b7f0-2c60-9bb358dfb91a', 'completion': True}</td>
+      <td>Name: srcSubnetAlert<br>Definition: 192.168.1.2/24: ALERT syslog 2 4 re-trigger-timed-sec 200, END</td>
+      <td>code: 201<br>command_state: Success<br>timestamp: 1571420648</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '8a0d8a84-3248-aadb-db11-dbe96562d1ef', 'completion': True}</td>
     </tr>
   </tbody>
 </table>
@@ -4767,18 +4680,18 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   </thead>
   <tbody>
     <tr>
-      <td>aria.mute_alert_src_subnet.Rule</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertSrcSubnet.Rule</td>
+      <td>string</td>
       <td>Specifies the name of the rule and the settings that define the rule.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_src_subnet.Status</td>
-      <td>Unknown</td>
+      <td>Aria.MuteAlertSrcSubnet.Status</td>
+      <td>string</td>
       <td>Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.</td>
     </tr>
     <tr>
-      <td>aria.mute_alert_src_subnet.Endpoints</td>
-      <td>unknown</td>
+      <td>Aria.MuteAlertSrcSubnet.Endpoints</td>
+      <td>string</td>
       <td>Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.</td>
     </tr>
   </tbody>
@@ -4792,32 +4705,29 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
 <h5>Context Example</h5>
 <pre>
 {
-    "aria.mute_alert_src_subnet": [
-        {
-            "Endpoints": [
-                {
-                    "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>",
-                    "IPAddress": "...",
-                    "Model": "sia-lx2160",
-                    "OS": "GNU/Linux",
-                    "Processor": "sia-lx2160",
-                    "Processors": 1,
-                    "completion": true,
-                    "trid": "bf3aa17a-5f74-492d-526c-ad664835612b"
-                }
-            ],
-            "Rule": {
-                "Definition": "",
-                "Name": "srcSubnetAlert"
-            },
-            "Status": {
-                "code": 201,
-                "command_state": "Success",
-                "error_info": "",
-                "timestamp": 1570723215
+    "Aria.MuteAlertSrcSubnet": {
+        "Endpoints": [
+            {
+                "FQN": "<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>",
+                "IPAddress": "10.1.1.0",
+                "Model": "sia-lx2160",
+                "OS": "GNU/Linux",
+                "Processor": "sia-lx2160",
+                "Processors": 1,
+                "completion": true,
+                "trid": "07e9f255-efb0-d60e-8118-ba947c4be47f"
             }
+        ],
+        "Rule": {
+            "Definition": "",
+            "Name": "srcSubnetAlert"
+        },
+        "Status": {
+            "code": 201,
+            "command_state": "Success",
+            "timestamp": 1571420656
         }
-    ]
+    }
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -4834,8 +4744,8 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
   <tbody>
     <tr>
       <td>Name: srcSubnetAlert<br>Definition: </td>
-      <td>code: 201<br>error_info: <br>timestamp: 1570723215<br>command_state: Success</td>
-      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_6c4a3c7e-7428-44f5-8d90-63f58c0539ff>', 'IPAddress': '...', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': 'bf3aa17a-5f74-492d-526c-ad664835612b', 'completion': True}</td>
+      <td>code: 201<br>timestamp: 1571420656<br>command_state: Success</td>
+      <td>{'FQN': '<sds_cluster_0>.<sds_node_sia17>.<sds_component_PacketIntelligence>.<sds_uuid_b84af73d-03df-48d1-9624-61849abde4d2>', 'IPAddress': '10.1.1.0', 'Model': 'sia-lx2160', 'OS': 'GNU/Linux', 'Processor': 'sia-lx2160', 'Processors': 1, 'trid': '07e9f255-efb0-d60e-8118-ba947c4be47f', 'completion': True}</td>
     </tr>
   </tbody>
 </table>

@@ -20,7 +20,7 @@ configuration:
   type: 0
   required: true
 script:
-  script: |-
+  script: '-'
   type: python
   commands:
   - name: aria-block-conversation

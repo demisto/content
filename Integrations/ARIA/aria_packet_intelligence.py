@@ -1,9 +1,9 @@
-import sys
 import demistomock as demisto
 from CommonServerPython import *
 import json
 import requests
 import time
+
 
 class ParameterError(Exception):
     """ Raised when the function parameters do not meet requirements """
@@ -303,7 +303,6 @@ class ARIA(object):
         command_state = False
 
         if response.ok:
-            error_info = ''
 
             command_state = True
 
@@ -321,8 +320,6 @@ class ARIA(object):
                 if not success:
                     command_state = False
             response_timestamp = response_json.get('timestamp')
-        else:
-            error_info = response.text
 
         if command_state:
             command_state_str = 'Success'
@@ -336,7 +333,6 @@ class ARIA(object):
             },
             'Status': {
                 'code': response.status_code,
-                'error_info': error_info,
                 'timestamp': response_timestamp,
                 'command_state': command_state_str
             },
@@ -367,8 +363,6 @@ class ARIA(object):
         # randomly looking for an available instances
         instance_list = list(range(0, instance_number))
 
-        error_info = ''
-
         response_timestamp = ''
 
         code = ''
@@ -376,9 +370,9 @@ class ARIA(object):
         endpoints = []
 
         command_state = False
-        # If response code is not 201, error_info will return error messages of the request.
-        # For example, the error message may be caused by no connection to the SDSo or no ISA can be found based on the
-        # labels provided. A response code of 201 may also be returned, even if the rule is not successfully added to
+        # If response code is not 201, the error message may be caused by no connection to the SDSo or no ISA
+        # can be found based on the labels provided.
+        # A response code of 201 may also be returned, even if the rule is not successfully added to
         # the SIAs. completion will be false to a specific SIA if the range within the rule overlaps the range of an
         # existing rule or the rule name is not unique for all the 10 instances.
 
@@ -397,8 +391,6 @@ class ARIA(object):
                     response_json = response.json()
                 except json.JSONDecodeError:
                     raise
-
-                error_info = ''
 
                 endpoints = response_json.get('endpoints')
 
@@ -450,7 +442,6 @@ class ARIA(object):
                             command_state = False
                     break
             else:
-                error_info = response.text
                 command_state = False
 
         if command_state:
@@ -465,7 +456,6 @@ class ARIA(object):
             },
             'Status': {
                 'code': code,
-                'error_info': error_info,
                 'command_state': command_state_str,
                 'timestamp': response_timestamp
             },
@@ -1321,9 +1311,10 @@ class ARIA(object):
 
         """
         return self._remove_rule(rule_name, 'src-subnet', None, label_sia_group, label_sia_name, label_sia_region)
+
 ''' HELPER FUNCTIONS '''
 
-def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
+def func_call(instance: ARIA, func_name: str, command_name: str, *argv: tuple):
     """ Helper function used to call different demisto command
 
     Args:
@@ -1342,202 +1333,184 @@ def func_call(instance: ARIA, func_name: str, command_name: str, *argv: str):
 
     context_entry = getattr(instance, func_name)(*tuple(arguments))  # get returned tuple
 
-    cont = [context_entry]
-
     table_header = ['Rule', 'Status', 'Endpoints']
 
     context_name = func_name.title().replace('_', '')
 
     ec = {
-        f'Aria.{context_name}(val.name && val.name == obj.name)': cont
+        f'Aria.{context_name}(val.name && val.name == obj.name)': context_entry
     }
 
     LOG(json.dumps(context_entry))
 
-    output_type = 'note'
+    readable_output = tableToMarkdown(command_name, context_entry, table_header)
 
-    # request failed
-    if context_entry['Status']['command_state'] != 'Success':
-        LOG.print_log()
-        output_type = 'error'
-        if context_entry['Status']['code'] != 201:
-            return_error('Failed to send a request to SDSo Node!')
-        else:
-            endpoints_str = json.dumps(context_entry['Endpoints'])
-            return_error(f'One or more endpoints fail to create/remove rules. Please see {endpoints_str}')
-
-    return_outputs(tableToMarkdown(command_name, cont, table_header), ec)
+    return (readable_output, ec)
 
 
 ''' COMMAND FUNCTION '''
 
-
 def block_conversation_command(instance):
     args = ('src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'label_sia_group',
             'label_sia_name', 'label_sia_region')
-    func_call(instance, 'block_conversation', 'aria-block-conversation', *args)
+    return func_call(instance, 'block_conversation', 'aria-block-conversation', *args)
 
 
 def unblock_conversation_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'unblock_conversation', 'aria-unblock-conversation', *args)
+    return func_call(instance, 'unblock_conversation', 'aria-unblock-conversation', *args)
 
 
 def record_conversation_command(instance):
     args = ('src_ip', 'target_ip', 'vlan_id', 'rule_name', 'src_port', 'target_port', 'protocol', 'sia_interface',
             'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'label_sia_group',
             'label_sia_name', 'label_sia_region')
-    func_call(instance, 'record_conversation', 'aria-record-conversation', *args)
+    return func_call(instance, 'record_conversation', 'aria-record-conversation', *args)
 
 
 def stop_recording_conversation_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'stop_recording_conversation', 'aria-stop-recording-conversation', *args)
+    return func_call(instance, 'stop_recording_conversation', 'aria-stop-recording-conversation', *args)
 
 
 def alert_conversation_command(instance):
     args = ('src_ip', 'target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
             'trigger_value', 'src_port', 'target_port', 'protocol', 'label_sia_group',
             'label_sia_name', 'label_sia_region')
-    func_call(instance, 'alert_conversation', 'aria-alert-conversation', *args)
+    return func_call(instance, 'alert_conversation', 'aria-alert-conversation', *args)
 
 
 def mute_alert_conversation_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'mute_alert_conversation', 'aria-mute-alert-conversation', *args)
+    return func_call(instance, 'mute_alert_conversation', 'aria-mute-alert-conversation', *args)
 
 
 def block_dest_port_command(instance):
     args = ('port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'block_dest_port', 'aria-block-dest-port', *args)
+    return func_call(instance, 'block_dest_port', 'aria-block-dest-port', *args)
 
 
 def unblock_dest_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'unblock_dest_port', 'aria-unblock-dest-port', *args)
+    return func_call(instance, 'unblock_dest_port', 'aria-unblock-dest-port', *args)
 
 
 def record_dest_port_command(instance):
     args = ('port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
             'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'record_dest_port', 'aria-record-dest-port', *args)
+    return func_call(instance, 'record_dest_port', 'aria-record-dest-port', *args)
 
 
 def stop_recording_dest_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', *args)
+    return func_call(instance, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', *args)
 
 
 def alert_dest_port_command(instance):
     args = ('port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
             'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'alert_dest_port', 'aria-alert-dest-port', *args)
+    return func_call(instance, 'alert_dest_port', 'aria-alert-dest-port', *args)
 
 
 def mute_alert_dest_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', *args)
+    return func_call(instance, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', *args)
 
 
 def block_src_port_command(instance):
     args = ('port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'block_src_port', 'aria-block-src-port', *args)
+    return func_call(instance, 'block_src_port', 'aria-block-src-port', *args)
 
 
 def unblock_src_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'unblock_src_port', 'aria-unblock-src-port', *args)
+    return func_call(instance, 'unblock_src_port', 'aria-unblock-src-port', *args)
 
 
 def record_src_port_command(instance):
     args = ('port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
             'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'record_src_port', 'aria-record-src-port', *args)
+    return func_call(instance, 'record_src_port', 'aria-record-src-port', *args)
 
 
 def stop_recording_src_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'stop_recording_src_port', 'aria-stop-recording-src-port', *args)
+    return func_call(instance, 'stop_recording_src_port', 'aria-stop-recording-src-port', *args)
 
 
 def alert_src_port_command(instance):
     args = ('port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
             'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'alert_src_port', 'aria-alert-src-port', *args)
+    return func_call(instance, 'alert_src_port', 'aria-alert-src-port', *args)
 
 
 def mute_alert_src_port_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'mute_alert_src_port', 'aria-mute-alert-src-port', *args)
+    return func_call(instance, 'mute_alert_src_port', 'aria-mute-alert-src-port', *args)
 
 
 def block_dest_subnet_command(instance):
     args = ('target_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'block_dest_subnet', 'aria-block-dest-subnet', *args)
+    return func_call(instance, 'block_dest_subnet', 'aria-block-dest-subnet', *args)
 
 
 def unblock_dest_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', *args)
+    return func_call(instance, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', *args)
 
 
 def record_dest_subnet_command(instance):
     args = ('target_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
             'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'record_dest_subnet', 'aria-record-dest-subnet', *args)
+    return func_call(instance, 'record_dest_subnet', 'aria-record-dest-subnet', *args)
 
 
 def stop_recording_dest_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet', *args)
+    return func_call(instance, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet', *args)
 
 
 def alert_dest_subnet_command(instance):
     args = ('target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
             'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'alert_dest_subnet', 'aria-alert-dest-subnet', *args)
+    return func_call(instance, 'alert_dest_subnet', 'aria-alert-dest-subnet', *args)
 
 
 def mute_alert_dest_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', *args)
+    return func_call(instance, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', *args)
 
 
 def block_src_subnet_command(instance):
     args = ('src_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'block_src_subnet', 'aria-block-src-subnet', *args)
+    return func_call(instance, 'block_src_subnet', 'aria-block-src-subnet', *args)
 
 
 def unblock_src_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'unblock_src_subnet', 'aria-unblock-src-subnet', *args)
+    return func_call(instance, 'unblock_src_subnet', 'aria-unblock-src-subnet', *args)
 
 
 def record_src_subnet_command(instance):
     args = ('src_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
             'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'record_src_subnet', 'aria-record-src-subnet', *args)
+    return func_call(instance, 'record_src_subnet', 'aria-record-src-subnet', *args)
 
 
 def stop_recording_src_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', *args)
+    return func_call(instance, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', *args)
 
 
 def alert_src_subnet_command(instance):
     args = ('src_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
             'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'alert_src_subnet', 'aria-alert-src-subnet', *args)
+    return func_call(instance, 'alert_src_subnet', 'aria-alert-src-subnet', *args)
 
 
 def mute_alert_src_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
-    func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', *args)
-
-
-def fetch_incidents_command():
-    pass
-
+    return func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', *args)
 
 def main():
     # disable insecure warnings
@@ -1595,22 +1568,27 @@ def main():
             size = len(json.loads(res.text))
             if res.ok and size != 0:
                 demisto.results('ok')
-                sys.exit(0)
         except:
             return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
-            sys.exit(1)
-
-    if demisto.command() == 'fetch-incidents':
-        demisto.incidents(fetch_incidents_command())
-        sys.exit(0)
-
-    cmd_func = commnds_dict.get(command)
-
-    if cmd_func is None:
-        raise NotImplementedError(f'Command "{command}" is not implemented.')
     else:
-        cmd_func(aria)
+        cmd_func = commnds_dict.get(command)
 
+        if cmd_func is None:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
+        else:
+
+            readable_output, ec= cmd_func(aria)
+            context_entry = list(ec.values())[0]
+
+            if context_entry['Status']['command_state'] != 'Success':
+                LOG.print_log()
+                if context_entry['Status']['code'] != 201:
+                    return_error('Failed to send a request to SDSo Node!')
+                else:
+                    endpoints_str = json.dumps(context_entry['Endpoints'])
+                    return_error(f'One or more endpoints fail to create/remove rules. Please see {endpoints_str}')
+            else:
+                return_outputs(readable_output, ec)
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':
