@@ -8,7 +8,7 @@ description: Contextual coaching and awareness for end users
 configuration:
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Trust any certificate (not secure)
