@@ -35,6 +35,7 @@ INTEGRATION_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(INTEGRATIONS_DIR)
 INTEGRATION_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
+INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
 
 BETA_SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
