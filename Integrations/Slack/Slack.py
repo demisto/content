@@ -17,6 +17,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 SEVERITY_DICT = {
+    'Unknown': 0,
     'Low': 1,
     'Medium': 2,
     'High': 3,
@@ -54,6 +55,8 @@ INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
 QUESTION_LIFETIME: int
+BOT_NAME: str
+BOT_ICON_URL: str
 
 ''' HELPER FUNCTIONS '''
 
@@ -78,7 +81,15 @@ def test_module():
     if not channel:
         return_error('Dedicated channel not found.')
     message = 'Hi there! This is a test message.'
-    CLIENT.chat_postMessage(channel=channel.get('id'), text=message)
+
+    kwargs = {
+        'text': message
+    }
+    if BOT_NAME:
+        kwargs['username'] = BOT_NAME
+    if BOT_ICON_URL:
+        kwargs['icon_url'] = BOT_ICON_URL
+    CLIENT.chat_postMessage(channel=channel.get('id'), **kwargs)
 
     demisto.results('ok')
 
@@ -398,9 +409,16 @@ def mirror_investigation():
     if send_first_message:
         server_links = demisto.demistoUrls()
         server_link = server_links.get('server')
-        CLIENT.chat_postMessage(channel=conversation_id,
-                                text='This channel was created to mirror incident {}. \n View it on: {}#/WarRoom/{}'
-                                .format(investigation_id, server_link, investigation_id))
+        message = ('This channel was created to mirror incident {}. \n View it on: {}#/WarRoom/{}'
+                   .format(investigation_id, server_link, investigation_id))
+        kwargs = {
+            'text': message
+        }
+        if BOT_NAME:
+            kwargs['username'] = BOT_NAME
+        if BOT_ICON_URL:
+            kwargs['icon_url'] = BOT_ICON_URL
+        CLIENT.chat_postMessage(channel=conversation_id, **kwargs)
 
     demisto.results('Investigation mirrored successfully, channel: {}'.format(conversation_name))
 
@@ -644,7 +662,14 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
         data = 'Sorry, I could not perform the selected operation.'
     im = await client.im_open(user=user.get('id'))
     channel = im.get('channel', {}).get('id')
-    await client.chat_postMessage(channel=channel, text=data)
+    kwargs = {
+        'text': data
+    }
+    if BOT_NAME:
+        kwargs['username'] = BOT_NAME
+    if BOT_ICON_URL:
+        kwargs['icon_url'] = BOT_ICON_URL
+    await client.chat_postMessage(channel=channel, **kwargs)
 
 
 async def translate_create(demisto_user: dict, message: str) -> str:
@@ -752,7 +777,15 @@ async def listen(**payload):
         user = await get_user_by_id_async(client, integration_context, user_id)
         entitlement_reply = await check_and_handle_entitlement(text, user, thread)
         if entitlement_reply:
-            await client.chat_postMessage(channel=channel, text=entitlement_reply, thread_ts=thread)
+            kwargs = {
+                'text': entitlement_reply,
+                'thread_ts': thread
+            }
+            if BOT_NAME:
+                kwargs['username'] = BOT_NAME
+            if BOT_ICON_URL:
+                kwargs['icon_url'] = BOT_ICON_URL
+            await client.chat_postMessage(channel=channel, **kwargs)
         elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
@@ -1115,6 +1148,10 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         kwargs['blocks'] = block_list
     if thread_id:
         kwargs['thread_ts'] = thread_id
+    if BOT_NAME:
+        kwargs['username'] = BOT_NAME
+    if BOT_ICON_URL:
+        kwargs['icon_url'] = BOT_ICON_URL
 
     for destination in destinations:
         response = CLIENT.chat_postMessage(channel=destination, **kwargs)
@@ -1454,6 +1491,7 @@ def init_globals():
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
+    global BOT_NAME, BOT_ICON_URL
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
@@ -1466,6 +1504,8 @@ def init_globals():
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
     VERIFY_CERT = not demisto.params().get('unsecure', False)
+    BOT_NAME = demisto.params().get('bot_name')
+    BOT_ICON_URL = demisto.params().get('bot_icon')
 
 
 def main():

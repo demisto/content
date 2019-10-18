@@ -1,5 +1,8 @@
 ## [Unreleased]
--
+
+
+## [19.10.1] - 2019-10-15
+Added support for changing the display name and icon for the Demisto bot in Slack.
 
 ## [19.10.0] - 2019-10-03
 Added support for sending blocks (graphical attachments) in messages. For more information see the integration documentation.
