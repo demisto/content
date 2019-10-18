@@ -168,8 +168,6 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     fetch_times = get_fetch_times(last_fetch)
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
-        if index > 5:
-            break
         if index < fetch_time_count - 1:
             raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
                                            event_type_filter=event_type_filter,
@@ -187,17 +185,14 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event)
             }
-            if raw_event["messageTime"] > last_fetch:
-                last_fetch = raw_event["messageTime"]
             last_event_fetch = raw_event["messageTime"]
 
             threat_info_map = raw_event.get("threatsInfoMap", [])
             for threat in threat_info_map:
                 if threat["threatTime"] > last_fetch:
-                    last_fetch = threat["threatTime"]
                     last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
                         "threatTime"]
-            incident['Occurred'] = last_event_fetch
+            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
@@ -208,10 +203,6 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event)
             }
-
-            if raw_event["messageTime"] > last_fetch:
-                last_fetch = raw_event["messageTime"]
-
             last_event_fetch = raw_event["messageTime"]
 
             threat_info_map = raw_event.get("threatsInfoMap", [])
@@ -221,7 +212,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
                     last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
                         "threatTime"]
 
-            incident['Occurred'] = last_event_fetch
+            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
@@ -230,16 +221,10 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             event_guid = raw_events.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event),
+                "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+                    "threatTime"]
             }
-
-            if raw_event["clickTime"] > last_fetch:
-                last_fetch = raw_event["clickTime"]
-
-            if raw_event["threatTime"] > last_fetch:
-                last_fetch = raw_event["threatTime"]
-            incident['Occurred'] = raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else \
-                raw_event["threatTime"]
             incidents.append(incident)
 
         clicks_blocked = raw_events.get("clicksBlocked", [])
@@ -248,27 +233,23 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             event_guid = raw_events.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event),
+                "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+                    "threatTime"]
             }
-
-            if raw_event["clickTime"] > fetch_time:
-                last_fetch = raw_event["clickTime"]
-
-            if raw_event["threatTime"] > fetch_time:
-                last_fetch = raw_event["threatTime"]
-            incident['Occurred'] = raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else \
-                raw_event["threatTime"]
             incidents.append(incident)
 
+    # limit incidents to the limit given
+    incidents.sort(key=lambda a: a.get('occurred'))
+    if len(incidents) > limit:
+        incidents = incidents[:limit]
+
+    # Cut the milliseconds from last fetch if exists
+    last_fetch = incidents[-1].get('occurred')
     last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
     last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     last_fetch = (last_fetch_datetime + timedelta(seconds=1)).strftime(DATE_FORMAT)
     next_run = {'last_fetch': last_fetch}
-
-    # limit incidents to the limit given
-    incidents.sort(key=lambda a: a.get('Occurred'))
-    if len(incidents) > limit:
-        incidents = incidents[:limit]
     return next_run, incidents
 
 
