@@ -17,7 +17,7 @@ def makebuf(text):
 
 
 class Client:
-    def __init__(self, private_key, public_key):
+    def __init__(self, private_key, public_key, recipient_key):
         self.smime = SMIME.SMIME()
 
         public_key_file = NamedTemporaryFile(delete=False)
@@ -30,6 +30,11 @@ class Client:
         self.private_key_file = private_key_file.name
         private_key_file.close()
 
+        recipient_key_file = NamedTemporaryFile(delete=False)
+        recipient_key_file.write(bytes(recipient_key, 'utf-8'))
+        self.recipient_key_file = recipient_key_file.name
+        recipient_key_file.close()
+
 
 ''' COMMANDS '''
 
@@ -39,7 +44,6 @@ def sign_email(client: Client, args: Dict):
     send a S/MIME-signed message via SMTP.
     """
     message_body = args.get('message_body', '')
-
     buf = makebuf(message_body.encode())
 
     client.smime.load_key(client.private_key_file, client.public_key_file)
@@ -48,16 +52,12 @@ def sign_email(client: Client, args: Dict):
     buf = makebuf(message_body.encode())
 
     out = BIO.MemoryBuffer()
-    client.smime.write(out, p7, buf)
 
+    client.smime.write(out, p7, buf)
     signed = out.read().decode('utf-8')
-    signed_message = signed.split('\n\n')
-    headers = signed_message[0].replace(': ', '=').replace('\n', ',')
-    body = signed_message[2:]
     context = {
         'SMIME.Signed': {
-            'Message': body,
-            'Headers': headers
+            'Message': signed,
         }
     }
 
@@ -89,14 +89,10 @@ def encrypt_email_body(client: Client, args: Dict):
 
     client.smime.write(out, p7)
     encrypted_message = out.read().decode('utf-8')
-    message = encrypted_message.split('\n\n')
-    headers = message[0]
-    new_headers = headers.replace(': ', '=').replace('\n', ',')
 
     entry_context = {
         'SMIME.Encrypted': {
             'Message': encrypted_message,
-            'Headers': new_headers
         }
     }
     return encrypted_message, entry_context
@@ -156,6 +152,47 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     return human_readable, entry_context
 
 
+def sign_and_encrypt(client: Client, args: Dict):
+    """ Sign and encrypt the message
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+
+    message = args.get('message', '').encode('utf-8')
+
+    buf = makebuf(message)
+    client.smime.load_key(client.private_key_file, client.public_key_file)
+    p7 = client.smime.sign(buf)
+
+    x509 = X509.load_cert(client.recipient_key_file)
+    sk = X509.X509_Stack()
+    sk.push(x509)
+    client.smime.set_x509_stack(sk)
+
+    client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
+
+    tmp = BIO.MemoryBuffer()
+
+    client.smime.write(tmp, p7)
+
+    p7 = client.smime.encrypt(tmp)
+
+    out = BIO.MemoryBuffer()
+    client.smime.write(out, p7)
+    msg = out.read().decode('utf-8')
+
+    entry_context = {
+        'SMIME.Encrypted': {
+            'Message': msg
+        }
+    }
+
+    return msg, entry_context
+
+
 def test_module(client, *_):
     message_body = 'testing'
     try:
@@ -177,15 +214,17 @@ def main():
 
     public_key: str = demisto.params().get('public_key', '')
     private_key: str = demisto.params().get('private_key', '')
+    recipient_key: str = demisto.params().get('recipient_key', '')
 
-    client = Client(private_key, public_key)
+    client = Client(private_key, public_key, recipient_key)
     LOG(f'Command being called is {demisto.command()}')
     commands = {
         'test-module': test_module,
         'smime-sign-email': sign_email,
         'smime-encrypt-email-body': encrypt_email_body,
         'smime-verify-sign': verify,
-        'smime-decrypt-email-body': decrypt_email_body
+        'smime-decrypt-email-body': decrypt_email_body,
+        'smime-sign-and-encrypt': sign_and_encrypt
     }
     try:
         command = demisto.command()
@@ -200,6 +239,8 @@ def main():
             os.unlink(client.private_key_file)
         if client.public_key_file:
             os.unlink(client.public_key_file)
+        if client.recipient_key_file:
+            os.unlink(client.recipient_key_file)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
