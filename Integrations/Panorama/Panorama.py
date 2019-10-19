@@ -1802,11 +1802,15 @@ def panorama_get_custom_url_category_command():
 
 @logger
 def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
+    if PANOS_VER == 8:
+        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
+    else:
+        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + add_argument("URL List", 'type', False)
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
