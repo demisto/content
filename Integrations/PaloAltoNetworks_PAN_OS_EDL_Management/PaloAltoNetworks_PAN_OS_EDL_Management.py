@@ -103,11 +103,11 @@ def ssh_execute(command: str):
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-            file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
+            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                      USERNAME + '@' + HOSTNAME + ':' + file_path]
+                      USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode != 0:
