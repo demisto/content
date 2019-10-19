@@ -1,12 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
+
+
 
 ''' IMPORTS '''
 from datetime import datetime
 from typing import Dict, List, Any, Optional
 import uuid
-import json
 import requests
 
 
@@ -20,6 +19,7 @@ if not demisto.params().get('port'):
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
+PANOS_VER = int(demisto.params().get('version'))
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -370,10 +370,10 @@ def panorama_command():
     Executes a command
     """
     params = {}
-    params['key'] = API_KEY
     for arg in demisto.args().keys():
         params[arg] = demisto.args()[arg]
-
+    params['key'] = API_KEY
+    
     result = http_request(
         URL,
         'POST',
@@ -1893,15 +1893,25 @@ def panorama_delete_custom_url_category_command():
 
 @logger
 def panorama_edit_custom_url_category(custom_url_category_name, sites, description=None):
+    if PANOS_VER == 8:
+        element = "<entry name='{}'>{}{}</entry>".format(
+            custom_url_category_name,
+            add_argument(description, 'description', False),
+            add_argument_list(sites, 'list', True))
+    else:
+        element = "<entry name='{}'>{}{}{}</entry>".format(
+            custom_url_category_name,
+            add_argument(description, 'description', False),
+            add_argument("URL List", 'type', False),
+            add_argument_list(sites, 'list', True))
     params = {
         'action': 'edit',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': "<entry name='" + custom_url_category_name + "'>"
-                   + add_argument(description, 'description', False)
-                   + add_argument_list(sites, 'list', True) + "</entry>",
+        'element': element,
         'key': API_KEY
     }
+
     result = http_request(
         URL,
         'POST',
@@ -2682,7 +2692,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ('address-group','edl'):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
