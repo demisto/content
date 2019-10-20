@@ -84,6 +84,7 @@ When we are fetching incidents, it is important to include the ```rawJson``` key
 
 ### Setting Last Run
 When the last of the events have been retrieved, we need to save the new last run time into the integration context. This timestamp will be used the next time the ```fetch-incidents``` function is ran.
+One more thing important to know when setting the last run object is that the values of the dictionairy must be of type string.
 
 ```python
     demisto.setLastRun({
