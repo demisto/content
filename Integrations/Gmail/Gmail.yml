@@ -787,7 +787,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Token to specify next page in the list
+      description: Page token to retrieve a specific page of results in the list.
       isArray: false
       name: page-token
       required: false
