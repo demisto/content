@@ -1,2 +1,2 @@
 ## [Unreleased]
-Convert a file from one format to another via Libre Office's *convert-to* function.
+Converts a file from one format to different format by using the *convert-to* function of Libre Office.
