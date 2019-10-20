@@ -1118,7 +1118,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The item ID of item to be uploaded as eml.
+      description: The item ID of item to upload as and EML file.
       isArray: false
       name: item-id
       required: true
@@ -1137,34 +1137,34 @@ script:
     name: ews-get-items-as-eml
     outputs:
     - contextPath: File.Size
-      description: The size of a file.
+      description: The size of the file.
       type: String
     - contextPath: File.SHA1
-      description: SHA1 of the file.
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: File.SHA256
-      description: SHA256 of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: File.SHA512
-      description: SHA512 of the file.
+      description: The SHA512 hash of the file.
       type: String
     - contextPath: File.Name
       description: The name of the file.
       type: String
     - contextPath: File.SSDeep
-      description: SSDeep of the file.
+      description: The SSDeep hash of the file.
       type: String
     - contextPath: File.EntryID
       description: EntryID of the file
       type: String
     - contextPath: File.Info
-      description: Info of the file.
+      description: Information about the file.
       type: String
     - contextPath: File.Type
-      description: The type of the file.
+      description: The file type.
       type: String
     - contextPath: File.MD5
-      description: MD5 of the file.
+      description: The MD5 hash of the file.
       type: String
     - contextPath: File.Extension
       description: The extension of the file.
