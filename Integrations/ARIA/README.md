@@ -18,7 +18,7 @@ This integration was integrated and tested with version xx of ARIA Packet Intell
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>SDSo Base URL (e.g. http://&lt;IP address or FQDN of SDSo Node>:7443&gt;</strong></li>
+   <li><strong>SDSo Base URL (e.g. http://&lt;IP address or FQDN of SDSo Node&gt;:7443);</strong></li>
     </ul>
   </li>
   <li>
