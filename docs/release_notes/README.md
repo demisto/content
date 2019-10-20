@@ -70,5 +70,4 @@ One should specify in the corresponding change log file the following changes:
   - fixing customer bugs
   
 ## Note
-New content entities (with the exception of classifier and reputation) should not have change log file submitted.
-this file will be automatically generated in the content release process.
+New content entities (with the exception of classifier and reputation) do not require you to submit a change log file.  This file will be automatically generated in the content release process.
