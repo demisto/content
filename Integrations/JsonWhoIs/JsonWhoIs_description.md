@@ -1,6 +1,6 @@
-Integration with JsonWhoIs with REST api. You can execute queries on url, ip, get inforamtion regarding domains.
+Execute queries on URLs and IP addresses, and get information for domains.
 
 ## Configuration Parameters
 
 **API Token**  
-The credentials entered here should be those created in the [JsonWhoIs site](https://jsonwhois.com/) for REST api.
+The credentials entered here should be those created in the [JsonWhoIs site](https://jsonwhois.com/) for REST API.
