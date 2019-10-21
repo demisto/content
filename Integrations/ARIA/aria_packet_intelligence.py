@@ -171,9 +171,9 @@ class ARIA(object):
                 the same time.
 
         """
-        selector = {
-            'kind': 'string'
-        }
+        selector = dict()
+
+        selector['kind'] = 'string'
 
         count = 0
 
@@ -317,7 +317,7 @@ class ARIA(object):
 
             for ep in endpoints:
                 trid = ep.get('trid')
-                success = self._wait_for_trid(trid)
+                success = self._wait_for_trid(str(trid))
                 ep['completion'] = success
                 if not success:
                     command_state = False
@@ -402,7 +402,7 @@ class ARIA(object):
 
                 for ep in endpoints:
                     trid = ep.get('trid')
-                    success = self._wait_for_trid(trid)  # check if the request completes successfully
+                    success = self._wait_for_trid(str(trid))  # check if the request completes successfully
                     ep['completion'] = success
                     if success:
                         at_least_one_completion = True  # Set to True if at least one endpoints complete
@@ -435,7 +435,7 @@ class ARIA(object):
                             endpoints[ep_index] = response_json.get('endpoints')[0]
 
                             trid = ep.get('trid')
-                            success = self._wait_for_trid(trid)
+                            success = self._wait_for_trid(str(trid))
                             endpoints[ep_index]['completion'] = success
                             if endpoints[ep_index]['completion']:
                                 break
