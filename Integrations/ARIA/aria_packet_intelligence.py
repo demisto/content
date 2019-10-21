@@ -369,7 +369,7 @@ class ARIA(object):
 
         code = None
 
-        endpoints : List[dict] = []
+        endpoints: List[dict] = []
 
         command_state = False
         # If response code is not 201, the error message may be caused by no connection to the SDSo or no ISA
