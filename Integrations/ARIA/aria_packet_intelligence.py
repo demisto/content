@@ -173,8 +173,6 @@ class ARIA(object):
         """
         selector = dict()
 
-        selector['kind'] = 'string'
-
         count = 0
 
         type_dict = ['group', 'name', 'region']
