@@ -12,6 +12,7 @@ import os
 import re
 import base64
 import logging
+from enum import Enum
 from collections import OrderedDict
 import xml.etree.cElementTree as ET
 from datetime import datetime, timedelta
@@ -34,6 +35,8 @@ else:
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
 
+
+# DEPRECATED - use EntryType enum instead
 entryTypes = {
     'note': 1,
     'downloadAgent': 2,
@@ -42,13 +45,30 @@ entryTypes = {
     'pinned': 5,
     'userManagement': 6,
     'image': 7,
-    'plagroundError': 8,
     'playgroundError': 8,
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
     'widget': 17
 }
+
+
+class EntryType(Enum):
+    NOTE = 1
+    DOWNLOAD_AGENT = 2
+    FILE = 3
+    ERROR = 4
+    PINNED = 5
+    USER_MANAGEMENT = 6
+    IMAGE = 7
+    PLAYGROUND_ERROR = 8
+    ENTRY_INFO_FILE = 9
+    WARNING = 11
+    MAP_ENTRY_TYPE = 15
+    WIDGET = 17
+
+
+# DEPRECATED - use EntryFormat enum instead
 formats = {
     'html': 'html',
     'table': 'table',
@@ -57,6 +77,15 @@ formats = {
     'dbotResponse': 'dbotCommandResponse',
     'markdown': 'markdown'
 }
+
+class EntryFormat(Enum):
+    HTML = 'html'
+    TABLE = 'table'
+    JSON = 'json'
+    TEXT = 'text'
+    DBOT_RESPONSE = 'dbotCommandResponse'
+    MARKDOWN = 'markdown'
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',
@@ -76,14 +105,33 @@ thresholds = {
     'vtPositives': 10,
     'vtPositiveUrlsForIP': 30
 }
-dbotscores = {
-    'Critical': 4,
-    'High': 3,
-    'Medium': 2,
-    'Low': 1,
-    'Unknown': 0,
-    'Informational': 0.5
-}
+
+
+class DBotScore(Enum):
+    NONE = 0
+    GOOD = 1
+    SUSPICIOUS = 2
+    BAD = 3
+
+
+class IndicatorType(Enum):
+    IP = 'ip'
+    HASH = 'hash'
+    DOMAIN = 'domain'
+    URL = 'url'
+
+
+class OutputPath(Enum):
+    IP = 'IP(val.Address && val.Address == obj.Address)'
+    URL = 'URL(val.Data && val.Data == obj.Data)'
+    DOMAIN = 'Domain(val.Name && val.Name == obj.Name)'
+    CVE = 'CVE(val.ID && val.ID == obj.ID)'
+    EMAIL = 'Account.Email(val.Address && val.Address == obj.Address)'
+    DBOT_SCORE = 'DBotScore'
+    FILE = 'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+          'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || ' \
+          'val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || ' \
+          'val.SSDeep && val.SSDeep == obj.SSDeep)'
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -1463,7 +1511,84 @@ def is_ip_valid(s, accept_v6_ips=False):
         return True
 
 
-def return_outputs(readable_output, outputs=None, raw_response=None):
+class DBotScoreEntry:
+    CONTEXT_PATH = 'DBotScore'
+
+    def __init__(self, indicator, indicator_type: IndicatorType, vendor, score: DBotScore):
+        self.indicator = indicator
+        self.indicator_type = indicator_type,
+        self.vendor = vendor
+        self.score = score
+
+    def to_context(self):
+        return {
+            'Indicator': self.indicator,
+            'Type': self.indicator_type,
+            'Vendor': self.vendor,
+            'Score': self.score
+        }
+
+
+class IPIndicator:
+    CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+
+    def __init__(self, vendor, ip, asn, hostname, geo_latitude, geo_longitude, geo_country, geo_description,
+                 detection_engines, positive_engines, dbot_score: DBotScore, malicious_description):
+        self.ip = ip
+        self.asn = asn
+        self.hostname = hostname
+        self.geo_latitude = geo_latitude
+        self.geo_longitude = geo_longitude
+        self.geo_country = geo_country
+        self.geo_description = geo_description
+        self.detection_engines = detection_engines
+        self.positive_engines = positive_engines
+        self.dbot_score = DBotScoreEntry(self.ip, IndicatorType.IP, vendor, dbot_score)
+
+        if dbot_score == DBotScore.BAD:
+            self.malicious = True
+            self.malicious_vendor = vendor
+            self.malicious_description = malicious_description
+
+    def to_context(self):
+        ip_context = {
+            'Address': self.ip
+        }
+
+        if self.asn:
+            ip_context['ASN'] = self.asn
+
+        if self.hostname:
+            ip_context['Hostname'] = self.hostname
+
+        if self.geo_latitude or self.geo_country or self.geo_description:
+            ip_context['Geo'] = {}
+
+            if self.geo_latitude and self.geo_longitude:
+                ip_context['Geo']['Location'] = f'{self.geo_latitude}:{self.geo_longitude}'
+
+            if self.geo_country:
+                ip_context['Geo']['Country'] = self.geo_country
+
+            if self.geo_description:
+                ip_context['Geo']['Description'] = self.geo_description
+
+        if self.detection_engines:
+            ip_context['DetectionEngines'] = self.detection_engines
+
+        if self.positive_engines:
+            ip_context['PositiveDetections'] = self.positive_engines
+
+        if self.malicious:
+            ip_context['Malicious'] = {
+                'Vendor': self.malicious_vendor,
+                'Description': self.malicious_description
+            }
+
+        return ip_context
+
+
+def return_outputs(readable_output, outputs=None, raw_response=None, ip_indicators=None):
     """
     This function wraps the demisto.results(), makes the usage of returning results to the user more intuitively.
 
@@ -1477,6 +1602,9 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     :type raw_response: ``dict`` | ``list``
     :param raw_response: must be dictionary, if not provided then will be equal to outputs. usually must be the original
     raw response from the 3rd party service (originally Contents)
+
+    :type ip_indicators: ``IPIndicator list``
+    :param ip_indicators:
 
     :return: None
     :rtype: ``None``
@@ -1495,6 +1623,16 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
+
+    if ip_indicators:
+        if "EntryContext" not in return_entry:
+            return_entry["EntryContext"] = {}
+
+        return_entry["EntryContext"][IPIndicator.CONTEXT_PATH] = ip_indicators
+        dbot_scores = map(lambda ip : ip.dbot_score, ip_indicators)
+
+        return_entry['EntryContext'][DBotScoreEntry.CONTEXT_PATH].extend(dbot_scores)
+
     demisto.results(return_entry)
 
 

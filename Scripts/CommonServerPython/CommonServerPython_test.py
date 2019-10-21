@@ -7,10 +7,11 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+from .CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    build_dbot_entry, IndicatorType, DBotScore, IPIndicator
 
 try:
     from StringIO import StringIO
@@ -968,3 +969,38 @@ class TestReturnOutputs:
         assert outputs == results['Contents']
         assert outputs == results['EntryContext']
         assert md == results['HumanReadable']
+
+    def test_return_ip_indicator(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        ip_indicator = IPIndicator(
+            ip='8.8.8.8',
+            asn='SOME ASN',
+            vendor='Virus Total',
+            dbot_score=DBotScore.BAD,
+            malicious_description='this is malicious ip'
+        )
+
+        return_outputs(md, ip_indicators=ip_indicator)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+
+        assert 'EntryContext' in results
+        assert 'DBotScore' in results['EntryContext']
+        assert results['DBotScore'] == {
+            'Vendor': 'Virus Total',
+            'Type': IndicatorType.IP,
+            'Indicator': '8.8.8.8',
+            'Score': DBotScore.BAD
+        }
+
+        assert 'IP' in results['EntryContext']
+        assert results['IP'] == {
+            'Address': '8.8.8.8',
+            'ASN': 'SOME ASN',
+            'Malicious': {
+                'Vendor': 'Virus Total',
+                'Description': 'this is malicious ip'
+            }
+        }
