@@ -649,6 +649,7 @@ def create_group():
     }
     demisto.results(demisto_entry)
 
+
 ''' UPDATE OBJECT '''
 
 
@@ -932,10 +933,7 @@ def delete_group():
     assert conn is not None
     args = demisto.args()
 
-    object_classes = ["top", "group"]
-    group_cn = args.get('name')
     dn = args.get('dn')
-    attributes = {}
 
     # delete group
     success = conn.delete(dn)
@@ -948,6 +946,7 @@ def delete_group():
         'Contents': "Deleted group with DN: {}".format(dn)
     }
     demisto.results(demisto_entry)
+
 
 '''
     TEST CONFIGURATION
@@ -1080,12 +1079,12 @@ def main():
 
         if demisto.command() == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
-			
+
         if demisto.command() == 'ad-create-group':
             create_group()
 
         if demisto.command() == 'ad-delete-group':
-            delete_group()	
+            delete_group()
 
     except Exception as e:
         message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
