@@ -112,8 +112,8 @@ class TestARIA:
                       f'aio_index={aio_index[i]}, trigger_type={trigger_type[i]}, trigger_value={trigger_value[i]})')
 
                 self.aria._build_alert_instruction(transport_type={transport_type[i]}, tti_index={tti_index[i]},
-                                                aio_index={aio_index[i]}, trigger_type={trigger_type[i]},
-                                                trigger_value={trigger_value[i]})
+                                                   aio_index={aio_index[i]}, trigger_type={trigger_type[i]},
+                                                   trigger_value={trigger_value[i]})
 
     def test_block_conversation(self):
 
