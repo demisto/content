@@ -195,7 +195,6 @@ class ARIA(object):
         # default label if no labels provided
         if count == 0:
             selector = {
-                'kind': 'string',
                 'label1': {
                     'kind': 'string',
                     'SIA_label_type': 'region',
