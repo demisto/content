@@ -1312,7 +1312,9 @@ class ARIA(object):
         """
         return self._remove_rule(rule_name, 'src-subnet', None, label_sia_group, label_sia_name, label_sia_region)
 
+
 ''' HELPER FUNCTIONS '''
+
 
 def func_call(instance: ARIA, func_name: str, command_name: str, *argv: tuple):
     """ Helper function used to call different demisto command
@@ -1349,6 +1351,7 @@ def func_call(instance: ARIA, func_name: str, command_name: str, *argv: tuple):
 
 
 ''' COMMAND FUNCTION '''
+
 
 def block_conversation_command(instance):
     args = ('src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'label_sia_group',
@@ -1512,6 +1515,7 @@ def mute_alert_src_subnet_command(instance):
     args = ('rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region')
     return func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', *args)
 
+
 def main():
     # disable insecure warnings
     requests.packages.urllib3.disable_warnings()
@@ -1560,24 +1564,25 @@ def main():
     LOG('ARIA: command is %s' % (command,))
 
     if demisto.command() == 'test-module':
-
         # Test if the ARIA PI Reaper is ready
         url = sdso_url + '/endPoint'
         try:
-            res = requests.get(url, timeout = 20)
+            res = requests.get(url, timeout=20)
             size = len(json.loads(res.text))
             if res.ok and size != 0:
                 demisto.results('ok')
-        except:
+            else:
+                return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
+        except (json.JSONDecodeError, requests.exceptions.RequestException):
             return_error('Fail to Connect to SDSo or no PacketIntelligence Service!')
+
     else:
         cmd_func = commnds_dict.get(command)
 
         if cmd_func is None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
         else:
-
-            readable_output, ec= cmd_func(aria)
+            readable_output, ec = cmd_func(aria)
             context_entry = list(ec.values())[0]
 
             if context_entry['Status']['command_state'] != 'Success':
@@ -1589,6 +1594,7 @@ def main():
                     return_error(f'One or more endpoints fail to create/remove rules. Please see {endpoints_str}')
             else:
                 return_outputs(readable_output, ec)
+
 
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == '__builtin__' or __name__ == 'builtins':

@@ -11,32 +11,27 @@ import random
 class TestARIA:
     sdso = input('\nPlease enter your SDSo Node\'s IP address: ')
     sdso_url = f'http://{sdso}:7443/Aria/SS/1.0.0/PBaaS/server'
-    aria = ARIA()
-    aria.sdso_url: str = sdso_url
+    aria = ARIA(sdso_url)
 
     # some function may test with specific label_sia_name, label_sia_region and label_sia_group
     print('\nTest cases will use specific labels of SIA, please enter valid labels for your SIA: ')
-    label_sia_group = input('Please enter label_sia_group or press Enter to skip: ')
-    label_sia_name = input('Please enter label_sia_name or press Enter to skip: ')
-    label_sia_region = input('Please enter label_sia_region or press Enter to skip: ')
+    label_sia_group = None
+    label_sia_name = None
+    label_sia_region = None
 
     wait_time = 1
 
-    if len(label_sia_group) == 0:
-        label_sia_group = None
-
-    if len(label_sia_name) == 0:
-        label_sia_name = None
-
-    if len(label_sia_region) == 0:
-        label_sia_region = None
-
     # write a ip generate function to skip the secret check
-    def _ip(self, ip1 = None, ip2 = None, ip3 = None, ip4 = None):
+    def _ip(self, ip1=None, ip2=None, ip3=None, ip4=None):
+
         ip1 = random.randint(0, 255) if ip1 is None else ip1
+
         ip2 = random.randint(0, 255) if ip2 is None else ip2
+
         ip3 = random.randint(0, 255) if ip3 is None else ip3
+
         ip4 = random.randint(0, 255) if ip4 is None else ip4
+
         return f'{str(ip1)}.{str(ip2)}.{str(ip3)}.{str(ip4)}'
 
     def test_process_ip_address(self):
@@ -50,20 +45,18 @@ class TestARIA:
         for i in range(0, len(ip_addr_invalid)):
 
             with pytest.raises(ValueError):
-                print(f'_process_ip_address(ip={ip_addr_invalid[i]})')
 
-                ARIA()._process_ip_address(ip=ip_addr_invalid[i])
+                self.aria._process_ip_address(ip=ip_addr_invalid[i])
 
         print('\nCase 2: Test valid IP input: ')
 
         # valid ip format input
-        ip_addr_valid = ['1.2. 3.4', f'{self._ip(1, 2, 3, 4)}  /32', f'{self._ip(255, 255, 255, 255)}/ 24', '10.20.30. 40']
+        ip_addr_valid = ['1.2. 3.4', f'{self._ip(1, 2, 3, 4)}  /32',
+                         f'{self._ip(255, 255, 255, 255)}/ 24', '10.20.30. 40']
 
         for i in range(0, len(ip_addr_valid)):
 
-            print(f'_process_ip_address(ip={ip_addr_valid[i]})')
-
-            res = ARIA()._process_ip_address(ip=ip_addr_valid[i])
+            res = self.aria._process_ip_address(ip=ip_addr_valid[i])
 
             # output IP addresses are in format like 1.2.3.4/32
             if '/' in ip_addr_valid[i]:
@@ -81,7 +74,7 @@ class TestARIA:
         for i in range(0, len(port_range_invalid)):
             with pytest.raises(ValueError):
                 print(f'_process_port_range(port_range={port_range_invalid[i]})')
-                ARIA()._process_port_range(port_range=port_range_invalid[i])
+                self.aria._process_port_range(port_range=port_range_invalid[i])
 
         print('\nCase 4: Test valid port input: ')
 
@@ -92,7 +85,7 @@ class TestARIA:
 
             print(f'_process_port_range(port_range={port_range_valid[i]})')
 
-            res = ARIA()._process_port_range(port_range=port_range_valid[i])
+            res = self.aria._process_port_range(port_range=port_range_valid[i])
 
             if port_range_valid[i] is None:
                 assert res == '0 - 65535'
@@ -118,7 +111,7 @@ class TestARIA:
                 print(f'_build_alert_instruction(transport_type={transport_type[i]}, tti_index={tti_index[i]}, '
                       f'aio_index={aio_index[i]}, trigger_type={trigger_type[i]}, trigger_value={trigger_value[i]})')
 
-                ARIA()._build_alert_instruction(transport_type={transport_type[i]}, tti_index={tti_index[i]},
+                self.aria._build_alert_instruction(transport_type={transport_type[i]}, tti_index={tti_index[i]},
                                                 aio_index={aio_index[i]}, trigger_type={trigger_type[i]},
                                                 trigger_value={trigger_value[i]})
 
