@@ -929,6 +929,7 @@ def delete_user():
     }
     demisto.results(demisto_entry)
 
+
 def delete_group():
     assert conn is not None
     args = demisto.args()
