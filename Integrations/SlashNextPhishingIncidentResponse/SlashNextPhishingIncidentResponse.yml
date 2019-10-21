@@ -505,7 +505,7 @@ script:
       results will be returned immediately. If not, this command will submit a URL
       scan request and return with the message "check back later" and include a unique
       Scan ID. You can check the results of this scan using the "slashnext-scan-report" command anytime 
-      after 60 seconds using the retuned Scan ID.
+      after 60 seconds using the returned Scan ID.
   - name: slashnext-url-scan-sync
     arguments:
     - name: url
@@ -614,7 +614,6 @@ script:
     - name: scanid
       required: true
       description: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" command or "slashnext-url-scan-sync" command.
-        commands.
     - name: extended_info
       description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
       defaultValue: "false"
@@ -704,14 +703,13 @@ script:
       description: Time when the landing IoC was last observed.
       type: date
     description: Retrieves the results of a URL scan against a previous scan request. If the
-      scan is finished, results will be retuned immediately; otherwise the message "check back
+      scan is finished, results will be returned immediately; otherwise the message "check back
       later" will be returned.
   - name: slashnext-download-screenshot
     arguments:
     - name: scanid
       required: true
       description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
-        command.
     - name: resolution
       description: Resolution of the web page screenshot. Can be "high" or "medium". Default is "high".
       defaultValue: "high"
@@ -721,13 +719,11 @@ script:
     - name: scanid
       required: true
       description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
-        command.
     description: Downloads a web page HTML against a previous URL scan request.
   - name: slashnext-download-text
     arguments:
     - name: scanid
       required: true
       description:  Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
-        command.
     description: Downloads the text of a web page against a previous URL scan request.
   runonce: false
