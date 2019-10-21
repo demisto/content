@@ -98,6 +98,10 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "ConvertFile-Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "playbookID": "TestAwsEC2GetPublicSGRules-Test"
         },
         {
@@ -1418,7 +1422,8 @@
         {
             "playbookID": "AD v2 - debug-mode - Test",
             "instance_names": "active_directory_query_v2",
-            "integrations": "Active Directory Query v2"
+            "integrations": "Active Directory Query v2",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Active Directory Query v2",
