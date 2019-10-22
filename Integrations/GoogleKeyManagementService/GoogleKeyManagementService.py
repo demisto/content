@@ -78,7 +78,13 @@ def arg_dict_creator(string: str):
     if not string:
         return None
 
-    return dict(section.split(':', 1) for section in string.split(','))
+    split_string = string.split(',')
+    arg_dict = {}
+    for section in split_string:
+        key, value = section.split(':', 1)
+        arg_dict[key] = value
+
+    return dict()
 
 
 def key_context_creation(res: Any) -> Dict:
@@ -266,7 +272,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
     if 'primary.attestation' in update_mask or 'primary.state' in update_mask:
         # Init the 'primary' sub-dictionary
-        body['primary'] = {}  # type:Dict
+        body['primary'] = {}
 
         if 'primary.attestation' in update_mask:
             # Add attestation dict to 'primary' sub-dictionary
@@ -278,7 +284,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
     if 'version_template.algorithm' in update_mask or 'version_template.protection_level' in update_mask:
         # Init the 'version_template' sun-dictionary
-        body['version_template'] = {}  # type:Dict
+        body['version_template'] = {}
 
         if 'version_template.algorithm' in update_mask:
             # Add algorithm enum to 'version_template' sun-dictionary
@@ -420,6 +426,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     # return the created ciphertext cleaned from additional characters.
     ciphertext = str(base64.b64encode(response.ciphertext))[2:-1]
     demisto.results(f"The text has been encrypted.\nCiphertext: {ciphertext}")
+    return None
 
 
 def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
@@ -454,6 +461,7 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
         plaintext = str(base64.b64decode(response.plaintext))[2:-1]
 
     demisto.results(f"The text has been decrypted.\nPlaintext: {plaintext}")
+    return None
 
 
 def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -828,8 +836,8 @@ def main():
         if command not in COMMANDS:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-        cmd_func = COMMANDS.get(command)[0]
-        cmd_role = COMMANDS.get(command)[1]
+        cmd_func = str(COMMANDS.get(command)[0])
+        cmd_role = list(COMMANDS.get(command)[1])
 
         if client.role not in cmd_role:
             raise Exception(f"Your Service Account Role does not permit the use of {command} command.")
