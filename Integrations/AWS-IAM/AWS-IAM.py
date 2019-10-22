@@ -4,6 +4,10 @@ from datetime import datetime, date
 import boto3
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
+import urllib3.util
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 AWS_DEFAULT_REGION = None
 AWS_ROLE_ARN = demisto.params()['roleArn']
