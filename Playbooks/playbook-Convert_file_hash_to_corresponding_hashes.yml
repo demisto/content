@@ -1,7 +1,6 @@
 id: Convert file hash to corresponding hashes
-version: -1
+version: 6
 name: Convert file hash to corresponding hashes
-fromversion: 4.5.0
 description: |
   The playbook allows to get all of the relevant file hash even if there is only one hash type available
   For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes as long as the
@@ -10,13 +9,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d454b23d-bf15-4908-8ee4-6c607666e3b5
+    taskid: f3d44d02-1482-4dd0-8055-34128346e4ec
     type: start
     task:
-      id: d454b23d-bf15-4908-8ee4-6c607666e3b5
-      description: Start
+      id: f3d44d02-1482-4dd0-8055-34128346e4ec
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -37,13 +36,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 991a7e8a-1cf0-4c21-8084-06e7c2f29309
+    taskid: d0c581d2-789c-4a12-8940-37f17a47b4f6
     type: title
     task:
-      description: Done
-      id: 991a7e8a-1cf0-4c21-8084-06e7c2f29309
+      id: d0c581d2-789c-4a12-8940-37f17a47b4f6
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -60,13 +59,13 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: dd11c15c-962d-4ed2-89bd-2be155160d3a
+    taskid: b797fdc7-1704-442a-8605-ee06bfb0bf54
     type: condition
     task:
-      id: dd11c15c-962d-4ed2-89bd-2be155160d3a
-      description: Does SHA256 exist?
+      id: b797fdc7-1704-442a-8605-ee06bfb0bf54
       version: -1
       name: Does SHA256 exist?
+      description: Does SHA256 exist?
       type: condition
       iscommand: false
       brand: ""
@@ -97,13 +96,13 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 8aa3f46d-9fe0-439a-868e-1d37f94e9150
+    taskid: f7142eb2-9483-4546-8d07-a828d636d0ad
     type: condition
     task:
-      id: 8aa3f46d-9fe0-439a-868e-1d37f94e9150
-      description: Does MD5 exist?
+      id: f7142eb2-9483-4546-8d07-a828d636d0ad
       version: -1
       name: Does MD5 exist?
+      description: Does MD5 exist?
       type: condition
       iscommand: false
       brand: ""
@@ -134,13 +133,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 3b85afdc-140b-46dd-88ee-9e1b19127b09
+    taskid: eff5d9b7-ea36-4310-8650-5e26fa38209e
     type: condition
     task:
-      id: 3b85afdc-140b-46dd-88ee-9e1b19127b09
-      description: Does SHA1 exist?
+      id: eff5d9b7-ea36-4310-8650-5e26fa38209e
       version: -1
       name: Does SHA1 exist?
+      description: Does SHA1 exist?
       type: condition
       iscommand: false
       brand: ""
@@ -171,10 +170,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 932b767f-e0e1-41ce-8c7a-ba0c99dd284d
+    taskid: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
     type: regular
     task:
-      id: 932b767f-e0e1-41ce-8c7a-ba0c99dd284d
+      id: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
       version: -1
       name: Get hashes by SHA1
       description: Accepts the SHA1 to check.
@@ -215,10 +214,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 41efbe36-3c18-42c4-87e6-31053a113cb8
+    taskid: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
     type: regular
     task:
-      id: 41efbe36-3c18-42c4-87e6-31053a113cb8
+      id: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
       version: -1
       name: Get hashes by MD5
       description: Accepts the MD5 to check.
@@ -259,10 +258,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 8bb54d60-e967-41f5-8df6-921d5328374e
+    taskid: 29ef7703-de75-4ff3-844c-a852e333bdbe
     type: regular
     task:
-      id: 8bb54d60-e967-41f5-8df6-921d5328374e
+      id: 29ef7703-de75-4ff3-844c-a852e333bdbe
       version: -1
       name: Get Hashes by SHA256
       description: Accepts the SHA256 to check.
@@ -303,10 +302,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 22b64069-8374-4822-82c5-b22f5efc9ad9
+    taskid: 5ea09cf0-1554-4f77-8ab9-0dd3e6137803
     type: regular
     task:
-      id: 22b64069-8374-4822-82c5-b22f5efc9ad9
+      id: 5ea09cf0-1554-4f77-8ab9-0dd3e6137803
       version: -1
       name: Set MD5
       description: Sets a value into the context with the given context key
@@ -327,6 +326,7 @@ tasks:
           root: inputs.MD5
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -340,10 +340,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: a11f996e-62b5-4b65-8a6c-a271ace08150
+    taskid: 7058583d-4f90-4ce6-8f0f-9e40ede488e9
     type: regular
     task:
-      id: a11f996e-62b5-4b65-8a6c-a271ace08150
+      id: 7058583d-4f90-4ce6-8f0f-9e40ede488e9
       version: -1
       name: Set SHA1
       description: Sets a value into the context with the given context key
@@ -365,6 +365,7 @@ tasks:
           accessor: SHA1
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -378,10 +379,10 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: e182fcaa-4756-498e-8a4d-cc8134070f23
+    taskid: 87217c82-ab0c-4328-85fd-4ff6593ad14d
     type: regular
     task:
-      id: e182fcaa-4756-498e-8a4d-cc8134070f23
+      id: 87217c82-ab0c-4328-85fd-4ff6593ad14d
       version: -1
       name: Set SHA256
       description: Sets a value into the context with the given context key
@@ -402,6 +403,7 @@ tasks:
           root: inputs.SHA256
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -415,10 +417,10 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 543bd903-62ae-425c-8a02-0436659b9770
+    taskid: 71114ac7-c4e6-43f9-8abc-fb1578a05dc1
     type: regular
     task:
-      id: 543bd903-62ae-425c-8a02-0436659b9770
+      id: 71114ac7-c4e6-43f9-8abc-fb1578a05dc1
       version: -1
       name: Set SHA1
       description: Sets a value into the context with the given context key
@@ -440,6 +442,7 @@ tasks:
           accessor: SHA1
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -453,10 +456,10 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: a6de4be0-4473-4a74-88ef-64017ed000d5
+    taskid: 5717038c-5ab2-4418-8942-acce24c6d8b3
     type: regular
     task:
-      id: a6de4be0-4473-4a74-88ef-64017ed000d5
+      id: 5717038c-5ab2-4418-8942-acce24c6d8b3
       version: -1
       name: Set SHA256
       description: Sets a value into the context with the given context key
@@ -477,6 +480,7 @@ tasks:
           root: inputs.SHA256
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -490,10 +494,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 2ec1c704-3daa-4db9-8d72-6e2a0054d66f
+    taskid: 8fdf592a-71e8-42dc-8484-fe2b66efbce4
     type: regular
     task:
-      id: 2ec1c704-3daa-4db9-8d72-6e2a0054d66f
+      id: 8fdf592a-71e8-42dc-8484-fe2b66efbce4
       version: -1
       name: Set MD5
       description: Sets a value into the context with the given context key
@@ -515,6 +519,7 @@ tasks:
           accessor: MD5
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -528,10 +533,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: a756cdfa-7fea-4cea-8a99-d01ae7c10d8c
+    taskid: 96100822-f6d5-403b-8025-cd8351aeb86c
     type: regular
     task:
-      id: a756cdfa-7fea-4cea-8a99-d01ae7c10d8c
+      id: 96100822-f6d5-403b-8025-cd8351aeb86c
       version: -1
       name: Set SHA1
       description: Sets a value into the context with the given context key
@@ -553,6 +558,7 @@ tasks:
           accessor: SHA1
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -566,10 +572,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 9bc359a5-220c-4db6-89ba-275418a3bd7c
+    taskid: ad7c5518-e2a9-4a51-8165-d7c30c8ffd51
     type: regular
     task:
-      id: 9bc359a5-220c-4db6-89ba-275418a3bd7c
+      id: ad7c5518-e2a9-4a51-8165-d7c30c8ffd51
       version: -1
       name: Set SHA256
       description: Sets a value into the context with the given context key
@@ -591,6 +597,7 @@ tasks:
           accessor: SHA256
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -604,13 +611,13 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: e61ed1b2-6f3e-47f3-8f92-52cf0c9304d4
+    taskid: 3411dbdc-9cbd-4a12-8420-d560cbdb3983
     type: title
     task:
-      id: e61ed1b2-6f3e-47f3-8f92-52cf0c9304d4
-      description: Done
+      id: 3411dbdc-9cbd-4a12-8420-d560cbdb3983
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -627,10 +634,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: 6e0cf800-4785-4e34-86d1-096b6d854d11
+    taskid: 53e657e8-0532-4ce9-8644-cf28472a7865
     type: regular
     task:
-      id: 6e0cf800-4785-4e34-86d1-096b6d854d11
+      id: 53e657e8-0532-4ce9-8644-cf28472a7865
       version: -1
       name: Set MD5
       description: Sets a value into the context with the given context key
@@ -652,6 +659,7 @@ tasks:
           accessor: MD5
           transformers:
           - operator: uniq
+          - operator: toLowerCase
     separatecontext: false
     view: |-
       {
@@ -665,13 +673,13 @@ tasks:
     ignoreworker: false
   "34":
     id: "34"
-    taskid: 81bd58c9-aef3-4e18-8c4a-5faec4ddd875
+    taskid: 21900c0e-069c-4ff2-85bd-c535093e2180
     type: title
     task:
-      id: 81bd58c9-aef3-4e18-8c4a-5faec4ddd875
-      description: Done
+      id: 21900c0e-069c-4ff2-85bd-c535093e2180
       version: -1
       name: Done
+      description: Done
       type: title
       iscommand: false
       brand: ""
@@ -688,13 +696,13 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: 5d2b34a8-b9d1-4710-843d-b4765d4e20e2
+    taskid: fdfd1cd9-3095-455b-8481-072b140ee5de
     type: title
     task:
-      id: 5d2b34a8-b9d1-4710-843d-b4765d4e20e2
-      description: MD5
+      id: fdfd1cd9-3095-455b-8481-072b140ee5de
       version: -1
       name: MD5
+      description: MD5
       type: title
       iscommand: false
       brand: ""
@@ -714,13 +722,13 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: d658bc79-875f-4eda-8f49-f618d825ef00
+    taskid: a75bc19c-d514-44ab-885d-fb6664dd0b29
     type: title
     task:
-      id: d658bc79-875f-4eda-8f49-f618d825ef00
-      description: SHA1
+      id: a75bc19c-d514-44ab-885d-fb6664dd0b29
       version: -1
       name: SHA1
+      description: SHA1
       type: title
       iscommand: false
       brand: ""
@@ -740,13 +748,13 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 3ba21cba-aa82-4776-8359-b8e35dc27854
+    taskid: a2d56e80-d468-46a0-891d-3792a6bf0bd9
     type: title
     task:
-      id: 3ba21cba-aa82-4776-8359-b8e35dc27854
-      description: SHA256
+      id: a2d56e80-d468-46a0-891d-3792a6bf0bd9
       version: -1
       name: SHA256
+      description: SHA256
       type: title
       iscommand: false
       brand: ""
@@ -811,5 +819,3 @@ outputs:
 - contextPath: File.MD5
   description: Output for detected MD5 hash.
   type: string
-tests:
-- Test Convert file hash to corresponding hashes
