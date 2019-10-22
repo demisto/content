@@ -9,14 +9,14 @@ tags:
 - general
 - transformer
 - entirelist
-comment: Returns the last element of an array.  If not passed an array, it returns
-  the original value.
+comment: Returns the last element of an array. If the value passed is not an array, it returns
+  the original value that was passed.
 enabled: true
 args:
 - name: value
   required: true
   default: true
-  description: An array to get the last value of.
+  description: An array for which to return the the last value.
   isArray: true
 scripttarget: 0
 runonce: false
