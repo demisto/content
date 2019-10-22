@@ -65,7 +65,7 @@ def get_dmarc(auth):
     """
     dmarc_context = {
         'Validation-Result': 'Unspecified',
-        'Tags': 'Unspecified',
+        'Tags': {'Unspecified': 'Unspecified'},
         'Signing-Domain': 'Unspecified'
     }
     if auth is not None:
