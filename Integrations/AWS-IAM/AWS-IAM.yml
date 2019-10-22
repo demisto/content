@@ -1327,7 +1327,7 @@ script:
     arguments: []
     outputs:
     - contextPath: AWS.IAM.PasswordPolicy
-      description: Account's password policy
+      description: Account's password policy.
       type: Unknown
     description: Get AWS account's password policy
   - name: aws-iam-update-account-password-policy
@@ -1342,35 +1342,35 @@ script:
         - "True"
         - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        of the non-alphanumeric characters.
+        of the non-alphanumeric characters. Can be "True" or "False".
     - name: requireNumbers
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        numeric character (0 to 9).
+        numeric character (0 to 9). Can be "True" or "False".
     - name: requireUppercaseCharacters
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        uppercase character from the ISO basic Latin alphabet (A to Z).
+        uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
     - name: requireLowercaseCharacters
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
       description: Specifies whether IAM user passwords must contain at least one
-        lowercase character from the ISO basic Latin alphabet (a to z).
+        lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
     - name: allowUsersToChangePassword
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
       description: Allows all IAM users in your account to use the AWS Management
-        Console to change their own passwords.
+        Console to change their own passwords. Can be "True" or "False".
     - name: maxPasswordAge
       predefined:
         - ""
@@ -1379,14 +1379,14 @@ script:
       predefined:
         - ""
       description: Specifies the number of previous passwords that IAM users are prevented
-        from reusing.
+        from reusing. 
     - name: hardExpiry
       auto: PREDEFINED
       predefined:
         - "True"
         - "False"
       description: Prevents IAM users from setting a new password after their password
-        has expired.
+        has expired. Can be "True" or "False".
     description: Create/update password policy
     execution: true
   dockerimage: demisto/boto3
