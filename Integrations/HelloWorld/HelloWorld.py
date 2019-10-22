@@ -74,19 +74,13 @@ def say_hello_command(client, args):
     Returns Hello {somename}
 
     Args:
-        client: HelloWorld client
-        args: all command arguments
-    Args:
-            client (Client): HelloWorld client.
-            args (dict): all command arguments.
+        client (Client): HelloWorld client.
+        args (dict): all command arguments.
+
     Returns:
         Hello {someone}
 
-        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
-        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
-                 playbook
-        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
-      readable_output (str): This will be presented in Warroom - should be in markdown syntax - human readable
+        readable_output (str): This will be presented in Warroom - should be in markdown syntax - human readable
         outputs (dict): Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
                  playbook
         raw_response (dict): Used for debugging/troubleshooting purposes - will be shown only if the command executed with
@@ -132,8 +126,6 @@ def fetch_incidents(client, last_run, first_fetch_time):
     This function will execute each interval (default is 1 minute).
 
     Args:
-        client: HelloWorld client
-        last_run: The greatest incident created_time we fetched from last fetch
         client (Client): HelloWorld client
         last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
         first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
