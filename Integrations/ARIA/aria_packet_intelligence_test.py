@@ -408,8 +408,6 @@ class TestARIA:
         self._mock_request('aria-stop-recording-src-subnet', demisto_args)
 
     def test_alert_src_subnet_command(self):
-
-        print('\nCase 34: Test alert_src_subnet: ')
         demisto_args = {
             'rule_name': 'alert_src_subnet',
             'src_ip': f'{TestARIA()._ip(1, 1, 1, 1)}/8',
