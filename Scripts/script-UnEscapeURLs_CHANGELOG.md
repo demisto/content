@@ -1,2 +1,2 @@
 ## [Unreleased]
-Add handling of proofpoint v3 urls.
+Added handling of Proofpoint v3 URLs.
