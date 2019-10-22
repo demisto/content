@@ -2,6 +2,7 @@
 import pickle
 from collections import defaultdict
 from io import BytesIO, StringIO
+import pandas as pd
 
 import demisto_ml
 from tabulate import tabulate
@@ -66,7 +67,7 @@ def read_file(input_entry_or_string, file_type):
     if file_type.startswith('json'):
         return json.loads(file_content.getvalue())
     elif file_type.startswith('pickle'):
-        return pickle.loads(file_content.getvalue())
+        return json.loads(pd.read_pickle(file_content).fillna('').to_json(orient='records'))
     else:
         return_error("Unsupported file type %s" % file_type)
 
