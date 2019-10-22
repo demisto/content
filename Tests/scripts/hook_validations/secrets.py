@@ -4,8 +4,6 @@ import re
 import math
 import json
 import string
-from bs4 import BeautifulSoup
-import PyPDF2
 
 from Tests.test_utils import run_command, print_error
 from Tests.scripts.constants import *
@@ -309,12 +307,6 @@ def get_file_contents(file_path, file_extension):
         # if pdf file, parse text
         if file_extension == '.pdf':
             file_contents = extract_text_from_pdf(file_path)
-        elif file_extension == '.md':
-            integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
-                                          string=file_path,
-                                          flags=re.IGNORECASE)
-            if integration_readme:
-                file_contents = extract_text_from_md_html(file_path)
         else:
             # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
             with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
@@ -342,16 +334,6 @@ def extract_text_from_pdf(file_path):
         page_num += 1
         file_contents += pdf_page.extractText()
 
-
-def extract_text_from_md_html(file_path):
-    file_contents = ''
-    try:
-        with open(file_path, mode='r') as html_page:
-            soup = BeautifulSoup(html_page, features="html.parser")
-            file_contents = soup.text
-    except Exception as ex:
-        print_error('Unable to parse the following file {} due to error {}'.format(file_path, ex))
-        raise
     return file_contents
 
 
