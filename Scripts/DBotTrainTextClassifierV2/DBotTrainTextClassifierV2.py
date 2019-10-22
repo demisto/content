@@ -2,6 +2,8 @@
 from collections import defaultdict
 import demisto_ml
 from tabulate import tabulate
+import pickle
+from io import BytesIO, StringIO
 from CommonServerPython import *
 
 ALL_LABELS = "*"
@@ -46,17 +48,25 @@ def read_file(input_entry_or_string, file_type):
     if not input_entry_or_string:
         return data
     if file_type.endswith("string"):
-        input_str = input_entry_or_string
         if 'b64' in file_type:
-            input_str = base64.b64decode(input_entry_or_string)
-        return json.loads(input_str)
+            input_entry_or_string = base64.b64decode(input_entry_or_string)
+        if isinstance(input_entry_or_string, str):
+            file_content = BytesIO(input_entry_or_string)
+        elif isinstance(input_entry_or_string, unicode):
+            file_content = StringIO(input_entry_or_string)
     else:
         res = demisto.getFilePath(input_entry_or_string)
         if not res:
             return_error("Entry {} not found".format(input_entry_or_string))
         file_path = res['path']
-        with open(file_path, 'r') as f:
-            return json.load(f)
+        with open(file_path, 'rb') as f:
+            file_content = BytesIO(f.read())
+    if file_type.startswith('json'):
+        return json.loads(file_content.getvalue())
+    elif file_type.startswith('pickle'):
+        return pickle.loads(file_content.getvalue())
+    else:
+        return_error("Unsupported file type %s" % file_type)
 
 
 def get_file_entry_id(file_name):
@@ -69,12 +79,12 @@ def get_file_entry_id(file_name):
     return res['EntryID']
 
 
-def read_files_by_name(file_names):
+def read_files_by_name(file_names, input_type):
     file_names = file_names.split(",")
     file_names = [f for f in file_names if f]
     data = []
     for file_name in file_names:
-        data += read_file(get_file_entry_id(file_name), "json")
+        data += read_file(get_file_entry_id(file_name), input_type)
     return data
 
 
@@ -136,10 +146,13 @@ def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples
     human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report)
     if cut > 0.5 and confusion_matrix_cut is not None:
         human_readable += "\n"
-        human_readable += "### Found optimal probability  %.2f threshold for target accuracy %.2f " % (cut, target_accuracy)
+        human_readable += "### Found optimal probability  %.2f threshold for target accuracy %.2f " % (cut,
+                                                                                                       target_accuracy)
         human_readable += "Samples below threshold: %d (%.2f%%)\n" % (report_cut['belowThreshold'],
-                                                          report_cut['belowThresholdRatio'] * 100)
-        human_readable += get_hr_for_scores("Model Evaluation probability >= %.2f" % cut, confusion_matrix_cut, report_cut)
+                                                                      report_cut['belowThresholdRatio'] * 100)
+        human_readable += get_hr_for_scores("Model Evaluation probability >= %.2f" % cut,
+                                            confusion_matrix_cut,
+                                            report_cut)
     return human_readable, confusion_matrix, report
 
 
@@ -172,8 +185,8 @@ def main():
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
 
-    if input_type == "filename":
-        data = read_files_by_name(input)
+    if input_type.endswith("filename"):
+        data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
         data = read_file(input, input_type)
 
@@ -212,13 +225,16 @@ def main():
         return_error("Error: data and tag data are different length")
 
     # print important words for each category
-    find_keywords(data, tag_field, text_field, keyword_min_score)
+    try:
+        find_keywords(data, tag_field, text_field, keyword_min_score)
+    except Exception:
+        pass
 
     # evaluate model
     human_readable, confusion_matrix, report = evaluate_model(train_text_data,
-                                                  train_tag_data,
-                                                  target_accuracy,
-                                                  max_samples_below_threshold)
+                                                              train_tag_data,
+                                                              target_accuracy,
+                                                              max_samples_below_threshold)
 
     # store model
     if store_model:
@@ -226,7 +242,6 @@ def main():
         human_readable += "\nDone training on {} samples model stored successfully".format(len(train_text_data))
     else:
         human_readable += "\n\nSkip storing model"
-
     result_entry = {
         'Type': entryTypes['note'],
         'Contents': {'scores': report, 'confusion_matrix': confusion_matrix.to_dict()},
@@ -236,7 +251,7 @@ def main():
         'EntryContext': {
             'DBotPhishingClassifier': {
                 'ModelName': model_name,
-                'EvaluationScores': report,
+                'EvaluationScores': {k.strip().replace(" ", "_"): v for k, v in report.items()},
                 'ConfusionMatrix': confusion_matrix.to_dict()
             }
         }

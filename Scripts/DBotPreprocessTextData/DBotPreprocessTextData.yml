@@ -79,6 +79,17 @@ args:
   name: hashSeed
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: pickle
+  description: The output file format
+  isArray: false
+  name: outputFormat
+  predefined:
+  - json
+  - pickle
+  required: false
+  secret: false
 comment: Pre-process text data for machine learning text classifier
 commonfields:
   id: DBotPreProcessTextData
@@ -95,6 +106,8 @@ outputs:
 - contextPath: DBotPreProcessTextData.TextFieldProcessed
   description: The processed text field inside the json file
   type: String
+- contextPath: DBotPreProcessTextData.FileFormat
+  type: Unknown
 script: '-'
 system: false
 tags:
@@ -103,3 +116,5 @@ timeout: 12µs
 type: python
 dockerimage: demisto/dl:1.4
 runonce: true
+tests:
+  - Create_Phishing_Classifier_V2_ML_Test

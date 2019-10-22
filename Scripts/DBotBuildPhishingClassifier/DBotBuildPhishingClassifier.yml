@@ -112,10 +112,10 @@ args:
   secret: false
 comment: Create a phishing classifier
 commonfields:
-  id: DBotBuildPhihsingClassifier
+  id: DBotBuildPhishingClassifier
   version: -1
 enabled: false
-name: DBotBuildPhihsingClassifier
+name: DBotBuildPhishingClassifier
 script: '-'
 system: false
 tags:
@@ -123,3 +123,5 @@ tags:
 timeout: 12µs
 type: python
 fromversion: 4.5.0
+tests:
+  - Create_Phishing_Classifier_V2_ML_Test
