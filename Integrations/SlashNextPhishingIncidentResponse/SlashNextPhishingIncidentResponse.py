@@ -6,6 +6,7 @@ from typing import List, Dict
 import requests
 import base64
 
+requests.packages.urllib3.disable_warnings()
 
 """
 Created on August 1, 2019
