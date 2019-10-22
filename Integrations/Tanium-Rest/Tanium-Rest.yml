@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Domain
   name: domain
-  required: true
+  required: false
   type: 0
 - display: Credentials
   name: credentials
@@ -42,7 +42,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a package object based on name or ID. Package ID or package name is required, when both of them are exists- it takes the ID.
+    description: Get a package object based on name or ID. Package ID or package name
+      is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-package
     outputs:
@@ -245,7 +246,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a sensor object based on name or ID. Sensor ID or sensor name is required, when both of them are exists- it takes the ID.
+    description: Get a sensor object based on name or ID. Sensor ID or sensor name
+      is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-sensor
     outputs:
@@ -738,7 +740,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a saved action object based on name or ID. Action ID or action name is required, when both of them are exists- it takes the ID.
+    description: Get a saved action object based on name or ID. Action ID or action
+      name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-saved-action
     outputs:
@@ -824,7 +827,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a saved question object based on name or ID. Question ID or question name is required, when both of them are exists- it takes the ID.
+    description: Get a saved question object based on name or ID. Question ID or question
+      name is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-saved-question-metadata
     outputs:
@@ -1015,7 +1019,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create action object based on package name or package ID. Group ID or group question is required, when both of them are exists- it takes the ID.
+    description: Create action object based on package name or package ID. Group ID
+      or group question is required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-create-action
     outputs:
@@ -1284,7 +1289,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get a group object based on ID or name. Group ID or group name is required, when both of them are exists- it takes the ID.
+    description: Get a group object based on ID or name. Group ID or group name is
+      required, when both of them are exists- it takes the ID.
     execution: false
     name: tn-get-group
     outputs:
@@ -1332,8 +1338,8 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: 'Text filter-based computer group, For example - operating system
-        contains windows'
+      description: Text filter-based computer group, For example - operating system
+        contains windows
       isArray: false
       name: text-filter
       required: true
@@ -1393,9 +1399,10 @@ script:
     name: tn-delete-group
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Tanium Rest Test
