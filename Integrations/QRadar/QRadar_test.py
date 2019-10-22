@@ -27,6 +27,43 @@ def test_enrich_offense_res_with_source_and_destination_address_exception(mocker
     assert qradar.enrich_offense_res_with_source_and_destination_address(OFFENSE_RAW_RESULT) == OFFENSE_RAW_RESULT
 
 
+def test_get_reference_by_name(mocker):
+    import QRadar as qradar
+    mocker.patch.object(qradar, 'send_request')
+    qradar.get_reference_by_name(NON_URL_SAFE_MSG)
+    qradar.send_request.assert_called_with('GET', 'www.qradar.com/api/reference_data/sets/{}'.format(
+        NON_URL_SAFE_MSG_URL_ENCODED), REQUEST_HEADERS, params={})
+
+
+def test_delete_reference_set(mocker):
+    import QRadar as qradar
+    mocker.patch.object(qradar, 'send_request')
+    qradar.delete_reference_set(NON_URL_SAFE_MSG)
+    qradar.send_request.assert_called_with('DELETE', 'www.qradar.com/api/reference_data/sets/{}'.format(
+        NON_URL_SAFE_MSG_URL_ENCODED))
+
+
+def test_update_reference_set_value(mocker):
+    import QRadar as qradar
+    mocker.patch.object(qradar, 'send_request')
+    qradar.update_reference_set_value(NON_URL_SAFE_MSG, 'value')
+    qradar.send_request.assert_called_with('POST', 'www.qradar.com/api/reference_data/sets/{}'.format(
+        NON_URL_SAFE_MSG_URL_ENCODED), params={'name': NON_URL_SAFE_MSG, 'value': 'value'})
+
+
+def test_delete_reference_set_value(mocker):
+    import QRadar as qradar
+    mocker.patch.object(qradar, 'send_request')
+    qradar.delete_reference_set_value(NON_URL_SAFE_MSG, 'value')
+    qradar.send_request.assert_called_with('DELETE', 'www.qradar.com/api/reference_data/sets/{}/value'.format(
+        NON_URL_SAFE_MSG_URL_ENCODED), params={'name': NON_URL_SAFE_MSG, 'value': 'value'})
+
+
+""" CONSTANTS """
+REQUEST_HEADERS = {'Content-Type': 'application/json', 'SEC': 'token'}
+NON_URL_SAFE_MSG = 'non-safe/;/?:@=&"<>#%{}|\\^~[] `'
+NON_URL_SAFE_MSG_URL_ENCODED = 'non-safe%2F%3B%2F%3F%3A%40%3D%26%22%3C%3E%23%25%7B%7D%7C%5C%5E%7E%5B%5D%20%60'
+
 """ API RAW RESULTS """
 
 OFFENSE_RAW_RESULT = [{
