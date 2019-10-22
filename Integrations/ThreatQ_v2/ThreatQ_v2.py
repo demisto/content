@@ -137,7 +137,7 @@ TABLE_HEADERS = {
                   'TQScore', 'CreatedAt', 'UpdatedAt', 'URL'],
     'adversary': ['ID', 'Name', 'CreatedAt', 'UpdatedAt', 'URL'],
     'event': ['ID', 'Type', 'Title', 'Description', 'Occurred', 'CreatedAt', 'UpdatedAt', 'URL'],
-    'attachment': ['ID', 'Name', 'Title', 'FileType', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
+    'attachment': ['ID', 'Name', 'Title', 'Type', 'Size', 'Description', 'MD5', 'CreatedAt', 'UpdatedAt',
                    'MalwareLocked', 'ContentType', 'URL'],
     'attributes': ['ID', 'Name', 'Value'],
     'sources': ['ID', 'Name']
@@ -260,14 +260,14 @@ def make_create_object_request(obj_type, params):
     # For some reason, only while creating an indicator, the response data is a list of dicts with size 1.
     # Creating other objects simply returns one dict, as expected.
     data = res['data'][0] if obj_type == 'indicator' else res['data']
-    raw = data_to_demisto_format(data, obj_type)
+    data = data_to_demisto_format(data, obj_type)
 
-    entry_context = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     readable_title = '{0} was successfully created.'.format(obj_type.title())
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, entry_context, raw)
+    return_outputs(readable, entry_context, res)
 
 
 def make_edit_request_for_an_object(obj_id, obj_type, params):
@@ -280,13 +280,13 @@ def make_edit_request_for_an_object(obj_id, obj_type, params):
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = data_to_demisto_format(res['data'], obj_type)
-    entry_context = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    data = data_to_demisto_format(res['data'], obj_type)
+    entry_context = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     readable_title = 'Successfully edited {0} with ID {1}'.format(obj_type, obj_id)
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, entry_context, raw)
+    return_outputs(readable, entry_context, res)
 
 
 def make_indicator_reputation_request(indicator_type, value, generic_context):
@@ -294,20 +294,22 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
     url_suffix = '/search?query={0}&limit=1'.format(value)
     res = tq_request('GET', url_suffix)
 
-    raw_context = {}  # type: Dict[str, Any]
-    if res['data'] and res['data'][0].get('value') == value:  # ThreatQ returns results whose prefixes match the query
-        # Search for detailed information about the indicator
-        url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(res['data'][0].get('id'))
-        res = tq_request('GET', url_suffix)
-        raw_context = indicator_data_to_demisto_format(res['data'])
+    data = {}  # type: Dict[str, Any]
+    for obj in res.get('data', []):
+        if obj.get('value') == value and obj.get('object') == 'indicator':
+            # Search for detailed information about the indicator
+            url_suffix = '/indicators/{0}?with=attributes,sources,score,type'.format(obj.get('id'))
+            res = tq_request('GET', url_suffix)
+            data = indicator_data_to_demisto_format(res['data'])
+            break
 
-    dbot_context = create_dbot_context(value, indicator_type, raw_context.get('TQScore', -1))
-    entry_context = set_indicator_entry_context(indicator_type, raw_context, dbot_context, generic_context)
+    dbot_context = create_dbot_context(value, indicator_type, data.get('TQScore', -1))
+    entry_context = set_indicator_entry_context(indicator_type, data, dbot_context, generic_context)
 
     readable_title = 'Search results for {0} {1}'.format(indicator_type, value)
-    readable = build_readable(readable_title, 'indicator', raw_context)
+    readable = build_readable(readable_title, 'indicator', data)
 
-    return_outputs(readable, entry_context, raw_context)
+    return_outputs(readable, entry_context, res)
 
 
 def create_dbot_context(indicator, ind_type, ind_score):
@@ -342,7 +344,7 @@ def create_dbot_context(indicator, ind_type, ind_score):
     }
 
     ret = {
-        'Vendor': 'ThreatQ',
+        'Vendor': 'ThreatQ v2',
         'Indicator': indicator,
         'Type': ind_type
     }
@@ -486,7 +488,7 @@ def adversary_data_to_demisto_format(data):
         'UpdatedAt': data.get('updated_at'),
         'CreatedAt': data.get('created_at'),
         'Name': data.get('name'),
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/adversaries/{1}/details'.format(SERVER_URL, data.get('id')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -501,7 +503,7 @@ def event_data_to_demisto_format(data):
         'Title': data.get('title'),
         'Occurred': data.get('happened_at'),
         'Type': TYPE_ID_TO_EVENT_TYPE[data.get('type_id')],
-        'URL': '{0}/indicators/{1}/details'.format(SERVER_URL, data.get('id')),
+        'URL': '{0}/events/{1}/details'.format(SERVER_URL, data.get('id')),
         'Description': clean_html_from_string(data.get('description')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
@@ -517,11 +519,12 @@ def file_data_to_demisto_format(data):
         'Size': data.get('file_size'),
         'MD5': data.get('hash'),
         'Type': TYPE_ID_TO_FILE_TYPE[data.get('type_id')],
+        'URL': '{0}/files/{1}/details'.format(SERVER_URL, data.get('id')),
         'Name': data.get('name'),
         'Title': data.get('title'),
         'Description': data.get('description'),
         'ContentType': content_type_to_demisto_format(data.get('content_type_id')),
-        'MalwareLocked': malware_locked_to_demisto_format(data.get('content_type_id')),
+        'MalwareLocked': malware_locked_to_demisto_format(data.get('malware_locked')),
         'Source': sources_to_demisto_format(data.get('sources')),
         'Attribute': attributes_to_demisto_format(data.get('attributes'))
     }
@@ -544,7 +547,7 @@ def get_pivot_id(obj1_type, obj1_id, obj2_type, obj2_id):
 
 def add_malicious_data(generic_context, tq_score):
     generic_context['Malicious'] = {
-        'Vendor': 'ThreatQ',
+        'Vendor': 'ThreatQ v2',
         'Description': 'Score from ThreatQ is {0}'.format(tq_score)
     }
 
@@ -641,9 +644,9 @@ def search_by_name_command():
     # Remove items with empty values:
     entry_context = {k: v for k, v in entry_context.items() if v}
 
-    human_readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
+    readable = build_readable_for_search_by_name(indicator_context, event_context, adversary_context, file_context)
 
-    return_outputs(human_readable, entry_context)
+    return_outputs(readable, entry_context, res)
 
 
 def search_by_id_command():
@@ -659,19 +662,19 @@ def search_by_id_command():
         url_suffix += ',score,type'
 
     res = tq_request('GET', url_suffix)
-    raw = data_to_demisto_format(res['data'], obj_type)
+    data = data_to_demisto_format(res['data'], obj_type)
 
-    ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)}
+    ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)}
 
     if obj_type == 'indicator':
-        indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(raw['Type'])
+        indicator_type = TQ_TO_DEMISTO_INDICATOR_TYPES.get(data['Type'])
         if indicator_type is not None:
-            ec['DBotScore'] = create_dbot_context(raw['Value'], indicator_type, raw['TQScore'])
+            ec['DBotScore'] = create_dbot_context(data['Value'], indicator_type, data['TQScore'])
 
     readable_title = 'Search results for {0} with ID {1}'.format(obj_type, obj_id)
-    readable = build_readable(readable_title, obj_type, raw)
+    readable = build_readable(readable_title, obj_type, data)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def create_indicator_command():
@@ -813,16 +816,16 @@ def get_related_objs_command(related_type):
 
     info = [data_to_demisto_format(obj, related_type) for obj in res['data']]
     info = createContext(info, removeNull=True)
-    raw = {
+    data = {
         RELATED_KEY[related_type]: createContext(info, removeNull=True),
         'ID': int(obj_id)
     }
-    ec = {CONTEXT_PATH[obj_type]: raw} if info else {}
+    ec = {CONTEXT_PATH[obj_type]: data} if info else {}
 
     readable_title = 'Related {0} type objects of {1} with ID {2}'.format(related_type, obj_type, obj_id)
-    readable = build_readable(readable_title, related_type, raw[RELATED_KEY[related_type]])
+    readable = build_readable(readable_title, related_type, data[RELATED_KEY[related_type]])
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def link_objects_command():
@@ -886,18 +889,18 @@ def update_score_command():
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = {
+    data = {
         'ID': int(indicator_id),
         'TQScore': get_tq_score_from_response(res['data'])
     }
 
-    ec = {CONTEXT_PATH['indicator']: raw}
+    ec = {CONTEXT_PATH['indicator']: data}
 
     readable = 'Successfully updated score of indicator with ID {0} to {1}. '\
                'Notice that final score is the maximum between ' \
-               'manual and generated scores.'.format(indicator_id, int(raw['TQScore']))
+               'manual and generated scores.'.format(indicator_id, int(data['TQScore']))
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def add_source_command():
@@ -1005,16 +1008,16 @@ def update_status_command():
 
     res = tq_request('PUT', url_suffix, params)
 
-    raw = {
+    data = {
         'ID': int(indicator_id),
         'Status': STATUS_ID_TO_STATUS[res['data'].get('status_id')],
     }
 
-    ec = {CONTEXT_PATH['indicator']: raw}
+    ec = {CONTEXT_PATH['indicator']: data}
 
     readable = 'Successfully updated status of indicator with ID {0} to {1}.'.format(indicator_id, status)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def upload_file_command():
@@ -1049,14 +1052,14 @@ def upload_file_command():
     finally:
         shutil.rmtree(file_info['name'], ignore_errors=True)
 
-    raw = file_data_to_demisto_format(res['data'])
+    data = file_data_to_demisto_format(res['data'])
 
-    ec = {CONTEXT_PATH['attachment']: raw}
+    ec = {CONTEXT_PATH['attachment']: data}
 
     readable_title = 'Successfully uploaded file {0}.'.format(file_info['name'])
-    readable = build_readable(readable_title, 'attachment', raw)
+    readable = build_readable(readable_title, 'attachment', data)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def download_file_command():
@@ -1090,17 +1093,17 @@ def get_all_objs_command(obj_type):
         url_suffix += ',score'
     res = tq_request('GET', url_suffix)
 
-    from_index = page
-    to_index = min(page + limit, len(res['data']))
+    from_index = min(page, len(res['data']))
+    to_index = min(from_index + limit, len(res['data']))
 
-    raw = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
-    ec = {CONTEXT_PATH[obj_type]: createContext(raw, removeNull=True)} if raw else {}
+    data = [data_to_demisto_format(obj, obj_type) for obj in res['data'][from_index:to_index]]
+    ec = {CONTEXT_PATH[obj_type]: createContext(data, removeNull=True)} if data else {}
 
     readable_title = 'List of all objects of type {0} - {1}-{2}'.format(obj_type, from_index, to_index - 1)
     metadata = 'Total number of objects is {0}'.format(len(res['data']))
-    readable = build_readable(readable_title, obj_type, raw, metadata=metadata)
+    readable = build_readable(readable_title, obj_type, data, metadata=metadata)
 
-    return_outputs(readable, ec, raw)
+    return_outputs(readable, ec, res)
 
 
 def get_ip_reputation():

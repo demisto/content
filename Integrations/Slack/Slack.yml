@@ -13,7 +13,7 @@ configuration:
   type: 4
 - display: Dedicated Slack channel to receive notifications
   name: incidentNotificationChannel
-  required: true
+  required: false
   type: 0
 - defaultvalue: 'true'
   display: Send notifications about incidents to the dedicated channel
@@ -24,6 +24,7 @@ configuration:
   display: Minimum incident severity to send messages to slack by
   name: min_severity
   options:
+  - Unknown
   - Low
   - Medium
   - High
@@ -43,12 +44,24 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct
     messages.
   name: longRunning
   required: false
   type: 8
+- display: Bot display name in Slack (Demisto Integration by default)
+  name: bot_name
+  required: false
+  type: 0
+- display: Bot icon in Slack - URL Image (Demisto icon by default)
+  name: bot_icon
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2
@@ -226,9 +239,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The ID of the thread to which to reply.
+      description: The ID of the thread to which to reply - can be retrieved from
+        a previous send-notification command.
       isArray: false
       name: threadID
+      required: false
+      secret: false
+    - default: false
+      description: A JSON string of Slack blocks to send in the message.
+      isArray: false
+      name: blocks
       required: false
       secret: false
     deprecated: false
@@ -336,7 +356,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The thread ID to which to send the file as a reply.
+      description: The ID of the thread to which to reply - can be retrieved from
+        a previous send-notification command.
       isArray: false
       name: threadID
       required: false
@@ -485,9 +506,10 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.1560
+  dockerimage: demisto/slack:1.0.0.2218
   isfetch: false
   longRunning: true
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python

@@ -1,6 +1,6 @@
 commonfields:
-  id: b695f044-fbdd-4d4b-89ce-9066cb0e165a
-  version: 45
+  id: cveReputation
+  version: -1
 name: cveReputation
 script: |
   var resCmd = executeCommand('cve-search', {'cveId': args.input})[0];
