@@ -7,24 +7,21 @@ import struct
 import re
 
 
-
 def csv_string_to_list(v):
     if type(v) == str or type(v) == unicode:
-        return v.lower().replace(' ', '').replace('\n','').split(',')
+        return v.lower().replace(' ', '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
 
 
 def make_mask(n):
     "return a mask of n bits as a long integer"
-    return (2<<n-1) - 1
-
+    return (2 << n - 1) - 1
 
 
 def dotted_quad_to_num(ip):
     "convert decimal dotted quad string to long integer"
-    return struct.unpack('<L', socket.inet_aton(ip) )[0]
-
+    return struct.unpack('<L', socket.inet_aton(ip))[0]
 
 
 def network_mask(ip, bits):
@@ -32,11 +29,9 @@ def network_mask(ip, bits):
     return dotted_quad_to_num(ip) & make_mask(bits)
 
 
-
 def address_in_network(ip, net):
-   "Is an address in a network"
-   return ip & net == net
-
+    "Is an address in a network"
+    return ip & net == net
 
 
 def cidr_to_tuple(cidr):
@@ -54,10 +49,8 @@ def cidr_to_tuple(cidr):
         return ip, mask
 
 
-
-
-ADDRESS_LIST = csv_string_to_list( demisto.args()['value'] )
-CIDR_LIST = csv_string_to_list( demisto.args()['cidr_ranges'] )
+ADDRESS_LIST = csv_string_to_list(demisto.args()['value'])
+CIDR_LIST = csv_string_to_list(demisto.args()['cidr_ranges'])
 
 excluded_addresses = []
 
@@ -73,7 +66,6 @@ for addr in ADDRESS_LIST:
 
     if not found:
         excluded_addresses.append(addr)
-
 
 
 if len(excluded_addresses) == 0:
