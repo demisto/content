@@ -428,7 +428,7 @@ def users_to_entry(title, response, next_page_token=None):
                'nextPageToken']
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
-    if nex_page_token:
+    if next_page_token:
         human_readable += "\nTo get further results, rerun the command with this page-token:\n" + nex_page_token
 
     return {
