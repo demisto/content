@@ -547,7 +547,7 @@ def get_test_list(files_string, branch_name):
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
-            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            print_error("There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
         else:

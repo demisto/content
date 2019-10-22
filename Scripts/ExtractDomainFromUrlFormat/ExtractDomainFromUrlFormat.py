@@ -43,23 +43,9 @@ def unescape_url(escaped_url):
     return url
 
 
-def get_tld_or_fqdn(the_input, isFQDNextract):
-    fqdn = None
-    domain = get_tld(the_input, fail_silently=True, as_object=True)
-
-    # handle fqdn if needed
-    if isFQDNextract and domain:
-        # get the subdomain using tld.subdomain
-        subdomain = domain.subdomain
-        if (subdomain):
-            fqdn = "{}.{}".format(subdomain, str(domain))
-
-    return domain, fqdn
-
-
-def extract_domain(the_input, isFQDNextract):
+def extract_domain(the_input):
+    is_url = None
     domain_from_mail = None
-
     is_email = validate_email(the_input)
     if is_email:
         # Take the entire part after the @ of the email
@@ -76,30 +62,34 @@ def extract_domain(the_input, isFQDNextract):
         # Not ATP Link or Proofpoint URL so just unescape
         else:
             the_input = unescape_url(the_input)
-
-        domain, fqdn = get_tld_or_fqdn(the_input, isFQDNextract)
+        is_url = domain = get_tld(the_input, fail_silently=True)
 
     # Extract domain itself from a potential subdomain
-    if domain_from_mail or not domain:
+    if domain_from_mail or not is_url:
         full_domain = 'https://'
         full_domain += domain_from_mail if domain_from_mail else the_input
         # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        domain, fqdn = get_tld_or_fqdn(full_domain, isFQDNextract)
+        domain = get_tld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
-    result = domain if not isFQDNextract else fqdn
-    result = '' if not result else result
-    return result
+    domain = '' if not domain else domain
+    if type(domain) == unicode:
+        domain = domain.encode('utf-8', errors='ignore')
+    return domain
 
 
-results = []
-the_input = demisto.args().get('input')
-isFQDNextract = demisto.args().get('extractFQDN')
+def main():
+    domains = []
+    the_input = demisto.args().get('input')
+    # argToList returns the argument as is if it's already a list so no need to check here
+    the_input = argToList(the_input)
 
-# argToList returns the argument as is if it's already a list so no need to check here
-the_input = argToList(the_input)
+    # Otherwise assumes it's already an array
+    for item in the_input:
+        domains.append(extract_domain(item))
+    demisto.results(domains)
 
-# Otherwise assumes it's already an array
-for item in the_input:
-    results.append(extract_domain(item, isFQDNextract == 'True'))
-demisto.results(results)
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
