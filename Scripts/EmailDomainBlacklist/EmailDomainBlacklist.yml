@@ -1,5 +1,5 @@
 commonfields:
-  id: EmailDomainWhitelist
+  id: EmailDomainBlacklist
   version: -1
 name: EmailDomainBlacklist
 script: ''
