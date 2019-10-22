@@ -1315,19 +1315,20 @@ class ARIA(object):
 ''' HELPER FUNCTIONS '''
 
 
-def func_call(instance: ARIA, func_name: str, command_name: str, demisto_arguments: list):
+def func_call(instance: ARIA, func_name: str, command_name: str, demisto_arguments: list, args: dict):
     """ Helper function used to call different demisto command
 
     Args:
         instance: An ARIA instance.
         func_name: Name of the functions in the ARIA class.
         command_name: Related demisto command name.
-        demisto_arguments: Different input parameters depends on the func_name.
+        demisto_arguments: List of arguments name in the right order.
+        args: Input of demisto arguments dict.
 
     """
     arguments_value = []
     for arg in demisto_arguments:
-        value = demisto.args().get(arg)  # get values from demisto command
+        value = args.get(arg)  # get values from demisto command
         arguments_value.append(value)
 
     context_entry = getattr(instance, func_name)(*tuple(arguments_value))  # get returned tuple
@@ -1340,8 +1341,6 @@ def func_call(instance: ARIA, func_name: str, command_name: str, demisto_argumen
         f'Aria.{context_name}(val.name && val.name == obj.name)': context_entry
     }
 
-    LOG(json.dumps(context_entry))
-
     readable_output = tableToMarkdown(command_name, context_entry, table_header)
 
     return readable_output, ec
@@ -1350,167 +1349,172 @@ def func_call(instance: ARIA, func_name: str, command_name: str, demisto_argumen
 ''' COMMAND FUNCTION '''
 
 
-def block_conversation_command(instance):
-    args = ['src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'label_sia_group',
-            'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'block_conversation', 'aria-block-conversation', args)
+def block_conversation_command(instance, args):
+    demisto_arguments = ['src_ip', 'target_ip', 'rule_name', 'src_port', 'target_port', 'protocol', 'label_sia_group',
+                         'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'block_conversation', 'aria-block-conversation', demisto_arguments, args)
 
 
-def unblock_conversation_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'unblock_conversation', 'aria-unblock-conversation', args)
+def unblock_conversation_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'unblock_conversation', 'aria-unblock-conversation', demisto_arguments, args)
 
 
-def record_conversation_command(instance):
-    args = ['src_ip', 'target_ip', 'vlan_id', 'rule_name', 'src_port', 'target_port', 'protocol', 'sia_interface',
-            'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value', 'label_sia_group',
-            'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'record_conversation', 'aria-record-conversation', args)
+def record_conversation_command(instance, args):
+    demisto_arguments = ['src_ip', 'target_ip', 'vlan_id', 'rule_name', 'src_port', 'target_port', 'protocol',
+                         'sia_interface', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
+                         'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'record_conversation', 'aria-record-conversation', demisto_arguments, args)
 
 
-def stop_recording_conversation_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'stop_recording_conversation', 'aria-stop-recording-conversation', args)
+def stop_recording_conversation_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'stop_recording_conversation', 'aria-stop-recording-conversation',
+                     demisto_arguments, args)
 
 
-def alert_conversation_command(instance):
-    args = ['src_ip', 'target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
-            'trigger_value', 'src_port', 'target_port', 'protocol', 'label_sia_group',
-            'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'alert_conversation', 'aria-alert-conversation', args)
+def alert_conversation_command(instance, args):
+    demisto_arguments = ['src_ip', 'target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
+                         'trigger_value', 'src_port', 'target_port', 'protocol', 'label_sia_group',
+                         'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'alert_conversation', 'aria-alert-conversation', demisto_arguments, args)
 
 
-def mute_alert_conversation_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'mute_alert_conversation', 'aria-mute-alert-conversation', args)
+def mute_alert_conversation_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'mute_alert_conversation', 'aria-mute-alert-conversation', demisto_arguments, args)
 
 
-def block_dest_port_command(instance):
-    args = ['port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'block_dest_port', 'aria-block-dest-port', args)
+def block_dest_port_command(instance, args):
+    demisto_arguments = ['port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'block_dest_port', 'aria-block-dest-port', demisto_arguments, args)
 
 
-def unblock_dest_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'unblock_dest_port', 'aria-unblock-dest-port', args)
+def unblock_dest_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'unblock_dest_port', 'aria-unblock-dest-port', demisto_arguments, args)
 
 
-def record_dest_port_command(instance):
-    args = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
-            'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'record_dest_port', 'aria-record-dest-port', args)
+def record_dest_port_command(instance, args):
+    demisto_arguments = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
+                         'aio_index', 'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name',
+                         'label_sia_region']
+    return func_call(instance, 'record_dest_port', 'aria-record-dest-port', demisto_arguments, args)
 
 
-def stop_recording_dest_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', args)
+def stop_recording_dest_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'stop_recording_dest_port', 'aria-stop-recording-dest-port', demisto_arguments, args)
 
 
-def alert_dest_port_command(instance):
-    args = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
-            'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'alert_dest_port', 'aria-alert-dest-port', args)
+def alert_dest_port_command(instance, args):
+    demisto_arguments = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
+                         'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'alert_dest_port', 'aria-alert-dest-port', demisto_arguments, args)
 
 
-def mute_alert_dest_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', args)
+def mute_alert_dest_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'mute_alert_dest_port', 'aria-mute-alert-dest-port', demisto_arguments, args)
 
 
-def block_src_port_command(instance):
-    args = ['port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'block_src_port', 'aria-block-src-port', args)
+def block_src_port_command(instance, args):
+    demisto_arguments = ['port_range', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'block_src_port', 'aria-block-src-port', demisto_arguments, args)
 
 
-def unblock_src_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'unblock_src_port', 'aria-unblock-src-port', args)
+def unblock_src_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'unblock_src_port', 'aria-unblock-src-port', demisto_arguments, args)
 
 
-def record_src_port_command(instance):
-    args = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
-            'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'record_src_port', 'aria-record-src-port', args)
+def record_src_port_command(instance, args):
+    demisto_arguments = ['port_range', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
+                         'aio_index', 'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name',
+                         'label_sia_region']
+    return func_call(instance, 'record_src_port', 'aria-record-src-port', demisto_arguments, args)
 
 
-def stop_recording_src_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'stop_recording_src_port', 'aria-stop-recording-src-port', args)
+def stop_recording_src_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'stop_recording_src_port', 'aria-stop-recording-src-port', demisto_arguments, args)
 
 
-def alert_src_port_command(instance):
-    args = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
-            'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'alert_src_port', 'aria-alert-src-port', args)
+def alert_src_port_command(instance, args):
+    demisto_arguments = ['port_range', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
+                         'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'alert_src_port', 'aria-alert-src-port', demisto_arguments, args)
 
 
-def mute_alert_src_port_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'mute_alert_src_port', 'aria-mute-alert-src-port', args)
+def mute_alert_src_port_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'mute_alert_src_port', 'aria-mute-alert-src-port', demisto_arguments, args)
 
 
-def block_dest_subnet_command(instance):
-    args = ['target_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'block_dest_subnet', 'aria-block-dest-subnet', args)
+def block_dest_subnet_command(instance, args):
+    demisto_arguments = ['target_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'block_dest_subnet', 'aria-block-dest-subnet', demisto_arguments, args)
 
 
-def unblock_dest_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', args)
+def unblock_dest_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'unblock_dest_subnet', 'aria-unblock-dest-subnet', demisto_arguments, args)
 
 
-def record_dest_subnet_command(instance):
-    args = ['target_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
-            'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'record_dest_subnet', 'aria-record-dest-subnet', args)
+def record_dest_subnet_command(instance, args):
+    demisto_arguments = ['target_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index',
+                         'aio_index', 'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name',
+                         'label_sia_region']
+    return func_call(instance, 'record_dest_subnet', 'aria-record-dest-subnet', demisto_arguments, args)
 
 
-def stop_recording_dest_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet', args)
+def stop_recording_dest_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'stop_recording_dest_subnet', 'aria-stop-recording-dest-subnet',
+                     demisto_arguments, args)
 
 
-def alert_dest_subnet_command(instance):
-    args = ['target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
-            'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'alert_dest_subnet', 'aria-alert-dest-subnet', args)
+def alert_dest_subnet_command(instance, args):
+    demisto_arguments = ['target_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
+                         'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'alert_dest_subnet', 'aria-alert-dest-subnet', demisto_arguments, args)
 
 
-def mute_alert_dest_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', args)
+def mute_alert_dest_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'mute_alert_dest_subnet', 'aria-mute-alert-dest-subnet', demisto_arguments, args)
 
 
-def block_src_subnet_command(instance):
-    args = ['src_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'block_src_subnet', 'aria-block-src-subnet', args)
+def block_src_subnet_command(instance, args):
+    demisto_arguments = ['src_ip', 'rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'block_src_subnet', 'aria-block-src-subnet', demisto_arguments, args)
 
 
-def unblock_src_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'unblock_src_subnet', 'aria-unblock-src-subnet', args)
+def unblock_src_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'unblock_src_subnet', 'aria-unblock-src-subnet', demisto_arguments, args)
 
 
-def record_src_subnet_command(instance):
-    args = ['src_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
-            'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'record_src_subnet', 'aria-record-src-subnet', args)
+def record_src_subnet_command(instance, args):
+    demisto_arguments = ['src_ip', 'vlan_id', 'rule_name', 'sia_interface', 'transport_type', 'tti_index', 'aio_index',
+                         'trigger_type', 'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'record_src_subnet', 'aria-record-src-subnet', demisto_arguments, args)
 
 
-def stop_recording_src_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', args)
+def stop_recording_src_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'stop_recording_src_subnet', 'aria-stop-recording-src-subnet', demisto_arguments, args)
 
 
-def alert_src_subnet_command(instance):
-    args = ['src_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type', 'trigger_value',
-            'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'alert_src_subnet', 'aria-alert-src-subnet', args)
+def alert_src_subnet_command(instance, args):
+    demisto_arguments = ['src_ip', 'rule_name', 'transport_type', 'tti_index', 'aio_index', 'trigger_type',
+                         'trigger_value', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'alert_src_subnet', 'aria-alert-src-subnet', demisto_arguments, args)
 
 
-def mute_alert_src_subnet_command(instance):
-    args = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
-    return func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', args)
+def mute_alert_src_subnet_command(instance, args):
+    demisto_arguments = ['rule_name', 'label_sia_group', 'label_sia_name', 'label_sia_region']
+    return func_call(instance, 'mute_alert_src_subnet', 'aria-mute-alert-src-subnet', demisto_arguments, args)
 
 
 def main():
@@ -1579,8 +1583,10 @@ def main():
         if cmd_func is None:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
         else:
-            readable_output, ec = cmd_func(aria)
+            readable_output, ec = cmd_func(aria, demisto.args())
             context_entry = list(ec.values())[0]
+
+            LOG(json.dumps(ec))
 
             if context_entry['Status']['command_state'] != 'Success':
                 LOG.print_log()
