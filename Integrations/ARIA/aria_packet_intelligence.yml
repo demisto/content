@@ -19,6 +19,16 @@ configuration:
   defaultvalue: http://<IP address or FQDN of SDSo Node>:7443
   type: 0
   required: true
+- display: Use system proxy
+  name: proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: Allow any cert
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
 script:
   script: '-'
   type: python
