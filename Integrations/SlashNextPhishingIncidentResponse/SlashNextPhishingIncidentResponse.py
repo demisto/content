@@ -1,7 +1,7 @@
-''' IMPORTS '''
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+''' IMPORTS '''
 from typing import List, Dict
 import requests
 import base64
@@ -19,6 +19,7 @@ AUTH_KEY = demisto.params().get('apikey')
 BASE_API = demisto.params().get('apiurl', 'https://oti.slashnext.cloud/api')
 if BASE_API.endswith('/'):
     BASE_API = BASE_API.strip('/')
+VERIFY = not demisto.params().get('unsecure', False)
 
 HOST_REPUTE_API = '/oti/v1/host/reputation'
 URL_SCAN_API = '/oti/v1/url/scan'
@@ -44,7 +45,7 @@ def http_request(endpoint, data, method='POST'):
     url = BASE_API + endpoint
     data['authkey'] = AUTH_KEY
 
-    response = requests.request(method, url=url, data=data, timeout=300)
+    response = requests.request(method, url=url, data=data, timeout=300, verify=VERIFY)
     if response.status_code == 200:
         try:
             return response.json()
@@ -1159,7 +1160,7 @@ def download_text_command():
 
 def main():
     LOG('Command to be executed is {}.'.format(demisto.command()))
-
+    handle_proxy()
     try:
         if demisto.command() == 'test-module':
             demisto.results(validate_snx_api_key())
