@@ -1564,6 +1564,18 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):
     get_folder_by_path(account, full_path)
     return "Folder %s created successfully" % full_path
 
+	
+def delete_folder(folder_name, folder_path, target_mailbox=None):
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    full_path = "%s\\%s" % (folder_path, folder_name)
+    try:
+        if get_folder_by_path(account, full_path):
+			folder = get_folder_by_path(account, full_path)
+			folder.delete()
+			return "Folder %s deleted succesfully " % folder_name
+    except Exception:
+        pass
+    return "Unable to find Folder %s" % folder_name
 
 def find_folders(target_mailbox=None, is_public=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
@@ -1966,6 +1978,8 @@ def main():
             encode_and_submit_results(recover_soft_delete_item(**args))
         elif demisto.command() == 'ews-create-folder':
             encode_and_submit_results(create_folder(**args))
+		elif demisto.command() == 'ews-delete-folder':
+            encode_and_submit_results(delete_folder(**args))
         elif demisto.command() == 'ews-mark-item-as-junk':
             encode_and_submit_results(mark_item_as_junk(**args))
         elif demisto.command() == 'ews-find-folders':
