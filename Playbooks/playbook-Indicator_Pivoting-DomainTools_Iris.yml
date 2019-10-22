@@ -1067,3 +1067,6 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode
   description: Google Analytics Tracking Code
   type: Unknown
+tests:
+- DomainTools Iris - Test
+fromversion: 4.1.0
