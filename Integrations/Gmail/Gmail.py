@@ -398,7 +398,7 @@ def organization_format(org_list):
         return None
 
 
-def users_to_entry(title, response, nex_page_token=None):
+def users_to_entry(title, response, next_page_token=None):
     context = []
 
     for user_data in response:
