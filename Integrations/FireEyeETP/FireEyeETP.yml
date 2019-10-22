@@ -307,6 +307,7 @@ script:
         90 days old are not available.
   isfetch: true
   runonce: false
+  subtype: python3
 tests:
   - No Test
 
