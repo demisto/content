@@ -4,6 +4,7 @@ commonfields:
 name: IsRFC1918Address
 script: ''
 type: python
+subtype: python3
 tags:
 - filter
 comment: Filter to determine whether an IPv4 address is in the private RFC-1918 address
@@ -16,5 +17,7 @@ args:
   description: The IPv4 address
 scripttarget: 0
 runonce: false
-dockerimage: demisto/python3:3.7.4.977
+dockerimage: demisto/python3:3.7.4.2728
 runas: DBotWeakRole
+tests:
+  - No test
