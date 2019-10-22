@@ -44,7 +44,7 @@ def get_phishing_map_labels(comma_values):
 
 
 def read_file(input_entry_or_string, file_type):
-    data = []
+    data = []  # type: List[Dict[str, str]]
     if not input_entry_or_string:
         return data
     if file_type.endswith("string"):
@@ -53,7 +53,7 @@ def read_file(input_entry_or_string, file_type):
         if isinstance(input_entry_or_string, str):
             file_content = BytesIO(input_entry_or_string)
         elif isinstance(input_entry_or_string, unicode):
-            file_content = StringIO(input_entry_or_string)
+            file_content = StringIO(input_entry_or_string)  # type: ignore
     else:
         res = demisto.getFilePath(input_entry_or_string)
         if not res:
@@ -82,7 +82,7 @@ def get_file_entry_id(file_name):
 def read_files_by_name(file_names, input_type):
     file_names = file_names.split(",")
     file_names = [f for f in file_names if f]
-    data = []
+    data = [] # type: List[Dict[str, str]]
     for file_name in file_names:
         data += read_file(get_file_entry_id(file_name), input_type)
     return data
@@ -90,8 +90,8 @@ def read_files_by_name(file_names, input_type):
 
 def get_data_with_mapped_label(data, labels_mapping, tag_field):
     new_data = []
-    exist_labels_counter = defaultdict(int)
-    missing_labels_counter = defaultdict(int)
+    exist_labels_counter = defaultdict(int)  # type: Dict[str, int]
+    missing_labels_counter = defaultdict(int)  # type: Dict[str, int]
     for row in data:
         original_label = row[tag_field]
         if labels_mapping == ALL_LABELS:
