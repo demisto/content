@@ -16,6 +16,21 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
+- defaultvalue: '0'
+  display: The number of results returned in each fetch
+  name: c_score_gte
+  required: false
+  type: 0
+- defaultvalue: ''
+  display: The number of results returned in each fetch
+  name: t_score_gte
+  required: false
+  type: 0
+- defaultvalue: '20'
+  display: The number of results returned in each fetch
+  name: fetch_size
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   defaultvalue: ""
@@ -236,8 +251,7 @@ script:
       description: Kerberos Service
     description: The rules branch can be used to retrieve a listing of configured
       Triage rules
-  - name: vec-get-host-by-id
-    deprecated: true
+  - name: vectra-get-host-by-id
     arguments:
     - name: host_id
       required: true
@@ -261,13 +275,15 @@ script:
     - contextPath: Endpoint.Vectra.CScore
       description: The current certainty score correlated to this host
     description: Get host by id
-  - name: vec-get-detetctions-by-id
+  - name: vectra-get-detetctions-by-id
     deprecated: true
     arguments:
     - name: detection_id
       description: The id of the required detection
     description: Get detections by host id
   - name: vectra-get-users
+    arguments: []
+  - name: vectra-get-proxies
     arguments: []
   - name: vectra-search
     arguments:
@@ -279,8 +295,6 @@ script:
       predefined:
       - hosts
       - detections
-  - name: vectra-proxy
-    arguments: []
   isfetch: true
   dockerimage: demisto/python3:3.7.4.2245
 tests:
