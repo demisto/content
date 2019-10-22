@@ -61,10 +61,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f05899de-49bb-4ded-8e5f-cd2109f51717
+    taskid: 8be22093-cfff-4bac-8e47-b8103af713c4
     type: regular
     task:
-      id: f05899de-49bb-4ded-8e5f-cd2109f51717
+      id: 8be22093-cfff-4bac-8e47-b8103af713c4
       version: -1
       name: Predict Tag1
       description: Predict text label using a pre-trained machine learning phishing
@@ -79,10 +79,14 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: closed church squeamish squeamish friction friction moaning
+        simple: closed church squeamish squeamish moaning closed closed closed church
+          squeamish squeamish moaning closed closed closed church squeamish squeamish
+          moaning closed closed
       hashSeed: {}
-      labelProbabilityThreshold: {}
-      minTextLength: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
       modelName:
         simple: test_phishing_model
       modelStoreType:
@@ -352,10 +356,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: e88aaabc-ff45-4c8c-8a6b-c7a3a5497c91
+    taskid: 405125d4-86fc-45a1-8142-147679ba56be
     type: regular
     task:
-      id: e88aaabc-ff45-4c8c-8a6b-c7a3a5497c91
+      id: 405125d4-86fc-45a1-8142-147679ba56be
       version: -1
       name: Predict Tag2
       description: Predict text label using a pre-trained machine learning phishing
@@ -370,10 +374,14 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: ntidy boy substance faulty waves type boat argument
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
+          faulty waves type boat argument ntidy boy substance faulty waves type boat
+          argument
       hashSeed: {}
-      labelProbabilityThreshold: {}
-      minTextLength: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
       modelName:
         simple: test_phishing_model
       modelStoreType:
@@ -393,10 +401,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 99d38dbc-45a9-46e9-8c63-4c7fbf92aa77
+    taskid: 8464bed5-94e4-4ed1-8472-5867ff62d57b
     type: regular
     task:
-      id: 99d38dbc-45a9-46e9-8c63-4c7fbf92aa77
+      id: 8464bed5-94e4-4ed1-8472-5867ff62d57b
       version: -1
       name: Predict Tag3
       description: Predict text label using a pre-trained machine learning phishing
@@ -411,10 +419,14 @@ tasks:
     scriptarguments:
       emailBody: {}
       emailSubject:
-        simple: suspend trucks aboriginal thread succeed gray last fall fall
+        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend
+          trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal
+          thread succeed gray last fall fall
       hashSeed: {}
-      labelProbabilityThreshold: {}
-      minTextLength: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
       modelName:
         simple: test_phishing_model
       modelStoreType:
@@ -515,4 +527,3 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: CreatePhishingClassifierMLTest
