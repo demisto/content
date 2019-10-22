@@ -158,7 +158,8 @@ def test_main(mocker):
         'removeShortTextThreshold': 5,
         'dedupThreshold': -1,
         'preProcessType': 'none',
-        'cleanHTML': 'true'
+        'cleanHTML': 'true',
+        'outputFormat': 'json'
     }
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
     mocker.patch.object(demisto, 'args', return_value=args)

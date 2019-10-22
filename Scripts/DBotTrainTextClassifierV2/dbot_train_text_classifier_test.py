@@ -29,9 +29,9 @@ def test_read_file(mocker):
 def test_read_files_by_name(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
     mocker.patch.object(demisto, 'dt', return_value={'EntryID': 'ads@Asd2'})
-    data = read_files_by_name("file1,file2")
+    data = read_files_by_name("file1,file2", "json")
     assert len(data) == 4
-    data = read_files_by_name("file1,")
+    data = read_files_by_name("file1,", "json")
     assert len(data) == 2
 
 
