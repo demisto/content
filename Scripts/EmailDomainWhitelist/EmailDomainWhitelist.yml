@@ -24,3 +24,5 @@ scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.7.4.977
 runas: DBotWeakRole
+tests:
+- No test - unit test
