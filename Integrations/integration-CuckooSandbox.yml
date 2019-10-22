@@ -284,9 +284,19 @@ script:
             EntryContext: context
         };
     };
+    var viewTasks = function(args, params){
+        ids = argToList(args['id']);
+        var res = [];
+        for(var i in ids){
+            task_id = ids[i];
+            entry = viewTask(args, params, task_id);
+            res.push(entry);
+        }
+        return res;
+    };
 
-    var viewTask = function(args, params){
-        result = cuckooGet(args, params, 'tasks/view/' + args['id']);
+    var viewTask = function(args, params, id){
+        result = cuckooGet(args, params, 'tasks/view/' + id);
 
         return {
             Type: entryTypes.note,
@@ -378,7 +388,7 @@ script:
 
         case 'ck-view'://deprecated
         case 'cuckoo-view-task':
-            return viewTask(args, params);
+            return viewTasks(args, params);
 
         case 'ck-del'://deprecated
         case 'cuckoo-delete-task':
@@ -731,6 +741,7 @@ script:
       required: true
       default: true
       description: commands.server.ckView.arguments.id.description
+      isArray: true
     outputs:
     - contextPath: Cuckoo.Task.Category
       description: Category of task
@@ -975,4 +986,4 @@ script:
 hidden: false
 fromversion: 3.5.0
 tests:
-  - No test
+  - CuckooTest

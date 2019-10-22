@@ -5,10 +5,9 @@ from CommonServerUserPython import *
 
 CMD_ARGS_REGEX = re.compile(r'([\w_-]+)=((?:\"[^"]+\")|(?:`.+`)|(?:\"\"\".+\"\"\")|(?:[^ ]+)) ?', re.S)
 
-
 """STRING TEMPLATES"""
 OVERVIEW: str = '''<p>
-  Overview description in this section without a header.
+{overview}
 </p>
 '''
 
@@ -21,15 +20,16 @@ SETUP_CONFIGURATION: str = '''<h2>Configure {integration_name} on Demisto</h2>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
+{params_list}
     </ul>
   </li>
-</ol>
-<ol start="4">
   <li>
     Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
   </li>
 </ol>
 '''
+
+PARAMS_LIST: str = '   <li><strong>{param}</strong></li>'
 
 COMMANDS_HEADER: str = '''<h2>Commands</h2>
 <p>
@@ -41,21 +41,31 @@ COMMANDS_HEADER: str = '''<h2>Commands</h2>
 </ol>
 '''
 
+PERMISSIONS_HEADER: str = '''<h2>Permissions</h2>
+<p>The following permissions are required for all commands.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>'''
+
 COMMAND_LIST: str = '  <li>{command_hr}: {command}</li>'
 
+PERMISSIONS_PER_COMMAND: str = '''
+<h5>Required Permissions</h5>
+<p>The following permissions are required for this command.</p>
+<ul>
+    <li>permission 1</li>
+    <li>permission 2</li>
+</ul>'''
+
 SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
-<!-- <hr> -->
+<hr>
 <p>{command_description}</p>
 <h5>Base Command</h5>
 <p>
   <code>{command}</code>
 </p>
-<h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
+{permissions}
 <h5>Input</h5>
 {arg_table}
 <p>&nbsp;</p>
@@ -70,6 +80,11 @@ SINGLE_COMMAND: str = '''<h3>{index}. {command_hr}</h3>
 <h5>Human Readable Output</h5>
 <p>
 {hr_example}
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 '''
 
@@ -272,7 +287,11 @@ def human_readable_example_to_html(hr_sample):
     hr_html: list = []
     while hr_sample:
         if hr_sample.startswith('#'):
-            title, hr_sample = hr_sample.split('\n', 1)
+            title = hr_sample
+            if '\n' in hr_sample:
+                title, hr_sample = hr_sample.split('\n', 1)
+            else:
+                hr_sample = ''
             heading_size = len(title) - len(title.lstrip('#'))
             hr_html.append('<h{0}>{1}</h{0}>'.format(heading_size, title[heading_size + 1:]))
             continue
@@ -338,24 +357,14 @@ def generate_section(title, data):
 
 # Setup integration on Demisto
 def generate_setup_section(yaml_data):
-    section = [
-        '1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.',
-        '2. Search for {}.'.format(yaml_data['name']),
-        '3. Click __Add instance__ to create and configure a new integration instance.',
-        '    * __Name__: a textual name for the integration instance.',
-    ]
-    for conf in yaml_data['configuration']:
-        if conf['display']:
-            section.append('    * __{}__'.format(conf['display']))
-        else:
-            section.append('    * __{}__'.format(conf['name']))
-    section.append('4. Click __Test__ to validate the URLs, token, and connection.')
-
-    return section
+    params_list = [
+        PARAMS_LIST.format(param=conf['display'] if conf.get('display') else conf['name']) for
+        conf in yaml_data.get('configuration', [])]
+    return SETUP_CONFIGURATION.format(params_list='\n'.join(params_list), integration_name=yaml_data['name'])
 
 
 # Commands
-def generate_commands_section(yaml_data, example_dict):
+def generate_commands_section(yaml_data, example_dict, should_include_permissions):
     errors: list = []
     command_sections: list = []
 
@@ -363,14 +372,14 @@ def generate_commands_section(yaml_data, example_dict):
     command_list = [COMMAND_LIST.format(command_hr=cmd['name'], command=cmd['name']) for cmd in commands]
 
     for i, cmd in enumerate(commands):
-        cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict)
+        cmd_section, cmd_errors = generate_single_command_section(i + 1, cmd, example_dict, should_include_permissions)
         command_sections.append(cmd_section)
         errors.extend(cmd_errors)
 
     return (COMMANDS_HEADER.format(command_list='\n'.join(command_list)) + '\n'.join(command_sections)), errors
 
 
-def generate_single_command_section(index, cmd, example_dict):
+def generate_single_command_section(index, cmd, example_dict, should_include_permissions):
     cmd_example: str = example_dict.get(cmd['name'])
     errors: list = []
     template: dict = {
@@ -378,6 +387,7 @@ def generate_single_command_section(index, cmd, example_dict):
         'command_hr': cmd['name'],
         'command': cmd['name'],
         'command_description': cmd.get('description', ' '),
+        'permissions': PERMISSIONS_PER_COMMAND if should_include_permissions else '',
     }
 
     # Inputs
@@ -409,7 +419,7 @@ def generate_single_command_section(index, cmd, example_dict):
                                                                                            cmd['name']))
             context_table.append(CONTEXT_RECORD.format(path=output['contextPath'],
                                                        type=output.get('type', 'unknown'),
-                                                       description=output.get('description').encode('utf-8')))
+                                                       description=output.get('description')))
         template['context_table'] = CONTEXT_TABLE.format(records='\n'.join(context_table))
 
     # Raw output:
@@ -463,16 +473,19 @@ def generate_html_docs(args, yml_data, example_dict, errors):
                              args.get('fetchedData',
                                       'Populate this section with Fetch incidents data'))
 
-    # Setup Configuration
-    docs += SETUP_CONFIGURATION.format(integration_name=yml_data['name'])
     # # Setup integration to work with Demisto
-    #
     # docs.extend(generate_section('Configure {} on Demisto'.format(yml_data['name']), args.get('setupOnIntegration')))
-    # # Setup integration on Demisto
-    # docs.extend(generate_setup_section(yml_data))
+
+    # Setup integration on Demisto
+    docs += (generate_setup_section(yml_data))
+
+    #  Permissions
+    if args.get('permissions') == 'global':
+        docs += PERMISSIONS_HEADER
 
     # Commands
-    command_section, command_errors = generate_commands_section(yml_data, example_dict)
+    command_section, command_errors = generate_commands_section(yml_data, example_dict,
+                                                                args.get('permissions') == 'per-command')
     docs += command_section
     errors.extend(command_errors)
 

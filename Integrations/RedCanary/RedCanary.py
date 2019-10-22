@@ -250,11 +250,11 @@ def detections_to_entry(detections, show_timeline=False):
     fixed_detections = [detection_to_context(d) for d in detections]
     endpoints = [get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id'])
                  for d in detections]
-    endpoints = sum(endpoints, [])
+    endpoints = sum(endpoints, [])  # type: list
     endpoint_users = [
         get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id'])
         for d in detections]
-    endpoint_users = sum(endpoint_users, [])
+    endpoint_users = sum(endpoint_users, [])  # type: list
 
     domains, files, ips, processes = [], [], [], []  # type:ignore
     activities = ''
