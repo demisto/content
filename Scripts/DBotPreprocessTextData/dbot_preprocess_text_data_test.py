@@ -164,7 +164,6 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
     mocker.patch.object(demisto, 'args', return_value=args)
     entry = main()
-    print entry
     os.remove('1_' + entry['FileID'])
     assert 'Read initial 2 samples' in entry['HumanReadable']
     assert 'Done processing' in entry['HumanReadable']
