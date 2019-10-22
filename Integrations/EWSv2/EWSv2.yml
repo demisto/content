@@ -1134,17 +1134,6 @@ script:
     deprecated: false
     description: Retrieves items by item ID and uploads it's content as eml file.
     execution: false
-    name: ews-delete-folder
-  - arguments:
-    - name: folder-name
-      required: true
-      description: The name of the folder.
-    - name: folder-path
-      required: true
-      description: Path to locate the new folder.
-    - name: target-mailbox
-      description: The mailbox in which to delete the folder.
-    description: Delete a folder in the specified path
     name: ews-get-items-as-eml
     outputs:
     - contextPath: File.Size
@@ -1180,6 +1169,17 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
+    name: ews-delete-folder
+  - arguments:
+    - name: folder-name
+      required: true
+      description: The name of the folder.
+    - name: folder-path
+      required: true
+      description: Path to locate the new folder.
+    - name: target-mailbox
+      description: The mailbox in which to delete the folder.
+    description: Delete a folder in the specified path
   dockerimage: demisto/py-ews:2.0
   isfetch: true
   runonce: false
