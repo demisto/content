@@ -784,7 +784,7 @@ def test_function(client: Client) -> None:
         response = client.kms_client.list_key_rings(location_path)
 
         # Count the number of existing KeyRings.
-        if sum(1 for ring in response) == 0:
+        if not list(response):
             raise Exception("No response - please check Project in Google Cloud KMS and Default Location")
 
 
