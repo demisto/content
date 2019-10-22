@@ -1,5 +1,4 @@
 # pylint: disable=no-member
-import pickle
 from collections import defaultdict
 from io import BytesIO, StringIO
 import pandas as pd
