@@ -9,7 +9,7 @@ import subprocess
 from time import sleep
 from datetime import datetime
 
-import demisto_client
+import demisto_client.demisto_api
 from slackclient import SlackClient
 
 from Tests.test_integration import test_integration, disable_all_integrations
