@@ -1,0 +1,253 @@
+id: PANW - Hunting and threat detection by indicator type Test
+version: -1
+name: PANW - Hunting and threat detection by indicator type Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92f715b0-9601-4b44-8d70-d77500208dcd
+    type: start
+    task:
+      id: 92f715b0-9601-4b44-8d70-d77500208dcd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: a83b5fa3-0000-4d49-8294-2dba0dbbe50e
+    type: playbook
+    task:
+      id: a83b5fa3-0000-4d49-8294-2dba0dbbe50e
+      version: -1
+      name: PANW - Hunting and threat detection by indicator type
+      description: |-
+        Integrations list: Cortex (Traps, PAN-OS, Analytics)
+        This is a multipurpose playbook used for hunting and threat detection. The playbook received inputs based on hashes, ip's or domain names provided manually or from outputs by other playbooks. With the received indicators the playbook leverages Palo Alto Cortex data received by products such as Traps, Analytics and Pan-OS to search for ips and hosts related to that specific hash. The output provided by the Playbook allows to pivot searches for possibly affected hosts, ip's or users.
+      playbookName: PANW - Hunting and threat detection by indicator type
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Domain:
+        simple: ${Domain.Name}
+      IP addresses:
+        simple: ${IP.Address}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 22d09767-3ee0-40fc-8b1d-8e1e32f0aae9
+    type: regular
+    task:
+      id: 22d09767-3ee0-40fc-8b1d-8e1e32f0aae9
+      version: -1
+      name: Set Hashes
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: File.SHA256
+      value:
+        simple: '["4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0","7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3","FF3ED70F7F4D79E8A24FACCC2CB9BF1FBE3D286EE2A8961CE1D1409E85CA871F"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 3538ca60-f60b-44ee-8881-14904379a0c1
+    type: regular
+    task:
+      id: 3538ca60-f60b-44ee-8881-14904379a0c1
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 9ead0f0d-6390-43e9-8ed4-f3417b95c4a6
+    type: regular
+    task:
+      id: 9ead0f0d-6390-43e9-8ed4-f3417b95c4a6
+      version: -1
+      name: Set IP's
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IP.Address
+      value:
+        simple: '["192.168.1.12","10.208.210.163"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 137c96bf-07f4-445c-86d4-9bc3dcdd0c0a
+    type: title
+    task:
+      id: 137c96bf-07f4-445c-86d4-9bc3dcdd0c0a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 06a15a07-461e-404f-8933-28eec6a3b574
+    type: regular
+    task:
+      id: 06a15a07-461e-404f-8933-28eec6a3b574
+      version: -1
+      name: Set Domains
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Domain.Name
+      value:
+        simple: '["microsoft.com","bla.xyz"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 1310,
+        "x": -40,
+        "y": -60
+      }
+    }
+  }
+inputs: []
+outputs: []

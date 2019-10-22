@@ -1866,6 +1866,16 @@
             "integrations": "VirusTotal - Private API"
         },
         {
+            "playbookID": "PANW - Hunting and threat detection by indicator type Test",
+            "fromversion": "4.5.0",
+            "timeout": 1200,
+            "integrations": [
+                "Palo Alto Networks Cortex",
+                "Panorama",
+                "AutoFocus V2"
+            ]
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
