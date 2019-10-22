@@ -1,17 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
 
+
 def csv_string_to_list(v):
-    if type(v) == str: # requires python3
-        return v.lower().replace(' ', '').replace('\n','').split(',')
+    if type(v) == str:  # requires python3
+        return v.lower().replace(' ', '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
 
 
-
 def main():
-    DOMAIN_LIST = csv_string_to_list( demisto.args()['domain_list'] )
-    EMAIL_ADDRESSES = csv_string_to_list( demisto.args()['value'] )
+    DOMAIN_LIST = csv_string_to_list(demisto.args()['domain_list'])
+    EMAIL_ADDRESSES = csv_string_to_list(demisto.args()['value'])
 
     filtered_addresses = []
 
@@ -25,7 +25,6 @@ def main():
         demisto.results(filtered_addresses)
     else:
         demisto.results(None)
-
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
