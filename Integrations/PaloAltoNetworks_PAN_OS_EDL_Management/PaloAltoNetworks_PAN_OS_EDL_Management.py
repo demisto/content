@@ -101,6 +101,9 @@ def ssh_execute(command: str):
 
 
 
+
+
+
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
