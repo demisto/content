@@ -1,7 +1,8 @@
 id: process_email_-_generic
 version: -1
 name: Process Email - Generic
-fromversion: '5.0.0'
+fromversion: 4.0.0
+toversion: 4.5.9
 description: Add email details to the relevant context entities and handle the case
   where original emails are attached.
 starttaskid: "0"
@@ -194,13 +195,13 @@ tasks:
       id: 79efc198-1523-4a55-89ad-668e64fba48c
       version: -1
       name: Render HTML to an image
-      description: Rasterize an email body into an image
+      description: ""
       tags:
       - email_html_image
-      script: '|||rasterize-email'
+      script: Rasterize|||rasterize-email
       type: regular
       iscommand: true
-      brand: ""
+      brand: Rasterize
     nexttasks:
       '#none#':
       - "6"
@@ -210,8 +211,6 @@ tasks:
         complex:
           root: Email
           accessor: HTML
-      offline:
-        simple: "true"
       type: {}
       width: {}
     reputationcalc: 1
@@ -1083,6 +1082,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
