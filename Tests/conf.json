@@ -1956,7 +1956,6 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "ThreatX": "Issue 19551",
-        "LogRhythmRest": "Issue 19362",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "SumoLogic": "Issue 18441",
@@ -1986,7 +1985,6 @@
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
         "Cisco Spark": "Issue 18940",
