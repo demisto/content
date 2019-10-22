@@ -1,0 +1,374 @@
+id: DBot_Create_Phishing_Classifier_V2
+version: 76
+name: DBot Create Phishing Classifier V2
+description: Create a phishing classifier using machine learning technique, based
+  on email content
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+    type: start
+    task:
+      id: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+    type: title
+    task:
+      id: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 48a1fd70-7f0f-40ec-8049-64d41714dd06
+    type: regular
+    task:
+      id: 48a1fd70-7f0f-40ec-8049-64d41714dd06
+      version: -1
+      name: Get Incidents
+      description: Get incidents by query. We will use those incident to train the
+        machine learning phishing model.
+      scriptName: GetIncidentsByQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      NonEmptyFields:
+        simple: ${inputs.emailTagKey}
+      fromDate: {}
+      incidentTypes:
+        simple: ${inputs.incidentTypes}
+      includeContext:
+        simple: "false"
+      limit:
+        simple: ${inputs.maxIncidentsToFetchOnTraining}
+      outputFormat:
+        simple: pickle
+      query:
+        simple: ${inputs.incidentsQuery}
+      timeField:
+        simple: created
+      toDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 4cd11300-c982-4628-868c-db215aa3a6ba
+    type: regular
+    task:
+      id: 4cd11300-c982-4628-868c-db215aa3a6ba
+      version: -1
+      name: Pre-process file
+      description: |-
+        Pre-process the text data for the machine learning text classifier.
+        The pre-process normalize the text:
+        - Remove HTML tags
+        - Convert every word to it's root (goes -> go)
+        - Remove text shorted then threshold
+        - Remove duplicate text samples
+      scriptName: DBotPreProcessTextData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      cleanHTML:
+        simple: "true"
+      dedupThreshold:
+        simple: ${inputs.dedupThreshold}
+      hashSeed:
+        simple: ${inputs.hashData}
+      input:
+        simple: ${lastCompletedTaskEntries}
+      inputType:
+        simple: ${GetIncidentsByQuery.FileFormat}
+      outputFormat:
+        simple: pickle
+      preProcessType:
+        simple: nlp
+      removeShortTextThreshold:
+        simple: ${inputs.removeShortTextThreshold}
+      textFields:
+        simple: ${inputs.emailSubjectKey},${inputs.emailTextKey}
+      whitelistFields:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 14768e58-dbe9-4f21-8210-d5e8f7ec352e
+    type: regular
+    task:
+      id: 14768e58-dbe9-4f21-8210-d5e8f7ec352e
+      version: -1
+      name: Train Model
+      description: Train the machine learning text classifier
+      scriptName: DBotTrainTextClassifierV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      input:
+        simple: ${DBotPreProcessTextData.Filename},${inputs.historicalDataFileListName}
+      inputType:
+        complex:
+          root: DBotPreProcessTextData
+          accessor: FileFormat
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: _filename
+      keywordMinScore: {}
+      maxBelowThreshold: {}
+      modelName:
+        simple: ${inputs.modelName}
+      overrideExistingModel:
+        simple: ${inputs.overrideModel}
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      storeModel: {}
+      tagField:
+        simple: ${inputs.emailTagKey}
+      targetAccuracy: {}
+      textField:
+        simple: ${DBotPreProcessTextData.TextFieldProcessed}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 4b329e39-33f9-4565-8566-d1ad2cd82f13
+    type: condition
+    task:
+      id: 4b329e39-33f9-4565-8566-d1ad2cd82f13
+      version: -1
+      name: Historical data exist?
+      description: Check if we have input with historical data file - usually from
+        external source, or data we used to have in Demisto
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.historicalDataFileListName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 99f5cc03-1224-4c0d-8d03-6c1337096de1
+    type: regular
+    task:
+      id: 99f5cc03-1224-4c0d-8d03-6c1337096de1
+      version: -1
+      name: Get Historical File
+      description: Converts Base64 file in a list to a binary file and upload to WarRoom
+      scriptName: Base64ListToFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      filename: {}
+      isZipFile:
+        simple: "no"
+      listname:
+        simple: ${inputs.historicalDataFileListName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 650,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: modelName
+  value:
+    simple: phishing_model
+  required: false
+  description: The name of Demisto list to store the model
+- key: emailTextKey
+  value:
+    simple: details
+  required: false
+  description: Incident key to extract email body text
+- key: emailSubjectKey
+  value:
+    simple: emailsubject
+  required: false
+  description: Incident key to extract email subject
+- key: emailTagKey
+  value:
+    simple: emailclassification
+  required: false
+  description: Incident key expression to extract email tag
+- key: phishingLabels
+  value:
+    simple: '*'
+  required: false
+  description: 'Comma-separated values of email tags values and mapping. The script
+    going to consider only the tags specify in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
+    4 values in email tag: malicious, credentials harvesting, inner communitcation,
+    external legit email, unclassified. While training, we want to ignore "unclassified"
+    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
+    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+- key: incidentsQuery
+  value: {}
+  required: false
+  description: The incidents query to fetch the training data for the model
+- key: maxIncidentsToFetchOnTraining
+  value:
+    simple: "3000"
+  required: false
+  description: Maximum number of incidents to fetch while training the model
+- key: hashSeed
+  value: {}
+  required: false
+  description: Preform hash function to the words (to anonymize the data). Choose
+    between yes/no
+- key: historicalDataFileListName
+  value: {}
+  required: false
+  description: The name of demisto list contains historical data samples for the algorithm
+- key: overrideModel
+  value:
+    simple: "true"
+  required: false
+  description: Override model, if model with the same name already exist (true\false)
+- key: incidentTypes
+  value: {}
+  required: false
+  description: Filter incidents with incident types. Comma separated value
+- key: dedupThreshold
+  value:
+    simple: "0.99"
+  required: false
+  description: Drop duplicate incidents with this threshold, value in range 0-1
+- key: removeShortTextThreshold
+  value:
+    simple: "15"
+  required: false
+  description: Remove text shorter then this threshold (number of words)
+outputs:
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
+  description: F1 score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.precision
+  description: Precision score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.recall
+  description: Rrecision score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.ModelName
+  description: Model name in Demisto
+  type: string
+sourceplaybookid: DBotCreatePhishingClassifier

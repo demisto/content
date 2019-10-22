@@ -20,6 +20,14 @@ configuration:
   name: incident_notifications_channel
   required: true
   type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
 - defaultvalue: Low
   display: Minimum incident severity to send notifications to Teams by
   name: min_incident_severity
@@ -46,7 +54,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Port mapping (<host port>:<docker port>)
+- display: Listen port, e.g. 7000 (Required for investigation
+    mirroring and direct messages)
   name: longRunningPort
   required: false
   type: 0
@@ -61,7 +70,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Channel to which send messages.
+      description: The channel to which to send messages.
       isArray: false
       name: channel
       required: false
@@ -79,7 +88,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Team in which the specified channel exists. The team must already
+      description: The team in which the specified channel exists. The team must already
         exist, and this value will override the default channel configured in the
         integration parameters.
       isArray: false
@@ -136,7 +145,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Team in which to mirror the Demisto investigation. If not specified,
+      description: The team in which to mirror the Demisto investigation. If not specified,
         the default team configured in the integration parameters will be used.
       isArray: false
       name: team
@@ -155,7 +164,7 @@ script:
     name: mirror-investigation
   - arguments:
     - default: false
-      description: Name of the channel to close.
+      description: The name of the channel to close.
       isArray: false
       name: channel
       required: false
@@ -164,7 +173,11 @@ script:
     description: Deletes the specified Microsoft Teams channel.
     execution: false
     name: close-channel
-  dockerimage: demisto/teams:1.0.0.1405
+  - deprecated: false
+    description: Returns real-time and historical data on the integration status.
+    execution: false
+    name: microsoft-teams-integration-health
+  dockerimage: demisto/teams:1.0.0.1701
   isfetch: false
   longRunning: true
   longRunningPort: true

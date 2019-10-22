@@ -1,4 +1,7 @@
 ## [Unreleased]
+Rasterizing the email now done in offline mode
+
+## [19.9.0] - 2019-09-04
 Changed to use IdentifyAttachedEmail to detect additional email attachment types.
 
 

@@ -1,3 +1,24 @@
+# Getting Started
+
+### Prerequisites
+ - Clone the Demisto Content repository
+ - [Python 3](https://www.python.org/downloads/)
+ - [Python 2](https://www.python.org/download/releases/2.0/)
+ - [pip](https://pip.pypa.io/en/stable/installing/)
+ - [Pipenv](https://pypi.org/project/pipenv/)
+ - [PyYaml](https://pypi.org/project/PyYAML/)
+ - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/)
+ - [Docker](https://www.docker.com/)
+ - [Flake8](http://flake8.pycqa.org/en/latest/)
+ - [Mypy](http://mypy-lang.org/)
+
+Demisto offers two IDEs for developing: IntelliJ Plugin and built-in platform IDE.
+
+## Demisto IntelliJ Plugin
+The Demisto Add-on for PyCharm simplifies third-party integration and script development by enabling users to author Python content for Demisto directly in PyCharm.
+
+Read more [here](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
+
 ## The Demisto IDE
 It is important to take a moment and familiarise yourself with the Demisto IDE as it may work differently than other IDEs you are familiar with. Some key differences between the Demisto IDE and ,for example pyCharm, is the absence of an interpreter. You will have to be mindful of Demisto reserved variables as you develop your integration. **(See Reserved Variables) **
 
