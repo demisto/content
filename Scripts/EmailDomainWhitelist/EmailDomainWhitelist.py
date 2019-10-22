@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 
 
 def csv_string_to_list(v):
