@@ -1,0 +1,119 @@
+{
+    "data": [
+        {
+            "id": "b048635c-41bb-4246-86f8-4f0e693b6087",
+            "createdAt": "2019-10-22T07:30:29Z",
+            "value": "https://acyd0i0093ywqu90de.gq/redirect/y8lHgdvjvCO9tfSZjRDtolQBQ+R1VYskWLZWkliV8hfe7-wPFX-ZEDFJlxuaXN5zC6lViCGhRUtPXXvtKxie9VVkjgs=1nDukXg/redacted@email.com",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "ccf24412-c243-48f5-89c4-99422c85df55",
+            "createdAt": "2019-10-22T07:30:29Z",
+            "value": "3e8d1d31cabcdd45509b0fdbfce7c2f8",
+            "type": "Attachment",
+            "attributes": [
+                {
+                    "id": "19dd51e6-125d-4bec-8718-3a2f95009bc1",
+                    "createdAt": "2019-10-22T07:30:29Z",
+                    "value": "3e8d1d31cabcdd45509b0fdbfce7c2f8",
+                    "name": "md5"
+                },
+                {
+                    "id": "69fd72af-d91d-4ae6-8bd9-511b7394a90d",
+                    "createdAt": "2019-10-22T07:30:29Z",
+                    "value": "text/plain",
+                    "name": "filetype"
+                },
+                {
+                    "id": "843c4110-5c1d-4e49-af62-ea22ac6f11f6",
+                    "createdAt": "2019-10-22T07:30:29Z",
+                    "value": "Hillrom..BENEFIT..PLAN.html",
+                    "name": "name"
+                }
+            ],
+            "falsePositive": false
+        },
+        {
+            "id": "01fe6cea-4741-4b45-86df-817f00c2f636",
+            "createdAt": "2019-10-22T07:11:49Z",
+            "value": "http://usedexcavators.com.au/gni/",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "4e38cb44-3a7e-4597-bb7d-e011d4044982",
+            "createdAt": "2019-10-22T07:07:27Z",
+            "value": "https://quickbooksonlinecloud.net/7516ac3e-daab-86d0-3806-9c9a79c4-4483dc8ec88b4ed2",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "578927a8-eda4-4137-a447-6bca9e632b44",
+            "createdAt": "2019-10-22T07:07:27Z",
+            "value": "9fcac7b3661554ca8b33b89c40f17577",
+            "type": "Attachment",
+            "attributes": [
+                {
+                    "id": "d9668f8a-ef16-4499-a773-e4c92100a119",
+                    "createdAt": "2019-10-22T07:07:27Z",
+                    "value": "9fcac7b3661554ca8b33b89c40f17577",
+                    "name": "md5"
+                },
+                {
+                    "id": "e132363c-90ef-4f32-b4fb-fc87c2e0bf19",
+                    "createdAt": "2019-10-22T07:07:27Z",
+                    "value": "3ddKrvzzR0675.pdf",
+                    "name": "name"
+                },
+                {
+                    "id": "f1d148e7-5772-41f0-837f-e285c6561bd9",
+                    "createdAt": "2019-10-22T07:07:27Z",
+                    "value": "application/pdf",
+                    "name": "filetype"
+                }
+            ],
+            "falsePositive": false
+        },
+        {
+            "id": "8a5fea15-54f5-49e4-98a6-4c0cfd9fc024",
+            "createdAt": "2019-10-22T07:04:45Z",
+            "value": "http://xn--kaipot-4pb.si/wp-admin/INV/365/incorrect.php",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "f1f4e116-94fd-4f75-8e31-2aa964a62bef",
+            "createdAt": "2019-10-22T07:04:45Z",
+            "value": "https://kalorikusa-my.sharepoint.com/:o:/g/personal/eangeles_kalorik_com/El-FzrCJCW5HjTSrkfvCclsBRTiS83GnqAeJj4J2ayQGwA?e=fGRJdA",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "3636c911-26f3-40f1-b708-ff4a85f1c76f",
+            "createdAt": "2019-10-22T07:02:31Z",
+            "value": "https://t0b14s.artworkbydivya.com/.ab/g/sypo6z3c2wdcpn694lxcnr5u.php?RHus8O1BAoNvYpSFxy5ZNzMa3utDGqKd1elwp4dXG3hLzea0YXQnszCejlL9UASDCHfp42EeHllOXNWE=&abc=&ego=redacted%40email.com",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "e6728557-3460-487b-81ea-2eda69509426",
+            "createdAt": "2019-10-22T07:02:31Z",
+            "value": "http://14a17b229.soundlanka.com/147:29:14%20AM29#t0b14s.artworkbydivya.com/.ab/g/?&abc=1960&ego=redacted@email.com&",
+            "type": "URL",
+            "falsePositive": false
+        },
+        {
+            "id": "30c9323e-a88d-45d4-9dd5-4f23ab1cb6bb",
+            "createdAt": "2019-10-22T06:49:21Z",
+            "value": "https://d.pr/f/1QpAIQ",
+            "type": "URL",
+            "falsePositive": false
+        }
+    ],
+    "meta": {
+        "count": 10,
+        "statusCode": 200,
+        "statusMessage": "ok"
+    }
+}

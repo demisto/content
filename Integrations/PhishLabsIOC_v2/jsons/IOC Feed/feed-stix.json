@@ -1,0 +1,31 @@
+{
+    "type": "bundle",
+    "id": "bundle--b715eb06-a190-4c30-a607-48540c9ceec2",
+    "spec_version": "2.0",
+    "objects": [
+        {
+            "type": "indicator",
+            "id": "indicator--8a5fea15-54f5-49e4-98a6-4c0cfd9fc024",
+            "created": "2019-10-22T07:04:45Z",
+            "modified": "2019-10-22T07:04:45Z",
+            "labels": [
+                "phishing"
+            ],
+            "name": "Phishing Site",
+            "pattern": "[url:value = 'http://xn--kaipot-4pb.si/wp-admin/INV/365/incorrect.php']",
+            "valid_from": "2019-10-22T07:04:45Z"
+        },
+        {
+            "type": "indicator",
+            "id": "indicator--f1f4e116-94fd-4f75-8e31-2aa964a62bef",
+            "created": "2019-10-22T07:04:45Z",
+            "modified": "2019-10-22T07:04:45Z",
+            "labels": [
+                "phishing"
+            ],
+            "name": "Phishing Site",
+            "pattern": "[url:value = 'https://kalorikusa-my.sharepoint.com/:o:/g/personal/eangeles_kalorik_com/El-FzrCJCW5HjTSrkfvCclsBRTiS83GnqAeJj4J2ayQGwA?e=fGRJdA']",
+            "valid_from": "2019-10-22T07:04:45Z"
+        }
+    ]
+}

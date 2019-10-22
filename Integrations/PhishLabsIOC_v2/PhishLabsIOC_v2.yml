@@ -29,6 +29,16 @@ display: PhishLabsI IOC v2
 name: AnalyticsAndSIEM
 script:
   commands:
+  - deprecated: false
+    description: Returns list of incidents and indicators within the feed
+    execution: false
+    name: phishlabs-eir-feed
+    outputs:
+    - type: Unknown
+  - deprecated: false
+    description: Returns global list of indicators, filtering client specific data.
+    execution: false
+    name: phishlabs-eir-globalfeed
   - arguments:
     - default: false
       description: Incident ID
@@ -39,7 +49,7 @@ script:
     deprecated: false
     description: Retrieve incident details by id
     execution: false
-    name: phishlabs-get-incident-by-id
+    name: phishlabs-eir-get-incident-by-id
     outputs:
     - contextPath: Email.To
       description: The recipient of the email.
@@ -141,7 +151,7 @@ script:
     deprecated: false
     description: Get list of incidents details - by default return 20 incidents
     execution: false
-    name: phishlabs-get-incidents
+    name: phishlabs-eir-get-incidents
     outputs:
     - contextPath: Email.To
       description: The recipient of the email.
@@ -187,7 +197,18 @@ script:
     deprecated: false
     description: Get case from Phishlabs by ID
     execution: false
-    name: phishlabs-get-case-by-id
+    name: phishlabs-drp-get-case-by-id
+    outputs:
+    - contextPath: PhishLabsIOC.Case.Id
+      description: Case ID
+      type: String
+    - contextPath: PhishLabsIOC.title
+      description: Case title
+      type: String
+    - contextPath: PhishLabsIOC.Description
+      description: Case Details
+      type: String
+    - type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -253,7 +274,7 @@ script:
     deprecated: false
     description: Get case from Phislabs by filters - by default return 20 cases.
     execution: false
-    name: phishlabs-get-cases
+    name: phishlabs-drp-get-cases
   - arguments:
     - default: false
       description: Case ID
@@ -264,7 +285,11 @@ script:
     deprecated: false
     description: Returns the case file itself
     execution: false
-    name: phishlabs-get-cases-attachment
+    name: phishlabs-drp-get-cases-attachment
+  - deprecated: false
+    description: Create cases for phishing, crimeware or mobile
+    execution: false
+    name: phishlabs-drp-create-case
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
