@@ -1,4 +1,4 @@
-import base64
+import base64, pickle
 
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
@@ -37,6 +37,9 @@ def test_read_file(mocker):
     with open('input_json_file_test', 'r') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
+        obj = read_file(pickle.dumps(obj), 'pickle_string')
+        assert len(obj) >= 1
+
     with open('input_json_file_test', 'r') as f:
         b64_input = base64.b64encode(f.read())
         obj = read_file(b64_input, 'json_b64_string')

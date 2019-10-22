@@ -66,7 +66,7 @@ def read_file(input_entry_or_string, file_type):
     if file_type.startswith('json'):
         return json.loads(file_content.getvalue())
     elif file_type.startswith('pickle'):
-        return json.loads(pd.read_pickle(file_content).fillna('').to_json(orient='records'))
+        return pd.read_pickle(file_content, compression=None)
     else:
         return_error("Unsupported file type %s" % file_type)
 
