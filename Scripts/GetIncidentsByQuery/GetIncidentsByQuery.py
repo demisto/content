@@ -1,5 +1,5 @@
 import uuid
-
+import pickle
 from dateutil import parser
 
 from CommonServerPython import *
@@ -36,6 +36,8 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if non_empty_fields:
         non_emprty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields.split(",")))
         query_parts.append(non_emprty_fields_part)
+    if len(query_parts) == 0:
+        return_error("Incidents query is empty - please fill one of the arguments")
     query = " and ".join(map(lambda x: "(%s)" % x, query_parts))
 
     return query
@@ -53,7 +55,7 @@ def get_incidents(query, time_field, size):
 def main():
     # fetch query
     query = build_incidents_query(demisto.args().get('query'),
-                                  demisto.args()['incidentTypes'],
+                                  demisto.args().get('incidentTypes'),
                                   demisto.args()['timeField'],
                                   demisto.args().get('fromDate'),
                                   demisto.args().get('toDate'),
@@ -70,14 +72,21 @@ def main():
 
     # output
     file_name = str(uuid.uuid4())
-    data_encoded = json.dumps(incident_list)
+
+    output_format = demisto.args()['outputFormat']
+    if output_format == 'pickle':
+        data_encoded = pickle.dumps(incident_list)
+    elif output_format == 'json':
+        data_encoded = json.dumps(incident_list)
+    else:
+        return_error("Invalid output format: %s" % output_format)
     entry = fileResult(file_name, data_encoded)
     entry['Contents'] = incident_list
     entry['HumanReadable'] = "Fetched %d incidents successfully by the query: %s" % (len(incident_list), query)
     entry['EntryContext'] = {
         'GetIncidentsByQuery': {
             'Filename': file_name,
-            'FileFormat': 'json',
+            'FileFormat': output_format,
         }
     }
     return entry

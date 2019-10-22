@@ -44,6 +44,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
+  description: The time field to consider in the incident query
   isArray: false
   name: timeField
   predefined:
@@ -51,11 +52,21 @@ args:
   - modified
   required: false
   secret: false
-  description: The time field to consider in the incident query
 - default: false
   description: Filter incidents with non-empty value in those field, comma-separated  values
   isArray: false
   name: NonEmptyFields
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: pickle
+  description: The output file format
+  isArray: false
+  name: outputFormat
+  predefined:
+  - json
+  - pickle
   required: false
   secret: false
 comment: Get incidents and output in a json file based on an incident query
@@ -78,3 +89,5 @@ tags:
 timeout: 60µs
 type: python
 dockerimage: demisto/dateutil
+tests:
+  - Create_Phishing_Classifier_V2_ML_Test

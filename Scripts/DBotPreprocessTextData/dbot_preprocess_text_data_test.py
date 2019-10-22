@@ -64,6 +64,17 @@ def test_concat_text_field(mocker):
     assert data[1]['target'] == 'TestSubject TestBody'
     assert data[2]['target'] == 'TestSubject TestBody2'
 
+    mocker.patch.object(demisto, 'dt', return_value=["value"])
+    data = [{"Email": {"Body": "value", "Subject": "value"}}]
+    concat_text_fields(data, 'target', "Email.Subject, Email.Body")
+    assert data[0]['target'] == 'value value'
+
+    mocker.patch.object(demisto, 'dt', return_value="value")
+    data = [{"Email": {"Body": "value", "Subject": "value"}}]
+    concat_text_fields(data, 'target', "Email.Subject, Email.Body")
+    assert data[0]['target'] == 'value value'
+
+
 
 def test_remove_fields_from_dict():
     data = [{

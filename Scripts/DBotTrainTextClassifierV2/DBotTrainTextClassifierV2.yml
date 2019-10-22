@@ -85,7 +85,12 @@ args:
   predefined:
   - json
   - json_string
-  - filename
+  - json_b64_string
+  - pickle
+  - pickle_string
+  - pickle_b64_string
+  - pickle_filename
+  - json_filename
   required: false
   secret: false
 - default: false
@@ -101,6 +106,16 @@ commonfields:
   version: -1
 enabled: false
 name: DBotTrainTextClassifierV2
+outputs:
+- contextPath: DBotPhishingClassifier.ModelName
+  description: The model name
+  type: String
+- contextPath: DBotPhishingClassifier.EvaluationScores
+  description: Model evaluation - scores (f1-score, precision, recall)
+  type: Unknown
+- contextPath: DBotPhishingClassifier.ConfusionMatrix
+  description: Model evaluation - confusion matrix
+  type: Unknown
 script: '-'
 system: false
 tags:
@@ -108,4 +123,7 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/dl:1.4
+runonce: true
 fromversion: 4.5.0
+tests:
+  - Create_Phishing_Classifier_V2_ML_Test

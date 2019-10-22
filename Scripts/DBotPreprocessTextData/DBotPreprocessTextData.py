@@ -1,6 +1,7 @@
 # pylint: disable=no-member
 
 import uuid
+import pickle
 from HTMLParser import HTMLParser
 from io import BytesIO, StringIO
 
@@ -67,24 +68,24 @@ def read_file(input_entry_or_string, file_type):
         if 'b64' in file_type:
             input_entry_or_string = base64.b64decode(input_entry_or_string)
         if isinstance(input_entry_or_string, str):
-            file_path = BytesIO(input_entry_or_string)
+            file_content = BytesIO(input_entry_or_string)
         elif isinstance(input_entry_or_string, unicode):
-            file_path = StringIO(input_entry_or_string)
+            file_content = StringIO(input_entry_or_string)
     else:
         res = demisto.getFilePath(input_entry_or_string)
         if not res:
             return_error("Entry {} not found".format(input_entry_or_string))
         file_path = res['path']
+        with open(file_path, 'rb') as f:
+            file_content = BytesIO(f.read())
     if file_type.startswith('csv'):
-        df = pd.read_csv(file_path)
+        return json.loads(pd.read_csv(file_content).fillna('').to_json(orient='records'))
     elif file_type.startswith('json'):
-        df = pd.read_json(file_path)
+        return json.loads(file_content.getvalue())
     elif file_type.startswith('pickle'):
-        df = pd.read_pickle(file_path)
+        return pickle.loads(file_content.getvalue())
     else:
         return_error("Unsupported file type %s" % file_type)
-    df = df.fillna('')
-    return json.loads(df.to_json(orient='records'))
 
 
 def pre_process(data, source_text_field, target_text_field, remove_html_tags, pre_process_type, hash_seed):
@@ -107,7 +108,12 @@ def concat_text_fields(data, target_field, text_fields):
         for fields in text_fields:
             for field in fields.strip().split("|"):
                 field = field.strip()
-                value = d.get(field) or d.get(field.lower(), '')
+                if "." in field:
+                    value = demisto.dt(d, field)
+                    if type(value) is list and len(value) > 0:
+                        value = value[0]
+                else:
+                    value = d.get(field) or d.get(field.lower(), '')
                 if value and isinstance(value, basestring):
                     text += value
                     text += ' '
@@ -157,6 +163,7 @@ def main():
     remove_html_tags = demisto.args()['cleanHTML'] == 'true'
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
+    output_format = demisto.args()['outputFormat']
 
     description = ""
     # read data
@@ -176,11 +183,15 @@ def main():
     description += desc
 
     # remove duplicates
-    if 0 < de_dup_threshold < 1:
-        duplicate_indices = demisto_ml.find_duplicate_indices(map(lambda x: x[DBOT_PROCESSED_TEXT_FIELD], data),
-                                                              de_dup_threshold)
-        data, desc = remove_duplicate_by_indices(data, duplicate_indices)
-        description += desc
+    try:
+        if 0 < de_dup_threshold < 1:
+
+            duplicate_indices = demisto_ml.find_duplicate_indices(map(lambda x: x[DBOT_PROCESSED_TEXT_FIELD], data),
+                                                                  de_dup_threshold)
+            data, desc = remove_duplicate_by_indices(data, duplicate_indices)
+            description += desc
+    except Exception:
+        pass
 
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
@@ -189,7 +200,13 @@ def main():
     description += "Done processing: %d samples" % len(data) + "\n"
     # output
     file_name = str(uuid.uuid4())
-    data_encoded = json.dumps(data, default=str)
+    output_format = demisto.args()['outputFormat']
+    if output_format == 'pickle':
+        data_encoded = pickle.dumps(data)
+    elif output_format == 'json':
+        data_encoded = json.dumps(data, default=str)
+    else:
+        return_error("Invalid output format: %s" % output_format)
     entry = fileResult(file_name, data_encoded)
     entry['Contents'] = data
     entry['HumanReadable'] = description
