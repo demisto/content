@@ -114,7 +114,9 @@ def concat_text_fields(data, target_field, text_fields):
                         value = value[0]
                 else:
                     value = d.get(field) or d.get(field.lower(), '')
-                if value and isinstance(value, basestring):
+                if isinstance(value, str):
+                    value = unicode(value, "utf-8")
+                if value and isinstance(value, unicode):
                     text += value
                     text += ' '
                     break
