@@ -42,7 +42,7 @@ def test_update_mask_creation():
     assert created_dict['label2'] == 'value2'
 
 
-def test_ags_extract():
+def test_args_extract():
     from GoogleKeyManagementService import demisto_args_extract
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(CLIENT, MOCK_ARGS_FULL)
     assert project_id == 'project_name'

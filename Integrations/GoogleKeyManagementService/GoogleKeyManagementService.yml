@@ -33,7 +33,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Integration Template
+description: Use the Google Key Management Service API for CryptoKey managment and encrypt/decrypt functionality.
 display: Google Key Management Service
 name: Google Key Management Service
 script:
@@ -237,7 +237,7 @@ script:
       description: The current state of the CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.CreationTime
-      description: ' The time at which this CryptoKeyVersion was created.'
+      description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
       description: The ProtectionLevel describing how crypto operations are performed
@@ -350,7 +350,7 @@ script:
 
         A base64-encoded string.
       isArray: false
-      name: "additional_authenticated_data\t "
+      name: additional_authenticated_data
       required: false
       secret: false
     - auto: PREDEFINED
@@ -438,7 +438,7 @@ script:
       description: The current state of the CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.CreationTime
-      description: ' The time at which this CryptoKeyVersion was created.'
+      description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
       description: The ProtectionLevel describing how crypto operations are performed
@@ -627,7 +627,7 @@ script:
       description: The current state of the CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.CreationTime
-      description: ' The time at which this CryptoKeyVersion was created.'
+      description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
       description: The ProtectionLevel describing how crypto operations are performed

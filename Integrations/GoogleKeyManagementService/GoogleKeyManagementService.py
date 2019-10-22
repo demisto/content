@@ -53,9 +53,8 @@ class Client:
     def _init_kms_client(self):
         """Creates the Python API client for Google Cloud KMS using service account credentials.
         """
-        cur_directory_path = os.getcwd()
         credentials_file_name = demisto.uniqueFile() + '.json'
-        credentials_file_path = os.path.join(cur_directory_path, credentials_file_name)
+        credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
 
         with open(credentials_file_path, 'w') as creds_file:
             json_object = json.loads(self.service_account)
@@ -76,13 +75,13 @@ def arg_dict_creator(string: str):
     Returns:
         Dict from string representation.
     """
-    if string is None or len(string) == 0:
+    if not string:
         return None
 
     split_string = string.split(',')
     arg_dict = {}
     for section in split_string:
-        key, value = section.split(':')
+        key, value = section.split(':', 1)
         arg_dict[key] = value
 
     return arg_dict
@@ -238,21 +237,6 @@ def get_update_mask(args: Dict[str, Any]) -> Dict:
     }
 
 
-def init_dict(body: Dict[str, Any], parent: str, key: str, value: Any):
-    """Creates a new dictionary to be used in update command body.
-
-    Args:
-        body(dict): The update command body dict.
-        parent(str): The key in the body.
-        key(str): The inner key of the sub-dictionary.
-        value(Any): The value to put in the sub-dictionary.
-
-    """
-    body[parent] = {
-        key: value
-    }
-
-
 def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
     """Creates update command request body, in accordance with the updateMask.
 
@@ -264,64 +248,53 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
         Dict to be used as body for update command
     """
     body = {}  # type:Dict[str,Any]
-    for field in update_mask:
-        if '.' in field:
-            split_field = field.split('.')
-            if split_field[1] == 'attestation':
-                if split_field[0] in body.keys():
-                    body[split_field[0]][split_field[1]] = arg_dict_creator(str(args.get(split_field[1])))
+    if 'labels' in update_mask:
+        # Add label dictionary to body
+        body['labels'] = arg_dict_creator(str(args.get('labels')))
 
-                else:
-                    init_dict(body, split_field[0], split_field[1], arg_dict_creator(str(args.get(split_field[1]))))
-
-            elif split_field[1] == 'state':
-                if split_field[0] in body.keys():
-                    val = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
-                    body[split_field[0]][split_field[1]] = val
-
-                else:
-                    init_dict(body, split_field[0], split_field[1],
-                              enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value)
-
-            elif split_field[1] == 'algorithm':
-                if split_field[0] in body.keys():
-                    val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
-                    body[split_field[0]][split_field[1]] = val
-
-                else:
-                    init_dict(body, split_field[0], split_field[1],
-                              enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value)
-
-            elif split_field[1] == 'protection_level':
-                if split_field[0] in body.keys():
-                    body[split_field[0]][split_field[1]] = enums.ProtectionLevel[args.get('protection_level')].value
-
-                else:
-                    init_dict(body, split_field[0], split_field[1],
-                              enums.ProtectionLevel[args.get('protection_level')].value)
-
-            else:
-                if split_field[0] in body.keys():
-                    body[split_field[0]][split_field[1]] = args.get(split_field[1])
-
-                else:
-                    init_dict(body, split_field[0], split_field[1], args.get(split_field[1]))
+    if 'next_rotation_time' in update_mask:
+        if str(args.get('next_rotation_time')).isdigit():
+            # If next_rotation_time given is a timestamp enter it as is
+            body['next_rotation_time'] = {'seconds': int(str(args.get('next_rotation_time')))}
 
         else:
-            if field == 'labels':
-                body[field] = arg_dict_creator(str(args.get('labels')))
+            # If next_rotation_time is date string, convert it to timestamp
+            body['next_rotation_time'] = {'seconds': int(datetime.strptime(str(args.get('next_rotation_time')),
+                                                                           RFC3339_DATETIME_FORMAT).timestamp())}
 
-            elif field == 'next_rotation_time':
-                body[field] = {'seconds': int(datetime.strptime(str(args.get('next_rotation_time')),
-                                                                RFC3339_DATETIME_FORMAT).timestamp())}
-            elif field == 'rotation_period':
-                body[field] = {'seconds': int(str(args.get('rotation_period')))}
+    if 'purpose' in update_mask:
+        # Add purpose enum to body
+        body['purpose'] = enums.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value
 
-            elif field == 'purpose':
-                body[field] = enums.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value
+    if 'rotation_period' in update_mask:
+        # Add rotation_period to body
+        body['rotation_period'] = {'seconds': int(str(args.get('rotation_period')))}
 
-            else:
-                body[field] = args.get(field)
+    if 'primary.attestation' in update_mask or 'primary.state' in update_mask:
+        # Init the 'primary' sub-dictionary
+        body['primary'] = {}  # type:Dict
+
+        if 'primary.attestation' in update_mask:
+            # Add attestation dict to 'primary' sub-dictionary
+            body['primary']['attestation'] = arg_dict_creator(str(args.get('attestation')))
+
+        if 'primary.state' in update_mask:
+            # Add state enum to 'primary' sub-dictionary
+            body['primary']['state'] = enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value
+
+    if 'version_template.algorithm' in update_mask or 'version_template.protection_level' in update_mask:
+        # Init the 'version_template' sun-dictionary
+        body['version_template'] = {}  # type:Dict
+
+        if 'version_template.algorithm' in update_mask:
+            # Add algorithm enum to 'version_template' sun-dictionary
+            val = enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value
+            body['version_template']['algorithm'] = val
+
+        if 'version_template.protection_level' in update_mask:
+            # Add protection_level to 'version_template' sun-dictionary
+            val = enums.ProtectionLevel[args.get('protection_level')].value
+            body['version_template']['protection_level'] = val
 
     return body
 
@@ -451,7 +424,8 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
                                          additional_authenticated_data=additional_authenticated_data)
 
     # return the created ciphertext cleaned from additional characters.
-    return str(base64.b64encode(response.ciphertext))[2:-1]
+    ciphertext = str(base64.b64encode(response.ciphertext))[2:-1]
+    demisto.results(f"The text has been encrypted.\nCiphertext: {ciphertext}")
 
 
 def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
@@ -480,10 +454,12 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
 
     # handle the resulting plain text if it supposed to be in base64 and clean added characters.
     if args.get('use_base64') == 'true':
-        return str(base64.b64encode(response.plaintext))[2:-1]
+        plaintext = str(base64.b64encode(response.plaintext))[2:-1]
 
     else:
-        return str(base64.b64decode(response.plaintext))[2:-1]
+        plaintext = str(base64.b64decode(response.plaintext))[2:-1]
+
+    demisto.results(f"The text has been decrypted.\nPlaintext: {plaintext}")
 
 
 def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -736,7 +712,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 
     # Algorithm must be a "DECRYPT" type asymmetric algorithm - if not, raise an error to the user.
     if 'DECRYPT' not in key_algo:
-        raise Exception(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
+        raise ValueError(f"{crypto_key_version_name} is not a valid asymmetric CryptoKeyVersion")
 
     # get public key of the asymmetric encryption.
     public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
@@ -756,7 +732,8 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
                            label=None)
 
     # encrypt plaintext and return the cipertext without added characters.
-    return str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
+    ciphertext = str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
+    demisto.results(f"The text has been encrypted.\nCiphertext: {ciphertext}")
 
 
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
@@ -782,10 +759,12 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
 
     # handle the created plaintext back to base64 if needed and clear added characters.
     if args.get('use_base64') == 'true':
-        return str(base64.b64encode(response.plaintext))[2:-1]
+        plaintext = str(base64.b64encode(response.plaintext))[2:-1]
 
     else:
-        return str(base64.b64decode(response.plaintext))[2:-1]
+        plaintext = str(base64.b64decode(response.plaintext))[2:-1]
+
+    demisto.results(f"The text has been decrypted.\nPlaintext: {plaintext}")
 
 
 def test_function(client: Client) -> None:
@@ -809,6 +788,40 @@ def test_function(client: Client) -> None:
 
 
 def main():
+    COMMANDS = {
+        f'{INTEGRATION_COMMAND_NAME}create-key': (create_crypto_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt': (symmetric_decrypt_key_command, ['Decrypter',
+                                                                                         'Encrypter/Decrypter',
+                                                                                         'Project-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt': (symmetric_encrypt_key_command, ['Encrypter',
+                                                                                         'Encrypter/Decrypter',
+                                                                                         'Project-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}get-key': (get_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}update-key': (update_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}destroy-key': (destroy_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}restore-key': (restore_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}disable-key': (disable_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}enable-key': (enable_key_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}list-keys': (list_keys_command, ['Project-Admin', 'KMS-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}asymmetric-encrypt': (asymmetric_encrypt_command, ['Encrypter',
+                                                                                       'Encrypter/Decrypter',
+                                                                                       'Project-Admin']),
+
+        f'{INTEGRATION_COMMAND_NAME}asymmetric-decrypt': (asymmetric_decrypt_command, ['Decrypter',
+                                                                                       'Encrypter/Decrypter',
+                                                                                       'Project-Admin'])
+    }
+
     command = demisto.command()
     LOG(f'{INTEGRATION_NAME}: command is {command}')
     try:
@@ -817,62 +830,19 @@ def main():
         if command == 'test-module':
             test_function(client)
             demisto.results('ok')
-            sys.exit(0)
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}create-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            results = create_crypto_key_command(client, demisto.args())
-            return_outputs(*results)
+        if command not in COMMANDS:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt' and client.role in ['Decrypter',
-                                                                                           'Encrypter/Decrypter',
-                                                                                           'Project-Admin']:
-            str_results = symmetric_decrypt_key_command(client, demisto.args())
-            demisto.results(f"The text has been decrypted.\nPlaintext: {str_results}")
+        cmd_func = COMMANDS.get(command)[0]
+        cmd_role = COMMANDS.get(command)[1]
 
-        elif command == f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt' and client.role in ['Encrypter',
-                                                                                           'Encrypter/Decrypter',
-                                                                                           'Project-Admin']:
-            str_results = symmetric_encrypt_key_command(client, demisto.args())
-            demisto.results(f"The text has been encrypted.\nCiphertext: {str_results}")
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}get-key':
-            results = get_key_command(client, demisto.args())
-            return_outputs(*results)
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}update-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            results = update_key_command(client, demisto.args())
-            return_outputs(*results)
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}destroy-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            destroy_key_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}restore-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            restore_key_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}disable-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            disable_key_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}enable-key' and client.role in ['Project-Admin', 'KMS-Admin']:
-            enable_key_command(client, demisto.args())
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}list-keys' and client.role in ['Project-Admin', 'KMS-Admin']:
-            res = list_keys_command(client, demisto.args())
-            return_outputs(*res)
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}asymmetric-encrypt' and client.role in ['Encrypter',
-                                                                                            'Encrypter/Decrypter',
-                                                                                            'Project-Admin']:
-            str_results = asymmetric_encrypt_command(client, demisto.args())
-            demisto.results(f"The text has been encrypted.\nCiphertext: {str_results}")
-
-        elif command == f'{INTEGRATION_COMMAND_NAME}asymmetric-decrypt' and client.role in ['Decrypter',
-                                                                                            'Encrypter/Decrypter',
-                                                                                            'Project-Admin']:
-            str_results = asymmetric_decrypt_command(client, demisto.args())
-            demisto.results(f"The text has been decrypted.\nPlaintext: {str_results}")
-
-        else:
+        if client.role not in cmd_role:
             raise Exception(f"Your Service Account Role does not permit the use of {command} command.")
+
+        results = cmd_func(client, demisto.args())  # type: ignore
+        if results:
+            return_outputs(*results)
 
     except Exception as e:
         return_error(f'{INTEGRATION_NAME}: {str(e)}', e)
