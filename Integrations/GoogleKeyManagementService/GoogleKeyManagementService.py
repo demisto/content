@@ -84,7 +84,7 @@ def arg_dict_creator(string: str):
         key, value = section.split(':', 1)
         arg_dict[key] = value
 
-    return dict()
+    return arg_dict
 
 
 def key_context_creation(res: Any) -> Dict:
@@ -393,7 +393,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     )
 
 
-def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
+def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Encrypt plaintext to ciphertext using a symmetric key.
 
     Args:
@@ -425,11 +425,10 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
 
     # return the created ciphertext cleaned from additional characters.
     ciphertext = str(base64.b64encode(response.ciphertext))[2:-1]
-    demisto.results(f"The text has been encrypted.\nCiphertext: {ciphertext}")
-    return None
+    return (f"The text has been encrypted.\nCiphertext: {ciphertext}", None, None)
 
 
-def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
+def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Decrypt ciphertext to plaintext using a symmetric key.
 
     Args:
@@ -460,8 +459,7 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> str:
     else:
         plaintext = str(base64.b64decode(response.plaintext))[2:-1]
 
-    demisto.results(f"The text has been decrypted.\nPlaintext: {plaintext}")
-    return None
+    return (f"The text has been decrypted.\nPlaintext: {plaintext}", None, None)
 
 
 def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -490,7 +488,7 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
     )
 
 
-def disable_key_command(client: Client, args: Dict[str, Any]) -> None:
+def disable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Disable a given CryptoKeyVersion.
 
     Args:
@@ -520,11 +518,11 @@ def disable_key_command(client: Client, args: Dict[str, Any]) -> None:
 
     # Print results
     response = client.kms_client.update_crypto_key_version(version, update_mask)
-    demisto.results(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
+    return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
-def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
+def enable_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Enable a CryptoKeyVersion.
 
     Args:
@@ -554,11 +552,11 @@ def enable_key_command(client: Client, args: Dict[str, Any]) -> None:
 
     # Print results
     response = client.kms_client.update_crypto_key_version(version, update_mask)
-    demisto.results(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
+    return(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+           f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
-def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
+def destroy_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Schedule the destruction of a given CryptoKeyVersion.
 
     Args:
@@ -585,11 +583,12 @@ def destroy_key_command(client: Client, args: Dict[str, Any]) -> None:
     response = client.kms_client.destroy_crypto_key_version(crypto_key_version_name)
 
     # Print results
-    demisto.results(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.')
+    return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}, it will be destroyed in 24h.',
+            None, None)
 
 
-def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
+def restore_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Restores a CryptoKeyVersion scheduled for destruction.
 
     Args:
@@ -616,8 +615,8 @@ def restore_key_command(client: Client, args: Dict[str, Any]) -> None:
     response = client.kms_client.restore_crypto_key_version(crypto_key_version_name)
 
     # Print results
-    demisto.results(f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
-                    f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.')
+    return (f'CryptoKeyVersion {crypto_key_version_name}\'s state has been set to '
+            f'{enums.CryptoKeyVersion.CryptoKeyVersionState(response.state).name}.', None, None)
 
 
 def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -685,7 +684,7 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     )
 
 
-def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
+def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Encrypt plainttext using an asymmetric key.
 
     Args:
@@ -735,10 +734,10 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]):
 
     # encrypt plaintext and return the cipertext without added characters.
     ciphertext = str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
-    demisto.results(f"The text has been encrypted.\nCiphertext: {ciphertext}")
+    return (f"The text has been encrypted.\nCiphertext: {ciphertext}", None, None)
 
 
-def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
+def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
     """Decrypt chipertext to plaintext using asymmetric key.
 
     Args:
@@ -766,7 +765,7 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]):
     else:
         plaintext = str(base64.b64decode(response.plaintext))[2:-1]
 
-    demisto.results(f"The text has been decrypted.\nPlaintext: {plaintext}")
+    return (f"The text has been decrypted.\nPlaintext: {plaintext}", None, None)
 
 
 def test_function(client: Client) -> None:
@@ -836,15 +835,14 @@ def main():
         if command not in COMMANDS:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-        cmd_func = str(COMMANDS.get(command)[0])
-        cmd_role = list(COMMANDS.get(command)[1])
+        cmd_func = COMMANDS.get(command)[0]  # type: ignore
+        cmd_role = list(COMMANDS.get(command)[1])  # type: ignore
 
         if client.role not in cmd_role:
-            raise Exception(f"Your Service Account Role does not permit the use of {command} command.")
+            raise PermissionError(f"Your Service Account Role does not permit the use of {command} command.")
 
         results = cmd_func(client, demisto.args())  # type: ignore
-        if results:
-            return_outputs(*results)
+        return_outputs(*results)
 
     except Exception as e:
         return_error(f'{INTEGRATION_NAME}: {str(e)}', e)
