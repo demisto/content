@@ -1008,15 +1008,10 @@ def update_account_password_policy(args):
 
 
 def test_function():
-    try:
-        client = aws_session()
-        response = client.list_users()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'ok'
-    except Exception as e:
-        LOG(str(e))
-        return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
-            code=type(e), message=str(e)))
+    client = aws_session()
+    response = client.list_users()
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('ok')
 
 
 '''EXECUTION BLOCK'''
