@@ -1,5 +1,5 @@
 ## [Unreleased]
-   - Added new command: ***smime-send-smime***
+Added the ***smime-send-smime*** command.
 
 ## [19.10.1] - 2019-10-15
 #### New Integration
