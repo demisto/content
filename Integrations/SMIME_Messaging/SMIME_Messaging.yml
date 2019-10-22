@@ -32,9 +32,6 @@ script:
     - contextPath: SMIME.Signed.Message
       description: The signed message body.
       type: String
-    - contextPath: SMIME.Signed.Headers
-      description: The S/MIME signing headers.
-      type: String
   - arguments:
     - default: false
       description: The message body to encrypt.
@@ -50,9 +47,6 @@ script:
     outputs:
     - contextPath: SMIME.Encrypted.Message
       description: The encrypted message.
-      type: String
-    - contextPath: SMIME.Encrypted.Headers
-      description: The encryption headers.
       type: String
   - arguments:
     - default: false

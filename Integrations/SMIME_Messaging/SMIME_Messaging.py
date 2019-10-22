@@ -68,17 +68,15 @@ def encrypt_email_body(client: Client, args: Dict):
 
     """
     message_body = args.get('message', '').encode('utf-8')
-
     buf = makebuf(message_body)
 
     x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
     sk.push(x509)
     client.smime.set_x509_stack(sk)
-
     client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
-    out = BIO.MemoryBuffer()
     p7 = client.smime.encrypt(buf)
+    out = BIO.MemoryBuffer()
 
     client.smime.write(out, p7)
     encrypted_message = out.read().decode('utf-8')
