@@ -213,7 +213,7 @@ def main():
     entry['EntryContext'] = {
         CONTEXT_KEY: {
             'Filename': file_name,
-            'FileFormat': 'json',
+            'FileFormat': output_format,
             'TextField': DBOT_TEXT_FIELD,
             'TextFieldProcessed': DBOT_PROCESSED_TEXT_FIELD,
         }

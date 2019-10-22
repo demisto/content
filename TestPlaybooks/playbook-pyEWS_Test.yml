@@ -23,7 +23,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 50
         }
       }
@@ -47,10 +47,12 @@ tasks:
       - "2"
       - "6"
       - "13"
-      - "4"
       - "15"
       - "17"
       - "21"
+      - "23"
+      - "8"
+      - "10"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,7 +61,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 195
         }
       }
@@ -250,9 +252,8 @@ tasks:
     task:
       id: 817fbc68-c466-4073-8708-c7e505c782a2
       version: -1
-      description: ""
       name: Get item attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -268,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 720
+          "x": 910,
+          "y": 370
         }
       }
     note: false
@@ -297,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 895
+          "x": 910,
+          "y": 545
         }
       }
     note: false
@@ -310,9 +311,8 @@ tasks:
     task:
       id: cd09ad8e-7075-473a-875c-dff12db7f8d3
       version: -1
-      description: ""
       name: Get file attachment
-      script: "|||ews-get-attachment"
+      script: '|||ews-get-attachment'
       type: regular
       iscommand: true
       brand: ""
@@ -329,8 +329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 720
+          "x": 2630,
+          "y": 370
         }
       }
     note: false
@@ -489,7 +489,6 @@ tasks:
     task:
       id: 27bad126-6323-44f2-8633-f472b7259ae6
       version: -1
-      description: ""
       name: Verify folders context key
       scriptName: VerifyContext
       type: regular
@@ -679,13 +678,73 @@ tasks:
       }
     note: false
     timertriggers: []
+  "23":
+    id: "23"
+    taskid: a5d3e114-8b01-4c5c-8307-79af801815d5
+    type: regular
+    task:
+      id: a5d3e114-8b01-4c5c-8307-79af801815d5
+      version: -1
+      name: Get items from folder
+      script: '|||ews-get-items-from-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      folder-path:
+        simple: Inbox\TEST
+      get-internal-item: {}
+      is-public: {}
+      limit:
+        simple: "10"
+      target-mailbox: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: 860405dc-5ef6-49b1-88ee-5278285c1cd9
+    type: regular
+    task:
+      id: 860405dc-5ef6-49b1-88ee-5278285c1cd9
+      version: -1
+      name: Verify items from folder
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: EWS.Items.itemId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1115,
-        "width": 2960,
+        "width": 3390,
         "x": 50,
         "y": 50
       }

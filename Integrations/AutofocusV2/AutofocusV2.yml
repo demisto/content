@@ -7,12 +7,11 @@ configuration:
   name: api_key
   required: true
   type: 4
-- defaultvalue: 'false'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -25,14 +24,14 @@ script:
   - arguments:
     - default: false
       description: The query for which to retrieve samples. For additional information
-        on how to build your query using the AF GUI, see the detailed description.
+        on how to build your query using the AF GUI, see the detailed description section.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Number of results to return.
+      description: The number of results to return.
       isArray: false
       name: max_results
       required: false
@@ -58,7 +57,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Result order ("Ascending" or "Descending").
+      description: The order of the results. Can be "Ascending" or "Descending". 
       isArray: false
       name: order
       predefined:
@@ -68,7 +67,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: ' Scope of the search. Can be "Private", "Public", or "Global".'
+      description: ' The scope of the search. Can be "Private", "Public", or "Global".'
       isArray: false
       name: scope
       predefined:
@@ -77,38 +76,90 @@ script:
       - Global
       required: true
       secret: false
+    - default: false
+      description: The MD5, SHA1 or SHA256 hash of the file.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: The domain to search.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: The IP address to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The URL to search.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The Wildfire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing".
+      isArray: false
+      name: wildfire_verdict
+      predefined:
+      - Malware
+      - Grayware
+      - Benign
+      - Phishing
+      required: false
+      secret: false
+    - default: false
+      description: 'The date range of the creation date.
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      isArray: false
+      name: first_seen
+      required: false
+      secret: false
+    - default: false
+      description: 'The date range of the last updated date.
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      isArray: false
+      name: last_updated
+      required: false
+      secret: false
     deprecated: false
-    description: Search for samples. To view results run the autofocus-samples-search-results
-      command with the returned Af Cookie. The AF Cookie expires 120 seconds after
+    description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+      command with the returned AF Cookie. The AF Cookie expires 120 seconds after
       the search completes.
     execution: false
     name: autofocus-search-samples
     outputs:
     - contextPath: AutoFocus.SamplesSearch.AFCookie
-      description: AutoFocus search ID. Use this ID to get search results. The AF
+      description: The AutoFocus search ID. Use this ID to retrieve search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SamplesSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
   - arguments:
     - default: false
       description: The query for which to retrieve samples. For additional information
-        on how to build your query using the AF GUI, see the detailed description.
+        on how to build your query using the AF GUI, see the detailed description section.
       isArray: false
       name: query
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '30'
-      description: Maximum number of results to return. Default is 30.
+      description: The maximum number of results to return. Default is 30.
       isArray: false
       name: max_results
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Field to sort by
+      description: The field by which to sort the results.
       isArray: false
       name: sort
       predefined:
@@ -135,7 +186,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Order of sort
+      description: The order of the results. Can be "Ascending" or "Descending".
       isArray: false
       name: order
       predefined:
@@ -143,23 +194,73 @@ script:
       - Descending
       required: false
       secret: false
+    - default: false
+      description: The MD5, SHA1 or SHA256 hash of the file.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: The domain to search.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: The IP address to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The URL to search.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      description: 'The date range in which to search for sessions.
+        Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end.
+        Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      isArray: false
+      name: time_range
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: 'The date after which to search for sessions.
+        Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59'
+      isArray: false
+      name: time_after
+      required: false
+      secret: false
+    - default: false
+      description: 'The date before which to search for sessions.
+        Format: YYYY-MM-DDTHH:MM:SS
+        Example: 2019-09-09T23:01:59'
+      isArray: false
+      name: time_before
+      required: false
+      secret: false
     deprecated: false
-    description: Search for sessions. To view results run the autofocus-sessions-search-results
+    description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results
       command with the returned AF Cookie. The AF Cookie expires 120 seconds after
       the search completes.
     execution: false
     name: autofocus-search-sessions
     outputs:
     - contextPath: AutoFocus.SessionsSearch.AFCookie
-      description: AutoFocus search ID. Use this ID to get search results. The AF
+      description: The AutoFocus search ID. Use this ID to get search results. The AF
         Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.SessionsSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
   - arguments:
     - default: false
-      description: The AF Cookie for retrieving results of previous searches. The
+      description: The AF Cookie for retrieving results of previous searches. The
         AF Cookie expires 120 seconds after the search completes.
       isArray: false
       name: af_cookie
@@ -171,16 +272,16 @@ script:
     name: autofocus-samples-search-results
     outputs:
     - contextPath: AutoFocus.SamplesResults.Size
-      description: File size in bytes.
+      description: The file size in bytes.
       type: String
     - contextPath: AutoFocus.SamplesResults.SHA1
-      description: SHA1 hash of the file.
+      description: The SHA1 hash of the file.
       type: String
     - contextPath: AutoFocus.SamplesResults.SHA256
-      description: SHA256 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.SamplesResults.Created
-      description: Date created.
+      description: The date that the file was created.
       type: Date
     - contextPath: AutoFocus.SamplesResults.Finished
       description: Date finished.
@@ -189,19 +290,19 @@ script:
       description: Region of the sample.
       type: String
     - contextPath: AutoFocus.SamplesResults.FileType
-      description: File type.
+      description: The file type.
       type: String
     - contextPath: AutoFocus.SamplesResults.Tags
-      description: Attached tags.
+      description: The tags attached to the sample.
       type: String
     - contextPath: AutoFocus.SamplesResults.Verdict
-      description: Sample verdict.
+      description: The verdict of the sample.
       type: Number
     - contextPath: AutoFocus.SamplesResults.TagGroups
       description: Groups of relevant tags.
       type: String
     - contextPath: AutoFocus.SamplesSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
     - contextPath: File.Size
       description: The size of the file in bytes.
@@ -221,7 +322,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The AF Cookie for retrieving the results of a previous search.
+      description: The AF Cookie for retrieving the results of a previous search.
         The AF Cookie expires 120 seconds after the search completes.
       isArray: false
       name: af_cookie
@@ -233,34 +334,34 @@ script:
     name: autofocus-sessions-search-results
     outputs:
     - contextPath: AutoFocus.SessionsResults.FileName
-      description: File name.
+      description: The name of the file..
       type: String
     - contextPath: AutoFocus.SessionsResults.ID
-      description: Session ID. Used to get session details.
+      description: The session ID. Used to get session details.
       type: String
     - contextPath: AutoFocus.SessionsResults.Industry
-      description: Related industry.
+      description: The related industry.
       type: String
     - contextPath: AutoFocus.SessionsResults.Region
-      description: Session regions.
+      description: The regions of the sessions.
       type: String
     - contextPath: AutoFocus.SessionsResults.SHA256
-      description: SHA256 hash of the file.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Seen date.
       type: Date
     - contextPath: AutoFocus.SessionsResults.UploadSource
-      description: Source of the uploaded sample.
+      description: The source of the uploaded sample.
       type: String
     - contextPath: AutoFocus.SessionsResults.FileURL
-      description: File URL.
+      description: The URL of the file.
       type: String
     - contextPath: AutoFocus.SessionsResults.Tags
       description: Relevant tags.
       type: String
     - contextPath: AutoFocus.SessionsSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -284,25 +385,25 @@ script:
     name: autofocus-get-session-details
     outputs:
     - contextPath: AutoFocus.Sessions.FileName
-      description: File name.
+      description: The file name.
       type: String
     - contextPath: AutoFocus.Sessions.ID
-      description: Session ID.
+      description: The session ID.
       type: String
     - contextPath: AutoFocus.Sessions.Industry
-      description: Related industry.
+      description: The related industry.
       type: String
     - contextPath: AutoFocus.Sessions.Region
       description: Session regions.
       type: String
     - contextPath: AutoFocus.Sessions.SHA256
-      description: SHA256 hash of the file.
+      description: TheSHA256 hash of the file.
       type: String
     - contextPath: AutoFocus.Sessions.Seen
       description: Seen date.
       type: Date
     - contextPath: AutoFocus.Sessions.UploadSource
-      description: Source that uploaded the sample.
+      description: The source that uploaded the sample.
       type: String
     - contextPath: File.Name
       description: The full file name (including file extension).
@@ -312,14 +413,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: SHA256 hash of the sample to analyze.
+      description: The SHA256 hash of the sample to analyze.
       isArray: false
       name: sample_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Analysis environment.
+      description: The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal".
       isArray: false
       name: os
       predefined:
@@ -334,7 +435,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If "False", the data returned will not be smartly filtered, and
+      description: Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and
         will significantly reduce integration performance. We recommend setting this
         to "True".
       isArray: false
@@ -390,46 +491,46 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get details on a given tag
+    description: Returns details about the given tag.
     execution: false
     name: autofocus-tag-details
     outputs:
     - contextPath: AutoFocus.Tag.TagName
-      description: Tag simple name.
+      description: The simple name of the tag.
       type: String
     - contextPath: AutoFocus.Tag.PublicTagName
-      description: Tag public name. Used as an ID of the tag.
+      description: The public name of the tag. This is used as an ID of the tag.
       type: String
     - contextPath: AutoFocus.Tag.Count
-      description: Number of samples that matched this tag.
+      description: The number of samples that matched this tag.
       type: Number
     - contextPath: AutoFocus.Tag.Lasthit
-      description: Tag last encounter date.
+      description: The date that the tag was last encountered.
       type: Date
     - contextPath: AutoFocus.Tag.TagDefinitionScope
-      description: Scope of the tag ("public", "private", or "Unit42").
+      description: The scope of the tag ("public", "private", or "Unit42").
       type: String
     - contextPath: AutoFocus.Tag.CustomerName
-      description: Organization that created the tag.
+      description: The organization that created the tag.
       type: String
     - contextPath: AutoFocus.Tag.Source
-      description: Organization or individual that discovered the threat that is defined
+      description: The organization or individual that discovered the threat that is defined
         in the tag.
       type: String
     - contextPath: AutoFocus.Tag.TagClass
-      description: Tag classification.
+      description: The classification of the tag.
       type: String
     - contextPath: AutoFocus.Tag.TagDefinitionStatus
-      description: Status of the tag definition ("enabled", "disabled", "removing",
+      description: The status of the tag definition ("enabled", "disabled", "removing",
         or "rescoping").
       type: String
     - contextPath: AutoFocus.Tag.TagGroup
-      description: Tag group of the tag.
+      description: The tag group of the tag.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Scope of the search.
+      description: Scope of the search. Can be "industry", "organization", "all", or "global".
       isArray: false
       name: scope
       predefined:
@@ -441,14 +542,13 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: |-
-        Tag class.
+      description: 'Tag class.
         - Malware Family: group of malware that have shared properties or common functions.
         - Campaign:  targeted attack, which might include several incidents or sets of activities.
         - Actor: individual or group that initiates a campaign using malware families.
         - Exploit: an attack, which takes advantage
         of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system.
-        - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
+        - Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.'
       isArray: false
       name: class
       predefined:
@@ -462,7 +562,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If "True", the tag scope is private. Default is "False".
+      description: Whether the tag scope is "private". If "True", the tag scope is private. Default is "False".
       isArray: false
       name: private
       predefined:
@@ -473,7 +573,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If "True", the tag scope is public. Default is "False".
+      description: Whether the tag scope is "public". If "True", the tag scope is public. Default is "False".
       isArray: false
       name: public
       predefined:
@@ -484,7 +584,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If "True", the tag scope is commodity. Default is "False".
+      description: Whether the tag scope is "commodity". If "True", the tag scope is commodity. Default is "False".
       isArray: false
       name: commodity
       predefined:
@@ -495,7 +595,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: If "True", the tag scope is unit42. Default is "False".
+      description: Whether the tag scope is "Unit42". If "True", the tag scope is unit42. Default is "False".
       isArray: false
       name: unit42
       predefined:
@@ -513,11 +613,11 @@ script:
         Cookie expires 120 seconds after the search completes.
       type: String
     - contextPath: AutoFocus.TopTagsSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
   - arguments:
     - default: false
-      description: 'The AF Cookie for retrieving results of previous search. Note:
+      description: 'The AF Cookie for retrieving results of previous search. Note:
         The AF Cookie expires 120 seconds after the search completes.'
       isArray: false
       name: af_cookie
@@ -529,27 +629,25 @@ script:
     name: autofocus-top-tags-results
     outputs:
     - contextPath: AutoFocus.TopTagsResults.Count
-      description: Number of samples that matched this tag.
+      description: The number of samples that matched this tag.
       type: Number
     - contextPath: AutoFocus.TopTagsResults.PublicTagName
-      description: Tag public name. Used as an ID of the tag.
+      description: The public name of the tag. This is used as an ID of the tag.
       type: String
     - contextPath: AutoFocus.TopTagsResults.TagName
-      description: Tag simple name.
+      description: The simple name of the tag.
       type: String
     - contextPath: AutoFocus.TopTagsResults.Lasthit
-      description: Tag last encounter date.
+      description: The last encounter date of the tag.
       type: Date
     - contextPath: AutoFocus.TopTagsSearch.Status
-      description: Search status ("in progress" or "complete").
+      description: The search status. Can be "in progress" or "complete".
       type: String
   dockerimage: demisto/python3:3.7.2.214
+  subtype: python3
   isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - AutoFocus V2 test

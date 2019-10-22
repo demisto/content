@@ -78,7 +78,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  defaultValue: filename
+  defaultValue: pickle_filename
   description: "The input type\t"
   isArray: false
   name: inputType
@@ -124,6 +124,6 @@ timeout: '0'
 type: python
 dockerimage: demisto/dl:1.4
 runonce: true
-fromversion: 4.5.0
 tests:
-  - Create_Phishing_Classifier_V2_ML_Test
+- Create_Phishing_Classifier_V2_ML_Test
+fromversion: 4.5.0

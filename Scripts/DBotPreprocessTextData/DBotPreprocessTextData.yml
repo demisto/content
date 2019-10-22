@@ -107,6 +107,7 @@ outputs:
   description: The processed text field inside the json file
   type: String
 - contextPath: DBotPreProcessTextData.FileFormat
+  description: The output file format
   type: Unknown
 script: '-'
 system: false
@@ -117,4 +118,4 @@ type: python
 dockerimage: demisto/dl:1.4
 runonce: true
 tests:
-  - Create_Phishing_Classifier_V2_ML_Test
+- Create_Phishing_Classifier_V2_ML_Test
