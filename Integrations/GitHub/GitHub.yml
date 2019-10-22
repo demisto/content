@@ -2375,8 +2375,7 @@ script:
         commits.
       type: Boolean
     - contextPath: GitHub.PR.Head.Repo.SubscribersCount
-      description: The number of entities subscribing to the repository of the checked
-      out.
+      description: The number of entities subscribing to the repository of the checked out.
       type: Number
     - contextPath: GitHub.PR.Base.Label
       description: The label of the base branch.
