@@ -76,7 +76,9 @@ def say_hello_command(client, args):
     Args:
         client: HelloWorld client
         args: all command arguments
-
+    Args:
+            client (Client): HelloWorld client.
+            args (dict): all command arguments.
     Returns:
         Hello {someone}
 
