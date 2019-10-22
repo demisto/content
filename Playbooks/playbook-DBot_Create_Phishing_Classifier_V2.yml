@@ -1,5 +1,5 @@
 id: DBot_Create_Phishing_Classifier_V2
-version: 76
+version: -1
 name: DBot Create Phishing Classifier V2
 description: Create a phishing classifier using machine learning technique, based
   on email content

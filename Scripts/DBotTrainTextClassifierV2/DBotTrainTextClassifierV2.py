@@ -1,9 +1,11 @@
 # pylint: disable=no-member
+import pickle
 from collections import defaultdict
+from io import BytesIO, StringIO
+
 import demisto_ml
 from tabulate import tabulate
-import pickle
-from io import BytesIO, StringIO
+
 from CommonServerPython import *
 
 ALL_LABELS = "*"
@@ -82,7 +84,7 @@ def get_file_entry_id(file_name):
 def read_files_by_name(file_names, input_type):
     file_names = file_names.split(",")
     file_names = [f for f in file_names if f]
-    data = [] # type: List[Dict[str, str]]
+    data = []  # type: List[Dict[str, str]]
     for file_name in file_names:
         data += read_file(get_file_entry_id(file_name), input_type)
     return data
