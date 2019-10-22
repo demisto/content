@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Improved implementation of the ***ews-search-mailbox*** command.
+- Added the ***ews-get-items-as-eml*** command.
 
 ## [19.9.1] - 2019-09-18
 Improved handling of uploaded EMLfiles.
