@@ -131,7 +131,7 @@ MOCK_PERMITTED_CLICK = {
     "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
     "classification": "MALWARE",
     "clickIP": "192.0.2.1",
-    "clickTime": "2010-00-11T00:00:20.000Z",
+    "clickTime": "2010-01-11T00:00:20.000Z",
     "messageID": "3333",
     "recipient": "bruce.wayne@pharmtech.zz",
     "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
