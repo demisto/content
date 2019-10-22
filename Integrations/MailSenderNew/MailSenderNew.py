@@ -218,17 +218,14 @@ def header(s):
     return Header(s_no_newlines, UTF_8)
 
 
-def create_msg():
+def create_msg(to, bcc, cc, subject):
     """
     Will get args from demisto object
     Return: a string representation of the message, to, cc, bcc
     """
     # Collect all parameters
-    to = argToList(demisto.getArg('to'))
-    cc = argToList(demisto.getArg('cc'))
-    bcc = argToList(demisto.getArg('bcc'))
+
     additional_header = argToList(demisto.getArg('additionalHeader'))
-    subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
     htmlBody = demisto.getArg('htmlBody') or ''
     replyTo = demisto.getArg('replyTo')
@@ -293,7 +290,7 @@ def create_msg():
         msg['CC'] = header(','.join(cc))
     if additional_header:
         for h in additional_header:
-            header_name_and_value = h.split('=')
+            header_name_and_value = h.split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
@@ -335,7 +332,23 @@ def main():
             SERVER.quit()
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
-            (str_msg, to, cc, bcc) = create_msg()
+            to = argToList(demisto.getArg('to'))
+            for address in to:
+                address.encode('utf-8')
+            cc = argToList(demisto.getArg('cc'))
+            bcc = argToList(demisto.getArg('bcc'))
+            subject = demisto.getArg('subject') or ''
+            raw_message = demisto.getArg('raw_message')
+            if raw_message:
+                if raw_message:
+                    raw_message = 'From: {}\n'.format(FROM) + raw_message
+                    if to:
+                        raw_message = 'To: {}\n'.format(address) + raw_message
+                    if subject:
+                        raw_message = 'Subject: {}\n'.format(subject) + raw_message
+                    str_msg = raw_message
+            else:
+                str_msg = create_msg(to, cc, bcc, subject)
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
             SERVER.quit()  # type: ignore
             demisto.results('Mail sent successfully')

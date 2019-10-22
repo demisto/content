@@ -30,11 +30,6 @@ class Client:
         self.private_key_file = private_key_file.name
         private_key_file.close()
 
-        # recipient_key_file = NamedTemporaryFile(delete=False)
-        # recipient_key_file.write(bytes(recipient_key, 'utf-8'))
-        # self.recipient_key_file = recipient_key_file.name
-        # recipient_key_file.close()
-
 
 ''' COMMANDS '''
 
@@ -53,7 +48,7 @@ def sign_email(client: Client, args: Dict):
 
     out = BIO.MemoryBuffer()
 
-    client.smime.write(out, p7, buf)
+    client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
     signed = out.read().decode('utf-8')
     context = {
         'SMIME.Signed': {
@@ -82,10 +77,8 @@ def encrypt_email_body(client: Client, args: Dict):
     client.smime.set_x509_stack(sk)
 
     client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
-
-    p7 = client.smime.encrypt(buf)
-
     out = BIO.MemoryBuffer()
+    p7 = client.smime.encrypt(buf)
 
     client.smime.write(out, p7)
     encrypted_message = out.read().decode('utf-8')
@@ -164,7 +157,7 @@ def send_smime(client: Client, args: Dict):
         if encrypt:
             p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT)
         else:
-            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT|SMIME.PKCS7_DETACHED)
+            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT | SMIME.PKCS7_DETACHED)
         msg_bio = BIO.MemoryBuffer(message)  # Recreate coz sign() has consumed it.
 
     if encrypt:
@@ -222,7 +215,6 @@ def main():
 
     public_key: str = demisto.params().get('public_key', '')
     private_key: str = demisto.params().get('private_key', '')
-    # recipient_key: str = demisto.params().get('recipient_key', '')
 
     client = Client(private_key, public_key)
     LOG(f'Command being called is {demisto.command()}')
@@ -232,7 +224,7 @@ def main():
         'smime-encrypt-email-body': encrypt_email_body,
         'smime-verify-sign': verify,
         'smime-decrypt-email-body': decrypt_email_body,
-        'smime-send-smime': send_smime
+        'smime-sign-and-encrypt': send_smime
     }
     try:
         command = demisto.command()
@@ -247,8 +239,6 @@ def main():
             os.unlink(client.private_key_file)
         if client.public_key_file:
             os.unlink(client.public_key_file)
-        # if client.recipient_key_file:
-        #     os.unlink(client.recipient_key_file)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

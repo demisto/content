@@ -90,7 +90,7 @@ script:
     deprecated: false
     description: Send signed/encrypted message.
     execution: false
-    name: smime-send-smime
+    name: smime-sign-and-encrypt
     outputs:
     - contextPath: SMIME.Encrypted.Message
       description: The raw message to send.
