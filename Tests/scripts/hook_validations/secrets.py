@@ -5,7 +5,6 @@ import math
 import json
 import string
 from bs4 import BeautifulSoup
-from HTMLParser import HTMLParseError
 import PyPDF2
 
 from Tests.test_utils import run_command, print_error
@@ -350,9 +349,9 @@ def extract_text_from_md_html(file_path):
         with open(file_path, mode='r') as html_page:
             soup = BeautifulSoup(html_page, features="html.parser")
             file_contents = soup.text
-    except HTMLParseError as ex:
+    except Exception as ex:
         print_error('Unable to parse the following file {} due to error {}'.format(file_path, ex))
-        raise ex
+        raise
     return file_contents
 
 
