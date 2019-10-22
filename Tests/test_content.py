@@ -9,7 +9,7 @@ import subprocess
 from time import sleep
 from datetime import datetime
 
-import demisto
+import demisto_client
 from slackclient import SlackClient
 
 from Tests.test_integration import test_integration, disable_all_integrations
@@ -373,16 +373,10 @@ def extract_filtered_tests():
     return filtered_tests, is_filter_configured, run_all
 
 
-def generate_demisto_api_key(c):
+def generate_demisto_api_key():
     with open("./conf_secret.json", "r") as conf_json:
         data = json.load(conf_json)
         demisto_api_key = data['apikeys'][0]['apikey']
-    # demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
-    # apikey_json = {
-    #     'name': 'test_apikey',
-    #     'apikey': demisto_api_key
-    # }
-    # c.req('POST', '/apikeys', apikey_json)
     return demisto_api_key
 
 
@@ -524,8 +518,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
 
     options = options_handler()
-    username = options.user
-    password = options.password
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
@@ -535,17 +527,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_number = options.buildNumber
     build_name = options.buildName
 
-    if not (username and password and server):
-        print_error('You must provide server user & password arguments')
-        sys.exit(1)
-
-    c = demisto.DemistoClient(None, server, username, password)
-    res = c.Login()
-    if res.status_code != 200:
-        print_error("Login has failed with status code " + str(res.status_code))
-        sys.exit(1)
-
-    demisto_api_key = generate_demisto_api_key(c)
+    demisto_api_key = generate_demisto_api_key()
+    c = demisto_client.configure(base_url=server, api_key=demisto_api_key)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
@@ -553,7 +536,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
     tests = conf['tests']
     skipped_tests_conf = conf['skipped_tests']
-    nightly_integrations = conf['nigthly_integrations']
+    nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
     unmockable_integrations = conf['unmockable_integrations']
 
