@@ -31,14 +31,19 @@ def create_incident_from_detection(detection: dict):
 
 
 class Client:
-    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxies: dict, fetch_size: int):
+    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxies: dict, fetch_size: int, t_score_gte: int,
+                 c_score_gte: int):
         """
         :param vectra_url: IP or hostname of Vectra brain (ex https://www.example.com) - required
         :param api_token: API token for authentication when using API v2*
         :param verify: Boolean, controls whether we verify the server's TLS certificate
         :param proxies: Dictionary mapping protocol to the URL of the proxy.
         :param fetch_size: Max number of incidents to fetch in each cycle
+        :param c_score_gte: Fetch only Detections with greater/equal Certainty score
+        :param t_score_gte: Fetch only Detections with greater/equal Threat score
         """
+        self.t_score_gte = t_score_gte
+        self.c_score_gte = c_score_gte
         self.fetch_size = fetch_size
         self.headers = {'Authorization': f'Token {api_token}'}
         self.base_url = vectra_url + '/api/v2.1/'
@@ -76,12 +81,11 @@ class Client:
         except Exception:
             raise ValueError(f"Failed to parse http response to JSON format. Original response body: \n{res.text}")
 
-    def fetch_incidents(self, last_run: Dict, t_score_gte: int, c_score_gte: int):
+    def fetch_incidents(self, last_run: Dict, ):
         """
         Fetches Detections from Vectra into Demisto Incidents
 
-        :param c_score_gte: Fetch only for Detections with greater/equal Certainty score
-        :param t_score_gte: Fetch only for Detections with greater/equal Threat score
+
         :param last_run: Integration's last run
         """
         # Get the last id, if exists
@@ -93,8 +97,8 @@ class Client:
             'page_size': self.fetch_size,
             'page': 1,
             'ordering': 'last_timestamp',
-            't_score_gte': t_score_gte,
-            'c_score_gte': c_score_gte
+            't_score_gte': self.t_score_gte,
+            'c_score_gte': self.c_score_gte
         }
         raw_response = self.http_request(params=params, url_suffix='detections')  # type: ignore
 
@@ -158,21 +162,25 @@ def get_detections_command(client: Client, **kwargs):
     :keyword resp: Filter by the resp in the dns_set
     """
     raw_response = client.http_request(params=kwargs, url_suffix='detections')
+    count = raw_response.get('count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
     res = raw_response.get('results')  # type: ignore
-    detections = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
+    dets: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
     headers = ['id', 'category', 'src_ip', 'threat', 'certainty', 'state', 'first_timestamp', 'tags',
                'targets_key_asset', 'type_vname']
-    readable_output = tableToMarkdown(name='Detection table', t=detections, headers=headers)
+    readable_output = tableToMarkdown(name='Detection table', t=dets, headers=headers)
 
     if 'detection_id' in kwargs:
-        if 'summary' in detections[0]:  # type: ignore
-            summary = detections[0].get('summary')  # type: ignore
+        if 'summary' in dets[0]:  # type: ignore
+            summary = dets[0].get('summary')  # type: ignore
             if summary:
                 readable_output += '\n' + tableToMarkdown(name='Summary', t=summary[0], headers=summary[0].keys())
 
-        if 'relayed_comm_set' in detections[0]:  # type: ignore
-            relayed_comm_set: List = detections[0].get('relayed_comm_set')  # type: ignore
+        if 'relayed_comm_set' in dets[0]:  # type: ignore
+            relayed_comm_set: List = dets[0].get('relayed_comm_set')  # type: ignore
             if not isinstance(relayed_comm_set, list):
                 relayed_comm_set = [relayed_comm_set]
                 if len(relayed_comm_set) > 0 and relayed_comm_set[0]:
@@ -181,13 +189,13 @@ def get_detections_command(client: Client, **kwargs):
                                                               headers=wanted_keys)
 
     context = []
-    for detection in detections:
+    for detection in dets:
         context.append(createContext(
             {
-                'DetectionId': detection.get('id'),
+                'ID': detection.get('id'),
                 'TypeVName': detection.get('type_vname'),
                 'Category': detection.get('category'),
-                'SrcIP': detection.get('src_ip'),
+                'SourceIP': detection.get('src_ip'),
                 'State': detection.get('state'),
                 'Threat_Score': detection.get('threat'),
                 'Certainty_Score': detection.get('certainty'),
@@ -195,10 +203,11 @@ def get_detections_command(client: Client, **kwargs):
                 'FirstTimestamp': detection.get('first_timestamp'),
                 'LastTimestamp': detection.get('last_timestamp'),
                 'Tags': detection.get('tags'),
+                'SourceAccount': detection.get('src_account'),
                 'HostID': detection.get('host', '').split('/')[-1] if 'host' in detection else None
             }, removeNull=True)
         )
-    outputs = {'Vectra.Detections(val.DetectionId==obj.DetectionId)': context}
+    outputs = {'Vectra.Detection(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
@@ -259,6 +268,10 @@ def get_hosts_command(client: Client, **kwargs):
     :keyword mac_address: Filter by mac address
     """
     raw_response = client.http_request(params=kwargs, url_suffix='hosts')
+    count = raw_response.get('count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
     res: List[Dict] = raw_response.get('results')  # type: ignore
     hosts: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
@@ -273,9 +286,9 @@ def get_hosts_command(client: Client, **kwargs):
     context = []
     for host in hosts:
         context.append(
-            {  # todo: go over with arseny
+            {
                 'ID': host.get('id'),
-                'Hostname': host.get('name'),
+                'Name': host.get('name'),
                 'LastDetection': host.get('last_detection_timestamp'),
                 'DetectionID': host.get('detection_ids'),
                 'Threat_Score': host.get('threat'),
@@ -287,7 +300,7 @@ def get_hosts_command(client: Client, **kwargs):
             }
         )
 
-    outputs = {'Vectra.Hosts(val.ID==obj.ID)': context}
+    outputs = {'Vectra.Host(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
@@ -304,6 +317,10 @@ def get_users_command(client: Client, **kwargs):
     :keyword last_login_gte: Filters for User’s that have logged in since the given timestamp
     """
     raw_response = client.http_request(params=kwargs, url_suffix='users')
+    count = raw_response.get('count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
     res: List[Dict] = raw_response.get('results')  # type: ignore
     users: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
@@ -323,7 +340,7 @@ def get_users_command(client: Client, **kwargs):
                 'Role': user.get('role'),
             }
         )
-    outputs = {'Vectra.Users(val.ID==obj.ID)': context}
+    outputs = {'Vectra.User(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
@@ -340,6 +357,10 @@ def search_command(client: Client, search_type: str, **kwargs):
     :keyword page_size: Number of results returned per page. the default page_size is 50, max 5000
     """
     raw_response = client.http_request(params=kwargs, url_suffix=f'search/{search_type}')
+    count = raw_response.get('count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
     res: List[Dict] = raw_response.get('results')  # type: ignore
     res: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
@@ -359,7 +380,6 @@ def search_command(client: Client, search_type: str, **kwargs):
                 'Certainty_Score': r.get('certainty'),
                 'KeyAsset': r.get('key_asset'),
                 'IP': r.get('last_source'),
-                'DetectionId': r.get('id'),
                 'TypeVName': r.get('type_vname'),
                 'Category': r.get('category'),
                 'SrcIP': r.get('src_ip'),
@@ -372,17 +392,21 @@ def search_command(client: Client, search_type: str, **kwargs):
             }, removeNull=True)
         )
 
-    path = 'Hosts' if search_type == 'hosts' else 'Detections'
+    path = 'Host' if search_type == 'hosts' else 'Detection'
     outputs = {f'Vectra.{path}(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
 
-def get_triage_command(client: Client, **kwargs):
+def get_triage_command(client: Client, **kwargs):  # todo: no rules
     """
     The rules branch can be used to retrieve a listing of configured Triage rules
     """
     raw_response = client.http_request(params=kwargs, url_suffix='rules')
+    count = raw_response.get('count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
     res: List[Dict] = raw_response.get('results')  # type: ignore
     rules: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('name'))  # type: ignore
 
@@ -428,7 +452,7 @@ def get_triage_command(client: Client, **kwargs):
         remove_nulls_from_dictionary(temp)
         context.append(temp)
 
-    outputs = {'Vectra.Rules(val.ID==obj.ID)': context}
+    outputs = {'Vectra.Rule(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
@@ -441,7 +465,11 @@ def get_proxies_command(client: Client, **kwargs):
     :param client: Vectra Client
     """
     raw_response = client.http_request(params=kwargs, url_suffix='proxies')
-    res = raw_response.get('results')  # type: ignore
+    count = demisto.get(raw_response, 'meta.count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
+    res = raw_response.get('proxies')  # type: ignore
     proxies: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
     headers = ['id', 'source', 'considersProxy', 'address']
@@ -458,6 +486,43 @@ def get_proxies_command(client: Client, **kwargs):
             }, removeNull=True)
         )
     outputs = {'Vectra.Proxy(val.ID==obj.ID)': context}
+
+    return readable_output, outputs, raw_response
+
+
+def get_threatfeed_command(client: Client, **kwargs):
+    """
+    Retrieves the current list of threatFeed objects already configured in the system
+
+    :param client: Vectra Client
+    """
+    raw_response = client.http_request(params=kwargs, url_suffix='threatFeeds')
+    count = demisto.get(raw_response, 'meta.count')
+    if count == 0:
+        return "Couldn't find any results", {}, raw_response
+
+    res = raw_response.get('threatFeeds')  # type: ignore
+    feeds: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
+
+    for feed in feeds:
+        feed.update(feed.get('defaults'))  # type: ignore
+    headers = ['id', 'name', 'certainty', 'category', 'duration', 'indicatorType']
+    readable_output = tableToMarkdown(name='Rules table', t=feeds, headers=headers)
+
+    context = []
+    for feed in feeds:
+        context.append(createContext(
+            {
+                'ID': feed.get('id'),
+                'Name': feed.get('name'),
+                'Duration': feed.get('duration'),
+                'Category': feed.get('category'),
+                'Certainty': feed.get('certainty'),
+                'Data': feed.get('data'),
+                'IndicatorType': feed.get('indicatorType'),
+            }, removeNull=True)
+        )
+    outputs = {'Vectra.ThreatFeed(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
 
@@ -495,7 +560,9 @@ def main():
             verify=verify_certificate,
             api_token=api_token,
             proxies=proxies,
-            fetch_size=min(fetch_size, MAX_FETCH_SIZE)
+            fetch_size=min(fetch_size, MAX_FETCH_SIZE),
+            c_score_gte=c_score_gte,
+            t_score_gte=t_score_gte
         )
 
         # execute the current command
@@ -504,11 +571,7 @@ def main():
             demisto.results(results)
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = client.fetch_incidents(
-                last_run=demisto.getLastRun(),
-                c_score_gte=c_score_gte,
-                t_score_gte=t_score_gte
-            )
+            next_run, incidents = client.fetch_incidents(last_run=demisto.getLastRun())
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
@@ -547,6 +610,9 @@ def main():
         elif demisto.command() == 'vectra-get-proxies':
             return_outputs(*get_proxies_command(client, **demisto.args()))
 
+        elif demisto.command() == 'vectra-get-threatfeed':
+            return_outputs(*get_threatfeed_command(client, **demisto.args()))
+
     # Log exceptions
     except Exception as ex:
         if demisto.command() == 'fetch-incidents':
@@ -559,5 +625,4 @@ def main():
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
 
-# todo: add detection for an account/host (new param)
 # todo: go over each command params and make sure it's in the keywords
