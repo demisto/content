@@ -2,7 +2,7 @@ import demistomock as demisto
 
 value = demisto.args()['value']
 
-if type(VALUE) is list and len(VALUE) > 0:
+if isinstance(value, list) and value:
     VALUE = VALUE[0]
 
 demisto.results(VALUE)
