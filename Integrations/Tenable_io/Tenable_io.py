@@ -129,7 +129,7 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
     return {
         'Type': entryTypes['note'],
-        'Contents': context_obj,
+        'Contents': obj,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, hr_obj, headers, removeNull=remove_null),
