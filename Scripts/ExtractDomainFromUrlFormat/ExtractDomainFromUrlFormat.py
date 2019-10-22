@@ -87,7 +87,7 @@ def extract_domain(the_input, isFQDNextract):
 
     # convert None to empty string if needed
     result = domain if not isFQDNextract else fqdn
-    result = '' if not domain else domain
+    result = '' if not result else result
     if type(result) == unicode:
         result = result.encode('utf-8', errors='ignore')
     return result
@@ -103,7 +103,7 @@ def main():
 
     # Otherwise assumes it's already an array
     for item in the_input:
-        results.append(extract_domain(item, isFQDNextract == 'True'))
+        results.append(extract_domain(item, isFQDNextract == 'true'))
     demisto.results(results)
 
 

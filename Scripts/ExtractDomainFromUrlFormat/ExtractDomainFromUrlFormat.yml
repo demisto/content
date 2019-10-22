@@ -5,11 +5,15 @@ args:
   name: input
   required: false
   secret: false
-- default: false
-  defaultValue: 'False'
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
   description: True if extract FQDN is needed
   isArray: false
   name: extractFQDN
+  predefined:
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: Extract Domain(s) from URL(s) and/or Email(s)
