@@ -1,0 +1,49 @@
+commonfields:
+  id: ConvertFile
+  version: -1
+name: ConvertFile
+script: ''
+type: python
+subtype: python3
+fromversion: 4.5.0
+tags:
+- Utility
+comment: 'Converts a file from one format to a different format by using the convert-to function of Libre Office. For a list of supported input/output formats see:  https://wiki.openoffice.org/wiki/Framework/Article/Filter/FilterList_OOo_3_0'
+enabled: true
+args:
+- name: entry_id
+  required: true
+  default: true
+  description: The War Room entryID of the file to convert.
+- name: format
+  description: 'Output format to which to convert. Can specify only file extension, such as: "pdf" or <ext:writer> such  as  "txt:Text (Encoded)". Default is "pdf".'
+  defaultValue: pdf
+- name: all_files
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: If "yes", will return all generated files. If "no", will return only the main file. Relevant
+    for formats that might generate multiple files, such as html (which will generate
+    image files additionally to the main html file). Default is "no".
+  defaultValue: "no"
+outputs:
+- contextPath: File.Name
+  description: The name of the output file.
+  type: String
+- contextPath: File.Extension
+  description: The extension of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: File.Info
+  description: Additional information about the file.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+scripttarget: 0
+runonce: false
+dockerimage: demisto/office-utils:1.0.0.2553
+runas: DBotWeakRole

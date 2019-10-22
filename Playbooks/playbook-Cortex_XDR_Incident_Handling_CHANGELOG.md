@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.10.0] - 2019-10-03
+The ***Is AutoFocus Enabled?*** task now checks for the **AutoFocus v2** integration.
+
 ## [19.9.1] - 2019-09-18
 #### New Playbook
 This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident. 
