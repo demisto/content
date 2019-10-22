@@ -24,17 +24,20 @@ Attributes:
     ALERTS_TRANS
         Transformation map for alerts to be used with build_transformed_dict
 
-    LISTS_TRANS
-        Transformation map for lists to be used with build_transformed_dict
-
-    RULES_TRANS
-        Transformation map for rules to be used with build_transformed_dict
-
     ENDPOINTS_TRANS
         Transformation map for endpoints to be used with build_transformation_dict
 
     EVENTS_TRANS
         Transformation map for events to be used with build_transformation_dict
+
+    LISTS_TRANS
+        Transformation map for lists to be used with build_transformed_dict
+
+    NOTES_TRANS
+        Transformation map for notes to be used with build_transformed_dict
+
+    RULES_TRANS
+        Transformation map for rules to be used with build_transformed_dict
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
@@ -162,6 +165,14 @@ LISTS_TRANS = {
     'is_protected': 'Protected',
     'is_active': 'Active',
 }
+NOTES_TRANS = {
+    'id': 'ID',
+    'created_at': 'CreatedTime',
+    'updated_at': 'UpdatedTime',
+    'note': 'Message',
+    'created_by.id': 'CreatorID',
+    'created_by.name': 'CreatorName',
+}
 RULES_TRANS = {
     'id': 'ID',
     '_rulePack': 'RulePack',
@@ -234,17 +245,17 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts'
         return self._http_request('POST', suffix, json_data=body)
 
-    def create_alert_note(self, _id: Optional[Any], note: Optional[Any]) -> Dict:
+    def create_alert_note(self, alert_id: Optional[Any], note: Optional[Any]) -> Dict:
         """Creates a single note for an alert by sending a POST request.
 
         Args:
-            _id: Alert ID to create note for.
+            alert_id: Alert ID to create note for.
             note: Note to add to alert.
 
         Returns:
             Response from API.
         """
-        suffix = f'/api/v3/alerts/{_id}/notes'
+        suffix = f'/api/v3/alerts/{alert_id}/notes'
         body = assign_params(note=note)
         return self._http_request('POST', suffix, json_data=body)
 
@@ -753,17 +764,18 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     Returns:
         Outputs
     """
-    _id = args.get('id')
+    alert_id = args.get('alert_id')
     note = args.get('note')
-    raw_response = client.create_alert_note(_id=_id, note=note)
+    raw_response = client.create_alert_note(alert_id=alert_id, note=note)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - Created Note for Alert {_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        title = f'{INTEGRATION_NAME} - Created Note for Alert {alert_id}:'
+        context_entry = build_transformed_dict(raw_response, NOTES_TRANS)
+        context_entry['AlertID'] = alert_id  # type: ignore
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:

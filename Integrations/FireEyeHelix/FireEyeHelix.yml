@@ -398,7 +398,7 @@ script:
     - default: true
       description: ID of the alert the note is created for.
       isArray: false
-      name: id
+      name: alert_id
       required: true
       secret: false
     - default: false
@@ -411,6 +411,28 @@ script:
     description: Create an alert note.
     execution: false
     name: fireeye-helix-alert-create-note
+    outputs:
+    - contextPath: FireEyeHelix.Note.ID
+      description: Note ID.
+      type: Number
+    - contextPath: FireEyeHelix.Note.CreatedTime
+      description: Time the note was created at.
+      type: Date
+    - contextPath: FireEyeHelix.Note.UpdatedTime
+      description: Time the note was updated at.
+      type: Date
+    - contextPath: FireEyeHelix.Note.Message
+      description: Message of the note.
+      type: String
+    - contextPath: FireEyeHelix.Note.CreatorID
+      description: ID of the note creator.
+      type: String
+    - contextPath: FireEyeHelix.Note.CreatorName
+      description: Name of the note creator.
+      type: String
+    - contextPath: FireEyeHelix.Note.AlertID
+      description: ID of the related alert.
+      type: Number
   - arguments:
     - default: false
       description: Name of the case to create.
