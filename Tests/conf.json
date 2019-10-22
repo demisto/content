@@ -21,7 +21,7 @@
             "playbookID": "AttackIQ - Test"
         },
         {
-            "playbookID": " Create_Phishing_Classifier_V2_ML_Test",
+            "playbookID": "Create_Phishing_Classifier_V2_ML_Test",
             "timeout" : 2400
         },
         {

@@ -1,5 +1,6 @@
 from CommonServerPython import *
-from DBotTrainTextClassifierV2 import get_phishing_map_labels, read_file, read_files_by_name, get_data_with_mapped_label, find_keywords, ALL_LABELS
+from DBotTrainTextClassifierV2 import get_phishing_map_labels, read_file, read_files_by_name, \
+    get_data_with_mapped_label, ALL_LABELS
 
 
 def test_get_phishing_map_labels(mocker):
@@ -44,4 +45,3 @@ def test_get_data_with_mapped_label(mocker):
     assert exist_labels_counter['malware'] == 1
     assert exist_labels_counter['spam'] == 1
     assert missing_labels_counter['not'] == 2
-

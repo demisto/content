@@ -1,16 +1,16 @@
+import base64
+
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
     concat_text_fields, filter_only_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
-import base64
+
 
 def test_clean_html(mocker):
     html_string = """
     <!DOCTYPE html>
         <html>
         <body>
-        
         <h1>My First Heading</h1>
-        
         </body>
         </html>
     """
@@ -44,18 +44,19 @@ def test_read_file(mocker):
 
 
 def test_concat_text_field(mocker):
-    data = [{
-        'body': 'TestBody',
-        'body2': 'TestBody2',
-        'subject': 'TestSubject',
-    },
+    data = [
         {
             'body': 'TestBody',
+            'body2': 'TestBody2',
             'subject': 'TestSubject',
         },
         {
+            'body': 'TestBody',
+            'subject': 'TestSubject'
+        },
+        {
             'body2': 'TestBody2',
-            'subject': 'TestSubject',
+            'subject': 'TestSubject'
         }
     ]
     text_fields = 'subject | subject2, Body | body2'
@@ -75,13 +76,13 @@ def test_concat_text_field(mocker):
     assert data[0]['target'] == 'value value'
 
 
-
 def test_remove_fields_from_dict():
-    data = [{
-        'body': 'TestBody',
-        'body2': 'TestBody2',
-        'subject': 'TestSubject',
-    },
+    data = [
+        {
+            'body': 'TestBody',
+            'body2': 'TestBody2',
+            'subject': 'TestSubject',
+        },
         {
             'body': 'TestBody',
             'subject': 'TestSubject',
@@ -100,9 +101,10 @@ def test_remove_fields_from_dict():
 
 
 def test_remove_short_text():
-    data = [{
-        'body': 'TestBody1 TestBody2 TestBody3 TestBody4',
-    },
+    data = [
+        {
+            'body': 'TestBody1 TestBody2 TestBody3 TestBody4',
+        },
         {
             'body': 'TestBody1 TestBody2',
         }
@@ -112,10 +114,11 @@ def test_remove_short_text():
     assert len(data) == 1
 
 
-def test_remove_short_text():
-    data = [{
-        'body': 'TestBody1 TestBody2 TestBody3 TestBody4',
-    },
+def test_remove_dups():
+    data = [
+        {
+            'body': 'TestBody1 TestBody2 TestBody3 TestBody4',
+        },
         {
             'body': 'TestBody1 TestBody2',
         },
