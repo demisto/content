@@ -30,15 +30,16 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The ID of the folder whose scans should be listed. Scans are stored
-        in specific folders on Tenable. e.g : folderId=8'
+      description: |-
+        The ID of the folder whose scans should be listed. Scans are stored
+        in specific folders on Tenable. e.g : folderId=8
       isArray: false
       name: folderId
       required: false
       secret: false
     - default: false
-      description: 'Limit the results to those that have only changed since this time.
-        Format: YYYY-MM-DD'
+      description: |-
+        Limit the results to those that have only changed since this time. Format: YYYY-MM-DD
       isArray: false
       name: lastModificationDate
       required: false
@@ -364,8 +365,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Check the status of a specific scan using its ID. The status can
-      hold following possible values : Running, Completed and Empty (Ready to run).'
+    description: |-
+      Check the status of a specific scan using its ID. The status can
+      hold following possible values : Running, Completed and Empty (Ready to run).
     execution: false
     name: tenable-io-get-scan-status
     outputs:
