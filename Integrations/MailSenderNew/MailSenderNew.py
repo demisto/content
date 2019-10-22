@@ -305,6 +305,7 @@ def main():
     global SERVER
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
+    FQDN = (FQDN and FQDN.strip()) or None
     stderr_org = smtplib.stderr  # type: ignore
     try:
         if demisto.command() == 'test-module':
