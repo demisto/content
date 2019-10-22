@@ -7,14 +7,24 @@ def init_tests(mocker):
     mocker.patch.object(demisto, 'params', return_value={'server': 'www.qradar.com', 'token': 'token', 'proxy': True})
 
 
-def test_enrich_offense_res_with_source_and_destination_address(mocker):
+def test_enrich_offense_res_with_source_and_destination_address_normal(mocker):
     import QRadar as qradar
     mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
                         return_value=(SOURCE_ADDR_IDS_DICT, DEST_ADDR_IDS_DICT))
     mocker.patch.object(qradar, 'enrich_source_addresses_dict')
     mocker.patch.object(qradar, 'enrich_destination_addresses_dict')
+    # Assert function enriched offense with destination and source addresses
     assert qradar.enrich_offense_res_with_source_and_destination_address(
         OFFENSE_RAW_RESULT) == ENRICH_OFFENSES_ADDR_EXPECTED
+
+
+def test_enrich_offense_res_with_source_and_destination_address_exception(mocker):
+    import QRadar as qradar
+    mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
+                        return_value=(SOURCE_ADDR_IDS_DICT, DEST_ADDR_IDS_DICT))
+    mocker.patch.object(qradar, 'enrich_source_addresses_dict', side_effect=Exception('Raised exception'))
+    # Assert function returns the raw result in case of raised exception
+    assert qradar.enrich_offense_res_with_source_and_destination_address(OFFENSE_RAW_RESULT) == OFFENSE_RAW_RESULT
 
 
 """ API RAW RESULTS """
