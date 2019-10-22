@@ -11,18 +11,18 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Credentials
-  name: credentials
+- display: API Token
+  name: token
   defaultvalue: ""
-  type: 9
+  type: 4
   required: true
 - defaultvalue: '0'
-  display: The number of results returned in each fetch
+  display: Fetch only Detections with greater/equal Certainty score
   name: c_score_gte
   required: false
   type: 0
-- defaultvalue: ''
-  display: The number of results returned in each fetch
+- defaultvalue: '0'
+  display: Fetch only Detections with greater/equal Threat score
   name: t_score_gte
   required: false
   type: 0
@@ -46,11 +46,6 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: API Token
-  name: token
-  defaultvalue: ""
-  type: 4
-  required: true
 - display: Use system proxy
   name: proxy
   defaultvalue: ""
@@ -132,30 +127,35 @@ script:
     - name: resp
       description: filter by the resp in the dns_set
     outputs:
-    - contextPath: Vectra.Detections.DetectionId
-      description: The learned hostname
-    - contextPath: Vectra.Detections.TypeVName
-      description: Vectra detection id
-    - contextPath: Vectra.Detections.Category
-      description: The detection category
-    - contextPath: Vectra.Detections.SrcIP
-      description: The detection source IP
-    - contextPath: Vectra.Detections.State
-      description: The detection state
-    - contextPath: Vectra.Detections.TScore
-      description: The detection tscore
-    - contextPath: Vectra.Detections.CScore
-      description: The detection cscore
-    - contextPath: Vectra.Detections.TargetsKeyAsset
-      description: Is detection targets key asset
-    - contextPath: Vectra.Detections.Tags
-      description: The detection tags
-    - contextPath: Vectra.Detections.FirstTimestamp
-      description: The detection first time stamp
-    - contextPath: Vectra.Detections.LastTimestamp
-      description: The detection last time stamp
-    - contextPath: Vectra.Detections.HostID
-      description: The detection host id
+    - contextPath: Vectra.Detection.Category
+      description: 'The category of the vname attack detected'
+      type: String
+    - contextPath: Vectra.Detection.TargetsKeyAsset
+      description: 'Flag indicating if the host has a detection targeting a key asset'
+      type: Boolean
+    - contextPath: Vectra.Detection.Certainty_Score
+      description: 'The current certainty score correlated to this host'
+      type: Number
+    - contextPath: Vectra.Detection.ID
+      description: 'Object ID'
+      type: Number
+    - contextPath: Vectra.Detection.FirstTimestamp
+      description: 'The timestamp when the event was first detected'
+      type: String
+    - contextPath: Vectra.Detection.LastTimestamp
+      description: 'The timestamp when the event was last detected'
+      type: String
+    - contextPath: Vectra.Detection.State
+      description: 'The state of the detection'
+      type: String
+    - contextPath: Vectra.Detection.Threat_Score
+      description: 'The threat score attributed to the detection'
+      type: Number
+    - contextPath: Vectra.Detection.SourceIP
+      description: 'The source IP address of the host attributed to the security event'
+      type: String
+    - contextPath: Vectra.Detection.SourceAccount
+      description: 'A dictionary with fields that describe the Account the detection is from'
     description: Detection objects contain all the information related to security
       events detected on the network
   - name: vectra-get-hosts
@@ -196,22 +196,36 @@ script:
     - name: mac_address
       description: filter by mac address
     outputs:
-    - contextPath: Endpoint.Hostname
-      description: The learned hostname
-    - contextPath: Endpoint.VectraID
-      description: Vectra object id
-    - contextPath: Endpoint.State
-      description: The state of this record
-    - contextPath: Endpoint.IP
-      description: Last source IP associated with this host
-    - contextPath: Endpoint.LastDetection
-      description: Last detection activity from this host
-    - contextPath: Endpoint.Detection.ID
-      description: List of Detections for Host
-    - contextPath: Endpoint.TScore
-      description: The current threat score correlated to this host
-    - contextPath: Endpoint.CScore
-      description: The current certainty score correlated to this host
+    - contextPath: Vectra.Host.Name
+      description: 'The learned hostname'
+      type: String
+    - contextPath: Vectra.Host.TargetsKeyAsset
+      description: 'Flag indicating if the host has a detection targeting a key asset'
+      type: Boolean
+    - contextPath: Vectra.Host.Certainty_Score
+      description: 'The current certainty score correlated to this host'
+      type: Number
+    - contextPath: Vectra.Host.DetectionID
+      description: 'List of Detections for Account'
+      type: String
+    - contextPath: Vectra.Host.KeyAsset
+      description: 'Flag indicating if the host is a key asset'
+      type: Boolean
+    - contextPath: Vectra.Host.State
+      description: 'The state of this host'
+      type: String
+    - contextPath: Vectra.Host.Threat_Score
+      description: 'The current threat score correlated to this host'
+      type: Number
+    - contextPath: Vectra.Host.LastDetection
+      description: 'Last detection activity from this host (Timestamp format: YYYY-MM-DD HH-MM-SS GMT)'
+      type: String
+    - contextPath: Vectra.Host.IP
+      description: 'Last source IP associated with this host'
+      type: String
+    - contextPath: Vectra.Host.ID
+      description: 'ID of the Host'
+      type: Number
     description: Host information includes data that correlates the host data to detected
       security events
   - name: vectra-triage
@@ -257,26 +271,8 @@ script:
       required: true
       default: true
       description: The id of the required host
-    outputs:
-    - contextPath: Endpoint.Hostname
-      description: The learned hostname
-    - contextPath: Endpoint.VectraID
-      description: Vectra object id
-    - contextPath: Endpoint.State
-      description: The state of this record
-    - contextPath: Endpoint.IP
-      description: Last source IP associated with this host
-    - contextPath: Endpoint.Vectra.LastDetection
-      description: Last detection activity from this host
-    - contextPath: Endpoint.Vectra.DetectionID
-      description: List of Detections for Host
-    - contextPath: Endpoint.Vectra.TScore
-      description: The current threat score correlated to this host
-    - contextPath: Endpoint.Vectra.CScore
-      description: The current certainty score correlated to this host
     description: Get host by id
   - name: vectra-get-detetctions-by-id
-    deprecated: true
     arguments:
     - name: detection_id
       description: The id of the required detection
@@ -285,6 +281,44 @@ script:
     arguments: []
   - name: vectra-get-proxies
     arguments: []
+    outputs:
+    - contextPath: Vectra.Proxy.Source
+      description: 'Whether the proxy was auto detected by Cognito or was added by user'
+      type: String
+    - contextPath: Vectra.Proxy.ID
+      description: 'The ID of the Proxy'
+      type: String
+    - contextPath: Vectra.Proxy.Source
+      description: 'Whether the proxy was auto detected by Cognito or was added by user'
+      type: String
+    - contextPath: Vectra.Proxy.ConsidersProxy
+      description: 'Whether to consider the object as a proxy or not'
+      type: String
+    - contextPath: Vectra.Proxy.Address
+      description: 'The proxy IP address'
+      type: String
+    description: Retrieves the current list of proxy IP addresses
+  - name: vectra-get-threatfeed
+    arguments: []
+    outputs:
+    - contextPath: Vectra.ThreatFeed.Category
+      description: 'The category in which the detection will fire if a match is observed with any indicator in the ThreatFeed'
+      type: String
+    - contextPath: Vectra.ThreatFeed.Name
+      description: 'The name of the ThreatFeed'
+      type: String
+    - contextPath: Vectra.ThreatFeed.Certainty
+      description: 'The default certainty to use for indicators in the STIX file'
+      type: String
+    - contextPath: Vectra.ThreatFeed.IndicatorType
+      description: 'The default indicatorType to use for the observables in the STIX file'
+      type: String
+    - contextPath: Vectra.ThreatFeed.Duration
+      description: 'The default duration for which indicators in the ThreatFeed are valid'
+      type: Number
+    - contextPath: Vectra.ThreatFeed.ID
+      description: 'The ID of the ThreatFeed'
+      type: String
   - name: vectra-search
     arguments:
     - name: query_string
