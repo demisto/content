@@ -1239,6 +1239,60 @@ script:
     description: Edit an existing rule.
     execution: false
     name: fireeye-helix-edit-rule
+  - arguments:
+    - default: true
+      description: Alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all notes related to alert.
+    execution: false
+    name: fireeye-helix-alert-get-notes
+    outputs:
+    - contextPath: FireEyeHelix.Note.ID
+      description: Note ID.
+      type: Number
+    - contextPath: FireEyeHelix.Note.CreatedTime
+      description: Time the note was created at.
+      type: Date
+    - contextPath: FireEyeHelix.Note.UpdatedTime
+      description: Time the note was updated at.
+      type: Date
+    - contextPath: FireEyeHelix.Note.Message
+      description: Message of the note.
+      type: String
+    - contextPath: FireEyeHelix.Note.CreatorID
+      description: ID of the note creator.
+      type: String
+    - contextPath: FireEyeHelix.Note.CreatorName
+      description: Name of the note creator.
+      type: String
+    - contextPath: FireEyeHelix.Note.AlertID
+      description: ID of the related alert.
+      type: Number
+    - contextPath: FireEye.Note.Count
+      description: Total number of notes for the alert.
+      type: Number
+  - arguments:
+    - default: true
+      description: Alert ID.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Note ID.
+      description: Note ID.
+      isArray: false
+      name: note_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete alert note.
+    execution: false
+    name: fireeye-helix-alert-delete-note
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: false
   longRunning: false

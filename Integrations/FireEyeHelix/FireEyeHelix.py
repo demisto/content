@@ -245,6 +245,18 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts'
         return self._http_request('POST', suffix, json_data=body)
 
+    def get_alert_notes(self, alert_id):
+        """Get all notes related to alert by sending a GET request.
+
+        Args:
+            alert_id: Alert ID.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/notes'
+        return self._http_request('GET', suffix)
+
     def create_alert_note(self, alert_id: Optional[Any], note: Optional[Any]) -> Dict:
         """Creates a single note for an alert by sending a POST request.
 
@@ -258,6 +270,19 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/notes'
         body = assign_params(note=note)
         return self._http_request('POST', suffix, json_data=body)
+
+    def delete_alert_note(self, alert_id: Optional[Any], note_id: Optional[Any]) -> Dict:
+        """Deletes a single note for an alert by sending a DELETE request.
+
+        Args:
+            alert_id: Alert ID to delete note for.
+            note_id: Note ID.
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v3/alerts/{alert_id}/notes/{note_id}'
+        return self._http_request('DELETE', suffix, resp_type='')
 
     def create_alert_case(self, alert_id: Optional[Any], name: str, status: str = None,
                           severity: Union[int, str] = None, tags: str = None, priority: str = None, state: str = None,
@@ -754,6 +779,41 @@ def update_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, D
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
+def get_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get all notes related to alert
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    alert_id = args.get('alert_id')
+    raw_response = client.get_alert_notes(alert_id=alert_id)
+    raw_notes = raw_response.get('results')
+    if raw_notes:
+        title = f'{INTEGRATION_NAME} - Created Note for Alert {alert_id}:'
+        context_entry = build_transformed_dict(raw_notes, NOTES_TRANS)
+        if isinstance(context_entry, dict):
+            context_entry['AlertID'] = alert_id
+        else:
+            for note in context_entry:
+                note['AlertID'] = alert_id
+        count = demisto.get(raw_response, 'meta.count')
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.Note(val.Count && val.AlertID === {alert_id}).Count': count
+        }
+        # Creating human readable for War room
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'CreatorName', 'Message', 'CreatedTime'],
+                                         headerTransform=pascalToSpace)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
+
+
 def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Create a note for an alert
 
@@ -770,7 +830,8 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     if raw_response:
         title = f'{INTEGRATION_NAME} - Created Note for Alert {alert_id}:'
         context_entry = build_transformed_dict(raw_response, NOTES_TRANS)
-        context_entry['AlertID'] = alert_id  # type: ignore
+        if isinstance(context_entry, dict):
+            context_entry['AlertID'] = alert_id
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -780,6 +841,22 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
+
+
+def delete_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Delete a note for an alert
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    alert_id = args.get('alert_id')
+    note_id = args.get('note_id')
+    client.delete_alert_note(alert_id=alert_id, note_id=note_id)
+    return f'{INTEGRATION_NAME} - Deleted note {note_id} for Alert {alert_id} successfully.', {}, {}
 
 
 def create_alert_case_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1141,7 +1218,9 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts_command,
         f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id_command,
+        f'{INTEGRATION_COMMAND_NAME}-alert-get-notes': get_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
+        f'{INTEGRATION_COMMAND_NAME}-alert-delete-note': delete_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case_command,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
