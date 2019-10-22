@@ -83,7 +83,7 @@ script:
       name: Status
       predefined:
       - open
-      - ' closed'
+      - closed
       required: false
       secret: false
     - default: false
@@ -124,7 +124,7 @@ script:
       name: sort
       predefined:
       - created_at
-      - ' closed_at'
+      - closed_at
       required: false
       secret: false
     - auto: PREDEFINED
@@ -135,13 +135,48 @@ script:
       name: direction
       predefined:
       - ascending
-      - ' descending'
+      - descending
       required: false
       secret: false
     deprecated: false
     description: Get list of incidents details - by default return 20 incidents
     execution: false
     name: phishlabs-get-incidents
+    outputs:
+    - contextPath: Email.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Body/HTML
+      description: The HTML version of the email.
+      type: String
+    - contextPath: Email.Subject
+      description: The subject of the email.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Malicious
+      description: The vendor that reported the file as malicious.
+      type: String
   - arguments:
     - default: false
       description: Case ID
@@ -161,11 +196,11 @@ script:
       name: case_status
       predefined:
       - New
-      - ' Closed'
-      - ' Assigned'
-      - ' Rejected'
-      - ' Duplicate'
-      - ' Pending Input'
+      - Closed
+      - Assigned
+      - Rejected
+      - Duplicate
+      - Pending Input
       required: false
       secret: false
     - auto: PREDEFINED
@@ -175,15 +210,15 @@ script:
       name: case_type
       predefined:
       - 419 Scam
-      - ' Credential Recovery'
-      - ' Crimeware'
-      - ' Mobile Abuse'
-      - ' Job Scam'
-      - ' Other'
-      - ' Pharming'
-      - ' Phishing'
-      - ' Phishing Redirect'
-      - ' Vishing'
+      - Credential Recovery
+      - Crimeware
+      - Mobile Abuse
+      - Job Scam
+      - Other
+      - Pharming
+      - Phishing
+      - Phishing Redirect
+      - Vishing
       required: false
       secret: false
     - default: false
@@ -199,7 +234,7 @@ script:
       name: date_field
       predefined:
       - caseOpen
-      - ' caseClose '
+      - caseClose
       - caseModify
       required: false
       secret: false
