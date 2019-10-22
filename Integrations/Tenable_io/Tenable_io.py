@@ -1,27 +1,40 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import sys, os, requests, traceback, time
+import os
+import requests
+import sys
+import time
+import traceback
 from datetime import datetime
+
 from requests.exceptions import HTTPError
+
+from CommonServerPython import *
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 # Header names transformation maps
 # Format: {'OldName': 'NewName'}
-FIELD_NAMES_MAP = {'ScanType': 'Type', 'ScanStart': 'StartTime', 'ScanEnd': 'EndTime', 'ScannerName': 'Scanner', 'SeenLast': 'LastSeen', 'SeenFirst': 'FirstSeen', 'PluginId': 'Id', 'Count': 'VulnerabilityOccurences'}
-REMEDIATIONS_NAMES_MAP = {'Value': 'Id', 'Vulns': 'AssociatedVulnerabilities', 'Hosts': 'AffectedHosts', 'Remediation': 'Description'}
-ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name', 'Count': 'VulnerabilityOccurences'}
+FIELD_NAMES_MAP = {'ScanType': 'Type', 'ScanStart': 'StartTime', 'ScanEnd': 'EndTime', 'ScannerName': 'Scanner',
+                   'SeenLast': 'LastSeen', 'SeenFirst': 'FirstSeen', 'PluginId': 'Id',
+                   'Count': 'VulnerabilityOccurences'}
+REMEDIATIONS_NAMES_MAP = {'Value': 'Id', 'Vulns': 'AssociatedVulnerabilities', 'Hosts': 'AffectedHosts',
+                          'Remediation': 'Description'}
+ASSET_VULNS_NAMES_MAP = {'PluginId': 'Id', 'PluginFamily': 'Family', 'PluginName': 'Name',
+                         'Count': 'VulnerabilityOccurences'}
 
 # Output Headers / Context Keys
-GET_SCANS_HEADERS = ['FolderId', 'Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner', 'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
+GET_SCANS_HEADERS = ['FolderId', 'Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Enabled', 'Type', 'Owner',
+                     'Scanner', 'Policy', 'CreationDate', 'LastModificationDate']
 LAUNCH_SCAN_HEADERS = ['Id', 'Targets', 'Status']
 SCAN_REPORT_INFO_HEADERS = ['Id', 'Name', 'Targets', 'Status', 'StartTime', 'EndTime', 'Scanner', 'Policy']
-SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'VulnerabilityOccurences']
+SCAN_REPORT_VULNERABILITIES_HEADERS = ['Id', 'Name', 'Severity', 'Description', 'Synopsis', 'Solution', 'FirstSeen',
+                                       'LastSeen', 'VulnerabilityOccurences']
 SCAN_REPORT_HOSTS_HEADERS = ['Hostname', 'Score', 'Critical', 'High', 'Medium', 'Low']
 SCAN_REPORT_REMEDIATIONS_HEADERS = ['Id', 'Description', 'AffectedHosts', 'AssociatedVulnerabilities']
-VULNERABILITY_DETAILS_HEADERS = ['Name', 'Severity', 'Type', 'Family', 'Description', 'Synopsis', 'Solution', 'FirstSeen', 'LastSeen', 'PublicationDate', 'ModificationDate', 'VulnerabilityOccurences', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector', 'Cvss3BaseScore']
+VULNERABILITY_DETAILS_HEADERS = ['Name', 'Severity', 'Type', 'Family', 'Description', 'Synopsis', 'Solution',
+                                 'FirstSeen', 'LastSeen', 'PublicationDate', 'ModificationDate',
+                                 'VulnerabilityOccurences', 'CvssVector', 'CvssBaseScore', 'Cvss3Vector',
+                                 'Cvss3BaseScore']
 ASSET_VULNS_HEADERS = ['Id', 'Name', 'Severity', 'Family', 'VulnerabilityOccurences', 'VulnerabilityState']
 
 severity_to_text = ['None', 'Low', 'Medium', 'High', 'Critical']
@@ -42,17 +55,19 @@ if not demisto.params()['proxy']:
 
 # Utility methods
 def flatten(d):
-    r = {}
+    r = {}  # type: ignore
     for k, v in d.iteritems():
         if isinstance(v, dict):
             r.update(flatten(v))
     d.update(r)
     return d
 
+
 def filter_dict_null(d):
     if isinstance(d, dict):
         return dict((k, v) for k, v in d.items() if v is not None)
     return d
+
 
 def filter_dict_keys(d, keys):
     if isinstance(d, list):
@@ -61,6 +76,7 @@ def filter_dict_keys(d, keys):
         return {k: v for k, v in d.iteritems() if k in keys}
     return d
 
+
 def convert_severity_values(d):
     if isinstance(d, list):
         return map(convert_severity_values, d)
@@ -68,12 +84,13 @@ def convert_severity_values(d):
         return {k: (severity_to_text[v] if k == 'Severity' else v) for k, v in d.iteritems()}
     return d
 
+
 def convert_dict_context_dates(d):
     def convert_epoch_to_date(k, v):
         if any(s in k.lower() for s in ('date', 'time')):
             try:
                 return datetime.utcfromtimestamp(int(v)).strftime('%Y-%m-%dT%H:%M:%SZ')
-            except:
+            except Exception:
                 pass
         return v
 
@@ -82,6 +99,7 @@ def convert_dict_context_dates(d):
     if isinstance(d, dict):
         return {k: convert_dict_context_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
     return d
+
 
 def convert_dict_readable_dates(d):
     def convert_epoch_to_date(k, v):
@@ -92,6 +110,7 @@ def convert_dict_readable_dates(d):
     if isinstance(d, dict):
         return {k: convert_dict_readable_dates(convert_epoch_to_date(k, v)) for k, v in d.iteritems()}
     return d
+
 
 def get_entry_for_object(title, context_key, obj, headers=None, remove_null=False):
     def intersection(lst1, lst2):
@@ -110,7 +129,7 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
     return {
         'Type': entryTypes['note'],
-        'Contents': obj,
+        'Contents': context_obj,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, hr_obj, headers, removeNull=remove_null),
@@ -118,6 +137,7 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
             context_key: context_obj
         }
     }
+
 
 # change the keys of a dictionary according to a conversion map
 # trans_map - { 'OldKey': 'NewKey', ...}
@@ -135,10 +155,11 @@ def replace_keys(src, trans_map=FIELD_NAMES_MAP, camelize=True):
     if isinstance(src, list):
         return map(lambda x: replace_keys(x, trans_map, camelize), src)
     if camelize:
-        src = {snake_to_camel(k): v for k,v in src.iteritems()}
+        src = {snake_to_camel(k): v for k, v in src.iteritems()}
     if trans_map:
-        src = {replace(k, trans_map): v for k,v in src.iteritems()}
+        src = {replace(k, trans_map): v for k, v in src.iteritems()}
     return src
+
 
 def date_range_to_param(date_range):
     params = {}
@@ -146,9 +167,10 @@ def date_range_to_param(date_range):
         try:
             date_range = int(date_range)
             params['date_range'] = date_range
-        except ValueError, e:
+        except ValueError:
             return_error("Invalid date range: {}".format(date_range))
     return params
+
 
 def get_scan_error_message(response, scan_id):
     code = response.status_code
@@ -166,6 +188,7 @@ def get_scan_error_message(response, scan_id):
         message += " - Scan cannot be launched in its current status."
     return message
 
+
 # Request/Response methods
 # kwargs: request parameters
 def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_error=False, **kwargs):
@@ -175,7 +198,7 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
     try:
         res = requests.request(method, full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=kwargs)
         res.raise_for_status()
-    except HTTPError, e:
+    except HTTPError:
         if ignore_license_error and res.status_code in (403, 500):
             return
         err_msg = get_scan_error_message(res, scan_id)
@@ -187,22 +210,26 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
         sys.exit(0)
     return res.json()
 
+
 def get_scan_info(scans_result_elem):
     response = send_scan_request(scans_result_elem['id'], ignore_license_error=True)
     if response:
         response['info'].update(scans_result_elem)
         return response['info']
 
+
 def send_vuln_details_request(plugin_id, date_range=None):
     full_url = "{}{}{}/{}".format(BASE_URL, "workbenches/vulnerabilities/", plugin_id, "info")
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     return res.json()
+
 
 def send_asset_vuln_request(asset_id, date_range):
     full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
     res.raise_for_status()
     return res.json()
+
 
 def get_vuln_info(vulns):
     vulns_info = {v['plugin_id']: v for v in vulns}
@@ -217,10 +244,12 @@ def get_vuln_info(vulns):
             infos.append(info)
     return infos, errors
 
+
 def get_assets():
     full_url = "{}{}".format(BASE_URL, "assets/")
     res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL)
     return res.json()
+
 
 def get_asset_id(hostname=None, ip=None):
     if all(s is None for s in (hostname, ip)):
@@ -241,23 +270,30 @@ def get_asset_id(hostname=None, ip=None):
         return assets[0]['id'], ip
     return_error('No IP or Hostname found for asset.')
 
+
 # Command methods
 def test_module():
     send_scan_request()
     return 'ok'
 
+
 def get_scans_command():
     folder_id, last_modification_date = demisto.getArg('folderId'), demisto.getArg('lastModificationDate')
     if last_modification_date:
-        last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')], "%Y-%m-%d").timetuple()))   # str(YYYY-MM-DD) to int(timestamp)
+        last_modification_date = int(time.mktime(datetime.strptime(last_modification_date[0:len('YYYY-MM-DD')],
+                                                                   "%Y-%m-%d").timetuple()))  # str(YYYY-MM-DD) to int(timestamp)
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
     scan_entries = map(get_scan_info, response['scans'])
     valid_scans = filter(lambda x: x is not None, scan_entries)
-    invalid_scans = [k for k,v in zip(response['scans'], scan_entries) if v is None]
-    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan', replace_keys(valid_scans), GET_SCANS_HEADERS)]
+    invalid_scans = [k for k, v in zip(response['scans'], scan_entries) if v is None]
+    res = [get_entry_for_object('Tenable.io - List of Scans', 'TenableIO.Scan', replace_keys(valid_scans),
+                                GET_SCANS_HEADERS)]
     if invalid_scans:
-        res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans', 'TenableIO.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS, remove_null=True))
+        res.append(get_entry_for_object('Inactive Web Applications Scans - Renew WAS license to use these scans',
+                                        'TenableIO.Scan', replace_keys(invalid_scans), GET_SCANS_HEADERS,
+                                        remove_null=True))
     return res
+
 
 def launch_scan_command():
     scan_id, targets = demisto.getArg('scanId'), demisto.getArg('scanTartgets')
@@ -271,7 +307,9 @@ def launch_scan_command():
         'status': 'pending'
     })
 
-    return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res), LAUNCH_SCAN_HEADERS)
+    return get_entry_for_object('The requested scan was launched successfully', 'TenableIO.Scan', replace_keys(res),
+                                LAUNCH_SCAN_HEADERS)
+
 
 def get_report_command():
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
@@ -281,31 +319,40 @@ def get_report_command():
     if info == 'yes':
         scan_details['info']['id'] = scan_id
         scan_details['info'] = replace_keys(scan_details['info'])
-        results.append(get_entry_for_object('Scan basic info', 'TenableIO.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
+        results.append(
+            get_entry_for_object('Scan basic info', 'TenableIO.Scan', scan_details['info'], SCAN_REPORT_INFO_HEADERS))
 
     if 'vulnerabilities' not in scan_details:
         return "No vulnerabilities found."
     vuln_info, vulns_not_found = get_vuln_info(scan_details['vulnerabilities'])
     vuln_info = convert_severity_values(replace_keys(vuln_info))
-    results.append(get_entry_for_object('Vulnerabilities', 'TenableIO.Vulnerabilities', vuln_info, SCAN_REPORT_VULNERABILITIES_HEADERS))
+    results.append(get_entry_for_object('Vulnerabilities', 'TenableIO.Vulnerabilities', vuln_info,
+                                        SCAN_REPORT_VULNERABILITIES_HEADERS))
     if len(vulns_not_found) > 0:
         vulns_not_found = replace_keys(vulns_not_found)
-        results.append(get_entry_for_object('Vulnerabilities - Missing From Workbench', 'TenableIO.Vulnerabilities', vulns_not_found, SCAN_REPORT_VULNERABILITIES_HEADERS, True))
+        results.append(get_entry_for_object('Vulnerabilities - Missing From Workbench', 'TenableIO.Vulnerabilities',
+                                            vulns_not_found, SCAN_REPORT_VULNERABILITIES_HEADERS, True))
 
     if detailed == 'yes':
         assets = replace_keys(scan_details['hosts'] + scan_details['comphosts'])
         results.append(get_entry_for_object('Assets', 'TenableIO.Assets', assets, SCAN_REPORT_HOSTS_HEADERS))
-        if 'remediations' in scan_details and 'remediations' in scan_details['remediations'] and len(scan_details['remediations']['remediations']) > 0:
+        if 'remediations' in scan_details and 'remediations' in scan_details['remediations'] and len(
+                scan_details['remediations']['remediations']) > 0:
             remediations = replace_keys(scan_details['remediations']['remediations'], REMEDIATIONS_NAMES_MAP)
-            results.append(get_entry_for_object('Remediations', 'TenableIO.Remediations', remediations, SCAN_REPORT_REMEDIATIONS_HEADERS))
+            results.append(get_entry_for_object('Remediations', 'TenableIO.Remediations', remediations,
+                                                SCAN_REPORT_REMEDIATIONS_HEADERS))
     return results
+
 
 def get_vulnerability_details_command():
     plugin_id, date_range = demisto.getArg('vulnerabilityId'), demisto.getArg('dateRange')
     info = send_vuln_details_request(plugin_id, date_range)
     if 'error' in info:
         return_error(info['error'])
-    return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'TenableIO.Vulnerabilities', convert_severity_values(replace_keys(flatten(info['info']))), VULNERABILITY_DETAILS_HEADERS)
+    return get_entry_for_object('Vulnerability details - {}'.format(plugin_id), 'TenableIO.Vulnerabilities',
+                                convert_severity_values(replace_keys(flatten(info['info']))),
+                                VULNERABILITY_DETAILS_HEADERS)
+
 
 def get_vulnerabilities_by_asset_command():
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
@@ -314,12 +361,14 @@ def get_vulnerabilities_by_asset_command():
     if 'error' in info:
         return_error(info['error'])
     vulns = convert_severity_values(replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP))
-    entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns, ASSET_VULNS_HEADERS)
+    entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns,
+                                 ASSET_VULNS_HEADERS)
     entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
         'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
         'Hostname': indicator
     }
     return entry
+
 
 def get_scan_status_command():
     scan_id = demisto.getArg('scanId')
@@ -329,7 +378,6 @@ def get_scan_status_command():
         'Status': scan_details['info']['status']
     }
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
-
 
 
 # Command selector
