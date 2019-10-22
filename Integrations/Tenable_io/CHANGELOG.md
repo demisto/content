@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed raw-response for all commands
+Fixed the *raw-response* argument for all commands.
