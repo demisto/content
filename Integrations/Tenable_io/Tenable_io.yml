@@ -24,9 +24,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: A comprehensive asset centric solution to accurately track resources
-  while accommodating dynamic assets such as cloud, mobile devices, containers and
-  web applications.
 display: Tenable.io
 name: Tenable.io
 script:
