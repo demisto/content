@@ -78,13 +78,7 @@ def arg_dict_creator(string: str):
     if not string:
         return None
 
-    split_string = string.split(',')
-    arg_dict = {}
-    for section in split_string:
-        key, value = section.split(':', 1)
-        arg_dict[key] = value
-
-    return arg_dict
+    return dict(section.split(':', 1) for section in string.split(','))
 
 
 def key_context_creation(res: Any) -> Dict:
