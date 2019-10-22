@@ -48,6 +48,10 @@ class Client(BaseClient):
         res = self._http_request('GET', 'session/login', json_data=body, ok_codes=[200])
 
         self.session = res.get('data').get('session')
+        return self.session
+
+    def login(self):
+        return self.update_session()
 
     def parse_sensor_parameters(self, parameters):
         sensors = parameters.split(';')
@@ -371,8 +375,7 @@ class Client(BaseClient):
 
 
 def test_module(client, data_args):
-    res = client.do_request('GET', 'system_status')
-    if res.get('data'):
+    if client.login():
         return demisto.results('ok')
     raise ValueError('Test Tanium integration failed - please check your username and password')
 
