@@ -301,7 +301,7 @@ def test_fetch_limit(requests_mock):
     )
 
     assert len(incidents) == 3
-    assert next_run.get('last_fetch') == '2010-01-30T00:01:00Z'
+    assert next_run.get('last_fetch') == '2010-01-11T00:00:21Z'
 
 
 def test_get_fetch_times():
