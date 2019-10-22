@@ -19,7 +19,7 @@ TOKEN = demisto.params().get('token', '')
 BASE_URL = 'https://api.github.com'
 REPOSITORY = demisto.params().get('repository')
 USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '30 days')
+FETCH_TIME = demisto.params().get('fetch_time', '3')
 
 USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
 ISSUE_SUFFIX = USER_SUFFIX + '/issues'

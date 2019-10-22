@@ -30,7 +30,7 @@ The package is converted into a YAML file, which include all the package compone
      - Dark version of the logo.
    - Note: Since Python 2.7 will not be maintained past 2020, we refer only to Python 3 for the Pipfile.
  
-For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory names PaloAltoNetworksCortex and contain the following files:
+For example, a package of the integration [Palo Alto Networks Cortex](https://github.com/demisto/content/tree/master/Integrations/PaloAltoNetworksCortex) is stored under Integrations directory in a sub-directory named PaloAltoNetworksCortex and contain the following files:
 
 ```
 .Integrations   
@@ -53,5 +53,10 @@ You can extract a package from a YAML file by using the following:
  -  `package_extractor.py` script from the Content repository. 
     - Usage example: `python3 package_extractor.py -i /Integrations/integration-WildFire.yml -o Integrations/WildFire -m`
 
+---
+
+#### Integration logo standard
+
+![integration logos-infographic2](https://user-images.githubusercontent.com/33804640/65389274-33119c80-dd5d-11e9-9d15-5ce8dbd03627.png)
 
 

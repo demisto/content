@@ -1,4 +1,7 @@
 ## [Unreleased]
+Improved implementation of the default value for the fetch time parameter.
+
+## [19.10.0] - 2019-10-03
 -
 
 ## [19.9.1] - 2019-09-18

@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.0] - 2019-10-03
 Fixed an issue where the email authenticity check task failed to find the relevant script.
 
 ## [19.9.1] - 2019-09-18
