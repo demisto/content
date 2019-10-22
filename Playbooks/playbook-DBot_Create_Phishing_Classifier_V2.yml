@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -40,6 +41,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -371,4 +373,4 @@ outputs:
 - contextPath: DBotPhishingClassifier.ModelName
   description: Model name in Demisto
   type: string
-sourceplaybookid: DBotCreatePhishingClassifier
+fromversion: "4.5.0"

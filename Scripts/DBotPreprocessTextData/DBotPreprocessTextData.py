@@ -61,7 +61,7 @@ PRE_PROCESS_TYPES = {
 
 
 def read_file(input_entry_or_string, file_type):
-    data = []
+    data = []  # type: List[Dict[str,str]]
     if not input_entry_or_string:
         return data
     if file_type.endswith("string"):
@@ -70,7 +70,7 @@ def read_file(input_entry_or_string, file_type):
         if isinstance(input_entry_or_string, str):
             file_content = BytesIO(input_entry_or_string)
         elif isinstance(input_entry_or_string, unicode):
-            file_content = StringIO(input_entry_or_string)
+            file_content = StringIO(input_entry_or_string)  # type: ignore
     else:
         res = demisto.getFilePath(input_entry_or_string)
         if not res:
@@ -104,7 +104,7 @@ def pre_process(data, source_text_field, target_text_field, remove_html_tags, pr
 
 def concat_text_fields(data, target_field, text_fields):
     for d in data:
-        text = ''
+        text = u''
         for fields in text_fields:
             for field in fields.strip().split("|"):
                 field = field.strip()

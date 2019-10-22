@@ -39,7 +39,8 @@ def test_build_query(mocker):
                     'and (modified:<"3 days ago") and (status:* and closeReason:*)'
     query = build_incidents_query("Extra part", "Phishing", "modified", "2019-01-10", "3 days ago",
                                   "status")
-    assert query == '(Extra part) and (type:("Phishing")) and (modified:>="2019-01-10T00:00:00") and (modified:<"3 days ago") and (status:*)'
+    assert query == '(Extra part) and (type:("Phishing")) and (modified:>="2019-01-10T00:00:00") ' \
+                    'and (modified:<"3 days ago") and (status:*)'
 
 
 def test_main(mocker):
