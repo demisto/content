@@ -128,7 +128,9 @@ def fetch_incidents(client, last_run, first_fetch_time):
     Args:
         client: HelloWorld client
         last_run: The greatest incident created_time we fetched from last fetch
-        first_fetch_time: If last_run is None then fetch all incidents since first_fetch_time
+        client (Client): HelloWorld client
+        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
+        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
 
     Returns:
         next_run: This will be last_run in the next fetch-incidents
