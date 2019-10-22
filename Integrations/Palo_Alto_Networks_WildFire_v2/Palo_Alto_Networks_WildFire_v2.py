@@ -282,14 +282,7 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    test_url = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
-    }
-    json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
-    if json_res:
+    if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
 
