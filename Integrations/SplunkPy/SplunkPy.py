@@ -213,6 +213,7 @@ if proxy:
             handler=handler(proxy),
             host=demisto.params()['host'],
             port=demisto.params()['port'],
+            app=demisto.params().get('app'),
             username=demisto.params()['authentication']['identifier'],
             password=demisto.params()['authentication']['password'],
             verify=VERIFY_CERTIFICATE)
@@ -225,6 +226,7 @@ else:
     service = client.connect(
         host=demisto.params()['host'],
         port=demisto.params()['port'],
+        app=demisto.params().get('app'),
         username=demisto.params()['authentication']['identifier'],
         password=demisto.params()['authentication']['password'],
         verify=VERIFY_CERTIFICATE)
@@ -282,7 +284,8 @@ if demisto.command() == 'splunk-search':
         if not isinstance(res[0], dict):
             headers = "results"
 
-    human_readable = tableToMarkdown("Splunk Search results for: " + demisto.args()['query'], res, headers)
+    human_readable = tableToMarkdown("Splunk Search results \n\n Results for query: {}".format(demisto.args()['query']),
+                                     res, headers)
 
     demisto.results({
         "Type": 1,
