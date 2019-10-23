@@ -343,7 +343,6 @@ def extract_text_from_pdf(file_path):
 
 
 def extract_text_from_md_html(file_path):
-    file_contents = ''
     try:
         with open(file_path, mode='r') as html_page:
             soup = BeautifulSoup(html_page, features="html.parser")
