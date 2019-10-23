@@ -2118,7 +2118,7 @@ script:
     - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
       type: Unknown
-  dockerimage: demisto/python3:3.7.4.2718
+  dockerimage: demisto/python3:3.7.4.2728
   isfetch: false
   longRunning: false
   longRunningPort: false
