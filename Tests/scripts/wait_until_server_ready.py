@@ -6,6 +6,7 @@ from time import sleep
 import datetime
 
 import demisto_client.demisto_api
+from demisto_client.demisto_api.rest import ApiException
 from typing import List, AnyStr
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
@@ -90,7 +91,12 @@ def main():
                 if ami_instance_name not in ready_ami_list:
                     host = "https://{}".format(ami_instance_ip)
                     client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-                    res = client.get_all_widgets()
+
+                    try:
+                        res = client.get_all_widgets()
+                    except ApiException:
+                        res[1] == 433
+                        pass
                     if res[1] == 200:
                         print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
