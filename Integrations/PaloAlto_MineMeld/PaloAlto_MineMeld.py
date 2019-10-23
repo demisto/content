@@ -453,7 +453,8 @@ def file():
 
     if result_indicator:
         miner_name = result_indicator[0]['miner']
-        hash_type = get_hash_type(file).upper()
+        hash_type = get_hash_type(file)
+        hash_type_upper = hash_type.upper()
         # add only malicious to context
         if dbotscore == 3:
             indicator_context_data = {
@@ -464,7 +465,8 @@ def file():
                     'Vendor': 'Palo Alto MineMeld',
                     'Description': 'Indicator was found in MineMeld\'s blacklist: {}'.format(miner_name)
                 },
-                hash_type: file
+                hash_type: file,
+                hash_type_upper: file
             }
         else:
             indicator_context_data = {
@@ -472,7 +474,8 @@ def file():
                     'Miner': {'name': miner_name},
                     'Indicators': result_indicator
                 },
-                hash_type: file
+                hash_type: file,
+                hash_type_upper: file
             }
 
         entry_context = {
