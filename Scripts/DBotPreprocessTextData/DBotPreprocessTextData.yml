@@ -117,5 +117,6 @@ timeout: 12µs
 type: python
 dockerimage: demisto/dl:1.4
 runonce: true
+fromversion: "4.5.0"
 tests:
 - Create_Phishing_Classifier_V2_ML_Test
