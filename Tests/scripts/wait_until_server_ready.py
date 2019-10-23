@@ -94,14 +94,14 @@ def main():
 
                     try:
                         res = client.get_all_widgets()
+                        if res[1] == 200:
+                            print("[{}] {} is ready to use".format(datetime.datetime.now(),
+                                                             ami_instance_name))
+                            ready_ami_list.append(ami_instance_name)
                     except ApiException:
-                        res = ()
+                        if i % 30 == 0:  # printing the message every 30 seconds
+                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
                         pass
-                    if res[1] == 200:
-                        print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
-                        ready_ami_list.append(ami_instance_name)
-                    elif i % 30 == 0:  # printing the message every 30 seconds
-                        print "{} is not ready yet - waiting for it to start".format(ami_instance_name)
 
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
