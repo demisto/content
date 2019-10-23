@@ -118,14 +118,14 @@ def get_entry_for_object(title, context_key, obj, headers=None, remove_null=Fals
 
     if len(obj) == 0:
         return "There is no output result"
-    obj = filter_dict_null(obj)
-    if isinstance(obj, list):
-        obj = map(filter_dict_null, obj)
-    if headers and isinstance(obj, dict):
-        headers = intersection(headers, obj.keys())
+    filtered_obj = filter_dict_null(obj)
+    if isinstance(filtered_obj, list):
+        filtered_obj = map(filter_dict_null, filtered_obj)
+    if headers and isinstance(filtered_obj, dict):
+        headers = intersection(headers, filtered_obj.keys())
 
-    hr_obj = convert_dict_readable_dates(obj)
-    context_obj = convert_dict_context_dates(filter_dict_keys(obj, headers) if headers else obj)
+    hr_obj = convert_dict_readable_dates(filtered_obj)
+    context_obj = convert_dict_context_dates(filter_dict_keys(filtered_obj, headers) if headers else filtered_obj)
 
     return {
         'Type': entryTypes['note'],
