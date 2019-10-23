@@ -8,8 +8,8 @@ requests.packages.urllib3.disable_warnings()
 
 ACCEPT_HEADER = {
     'Accept': "application/json, "
-    "application/vnd.docker.distribution.manifest.v2+json, "
-    "application/vnd.docker.distribution.manifest.list.v2+json"
+              "application/vnd.docker.distribution.manifest.v2+json, "
+              "application/vnd.docker.distribution.manifest.list.v2+json"
 }
 
 # use 10 seconds timeout for requests
@@ -70,6 +70,12 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
 
 
 def segment_max_extract(tags, segment_number):
+    """Will find the maximal number in a docker image tag segment
+
+    Args:
+        tags(list): list of docker image tag names - ordered in lexical order
+        segment_number(int): the number of the tag segment to check.
+    """
     max_segment = -1
     for tag in tags:
         tag_seg = tag.split('.')
@@ -87,6 +93,17 @@ def segment_max_extract(tags, segment_number):
 
 
 def clear_older_tags(tags, max_segment, segment_number):
+    """Will remove entries from the docker image tags list where their tag segment is lower than the maximal number
+    in that segment.
+
+    Args:
+        tags(list): list of docker image tag names - ordered in lexical order
+        max_segment(int): the maximal number in a docker image tag in the segment_number
+        segment_number(int): the segment_number to clear the list by
+
+    Returns:
+        The cleared docker image tags list
+    """
     cleared_tag_list = []  # type:List
     for tag in tags:
         tag_seg = tag.split('.')
@@ -103,19 +120,46 @@ def clear_older_tags(tags, max_segment, segment_number):
     return cleared_tag_list
 
 
-def find_latest_tag(tags):
+def lexical_find_latest_tag(tags):
+    """Will return the latest numeric docker image tag if possible - otherwise will return the last lexical tag.
+
+    for example for the tag list: [2.1.2000, 2.1.2700 2.1.373, latest], will return 2.1.2700
+
+    Args:
+        tags(list): list of docker image tag names - ordered in lexical order
+    """
     segment_number = 0
     while True:
         segment_max = segment_max_extract(tags, segment_number)
-        # no tags
+        # no tags with numbers
         if segment_max == -1:
-            return 'latest'
+            return tags[-1]
 
         tags = clear_older_tags(tags, segment_max, segment_number)
         if len(tags) == 1:
             return tags[0]
 
         segment_number = segment_number + 1
+
+
+def find_latest_tag_by_date(tags):
+    """Get the latest tags by datetime comparison.
+
+    Args:
+        tags(list): List of dictionaries representing the docker image tags
+
+    Returns:
+        The last updated docker image tag name
+    """
+    latest_tag_name = 'latest'
+    latest_tag_date = datetime.now() - timedelta(days=400000)
+    for tag in tags:
+        tag_date = datetime.strptime(tag.get('last_updated'), '%Y-%m-%dT%H:%M:%S.%fZ')
+        if tag_date >= latest_tag_date:
+            latest_tag_date = tag_date
+            latest_tag_name = tag.get('name')
+
+    return latest_tag_name
 
 
 def main():
@@ -136,20 +180,32 @@ def main():
         if auth_token:
             headers['Authorization'] = "Bearer {}".format(auth_token)
 
+        # first try to get the docker image tags using normal http request
         res = requests.get(
-            'https://{}/v2/{}/tags/list'.format(registry, image_name),
-            headers=headers,
-            timeout=TIMEOUT,
-            verify=verify_ssl
+            url='https://hub.docker.com/v2/repositories/{}/tags'.format(image_name),
+            verify=verify_ssl,
         )
-        res.raise_for_status()
-        # returns tags in lexical order. See: https://docs.docker.com/registry/spec/api/#listing-image-tags
-        tags = res.json().get('tags', [])
-        if tags:
-            tag = find_latest_tag(tags)
+        if res.status_code == 200:
+            tags = res.json().get('results', [])
+            # if http request successful find the latest tag by date in the response
+            if tags:
+                tag = find_latest_tag_by_date(tags)
 
         else:
-            tag = 'latest'
+            # if http request did not successed than get tags using the API.
+            # See: https://docs.docker.com/registry/spec/api/#listing-image-tags
+            res = requests.get(
+                'https://{}/v2/{}/tags/list'.format(registry, image_name),
+                headers=headers,
+                timeout=TIMEOUT,
+                verify=verify_ssl
+            )
+            res.raise_for_status()
+            # the API returns tags in lexical order with no date info - so try an get the numeric highest tag
+            tags = res.json().get('tags', [])
+            if tags:
+                tag = lexical_find_latest_tag(tags)
+
         demisto.results(tag)
     except Exception as ex:
         return_error("Failed getting tag for: {}. Err: {}".format(docker_full_name, str(ex)))
