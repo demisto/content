@@ -7,7 +7,7 @@ import logging
 
 
 # CONST
-POLYSWARM_DEMISTO_VERSION = '0.1.0'
+POLYSWARM_DEMISTO_VERSION = '0.1.1'
 POLYSWARM_URL_RESULTS = 'https://polyswarm.network/scan/results'
 ERROR_ENDPOINT = 'Error with endpoint: '
 
@@ -298,7 +298,7 @@ class PolyswarmConnector():
             if not artifact_instances[0]['bounty_result']:
                 return_error('Run Rescan for this hash')
 
-            uuid = artifact_instances[0]['bounty_result']['uuid']
+            uuid = artifact_instances[0]['bounty_result']['files'][0]['submission_guid']
             assertions = artifact_instances[0]['bounty_result']['files'][0]['assertions']
 
             for assertion in assertions:
