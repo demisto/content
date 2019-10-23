@@ -5,7 +5,7 @@ import argparse
 from time import sleep
 import datetime
 
-import demisto
+import demisto_client.demisto_api
 from typing import List, AnyStr
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
@@ -14,7 +14,7 @@ MAX_TRIES = 20
 SLEEP_TIME = 45
 
 
-def get_username_password():
+def get_api_key():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
     parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
@@ -28,34 +28,31 @@ def get_username_password():
     if options.non_ami:
         return conf['username'], conf['username'], options.contentVersion
 
-    return conf['username'], conf['userPassword'], options.contentVersion
+    return conf['apikeys'][0]['apikey'] , options.contentVersion
 
 
-def is_correct_content_installed(username, password, ips, content_version):
+def is_correct_content_installed(api_key, ips, content_version):
     # type: (AnyStr, AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
     Args:
-        username: for server connection
-        password: for server connection
+        api_key: For server connection
         ips: list with lists of [instance_name, instance_ip]
         content_version: content version that should be installed
 
     Returns:
         True: if all tests passed, False if one failure
     """
-    method = "post"
-    suffix = "/content/installed/"
+
     for ami_instance_name, ami_instance_ip in ips:
-        d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
-        d.Login()
-        resp = d.req(method, suffix, None)
-        resp_json = None
+        host = "https://{}".format(ami_instance_ip)
+        client = demisto_client.configure(base_url=host, api_key=api_key)
+        resp_json = client.generic_request_func(self=client, path='/content/installed/', method='POST')
+
         try:
-            resp_json = resp.json()
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
-                                 'Text: {}'.format(type(resp_json), resp.text))
+                                 'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
@@ -80,7 +77,7 @@ def is_correct_content_installed(username, password, ips, content_version):
 
 
 def main():
-    username, password, content_version = get_username_password()
+    api_key, content_version = get_api_key()
 
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
@@ -91,9 +88,10 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
-                    c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
-                    res = c.Login()
-                    if res.status_code == 200:
+                    host = "https://{}".format(ami_instance_ip)
+                    client = demisto_client.configure(base_url=host, api_key=api_key)
+                    res = client.get_all_widgets()
+                    if res[1] == 200:
                         print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
                         ready_ami_list.append(ami_instance_name)
                     elif i % 30 == 0:  # printing the message every 30 seconds
@@ -109,7 +107,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_correct_content_installed(username, password, instance_ips, content_version):
+    if not is_correct_content_installed(api_key, instance_ips, content_version):
         sys.exit(1)
 
 
