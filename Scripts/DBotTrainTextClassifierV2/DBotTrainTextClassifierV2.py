@@ -143,7 +143,8 @@ def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples
                 model_evaluation_success = True
 
     if not model_evaluation_success:
-        return_error("Model target accuracy %.2f is below %.2f" % (report['accuracy'], target_accuracy))
+        low_score = min(report['macro avg']['precision'], report['macro avg']['recall'])
+        return_error("Model target accuracy %.2f is below %.2f" % (low_score, target_accuracy))
 
     human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report)
     if cut > 0.5 and confusion_matrix_cut is not None:
@@ -194,7 +195,7 @@ def main():
 
     data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping, tag_field)
     if len(missing_labels_counter) > 0:
-        human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", exist_labels_counter)
+        human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
             'Type': entryTypes['note'],
             'Contents': missing_labels_counter,
