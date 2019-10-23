@@ -1456,6 +1456,12 @@
             "nightly": true
         },
         {
+            "integrations": "SlashNext Phishing Incident Response",
+            "playbookID": "SlashNextPhishingIncidentResponse-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
