@@ -1,0 +1,54 @@
+commonfields:
+  id: nmap
+  version: -1
+name: nmap
+display: nmap
+category: Network Security
+description: Run nmap scans with the given parameters
+configuration: []
+fromversion: 5.0.0
+script:
+  script: ''
+  type: python
+  subtype: python3
+  commands:
+  - name: nmap-scan
+    arguments:
+    - name: targets
+      required: true
+      description: The targets to scan. Accepts comma-separated list.
+    - name: options
+      required: true
+      description: The nmap options to use as documented by nmap
+    outputs:
+    - contextPath: NMAP.Scan.Summary
+      description: Scan summary
+    - contextPath: NMAP.Scan.Version
+      description: nmap version
+    - contextPath: NMAP.Scan.Started
+      description: Start time epoch
+    - contextPath: NMAP.Scan.Ended
+      description: End time epoch
+    - contextPath: NMAP.Scan.CommandLine
+      description: The command line being used
+    - contextPath: NMAP.Scan.ScanType
+      description: The type of discovery scan
+    - contextPath: NMAP.Scan.Hosts.Hostname
+      description: DNS hostname of scanned host
+    - contextPath: NMAP.Scan.Hosts.Address
+      description: Scanned host address
+    - contextPath: NMAP.Scan.Hosts.Status
+      description: Is the host up or down
+    - contextPath: NMAP.Scan.Hosts.Services.Port
+      description: The port of the service
+    - contextPath: NMAP.Scan.Hosts.Services.Protocol
+      description: The protocol of the service
+    - contextPath: NMAP.Scan.Hosts.Services.State
+      description: The state of the service
+    - contextPath: NMAP.Scan.Hosts.Services.Banner
+      description: Any captured banner from the service
+    - contextPath: NMAP.Scan.Hosts.Services.Service
+      description: The service name
+    description: Scan targets with the given parameters
+    execution: true
+  dockerimage: demisto/nmap:1.0.0.1977
