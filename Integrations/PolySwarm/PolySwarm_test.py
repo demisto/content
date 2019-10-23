@@ -385,7 +385,7 @@ MOCK_SEARCH_JSON_RESPONSE = {
                                     }
                                 ],
                                 "bounty_guid": "c21cba7a-43c8-452d-a1bd-c30ce21f66e9",
-                                "submission_guid": "2521926f-0997-4a01-9f91-617a6ee2097a",
+                                "submission_guid": "eda6fbd6-b1c6-4e97-8126-01f936460fe5",
                                 "hash": "8c9d28c07e7edeeb85c7ae4390e15cd545532acfdab3369f568d17162513eb47",
                                 "window_closed": True,
                                 "assertions": [
