@@ -22,7 +22,8 @@
         },
         {
             "playbookID": "Create_Phishing_Classifier_V2_ML_Test",
-            "timeout" : 2400
+            "timeout" : 2400,
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "ZeroFox",
