@@ -99,7 +99,7 @@ def main():
                     try:
                         path = '/health'
                         method = 'GET'
-                        res = client.generic_request_func(self=api_instance, path=path, method=method)
+                        res = client.generic_request_func(self=client, path=path, method=method)
                         print(res)
                         if int(res[1]) == 200:
                             print("[{}] {} is ready to use".format(datetime.datetime.now(),
