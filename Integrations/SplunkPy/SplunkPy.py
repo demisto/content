@@ -153,7 +153,7 @@ def notable_to_incident(event):
         rule_title = event['rule_title']
     if demisto.get(event, 'rule_name'):
         rule_name = event['rule_name']
-    incident["name"] = rule_title + ' : ' + rule_name
+    incident["name"] = "{} : {}".format(rule_title, rule_name)
     if demisto.get(event, 'urgency'):
         incident["severity"] = severity_to_level(event['urgency'])
     if demisto.get(event, 'rule_description'):
