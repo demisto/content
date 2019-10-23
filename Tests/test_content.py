@@ -503,8 +503,8 @@ def restart_demisto_service(ami, c):
         if exit_code == 0:
             print("{}: Checking login to the server...".format(datetime.now()))
             try:
-                res = c.Login()
-                if res.status_code == 200:
+                res = c.get_all_widgets()
+                if res[1] == 200:
                     return
                 else:
                     print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
@@ -528,7 +528,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_name = options.buildName
 
     demisto_api_key = generate_demisto_api_key()
-    c = demisto_client.configure(base_url=server, api_key=demisto_api_key)
+    c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
 
