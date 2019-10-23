@@ -52,7 +52,7 @@ def sign_email(client: Client, args: Dict):
     signed = out.read().decode('utf-8')
     context = {
         'SMIME.Signed': {
-            'Message': signed,
+            'Message': signed
         }
     }
 
@@ -83,7 +83,7 @@ def encrypt_email_body(client: Client, args: Dict):
 
     entry_context = {
         'SMIME.Encrypted': {
-            'Message': encrypted_message,
+            'Message': encrypted_message
         }
     }
     return encrypted_message, entry_context
@@ -143,7 +143,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     return human_readable, entry_context
 
 
-def send_smime(client: Client, args: Dict):
+def sign_and_encrypt(client: Client, args: Dict):
 
     message = args.get('message', '').encode('utf-8')
     msg_bio = BIO.MemoryBuffer(message)
@@ -184,7 +184,7 @@ def send_smime(client: Client, args: Dict):
 
     msg = out.read().decode('utf-8')
     entry_context = {
-        'SMIME.Encrypted': {
+        'SMIME.SignedAndEncrypted': {
             'Message': msg
         }
     }
@@ -222,7 +222,7 @@ def main():
         'smime-encrypt-email-body': encrypt_email_body,
         'smime-verify-sign': verify,
         'smime-decrypt-email-body': decrypt_email_body,
-        'smime-sign-and-encrypt': send_smime
+        'smime-sign-and-encrypt': sign_and_encrypt
     }
     try:
         command = demisto.command()
