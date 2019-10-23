@@ -87,7 +87,7 @@ def extract_domain(the_input, isFQDNextract):
 
     # convert None to empty string if needed
     result = domain if not isFQDNextract else fqdn
-    result = '' if not result else result
+    result = '' if not result else str(result)
     if type(result) == unicode:
         result = result.encode('utf-8', errors='ignore')
     return result
