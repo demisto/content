@@ -354,7 +354,6 @@ def extract_text_from_md_html(file_path):
         raise
 
 
-
 def remove_false_positives(line):
     false_positive = re.search('([^\s]*[(\[{].*[)\]}][^\s]*)', line)
     if false_positive:
