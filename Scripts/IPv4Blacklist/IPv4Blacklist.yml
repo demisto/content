@@ -16,11 +16,11 @@ args:
 - name: value
   required: true
   default: true
-  description: CSV list of IPv4 Addresses to filter
+  description: Comma-separated list of IPv4 addresses to filter.
   isArray: true
 - name: cidr_ranges
   required: true
-  description: Comma-separated list of IPv4 ranges in CIDR notation to match against
+  description: Comma-separated list of IPv4 ranges in CIDR notation against which to match the IPv4 addresses.
 scripttarget: 0
 runonce: false
 dockerimage: demisto/python3:3.7.4.2728
