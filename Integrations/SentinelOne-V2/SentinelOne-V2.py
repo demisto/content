@@ -448,7 +448,7 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
 
     params = {
         'contentHash': content_hash,
-        'mitigationStatus': mitigation_status,
+        'mitigationStatuses': mitigation_status,
         'createdAt__lt': created_before,
         'createdAt__gt': created_after,
         'createdAt__lte': created_until,
