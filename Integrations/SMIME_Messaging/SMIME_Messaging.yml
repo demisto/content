@@ -25,7 +25,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve items from the service.
+    description: Retrieves items from the service.
     execution: false
     name: smime-sign-email
     outputs:
@@ -82,7 +82,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Send signed/encrypted message.
+    description: Sends the signed/encrypted message.
     execution: false
     name: smime-sign-and-encrypt
     outputs:
