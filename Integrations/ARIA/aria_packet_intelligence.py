@@ -1,5 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
+import os
 import json
 import requests
 import time
@@ -13,9 +14,10 @@ class ParameterError(Exception):
 
 class ARIA(object):
 
-    def __init__(self, sdso_url: str):
+    def __init__(self, sdso_url: str, verify_cert: bool=True):
         self.sdso_url = sdso_url
         self.time_out = 20
+        self.verify_cert = verify_cert
 
     """HELPER FUNCTION"""
 
@@ -251,7 +253,7 @@ class ARIA(object):
         delta = time.perf_counter() - t0
 
         while delta < 20:
-            res = requests.get(trid_url, timeout=self.time_out)
+            res = requests.get(trid_url, timeout=self.time_out, verify=self.verify_cert)
 
             delta = time.perf_counter() - t0
 
@@ -293,7 +295,8 @@ class ARIA(object):
         data = self._generate_named_rule_data(rule_name, logic_block, 'no_rule', 'remove', instance_id,
                                               label_sia_group, label_sia_name, label_sia_region)
 
-        response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out)
+        response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out,
+                                verify=self.verify_cert)
 
         response_timestamp = ''
 
@@ -380,7 +383,8 @@ class ARIA(object):
         for i in instance_list:
             data['selector']['instance_ID'] = str(i)
 
-            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out)
+            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out,
+                                    verify=self.verify_cert)
 
             code = response.status_code
 
@@ -423,7 +427,8 @@ class ARIA(object):
                             data['selector']['label_query']['label2']['SIA_label_type'] = 'name'
                             data['selector']['label_query']['label2']['SIA_label'] = ep.get('Name')
 
-                            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out)
+                            response = requests.put(url, data=json.dumps(data), headers=headers, timeout=self.time_out,
+                                                    verify=self.verify_cert)
                             try:
                                 response_json = response.json()
                             except json.JSONDecodeError:
@@ -1524,9 +1529,21 @@ def main():
     # IP address or FQDN of your SDSo node
     SDSO = demisto.params().get('sdso')
 
+    PROXY = demisto.params().get('proxy', False)
+
+    INSECURE = demisto.params().get('insecure', False)
+
+    verify_cert = not INSECURE
+
+    if not PROXY:
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
     sdso_url = f'{SDSO}/Aria/SS/1.0.0/PBaaS/server'
 
-    aria = ARIA(sdso_url)
+    aria = ARIA(sdso_url, verify_cert)
 
     commnds_dict = {
         'aria-block-conversation': block_conversation_command,
@@ -1568,7 +1585,7 @@ def main():
         # Test if the ARIA PI Reaper is ready
         url = sdso_url + '/endPoint'
         try:
-            res = requests.get(url, timeout=20)
+            res = requests.get(url, timeout=20, verify=verify_cert)
             size = len(json.loads(res.text))
             if res.ok and size != 0:
                 demisto.results('ok')
