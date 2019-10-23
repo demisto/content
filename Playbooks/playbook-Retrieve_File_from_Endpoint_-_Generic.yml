@@ -16,6 +16,7 @@ tasks:
       id: aafd2bad-97ae-4462-85cb-8ef1cad54fc5
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -86,6 +87,7 @@ tasks:
       id: 21df4e3f-565e-48ca-8937-7106ed312e6e
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
