@@ -9,14 +9,17 @@ import urllib3.util
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# Initiating params object for efficiency
+params = demisto.params()
+
 AWS_DEFAULT_REGION = None
-AWS_ROLE_ARN = demisto.params()['roleArn']
-AWS_ROLE_SESSION_NAME = demisto.params()['roleSessionName']
-AWS_ROLE_SESSION_DURATION = demisto.params()['sessionDuration']
+AWS_ROLE_ARN = params.get('roleArn')
+AWS_ROLE_SESSION_NAME = params.get('roleSessionName')
+AWS_ROLE_SESSION_DURATION = params.get('sessionDuration')
 AWS_ROLE_POLICY = None
-AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
-AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
-VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
+AWS_ACCESS_KEY_ID = params.get('access_key')
+AWS_SECRET_ACCESS_KEY = params.get('secret_key')
+VERIFY_CERTIFICATE = not params.get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
 config = Config(
     connect_timeout=1,
@@ -984,24 +987,24 @@ def update_account_password_policy(args):
     if args.get('minimumPasswordLength'):
         kwargs.update({'MinimumPasswordLength': int(args.get('minimumPasswordLength'))})
     if args.get('requireSymbols'):
-        kwargs.update({'RequireSymbols': bool(args.get('requireSymbols'))})
+        kwargs.update({'RequireSymbols': True if args.get('requireSymbols') == 'True' else False})
     if args.get('requireNumbers'):
-        kwargs.update({'RequireNumbers': bool(args.get('requireNumbers'))})
+        kwargs.update({'RequireNumbers': True if args.get('requireNumbers') == 'True' else False})
     if args.get('requireUppercaseCharacters'):
         kwargs.update(
-            {'RequireUppercaseCharacters': bool(args.get('requireUppercaseCharacters'))})
+            {'RequireUppercaseCharacters': True if args.get('requireUppercaseCharacters') == 'True' else False})
     if args.get('requireLowercaseCharacters'):
         kwargs.update(
-            {'RequireLowercaseCharacters': bool(args.get('requireLowercaseCharacters'))})
+            {'RequireLowercaseCharacters': True if args.get('requireLowercaseCharacters') == 'True' else False})
     if args.get('allowUsersToChangePassword'):
         kwargs.update(
-            {'AllowUsersToChangePassword': bool(args.get('allowUsersToChangePassword'))})
+            {'AllowUsersToChangePassword': True if args.get('allowUsersToChangePassword') == 'True' else False})
     if args.get('maxPasswordAge'):
         kwargs.update({'MaxPasswordAge': int(args.get('maxPasswordAge'))})
     if args.get('passwordReusePrevention'):
         kwargs.update({'PasswordReusePrevention': int(args.get('passwordReusePrevention'))})
     if args.get('hardExpiry'):
-        kwargs.update({'HardExpiry': bool(args.get('hardExpiry'))})
+        kwargs.update({'HardExpiry': True if args.get('hardExpiry') == 'True' else False})
     response = client.update_account_password_policy(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results("The Account Password Policy was updated")
