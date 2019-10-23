@@ -76,13 +76,14 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The message to send.
+      description: The message body to encrypt and sign.
       isArray: false
       name: message
       required: true
       secret: false
     deprecated: false
-    description: Sends the signed/encrypted message.
+    description: Encrypts and signs an email message with S/MIME protocol by using a public
+      RSA certificate.
     execution: false
     name: smime-sign-and-encrypt
     outputs:
