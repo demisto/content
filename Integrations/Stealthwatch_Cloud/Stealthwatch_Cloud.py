@@ -509,14 +509,16 @@ def fetch_incidents():
     list_params['offset'] = offset
     alerts_response = list_alerts(list_params)
 
-    alerts_data = alerts_response.get('objects', None)
+    alerts_data = alerts_response.get('objects', [])
     max_fetch_time = last_fetch_string if last_fetch_string else now.strftime(date_format)
+
     for alert in alerts_data:
         created = alert.get('created')
         if parse_date_string(created) > last_fetch:
             incident_from_alert = create_incident_data_from_alert(alert)
             final_alerts.append(incident_from_alert)
-            max_fetch_time = created
+            if parse_date_string(created) > parse_date_string(max_fetch_time):
+                max_fetch_time = created
 
     demisto.setLastRun({
         'last_fetch_time': max_fetch_time
