@@ -95,7 +95,7 @@ def main():
                     try:
                         res = client.get_all_widgets()
                     except ApiException:
-                        res = None
+                        res = ()
                         pass
                     if res[1] == 200:
                         print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
