@@ -154,10 +154,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 14768e58-dbe9-4f21-8210-d5e8f7ec352e
+    taskid: dfe802aa-a1a6-4534-80c9-e03fe1243536
     type: regular
     task:
-      id: 14768e58-dbe9-4f21-8210-d5e8f7ec352e
+      id: dfe802aa-a1a6-4534-80c9-e03fe1243536
       version: -1
       name: Train Model
       description: Train the machine learning text classifier
@@ -193,7 +193,8 @@ tasks:
       storeModel: {}
       tagField:
         simple: ${inputs.emailTagKey}
-      targetAccuracy: {}
+      targetAccuracy:
+        simple: ${inputs.modelTargetAccuracy}
       textField:
         simple: ${DBotPreProcessTextData.TextFieldProcessed}
     separatecontext: false
@@ -360,6 +361,11 @@ inputs:
     simple: "15"
   required: false
   description: Remove text shorter then this threshold (number of words)
+- key: modelTargetAccuracy
+  value:
+    simple: "0.8"
+  required: false
+  description: The target accuracy of the model
 outputs:
 - contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
   description: F1 score (0-1)
@@ -374,3 +380,5 @@ outputs:
   description: Model name in Demisto
   type: string
 fromversion: "4.5.0"
+tests:
+  - Create_Phishing_Classifier_V2_ML_Test
