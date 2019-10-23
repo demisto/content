@@ -99,11 +99,10 @@ def main():
                     try:
                         path = '/health'
                         method = 'GET'
-                        res = client.generic_request_func(self=client, path=path, method=method)
+                        res = demisto_client.generic_request_func(self=client, path=path, method=method)
                         print(res)
                         if int(res[1]) == 200:
-                            print("[{}] {} is ready to use".format(datetime.datetime.now(),
-                                                             ami_instance_name))
+                            print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                             ready_ami_list.append(ami_instance_name)
                     except ApiException:
                         if i % 30 == 0:  # printing the message every 30 seconds
