@@ -113,10 +113,14 @@ At the moment, this step does not break the build.
 ## Common Server Documentation
 This Step generates documentation files used to populate the *Script Helper* menu.
 
+#### Troubleshoot
 <!-- TODO: add troubleshooting errors -->
+Errors in this section indicates on a problem with the docstrings of CommonServer / CommonServerPython functions.
+Make sure all docstrings compatible with the [Sphinx format](https://sphinx-doc.org).
 
 ## Create Content Artifacts
-This step creates 3 zip files:
+This step creates artifact files that are uploaded to the server and contain all of the content for Demisto. 
+They are composed of 3 zip files:
 - `content_new.zip`: Contains all content entities.
 - `content_yml.zip`: **legacy**. Contains all content entities relevant to Demisto 3.4 and below.
 - `content_test.zip`: Contains all entities under `TestPlaybooks` folder.
@@ -131,7 +135,7 @@ This will upload all files stored under the artifact folder as a circle build ar
 ![](artifacts_1.png)
 
 ## Run Unit Testing and Lint
-Run all relevant unit tests.
+Run all relevant unit tests of integrations and scripts.
 In master branch or due to changes to *CommonServerPython* all unit-tests will be triggered.
 
 ## Download Artifacts
@@ -143,19 +147,32 @@ It will download the Demisto installer from the given build number.
 ## Download Configuration
 **Not relevant for contributors**
 
+Downloads data from content-test-conf, where all the private data is stored. This includes AWS configurations, API keys, login details, and other configurations needed to create a Demisto server with an instance of an integration.
+If one need to used a modified private configuration, One should create a new branch with the exact same branch name as this repository branch. 
+
+#### Troubleshoot
 <!-- TODO: add troubleshooting errors -->
+* master fallback
+* anar circle link
 
 ## Create Instance
 **Not relevant for contributors**
+
+Creates AWS instances for the build.
 <!-- TODO: add troubleshooting errors -->
 
 ## Setup Instance
 **Not relevant for contributors**
+
+Sets up Demisto on the AWS instances, as well as copies the content from the branch you are working on to the instance itself.
 <!-- TODO: add troubleshooting errors -->
 
 ## Run Tests - Latest GA
 **Not relevant for contributors**
+
+This step iterates over each of the test playbooks. This involves creating an incident, attaching the test playbook to the incident, running the playbook, and finally awaiting the results.
 <!-- TODO: add troubleshooting errors -->
+
 
 ## Run Tests - One Before GA
 **Not relevant for contributors**
@@ -176,8 +193,9 @@ Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of
 **Not relevant for contributors**
 
 This step runs only in nightly builds of master branch.
-It will notify the slack channel `#dmst-content-team` about the list of failed tests.
-
+Notifies the `#dmst-content-team` of the results of the build test.
+- **Green** - Awesome. Things aren't broken and the build passed all of its tests. You can share your joy in the content team slack channel with the ```:green-build:``` Anar emoji.
+- **Red** - Bad. You've broken something and your current build will probably cause skynet to form. Try looking at the logs and seeing why it failed.
 
 ## Validate Docker Images
 **This will not run on master branch (or release branches)**
@@ -186,14 +204,15 @@ It will notify the slack channel `#dmst-content-team` about the list of failed t
 ## Instance Test
 **Not relevant for contributors**
 
-This step runs only in nightly builds of master branch.
-
-Configure each integration instance, trigger a `test-module` (test button in instance configuration screen) and notify `dmst-content-lab` slack channel on failures.
+This is for the DevOps teams use and runs on the nightly builds only.
+Iterates through all the integrations we have in the content-test-conf repo and tries to create an instance for each of them, after that it will run the test button for each of them.
+Notifies `#dmst-content-lab` slack channel on failures.
 
 ## Destroy Instances
 **Not relevant for contributors**
 
-This step will download Demisto server log and shutdown each server iff relevant "Run Tests" step passed.
+This step downloads the Demisto server log and destroys the AWS instance in a case of success in the relevant "Run Tests" step.
+If the tests have failed, the instance is preserved for debug purposes. Instances are not persistent and **will be destroyed**.
 
 ## Uploading artifacts final
 Once more, will upload artifact folder (which now also contains serverlogs) as circle build artifacts.
