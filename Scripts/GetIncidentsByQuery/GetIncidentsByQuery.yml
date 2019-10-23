@@ -84,8 +84,7 @@ outputs:
   type: String
 script: '-'
 system: false
-tags:
-- ''
+tags: []
 timeout: 60µs
 type: python
 dockerimage: demisto/dateutil
