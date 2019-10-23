@@ -166,7 +166,7 @@ tasks:
       version: -1
       name: Get address group
       description: Get details for the specified address group
-      script: Panorama|||panorama-get-address-group
+      script: '|||panorama-get-address-group'
       type: regular
       iscommand: true
       brand: ""
