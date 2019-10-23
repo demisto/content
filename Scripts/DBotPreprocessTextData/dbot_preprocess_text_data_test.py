@@ -1,4 +1,4 @@
-import base64, pickle
+import pickle
 
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
