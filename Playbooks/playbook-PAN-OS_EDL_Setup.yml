@@ -2,7 +2,9 @@ id: PAN-OS EDL Setup
 version: -1
 name: PAN-OS EDL Setup
 fromversion: 4.0.0
-description: Sets up external dynamic list in PAN-OS.\nin case file exists in web server it will sync it to demisto. then it will create an EDL object and a matching rule.
+description: Sets up external dynamic list in PAN-OS.\nin case file exists in web
+  server it will sync it to demisto. then it will create an EDL object and a matching
+  rule.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,7 +40,8 @@ tasks:
       id: 131a0e57-5142-4c46-841f-2a1d92d76a12
       version: -1
       name: Is PAN-OS integration enabled?
-      description: Checks if there is an active instance of the PAN-OS integration enabled.
+      description: Checks if there is an active instance of the PAN-OS integration
+        enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -93,7 +96,8 @@ tasks:
       id: 1bcbc1b7-d68f-44b1-8ca3-0ab6a8040e51
       version: -1
       name: Is PAN-OS EDL Management integration enabled?
-      description: Checks if there is an active instance of the PAN-OS EDL Management integration enabled.
+      description: Checks if there is an active instance of the PAN-OS EDL Management
+        integration enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -148,7 +152,6 @@ tasks:
       id: a056115b-eb25-426c-8a8e-eb0a1b72245b
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -156,8 +159,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2720
+          "x": 180,
+          "y": 2600
         }
       }
     note: false
@@ -333,7 +336,7 @@ tasks:
       version: -1
       name: Create EDL Object
       description: Creates an external dynamic list in PAN-OS and connects it to the
-         external file.
+        external file.
       script: '|||panorama-create-edl'
       type: regular
       iscommand: true
@@ -371,14 +374,13 @@ tasks:
       id: 915c9aa1-b402-40a8-81c5-4acd24384556
       version: -1
       name: PAN-OS-Commit-Configuration
-      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "25"
+      - "29"
     separatecontext: true
     view: |-
       {
@@ -398,7 +400,6 @@ tasks:
       id: 66b309f9-5e29-4dfd-8908-4dedac4c3a0f
       version: -1
       name: PAN-OS-Commit-Configuration
-      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -411,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 700,
-          "y": 2260
+          "y": 2170
         }
       }
     note: false
@@ -462,66 +463,20 @@ tasks:
       id: 9b26423f-5509-478d-8e20-f4c5313d60ad
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "28"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1270,
           "y": 1750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "25":
-    id: "25"
-    taskid: db834220-178b-4182-852c-33ecf7a8a12a
-    type: regular
-    task:
-      id: db834220-178b-4182-852c-33ecf7a8a12a
-      version: -1
-      name: Create EDL object rule
-      description: Creates a policy rule in PAN-OS and uses the EDL as a destination.
-      script: '|||panorama-create-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      action:
-        simple: ${inputs.action-type}
-      application: {}
-      description: {}
-      destination:
-        simple: ${Panorama.EDL.Name}
-      disable: {}
-      log_forwarding:
-        simple: ${inputs.log-forwarding-server}
-      negate_destination: {}
-      negate_source: {}
-      pre_post:
-        simple: ${inputs.pre-post-rulebase}
-      rulename:
-        simple: ${inputs.list-name}-edl-rule
-      service: {}
-      source: {}
-      source_user: {}
-      target: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 700,
-          "y": 2010
         }
       }
     note: false
@@ -535,7 +490,8 @@ tasks:
       id: ddd362fc-e9fd-49c1-87c7-4e662fdce8aa
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be operational if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -547,54 +503,101 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 2260
+          "y": 2170
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "28":
-    id: "28"
-    taskid: 17c460aa-11f5-4387-89c6-7c4aac7a7eb4
-    type: regular
+  "29":
+    id: "29"
+    taskid: bc9c862b-47d9-4ed7-8b77-a8ecdfb1e4e1
+    type: playbook
     task:
-      id: 17c460aa-11f5-4387-89c6-7c4aac7a7eb4
+      id: bc9c862b-47d9-4ed7-8b77-a8ecdfb1e4e1
       version: -1
-      name: Create EDL object rule
-      description: Creates a policy rule in PAN-OS and uses the EDL as a destination.
-      script: '|||panorama-create-rule'
-      type: regular
-      iscommand: true
+      name: Panorama Rule Handling
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      action-type:
+        simple: ${inputs.action-type}
+      element-to-add:
+        simple: ${Panorama.EDL.Name}
+      inbound-or-outbound-rule:
+        simple: ${inputs.inbound-or-outbound-rule}
+      log-forwarding-object-name:
+        simple: ${inputs.log-forwarding-object-name}
+      pre-post-rulebase:
+        simple: ${inputs.pre-post-rulebase}
+      relative-rule-name:
+        simple: ${inputs.relative-rule-name}
+      rule-position:
+        simple: ${inputs.rule-position}
+      rule_name:
+        simple: ${inputs.rule-name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b3c9e690-1dd8-415b-8da5-97990068ed1c
+    type: playbook
+    task:
+      id: b3c9e690-1dd8-415b-8da5-97990068ed1c
+      version: -1
+      name: Panorama Rule Handling
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "27"
     scriptarguments:
-      action:
+      action-type:
         simple: ${inputs.action-type}
-      application: {}
-      description: {}
-      destination:
+      element-to-add:
         simple: ${Panorama.EDL.Name}
-      disable: {}
-      log_forwarding:
-        simple: ${inputs.log-forwarding-server}
-      negate_destination: {}
-      negate_source: {}
-      pre_post:
+      inbound-or-outbound-rule:
+        simple: ${inputs.inbound-or-outbound-rule}
+      log-forwarding-object-name:
+        simple: ${inputs.log-forwarding-object-name}
+      pre-post-rulebase:
         simple: ${inputs.pre-post-rulebase}
-      rulename:
-        simple: ${inputs.list-name}-edl-rule
-      service: {}
-      source: {}
-      source_user: {}
-      target: {}
-    separatecontext: false
+      relative-rule-name:
+        simple: ${inputs.relative-rule-name}
+      rule-position:
+        simple: ${inputs.rule-position}
+      rule_name:
+        simple: ${inputs.rule-name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
     view: |-
       {
         "position": {
           "x": 1270,
-          "y": 2010
+          "y": 1960
         }
       }
     note: false
@@ -613,9 +616,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2735,
-        "width": 1430,
-        "x": 220,
+        "height": 2615,
+        "width": 1470,
+        "x": 180,
         "y": 50
       }
     }
@@ -630,7 +633,8 @@ inputs:
 - key: ioc-type
   value: {}
   required: true
-  description: The type of the IOCs that the list will store. Can be "IP", "URL", or "Domain".
+  description: The type of the IOCs that the list will store. Can be "IP", "URL",
+    or "Domain".
 - key: action-type
   value: {}
   required: true
@@ -649,10 +653,31 @@ inputs:
 - key: web-server-ip
   value: {}
   required: true
-  description: The IP address of the web server on which the files are stored. The web server IP address is configured in the integration instance.
+  description: The IP address of the web server on which the files are stored. The
+    web server IP address is configured in the integration instance.
 - key: pre-post-rulebase
   value:
     simple: pre-rulebase
   required: true
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: rule-position
+  value: {}
+  required: true
+  description: |-
+    the position of the rule in the ruleset
+    can be top/bottom/before/after
+- key: relative-rule-name
+  value: {}
+  required: false
+  description: if the position that is chosen is before/after, specify a rule that
+    the position is relative to
+- key: inbound-or-outbound-rule
+  value: {}
+  required: false
+  description: if a new rule is created, is the rule inbound or outbound
+- key: rule-name
+  value: {}
+  required: false
+  description: The name of the rule to update, or the name of the rule that will be
+    created.
 outputs: []

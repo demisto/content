@@ -2,12 +2,13 @@ id: PAN-OS DAG Configuration
 version: -1
 name: PAN-OS DAG Configuration
 fromversion: 4.0.0
-description: "This playbook utilizes the Dynamic Address Group (DAG) capability of PAN-OS.\nDAG
-  enables analysts to create a rule one time, where the group is the source/destination,
-  and adds IP addresses dynamically without the need to commit the configuration every time.\n\nThe
-  playbook checks if the given tag already exists. If the tag exists, then the IP address is added
-  to the tag.\n\nIf the tag does not exist, a new address group is created with the
-  given tag and a matching rule, and the configuration is committed. \n"
+description: "This playbook utilizes the Dynamic Address Group (DAG) capability of
+  PAN-OS.\nDAG enables analysts to create a rule one time, where the group is the
+  source/destination, and adds IP addresses dynamically without the need to commit
+  the configuration every time.\n\nThe playbook checks if the given tag already exists.
+  If the tag exists, then the IP address is added to the tag.\n\nIf the tag does not
+  exist, a new address group is created with the given tag and a matching rule, and
+  the configuration is committed. \n"
 starttaskid: "0"
 tasks:
   "0":
@@ -193,8 +194,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1480
+          "x": 325,
+          "y": 2450
         }
       }
     note: false
@@ -208,7 +209,6 @@ tasks:
       id: ee06ca45-8577-4b16-8911-2ac2560b2142
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -216,8 +216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
-          "y": 1910
+          "x": 325,
+          "y": 2720
         }
       }
     note: false
@@ -238,7 +238,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "18"
     scriptarguments:
       addresses: {}
       description: {}
@@ -252,49 +252,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
+          "x": 720,
           "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 43bfffc7-9406-492c-8f3a-b6c8a23f764e
-    type: regular
-    task:
-      id: 43bfffc7-9406-492c-8f3a-b6c8a23f764e
-      version: -1
-      name: Create block rule
-      description: Creates a custom block policy rule.
-      script: '|||panorama-custom-block-rule'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "17"
-    scriptarguments:
-      direction:
-        simple: both
-      log_forwarding:
-        simple: ${inputs.log-forwarding-object-name}
-      object_type:
-        simple: address-group
-      object_value:
-        simple: ${inputs.address_group_name}
-      pre_post:
-        simple: pre-rulebase
-      rulename:
-        simple: ${inputs.rule_name}
-      target: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 705,
-          "y": 895
         }
       }
     note: false
@@ -308,8 +267,8 @@ tasks:
       id: 19cf90dc-4544-47e9-809f-38090341f269
       version: -1
       name: Manually commit
-      description: Allows the analyst to manually commit the changes. This will be operational
-        if auto-commit is "false".
+      description: Allows the analyst to manually commit the changes. This will be
+        operational if auto-commit is "false".
       type: regular
       iscommand: false
       brand: ""
@@ -320,8 +279,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 1290
+          "x": 1000,
+          "y": 1400
         }
       }
     note: false
@@ -335,7 +294,6 @@ tasks:
       id: 2bd82322-f586-4e9c-881c-f4385d43d012
       version: -1
       name: PAN-OS-Commit-Configuration
-      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -347,8 +305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1290
+          "x": 570,
+          "y": 1400
         }
       }
     note: false
@@ -384,8 +342,55 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 705,
-          "y": 1070
+          "x": 720,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 08d03cb7-aace-4ff1-8bc5-475010b122db
+    type: playbook
+    task:
+      id: 08d03cb7-aace-4ff1-8bc5-475010b122db
+      version: -1
+      name: Panorama Rule Handling
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      action-type:
+        simple: ${inputs.action-type}
+      element-to-add:
+        simple: ${inputs.address_group_name}
+      inbound-or-outbound-rule:
+        simple: ${inputs.inbound-or-outbound-rule}
+      log-forwarding-object-name:
+        simple: ${inputs.log-forwarding-object-name}
+      pre-post-rulebase:
+        simple: ${inputs.pre-post-rulebase}
+      relative-rule-name:
+        simple: ${inputs.relative-rule-name}
+      rule-position:
+        simple: ${inputs.rule-position}
+      rule_name:
+        simple: ${inputs.rule_name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 940
         }
       }
     note: false
@@ -394,16 +399,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "17_15_#default#": 0.4,
+      "17_15_#default#": 0.24,
       "17_16_yes": 0.34,
       "1_5_#default#": 0.1,
-      "3_4_yes": 0.47,
+      "3_4_yes": 0.4,
       "3_6_#default#": 0.65
     },
     "paper": {
       "dimensions": {
-        "height": 1925,
-        "width": 1380,
+        "height": 2735,
+        "width": 1330,
         "x": 50,
         "y": 50
       }
@@ -411,22 +416,26 @@ view: |-
   }
 inputs:
 - key: tag_name
-  value: {}
+  value:
+    simple: DavidTag5
   required: true
   description: The name of the tag to add to PAN-OS.
 - key: ip_list
-  value: {}
+  value:
+    simple: 192.168.1.12
   required: true
   description: The list of the IP addresses to block.
 - key: address_group_name
-  value: {}
+  value:
+    simple: DavidAG5
   required: true
-  description: The name of the group that will be created if the tag does not
-    exist.
+  description: The name of the group that will be created if the tag does not exist.
 - key: rule_name
-  value: {}
+  value:
+    simple: meshi-rule
   required: false
-  description: A meaningful name of the rule in PAN-OS.
+  description: The name of the rule to update, or the name of the rule that will be
+    created.
 - key: auto_commit
   value:
     simple: "Yes"
@@ -436,4 +445,34 @@ inputs:
   value: {}
   required: false
   description: The server address to which to forward logs.
+- key: rule-position
+  value:
+    simple: before
+  required: true
+  description: |-
+    the position of the rule in the ruleset
+    can be top/bottom/before/after
+- key: relative-rule-name
+  value:
+    simple: pan-os-edl-test-edl-rule
+  required: false
+  description: if the position that is chosen is before/after, specify a rule that
+    the position is relative to
+- key: inbound-or-outbound-rule
+  value:
+    simple: outbound
+  required: false
+  description: if a new rule is created, is the rule inbound or outbound
+- key: action-type
+  value:
+    simple: drop
+  required: false
+  description: |-
+    The action that will be defined in the rule:
+    allow/deny/drop
+- key: pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: true
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
 outputs: []
