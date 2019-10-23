@@ -209,6 +209,7 @@ tasks:
       id: ee06ca45-8577-4b16-8911-2ac2560b2142
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -294,6 +295,7 @@ tasks:
       id: 2bd82322-f586-4e9c-881c-f4385d43d012
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -357,6 +359,7 @@ tasks:
       id: 08d03cb7-aace-4ff1-8bc5-475010b122db
       version: -1
       name: Panorama Rule Handling
+      description: Creates or edits a panorama rule with the given DAG
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false

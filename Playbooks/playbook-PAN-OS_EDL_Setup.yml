@@ -152,6 +152,7 @@ tasks:
       id: a056115b-eb25-426c-8a8e-eb0a1b72245b
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -374,6 +375,7 @@ tasks:
       id: 915c9aa1-b402-40a8-81c5-4acd24384556
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -400,6 +402,7 @@ tasks:
       id: 66b309f9-5e29-4dfd-8908-4dedac4c3a0f
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -517,6 +520,7 @@ tasks:
       id: bc9c862b-47d9-4ed7-8b77-a8ecdfb1e4e1
       version: -1
       name: Panorama Rule Handling
+      description: Creates or edits a panorama rule with the given EDL
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
@@ -564,6 +568,7 @@ tasks:
       id: b3c9e690-1dd8-415b-8da5-97990068ed1c
       version: -1
       name: Panorama Rule Handling
+      description: Creates or edits a panorama rule with the given EDL
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
