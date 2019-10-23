@@ -100,7 +100,7 @@ def main():
                             ready_ami_list.append(ami_instance_name)
                     except ApiException:
                         if i % 30 == 0:  # printing the message every 30 seconds
-                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
+                            print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
                         pass
 
             if len(instance_ips) > len(ready_ami_list):
