@@ -1,2 +1,2 @@
 ## [Unreleased]
-Addresses unhandled exception thrown within exception handler.
+Improved unhandled exceptions that occur when testing the integration instance.
