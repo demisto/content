@@ -8,7 +8,7 @@ import re
 
 def csv_string_to_list(v):
     if type(v) == str:
-        return v.lower().replace(' ', '').replace('\n', '').split(',')
+        return v.lower().replace(' ', '').replace("'", '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
 
@@ -48,9 +48,9 @@ def cidr_to_tuple(cidr):
         return ip, mask
 
 
-def main():
-    ADDRESS_LIST = csv_string_to_list(demisto.args()['value'])
-    CIDR_LIST = csv_string_to_list(demisto.args()['cidr_ranges'])
+def main(value, cidr_ranges):
+    ADDRESS_LIST = csv_string_to_list(value)
+    CIDR_LIST = csv_string_to_list(cidr_ranges)
 
     included_addresses = []
 
@@ -64,10 +64,10 @@ def main():
                 included_addresses.append(addr)
 
     if len(included_addresses) == 0:
-        demisto.results(False)
+        return False
     else:
-        demisto.results(True)
+        return True
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
-    main()
+    demisto.results(main(**demisto.args()))

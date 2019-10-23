@@ -8,7 +8,7 @@ import re
 
 def csv_string_to_list(v):
     if type(v) == str:
-        return v.lower().replace(' ', '').replace('\n', '').split(',')
+        return v.lower().replace(' ', '').replace("'", '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
 
