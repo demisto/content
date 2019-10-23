@@ -14,7 +14,7 @@ class ParameterError(Exception):
 
 class ARIA(object):
 
-    def __init__(self, sdso_url: str, verify_cert: bool=True):
+    def __init__(self, sdso_url: str, verify_cert: bool = True):
         self.sdso_url = sdso_url
         self.time_out = 20
         self.verify_cert = verify_cert
