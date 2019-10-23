@@ -18,7 +18,7 @@ SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.pa
     else demisto.params()['url']
 USE_SSL = not demisto.params().get('insecure', False)
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
+FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 5))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
 BASE_URL = SERVER + '/web/api/v2.0/'
 HEADERS = {
