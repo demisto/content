@@ -33,7 +33,7 @@ def get_api_key():
 
 
 def is_correct_content_installed(api_key, ips, content_version):
-    # type: (AnyStr, AnyStr, List[List], AnyStr) -> bool
+    # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
     Args:
@@ -95,7 +95,7 @@ def main():
                     try:
                         res = client.get_all_widgets()
                     except ApiException:
-                        res[1] == 433
+                        res = None
                         pass
                     if res[1] == 200:
                         print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
