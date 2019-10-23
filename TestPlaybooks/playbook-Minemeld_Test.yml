@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 4395
         }
       }
     note: false
@@ -738,18 +738,18 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: bb51b7df-063f-4b78-86c0-1797aadf584c
+    taskid: 541e6287-ea77-4c73-8b1a-71259424f2f2
     type: condition
     task:
-      id: bb51b7df-063f-4b78-86c0-1797aadf584c
+      id: 541e6287-ea77-4c73-8b1a-71259424f2f2
       version: -1
-      name: Test if file indicator exists
+      name: Test if SHA256 indicator exists
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "28"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -774,12 +774,157 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 633ee109-02ee-4514-839e-148cf74acbe6
+    type: regular
+    task:
+      id: 633ee109-02ee-4514-839e-148cf74acbe6
+      version: -1
+      name: Check File (MD5)
+      description: Search for file on lists
+      script: Palo Alto Minemeld|||file
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      file:
+        simple: d35fc4383b8b89cf29d3d688e1b9cf3d
+      long: {}
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: ed829bc7-d559-499b-85ef-6656af77bffe
+    type: condition
+    task:
+      id: ed829bc7-d559-499b-85ef-6656af77bffe
+      version: -1
+      name: Test if MD5 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          right:
+            value:
+              simple: d35fc4383b8b89cf29d3d688e1b9cf3d
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 8629e502-81b8-4d0d-8854-efa23482967f
+    type: regular
+    task:
+      id: 8629e502-81b8-4d0d-8854-efa23482967f
+      version: -1
+      name: Check File (SHA1)
+      description: Search for file on lists
+      script: Palo Alto Minemeld|||file
+      type: regular
+      iscommand: true
+      brand: Palo Alto Minemeld
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      file:
+        simple: a790cf8ad94bdd47f4232d87fe7b25bdabaf66af
+      long: {}
+      md5: {}
+      retries: {}
+      sha256: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 721f3efa-3ce8-4c13-8814-652d34df7ee0
+    type: condition
+    task:
+      id: 721f3efa-3ce8-4c13-8814-652d34df7ee0
+      version: -1
+      name: Test if SHA1 indicator exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MineMeld
+                accessor: Indicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3710,
+        "height": 4410,
         "width": 380,
         "x": 50,
         "y": 50
