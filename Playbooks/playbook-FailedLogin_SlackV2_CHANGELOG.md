@@ -1,1 +1,1 @@
-New Failed login playbook with Slack V2.
+New Failed login playbook with Slack v2.

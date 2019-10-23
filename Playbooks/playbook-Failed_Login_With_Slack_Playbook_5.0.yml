@@ -1,7 +1,7 @@
 id: Failed Login Playbook With Slack
 version: -1
 name: Failed Login Playbook With Slack
-description: Deprecated. Use the Failed Login - Slack V2 playbook instead.
+description: Deprecated. Use the Failed Login - Slack v2 playbook instead.
 system: true
 fromversion: 5.0.0
 starttaskid: "0"

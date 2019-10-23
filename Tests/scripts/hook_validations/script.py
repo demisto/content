@@ -2,8 +2,8 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_MASTER_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -19,7 +19,7 @@ class ScriptValidator(object):
        old_script (dict): Json representation of the current script from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None):
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self.file_path = file_path
         self.current_script = {}
         self.old_script = {}
@@ -28,17 +28,17 @@ class ScriptValidator(object):
             self.current_script = get_yaml(file_path)
             # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, old_file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
             else:
-                git_hub_path = os.path.join(CONTENT_GITHUB_MASTER_LINK, file_path).replace("\\", "/")
+                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace("\\", "/")
 
             try:
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_script = yaml.safe_load(file_content)
+                res = requests.get(git_hub_path, verify=False)
+                res.raise_for_status()
+                self.old_script = yaml.safe_load(res.content)
             except Exception as e:
-                print(str(e))
-                print_error("Could not find the old script please make sure that you did not break "
-                            "backward compatibility")
+                print_warning("{}\nCould not find the old script please make sure that you did not break "
+                              "backward compatibility".format(str(e)))
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
@@ -54,14 +54,26 @@ class ScriptValidator(object):
         if not self.old_script:
             return True
 
-        is_bc_broke = any([
-            self.is_context_path_changed(),
+        backwards_checks = [
             self.is_docker_image_changed(),
+            self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
             self.is_changed_subtype()
-        ])
+        ]
+
+        # Add sane-doc-report exception
+        # Sane-doc-report uses docker and every fix/change
+        # requires a docker tag change, thus it won't be
+        # backwards compatible.
+        # All other tests should be False (i.e. no problems)
+        sane_doc_checks = all([not c for c in backwards_checks[1:]])
+        if sane_doc_checks and \
+                self.file_path == 'Scripts/SaneDocReport/SaneDocReport.yml':
+            return True
+
+        is_bc_broke = any(backwards_checks)
 
         return not is_bc_broke
 
@@ -164,9 +176,11 @@ class ScriptValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the docker image as been changed."""
-        if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                return True
 
         return False

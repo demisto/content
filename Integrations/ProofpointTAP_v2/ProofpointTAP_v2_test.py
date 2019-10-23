@@ -1,6 +1,8 @@
-from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 import json
 from unittest.mock import patch
+
+from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
+from datetime import datetime
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_DELIVERED_MESSAGE = {
@@ -129,13 +131,13 @@ MOCK_PERMITTED_CLICK = {
     "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
     "classification": "MALWARE",
     "clickIP": "192.0.2.1",
-    "clickTime": "2010-00-11T00:00:20.000Z",
+    "clickTime": "2010-01-11T00:00:20.000Z",
     "messageID": "3333",
     "recipient": "bruce.wayne@pharmtech.zz",
     "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
     "senderIP": "192.0.2.255",
     "threatID": "61f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
-    "threatTime": "2010-00-11T00:00:10.000Z",
+    "threatTime": "2010-01-11T00:00:10.000Z",
     "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
     "url": "http://badguy.zz/",
     "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
@@ -145,13 +147,13 @@ MOCK_BLOCKED_CLICK = {
     "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
     "classification": "MALWARE",
     "clickIP": "192.0.2.2",
-    "clickTime": "2010-00-22T00:00:10.000Z",
+    "clickTime": "2010-01-22T00:00:10.000Z",
     "messageID": "4444",
     "recipient": "bruce.wayne@pharmtech.zz",
     "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
     "senderIP": "192.0.2.255",
     "threatID": "61f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
-    "threatTime": "2010-00-22T00:00:20.000Z",
+    "threatTime": "2010-01-22T00:00:20.000Z",
     "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
     "url": "http://badguy.zz/",
     "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
@@ -182,6 +184,10 @@ MOCK_ALL_EVENTS = {
 }
 
 
+def get_mocked_time():
+    return datetime.strptime("2010-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+
+
 def test_command(requests_mock):
     requests_mock.get(MOCK_URL + "/v2/siem/issues?format=json&sinceSeconds=100&threatType=url&threatType=attachment",
                       json=MOCK_ISSUES)
@@ -191,7 +197,8 @@ def test_command(requests_mock):
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     args = {
@@ -205,20 +212,26 @@ def test_command(requests_mock):
     assert len(outputs["Proofpoint.ClicksPermitted(val.GUID == obj.GUID)"]) == 1
 
 
+def return_self(return_date):
+    return return_date
+
+
 @patch('ProofpointTAP_v2.parse_date_range')
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     mock_date = "2010-01-01T00:00:00Z"
     mocked_parse_date_range.return_value = (mock_date, "never mind")
-
-    requests_mock.get(MOCK_URL + "/v2/siem/all?format=json&sinceTime=2010-01-01T00%3A00%3A00Z",
-                      json=MOCK_ALL_EVENTS)
+    requests_mock.get(
+        MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A00%3A00Z',
+        json=MOCK_ALL_EVENTS)
 
     client = Client(
         proofpoint_url=MOCK_URL,
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     next_run, incidents = fetch_incidents(
@@ -231,14 +244,14 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
-    assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
+    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "1111@evil.zz"
 
 
+@patch("ProofpointTAP_v2.get_now", get_mocked_time)
 def test_next_fetch(requests_mock):
     mock_date = "2010-01-01T00:00:00Z"
-    requests_mock.get(MOCK_URL + "/v2/siem/all?format=json&sinceTime=2010-01-01T00%3A00%3A00Z"
-                                 "&threatStatus=active&threatStatus=cleared",
+    requests_mock.get(MOCK_URL + '/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%'
+                                 '2F2010-01-01T00%3A00%3A00Z&threatStatus=active&threatStatus=cleared',
                       json=MOCK_ALL_EVENTS)
 
     client = Client(
@@ -246,7 +259,8 @@ def test_next_fetch(requests_mock):
         api_version="v2",
         service_principal="user1",
         secret="123",
-        verify=False
+        verify=False,
+        proxies=None
     )
 
     next_run, incidents = fetch_incidents(
@@ -255,9 +269,46 @@ def test_next_fetch(requests_mock):
         first_fetch_time="3 month",
         event_type_filter=ALL_EVENTS,
         threat_status=["active", "cleared"],
-        threat_type=""
+        threat_type="",
+        limit=50
     )
 
     assert len(incidents) == 4
-    assert json.loads(incidents[0]['rawJSON'])["messageID"] == "1111@evil.zz"
-    assert next_run == {"last_fetch": "2010-01-30T00:01:00.000Z"}
+    assert json.loads(incidents[3]['rawJSON'])["messageID"] == "1111@evil.zz"
+
+
+def test_fetch_limit(requests_mock):
+    mock_date = "2010-01-01T00:00:00Z"
+    requests_mock.get(MOCK_URL + '/v2/siem/all', json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": mock_date},
+        first_fetch_time="3 month",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=3
+    )
+
+    assert len(incidents) == 3
+    assert next_run.get('last_fetch') == '2010-01-11T00:00:21Z'
+
+
+def test_get_fetch_times():
+    from datetime import datetime, timedelta
+    from ProofpointTAP_v2 import get_fetch_times
+
+    now = datetime.now()
+    before_two_hours = now - timedelta(hours=2)
+    times = get_fetch_times(before_two_hours)
+    assert len(times) == 3

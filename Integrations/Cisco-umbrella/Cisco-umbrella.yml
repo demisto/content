@@ -1,46 +1,47 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cisco Umbrella Investigate
   version: -1
-name: Cisco Umbrella Investigate
-display: Cisco Umbrella Investigate
-category: Data Enrichment & Threat Intelligence
-description: Cisco Umbrella Investigate
 configuration:
 - display: Cisco Umbrella API token
   name: APIToken
-  defaultvalue: ""
-  type: 4
   required: true
+  type: 4
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Trust any certificate (unsecure)
   name: insecure
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-- display: Base URL
+- defaultvalue: https://investigate.api.umbrella.com
+  display: Base URL
   name: baseURL
-  defaultvalue: https://investigate.api.umbrella.com
-  type: 0
   required: true
-- display: DBot Score Malicious Threshold (-100 to 100)
-  name: dboscore_threshold
-  defaultvalue: "-100"
   type: 0
+- defaultvalue: '-100'
+  display: DBot Score Malicious Threshold (-100 to 100)
+  name: dboscore_threshold
   required: false
+  type: 0
+description: Cisco Umbrella Investigate
+display: Cisco Umbrella Investigate
+name: Cisco Umbrella Investigate
 script:
-  script: ''
-  type: python
   commands:
-  - name: umbrella-domain-categorization
-    arguments:
-    - name: domain
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Enter the domain you would like to categorize (e.g. amazon.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the category of a domain. e.g. domain=amazon.com returns
+      Ecommerce/Shopping
+    execution: false
+    name: umbrella-domain-categorization
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -58,35 +59,51 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
-    description: Returns the category of a domain. e.g. domain=amazon.com returns
-      Ecommerce/Shopping
-  - name: investigate-umbrella-domain-categorization
+  - arguments:
+    - default: true
+      description: Enter the domain you would like to categorize (e.g. amazon.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
     deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
-      description: Enter the domain you would like to categorize (e.g. amazon.com)
+    description: Returns the category of a domain. e.g. domain=amazon.com returns
+      Ecommerce/Shopping
+    execution: false
+    name: investigate-umbrella-domain-categorization
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: Unknown
     - contextPath: Domain.SecurityCategories
       description: The Umbrella security category, or categories, that match this
         domain
+      type: Unknown
     - contextPath: Domain.ContentCategories
       description: The Umbrella content category or categories that match this domain
+      type: Unknown
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
+      type: Unknown
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
-    description: Returns the category of a domain. e.g. domain=amazon.com returns
-      Ecommerce/Shopping
-  - name: umbrella-domain-co-occurrences
-    arguments:
-    - name: domain
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: Enter a domain (e.g. www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a list of related domains back and returns a list of co-occurences
+      for the specified domain. A co-occurrence is when two or more domains are being
+      accessed by the same users within a small window of time. Being a co-occurrence
+      isn't necessarily a bad thing, legitimate sites co-occur with each other as
+      a part of normal web activity. However, unusual or suspicious co-occurence can
+      provide additional information regarding attacks
+    execution: false
+    name: umbrella-domain-co-occurrences
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -97,36 +114,43 @@ script:
     - contextPath: Domain.CoOccurrences.Name
       description: Domain name
       type: string
+  - arguments:
+    - default: true
+      description: Enter a domain (e.g. www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: true
     description: Get a list of related domains back and returns a list of co-occurences
       for the specified domain. A co-occurrence is when two or more domains are being
       accessed by the same users within a small window of time. Being a co-occurrence
       isn't necessarily a bad thing, legitimate sites co-occur with each other as
       a part of normal web activity. However, unusual or suspicious co-occurence can
       provide additional information regarding attacks
-  - name: investigate-umbrella-domain-co-occurrences
-    deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
-      description: Enter a domain (e.g. www.cnn.com)
+    execution: false
+    name: investigate-umbrella-domain-co-occurrences
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: Unknown
     - contextPath: Domain.Score
       description: Domain score - value range between 0 and 1
-    description: Get a list of related domains back and returns a list of co-occurences
-      for the specified domain. A co-occurrence is when two or more domains are being
-      accessed by the same users within a small window of time. Being a co-occurrence
-      isn't necessarily a bad thing, legitimate sites co-occur with each other as
-      a part of normal web activity. However, unusual or suspicious co-occurence can
-      provide additional information regarding attacks
-  - name: umbrella-domain-related
-    arguments:
-    - name: domain
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: Enter a domain (e.g. www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: This will return a list of domain names that have been frequently
+      seen requested b around the same time (up to 60 seconds before or after) as
+      the given domain name, but that are not frequently associated with other domain
+      names.
+    execution: false
+    name: umbrella-domain-related
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -138,37 +162,50 @@ script:
     - contextPath: Domain.Related.Name
       description: Related domain name
       type: string
+  - arguments:
+    - default: true
+      description: Enter a domain (e.g. www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: true
     description: This will return a list of domain names that have been frequently
       seen requested b around the same time (up to 60 seconds before or after) as
       the given domain name, but that are not frequently associated with other domain
       names.
-  - name: investigate-umbrella-domain-related
-    deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
-      description: Enter a domain (e.g. www.cnn.com)
+    execution: false
+    name: investigate-umbrella-domain-related
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: Unknown
     - contextPath: Domain.Score
       description: This is a score reflecting the number of client IPs looking up
         related sites within 60 seconds of the original request
-    description: This will return a list of domain names that have been frequently
-      seen requested b around the same time (up to 60 seconds before or after) as
-      the given domain name, but that are not frequently associated with other domain
-      names.
-  - name: umbrella-domain-security
-    arguments:
-    - name: domain
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: Enter a domain like (www.cnn.com)
-    - name: threshold
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '-100'
       description: Manually set a threshold instead of secure rank in order to determine
         if domain is malicious. from -100(malicious) to 100(good)
-      defaultValue: "-100"
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: This contains multiple scores or security features, each of which
+      can be used to determine relevant datapoints to build insight on the reputation
+      or security risk posed by the site. See security information about this specific
+      domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
+    execution: false
+    name: umbrella-domain-security
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -195,6 +232,7 @@ script:
     - contextPath: Domain.Security.ASNScore
       description: ASN reputation score, ranges from -100 to 0 with -100 being very
         suspicious
+      type: Unknown
     - contextPath: Domain.Security.PrefixScore
       description: Prefix ranks domains given their IP prefixes (an IP prefix is the
         first three octets in an IP address) and the reputation score of these prefixes.
@@ -224,323 +262,452 @@ script:
       description: The type of the known attack, such as botnet or APT, or blank if
         no known threat
       type: string
-    description: This contains multiple scores or security features, each of which
-      can be used to determine relevant datapoints to build insight on the reputation
-      or security risk posed by the site. See security information about this specific
-      domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
-  - name: investigate-umbrella-domain-security
+  - arguments:
+    - default: true
+      description: Enter a domain like (www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
     deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
-      description: Enter a domain like (www.cnn.com)
-    outputs:
-    - contextPath: Domain.Name
-      description: Domain name
-    - contextPath: Domain.Security.DGA
-      description: Domain Generation Algorithm. This score is generated based on the
-        likeliness of the domain name being generated by an algorithm rather than
-        a human
-    - contextPath: Domain.Security.Perplexity
-      description: A second score on the likeliness of the name to be algorithmically
-        generated, on a scale from 0 to 1
-    - contextPath: Domain.Security.Entropy
-      description: The number of bits required to encode the domain name, as a score
-    - contextPath: Domain.Security.SecureRank
-      description: Suspicious rank for a domain that reviews based on the lookup behavior
-        of client IP for the domain
-    - contextPath: Domain.Security.PageRank
-      description: Popularity according to Google's pagerank algorithm
-    - contextPath: Domain.Security.ASNScore
-      description: ASN reputation score, ranges from -100 to 0 with -100 being very
-        suspicious
-    - contextPath: Domain.Security.PrefixScore
-      description: Prefix ranks domains given their IP prefixes (an IP prefix is the
-        first three octets in an IP address) and the reputation score of these prefixes.
-        Ranges from -100 to 0, -100 being very suspicious
-    - contextPath: Domain.Security.RipScore
-      description: RIP ranks domains given their IP addresses and the reputation score
-        of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
-    - contextPath: Domain.Security.Popularity
-      description: The number of unique client IPs visiting this site, relative to
-        the all requests to all sites
-    - contextPath: Domain.Security.GeoScore
-      description: A score that represents how far the different physical locations
-        serving this name are from each other
-    - contextPath: Domain.Security.KolmoorovSmirnov
-      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
-        traffic matches what is expected for this TLD
-    - contextPath: Domain.Security.AttackName
-      description: The name of any known attacks associated with this domain, or blank
-        if no known threat
-    - contextPath: Domain.Security.ThreatType
-      description: The type of the known attack, such as botnet or APT, or blank if
-        no known threat
     description: This contains multiple scores or security features, each of which
       can be used to determine relevant datapoints to build insight on the reputation
       or security risk posed by the site. See security information about this specific
       domain at https://investigate-api.readme.io/docs/security-information-for-a-domain-1
-  - name: umbrella-domain-dns-history
-    arguments:
-    - name: domain
-      required: true
-      default: true
+    execution: false
+    name: investigate-umbrella-domain-security
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: Unknown
+    - contextPath: Domain.Security.DGA
+      description: Domain Generation Algorithm. This score is generated based on the
+        likeliness of the domain name being generated by an algorithm rather than
+        a human
+      type: Unknown
+    - contextPath: Domain.Security.Perplexity
+      description: A second score on the likeliness of the name to be algorithmically
+        generated, on a scale from 0 to 1
+      type: Unknown
+    - contextPath: Domain.Security.Entropy
+      description: The number of bits required to encode the domain name, as a score
+      type: Unknown
+    - contextPath: Domain.Security.SecureRank
+      description: Suspicious rank for a domain that reviews based on the lookup behavior
+        of client IP for the domain
+      type: Unknown
+    - contextPath: Domain.Security.PageRank
+      description: Popularity according to Google's pagerank algorithm
+      type: Unknown
+    - contextPath: Domain.Security.ASNScore
+      description: ASN reputation score, ranges from -100 to 0 with -100 being very
+        suspicious
+      type: Unknown
+    - contextPath: Domain.Security.PrefixScore
+      description: Prefix ranks domains given their IP prefixes (an IP prefix is the
+        first three octets in an IP address) and the reputation score of these prefixes.
+        Ranges from -100 to 0, -100 being very suspicious
+      type: Unknown
+    - contextPath: Domain.Security.RipScore
+      description: RIP ranks domains given their IP addresses and the reputation score
+        of these IP addresses. Ranges from -100 to 0, -100 being very suspicious
+      type: Unknown
+    - contextPath: Domain.Security.Popularity
+      description: The number of unique client IPs visiting this site, relative to
+        the all requests to all sites
+      type: Unknown
+    - contextPath: Domain.Security.GeoScore
+      description: A score that represents how far the different physical locations
+        serving this name are from each other
+      type: Unknown
+    - contextPath: Domain.Security.KolmoorovSmirnov
+      description: olmogorov–Smirnov test on geodiversity. 0 means that the client
+        traffic matches what is expected for this TLD
+      type: Unknown
+    - contextPath: Domain.Security.AttackName
+      description: The name of any known attacks associated with this domain, or blank
+        if no known threat
+      type: Unknown
+    - contextPath: Domain.Security.ThreatType
+      description: The type of the known attack, such as botnet or APT, or blank if
+        no known threat
+      type: Unknown
+  - arguments:
+    - default: true
       description: Enter a domain like (www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: The DNS database can be used to query the history that Umbrella has
+      seen for a given domain. The most common use case is to obtain the RRs (Resource
+      Record) history for a given domain, passing in the record query type as a parameter,
+      to help build intelligence around an domain.
+    execution: false
+    name: umbrella-domain-dns-history
     outputs:
     - contextPath: Domain.Address
       description: IP address
+      type: Unknown
     - contextPath: Domain.DNSHistory.Age
       description: The day in days between now and the last request for this domain.
         This value is only useful if present
+      type: Unknown
     - contextPath: Domain.DNSHistory.TtlsMin
       description: Minimum amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: Domain.DNSHistory.TtlsMax
       description: Maximum amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: Domain.DNSHistory.TtlsMean
       description: Average amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: Domain.DNSHistory.TtlsMedian
       description: Median amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: Domain.DNSHistory.TtlsStddev
       description: Standard deviation of the amount of time set that DNS records should
         be cached
+      type: Unknown
     - contextPath: Domain.DNSHistory.CountryCodes
       description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
         to'
+      type: Unknown
     - contextPath: Domain.DNSHistory.CountryCount
       description: Number of countries the IPs are hosted in
+      type: Unknown
     - contextPath: Domain.DNSHistory.Asns
       description: List of ASN numbers the IPs are in
+      type: Unknown
     - contextPath: Domain.DNSHistory.AsnsCount
       description: Number of ASNs the IPs map to
+      type: Unknown
     - contextPath: Domain.DNSHistory.Prefixes
       description: List of network prefixes the IPs map to
+      type: Unknown
     - contextPath: Domain.DNSHistory.PrefixesCount
       description: Number of network prefixes the IPs map to
+      type: Unknown
     - contextPath: Domain.DNSHistory.Rips
       description: Number of IPs seen for the domain name
+      type: Unknown
     - contextPath: Domain.DNSHistory.DivRips
       description: The number of prefixes over the number of IPs
+      type: Unknown
     - contextPath: Domain.DNSHistory.Locations
       description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
         mapping to
+      type: Unknown
     - contextPath: Domain.DNSHistory.LocationsCount
       description: Number of distinct geo coordinates the IPs are mapping to
+      type: Unknown
     - contextPath: Domain.DNSHistory.GeoDistanceSum
       description: Minimum sum of distance between locations, in kilometers
+      type: Unknown
     - contextPath: Domain.DNSHistory.GeoDistancMean
       description: Mean distance between the geo median and each location, in kilometers
+      type: Unknown
     - contextPath: Domain.DNSHistory.MailExchanger
       description: Boolean, If an MX query for this domain name has been seen
+      type: Unknown
     - contextPath: Domain.DNSHistory.NonRoutable
       description: Boolean. If one of the IPs is in a reserved, non-routable IP range
+      type: Unknown
     - contextPath: Domain.DNSHistory.FfCandidate
       description: Boolean. If the domain name looks like a candidate for fast flux.
         This does not necessarily mean the domain is in fast flux, but rather that
         the IP address the domain resolves to changes rapidly
+      type: Unknown
     - contextPath: Domain.DNSHistory.RipsStability
       description: 1.0 divided by the number of times the set of IP addresses changed
+      type: Unknown
     - contextPath: Domain.DNSHistory.BaseDomain
       description: The base domain of the requested domain
+      type: Unknown
     - contextPath: Domain.DNSHistory.IsSubdomain
       description: Boolean. True if the requested domain is a subdomain of another
-    description: 'The DNS database can be used to query the history that Umbrella
-      has seen for a given domain. The most common use case is to obtain the RRs (Resource
-      Record) history for a given domain, passing in the record query type as a parameter,
-      to help build intelligence around an domain. '
-  - name: investigate-umbrella-domain-dns-history
-    deprecated: true
-    arguments:
-    - name: domain
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: Enter a domain like (www.cnn.com)
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: true
+    description: The DNS database can be used to query the history that Umbrella has
+      seen for a given domain. The most common use case is to obtain the RRs (Resource
+      Record) history for a given domain, passing in the record query type as a parameter,
+      to help build intelligence around an domain.
+    execution: false
+    name: investigate-umbrella-domain-dns-history
     outputs:
     - contextPath: IP.Address
       description: IP address
+      type: Unknown
     - contextPath: IP.DNSHistory.Age
       description: The day in days between now and the last request for this domain.
         This value is only useful if present
+      type: Unknown
     - contextPath: IP.DNSHistory.TtlsMin
       description: Minimum amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: IP.DNSHistory.TtlsMax
       description: Maximum amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: IP.DNSHistory.TtlsMean
       description: Average amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: IP.DNSHistory.TtlsMedian
       description: Median amount of time set that DNS records should be cached
+      type: Unknown
     - contextPath: IP.DNSHistory.TtlsStddev
       description: Standard deviation of the amount of time set that DNS records should
         be cached
+      type: Unknown
     - contextPath: IP.DNSHistory.CountryCodes
       description: 'List of country codes (ex: US, FR, TW) for the IPs the name maps
         to'
+      type: Unknown
     - contextPath: IP.DNSHistory.CountryCount
       description: Number of countries the IPs are hosted in
+      type: Unknown
     - contextPath: IP.DNSHistory.Asns
       description: List of ASN numbers the IPs are in
+      type: Unknown
     - contextPath: IP.DNSHistory.AsnsCount
       description: Number of ASNs the IPs map to
+      type: Unknown
     - contextPath: IP.DNSHistory.Prefixes
       description: List of network prefixes the IPs map to
+      type: Unknown
     - contextPath: IP.DNSHistory.PrefixesCount
       description: Number of network prefixes the IPs map to
+      type: Unknown
     - contextPath: IP.DNSHistory.Rips
       description: Number of IPs seen for the domain name
+      type: Unknown
     - contextPath: IP.DNSHistory.DivRips
       description: The number of prefixes over the number of IPs
+      type: Unknown
     - contextPath: IP.DNSHistory.Locations
       description: List of geo coordinates (WGS84 datum, decimal format) the IPs are
         mapping to
+      type: Unknown
     - contextPath: IP.DNSHistory.LocationsCount
       description: Number of distinct geo coordinates the IPs are mapping to
+      type: Unknown
     - contextPath: IP.DNSHistory.GeoDistanceSum
       description: Minimum sum of distance between locations, in kilometers
+      type: Unknown
     - contextPath: IP.DNSHistory.GeoDistancMean
       description: Mean distance between the geo median and each location, in kilometers
+      type: Unknown
     - contextPath: IP.DNSHistory.MailExchanger
       description: Boolean, If an MX query for this domain name has been seen
+      type: Unknown
     - contextPath: IP.DNSHistory.NonRoutable
       description: Boolean. If one of the IPs is in a reserved, non-routable IP range
+      type: Unknown
     - contextPath: IP.DNSHistory.FfCandidate
       description: Boolean. If the domain name looks like a candidate for fast flux.
         This does not necessarily mean the domain is in fast flux, but rather that
         the IP address the domain resolves to changes rapidly
+      type: Unknown
     - contextPath: IP.DNSHistory.RipsStability
       description: 1.0 divided by the number of times the set of IP addresses changed
+      type: Unknown
     - contextPath: IP.DNSHistory.BaseDomain
       description: The base domain of the requested domain
+      type: Unknown
     - contextPath: IP.DNSHistory.IsSubdomain
       description: Boolean. True if the requested domain is a subdomain of another
-    description: 'The DNS database can be used to query the history that Umbrella
-      has seen for a given domain. The most common use case is to obtain the RRs (Resource
-      Record) history for a given domain, passing in the record query type as a parameter,
-      to help build intelligence around an domain. '
-  - name: umbrella-ip-dns-history
-    arguments:
-    - name: ip
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: 'Enter an IP Address:'
-    - name: limit
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: Limit fetched results, removing limit can fetch big amount of results
         into context.
-      defaultValue: "100"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: The DNS database can be used to query the history that Umbrella has
+      seen for a given IP address. The most common use case is to obtain the DNS Resource
+      Record (RR) history for a given IP, passing in the record query type as a parameter,
+      to help build intelligence around an IP or a range of IPs. The information provided
+      is from within the last 90 days.
+    execution: false
+    name: umbrella-ip-dns-history
     outputs:
     - contextPath: IP.Address
       description: IP address
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Name
       description: The looked up IP addres
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Class
       description: DNS class type
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Type
       description: Query type
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.RR
       description: Resource record owner
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.TTL
       description: Time to live for this record
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.RrCount
       description: Number of records of that type mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.Ld2Count
       description: Number of 2-level names mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.Ld3Count
       description: Number of 3-level names mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.Ld21Count
       description: Number of 2-level names, without the TLD, mapping to the given
         IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.Ld22Count
       description: Number of 3-level names, without the TLD, mapping to the given
         IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.DivLd2
       description: ld2_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.DivLd3
       description: ld3_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.DivLd21
       description: ld2_1_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Features.DivLd22
       description: ld2_2_count divided by the number of records
+      type: Unknown
+  - arguments:
+    - default: true
+      description: 'Enter an IP Address:'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: true
     description: The DNS database can be used to query the history that Umbrella has
       seen for a given IP address. The most common use case is to obtain the DNS Resource
       Record (RR) history for a given IP, passing in the record query type as a parameter,
       to help build intelligence around an IP or a range of IPs. The information provided
       is from within the last 90 days.
-  - name: investigate-umbrella-ip-dns-history
-    deprecated: true
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: 'Enter an IP Address:'
+    execution: false
+    name: investigate-umbrella-ip-dns-history
     outputs:
     - contextPath: IP.Address
       description: IP address
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Name
       description: The looked up IP addres
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Class
       description: DNS class type
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.Type
       description: Query type
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.RR
       description: Resource record owner
+      type: Unknown
     - contextPath: IP.DNSHistory.RRS.TTL
       description: Time to live for this record
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.RrCount
       description: Number of records of that type mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.Ld2Count
       description: Number of 2-level names mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.Ld3Count
       description: Number of 3-level names mapping to the given IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.Ld21Count
       description: Number of 2-level names, without the TLD, mapping to the given
         IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.Ld22Count
       description: Number of 3-level names, without the TLD, mapping to the given
         IP
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.DivLd2
       description: ld2_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.DivLd3
       description: ld3_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.DivLd21
       description: ld2_1_count divided by the number of records
+      type: Unknown
     - contextPath: IP.DNSHistory.Feature.DivLd22
       description: ld2_2_count divided by the number of records
-    description: The DNS database can be used to query the history that Umbrella has
-      seen for a given IP address. The most common use case is to obtain the DNS Resource
-      Record (RR) history for a given IP, passing in the record query type as a parameter,
-      to help build intelligence around an IP or a range of IPs. The information provided
-      is from within the last 90 days.
-  - name: investigate-umbrella-ip-malicious-domains
-    deprecated: true
-    arguments:
-    - name: ip
-      required: true
-      default: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: An IP Address
-    outputs:
-    - contextPath: Domain.Name
-      description: Domain name
-    - contextPath: Domain.Malicious.Vendor
-      description: For malicious domains, the vendor that made the decision
-    - contextPath: Domain.Malicious.Description
-      description: For malicious domains, the reason for the vendor to make the decision
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: true
     description: This command  shows whether the IP address you’ve entered as input
       has any known malicious domains associated with it. The domains that appear
       when using this endpoint are those that currently exist in the Umbrella block
       list. This endpoint will return an array with a single domain name for each
       domain associated with the IP, along with an id number that can be ignored.
-  - name: umbrella-ip-malicious-domains
-    arguments:
-    - name: ip
-      required: true
-      default: true
-      description: An IP Address
+    execution: false
+    name: investigate-umbrella-ip-malicious-domains
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: Unknown
     - contextPath: Domain.Malicious.Vendor
       description: For malicious domains, the vendor that made the decision
+      type: Unknown
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
+      type: Unknown
+  - arguments:
+    - default: true
+      description: An IP Address
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: This command  shows whether the IP address you’ve entered as input
+      has any known malicious domains associated with it. The domains that appear
+      when using this endpoint are those that currently exist in the Umbrella block
+      list. This endpoint will return an array with a single domain name for each
+      domain associated with the IP, along with an id number that can be ignored.
+    execution: false
+    name: umbrella-ip-malicious-domains
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: Unknown
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+      type: Unknown
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason for the vendor to make the decision
+      type: Unknown
     - contextPath: DBotScore.Score
       description: The DBot score
       type: number
@@ -553,25 +720,37 @@ script:
     - contextPath: DBotScore.Indicator
       description: The Indicator
       type: string
-    description: This command  shows whether the IP address you’ve entered as input
-      has any known malicious domains associated with it. The domains that appear
-      when using this endpoint are those that currently exist in the Umbrella block
-      list. This endpoint will return an array with a single domain name for each
-      domain associated with the IP, along with an id number that can be ignored.
-  - name: umbrella-domain-search
-    arguments:
-    - name: regex
-      required: true
-      default: true
+  - arguments:
+    - default: true
       description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
         use double backslash ("\\\\")
-    - name: start
+      isArray: false
+      name: regex
+      required: true
+      secret: false
+    - default: false
       description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time, MAX:
         -31days'
-    - name: limit
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: Limit fetched results, removing limit can fetch big amount of results
         into context.
-      defaultValue: "100"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: This produces a list of matching domains based on a regular expression.
+      You could use this for domain squatting. The pattern search functionality in
+      Investigate uses regular expressions (RegEx) to search against the Investigate
+      database. There are several excellent tools online such as http://regexr.com
+      to help if you’re not familiar with building RegEx.
+    execution: false
+    name: umbrella-domain-search
     outputs:
     - contextPath: Domain.Name
       description: Domain name
@@ -581,44 +760,59 @@ script:
       type: string
     - contextPath: Domain.FirstSeenISO
       description: First seen time in ISO format
+      type: Unknown
     - contextPath: Domain. SecurityCategories
       description: Matching Umbrella Security Categories
       type: string
+  - arguments:
+    - default: true
+      description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
+        use double backslash ("\\\\")
+      isArray: false
+      name: regex
+      required: true
+      secret: false
+    - default: false
+      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    deprecated: true
     description: This produces a list of matching domains based on a regular expression.
       You could use this for domain squatting. The pattern search functionality in
       Investigate uses regular expressions (RegEx) to search against the Investigate
       database. There are several excellent tools online such as http://regexr.com
       to help if you’re not familiar with building RegEx.
-  - name: investigate-umbrella-domain-search
-    deprecated: true
-    arguments:
-    - name: regex
-      required: true
-      default: true
-      description: Enter a domain regular expression (e.g. "cn.*\\\\.com"). Note to
-        use double backslash ("\\\\")
-    - name: start
-      description: 'Example: -2weeks, -1 day, -1000minutes, EPOCH unix time'
+    execution: false
+    name: investigate-umbrella-domain-search
     outputs:
     - contextPath: Domain.Name
       description: Domain name
+      type: Unknown
     - contextPath: Domain.FirstSeean
       description: First seen time in Epoch format
+      type: Unknown
     - contextPath: Domain.FirstSeeanISO
       description: First seen time in ISO format
+      type: Unknown
     - contextPath: Domain. SecurityCategories
       description: Matching Umbrella Security Categories
-    description: This produces a list of matching domains based on a regular expression.
-      You could use this for domain squatting. The pattern search functionality in
-      Investigate uses regular expressions (RegEx) to search against the Investigate
-      database. There are several excellent tools online such as http://regexr.com
-      to help if you’re not familiar with building RegEx.
-  - name: domain
-    arguments:
-    - name: domain
-      required: true
+      type: Unknown
+  - arguments:
+    - default: true
       description: 'The domain name you would like to categorize. (e.g. : www.amazon.com)
         Comma separated list allowed. (e.g. : www.amazon.com,www.facebook.com,www.yahoo.com)'
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
+      reputation score is either true or false from the service and cannot be modified
+      using a threshold.
+    execution: false
+    name: domain
     outputs:
     - contextPath: Domain.Name
       description: The domain's name.
@@ -639,17 +833,17 @@ script:
       description: The time when the attribution for this Domain was made.
       type: number
     - contextPath: DBotScore.Indicator
-      description: The Indicator
-      type: string
+      description: The indicator that was tested.
+      type: String
     - contextPath: DBotScore.Score
-      description: The DBot score
-      type: number
+      description: The actual score.
+      type: Number
     - contextPath: DBotScore.Type
-      description: The Indicator type
-      type: string
+      description: The indicator type.
+      type: String
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
-      type: string
+      description: Vendor used to calculate the score.
+      type: String
     - contextPath: Domain.Umbrella.ContentCategories
       description: The Umbrella content category or categories that match this domain.
         If none of them match, the return will be blank.
@@ -665,24 +859,72 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
-    description: Get Domain Reputation info using Cisco Umbrella Investigate. Domain
-      reputation score is either true or false from the service and cannot be modified
-      using a threshold.
-  - name: umbrella-get-related-domains
-    arguments:
-    - name: domain
-      required: true
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date on which the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date on which the domain was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar, such as "GoDaddy".
+      type: String
+  - arguments:
+    - default: false
       description: 'The domain name you would like see related domains for. (e.g.
         : www.cnn.com)'
-    - name: coOccurences
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
       description: Set to true to get a list of co-occurences. (A co-occurrence is
         when two or more domains are being accessed by the same users within a small
         window of time) By default, this value will be false.
-      defaultValue: "false"
+      isArray: false
+      name: coOccurences
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of domain names that have been frequently seen requested
+      around the same time (up to 60 seconds before or after) as the given domain
+      name. And also a list of co-occurences.
+    execution: false
+    name: umbrella-get-related-domains
     outputs:
     - contextPath: Umbrella.RelatedDomains.Domain
       description: The domain's name.
@@ -707,14 +949,18 @@ script:
     - contextPath: Umbrella.CoOccurences.Domain
       description: The domain's name.
       type: string
-    description: Get a list of domain names that have been frequently seen requested
-      around the same time (up to 60 seconds before or after) as the given domain
-      name. And also a list of co-occurences.
-  - name: umbrella-get-domain-classifiers
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: 'The domain name you would like see classifiers for. (e.g. : www.cnn.com)'
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: List all the classifiers used for a particular domain to assign a
+      particular security categorization or threat type (indicators of compromise).
+    execution: false
+    name: umbrella-get-domain-classifiers
     outputs:
     - contextPath: Umbrella.DomainClassifiers.Domain
       description: The domain's name.
@@ -728,40 +974,61 @@ script:
     - contextPath: Umbrella.DomainClassifiers.Data.ThreatTypes
       description: Which threat type, if any, matched in the input.
       type: string
-    description: List all the classifiers used for a particular domain to assign a
-      particular security categorization or threat type (indicators of compromise).
-  - name: umbrella-get-domain-queryvolume
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: 'The domain name you would like see volume for. (e.g. : www.cnn.com)'
-    - name: start
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      defaultValue: -7days
       description: 'Point in time in the past, expressed as a timestamp in the following
         format or relative time. Valid formats: start=-2days start=-2hours start=1997-07-16T19:20:30+01:00
         i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative sign. The max is 30 days.'
-      defaultValue: -7days
-    - name: stop
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      defaultValue: now
       description: 'Point in time in the past expressed as a timestamp in milliseconds
         or relative time. Also valid is ''now''. Valid formats: stop=-1days stop=now
         start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
         sign. The max is 30 days.'
-      defaultValue: now
-    - name: match
-      auto: PREDEFINED
+      isArray: false
+      name: stop
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      description: 'Valid options are: exact, component, or all (default).     1.Using
+        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
+        Component gives results for every component of cisco.com, but not cisco.com.
+        Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
+        returns the sum of component and exact, this is the default.'
+      isArray: false
+      name: match
       predefined:
       - all
       - exact
       - component
-      description: 'Valid options are: exact, component, or all (default).     1.Using
-        "cisco.com" as an example, "exact" only gives results for cisco.com.    2.
-        Component gives results for every component of cisco.com, but not cisco.com.
-        Examples are www.cisco.com, mail.cisco.com, wwwin.cisco.com, something.else.cisco.com.     3.All
-        returns the sum of component and exact, this is the default.'
-      defaultValue: all
-    - name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: Limit fetched results, removing limit can fetch big amount of results
         into context.
-      defaultValue: "100"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: The domain volume command shows the number of DNS queries made per
+      hour to the specified domain by users of Umbrella's recursive DNS servers.
+    execution: false
+    name: umbrella-get-domain-queryvolume
     outputs:
     - contextPath: Umbrella.QueryVolume.Domain
       description: The domain's name.
@@ -779,18 +1046,27 @@ script:
       description: Number of DNS queries per hour, in ascending order, to the specified
         domain.
       type: string
-    description: The domain volume command shows the number of DNS queries made per
-      hour to the specified domain by users of Umbrella's recursive DNS servers.
-  - name: umbrella-get-domain-details
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: 'The domain name you would like see the security info for. (e.g.
         : www.cnn.com)'
-    - name: threshold
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '-100'
       description: Manually set a threshold instead of secure rank in order to determine
         if domain is malicious. from -100(malicious) to 100(good)
-      defaultValue: "-100"
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: The security information API method contains multiple scores or security
+      features, which can act as relevant datapoints to build insight on the reputation.
+    execution: false
+    name: umbrella-get-domain-details
     outputs:
     - contextPath: Umbrella.DomainDetails.Domain
       description: The domain's name.
@@ -857,31 +1133,47 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason for the vendor to make the decision
       type: string
-    description: The security information API method contains multiple scores or security
-      features, which can act as relevant datapoints to build insight on the reputation.
-  - name: umbrella-get-domains-for-email-registrar
-    arguments:
-    - name: emails
-      required: true
-      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
+  - arguments:
+    - default: false
+      description: 'Email address following rfc5322 conventions. (e.g. : admin@google.com)
         Comma separated list allowed. (e.g. : admin@google.com, dns-admin@google.com,
         hostmaster@charter.com)'
       isArray: true
-    - name: offset
+      name: emails
+      required: true
+      secret: false
+    - default: false
       description: For paging with offset for domains with more than 500 results,
         set the url-param limit. Default value is 10.
-    - name: sort
-      auto: PREDEFINED
-      predefined:
-      - created
-      - updated
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: 'To sort the list of domains based on timestamp. By default, domains
         are simply sorted by name in alphabetical order.  Possible values are: ""created"",
         ""updated"", and ""expired"", each of which sorts from the most recent date
         for the value of the WHOIS entry.'
-    - name: limit
+      isArray: false
+      name: sort
+      predefined:
+      - created
+      - updated
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: To limit the total number of results (domains).
-      defaultValue: "100"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: The command will return the domains associated with the email address
+      or addresses of the registrar that are looked up.
+    execution: false
+    name: umbrella-get-domains-for-email-registrar
     outputs:
     - contextPath: Umbrella.AssociatedDomains.Email
       description: Email address.
@@ -909,30 +1201,47 @@ script:
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
       type: string
-    description: The command will return the domains associated with the email address
-      or addresses of the registrar that are looked up.
-  - name: umbrella-get-domains-for-nameserver
-    arguments:
-    - name: nameservers
-      required: true
-      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
+  - arguments:
+    - default: false
+      description: 'Enter the Nameserver’s domain name. (e.g. : ns2.google.com) Comma
         separated list allowed. (e.g. : ns2.google.com, ns1.google.com)'
       isArray: true
-    - name: offset
+      name: nameservers
+      required: true
+      secret: false
+    - default: false
       description: For paging with offset for domains with more than 500 results,
         set the url-param limit. Default value is 10.
-    - name: sort
-      auto: PREDEFINED
-      predefined:
-      - created
-      - updated
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
       description: '"To sort the list of domains based on timestamp. By default, domains
         are simply sorted by name in alphabetical order.  Possible values are: ""created"",
         ""updated"", and ""expired"", each of which sorts from the most recent date
         for the value of the WHOIS entry."'
-    - name: limit
+      isArray: false
+      name: sort
+      predefined:
+      - created
+      - updated
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: To limit the total number of results (domains).
-      defaultValue: "100"
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: The Nameserver command allows you to search a nameserver to find
+      all domains registered by that nameserver. You can search against a single nameserver
+      or multiple nameservers in a query.
+    execution: false
+    name: umbrella-get-domains-for-nameserver
     outputs:
     - contextPath: Umbrella.AssociatedDomains.Nameserver
       description: Nameserver's domain name.
@@ -960,14 +1269,18 @@ script:
       description: 'Whether the domain is current, meaning currently registered by
         this email address. Values : Past or Current'
       type: string
-    description: The Nameserver command allows you to search a nameserver to find
-      all domains registered by that nameserver. You can search against a single nameserver
-      or multiple nameservers in a query.
-  - name: umbrella-get-whois-for-domain
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: 'Domain name without wildcards and including TLD. (e.g. : www.cnn.com)'
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: This command will provide a standard WHOIS response record for a
+      single domain with all available WHOIS data returned.
+    execution: false
+    name: umbrella-get-whois-for-domain
     outputs:
     - contextPath: Domain.Umbrella.Whois.Name
       description: Domain's name.
@@ -999,13 +1312,60 @@ script:
     - contextPath: Domain.Umbrella.Whois.Emails.Name
       description: Domain's email
       type: string
-    description: This command will provide a standard WHOIS response record for a
-      single domain with all available WHOIS data returned. 
-  - name: umbrella-get-malicious-domains-for-ip
-    arguments:
-    - name: ip
-      required: true
+    - contextPath: Domain.Name
+      description: The domain name e.g. google.com
+      type: Unknown
+    - contextPath: Domain.Admin.Country
+      description: The country of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Email
+      description: The email address of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Name
+      description: The name of the domain administrator.
+      type: String
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the domain administrator.
+      type: String
+    - contextPath: Domain.Registrant.Country
+      description: The country of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Email
+      description: The email address of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Name
+      description: The name of the registrant.
+      type: String
+    - contextPath: Domain.Registrant.Phone
+      description: The phone number of the registrant.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: The date on which the domain was created.
+      type: Date
+    - contextPath: Domain.DomainStatus
+      description: The status of the domain.
+      type: String
+    - contextPath: Domain.UpdatedDate
+      description: The date on which the domain was last updated.
+      type: Date
+    - contextPath: Domain.ExpirationDate
+      description: The expiration date of the domain.
+      type: Date
+    - contextPath: Domain.Registrar.Name
+      description: The name of the registrar, such as "GoDaddy".
+      type: String
+  - arguments:
+    - default: false
       description: IP Address to check for malicious domains.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Test whether the IP address you’ve entered as input has any known
+      malicious domains associated with it.
+    execution: false
+    name: umbrella-get-malicious-domains-for-ip
     outputs:
     - contextPath: Umbrella.MaliciousDomains.IP
       description: IP address.
@@ -1023,49 +1383,74 @@ script:
     - contextPath: Umbrella.MaliciousDomains.Data.ContentCategories
       description: Content Categories associated with the domain.
       type: string
-    description: Test whether the IP address you’ve entered as input has any known
-      malicious domains associated with it.
-  - name: umbrella-get-domains-using-regex
-    arguments:
-    - name: expression
-      required: true
+  - arguments:
+    - default: false
       description: 'A standard RegEx search pattern, must be encoded in a double quoted
         bracket. e.g. :'
-    - name: start
+      isArray: false
+      name: expression
+      required: true
+      secret: false
+    - default: false
+      defaultValue: -7days
       description: 'Can either be specified in relative or absolute time. Point in
         time in the past, expressed as a timestamp in the following format or relative
         time. Valid formats: start=-2days start=-2hours start=-1000minutes start=-3weeks
         start=1997-07-16T19:20:30+01:00 i.e YYYY-MM-DDThh:mm:ssTZD  Note the negative
         sign for relative time.  Max is -30days.'
-      defaultValue: -7days
-    - name: includeCategory
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
       description: Default is false, if set to true this will include security categories
         in the results and may slow the return times.
-      defaultValue: "true"
-    - name: stop
+      isArray: false
+      name: includeCategory
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: now
       description: 'The exclusive end time in milliseconds absolute or relative time
         (eg: ''now'', ''-2days'',''1997-07-16T19:20:30+01:00'') for a query.'
-      defaultValue: now
-    - name: limit
+      isArray: false
+      name: stop
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The maximum number of items to return - combine with offset for
         result pagination
-      defaultValue: "100"
-    - name: type
-      auto: PREDEFINED
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: HOST
+      description: Search database node type (URL, IP, HOST).
+      isArray: false
+      name: type
       predefined:
       - URL
       - IP
       - HOST
-      description: Search database node type (URL, IP, HOST).
-      defaultValue: HOST
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of matching domains (Investigate Database) based on
+      a regular expression.
+    execution: false
+    name: umbrella-get-domains-using-regex
     outputs:
     - contextPath: Umbrella.DomainSearch.TotalResults
       description: Total results from this search string. The default number of results
-        is 100 and can be expanded using the limit parameter. 
+        is 100 and can be expanded using the limit parameter.
       type: number
     - contextPath: Umbrella.DomainSearch.Data.Name
       description: Name of the domain found.
@@ -1076,13 +1461,18 @@ script:
     - contextPath: Umbrella.DomainSearch.Data.SecurityCategories
       description: Security Categories associated with the domain.
       type: string
-    description: 'Get the list of matching domains (Investigate Database) based on
-      a regular expression. '
-  - name: umbrella-get-domain-timeline
-    arguments:
-    - name: domain
-      required: true
+  - arguments:
+    - default: false
       description: 'The domain name you would like see timeline for. (e.g. : www.cnn.com)'
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: The timeline command shows when a domain was given attribution of
+      a particular security categorization or threat type (indicators of compromise).
+    execution: false
+    name: umbrella-get-domain-timeline
     outputs:
     - contextPath: Umbrella.Timeline.Domain
       description: Domain name
@@ -1097,15 +1487,20 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this Domain changed. 
+      description: The time when the attribution for this Domain changed.
       type: string
-    description: The timeline command shows when a domain was given attribution of
-      a particular security categorization or threat type (indicators of compromise).
-  - name: umbrella-get-ip-timeline
-    arguments:
-    - name: ip
-      required: true
+  - arguments:
+    - default: false
       description: 'The IP you would like see timeline for. (e.g. : 8.8.8.8)'
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: The timeline command shows when a IP was given attribution of a particular
+      security categorization or threat type (indicators of compromise).
+    execution: false
+    name: umbrella-get-ip-timeline
     outputs:
     - contextPath: Umbrella.Timeline.IP
       description: IP address
@@ -1121,15 +1516,20 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this IP changed. 
+      description: The time when the attribution for this IP changed.
       type: string
-    description: The timeline command shows when a IP was given attribution of a particular
-      security categorization or threat type (indicators of compromise).
-  - name: umbrella-get-url-timeline
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - default: false
       description: 'The URL you would like see timeline for. (e.g. : www.aws.amazon.com)'
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: The timeline command shows when a URL was given attribution of a
+      particular security categorization or threat type (indicators of compromise).
+    execution: false
+    name: umbrella-get-url-timeline
     outputs:
     - contextPath: Umbrella.Timeline.URL
       description: URL value
@@ -1144,10 +1544,14 @@ script:
       description: Which threat type, if any, matched in the input.
       type: string
     - contextPath: Umbrella.Timeline.Data.Timestamp
-      description: The time when the attribution for this URL changed. 
+      description: The time when the attribution for this URL changed.
       type: date
-    description: The timeline command shows when a URL was given attribution of a
-      particular security categorization or threat type (indicators of compromise).
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  type: python
+  subtype: python2
 tests:
-  - Cisco Umbrella Test
+- Cisco Umbrella Test

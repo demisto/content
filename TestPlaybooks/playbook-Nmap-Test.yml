@@ -1,6 +1,6 @@
-id: af2f5a99-d70b-48c1-8c25-519732b733f2
-version: 1
-name: nmap-test
+id: Nmap - Test
+version: -1
+name: Nmap - Test
 starttaskid: "0"
 tasks:
   "0":
