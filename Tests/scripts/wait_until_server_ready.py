@@ -97,7 +97,10 @@ def main():
                     client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
 
                     try:
-                        res = client.get_all_widgets()
+                        path = '/health'
+                        method = 'GET'
+                        res = client.generic_request_func(self=api_instance, path=path, method=method)
+                        print(res)
                         if int(res[1]) == 200:
                             print("[{}] {} is ready to use".format(datetime.datetime.now(),
                                                              ami_instance_name))
