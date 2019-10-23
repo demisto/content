@@ -40,7 +40,7 @@ def http_request(method, url_suffix, params_dict, headers, data=None):
 
     url = SERVER_URL + url_suffix
 
-    LOG('running %s request with url=%s\theaders=%s\nparams=%s' % (method, url, headers, json.dumps(req_params)))
+    LOG('running %s request with url=%s\tparams=%s' % (method, url, json.dumps(req_params)))
 
     try:
         res = requests.request(method,
@@ -384,7 +384,7 @@ def list_observations_command():
     """
     args = demisto.args()
     list_params = {
-        "order_by": 'creation_time'
+        "ordering": 'creation_time'
     }
     # adding the possible params for update
     possible_params = ['alert', 'id', 'search', 'limit']
