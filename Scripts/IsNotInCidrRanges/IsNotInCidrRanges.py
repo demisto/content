@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 # borrowed from https://stackoverflow.com/questions/819355/how-can-i-check-if-an-ip-is-in-a-network-in-python
 
 import socket
@@ -67,7 +66,6 @@ def main():
 
         if not found:
             excluded_addresses.append(addr)
-
 
     if len(excluded_addresses) == 0:
         demisto.results(False)
