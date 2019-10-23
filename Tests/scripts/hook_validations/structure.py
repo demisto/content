@@ -48,7 +48,10 @@ class StructureValidator(object):
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
         REPUTATION_REGEX,
-        BETA_INTEGRATION_YML_REGEX
+        BETA_INTEGRATION_YML_REGEX,
+        BETA_INTEGRATION_REGEX,
+        BETA_SCRIPT_REGEX,
+        BETA_PLAYBOOK_REGEX,
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -298,7 +301,9 @@ class StructureValidator(object):
         """
         loaded_file_data = self.load_data_from_file()
         file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
-        if '/' in file_id:
+        if (not file_id and loaded_file_data['name'] == 'reputations'):
+            return True
+        if not file_id or '/' in file_id:
             self._is_valid = False
             print_error("File's ID contains slashes - please remove.")
             return False
