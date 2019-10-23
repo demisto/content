@@ -46,7 +46,7 @@ def is_correct_content_installed(api_key, ips, content_version):
 
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
-        client = demisto_client.configure(base_url=host, api_key=api_key)
+        client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         resp_json = client.generic_request_func(self=client, path='/content/installed/', method='POST')
 
         try:
@@ -89,7 +89,7 @@ def main():
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
                     host = "https://{}".format(ami_instance_ip)
-                    client = demisto_client.configure(base_url=host, api_key=api_key)
+                    client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
                     res = client.get_all_widgets()
                     if res[1] == 200:
                         print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
