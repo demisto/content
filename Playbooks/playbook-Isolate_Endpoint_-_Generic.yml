@@ -1,9 +1,9 @@
-id: Block Endpoint - Generic
+id: Isolate Endpoint - Generic
 version: -1
-name: Block Endpoint - Generic
+name: Isolate Endpoint - Generic
 fromversion: 4.5.0
 description: |-
-  This playbook blocks/isolates a given endpoint using the following integrations:
+  This playbook isolates a given endpoint using the following integrations:
   - Carbon Black Enterprise Response
   - Palo Alto Networks Traps
 starttaskid: "0"
