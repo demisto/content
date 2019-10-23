@@ -8,53 +8,137 @@ def init_tests(mocker):
 
 
 def test_enrich_offense_res_with_source_and_destination_address_normal(mocker):
+    """
+    Given:
+        - Offense raw response was fetched successfully with source and destination addresses IDs
+    When
+        - I enrich the offense with source and destination addresses
+    Then
+        - The offense result will have the source and destination addresses
+    """
     import QRadar as qradar
+    # Given:
+    #     - Offense raw response was fetched successfully with source and destination addresses IDs
     mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
                         return_value=(SOURCE_ADDR_IDS_DICT, DEST_ADDR_IDS_DICT))
     mocker.patch.object(qradar, 'enrich_source_addresses_dict')
     mocker.patch.object(qradar, 'enrich_destination_addresses_dict')
-    # Assert function enriched offense with destination and source addresses
-    assert qradar.enrich_offense_res_with_source_and_destination_address(
-        OFFENSE_RAW_RESULT) == ENRICH_OFFENSES_ADDR_EXPECTED
+    # When
+    #     - I enrich the offense with source and destination addresses
+    enriched_offense = qradar.enrich_offense_res_with_source_and_destination_address(OFFENSE_RAW_RESULT)
+    # Then
+    #     - The offense result will have the source and destination addresses
+    assert enriched_offense[0]['source_address_ids'] == ENRICH_OFFENSES_ADDR_EXPECTED[0]['source_address_ids']
+    assert enriched_offense[0]['local_destination_address_ids'] == ENRICH_OFFENSES_ADDR_EXPECTED[0][
+        'local_destination_address_ids']
 
 
 def test_enrich_offense_res_with_source_and_destination_address_exception(mocker):
+    """
+    Given:
+        - Offense raw response was fetched successfully with source and destination addresses IDs
+    When
+        - I enrich the offense with source and destination addresses, but encounter an exception in the middle
+    Then
+        - The offense result will be the same as the raw offense response
+    """
     import QRadar as qradar
+    # Given:
+    #     - Offense raw response was fetched successfully with source and destination addresses IDs
     mocker.patch.object(qradar, 'extract_source_and_destination_addresses_ids',
                         return_value=(SOURCE_ADDR_IDS_DICT, DEST_ADDR_IDS_DICT))
+    # When
+    #     - I enrich the offense with source and destination addresses, but encounter an exception in the middle
     mocker.patch.object(qradar, 'enrich_source_addresses_dict', side_effect=Exception('Raised exception'))
-    # Assert function returns the raw result in case of raised exception
+    # Then
+    #     - The offense result will be the same as the raw offense response
     assert qradar.enrich_offense_res_with_source_and_destination_address(OFFENSE_RAW_RESULT) == OFFENSE_RAW_RESULT
 
 
 def test_get_reference_by_name(mocker):
+    """
+    Given:
+        - There's a reference set with non-url safe chars
+    When
+        - I fetch reference by name
+    Then
+        - The rest API endpoint will be called with URL safe chars
+    """
     import QRadar as qradar
     mocker.patch.object(qradar, 'send_request')
+    # Given:
+    #     - There's a reference set with non-url safe chars
+    # When
+    #     - I fetch reference by name
     qradar.get_reference_by_name(NON_URL_SAFE_MSG)
+    # Then
+    #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('GET', 'www.qradar.com/api/reference_data/sets/{}'.format(
         NON_URL_SAFE_MSG_URL_ENCODED), REQUEST_HEADERS, params={})
 
 
 def test_delete_reference_set(mocker):
+    """
+    Given:
+        - There's a reference set with non-url safe chars
+    When
+        - I delete a reference by name
+    Then
+        - The rest API endpoint will be called with URL safe chars
+    """
     import QRadar as qradar
     mocker.patch.object(qradar, 'send_request')
+    # Given:
+    #     - There's a reference set with non-url safe chars
+    # When
+    #     - I delete a reference by name
     qradar.delete_reference_set(NON_URL_SAFE_MSG)
+    # Then
+    #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('DELETE', 'www.qradar.com/api/reference_data/sets/{}'.format(
         NON_URL_SAFE_MSG_URL_ENCODED))
 
 
 def test_update_reference_set_value(mocker):
+    """
+    Given:
+        - There's a reference set with non-url safe chars
+    When
+        - I fetch reference value by name
+    Then
+        - The rest API endpoint will be called with URL safe chars
+    """
     import QRadar as qradar
     mocker.patch.object(qradar, 'send_request')
+    # Given:
+    #     - There's a reference set with non-url safe chars
+    # When
+    #     - I fetch reference value by name
     qradar.update_reference_set_value(NON_URL_SAFE_MSG, 'value')
+    # Then
+    #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('POST', 'www.qradar.com/api/reference_data/sets/{}'.format(
         NON_URL_SAFE_MSG_URL_ENCODED), params={'name': NON_URL_SAFE_MSG, 'value': 'value'})
 
 
 def test_delete_reference_set_value(mocker):
+    """
+    Given:
+        - There's a reference set with non-url safe chars
+    When
+        - I delete a reference value by name
+    Then
+        - The rest API endpoint will be called with URL safe chars
+    """
     import QRadar as qradar
     mocker.patch.object(qradar, 'send_request')
+    # Given:
+    #     - There's a reference set with non-url safe chars
+    # When
+    #     - I delete a reference value by name
     qradar.delete_reference_set_value(NON_URL_SAFE_MSG, 'value')
+    # Then
+    #     - The rest API endpoint will be called with URL safe chars
     qradar.send_request.assert_called_with('DELETE', 'www.qradar.com/api/reference_data/sets/{}/value'.format(
         NON_URL_SAFE_MSG_URL_ENCODED), params={'name': NON_URL_SAFE_MSG, 'value': 'value'})
 
