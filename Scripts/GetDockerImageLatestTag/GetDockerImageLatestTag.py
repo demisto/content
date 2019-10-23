@@ -96,6 +96,9 @@ def clear_older_tags(tags, max_segment, segment_number):
     """Will remove entries from the docker image tags list where their tag segment is lower than the maximal number
     in that segment.
 
+    for example for tag list: [2.0.2000, 2.1.2700 2.1.373, latest] in segment '1' the highest number is '1'
+    will return [2.1.2700, 2.1.373]
+
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
         max_segment(int): the maximal number in a docker image tag in the segment_number
@@ -123,7 +126,7 @@ def clear_older_tags(tags, max_segment, segment_number):
 def lexical_find_latest_tag(tags):
     """Will return the latest numeric docker image tag if possible - otherwise will return the last lexical tag.
 
-    for example for the tag list: [2.1.2000, 2.1.2700 2.1.373, latest], will return 2.1.2700
+    for example for the tag list: [2.0.2000, 2.1.2700 2.1.373, latest], will return 2.1.2700
 
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
