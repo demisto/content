@@ -69,4 +69,5 @@ Finally, you have tested your code, it's working the way you'd like, and you mad
 | [CircleCI](https://github.com/demisto/content/blob/master/docs/docs/circleci/README.MD) | How we test using CircleCI |
 | [Mocks](https://github.com/demisto/content/blob/master/docs/tests/mocks/README.MD) | Explanation of how to test using mocked data |
 | [Unit Testing](https://github.com/demisto/content/blob/master/docs/tests/unit-testing/README.md) | Explanation of How to Perform Unit Testing on Integrations/Scripts |
+| [GenericPolling Playbook](https://github.com/demisto/content/blob/master/docs/tests/genericpolling/README.md) | Explanation of how and when to use the GenericPolling playbook |
 
