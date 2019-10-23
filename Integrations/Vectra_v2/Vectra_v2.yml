@@ -46,7 +46,7 @@ configuration:
   defaultvalue: ""
   type: 13
   required: false
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -275,12 +275,27 @@ script:
   - name: vectra-get-detetctions-by-id
     arguments:
     - name: detection_id
+      required: true
+      default: true
       description: The id of the required detection
-    description: Get detections by host id
+    description: Get detections by detetction id
   - name: vectra-get-users
-    arguments: []
+    description: Retrieves the current list of Users
+    arguments:
+    - name: username
+      description: 'Filter by username'
+    - name: role
+      description: 'Filter by role'
+    - name: account_type
+      description: 'Filter by account type (Local, Special, Limited Time Link, LDAP, TACACS)'
+    - name: authentication_profile
+      description: 'Filter by authentication profile (LDAP or TACACS only)'
+    - name: last_login_gte
+      description: 'Filters for User’s that have logged in since the given timestamp'
   - name: vectra-get-proxies
-    arguments: []
+    arguments:
+    - name: proxy_id
+      description: 'The id of the Proxy object'
     outputs:
     - contextPath: Vectra.Proxy.Source
       description: 'Whether the proxy was auto detected by Cognito or was added by user'
@@ -297,9 +312,11 @@ script:
     - contextPath: Vectra.Proxy.Address
       description: 'The proxy IP address'
       type: String
-    description: Retrieves the current list of proxy IP addresses
+    description: Retrieves the current list of proxy IP addresses, or just one by Proxy ID
   - name: vectra-get-threatfeed
-    arguments: []
+    arguments:
+    - name: threatfeed_id
+      description: 'The id of the ThreatFeed object'
     outputs:
     - contextPath: Vectra.ThreatFeed.Category
       description: 'The category in which the detection will fire if a match is observed with any indicator in the ThreatFeed'
@@ -319,16 +336,24 @@ script:
     - contextPath: Vectra.ThreatFeed.ID
       description: 'The ID of the ThreatFeed'
       type: String
+    description: Retrieves the current list of all ThreatFeeds, or just one by ThreatFeed ID
   - name: vectra-search
     arguments:
     - name: query_string
       required: true
+      description: 'The query that needs to be performed, e.g. `host.threat:>=50 and host.certainty:>=50` will
+       find all hosts in the critical quadrant.
+       `host.owner_name:bob` will find hosts with probable owner that contains the phrase “bob” in it.'
     - name: search_type
+      description: 'The type of search to preform, can be either Hosts or Detections'
       required: true
       auto: PREDEFINED
       predefined:
       - hosts
       - detections
+    - name: page_size
+      description: 'Number of results returned per page. the default page_size is 50, max 5000'
+    description: "Advanced search on hosts and detections"
   isfetch: true
   dockerimage: demisto/python3:3.7.4.2245
 tests:

@@ -312,8 +312,8 @@ def get_users_command(client: Client, **kwargs):
     :QUERY PARAMETERS:
     :keyword username: Filter by username
     :keyword role: Filter by role
-    :keyword account_type: Filter by account type
-    :keyword authentication_profile: Filter by authentication profile
+    :keyword account_type: Filter by account type (Local, Special, Limited Time Link, LDAP, TACACS)
+    :keyword authentication_profile: Filter by authentication profile (LDAP or TACACS only)
     :keyword last_login_gte: Filters for User’s that have logged in since the given timestamp
     """
     raw_response = client.http_request(params=kwargs, url_suffix='users')
@@ -352,7 +352,7 @@ def search_command(client: Client, search_type: str, **kwargs):
     :param client: Vectra Client
 
     :QUERY PARAMETERS:
-    :param search_type: hosts or detections
+    :param search_type: The type of search to preform, can be either Hosts or Detections
     :keyword query_string: Query that needs to be performed
     :keyword page_size: Number of results returned per page. the default page_size is 50, max 5000
     """
@@ -398,11 +398,11 @@ def search_command(client: Client, search_type: str, **kwargs):
     return readable_output, outputs, raw_response
 
 
-def get_triage_command(client: Client, **kwargs):  # todo: no rules
+def get_triage_command(client: Client):
     """
     The rules branch can be used to retrieve a listing of configured Triage rules
     """
-    raw_response = client.http_request(params=kwargs, url_suffix='rules')
+    raw_response = client.http_request(url_suffix='rules')
     count = raw_response.get('count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -457,14 +457,15 @@ def get_triage_command(client: Client, **kwargs):  # todo: no rules
     return readable_output, outputs, raw_response
 
 
-def get_proxies_command(client: Client, **kwargs):
+def get_proxies_command(client: Client, proxy_id: int = None):
     """
     The proxies API can be used to manage proxy IP addresses (internal or external) in Cognito. The API can
     be used to retrieve the current list of proxy IP addresses or to create new proxy objects in Cognito.
 
+    :param proxy_id: The id of the Proxy object.
     :param client: Vectra Client
     """
-    raw_response = client.http_request(params=kwargs, url_suffix='proxies')
+    raw_response = client.http_request(url_suffix=f'proxies/{proxy_id}')
     count = demisto.get(raw_response, 'meta.count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -490,13 +491,14 @@ def get_proxies_command(client: Client, **kwargs):
     return readable_output, outputs, raw_response
 
 
-def get_threatfeed_command(client: Client, **kwargs):
+def get_threatfeed_command(client: Client, threatfeed_id: int = None):
     """
     Retrieves the current list of threatFeed objects already configured in the system
 
+    :param threatfeed_id: The id of the ThreatFeed object.
     :param client: Vectra Client
     """
-    raw_response = client.http_request(params=kwargs, url_suffix='threatFeeds')
+    raw_response = client.http_request(url_suffix=f'threatFeeds/{threatfeed_id}')
     count = demisto.get(raw_response, 'meta.count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -578,26 +580,23 @@ def main():
         elif demisto.command() == 'vectra-get-detections':
             return_outputs(*get_detections_command(client, **demisto.args()))
 
-        # elif demisto.command() == 'vectra-update-detections':
-        #     return_outputs(*update_detections_command(client, **demisto.args()))
-
         elif demisto.command() == 'vectra-get-users':
             return_outputs(*get_users_command(client, **demisto.args()))
-
-        # elif demisto.command() == 'vectra-update-users':
-        # return_outputs(*update_users_command(client, **demisto.args()))
 
         elif demisto.command() == 'vectra-get-hosts':
             return_outputs(*get_hosts_command(client, **demisto.args()))
 
-        # elif demisto.command() == 'vectra-update-hosts':
-        #     return_outputs(*update_hosts_command(client, **demisto.args()))
+        elif demisto.command() == 'vectra-get-proxies':
+            return_outputs(*get_proxies_command(client, demisto.getArg('proxy_id')))
+
+        elif demisto.command() == 'vectra-get-threatfeed':
+            return_outputs(*get_threatfeed_command(client, demisto.getArg('threatfeed_id')))
 
         elif demisto.command() == 'vectra-search':
             return_outputs(*search_command(client, **demisto.args()))
 
         elif demisto.command() == 'vectra-triage':
-            return_outputs(*get_triage_command(client, **demisto.args()))
+            return_outputs(*get_triage_command(client))
 
         elif demisto.command() == 'vectra-get-host-by-id':
             query_string = f'host.id:{demisto.args().get("host_id")}'
@@ -607,11 +606,14 @@ def main():
             query_string = f'detection.id:{demisto.args().get("detection_id")}'
             return_outputs(*search_command(client, search_type='detections', query_string=query_string))
 
-        elif demisto.command() == 'vectra-get-proxies':
-            return_outputs(*get_proxies_command(client, **demisto.args()))
+        # elif demisto.command() == 'vectra-update-users':
+        # return_outputs(*update_users_command(client, **demisto.args()))
 
-        elif demisto.command() == 'vectra-get-threatfeed':
-            return_outputs(*get_threatfeed_command(client, **demisto.args()))
+        # elif demisto.command() == 'vectra-update-detections':
+        #     return_outputs(*update_detections_command(client, **demisto.args()))
+
+        # elif demisto.command() == 'vectra-update-hosts':
+        #     return_outputs(*update_hosts_command(client, **demisto.args()))
 
     # Log exceptions
     except Exception as ex:
