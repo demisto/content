@@ -53,7 +53,7 @@ def search_result_to_md(res):
     columns = res['columns']
     rows = res['rows']
 
-    md = "### results: \n"
+    md = "### results:\n"
 
     if len(rows) == 0:
         return md + "No matching search result were found"
