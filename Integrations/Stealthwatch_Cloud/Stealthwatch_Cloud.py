@@ -11,8 +11,8 @@ import collections
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params().get('serverURL')[
-    :-1] if demisto.params().get('serverURL').endswith('/') else demisto.params().get('serverURL')
+SERVER = demisto.params().get('serverURL')[:-1] if demisto.params().get('serverURL').endswith('/') else \
+    demisto.params().get('serverURL')
 SERVER_URL = SERVER + '/api/v3'
 API_KEY = demisto.params()['APIKey']
 
