@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Fixed an issue in the ***Fetch incidents*** function.
-  - Fixed bug in the ***sentinelone-get-threats*** command.
+  - Fixed an issue in the ***sentinelone-get-threats*** command.
 
 
 ## [19.10.0] - 2019-10-03
