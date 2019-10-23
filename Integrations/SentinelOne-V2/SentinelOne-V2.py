@@ -389,7 +389,12 @@ def get_threats_command():
     # Parse response into context & content entries
     if threats:
         for threat in threats:
-            if not rank or (rank and threat.get('rank') >= rank):
+            threat_rank = threat.get('rank')
+            try:
+                threat_rank = int(threat_rank)
+            except TypeError:
+                threat_rank = 0
+            if not rank or (rank and threat_rank >= rank):
                 contents.append({
                     'ID': threat.get('id'),
                     'Agent Computer Name': threat.get('agentComputerName'),
