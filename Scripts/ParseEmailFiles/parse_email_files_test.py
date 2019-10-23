@@ -1,3 +1,4 @@
+from __future__ import print_function
 from ParseEmailFiles import MsOxMessage, main, convert_to_unicode, unfold, handle_msg
 from CommonServerPython import entryTypes
 import demistomock as demisto
@@ -43,6 +44,7 @@ def exec_command_for_file(file_path, info="RFC 822 mail text, with CRLF line ter
             ]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
+
     return executeCommand
 
 
@@ -70,7 +72,6 @@ def test_msg_utf_encoded_subject():
 
 
 def test_eml_smtp_type(mocker):
-
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -149,7 +150,6 @@ def test_eml_contains_eml(mocker):
     assert 'ArcSight_ESM_fixes.yml' in results[0]['EntryContext']['Email'][0]['Attachments']
     assert 'test - inner attachment eml.eml' in results[0]['EntryContext']['Email'][0]['Attachments']
     assert results[0]['EntryContext']['Email'][0]['Depth'] == 0
-
     assert results[0]['EntryContext']['Email'][1]["Subject"] == 'test - inner attachment eml'
     assert 'CS Training 2019 - EWS.pptx' in results[0]['EntryContext']['Email'][1]["Attachments"]
     assert results[0]['EntryContext']['Email'][1]['Depth'] == 1
@@ -243,7 +243,6 @@ def test_eml_contains_eml_depth(mocker):
 
 
 def test_eml_utf_text(mocker):
-
     def executeCommand(name, args=None):
         if name == 'getFilePath':
             return [
@@ -353,8 +352,10 @@ def test_email_raw_headers(mocker):
     assert results[0]['EntryContext']['Email']['To'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['CC'] == 'test@test.com, example1@example.com'
     assert results[0]['EntryContext']['Email']['HeadersMap']['From'] == 'Guy Test <test@test.com>'
-    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'
-    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['To'] == 'Guy Test <test@test.com>' \
+                                                                      ', Guy Test1 <example1@example.com>'
+    assert results[0]['EntryContext']['Email']['HeadersMap']['CC'] == 'Guy Test <test@test.com>, ' \
+                                                                      'Guy Test1 <example1@example.com>'
 
 
 def test_eml_contains_eml_with_status(mocker):
@@ -398,9 +399,11 @@ def test_eml_contains_base64_encoded_eml(mocker, email_file):
 
 
 # check that we parse an email with "data" type and eml extension
-def test_eml_data_type(mocker):
+@pytest.mark.parametrize('file_info', ['data', 'data\n'])
+def test_eml_data_type(mocker, file_info):
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info='data'))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smtp_email_type.eml', info=file_info))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -413,11 +416,11 @@ def test_eml_data_type(mocker):
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
 
 
-# check that we parse an email with "data" type and eml extension
 def test_smime(mocker):
     multipart_sigened = 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators'
     mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime.p7m', info=multipart_sigened))
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime.p7m', info=multipart_sigened))
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['entryid'] == 'test'
@@ -428,6 +431,22 @@ def test_smime(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Testing Email Attachment'
+
+
+def test_smime_msg(mocker):
+    info = 'CDFV2 Microsoft Outlook Message'
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smime-p7s.msg', info=info))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    # assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    assert results[0]['EntryContext']['Email']['Subject'] == 'test'
 
 
 def test_msg_headers_map():
@@ -444,3 +463,18 @@ def test_msg_headers_map():
     assert '2eWTrUmQCI=; 20:7yMOvCHfrNUNaJIus4SbwkpcSids8EscckQZzX/oGEwux6FJcH42uCQd9tNH8gmDkvPw' \
            in email_data['HeadersMap']['X-Microsoft-Exchange-Diagnostics'][2]
     assert 'text/plain' in email_data['Format']
+
+
+def test_unknown_file_type(mocker):
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=exec_command_for_file('smtp_email_type.eml', info="bad"))
+    mocker.patch.object(demisto, 'results')
+    try:
+        main()
+    except SystemExit:
+        gotexception = True
+    assert gotexception
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert 'Unknown file format:' in results[0]['Contents']
+    assert 'smtp_email_type.eml' in results[0]['Contents']
