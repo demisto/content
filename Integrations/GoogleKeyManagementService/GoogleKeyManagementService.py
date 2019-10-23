@@ -66,7 +66,7 @@ class Client:
 """HELPER FUNCTIONS"""
 
 
-def arg_dict_creator(string: str):
+def arg_dict_creator(string: Any):
     """Creates a Dict from a CSV string.
 
     Args:
@@ -87,17 +87,24 @@ def arg_dict_creator(string: str):
     return arg_dict
 
 
-def key_context_creation(res: Any) -> Dict:
+def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_id: str) -> Dict:
     """Creates GoogleKMS.CryptoKey context.
 
     Args:
         res(Any): `~google.cloud.kms_v1.types.CryptoKey` instance.
+        project_id(str): the project id
+        location_id(str): the location id
+        key_ring_id(str): the KeyRing id
 
     Returns:
         Dict representing GoogleKMS.CryptoKey context.
     """
+    # remove the CryptoKey path and leave only the name
+    pre_name = f"projects/{project_id}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/"
+    name = str(res.name).replace(pre_name, '')
+
     key_context = {
-        'Name': res.name,
+        'Name': name,
         'Purpose': enums.CryptoKey.CryptoKeyPurpose(res.purpose).name,
         'CreationTime': datetime.fromtimestamp(int(res.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'NextRotationTime': datetime.fromtimestamp(int(res.next_rotation_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
@@ -185,15 +192,15 @@ def demisto_args_extract(client: Client, args: Dict[str, Any]) -> Tuple[str, str
     """
     project_id = client.project
 
-    location_id = args.get('location_id')
+    location_id = args.get('location')
     if location_id == 'default':
         location_id = client.location
 
-    key_ring_id = args.get('key_ring_id')
+    key_ring_id = args.get('key_ring')
     if key_ring_id == 'default':
         key_ring_id = client.key_ring
 
-    crypto_key_id = args.get('crypto_key_id')
+    crypto_key_id = args.get('crypto_key')
     return str(project_id), str(location_id), str(key_ring_id), str(crypto_key_id)
 
 
@@ -250,7 +257,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
     body = {}  # type:Dict[str,Any]
     if 'labels' in update_mask:
         # Add label dictionary to body
-        body['labels'] = arg_dict_creator(str(args.get('labels')))
+        body['labels'] = arg_dict_creator(args.get('labels'))
 
     if 'next_rotation_time' in update_mask:
         if str(args.get('next_rotation_time')).isdigit():
@@ -276,7 +283,7 @@ def get_update_command_body(args: Dict[str, Any], update_mask: List) -> Dict:
 
         if 'primary.attestation' in update_mask:
             # Add attestation dict to 'primary' sub-dictionary
-            body['primary']['attestation'] = arg_dict_creator(str(args.get('attestation')))
+            body['primary']['attestation'] = arg_dict_creator(args.get('attestation'))
 
         if 'primary.state' in update_mask:
             # Add state enum to 'primary' sub-dictionary
@@ -361,7 +368,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     crypto_key = {
         'purpose': enums.CryptoKey.CryptoKeyPurpose[args.get('purpose')].value,
         'next_rotation_time': next_rotation_time,
-        'labels': arg_dict_creator(str(args.get('labels'))),
+        'labels': arg_dict_creator(args.get('labels')),
         'rotation_period': {
             'seconds': int(str(args.get('rotation_period')))
         },
@@ -371,7 +378,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     if not args.get('skip_initial_version_creation') == 'true':
         crypto_key['primary'] = {
             'state': enums.CryptoKeyVersion.CryptoKeyVersionState[args.get('state')].value,
-            'attestation': arg_dict_creator(str(args.get('attestation')))
+            'attestation': arg_dict_creator(args.get('attestation'))
         }
         crypto_key['version_template'] = {
             'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm[args.get('algorithm')].value,
@@ -382,7 +389,7 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
     response = client.kms_client.create_crypto_key(key_ring_name, crypto_key_id, crypto_key,
                                                    args.get('skip_initial_version_creation') == 'true')
 
-    context = key_context_creation(response)
+    context = key_context_creation(response, project_id, location_id, key_ring_id)
 
     return (
         tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
@@ -404,7 +411,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
         The encrypted ciphertext.
     """
     # handle given plaintext - revert it to base 64.
-    if args.get('use_base64') == 'false':
+    if args.get('is_base64') == 'false':
         plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
     else:
@@ -425,7 +432,18 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
 
     # return the created ciphertext cleaned from additional characters.
     ciphertext = str(base64.b64encode(response.ciphertext))[2:-1]
-    return (f"The text has been encrypted.\nCiphertext: {ciphertext}", None, None)
+
+    symmetric_encrypt_context = {
+        'CryptoKey': crypto_key_id,
+        'IsBase64': args.get('is_base64') == 'true',
+        'Ciphertext': ciphertext
+    }
+
+    return (f"The text has been encrypted.\nCiphertext: {ciphertext}",
+            {
+                f'{INTEGRATION_CONTEXT_NAME}.SymmetricEncrypt(val.CryptoKey == obj.CryptoKey '
+                f'&& val.IsBase64 == obj.IsBase64 && val.Ciphertext == obj.Ciphertext)': symmetric_encrypt_context,
+            }, None)
 
 
 def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -453,13 +471,23 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
                                          additional_authenticated_data=additional_authenticated_data)
 
     # handle the resulting plain text if it supposed to be in base64 and clean added characters.
-    if args.get('use_base64') == 'true':
+    if args.get('is_base64') == 'true':
         plaintext = str(base64.b64encode(response.plaintext))[2:-1]
 
     else:
         plaintext = str(base64.b64decode(response.plaintext))[2:-1]
 
-    return (f"The text has been decrypted.\nPlaintext: {plaintext}", None, None)
+    symmetric_decrypt_context = {
+        'CryptoKey': crypto_key_id,
+        'IsBase64': args.get('is_base64') == 'true',
+        'Plaintext': plaintext
+    }
+
+    return (f"The text has been decrypted.\nPlaintext: {plaintext}",
+            {
+                f'{INTEGRATION_CONTEXT_NAME}.SymmetricDecrypt(val.CryptoKey == obj.CryptoKey '
+                f'&& val.IsBase64 == obj.IsBase64 && val.Plaintext == obj.Plaintext)': symmetric_decrypt_context,
+            }, None)
 
 
 def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -477,7 +505,7 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
     # Get CryptoKey info.
     response = client.kms_client.get_crypto_key(crypto_key_name)
 
-    context = key_context_creation(response)
+    context = key_context_creation(response, project_id, location_id, key_ring_id)
 
     return (
         tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
@@ -641,7 +669,7 @@ def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     # update command using the KMS API.
     response = client.kms_client.update_crypto_key(crypto_key=crypto_key, update_mask=update_mask)
 
-    context = key_context_creation(response)
+    context = key_context_creation(response, project_id, location_id, key_ring_id)
     return (
         tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
         {
@@ -672,11 +700,14 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
     overall_context = []  # type: List
     overall_raw = []  # type: List
     for crypto_key in response:
-        overall_context.append(key_context_creation(crypto_key))
+        overall_context.append(key_context_creation(crypto_key, project_id, location_id, key_ring_id))
         overall_raw.append(crypto_key_to_json(crypto_key))
 
+    headers = ['CreationTime', 'Name', 'Labels', 'NextRotationTime', 'Purpose', 'RotationPeriod',
+               'PrimaryCryptoKeyVersion', 'VersionTemplate']
+
     return (
-        tableToMarkdown("CryptoKeys:", overall_context, removeNull=True),
+        tableToMarkdown("CryptoKeys:", overall_context, removeNull=True, headers=headers),
         {
             f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name)': overall_context,
         },
@@ -695,7 +726,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
         The encrypted ciphertext.
     """
     # handle the plaintext - convert to base64
-    if args.get('use_base64') == 'false':
+    if args.get('is_base64') == 'false':
         plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
 
     else:
@@ -734,7 +765,18 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
 
     # encrypt plaintext and return the cipertext without added characters.
     ciphertext = str(base64.b64encode(public_key.encrypt(plaintext, pad)))[2:-1]
-    return (f"The text has been encrypted.\nCiphertext: {ciphertext}", None, None)
+
+    asymmetric_encrypt_context = {
+        'CryptoKey': crypto_key_id,
+        'IsBase64': args.get('is_base64') == 'true',
+        'Ciphertext': ciphertext
+    }
+
+    return (f"The text has been encrypted.\nCiphertext: {ciphertext}",
+            {
+                f'{INTEGRATION_CONTEXT_NAME}.AsymmetricEncrypt(val.CryptoKey == obj.CryptoKey '
+                f'&& val.IsBase64 == obj.IsBase64 && val.Ciphertext == obj.Ciphertext)': asymmetric_encrypt_context,
+            }, None)
 
 
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -759,13 +801,23 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
 
     # handle the created plaintext back to base64 if needed and clear added characters.
-    if args.get('use_base64') == 'true':
+    if args.get('is_base64') == 'true':
         plaintext = str(base64.b64encode(response.plaintext))[2:-1]
 
     else:
         plaintext = str(base64.b64decode(response.plaintext))[2:-1]
 
-    return (f"The text has been decrypted.\nPlaintext: {plaintext}", None, None)
+    asymmetric_decrypt_context = {
+        'CryptoKey': crypto_key_id,
+        'IsBase64': args.get('is_base64') == 'true',
+        'Plaintext': plaintext
+    }
+
+    return (f"The text has been decrypted.\nPlaintext: {plaintext}",
+            {
+                f'{INTEGRATION_CONTEXT_NAME}.AsymmetricDecrypt(val.CryptoKey == obj.CryptoKey '
+                f'&& val.IsBase64 == obj.IsBase64 && val.Plaintext == obj.Plaintext)': asymmetric_decrypt_context,
+            }, None)
 
 
 def test_function(client: Client) -> None:
