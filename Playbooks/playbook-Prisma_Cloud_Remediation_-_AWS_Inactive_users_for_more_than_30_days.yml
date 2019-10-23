@@ -1,6 +1,6 @@
-id: Prisma Cloud Remediation - AWS Inactive users for more than 30 days
+id: Prisma Cloud Remediation - AWS Inactive Users For More Than 30 Days
 version: -1
-name: Prisma Cloud Remediation - AWS Inactive users for more than 30 days
+name: Prisma Cloud Remediation - AWS Inactive Users For More Than 30 Days
 description: |-
   To increase the security of your AWS account, it is recommended to find and remove IAM user credentials (passwords, access keys) that have not been used within a specified period of time.
 
@@ -81,7 +81,7 @@ tasks:
     task:
       id: 10fb9db0-4a1e-41ea-8227-163d3bf497b8
       version: -1
-      name: Disabling Access keys
+      name: Disable access keys
       description: Marking access keys as "inactive"
       script: '|||aws-iam-update-access-key'
       type: regular
@@ -236,7 +236,7 @@ tasks:
     task:
       id: a171957c-457e-4879-81a8-d964e4755796
       version: -1
-      name: Listing access keys
+      name: List user access keys
       description: Returns information about the access key IDs associated with the
         specified IAM user.
       script: '|||aws-iam-list-access-keys-for-user'
@@ -279,7 +279,7 @@ tasks:
     task:
       id: 5f088cbd-ac91-4bc4-8e79-d8f7173e5869
       version: -1
-      name: Reset IAM Password
+      name: Reset IAM password
       description: Changes the password for the specified IAM user and require user
         to change password.
       script: '|||aws-iam-update-login-profile'
@@ -348,7 +348,7 @@ tasks:
     task:
       id: 214eacce-6ff8-4af4-8b65-aa307c9087d5
       version: -1
-      name: Close Investigation
+      name: Close investigation
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -381,7 +381,7 @@ tasks:
     task:
       id: c06de3c2-84f6-433f-8ec8-20d0118e5c4e
       version: -1
-      name: Manually Inspect and check to see if IAM user should be quarantined/deleted
+      name: Manually inspect and check to see if IAM user should be quarantined/deleted
       description: |-
         1. Make sure that the user has legitimate reason to be inactive for such an extended period.
         2. Delete the user account, if the user no longer needs access to the console or no longer exists.
