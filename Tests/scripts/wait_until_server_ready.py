@@ -8,6 +8,10 @@ import datetime
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
 from typing import List, AnyStr
+import urllib3.util
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
 
@@ -94,7 +98,7 @@ def main():
 
                     try:
                         res = client.get_all_widgets()
-                        if res[1] == 200:
+                        if int(res[1]) == 200:
                             print("[{}] {} is ready to use".format(datetime.datetime.now(),
                                                              ami_instance_name))
                             ready_ami_list.append(ami_instance_name)
