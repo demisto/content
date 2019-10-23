@@ -472,7 +472,7 @@ inputs:
   description: the element to add to the rule
 - key: action-type
   value: {}
-  required: false
+  required: true
   description: |-
     The action that will be defined in the rule:
     allow/deny/drop
@@ -482,3 +482,5 @@ inputs:
   description: Either pre-rulebase or post-rulebase,  according to the rule structure.
     exists only in panorama!
 outputs: []
+tests:
+- PAN-OS Create Or Edit Rule Test
