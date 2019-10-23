@@ -1,5 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
 # borrowed from https://stackoverflow.com/questions/819355/how-can-i-check-if-an-ip-is-in-a-network-in-python
 
 import socket
@@ -8,7 +7,7 @@ import re
 
 
 def csv_string_to_list(v):
-    if type(v) == str or type(v) == unicode:
+    if type(v) == str:
         return v.lower().replace(' ', '').replace('\n', '').split(',')
     v = [val.lower() for val in v]
     return v
@@ -35,8 +34,8 @@ def address_in_network(ip, net):
 
 
 def cidr_to_tuple(cidr):
-    res = re.search('^(\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})/(\d{1,2})$', cidr)
-    if not res and re.search('^(\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})$', cidr):
+    res = re.search(r'^(\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})/(\d{1,2})$', cidr)
+    if not res and re.search(r'^(\d{1,3}\.\d{1,3}.\d{1,3}.\d{1,3})$', cidr):
         # plain ip, return a mask of 32 bits
         return cidr, 32
     elif not res:
@@ -49,22 +48,26 @@ def cidr_to_tuple(cidr):
         return ip, mask
 
 
-ADDRESS_LIST = csv_string_to_list(demisto.args()['value'])
-CIDR_LIST = csv_string_to_list(demisto.args()['cidr_ranges'])
+def main():
+    ADDRESS_LIST = csv_string_to_list(demisto.args()['value'])
+    CIDR_LIST = csv_string_to_list(demisto.args()['cidr_ranges'])
 
-included_addresses = []
+    included_addresses = []
 
-for addr in ADDRESS_LIST:
-    address = dotted_quad_to_num(addr)
-    for cidr_range in CIDR_LIST:
-        cidr_tuple = cidr_to_tuple(cidr_range)
-        cidr_network = network_mask(*cidr_tuple)
+    for addr in ADDRESS_LIST:
+        address = dotted_quad_to_num(addr)
+        for cidr_range in CIDR_LIST:
+            cidr_tuple = cidr_to_tuple(cidr_range)
+            cidr_network = network_mask(*cidr_tuple)
 
-        if cidr_network and address_in_network(address, cidr_network):
-            included_addresses.append(addr)
+            if cidr_network and address_in_network(address, cidr_network):
+                included_addresses.append(addr)
+
+    if len(included_addresses) == 0:
+        demisto.results(False)
+    else:
+        demisto.results(True)
 
 
-if len(included_addresses) == 0:
-    demisto.results(False)
-else:
-    demisto.results(True)
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()
