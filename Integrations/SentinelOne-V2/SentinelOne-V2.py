@@ -1754,7 +1754,7 @@ def fetch_incidents():
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
+        if rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
