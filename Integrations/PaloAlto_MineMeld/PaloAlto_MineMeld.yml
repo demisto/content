@@ -31,7 +31,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
         of type "miner").
       isArray: false
       name: miner
@@ -55,7 +55,7 @@ script:
     name: minemeld-add-to-miner
   - arguments:
     - default: false
-      description: Miner name - you can get it under Nodes page on Minemeld UI (nodes
+      description: Miner name - you can get it under Nodes page on MineMeld UI (nodes
         of type "miner").
       isArray: false
       name: miner
