@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import requests
 import re
+from pkg_resources import parse_version
 
 requests.packages.urllib3.disable_warnings()
 
@@ -69,58 +70,27 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
         return None
 
 
-def segment_max_extract(tags, segment_number):
-    """Will find the maximal number in a docker image tag segment
+def clear_non_numbered_tags(tags):
+    """Clears a given tags list to only keep numbered tags
 
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
-        segment_number(int): the number of the tag segment to check.
-    """
-    max_segment = -1
-    for tag in tags:
-        tag_seg = tag.split('.')
-        if len(tag_seg) < segment_number + 1:
-            continue
-
-        else:
-            tag_seg = tag_seg[segment_number]
-
-        if tag_seg.isdigit():
-            if int(tag_seg) > max_segment:
-                max_segment = int(tag_seg)
-
-    return max_segment
-
-
-def clear_older_tags(tags, max_segment, segment_number):
-    """Will remove entries from the docker image tags list where their tag segment is lower than the maximal number
-    in that segment.
-
-    for example for tag list: [2.0.2000, 2.1.2700 2.1.373, latest] in segment '1' the highest number is '1'
-    will return [2.1.2700, 2.1.373]
-
-    Args:
-        tags(list): list of docker image tag names - ordered in lexical order
-        max_segment(int): the maximal number in a docker image tag in the segment_number
-        segment_number(int): the segment_number to clear the list by
 
     Returns:
-        The cleared docker image tags list
+        a tag list with only numbered tags
     """
-    cleared_tag_list = []  # type:List
+    only_numbered_tags = []
     for tag in tags:
-        tag_seg = tag.split('.')
-        if len(tag_seg) < segment_number + 1:
-            continue
+        number_token = 1
+        split_tag = tag.split('.')
+        for sub_section in split_tag:
+            if not sub_section.isdigit():
+                number_token = 0
 
-        else:
-            tag_seg = tag_seg[segment_number]
+        if number_token:
+            only_numbered_tags.append(tag)
 
-        if tag_seg.isdigit():
-            if int(tag_seg) == max_segment:
-                cleared_tag_list.append(tag)
-
-    return cleared_tag_list
+    return only_numbered_tags
 
 
 def lexical_find_latest_tag(tags):
@@ -131,18 +101,19 @@ def lexical_find_latest_tag(tags):
     Args:
         tags(list): list of docker image tag names - ordered in lexical order
     """
-    segment_number = 0
-    while True:
-        segment_max = segment_max_extract(tags, segment_number)
-        # no tags with numbers
-        if segment_max == -1:
-            return tags[-1]
 
-        tags = clear_older_tags(tags, segment_max, segment_number)
-        if len(tags) == 1:
-            return tags[0]
+    only_numbered_tags = clear_non_numbered_tags(tags)
 
-        segment_number = segment_number + 1
+    if len(only_numbered_tags) == 0:
+        return tags[-1]
+
+    max_tag = only_numbered_tags[0]
+
+    for num_tag in only_numbered_tags:
+        if parse_version(max_tag) < parse_version(num_tag):
+            max_tag = num_tag
+
+    return max_tag
 
 
 def find_latest_tag_by_date(tags):
