@@ -1,7 +1,7 @@
 commonfields:
-  id: RegexGroups-PY3
+  id: RegexGroups
   version: -1
-name: RegexGroups-PY3
+name: RegexGroups
 script: ''
 type: python
 tags:
