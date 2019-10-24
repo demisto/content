@@ -108,6 +108,9 @@ USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 USE_SSL = not demisto.params()['insecure']
 PROXIES = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+if not PROXIES:
+    for k in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+        PROXIES[k] = None
 VERSION = demisto.params()['version']
 IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
@@ -973,7 +976,6 @@ def main():
     TOKEN = get_token()
     command = demisto.command()
     try:
-        handle_proxy()
         if command == 'test-module':
             demisto.results(test_module())
         elif command == 'fetch-incidents':
