@@ -1287,7 +1287,7 @@
             "Attachment Names": "puppy.png",
             "Attachments": [
                 {
-                    "ID": "ANGjdJ_f_4lMP8JpQAzRYSUkEf3znJtZDU2heSETG4N1Fo3BOMkp6RBnG2qKAlOUZd5AwJvv3IzlIkoSfuMmrGg3KJ5yRF6YQeA8NxYpYMt7aA00Ig5Fog5x4trMm-LwYy-a49UpEJx-jPKD1mNTaiLTk_iz4Dj6CPodRJtmphdeVYOrmStivDzBCYP-VLuJn47GjYJTK9s1tRcym_u_0WMpyvJtlTOYNigbIiXN5bFQZMUnl3JGeT_TCxcQsxjguhzj473kHFoyaMDn-CdayKaQYbsVkvBCyKYXszDWqmAVoTUiRKK3leoLajw2-Qqqjb00yZOG-LG16S0WCd40Qw2bkEWnpNwYhkMvHPfi-ywJH_sUxZ27fuRzf7wqVrg",
+                    "ID": "<id>",
                     "Name": "puppy.png"
                 }
             ],
@@ -1341,7 +1341,7 @@
                 },
                 {
                     "Name": "Message-Id",
-                    "Value": "&lt;CAEvnzxLptUqBeWJpTWq1qNanmO2q1f_HjdJbJAHd-0XmHdi_1Q@mail.gmail.com&gt;"
+                    "Value": "&lt;<value>&gt;"
                 }
             ],
             "ID": "16d4316a25a332e4",
@@ -1355,7 +1355,7 @@
             "Attachment Names": "puppy.png",
             "Attachments": [
                 {
-                    "ID": "ANGjdJ_f_4lMP8JpQAzRYSUkEf3znJtZDU2heSETG4N1Fo3BOMkp6RBnG2qKAlOUZd5AwJvv3IzlIkoSfuMmrGg3KJ5yRF6YQeA8NxYpYMt7aA00Ig5Fog5x4trMm-LwYy-a49UpEJx-jPKD1mNTaiLTk_iz4Dj6CPodRJtmphdeVYOrmStivDzBCYP-VLuJn47GjYJTK9s1tRcym_u_0WMpyvJtlTOYNigbIiXN5bFQZMUnl3JGeT_TCxcQsxjguhzj473kHFoyaMDn-CdayKaQYbsVkvBCyKYXszDWqmAVoTUiRKK3leoLajw2-Qqqjb00yZOG-LG16S0WCd40Qw2bkEWnpNwYhkMvHPfi-ywJH_sUxZ27fuRzf7wqVrg",
+                    "ID": "<id>",
                     "Name": "puppy.png"
                 }
             ],
@@ -1408,7 +1408,7 @@
                 },
                 {
                     "Name": "Message-Id",
-                    "Value": "&lt;CAEvnzxLptUqBeWJpTWq1qNanmO2q1f_HjdJbJAHd-0XmHdi_1Q@mail.gmail.com&gt;"
+                    "Value": "&lt;<value>&gt;"
                 }
             ],
             "Html": "",
@@ -3005,7 +3005,7 @@
             "Attachment Names": "puppy.png",
             "Attachments": [
                 {
-                    "ID": "ANGjdJ-R-EMPyOXUZkOi7yyrPLzXilaKBthScq2AGwJiSFSnF2wyzcRwubMc0qqvDPkF-43i6nUmnTstln3Z52zZdQD6RHHPffCfubL5QriZipLqPwDbSoBuNDZJJL6Y4M5D9AL3Vug_p0kR-mwg2zdmv8doJhUbAHxrSGjIvxgcq_9b9mOArbh3Aw6plz_W5ycVRExuwqGEbsSagXK7pBBPsLzI5G9rbDZMqiFNzc2yd_4uzPY2SQ6BcNgGUfslcu2DSbmMLkUlXmqUjgL3Afcvbn_Cc_R4rOrhT4s-tz86NiEnsFBdgDLTqaa-6iarXEzl1gNFzZT6iuGQGeJEinLRM-8ExU2XUfCE-izHPmKmFHgVi5zgJryj8R27VvQ",
+                    "ID": "<id>",
                     "Name": "puppy.png"
                 }
             ],
@@ -3059,7 +3059,7 @@
                 },
                 {
                     "Name": "Message-Id",
-                    "Value": "&lt;CAEvnzxLptUqBeWJpTWq1qNanmO2q1f_HjdJbJAHd-0XmHdi_1Q@mail.gmail.com&gt;"
+                    "Value": "&lt;<value>&gt;"
                 }
             ],
             "ID": "16d4316a25a332e4",
@@ -3073,7 +3073,7 @@
             "Attachment Names": "puppy.png",
             "Attachments": [
                 {
-                    "ID": "ANGjdJ-R-EMPyOXUZkOi7yyrPLzXilaKBthScq2AGwJiSFSnF2wyzcRwubMc0qqvDPkF-43i6nUmnTstln3Z52zZdQD6RHHPffCfubL5QriZipLqPwDbSoBuNDZJJL6Y4M5D9AL3Vug_p0kR-mwg2zdmv8doJhUbAHxrSGjIvxgcq_9b9mOArbh3Aw6plz_W5ycVRExuwqGEbsSagXK7pBBPsLzI5G9rbDZMqiFNzc2yd_4uzPY2SQ6BcNgGUfslcu2DSbmMLkUlXmqUjgL3Afcvbn_Cc_R4rOrhT4s-tz86NiEnsFBdgDLTqaa-6iarXEzl1gNFzZT6iuGQGeJEinLRM-8ExU2XUfCE-izHPmKmFHgVi5zgJryj8R27VvQ",
+                    "ID": "<id>",
                     "Name": "puppy.png"
                 }
             ],
@@ -3126,7 +3126,7 @@
                 },
                 {
                     "Name": "Message-Id",
-                    "Value": "&lt;CAEvnzxLptUqBeWJpTWq1qNanmO2q1f_HjdJbJAHd-0XmHdi_1Q@mail.gmail.com&gt;"
+                    "Value": "&lt;<value>&gt;"
                 }
             ],
             "Html": "",
@@ -3913,9 +3913,9 @@
                 ]
             },
             "Criteria": {
-                "from": "yarden@sade.com"
+                "from": "<mail>"
             },
-            "ID": "ANe1Bmj-5GC5Fs6BH56lYlE3mV4RTVwDZrECGw",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3927,7 +3927,7 @@
             "Criteria": {
                 "from": "test@demistodev.com"
             },
-            "ID": "ANe1Bmgqpm9zpcYPbuK1bUFMNTIBuoA7lKmdIg",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3938,7 +3938,7 @@
                 "hasAttachment": true,
                 "subject": "phishing"
             },
-            "ID": "ANe1Bmix8mOp_HSgf3yIYkunKqRZcwDAoDLv2Q",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3950,7 +3950,7 @@
             "Criteria": {
                 "from": "JohnS1555841687807@demistodev.com"
             },
-            "ID": "ANe1Bmj-KNWIsIHcn0Gd3AwCmgAOoQkHkfSJfw",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3960,9 +3960,9 @@
                 ]
             },
             "Criteria": {
-                "from": "asdf@asdf.com"
+                "from": "<mail>"
             },
-            "ID": "ANe1Bmj66AJomGz6DyK_WdKzO_k_NOOPfdFU2Q",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3972,9 +3972,9 @@
                 ]
             },
             "Criteria": {
-                "from": "asdf@asdf.com"
+                "from": "<mail>"
             },
-            "ID": "ANe1BmgQ7pVqSW9qBQGCOrZ-ElwDZJPkS--uiA",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3984,9 +3984,9 @@
                 ]
             },
             "Criteria": {
-                "to": "asdf@asdf.com"
+                "to": "<mail>"
             },
-            "ID": "ANe1BmhIkIXFgonS8gBfIoR3wBSBLv5Mh03gYQ",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -3996,9 +3996,9 @@
                 ]
             },
             "Criteria": {
-                "from": "asdf@wsx.com"
+                "from": "<mail>"
             },
-            "ID": "ANe1BmjoBSL6RlpthcxJ90wSf52REh58glyXJg",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -4010,7 +4010,7 @@
             "Criteria": {
                 "from": "JohnS1555840057376@demistodev.com"
             },
-            "ID": "ANe1BmhXnKmGg-1Wpv_wTE1GitID3MYnnSrNPw",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -4022,7 +4022,7 @@
             "Criteria": {
                 "from": "JohnS1555841545018@demistodev.com"
             },
-            "ID": "ANe1BmgtrDhHnl_tdhQ3r05qxb6ZxANbJSwUPw",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -4034,7 +4034,7 @@
             "Criteria": {
                 "from": "JohnS1555840196890@demistodev.com"
             },
-            "ID": "ANe1BmiWJiw2MoZgOhf_HUYiawJiJ5a2WyEsew",
+            "ID": "<id>,
             "Mailbox": "admin@demistodev.com"
         },
         {
@@ -4046,7 +4046,7 @@
             "Criteria": {
                 "from": "JohnS1555841616384@demistodev.com"
             },
-            "ID": "ANe1BmjOo3mQ1F7pWx2EhFM2VBe1oNhW56NCHg",
+            "ID": "<id>",
             "Mailbox": "admin@demistodev.com"
         }
     ]
@@ -4070,17 +4070,17 @@
   </thead>
   <tbody>
     <tr>
-      <td>ANe1Bmj-5GC5Fs6BH56lYlE3mV4RTVwDZrECGw</td>
-      <td>from: yarden@sade.com</td>
+      <td><id></td>
+      <td>from: <mail></td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1Bmgqpm9zpcYPbuK1bUFMNTIBuoA7lKmdIg</td>
+      <td><id></td>
       <td>from: test@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1Bmix8mOp_HSgf3yIYkunKqRZcwDAoDLv2Q</td>
+      <td><id></td>
       <td>
         hasAttachment: true<br>
         subject: phishing
@@ -4088,47 +4088,47 @@
       <td>forward: test@demistodev.com</td>
     </tr>
     <tr>
-      <td>ANe1Bmj-KNWIsIHcn0Gd3AwCmgAOoQkHkfSJfw</td>
+      <td><id></td>
       <td>from: JohnS1555841687807@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1Bmj66AJomGz6DyK_WdKzO_k_NOOPfdFU2Q</td>
-      <td>from: asdf@asdf.com</td>
+      <td><id></td>
+      <td>from: <mail></td>
       <td>addLabelIds: CATEGORY_SOCIAL</td>
     </tr>
     <tr>
-      <td>ANe1BmgQ7pVqSW9qBQGCOrZ-ElwDZJPkS--uiA</td>
-      <td>from: asdf@asdf.com</td>
+      <td><id></td>
+      <td>from: <mail></td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1BmhIkIXFgonS8gBfIoR3wBSBLv5Mh03gYQ</td>
-      <td>to: asdf@asdf.com</td>
+      <td><id></td>
+      <td>to: <mail></td>
       <td>removeLabelIds: INBOX</td>
     </tr>
     <tr>
-      <td>ANe1BmjoBSL6RlpthcxJ90wSf52REh58glyXJg</td>
-      <td>from: asdf@wsx.com</td>
+      <td><id></td>
+      <td>from: <mail></td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1BmhXnKmGg-1Wpv_wTE1GitID3MYnnSrNPw</td>
+      <td><id></td>
       <td>from: JohnS1555840057376@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1BmgtrDhHnl_tdhQ3r05qxb6ZxANbJSwUPw</td>
+      <td><id></td>
       <td>from: JohnS1555841545018@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1BmiWJiw2MoZgOhf_HUYiawJiJ5a2WyEsew</td>
+      <td><id></td>
       <td>from: JohnS1555840196890@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
     <tr>
-      <td>ANe1BmjOo3mQ1F7pWx2EhFM2VBe1oNhW56NCHg</td>
+      <td><id></td>
       <td>from: JohnS1555841616384@demistodev.com</td>
       <td>addLabelIds: TRASH</td>
     </tr>
@@ -4178,7 +4178,7 @@
 </table>
 <p>&nbsp;</p>
 <h5>Command Example</h5>
-<pre>  !gmail-remove-filter user-id=admin@demistodev.com filter_ids=ANe1Bmgqpm9zpcYPbuK1bUFMNTIBuoA7lKmdIg
+<pre>  !gmail-remove-filter user-id=admin@demistodev.com filter_ids=<id>
 </pre>
 <h5>Human Readable Output</h5>
 <h3 id="h_7d54beb9-bff7-4e22-9ebf-56a921aeb368">20. Move a mail to a different mailbox</h3>
