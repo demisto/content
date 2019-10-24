@@ -24,6 +24,9 @@ Attributes:
     ALERTS_TRANS
         Transformation map for alerts to be used with build_transformed_dict
 
+    CASES_TRANS
+        Transformation map for cases to be used with build_transformed_dict
+
     ENDPOINTS_TRANS
         Transformation map for endpoints to be used with build_transformation_dict
 
@@ -96,7 +99,31 @@ ALERTS_TRANS = {
     'tags': 'Tags',
     'type': 'Type',
 }
-ENDPOINT_TRANS = {
+CASES_TRANS = {
+    'id': 'ID',
+    'name': 'Name',
+    'alerts_count': 'AlertsCount',
+    'assigned_to.id': 'AssigneeID',
+    'assigned_to.name': 'AssigneeName',
+    'created_by.id': 'CreatorID',
+    'created_by.name': 'CreatorName',
+    'updated_by.id': 'UpdaterID',
+    'updated_by.name': 'UpdaterName',
+    'created_at': 'CreatedTime',
+    'updated_at': 'ModifiedTime',
+    'description': 'Description',
+    'events_count': 'EventsCount',
+    'info_links': 'InfoLinks',
+    'notes_count': 'NotesCount',
+    'priority': 'Priority',
+    'priority_order': 'PriorityOrder',
+    'severity': 'Severity',
+    'state': 'State',
+    'status': 'Status',
+    'tags': 'Tags',
+    'total_days_unresolved': 'TotalDaysUnresolved'
+}
+ENDPOINTS_TRANS = {
     'id': 'ID',
     'customer_id': 'CustomerID',
     'device_id': 'DeviceID',
@@ -284,43 +311,6 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/notes/{note_id}'
         return self._http_request('DELETE', suffix, resp_type='')
 
-    def create_alert_case(self, alert_id: Optional[Any], name: str, status: str = None,
-                          severity: Union[int, str] = None, tags: str = None, priority: str = None, state: str = None,
-                          info_links: str = None, assigned_to: str = None, total_days_unresolved: str = None,
-                          description: str = None, **kwargs) -> Dict:
-        """Creates a single case for an alert by sending a POST request.
-
-        Args:
-            alert_id: Alert ID to create case for.
-            name: Name of the case.
-            status: Status of the case.
-            severity: Severity of the case.
-            tags: Tags of the case.
-            priority: Priority of the case.
-            state: State of the case.
-            info_links: Info links of the case.
-            assigned_to: Assignee list.
-            total_days_unresolved: Total days the case is unresolved.
-            description: Description of the case.
-
-        Returns:
-            Response from API.
-        """
-        suffix = f'/api/v3/alerts/{alert_id}/cases'
-        body = assign_params(
-            status=status,
-            severity=severity,
-            tags=tags,
-            name=name,
-            priority=priority,
-            state=state,
-            info_links=info_links,
-            assigned_to=assigned_to,
-            total_days_unresolved=total_days_unresolved,
-            description=description
-        )
-        return self._http_request('POST', suffix, json_data=body)
-
     def get_events_by_alert(self, alert_id: Optional[Any]) -> Dict:
         """Fetches events for an alert by sending a GET request.
 
@@ -364,25 +354,8 @@ class Client(BaseClient):
             offset=offset,
             order_by=order_by
         )
+        body = body if body else None
         return self._http_request('GET', suffix, json_data=body)
-
-    def update_case(self, case_id: Optional[Any], assigned_to: List = None, status: Optional[Any] = None) -> Dict:
-        """Updates a case by send a PATCH request.
-
-        Args:
-            case_id: ID of the case.
-            assigned_to: List of case assignees.
-            status: Status of the case.
-
-        Returns:
-            Response from API.
-        """
-        suffix = f'/api/v3/cases/{case_id}'
-        params = assign_params(
-            assigned_to=assigned_to,
-            status=status
-        )
-        return self._http_request('PATCH', suffix, params=params)
 
     def get_event_by_id(self, event_id: Optional[Any]) -> Dict:
         """Fetches an event by id via a GET request.
@@ -753,33 +726,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
 
 
-def update_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Lists all events and return outputs in Demisto's format
-
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    _id = args.get('id')
-    raw_response = client.update_alert_by_id(body=args)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Updated Alert {_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
-        }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return human_readable, context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
-
-
-def get_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_alert_notes_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get all notes related to alert
 
     Args:
@@ -793,7 +740,7 @@ def get_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     raw_response = client.get_alert_notes(alert_id=alert_id)
     raw_notes = raw_response.get('results')
     if raw_notes:
-        title = f'{INTEGRATION_NAME} - Created Note for Alert {alert_id}:'
+        title = f'{INTEGRATION_NAME} - Notes for Alert {alert_id}:'
         context_entry = build_transformed_dict(raw_notes, NOTES_TRANS)
         if isinstance(context_entry, dict):
             context_entry['AlertID'] = alert_id
@@ -811,7 +758,7 @@ def get_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
-        return f'{INTEGRATION_NAME} - Could not create a note.', {}, {}
+        return f'{INTEGRATION_NAME} - No notes were found for alert {alert_id}.', {}, {}
 
 
 def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -836,7 +783,8 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
             f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'CreatorName', 'Message', 'CreatedTime'],
+                                         headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -859,32 +807,6 @@ def delete_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     return f'{INTEGRATION_NAME} - Deleted note {note_id} for Alert {alert_id} successfully.', {}, {}
 
 
-def create_alert_case_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Create a case for an alert
-
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    alert_id = args.get('id')
-    raw_response = client.create_alert_case(**args)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Updated Alert {alert_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Note(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
-        }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return human_readable, context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
-
-
 def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Get events for a specific alert
 
@@ -895,7 +817,6 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     Returns:
         Outputs
     """
-    # TODO: Add yaml outputs
     alert_id = args.get('id')
     raw_response = client.get_events_by_alert(alert_id=alert_id)
     events = raw_response.get('results')
@@ -908,7 +829,9 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.Count).Count': count
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry,
+                                         ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
+                                         removeNull=True)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -930,14 +853,16 @@ def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dic
     endpoints = demisto.get(raw_response, 'results.endpoints')
     if endpoints:
         title = f'{INTEGRATION_NAME} - Endpoints for alert {alert_id}:'
-        context_entry = build_transformed_dict(endpoints, ENDPOINT_TRANS)
+        context_entry = build_transformed_dict(endpoints, ENDPOINTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry,
             f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.Count).Count': count
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+        human_readable = tableToMarkdown(title, context_entry,
+                                         ['ID', 'DeviceID', 'Hostname', 'IP', 'MACAddress', 'UpdatedTime'],
+                                         headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -954,38 +879,24 @@ def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     Returns:
         Outputs
     """
-    alert_id = args.get('id')
+    alert_id = args.get('alert_id')
     raw_response = client.get_cases_by_alert(alert_id=alert_id, limit=args.get('limit'), offset=args.get('offset'),
                                              order_by=args.get('order_by'))
-    cases = raw_response.get('results.endpoints')
+    cases = raw_response.get('results')
     if cases:
         title = f'{INTEGRATION_NAME} - Cases for alert {alert_id}:'
-        context_entry = build_transformed_dict(cases, {})  # TODO: edit this
+        context_entry = build_transformed_dict(cases, CASES_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Case(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Case(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry,
+                                         ['ID', 'Name', 'AssigneeName', 'Priority', 'Severity', 'State', 'Status',
+                                          'ModifiedTime'], removeNull=True)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
-
-
-def update_case_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Update a case
-
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    case_id = args.get('id')
-    raw_response = client.update_case(case_id=case_id, assigned_to=argToList(args.get('assigned_to')),
-                                      status=args.get('status'))
-    return f'{INTEGRATION_NAME} - Created case successfully.', {}, raw_response
 
 
 def get_event_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1217,15 +1128,12 @@ def main():  # pragma: no cover
         'fetch-incidents': fetch_incidents,
         f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts_command,
         f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-alert': update_alert_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-alert-get-notes': get_alert_note_command,
+        f'{INTEGRATION_COMMAND_NAME}-alert-get-notes': get_alert_notes_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-delete-note': delete_alert_note_command,
-        f'{INTEGRATION_COMMAND_NAME}-alert-create-case': create_alert_case_command,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert ': get_cases_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-case': update_case_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert': get_cases_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
@@ -1236,6 +1144,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
     }
+    demisto.info(f'************ {command}')
     try:
         if command == 'fetch-incidents':
             incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())  # type: ignore

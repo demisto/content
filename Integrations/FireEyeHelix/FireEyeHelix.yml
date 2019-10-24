@@ -385,17 +385,6 @@ script:
       type: String
   - arguments:
     - default: true
-      description: ID of the alert to update.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Change status, assign, assess, add to case.
-    execution: false
-    name: fireeye-helix-update-alert
-  - arguments:
-    - default: true
       description: ID of the alert the note is created for.
       isArray: false
       name: alert_id
@@ -434,77 +423,6 @@ script:
       description: ID of the related alert.
       type: Number
   - arguments:
-    - default: false
-      description: Name of the case to create.
-      isArray: false
-      name: name
-      required: true
-      secret: false
-    - default: false
-      description: Status of the case to create.
-      isArray: false
-      name: status
-      required: false
-      secret: false
-    - default: false
-      description: Severity of the case to create.
-      isArray: false
-      name: severity
-      required: false
-      secret: false
-    - default: false
-      description: Tags of the newly created case.
-      isArray: false
-      name: tags
-      required: false
-      secret: false
-    - default: false
-      description: Priority of the case to create.
-      isArray: false
-      name: priority
-      required: false
-      secret: false
-    - default: false
-      description: State of the case to create.
-      isArray: false
-      name: state
-      required: false
-      secret: false
-    - default: false
-      description: Info links of the case to create.
-      isArray: false
-      name: info_links
-      required: false
-      secret: false
-    - default: false
-      description: ID of the assignee of the case.
-      isArray: false
-      name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Total days the case is unresolved.
-      isArray: false
-      name: total_days_unresolved
-      required: false
-      secret: false
-    - default: false
-      description: Description of the created case.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - default: false
-      description: ID of the alert the case is created under.
-      isArray: false
-      name: alert_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Create a case.
-    execution: false
-    name: fireeye-helix-alert-create-case
-  - arguments:
     - default: true
       description: Alert ID to get event by.
       isArray: false
@@ -515,6 +433,127 @@ script:
     description: Lists alert events for a specific alert.
     execution: false
     name: fireeye-helix-get-events-by-alert
+    outputs:
+    - contextPath: FireEyeHelix.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: FireEyeHelix.Event.Type
+      description: Event type.
+      type: String
+    - contextPath: FireEyeHelix.Event.Result
+      description: Event result.
+      type: String
+    - contextPath: FireEyeHelix.Event.MatchedAt
+      description: Time the event was matched at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.Confidence
+      description: Confidence of the event. Can be either low, medium or high.
+      type: String
+    - contextPath: FireEyeHelix.Event.Status
+      description: Status of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.EventTime
+      description: Time the event took place.
+      type: Date
+    - contextPath: FireEyeHelix.Event.DetectedRuleID
+      description: ID of the detected rule.
+      type: String
+    - contextPath: FireEyeHelix.Event.PID
+      description: Process ID.
+      type: String
+    - contextPath: FireEyeHelix.Event.Process
+      description: Process details.
+      type: String
+    - contextPath: FireEyeHelix.Event.ProcessPath
+      description: Process path.
+      type: String
+    - contextPath: FireEyeHelix.Event.FileName
+      description: Name of the file affected by the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.FilePath
+      description: Path of the the file affected by the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.DeviceName
+      description: Device name.
+      type: String
+    - contextPath: FireEyeHelix.Event.Size
+      description: Size of the file that created the event in bytes.
+      type: String
+    - contextPath: FireEyeHelix.Event.Virus
+      description: Virus that was detected in the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.MalwareType
+      description: Malware type of the virus that was detected.
+      type: String
+    - contextPath: FireEyeHelix.Event.CreatedTime
+      description: Time the event was created at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.Class
+      description: Event class.
+      type: String
+    - contextPath: FireEyeHelix.Event.MD5
+      description: MD5 hash of the affected file.
+      type: String
+    - contextPath: FireEyeHelix.Event.SHA1
+      description: SHA1 has of the affected file.
+      type: String
+    - contextPath: FireEyeHelix.Event.Protocol
+      description: Protocol used in the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceIPv4
+      description: IPv4 address of the event source.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceIPv6
+      description: IPv6 address of the event source.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourcePort
+      description: Port of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceLongitude
+      description: Longitude of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceLatitude
+      description: Latitude of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationIPv4
+      description: IPv4 address of the event destination.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationIPv6
+      description: IPv6 address of the event destination.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationPort
+      description: Port of the event destination address.
+      type: String
+    - contextPath: FireEyeHelix.Event.ReportTime
+      description: Time the event was reported at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.FalsePositive
+      description: Boolean flag - is the event false positive.
+      type: String
+    - contextPath: FireEyeHelix.Event.Domain
+      description: Domain of the recepient.
+      type: String
+    - contextPath: FireEyeHelix.Event.From
+      description: Source email address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceDomain
+      description: Domain of the host that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceISP
+      description: ISP of the source of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationISP
+      description: ISP of the destination of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.To
+      description: Destination email address.
+      type: String
+    - contextPath: FireEyeHelix.Event.Attachment
+      description: Email attachment.
+      type: Unknown
+    - contextPath: FireEyeHelix.Event.Count
+      description: Total number of events.
+      type: Number
   - arguments:
     - default: true
       description: ID of an alert.
@@ -589,34 +628,83 @@ script:
     description: Get cases of an alert.
     execution: false
     name: fireeye-helix-get-cases-by-alert
-  - arguments:
-    - default: false
-      isArray: false
-      name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: IDs of the new assignees of the case.
-      isArray: true
-      name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: Status of the case.
-      isArray: false
-      name: status
-      required: false
-      secret: false
-    - default: true
-      description: ID of the case to update.
-      isArray: false
-      name: id
-      required: true
-      secret: false
-    deprecated: false
-    description: Change case assignee or status.
-    execution: false
-    name: fireeye-helix-update-case
+    outputs:
+    - contextPath: FireEyeHelix.Case.AlertsCount
+      description: Number of alerts related to case.
+      type: Number
+    - contextPath: FireEyeHelix.Case.AssigneeID
+      description: ID of the assignee.
+      type: String
+    - contextPath: FireEyeHelix.Case.AssigneeName
+      description: Name of the assignee.
+      type: String
+    - contextPath: FireEyeHelix.Case.CreatorID
+      description: ID of the case creator.
+      type: String
+    - contextPath: FireEyeHelix.Case.CreatorName
+      description: Name of the case creator.
+      type: String
+    - contextPath: FireEyeHelix.Case.UpdaterID
+      description: ID of the user who last updated the case.
+      type: String
+    - contextPath: FireEyeHelix.Case.UpdaterName
+      description: Name of the user who last updated the case.
+      type: String
+    - contextPath: FireEyeHelix.Case.CreatedTime
+      description: Time the case was created at.
+      type: Date
+    - contextPath: FireEyeHelix.Case.ModifiedTime
+      description: Time the case was last modified at.
+      type: Date
+    - contextPath: FireEyeHelix.Case.Description
+      description: Case description.
+      type: String
+    - contextPath: FireEyeHelix.Case.EventsCount
+      description: Number of events in case.
+      type: Number
+    - contextPath: FireEyeHelix.Case.ID
+      description: ID of the case.
+      type: Number
+    - contextPath: FireEyeHelix.Case.InfoLinks
+      description: Links for information or reference purposes
+      type: Unknown
+    - contextPath: FireEyeHelix.Case.Name
+      description: Name of the case.
+      type: String
+    - contextPath: FireEyeHelix.Case.NotesCount
+      description: Number of notes in the case.
+      type: Number
+    - contextPath: FireEyeHelix.Case.Priority
+      description: Provides an indication of the order in which the case should be
+        examined as compared to other cases. Priority can be either Critical, High,
+        Medium, or Low.
+      type: String
+    - contextPath: FireEyeHelix.Case.PriorityOrder
+      description: Provides an indication of the order in which the case should be
+        examined as compared to other cases. Priority order can be either 4, 3, 2
+        or 1.
+      type: Number
+    - contextPath: FireEyeHelix.Case.Severity
+      description: Thepotentialimpactthatthecasecouldhaveon the organization if it
+        is a true positive. It is calculated based on the risk of the alert.
+      type: Number
+    - contextPath: FireEyeHelix.Case.State
+      description: State of the case.
+      type: String
+    - contextPath: FireEyeHelix.Case.Status
+      description: |-
+        Cases with the following statuses are considered open: Declared, Scoped, Contained.
+        Cases with the following statuses are considered closed: Recovered, Improved.
+      type: String
+    - contextPath: FireEyeHelix.Case.Tags
+      description: Tags of the case.
+      type: Unknown
+    - contextPath: FireEyeHelix.Case.TotalDaysUnresolved
+      description: Amount of days the case has been unresolved.
+      type: Number
+    - contextPath: FireEyeHelix.Case.Count
+      description: Total amount of cases.
+      type: Number
   - arguments:
     - default: true
       description: ID of an event.
@@ -628,6 +716,124 @@ script:
     description: Get an event by an event ID.
     execution: false
     name: fireeye-helix-get-event-by-id
+    outputs:
+    - contextPath: FireEyeHelix.Event.ID
+      description: Event ID.
+      type: String
+    - contextPath: FireEyeHelix.Event.Type
+      description: Event type.
+      type: String
+    - contextPath: FireEyeHelix.Event.Result
+      description: Event result.
+      type: String
+    - contextPath: FireEyeHelix.Event.MatchedAt
+      description: Time the event was matched at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.Confidence
+      description: Confidence of the event. Can be either low, medium or high.
+      type: String
+    - contextPath: FireEyeHelix.Event.Status
+      description: Status of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.EventTime
+      description: Time the event took place.
+      type: Date
+    - contextPath: FireEyeHelix.Event.DetectedRuleID
+      description: ID of the detected rule.
+      type: String
+    - contextPath: FireEyeHelix.Event.PID
+      description: Process ID.
+      type: String
+    - contextPath: FireEyeHelix.Event.Process
+      description: Process details.
+      type: String
+    - contextPath: FireEyeHelix.Event.ProcessPath
+      description: Process path.
+      type: String
+    - contextPath: FireEyeHelix.Event.FileName
+      description: Name of the file affected by the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.FilePath
+      description: Path of the the file affected by the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.DeviceName
+      description: Device name.
+      type: String
+    - contextPath: FireEyeHelix.Event.Size
+      description: Size of the file that created the event in bytes.
+      type: String
+    - contextPath: FireEyeHelix.Event.Virus
+      description: Virus that was detected in the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.MalwareType
+      description: Malware type of the virus that was detected.
+      type: String
+    - contextPath: FireEyeHelix.Event.CreatedTime
+      description: Time the event was created at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.Class
+      description: Event class.
+      type: String
+    - contextPath: FireEyeHelix.Event.MD5
+      description: MD5 hash of the affected file.
+      type: String
+    - contextPath: FireEyeHelix.Event.SHA1
+      description: SHA1 has of the affected file.
+      type: String
+    - contextPath: FireEyeHelix.Event.Protocol
+      description: Protocol used in the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceIPv4
+      description: IPv4 address of the event source.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceIPv6
+      description: IPv6 address of the event source.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourcePort
+      description: Port of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceLongitude
+      description: Longitude of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceLatitude
+      description: Latitude of the event source address.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationIPv4
+      description: IPv4 address of the event destination.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationIPv6
+      description: IPv6 address of the event destination.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationPort
+      description: Port of the event destination address.
+      type: String
+    - contextPath: FireEyeHelix.Event.ReportTime
+      description: Time the event was reported at.
+      type: Date
+    - contextPath: FireEyeHelix.Event.FalsePositive
+      description: Boolean flag - is the event false positive.
+      type: String
+    - contextPath: FireEyeHelix.Event.Domain
+      description: Domain of the recepient.
+      type: String
+    - contextPath: FireEyeHelix.Event.From
+      description: Source email address.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceDomain
+      description: Domain of the host that created the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.SourceISP
+      description: ISP of the source of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.DestinationISP
+      description: ISP of the destination of the event.
+      type: String
+    - contextPath: FireEyeHelix.Event.To
+      description: Destination email address.
+      type: String
+    - contextPath: FireEyeHelix.Event.Attachment
+      description: Email attachment.
+      type: Unknown
   - arguments:
     - default: false
       description: Number of results to return per page.
