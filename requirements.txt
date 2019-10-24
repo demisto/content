@@ -1,4 +1,3 @@
-beautifulsoup4
 google
 Google-Search-API
 pyping
