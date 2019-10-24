@@ -2381,7 +2381,7 @@ if 'requests' in sys.modules:
                 return response.status_code in status_codes
             return response.ok
 
-    class BaseSessionClient(BaseClient):
+    class SessionBaseClient(BaseClient):
         """Client to use in integrations with powerful _http_request
             Same as BaseClient, only keeps a session open with the server.
             :type base_url: ``str``
@@ -2413,7 +2413,7 @@ if 'requests' in sys.modules:
             """
         def __init__(self, base_url, *args, **kwargs):
             self._session = requests.Session()
-            super().__init__(base_url, *args, **kwargs)
+            super(SessionBaseClient, self).__init__(base_url, *args, **kwargs)
 
         def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,

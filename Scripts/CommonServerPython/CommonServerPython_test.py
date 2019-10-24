@@ -864,6 +864,117 @@ class TestBaseClient:
         assert not self.client._is_status_code_valid(response)
 
 
+class TestSessionBaseClient:
+    from CommonServerPython import SessionBaseClient
+    text = {"status": "ok"}
+    client = SessionBaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+
+    def test_http_request_json(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event')
+        assert res == self.text
+
+    def test_http_request_json_negative(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', text='notjson')
+        with raises(DemistoException, match="Failed to parse json"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_text(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event', resp_type='text')
+        assert res == json.dumps(self.text)
+
+    def test_http_request_content(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', content=str.encode(json.dumps(self.text)))
+        res = self.client._http_request('get', 'event', resp_type='content')
+        assert json.loads(res) == self.text
+
+    def test_http_request_response(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event')
+        res = self.client._http_request('get', 'event', resp_type='response')
+        assert isinstance(res, requests.Response)
+
+    def test_http_request_not_ok(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        with raises(DemistoException, match="[500]"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_not_ok_but_ok(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        res = self.client._http_request('get', 'event', resp_type='response', ok_codes=(500,))
+        assert res.status_code == 500
+
+    def test_http_request_not_ok_with_json(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_timeout(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
+        with raises(DemistoException, match="Connection Timeout Error"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_ssl_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
+        with raises(DemistoException, match="SSL Certificate Verification Failed"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_proxy_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
+        with raises(DemistoException, match="Proxy Error"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
+        with raises(DemistoException, match="Verify that the server URL parameter"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_is_valid_ok_codes_empty(self):
+        from requests import Response
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        response = Response()
+        response.status_code = 200
+        assert new_client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_empty_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response)
+
+
 def test_parse_date_string():
     # test unconverted data remains: Z
     assert parse_date_string('2019-09-17T06:16:39Z') == datetime(2019, 9, 17, 6, 16, 39)
