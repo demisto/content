@@ -83,7 +83,9 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
         demisto.debug(f'Navigating to path. Mode: {"OFFLINE" if offline_mode else "ONLINE"}')
 
         driver.get(path)
-        time.sleep(wait_time) if wait_time > 0 else driver.implicitly_wait(5)  # type: ignore
+        driver.implicitly_wait(5)
+        if wait_time > 0:
+            time.sleep(wait_time)
         check_response(driver)
 
         demisto.debug('Navigating to path - COMPLETED')
