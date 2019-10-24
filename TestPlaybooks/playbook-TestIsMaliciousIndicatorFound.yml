@@ -285,7 +285,7 @@ tasks:
     task:
       id: eee1f03a-24d3-42fc-8d0e-d97867a7d5a4
       version: -1
-      name: IsMaliciuosFound-incvude-suspicious
+      name: IsMaliciuosFound-include-suspicious
       description: Checks if the investigation found any Malicious File/URL/IP, if
         so return yes, otherwise no.
       scriptName: IsMaliciousIndicatorFound
