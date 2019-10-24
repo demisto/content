@@ -1529,17 +1529,11 @@ def main():
     # IP address or FQDN of your SDSo node
     SDSO = demisto.params().get('sdso')
 
-    PROXY = demisto.params().get('proxy', False)
+    handle_proxy()
 
     INSECURE = demisto.params().get('insecure', False)
 
     verify_cert = not INSECURE
-
-    if not PROXY:
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
 
     sdso_url = f'{SDSO}/Aria/SS/1.0.0/PBaaS/server'
 
