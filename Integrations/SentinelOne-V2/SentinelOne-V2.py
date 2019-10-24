@@ -436,7 +436,7 @@ def get_threats_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': contents,
+        'Contents': threats,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
                                                                                    'details for all the threats that '
