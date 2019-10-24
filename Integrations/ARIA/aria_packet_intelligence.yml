@@ -229,7 +229,7 @@ script:
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
-        labels are allowed.  you enter values for all three labels, the command
+        labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
         is deleted from every SIA attached to the SDSo.'
     outputs:
