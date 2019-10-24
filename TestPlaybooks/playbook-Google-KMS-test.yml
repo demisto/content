@@ -117,10 +117,14 @@ tasks:
       - "9"
     scriptarguments:
       crypto_key:
-        simple: new_nam
+        simple: new_name
+      crypto_key_id:
+        simple: new_name1
       crypto_key_version: {}
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -152,8 +156,12 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -230,10 +238,14 @@ tasks:
       - "12"
     scriptarguments:
       crypto_key:
-        simple: new_nam
+        simple: new_name
+      crypto_key_id:
+        simple: new_name1
       crypto_key_version: {}
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -265,8 +277,12 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -344,9 +360,13 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       crypto_key_version: {}
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -378,8 +398,12 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -457,9 +481,13 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       crypto_key_version: {}
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -491,8 +519,12 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
@@ -570,9 +602,13 @@ tasks:
     scriptarguments:
       crypto_key:
         simple: new_name
+      crypto_key_id:
+        simple: new_name1
       crypto_key_version: {}
       key_ring: {}
+      key_ring_id: {}
       location: {}
+      location_id: {}
     separatecontext: false
     view: |-
       {
