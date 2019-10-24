@@ -2810,88 +2810,88 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Application name
+      description: The application name.
       isArray: false
       name: application
       required: false
       secret: false
     - default: false
-      description: Category name
+      description: The category name.
       isArray: false
       name: category
       required: false
       secret: false
     - default: false
-      description: Ddestination IP address
+      description: The destination IP address.
       isArray: false
       name: destination
       required: true
       secret: false
     - default: false
-      description: Destination port
+      description: The destination port.
       isArray: false
       name: destination-port
       required: false
       secret: false
     - default: false
-      description: From zone
+      description: The from zone.
       isArray: false
       name: from
       required: false
       secret: false
     - default: false
-      description: To zone
+      description: The to zone.
       isArray: false
       name: to
       required: false
       secret: false
     - default: false
-      description: IP protocol value
+      description: The IP protocol value.
       isArray: false
       name: protocol
       required: true
       secret: false
     - default: false
-      description: Source IP address
+      description: The source IP address.
       isArray: false
       name: source
       required: true
       secret: false
     - default: false
-      description: Source user
+      description: The source user.
       isArray: false
       name: source-user
       required: false
       secret: false
     deprecated: false
-    description: Check whether a session is matching a security policy. this command
+    description: Checks whether a session matches the specified security policy. This command
       is only available on Firewall instances.
     execution: false
     name: panorama-security-policy-match
     outputs:
     - contextPath: Panorama.SecurityPolicyMatch.Query
-      description: Query for the session to test
+      description: Query for the session to test.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.Name
-      description: Matching rule name
+      description: The matching rule name.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.Action
-      description: Matching rule action
+      description: The matching rule action.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.Category
-      description: Matching rule category
+      description: The matching rule category.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.Destination
-      description: Matching rule destination
+      description: The matching rule destination.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.From
-      description: Matching rule from zone
+      description: The matching rule from zone.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.Source
-      description: Matching rule source
+      description: The matching rule source.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.To
-      description: Matching rule to zone
+      description: The matching rule to zone.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
