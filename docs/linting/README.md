@@ -6,6 +6,7 @@ All linters are run via the following script:
 ./Tests/scripts/pkg_dev_test_tasks.py -h
 usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
+                             [--cpu-num CPU_NUM]
 
 Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
@@ -23,6 +24,9 @@ optional arguments:
   --no-test             Do NOT test (skip pytest) (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
+  --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
+                        automatic detection of the number of CPUs.) (default:
+                        0)
 ```
 
 **Note**: this script is also used to run pytest. See: [Unit Testing](../tests/unit-testing/README.md#run-with-docker)
