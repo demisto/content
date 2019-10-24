@@ -9,8 +9,11 @@ import re
 def csv_string_to_list(v):
     if type(v) == str:
         return v.lower().replace(' ', '').replace("'", '').replace('\n', '').split(',')
-    v = [val.lower() for val in v]
-    return v
+    elif type(v) == list:
+        y = [val.lower() for val in v]
+        return y
+    else:
+        return v.lower().replace(' ', '').replace("'", '').replace('\n', '')
 
 
 def make_mask(n):
