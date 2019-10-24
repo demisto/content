@@ -38,6 +38,17 @@ FETCH_QUERY = demisto.params().get('fetch_query', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
+TIMESTAMP = demisto.params().get('use_timestamp', False)
+
+
+def timestamp_to_date(timestamp_string):
+    # cut the timestamp down to size if needed
+    timestamp_len = len(str(int(time.time())))
+    if len(timestamp_string) > timestamp_len:
+        timestamp_number = int(str(timestamp_string)[:timestamp_len])
+
+    # convert timestamp to datetime
+    return datetime.fromtimestamp(timestamp_number)
 
 
 def elasticsearch_builder():
@@ -265,8 +276,16 @@ def test_func():
             if temp:
                 response = temp
 
+            # get the value in the time field
             hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
-            datetime.strptime(hit_date, TIME_FORMAT)
+
+            # if not a timestamp test the conversion to datetime object
+            if not TIMESTAMP:
+                datetime.strptime(hit_date, TIME_FORMAT)
+
+            # test conversion to date
+            else:
+                timestamp_to_date(hit_date)
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + '\n' + TIME_FIELD + ' fetched: ' + hit_date)
