@@ -11,10 +11,16 @@ from distutils.util import strtobool
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-TOKEN, SERVER, FETCH_TIME, BASE_URL = '', '', '', ''
-FETCH_THREAT_RANK, FETCH_LIMIT = 0, 0
-USE_SSL = False
-HEADERS: dict = {}
+''' GLOBALS '''
+
+TOKEN: str
+SERVER: str
+FETCH_TIME: str
+BASE_URL: str
+FETCH_THREAT_RANK: int
+FETCH_LIMIT: int
+USE_SSL: bool
+HEADERS: dict
 
 ''' HELPER FUNCTIONS '''
 
