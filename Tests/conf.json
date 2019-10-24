@@ -946,8 +946,8 @@
         {
             "playbookID": "Test-IsMaliciousIndicatorFound",
             "integrations": "VirusTotal",
-            "instance_names": "virus_total_general"
-
+            "instance_names": "virus_total_general",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "TestExtractHTMLTables"
