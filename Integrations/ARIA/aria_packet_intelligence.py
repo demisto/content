@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import os
 import json
 import requests
 import time
