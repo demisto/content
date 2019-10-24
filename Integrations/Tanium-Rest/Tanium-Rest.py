@@ -362,13 +362,20 @@ class Client(BaseClient):
         }
 
     def get_group_item(self, group):
-        return {
+        item = {
             'ID': group.get('id'),
             'Name': group.get('name'),
             'Deleted': group.get('deleted_flag'),
-            'Text': group.get('text'),
-            'Type': GROUP_TYPES[group.get('type')]
+            'Text': group.get('text')
         }
+        group_type = group.get('type')
+
+        if group_type:
+            item['Type'] = GROUP_TYPES[group_type]
+        else:
+            item['Type'] = 'Manual group'
+
+        return item
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -534,12 +541,12 @@ def get_question_result(client, data_args):
 
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
-        return f'Question is still executing, Question id_: {str(id)}',\
-               {f'Tanium.QuestionResult(val.QuestionID == {id})': context}, res
+        return f'Question is still executing, Question id: {str(id_)}',\
+               {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}, res
 
     context = {'QuestionID': id_, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
-    outputs = {f'Tanium.QuestionResult(val.QuestionID == {id})': context}
+    outputs = {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}
     human_readable = tableToMarkdown('Question results', rows)
     return human_readable, outputs, res
 
@@ -846,9 +853,9 @@ def get_groups(client, data_args):
 
 def delete_group(client, data_args):
     id_ = data_args.get('id')
-    raw_response = client.do_request('DELETE', 'groups/' + str(id))
+    raw_response = client.do_request('DELETE', 'groups/' + str(id_))
     group = {'ID': int(id_), 'Deleted': True}
-    human_readable = 'Group has been deleted. ID = ' + str(id)
+    human_readable = 'Group has been deleted. ID = ' + str(id_)
     context = createContext(group, removeNull=True)
     outputs = {'Tanium.Group(val.ID && val.ID === obj.ID)': context}
     return human_readable, outputs, raw_response
