@@ -11,21 +11,10 @@ from distutils.util import strtobool
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
-
-TOKEN = demisto.params().get('token')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
-    else demisto.params()['url']
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 0))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
-BASE_URL = SERVER + '/web/api/v2.0/'
-HEADERS = {
-    'Authorization': 'ApiToken ' + TOKEN,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
+TOKEN, SERVER, FETCH_TIME, BASE_URL = '', '', '', ''
+FETCH_THREAT_RANK, FETCH_LIMIT = 0, 0
+USE_SSL = False
+HEADERS: dict = {}
 
 ''' HELPER FUNCTIONS '''
 
@@ -1781,74 +1770,99 @@ def threat_to_incident(threat):
     return incident
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    ''' PARSE INTEGRATION PARAMETERS '''
 
-LOG('command is %s' % (demisto.command()))
+    global TOKEN, SERVER, USE_SSL, FETCH_TIME
+    global FETCH_THREAT_RANK, FETCH_LIMIT, BASE_URL, HEADERS
 
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'sentinelone-get-activities':
-        get_activities_command()
-    elif demisto.command() == 'sentinelone-get-threats':
-        get_threats_command()
-    elif demisto.command() == 'sentinelone-mark-as-threat':
-        mark_as_threat_command()
-    elif demisto.command() == 'sentinelone-mitigate-threat':
-        mitigate_threat_command()
-    elif demisto.command() == 'sentinelone-resolve-threat':
-        resolve_threat_command()
-    elif demisto.command() == 'sentinelone-threat-summary':
-        get_threat_summary_command()
-    elif demisto.command() == 'sentinelone-get-hash':
-        get_hash_command()
-    elif demisto.command() == 'sentinelone-get-white-list':
-        get_white_list_command()
-    elif demisto.command() == 'sentinelone-create-white-list-item':
-        create_white_item_command()
-    elif demisto.command() == 'sentinelone-get-sites':
-        get_sites_command()
-    elif demisto.command() == 'sentinelone-get-site':
-        get_site_command()
-    elif demisto.command() == 'sentinelone-reactivate-site':
-        reactivate_site_command()
-    elif demisto.command() == 'sentinelone-list-agents':
-        list_agents_command()
-    elif demisto.command() == 'sentinelone-get-agent':
-        get_agent_command()
-    elif demisto.command() == 'sentinelone-get-groups':
-        get_groups_command()
-    elif demisto.command() == 'sentinelone-move-agent':
-        move_agent_to_group_command()
-    elif demisto.command() == 'sentinelone-delete-group':
-        delete_group()
-    elif demisto.command() == 'sentinelone-agent-processes':
-        get_agent_processes()
-    elif demisto.command() == 'sentinelone-connect-agent':
-        connect_agent_to_network()
-    elif demisto.command() == 'sentinelone-disconnect-agent':
-        disconnect_agent_from_network()
-    elif demisto.command() == 'sentinelone-broadcast-message':
-        broadcast_message()
-    elif demisto.command() == 'sentinelone-get-events':
-        get_events()
-    elif demisto.command() == 'sentinelone-create-query':
-        create_query()
-    elif demisto.command() == 'sentinelone-get-processes':
-        get_processes()
-    elif demisto.command() == 'sentinelone-shutdown-agent':
-        shutdown_agents()
-    elif demisto.command() == 'sentinelone-uninstall-agent':
-        uninstall_agent()
+    TOKEN = demisto.params().get('token')
+    SERVER = demisto.params().get('url')[:-1] if (demisto.params().get('url')
+                                                  and demisto.params().get('url').endswith('/')) \
+        else demisto.params().get('url')
+    USE_SSL = not demisto.params().get('insecure', False)
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 0))
+    FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
+    BASE_URL = SERVER + '/web/api/v2.0/'
+    HEADERS = {
+        'Authorization': 'ApiToken ' + TOKEN if TOKEN else 'ApiToken',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
 
-except Exception as e:
-    if demisto.command() == 'fetch-incidents':
-        LOG(str(e))
-        raise
-    else:
-        return_error(e)
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('command is %s' % (demisto.command()))
+
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'sentinelone-get-activities':
+            get_activities_command()
+        elif demisto.command() == 'sentinelone-get-threats':
+            get_threats_command()
+        elif demisto.command() == 'sentinelone-mark-as-threat':
+            mark_as_threat_command()
+        elif demisto.command() == 'sentinelone-mitigate-threat':
+            mitigate_threat_command()
+        elif demisto.command() == 'sentinelone-resolve-threat':
+            resolve_threat_command()
+        elif demisto.command() == 'sentinelone-threat-summary':
+            get_threat_summary_command()
+        elif demisto.command() == 'sentinelone-get-hash':
+            get_hash_command()
+        elif demisto.command() == 'sentinelone-get-white-list':
+            get_white_list_command()
+        elif demisto.command() == 'sentinelone-create-white-list-item':
+            create_white_item_command()
+        elif demisto.command() == 'sentinelone-get-sites':
+            get_sites_command()
+        elif demisto.command() == 'sentinelone-get-site':
+            get_site_command()
+        elif demisto.command() == 'sentinelone-reactivate-site':
+            reactivate_site_command()
+        elif demisto.command() == 'sentinelone-list-agents':
+            list_agents_command()
+        elif demisto.command() == 'sentinelone-get-agent':
+            get_agent_command()
+        elif demisto.command() == 'sentinelone-get-groups':
+            get_groups_command()
+        elif demisto.command() == 'sentinelone-move-agent':
+            move_agent_to_group_command()
+        elif demisto.command() == 'sentinelone-delete-group':
+            delete_group()
+        elif demisto.command() == 'sentinelone-agent-processes':
+            get_agent_processes()
+        elif demisto.command() == 'sentinelone-connect-agent':
+            connect_agent_to_network()
+        elif demisto.command() == 'sentinelone-disconnect-agent':
+            disconnect_agent_from_network()
+        elif demisto.command() == 'sentinelone-broadcast-message':
+            broadcast_message()
+        elif demisto.command() == 'sentinelone-get-events':
+            get_events()
+        elif demisto.command() == 'sentinelone-create-query':
+            create_query()
+        elif demisto.command() == 'sentinelone-get-processes':
+            get_processes()
+        elif demisto.command() == 'sentinelone-shutdown-agent':
+            shutdown_agents()
+        elif demisto.command() == 'sentinelone-uninstall-agent':
+            uninstall_agent()
+
+    except Exception as e:
+        if demisto.command() == 'fetch-incidents':
+            LOG(str(e))
+            raise
+        else:
+            return_error(e)
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()
