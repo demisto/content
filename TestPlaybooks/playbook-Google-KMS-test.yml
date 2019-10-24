@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: d87a7285-63e9-493d-83df-f356921b99f0
+    taskid: 5f7e120e-35ad-4595-8fc9-fcd3b8631acd
     type: condition
     task:
-      id: d87a7285-63e9-493d-83df-f356921b99f0
+      id: 5f7e120e-35ad-4595-8fc9-fcd3b8631acd
       version: -1
       name: Check CryptoKey
       type: condition
@@ -75,6 +75,8 @@ tasks:
     nexttasks:
       "yes":
       - "8"
+      - "36"
+      - "40"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -86,7 +88,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: projects/kms-integration/locations/global/keyRings/TestKeyRing/cryptoKeys/TestCryptoKey
+              simple: TestCryptoKey
     view: |-
       {
         "position": {
@@ -99,10 +101,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c6d8672d-b031-4c33-83f4-5b27ccbd201f
+    taskid: a8965242-8e81-489d-8a56-a00468b4fb4d
     type: regular
     task:
-      id: c6d8672d-b031-4c33-83f4-5b27ccbd201f
+      id: a8965242-8e81-489d-8a56-a00468b4fb4d
       version: -1
       name: google-kms-destroy-key
       description: Destroy the primary CryptoKeyVersion of a given CryptoKey
@@ -114,11 +116,11 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
+      crypto_key:
+        simple: new_nam
       crypto_key_version: {}
-      key_ring_id: {}
-      location_id: {}
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -132,10 +134,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: b411f156-09ea-430e-8313-7ee7f4c7dd83
+    taskid: 991267f3-972e-40f7-831b-f63b6affbad8
     type: regular
     task:
-      id: b411f156-09ea-430e-8313-7ee7f4c7dd83
+      id: 991267f3-972e-40f7-831b-f63b6affbad8
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -148,10 +150,10 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -165,10 +167,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 76fecd58-a27e-47ec-8fc2-e58d5ae913fe
+    taskid: 4c532a9d-2257-4b3d-825b-8a1e1581cf2e
     type: condition
     task:
-      id: 76fecd58-a27e-47ec-8fc2-e58d5ae913fe
+      id: 4c532a9d-2257-4b3d-825b-8a1e1581cf2e
       version: -1
       name: Check key destruction
       type: condition
@@ -194,7 +196,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name1
+                        simple: new_name
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -212,10 +214,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: af4c0a9d-36e3-4416-8e68-1ae96a66fad6
+    taskid: 8a81cb6a-fd70-4081-8fdb-b275bdbe91c5
     type: regular
     task:
-      id: af4c0a9d-36e3-4416-8e68-1ae96a66fad6
+      id: 8a81cb6a-fd70-4081-8fdb-b275bdbe91c5
       version: -1
       name: google-kms-restore-key
       description: Restore the primary CryptoKeyVersion of a given CryptoKey
@@ -227,10 +229,11 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_nam
+      crypto_key_version: {}
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -244,10 +247,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 69bb32dc-63cc-43af-8476-4d219bef8f6a
+    taskid: ca67ee52-1bcf-4e65-8972-0f1cdb39b1f1
     type: regular
     task:
-      id: 69bb32dc-63cc-43af-8476-4d219bef8f6a
+      id: ca67ee52-1bcf-4e65-8972-0f1cdb39b1f1
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -260,10 +263,10 @@ tasks:
       '#none#':
       - "13"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -277,10 +280,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: b9351f96-03f2-4a24-87a1-f6469337f198
+    taskid: ea6f6631-43e3-4a98-869b-619815a1f87e
     type: condition
     task:
-      id: b9351f96-03f2-4a24-87a1-f6469337f198
+      id: ea6f6631-43e3-4a98-869b-619815a1f87e
       version: -1
       name: Check key restoration
       type: condition
@@ -306,7 +309,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name1
+                        simple: new_name
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -324,10 +327,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 298b7346-67b3-44e5-889b-5d18816c4f65
+    taskid: 963b7bc9-cb4d-414e-8b86-1aa7e409e1d6
     type: regular
     task:
-      id: 298b7346-67b3-44e5-889b-5d18816c4f65
+      id: 963b7bc9-cb4d-414e-8b86-1aa7e409e1d6
       version: -1
       name: google-kms-enable-key
       description: Enable the primary CryptoKeyVersion of a given CryptoKey
@@ -339,10 +342,11 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      crypto_key_version: {}
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -356,10 +360,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 3ee057eb-e4eb-4da1-87cf-a83db580020d
+    taskid: 10cefc95-83bf-46ad-811d-2f102415c874
     type: regular
     task:
-      id: 3ee057eb-e4eb-4da1-87cf-a83db580020d
+      id: 10cefc95-83bf-46ad-811d-2f102415c874
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -372,10 +376,10 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -389,10 +393,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: b86051ba-c045-4045-86db-f1ea656cd4ea
+    taskid: c528c217-37b3-412e-84b3-5f3f0b2d0a0a
     type: condition
     task:
-      id: b86051ba-c045-4045-86db-f1ea656cd4ea
+      id: c528c217-37b3-412e-84b3-5f3f0b2d0a0a
       version: -1
       name: Check key enabled
       type: condition
@@ -418,7 +422,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name1
+                        simple: new_name
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -436,10 +440,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: bbc5a954-2fdc-4f11-8985-4264c2f3c656
+    taskid: 5a88bc94-8e27-4f76-806c-8a1729a55e1b
     type: regular
     task:
-      id: bbc5a954-2fdc-4f11-8985-4264c2f3c656
+      id: 5a88bc94-8e27-4f76-806c-8a1729a55e1b
       version: -1
       name: google-kms-disable-key
       description: Disable the primary CryptoKeyVersion of a given CryptoKey
@@ -451,10 +455,11 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      crypto_key_version: {}
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -468,10 +473,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 6528a1a4-19a3-46bc-8ed3-cb36e47c7158
+    taskid: 5dd7454b-f058-453e-8a1a-0aa78a4a9627
     type: regular
     task:
-      id: 6528a1a4-19a3-46bc-8ed3-cb36e47c7158
+      id: 5dd7454b-f058-453e-8a1a-0aa78a4a9627
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -484,10 +489,10 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -501,10 +506,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: df115a3f-2c46-4a7e-82e7-2a9563ae5c01
+    taskid: 02a7af6c-831f-4375-8314-5ae7094de088
     type: condition
     task:
-      id: df115a3f-2c46-4a7e-82e7-2a9563ae5c01
+      id: 02a7af6c-831f-4375-8314-5ae7094de088
       version: -1
       name: Check key disabled
       type: condition
@@ -530,7 +535,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name1
+                        simple: new_name
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -548,10 +553,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 80d82375-0bf3-46e3-8c9e-e692e469baea
+    taskid: 8275ebec-d1c2-4705-8dc7-01bd731f90d3
     type: regular
     task:
-      id: 80d82375-0bf3-46e3-8c9e-e692e469baea
+      id: 8275ebec-d1c2-4705-8dc7-01bd731f90d3
       version: -1
       name: google-kms-enable-key
       description: Enable the primary CryptoKeyVersion of a given CryptoKey
@@ -563,10 +568,11 @@ tasks:
       '#none#':
       - "34"
     scriptarguments:
-      crypto_key_id:
-        simple: new_name1
-      key_ring_id: {}
-      location_id: {}
+      crypto_key:
+        simple: new_name
+      crypto_key_version: {}
+      key_ring: {}
+      location: {}
     separatecontext: false
     view: |-
       {
@@ -632,14 +638,236 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 4844d56c-07c3-4bbd-8dd9-ec2d431c022d
+    type: regular
+    task:
+      id: 4844d56c-07c3-4bbd-8dd9-ec2d431c022d
+      version: -1
+      name: google-kms-asymmetric-encrypt
+      description: Encrypt using a asymmetric CryptoKey
+      script: '|||google-kms-asymmetric-encrypt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      crypto_key:
+        simple: asy256-4
+      crypto_key_version:
+        simple: "1"
+      is_base64:
+        simple: "false"
+      key_ring: {}
+      location: {}
+      plaintext:
+        simple: some text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: 253d6331-5c89-473e-88e2-a415866c636c
+    type: regular
+    task:
+      id: 253d6331-5c89-473e-88e2-a415866c636c
+      version: -1
+      name: google-kms-asymmetric-decrypt
+      description: Decrypt using an asymmetric CryptoKey
+      script: '|||google-kms-asymmetric-decrypt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      ciphertext:
+        simple: DF5xqeU9YprPUcJf1xgX/2HMavw1McKfY/U2JE7+xlREshgzPdgm6zDXAM29SXKCYfh1kSQVSQECUTOfhrxbRiub8/3H9WSE9qo+JLAbfa6IhL7C1CLXdpD71HBB2vZrsEDa/P837/YLgOX6sS34XXwRXM78Gg+x/1h4w84So81i8NF+/ODaJdScqr+IK+i2yGIXHJK0TEiuLHLx0//UBfuoMLAdHvN/UwTel5k0igop0eiKDyfWFqm9nxYWyqKkiHx+ElobqksouqXizsVnr/csHNj8HRSiv4p8QWXOTlHLtlKQGmAUSZAKX5vBYlqPxz1iTHQ+/545wPWf7T4VSHCGiig2lB2rCvyQsxtehFtw5nI9oSyaimY8iGja8JMC6V0Lk3IitR2n6ytXXjfDKqKzkeP1jZt4bsLSnfrhRRgkx8ulPfKqc1Uuu3d4Ejy+EN9iT23z1OKxK5FOh5rm5SkVcH0ArBUklcvOaPOasMSa+jXqTc3E8Z8arG09h6A3aAsiuUIrcT7hGbAf6E4OuAzt/Y0ifpDX5v/WXc8Jk1jlJNpX5F3KJ70gSA+7fQS47HtwiHCx/8dL/VfNB+hbYZ2KNbgV+UceffG4J+Ykvzx/x0Wom5E2fJ0Htse9lknnLoIj35AxCvvQwGd5L71XmfTFRFqQ7oWct9HdIeKR9m0=
+      crypto_key:
+        simple: asy256-4
+      crypto_key_version:
+        simple: "1"
+      is_base64:
+        simple: "false"
+      key_ring: {}
+      location: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 37842385-5f0e-4144-8d41-18be7e8593de
+    type: condition
+    task:
+      id: 37842385-5f0e-4144-8d41-18be7e8593de
+      version: -1
+      name: check asymmetric decryption
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleKMS.AsymmetricDecrypt.Plaintext
+            iscontext: true
+          right:
+            value:
+              simple: some text
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "40":
+    id: "40"
+    taskid: f0bef849-8951-4b95-8cfc-752a98b00aa5
+    type: regular
+    task:
+      id: f0bef849-8951-4b95-8cfc-752a98b00aa5
+      version: -1
+      name: google-kms-symmetric-encrypt
+      description: Encrypts data, so that it can only be recovered by a call to Decrypt.
+      script: Google Key Management Service|||google-kms-symmetric-encrypt
+      type: regular
+      iscommand: true
+      brand: Google Key Management Service
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      additional_authenticated_data: {}
+      crypto_key:
+        simple: TestCryptoKey
+      is_base64:
+        simple: "false"
+      key_ring: {}
+      location: {}
+      plaintext:
+        simple: some text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 0daa2b1e-53bc-4b32-8851-12152388d86f
+    type: regular
+    task:
+      id: 0daa2b1e-53bc-4b32-8851-12152388d86f
+      version: -1
+      name: google-kms-symmetric-decrypt
+      description: Decrypts data that was protected by Encrypt.
+      script: '|||google-kms-symmetric-decrypt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      additional_authenticated_data: {}
+      ciphertext:
+        simple: CiQACehADCHxWXJOURaSKEJ+QECCA7lMAjOrizAlp3ub8y0wPxYSNQAZIMlNz+UFV+BD/b644q61xMymuLiGAC8UNojb0Lh2iPnP/pcZEfa2xLYOQt73exrfYHSr
+      crypto_key:
+        simple: TestCryptoKey
+      is_base64:
+        simple: "false"
+      key_ring: {}
+      location: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: da28139b-33cf-4f93-8161-021626264466
+    type: condition
+    task:
+      id: da28139b-33cf-4f93-8161-021626264466
+      version: -1
+      name: check symmetric decrypt
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleKMS.SymmetricDecrypt.Plaintext
+            iscontext: true
+          right:
+            value:
+              simple: some text
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 3155,
-        "width": 380,
-        "x": 450,
+        "width": 1360,
+        "x": -30,
         "y": 50
       }
     }

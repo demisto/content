@@ -57,7 +57,7 @@ class Client:
         credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
 
         with open(credentials_file_path, 'w') as creds_file:
-            json_object = json.loads(self.service_account)
+            json_object = json.loads(str(self.service_account))
             json.dump(json_object, creds_file)
 
         return kms_v1.KeyManagementServiceClient.from_service_account_json(credentials_file_path)
@@ -81,10 +81,42 @@ def arg_dict_creator(string: Any):
     split_string = string.split(',')
     arg_dict = {}
     for section in split_string:
-        key, value = section.split(':', 1)
-        arg_dict[key] = value
+        section_key, section_value = section.split(':', 1)
+        arg_dict[section_key] = section_value
 
     return arg_dict
+
+
+def clear_label_commas(labels: Any):
+    """When extracted from the response - the labels return with an added commas and spaces
+    This function removes these commas.
+
+    Args:
+        labels(Dict): a dictionary of labels as returned from the response.
+
+    Returns:
+        the label dictionary without the commas and spaces.
+    """
+    if not labels:
+        return None
+
+    cleared_labels = {}  # type:Dict
+    for label in labels.keys():
+        if str(label).startswith(' '):
+            cleared_label_key = label[2:-1]
+
+        else:
+            cleared_label_key = label[1:-1]
+
+        if str(labels[label]).startswith(' '):
+            cleared_label_value = labels[label][2:-1]
+
+        else:
+            cleared_label_value = labels[label][1:-1]
+
+        cleared_labels[cleared_label_key] = cleared_label_value
+
+    return cleared_labels
 
 
 def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_id: str) -> Dict:
@@ -103,13 +135,23 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
     pre_name = f"projects/{project_id}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/"
     name = str(res.name).replace(pre_name, '')
 
+    # prepare the labels
+    labels = str(res.labels)
+
+    if labels != '{}':
+        labels = arg_dict_creator(str(labels)[1:-1])
+        labels = clear_label_commas(labels)
+
+    else:
+        labels = ''
+
     key_context = {
         'Name': name,
         'Purpose': enums.CryptoKey.CryptoKeyPurpose(res.purpose).name,
         'CreationTime': datetime.fromtimestamp(int(res.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'NextRotationTime': datetime.fromtimestamp(int(res.next_rotation_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'RotationPeriod': f'{str(res.rotation_period.seconds)}s',
-        'Labels': arg_dict_creator(str(res.labels)[1:-1]),
+        'Labels': labels,
         'VersionTemplate': {
             'ProtectionLevel': enums.ProtectionLevel(res.version_template.protection_level).name,
             'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(res.version_template.algorithm).name,
@@ -139,6 +181,15 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
     Returns:
         A json Dict containing the raw response.
     """
+    # handle labels
+    labels = str(crypto_key.labels)
+    if labels != '{}':
+        labels = arg_dict_creator(str(labels)[1:-1])
+        labels = clear_label_commas(labels)
+
+    else:
+        labels = ''
+
     key_json = {
         'name': crypto_key.name,
         'purpose': enums.CryptoKey.CryptoKeyPurpose(crypto_key.purpose).name,
@@ -154,7 +205,7 @@ def crypto_key_to_json(crypto_key: Any) -> Dict:
         'rotation_period': {
             'seconds': crypto_key.rotation_period.seconds
         },
-        'labels': arg_dict_creator(str(crypto_key.labels)[1:-1]),
+        'labels': labels,
         'version_template': {
             'protection_level': enums.ProtectionLevel(crypto_key.version_template.protection_level).name,
             'algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(crypto_key.version_template.algorithm).name,
@@ -707,7 +758,7 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
                'PrimaryCryptoKeyVersion', 'VersionTemplate']
 
     return (
-        tableToMarkdown("CryptoKeys:", overall_context, removeNull=True, headers=headers),
+        tableToMarkdown(name="CryptoKeys:", t=overall_context, removeNull=True, headers=headers),
         {
             f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name)': overall_context,
         },

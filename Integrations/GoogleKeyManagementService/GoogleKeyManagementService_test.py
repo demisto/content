@@ -21,9 +21,9 @@ MOCK_PARAMS = {
 CLIENT = Client(MOCK_PARAMS)
 
 MOCK_ARGS_FULL = {
-    "location_id": "global",
-    "key_ring_id": "key_ring",
-    "crypto_key_id": "crypto_key",
+    "location": "global",
+    "key_ring": "key_ring",
+    "crypto_key": "crypto_key",
     "labels": "label1:value1,label2:value2",
     "rotation_period": "7776000",
     "next_rotation_time": None,
