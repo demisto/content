@@ -45,31 +45,31 @@ INCIDENTS_FOR_FETCH = [
         "previousRoles": None,
         "rawCategory": "",
         "rawCloseReason": "",
-        "rawJSON": "{\"accountId\": \"433241117337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
-                   "\"EC2AMAZ-AJ0KANC\", \"agentDomain\": \"WORKGROUP\", \"agentId\": \"657613730168123595\", "
-                   "\"agentInfected\": False, \"agentIp\": \"3.122.240.42\", \"agentIsActive\": True, "
+        "rawJSON": "{\"accountId\": \"412243337337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
+                   "\"EC2AMAZ-AJ0KDDD\", \"agentDomain\": \"WORKGROUP\", \"agentId\": \"657613730168123596\", "
+                   "\"agentInfected\": False, \"agentIp\": \"3.136.231.41\", \"agentIsActive\": True, "
                    "\"agentIsDecommissioned\": False, \"agentMachineType\": \"server\", \"agentNetworkStatus\": "
-                   "\"disconnected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.1.3.38\", \"annotation\": "
+                   "\"disconnected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.2.3.37\", \"annotation\": "
                    "None, \"annotationUrl\": None, \"browserType\": None, \"certId\": \"\", \"classification\": "
                    "\"Malware\", \"classificationSource\": \"Static\", \"classifierName\": \"STATIC\", "
-                   "\"cloudVerdict\": \"provider_unknown\", \"collectionId\": \"715789430041423401\", \"createdAt\": "
+                   "\"cloudVerdict\": \"provider_unknown\", \"collectionId\": \"715789430041423412\", \"createdAt\": "
                    "\"2019-09-15T14:25:49.944443Z\", \"createdDate\": \"2019-09-15T14:25:48.988000Z\", "
                    "\"description\": \"malware detected - not mitigated yet (static engine)\", \"engines\": ["
-                   "\"pre_execution\"], \"fileContentHash\": \"3e7704f5668bc4330c686ccce2dd6f9969686a2c\", "
+                   "\"pre_execution\"], \"fileContentHash\": \"3e7704f5668bc4330c686ccce2dd6f99696863bd\", "
                    "\"fileCreatedDate\": None, \"fileDisplayName\": \"Ncat Netcat Portable - CHIP-Installer.exe\", "
                    "\"fileExtensionType\": \"Executable\", \"fileIsDotNet\": None, \"fileIsExecutable\": False, "
-                   "\"fileIsSystem\": False, \"fileMaliciousContent\": None, \"fileObjectId\": \"43A5D890AC420FEC\", "
+                   "\"fileIsSystem\": False, \"fileMaliciousContent\": None, \"fileObjectId\": \"43A5D890AC420DKC\", "
                    "\"filePath\": \"\\\\Device\\\\HarddiskVolume1\\\\Users\\\\Administrator\\\\Downloads\\\\Ncat "
                    "Netcat Portable - CHIP-Installer.exe\", \"fileSha256\": None, \"fileVerificationType\": "
-                   "\"PathNotFound\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"715789434420276790\", "
+                   "\"PathNotFound\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"715789434420276799\", "
                    "\"indicators\": [25, 24, 23, 6], \"isCertValid\": False, \"isInteractiveSession\": False, "
-                   "\"isPartialStory\": False, \"maliciousGroupId\": \"B9343BEED7D7713D\", "
+                   "\"isPartialStory\": False, \"maliciousGroupId\": \"B9343BEED7D7713C\", "
                    "\"maliciousProcessArguments\": None, \"markedAsBenign\": None, \"mitigationMode\": \"protect\", "
                    "\"mitigationReport\": {\"kill\": {\"status\": \"success\"}, \"network_quarantine\": {\"status\": "
                    "None}, \"quarantine\": {\"status\": \"success\"}, \"remediate\": {\"status\": None}, "
                    "\"rollback\": {\"status\": None}}, \"mitigationStatus\": \"mitigated\", \"publisher\": \"\", "
-                   "\"rank\": 0, \"resolved\": False, \"siteId\": \"475482421366727779\", \"siteName\": \"demisto\", "
-                   "\"threatAgentVersion\": \"3.1.3.38\", \"threatName\": \"Ncat Netcat Portable - "
+                   "\"rank\": 0, \"resolved\": False, \"siteId\": \"475482421366727777\", \"siteName\": \"demisto\", "
+                   "\"threatAgentVersion\": \"3.2.3.37\", \"threatName\": \"Ncat Netcat Portable - "
                    "CHIP-Installer.exe\", \"updatedAt\": \"2019-09-15T14:25:50.181148Z\", \"username\": \"\", "
                    "\"whiteningOptions\": [\"hash\", \"path\"]}",
         "rawName": "",
@@ -125,32 +125,32 @@ INCIDENTS_FOR_FETCH = [
         "previousRoles": None,
         "rawCategory": "",
         "rawCloseReason": "",
-        "rawJSON": "{\"accountId\": \"433241117337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
-                   "\"EC2AMAZ-AJ0KANC\", \"agentDomain\": \"WORKGROUP\", \"agentId\": \"657613730168123595\", "
-                   "\"agentInfected\": False, \"agentIp\": \"3.122.240.42\", \"agentIsActive\": True, "
+        "rawJSON": "{\"accountId\": \"412243337337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
+                   "\"EC2AMAZ-AJ0KDDD\", \"agentDomain\": \"WORKGROUP\", \"agentId\": \"657613730168123596\", "
+                   "\"agentInfected\": False, \"agentIp\": \"3.136.231.41\", \"agentIsActive\": True, "
                    "\"agentIsDecommissioned\": False, \"agentMachineType\": \"server\", \"agentNetworkStatus\": "
-                   "\"disconnected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.1.3.38\", \"annotation\": "
+                   "\"disconnected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.2.3.37\", \"annotation\": "
                    "None, \"annotationUrl\": None, \"browserType\": None, \"certId\": \"\", \"classification\": "
                    "\"Malware\", \"classificationSource\": \"Engine\", \"classifierName\": \"STATIC\", "
-                   "\"cloudVerdict\": \"black\", \"collectionId\": \"433377870883088367\", \"createdAt\": "
+                   "\"cloudVerdict\": \"black\", \"collectionId\": \"433377888883088367\", \"createdAt\": "
                    "\"2019-09-16T09:36:02.411027Z\", \"createdDate\": \"2019-09-16T09:36:02.331000Z\", "
                    "\"description\": \"malware detected - not mitigated yet (static engine)\", \"engines\": ["
-                   "\"reputation\"], \"fileContentHash\": \"3395856ce81f2b7382dee72602f798b642f14140\", "
+                   "\"reputation\"], \"fileContentHash\": \"3395856ce81f2b7382dee72602f798b642f14444\", "
                    "\"fileCreatedDate\": None, \"fileDisplayName\": \"Unconfirmed 742374.crdownload\", "
                    "\"fileExtensionType\": \"Unknown\", \"fileIsDotNet\": None, \"fileIsExecutable\": False, "
-                   "\"fileIsSystem\": False, \"fileMaliciousContent\": None, \"fileObjectId\": \"A19CF2DDC726C178\", "
+                   "\"fileIsSystem\": False, \"fileMaliciousContent\": None, \"fileObjectId\": \"A19CF2DDC726C111\", "
                    "\"filePath\": \"\\\\Device\\\\HarddiskVolume1\\\\Users\\\\Administrator\\\\Downloads"
                    "\\\\Unconfirmed 742374.crdownload\", \"fileSha256\": None, \"fileVerificationType\": "
-                   "\"NotSigned\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"716368352944665294\", "
+                   "\"NotSigned\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"716368352944665999\", "
                    "\"indicators\": [], \"isCertValid\": False, \"isInteractiveSession\": False, \"isPartialStory\": "
-                   "False, \"maliciousGroupId\": \"FAF42748C2B397AD\", \"maliciousProcessArguments\": None, "
+                   "False, \"maliciousGroupId\": \"FAF42748C2B39DDD\", \"maliciousProcessArguments\": None, "
                    "\"markedAsBenign\": None, \"mitigationMode\": \"protect\", \"mitigationReport\": {\"kill\": {"
                    "\"status\": \"success\"}, \"network_quarantine\": {\"status\": None}, \"quarantine\": {"
                    "\"status\": \"success\"}, \"remediate\": {\"status\": None}, \"rollback\": {\"status\": None}}, "
                    "\"mitigationStatus\": \"mitigated\", \"publisher\": \"\", \"rank\": 7, \"resolved\": False, "
-                   "\"siteId\": \"475482421366727779\", \"siteName\": \"demisto\", \"threatAgentVersion\": "
-                   "\"3.1.3.38\", \"threatName\": \"Unconfirmed 742374.crdownload\", \"updatedAt\": "
-                   "\"2019-09-16T09:36:02.636239Z\", \"username\": \"EC2AMAZ-AJ0KANC\\\\Administrator\", "
+                   "\"siteId\": \"475482421366727777\", \"siteName\": \"demisto\", \"threatAgentVersion\": "
+                   "\"3.2.3.37\", \"threatName\": \"Unconfirmed 742374.crdownload\", \"updatedAt\": "
+                   "\"2019-09-16T09:36:02.636239Z\", \"username\": \"EC2AMAZ-AJ0KDDD\\\\Administrator\", "
                    "\"whiteningOptions\": [\"hash\"]}",
         "rawName": "",
         "rawPhase": "",
@@ -205,34 +205,34 @@ INCIDENTS_FOR_FETCH = [
         "previousRoles": None,
         "rawCategory": "",
         "rawCloseReason": "",
-        "rawJSON": "{\"accountId\": \"433241117337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
-                   "\"TLVWIN9131Q1V\", \"agentDomain\": \"PALOALTONETWORK\", \"agentId\": \"657738871640371668\", "
-                   "\"agentInfected\": False, \"agentIp\": \"77.125.26.141\", \"agentIsActive\": True, "
+        "rawJSON": "{\"accountId\": \"412243337337583618\", \"accountName\": \"SentinelOne\", \"agentComputerName\": "
+                   "\"TLVWIN9131VVV\", \"agentDomain\": \"PALOALTONETWORK\", \"agentId\": \"657738871640371666\", "
+                   "\"agentInfected\": False, \"agentIp\": \"77.125.26.100\", \"agentIsActive\": True, "
                    "\"agentIsDecommissioned\": False, \"agentMachineType\": \"laptop\", \"agentNetworkStatus\": "
-                   "\"connected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.1.3.38\", \"annotation\": "
+                   "\"connected\", \"agentOsType\": \"windows\", \"agentVersion\": \"3.2.3.37\", \"annotation\": "
                    "None, \"annotationUrl\": None, \"browserType\": None, \"certId\": \"\", \"classification\": "
                    "\"Malware\", \"classificationSource\": \"Static\", \"classifierName\": \"LOGIC\", "
-                   "\"cloudVerdict\": None, \"collectionId\": \"736969199281920523\", \"createdAt\": "
+                   "\"cloudVerdict\": None, \"collectionId\": \"736969199281920555\", \"createdAt\": "
                    "\"2019-10-14T19:46:14.666494Z\", \"createdDate\": \"2019-10-14T19:44:24.647000Z\", "
                    "\"description\": \"malware detected - not mitigated yet\", \"engines\": [\"data_files\"], "
                    "\"fileContentHash\": \"ffffffffffffffffffffffffffffffffffffffff\", \"fileCreatedDate\": None, "
                    "\"fileDisplayName\": \"19.152.0801.0008\", \"fileExtensionType\": \"Unknown\", \"fileIsDotNet\": "
                    "None, \"fileIsExecutable\": False, \"fileIsSystem\": False, \"fileMaliciousContent\": None, "
-                   "\"fileObjectId\": \"DC1471176A586CA6\", \"filePath\": "
-                   "\"\\\\Device\\\\HarddiskVolume4\\\\Users\\\\mgoldberg\\\\AppData\\\\Local\\\\Microsoft"
+                   "\"fileObjectId\": \"DC1471176A586CAA\", \"filePath\": "
+                   "\"\\\\Device\\\\HarddiskVolume4\\\\Users\\\\ooooooooo\\\\AppData\\\\Local\\\\Microsoft"
                    "\\\\OneDrive\\\\19.152.0801.0008\", \"fileSha256\": None, \"fileVerificationType\": "
-                   "\"NotSigned\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"736969199273531914\", "
+                   "\"NotSigned\", \"fromCloud\": False, \"fromScan\": False, \"id\": \"736969199273531999\", "
                    "\"indicators\": [83], \"isCertValid\": False, \"isInteractiveSession\": False, "
-                   "\"isPartialStory\": False, \"maliciousGroupId\": \"CA1BD9CFD7148278\", "
+                   "\"isPartialStory\": False, \"maliciousGroupId\": \"CA1BD9CFD7148222\", "
                    "\"maliciousProcessArguments\": \"/q /c rmdir /s /q "
-                   "\\\"C:\\\\Users\\\\mgoldberg\\\\AppData\\\\Local\\\\Microsoft\\\\OneDrive\\\\19.152.0801.0008"
+                   "\\\"C:\\\\Users\\\\ooooooooo\\\\AppData\\\\Local\\\\Microsoft\\\\OneDrive\\\\19.152.0801.0008"
                    "\\\"\", \"markedAsBenign\": None, \"mitigationMode\": \"protect\", \"mitigationReport\": {"
                    "\"kill\": {\"status\": \"success\"}, \"network_quarantine\": {\"status\": None}, \"quarantine\": "
                    "{\"status\": \"success\"}, \"remediate\": {\"status\": None}, \"rollback\": {\"status\": None}}, "
                    "\"mitigationStatus\": \"mitigated\", \"publisher\": \"\", \"rank\": None, \"resolved\": False, "
-                   "\"siteId\": \"475482421366727779\", \"siteName\": \"demisto\", \"threatAgentVersion\": "
-                   "\"3.1.3.38\", \"threatName\": \"19.152.0801.0008\", \"updatedAt\": "
-                   "\"2019-10-14T19:46:15.271542Z\", \"username\": \"PALOALTONETWORK\\\\mgoldberg\", "
+                   "\"siteId\": \"475482421366727777\", \"siteName\": \"demisto\", \"threatAgentVersion\": "
+                   "\"3.2.3.37\", \"threatName\": \"19.152.0801.0008\", \"updatedAt\": "
+                   "\"2019-10-14T19:46:15.271542Z\", \"username\": \"PALOALTONETWORK\\\\ooooooooo\", "
                    "\"whiteningOptions\": [\"file_type\", \"path\"]}",
         "rawName": "",
         "rawPhase": "",
@@ -255,19 +255,19 @@ INCIDENTS_FOR_FETCH = [
 RAW_THREATS_RESPONSE = {
     "data": [
         {
-            "accountId": "433241117337583618",
+            "accountId": "412243337337583618",
             "accountName": "SentinelOne",
-            "agentComputerName": "TLVWIN9131Q1V",
+            "agentComputerName": "TLVWIN9131VVV",
             "agentDomain": "PALOALTONETWORK",
-            "agentId": "657738871640371668",
+            "agentId": "657738871640371666",
             "agentInfected": False,
-            "agentIp": "77.125.26.141",
+            "agentIp": "77.125.26.100",
             "agentIsActive": True,
             "agentIsDecommissioned": False,
             "agentMachineType": "laptop",
             "agentNetworkStatus": "connected",
             "agentOsType": "windows",
-            "agentVersion": "3.1.3.38",
+            "agentVersion": "3.2.3.37",
             "annotation": None,
             "annotationUrl": None,
             "browserType": None,
@@ -276,7 +276,7 @@ RAW_THREATS_RESPONSE = {
             "classificationSource": "Static",
             "classifierName": "LOGIC",
             "cloudVerdict": None,
-            "collectionId": "736969199281920523",
+            "collectionId": "736969199281920555",
             "createdAt": "2019-10-14T19:46:14.666494Z",
             "createdDate": "2019-10-14T19:44:24.647000Z",
             "description": "malware detected - not mitigated yet",
@@ -289,20 +289,20 @@ RAW_THREATS_RESPONSE = {
             "fileIsExecutable": False,
             "fileIsSystem": False,
             "fileMaliciousContent": None,
-            "fileObjectId": "DC1471176A586CA6",
-            "filePath": "\\Device\\HarddiskVolume4\\Users\\mgoldberg\\AppData\\Local\\Microsoft\\OneDrive\\19.152.0801"
+            "fileObjectId": "DC1471176A586CAA",
+            "filePath": "\\Device\\HarddiskVolume4\\Users\\ooooooooo\\AppData\\Local\\Microsoft\\OneDrive\\19.152.0801"
                         ".0008",
             "fileSha256": None,
             "fileVerificationType": "NotSigned",
             "fromCloud": False,
             "fromScan": False,
-            "id": "736969199273531914",
+            "id": "736969199273531999",
             "indicators": [83],
             "isCertValid": False,
             "isInteractiveSession": False,
             "isPartialStory": False,
-            "maliciousGroupId": "CA1BD9CFD7148278",
-            "maliciousProcessArguments": "/q /c rmdir /s /q \"C:\\Users\\mgoldberg\\AppData\\Local\\Microsoft\\OneDrive"
+            "maliciousGroupId": "CA1BD9CFD7148222",
+            "maliciousProcessArguments": "/q /c rmdir /s /q \"C:\\Users\\ooooooooo\\AppData\\Local\\Microsoft\\OneDrive"
                                          "\\19.152.0801.0008\"",
             "markedAsBenign": None,
             "mitigationMode": "protect",
@@ -327,28 +327,28 @@ RAW_THREATS_RESPONSE = {
             "publisher": "",
             "rank": None,
             "resolved": False,
-            "siteId": "475482421366727779",
+            "siteId": "475482421366727777",
             "siteName": "demisto",
-            "threatAgentVersion": "3.1.3.38",
+            "threatAgentVersion": "3.2.3.37",
             "threatName": "19.152.0801.0008",
             "updatedAt": "2019-10-14T19:46:15.271542Z",
-            "username": "PALOALTONETWORK\\mgoldberg",
+            "username": "PALOALTONETWORK\\ooooooooo",
             "whiteningOptions": ["file_type", "path"]
         },
         {
-            "accountId": "433241117337583618",
+            "accountId": "412243337337583618",
             "accountName": "SentinelOne",
-            "agentComputerName": "EC2AMAZ-AJ0KANC",
+            "agentComputerName": "EC2AMAZ-AJ0KDDD",
             "agentDomain": "WORKGROUP",
-            "agentId": "657613730168123595",
+            "agentId": "657613730168123596",
             "agentInfected": False,
-            "agentIp": "3.122.240.42",
+            "agentIp": "3.136.231.41",
             "agentIsActive": True,
             "agentIsDecommissioned": False,
             "agentMachineType": "server",
             "agentNetworkStatus": "disconnected",
             "agentOsType": "windows",
-            "agentVersion": "3.1.3.38",
+            "agentVersion": "3.2.3.37",
             "annotation": None,
             "annotationUrl": None,
             "browserType": None,
@@ -357,12 +357,12 @@ RAW_THREATS_RESPONSE = {
             "classificationSource": "Engine",
             "classifierName": "STATIC",
             "cloudVerdict": "black",
-            "collectionId": "433377870883088367",
+            "collectionId": "433377888883088367",
             "createdAt": "2019-09-16T09:36:02.411027Z",
             "createdDate": "2019-09-16T09:36:02.331000Z",
             "description": "malware detected - not mitigated yet (static engine)",
             "engines": ["reputation"],
-            "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14140",
+            "fileContentHash": "3395856ce81f2b7382dee72602f798b642f14444",
             "fileCreatedDate": None,
             "fileDisplayName": "Unconfirmed 742374.crdownload",
             "fileExtensionType": "Unknown",
@@ -370,18 +370,18 @@ RAW_THREATS_RESPONSE = {
             "fileIsExecutable": False,
             "fileIsSystem": False,
             "fileMaliciousContent": None,
-            "fileObjectId": "A19CF2DDC726C178",
+            "fileObjectId": "A19CF2DDC726C111",
             "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Unconfirmed 742374.crdownload",
             "fileSha256": None,
             "fileVerificationType": "NotSigned",
             "fromCloud": False,
             "fromScan": False,
-            "id": "716368352944665294",
+            "id": "716368352944665999",
             "indicators": [],
             "isCertValid": False,
             "isInteractiveSession": False,
             "isPartialStory": False,
-            "maliciousGroupId": "FAF42748C2B397AD",
+            "maliciousGroupId": "FAF42748C2B39DDD",
             "maliciousProcessArguments": None,
             "markedAsBenign": None,
             "mitigationMode": "protect",
@@ -406,28 +406,28 @@ RAW_THREATS_RESPONSE = {
             "publisher": "",
             "rank": 7,
             "resolved": False,
-            "siteId": "475482421366727779",
+            "siteId": "475482421366727777",
             "siteName": "demisto",
-            "threatAgentVersion": "3.1.3.38",
+            "threatAgentVersion": "3.2.3.37",
             "threatName": "Unconfirmed 742374.crdownload",
             "updatedAt": "2019-09-16T09:36:02.636239Z",
-            "username": "EC2AMAZ-AJ0KANC\\Administrator",
+            "username": "EC2AMAZ-AJ0KDDD\\Administrator",
             "whiteningOptions": ["hash"]
         },
         {
-            "accountId": "433241117337583618",
+            "accountId": "412243337337583618",
             "accountName": "SentinelOne",
-            "agentComputerName": "EC2AMAZ-AJ0KANC",
+            "agentComputerName": "EC2AMAZ-AJ0KDDD",
             "agentDomain": "WORKGROUP",
-            "agentId": "657613730168123595",
+            "agentId": "657613730168123596",
             "agentInfected": False,
-            "agentIp": "3.122.240.42",
+            "agentIp": "3.136.231.41",
             "agentIsActive": True,
             "agentIsDecommissioned": False,
             "agentMachineType": "server",
             "agentNetworkStatus": "disconnected",
             "agentOsType": "windows",
-            "agentVersion": "3.1.3.38",
+            "agentVersion": "3.2.3.37",
             "annotation": None,
             "annotationUrl": None,
             "browserType": None,
@@ -436,12 +436,12 @@ RAW_THREATS_RESPONSE = {
             "classificationSource": "Static",
             "classifierName": "STATIC",
             "cloudVerdict": "provider_unknown",
-            "collectionId": "715789430041423401",
+            "collectionId": "715789430041423412",
             "createdAt": "2019-09-15T14:25:49.944443Z",
             "createdDate": "2019-09-15T14:25:48.988000Z",
             "description": "malware detected - not mitigated yet (static engine)",
             "engines": ["pre_execution"],
-            "fileContentHash": "3e7704f5668bc4330c686ccce2dd6f9969686a2c",
+            "fileContentHash": "3e7704f5668bc4330c686ccce2dd6f99696863bd",
             "fileCreatedDate": None,
             "fileDisplayName": "Ncat Netcat Portable - CHIP-Installer.exe",
             "fileExtensionType": "Executable",
@@ -449,19 +449,19 @@ RAW_THREATS_RESPONSE = {
             "fileIsExecutable": False,
             "fileIsSystem": False,
             "fileMaliciousContent": None,
-            "fileObjectId": "43A5D890AC420FEC",
+            "fileObjectId": "43A5D890AC420DKC",
             "filePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Ncat Netcat Portable - "
                         "CHIP-Installer.exe",
             "fileSha256": None,
             "fileVerificationType": "PathNotFound",
             "fromCloud": False,
             "fromScan": False,
-            "id": "715789434420276790",
+            "id": "715789434420276799",
             "indicators": [25, 24, 23, 6],
             "isCertValid": False,
             "isInteractiveSession": False,
             "isPartialStory": False,
-            "maliciousGroupId": "B9343BEED7D7713D",
+            "maliciousGroupId": "B9343BEED7D7713C",
             "maliciousProcessArguments": None,
             "markedAsBenign": None,
             "mitigationMode": "protect",
@@ -486,9 +486,9 @@ RAW_THREATS_RESPONSE = {
             "publisher": "",
             "rank": 0,
             "resolved": False,
-            "siteId": "475482421366727779",
+            "siteId": "475482421366727777",
             "siteName": "demisto",
-            "threatAgentVersion": "3.1.3.38",
+            "threatAgentVersion": "3.2.3.37",
             "threatName": "Ncat Netcat Portable - CHIP-Installer.exe",
             "updatedAt": "2019-09-15T14:25:50.181148Z",
             "username": "",
