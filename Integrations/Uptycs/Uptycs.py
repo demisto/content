@@ -1337,6 +1337,7 @@ def uptycs_get_parent_event_information():
     api_call = '/query'
     child_add_time = demisto.args().get('child_add_time')
     child_ancestor_list = demisto.args().get('child_ancestor_list')
+    parent = demisto.args().get('parent')
 
     if child_add_time is not None:
         day = child_add_time.replace(" ", "-")
