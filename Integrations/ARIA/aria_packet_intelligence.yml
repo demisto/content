@@ -19,12 +19,14 @@ configuration:
   defaultvalue: http://<IP address or FQDN of SDSo Node>:7443
   type: 0
   required: true
-- display: Use system proxy settings
+- display: Use system proxy
   name: proxy
+  defaultvalue: 'false'
   type: 8
   required: false
-- display: Trust any certificate (not secure)
+- display: Trust any certificate (insecure)
   name: insecure
+  defaultvalue: 'false'
   type: 8
   required: false
 script:
@@ -46,7 +48,7 @@ script:
       description: The destination port(s). This accepts a comma-separated list (e.g.,
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
-      description: The protocol (e.g., TCP) used for the packets.
+      description: The protocol used for the packets (e.g., TCP).
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -70,15 +72,15 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockConversation.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.BlockConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that drops all packets matching the specified 5-tuple
+    description: Creates a rule that drops all packets that match the specified 5-tuple
       values.
   - name: aria-unblock-conversation
     arguments:
@@ -89,17 +91,17 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.UnblockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
@@ -130,10 +132,10 @@ script:
       description: The destination port(s). This accepts a comma-separated list (e.g.,
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
-      description: The protocol (e.g., TCP) used for the packets.
+      description: The protocol used for the packets (e.g., TCP) .
     - name: vlan_id
       required: true
-      description: The VLAN ID your network switch uses to forward packets to the
+      description: The VLAN ID that your network switch uses to forward packets to the
         Packet Recorder.
     - name: rule_name
       required: true
@@ -143,14 +145,14 @@ script:
       predefined:
       - A
       - B
-      description: The letter of the interface on the SIA used for forwarding packets.
+      description: The letter of the interface on the SIA used for forwarding packets. Can be A or B.
         If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog.'
     - name: tti_index
       description: The index of the entry in the transport type table.
     - name: aio_index
@@ -164,22 +166,22 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The
         value entered here depends on the trigger_type. If the trigger_type is one-shot
         or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
-        is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
+        before the alert is triggered. The valid range is 1-8191. If the trigger_type
+        is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs),
         respectively, that must elapse before the alert is triggered again. The valid
         range is 1-8191.
     - name: label_sia_group
@@ -202,15 +204,15 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordConversation.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.RecordConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that redirects a conversation matching 5-tuple values
+    description: Creates a rule that redirects a conversation that matches 5-tuple values
       to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-conversation
     arguments:
@@ -221,25 +223,25 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
-        labels are allowed. If you enter values for all three labels, the command
+        labels are allowed.  you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.StopRecordingConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingConversation.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.StopRecordingConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
@@ -262,7 +264,7 @@ script:
       description: The destination port(s). This accepts a comma-separated list (e.g.,
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: protocol
-      description: The protocol (e.g., TCP) used for the packets.
+      description: The protocol used for the packets (e.g., TCP) .
     - name: rule_name
       required: true
       description: The name of the rule to create.
@@ -289,22 +291,22 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The
         value entered here depends on the trigger_type. If the trigger_type is one-shot
         or retrigger-count, this is the total number of packets that must be received
-        before the alert is triggered. The valid range is 1-8191, If the trigger_type
+        before the alert is triggered. The valid range is 1-8191. If the trigger_type
         is re-trigger-ms or re-triggersec, this is the total number of msecs or secs,
         respectively, that must elapse before the alert is triggered again. The valid
         range is 1-8191.
@@ -328,7 +330,7 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertConversation.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
@@ -336,7 +338,7 @@ script:
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that generates an alert when a conversation matching
+    description: Adds a rule that generates an alert when a conversation that matches
       the specified 5-tuple values is detected.
   - name: aria-mute-alert-conversation
     arguments:
@@ -347,25 +349,25 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.MuteAlertConversation.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertConversation.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.MuteAlertConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
@@ -377,7 +379,7 @@ script:
     arguments:
     - name: port_range
       required: true
-      description: The destination port(s). This accepts a comma-separated list (e.g.,
+      description: The destination port(s) to block. This accepts a comma-separated list (e.g.,
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
@@ -399,18 +401,18 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.BlockDestPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockDestPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.BlockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
-    description: Creates a rule that blocks packets destined for one or more specific
+    description: Creates a rule that blocks packets destined for one or more specified
       ports.
   - name: aria-unblock-dest-port
     arguments:
@@ -421,25 +423,25 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.UnblockDestPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockDestPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.UnblockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the
@@ -455,7 +457,7 @@ script:
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: vlan_id
       required: true
-      description: The VLAN ID your network switch uses to forward packets to the
+      description: The VLAN ID that your network switch uses to forward packets to the
         Packet Recorder.
     - name: rule_name
       required: true
@@ -466,13 +468,13 @@ script:
       - A
       - B
       description: The letter of the interface on the SIA used for forwarding packets.
-        If omitted, interface A is used.
+        Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog.'
     - name: tti_index
       description: The index of the entry in the transport type table.
     - name: aio_index
@@ -486,15 +488,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The
@@ -532,7 +534,7 @@ script:
       description: 'Returns endpoints information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
-    description: Adds a rule that redirects traffic destined for one or more ports
+    description: Adds a rule that redirects traffic that is destined for one or more ports
       to the Packet Recorder. Packets are tagged with the VID specified in the instance.
   - name: aria-stop-recording-dest-port
     arguments:
@@ -543,11 +545,11 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
@@ -559,12 +561,12 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingDestPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.StopRecordingDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the destination port logic block. This
@@ -601,15 +603,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
@@ -637,15 +639,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.AlertDestPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertDestPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.AlertDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Creates a rule that generates an alert when traffic destined for
@@ -669,18 +671,18 @@ script:
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.MuteAlertDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertDestPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.MuteAlertDestPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the destination port logic block, disabling
@@ -714,12 +716,12 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.BlockSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Adds a rule that blocks packets originating from one or more specific
@@ -733,20 +735,20 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.UnblockSrcPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockSrcPort.Status
       description: 'Returns the response code, the state of the command, and the
@@ -754,7 +756,7 @@ script:
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.UnblockSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source port logic block. This allows
@@ -778,13 +780,13 @@ script:
       - A
       - B
       description: The letter of the interface on the SIA used for forwarding packets.
-        If omitted, interface A is used.
+        Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog.'
     - name: tti_index
       description: The index of the entry in the transport type table.
     - name: aio_index
@@ -798,15 +800,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The
@@ -833,15 +835,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.RecordSrcPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.RecordSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Adds a rule that redirects traffic originating from one or more ports
@@ -855,28 +857,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.StopRecordingSrcPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.StopRecordingSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source port logic block. This stops
@@ -889,14 +891,14 @@ script:
         “1, 3”), a range (e.g., “1-3”), or a combination (e.g., “1, 3-5”).
     - name: rule_name
       required: true
-      description: The name of the rule to create
+      description: The name of the rule to create.
     - name: transport_type
       required: true
       auto: PREDEFINED
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog'
     - name: tti_index
       required: true
       description: The index of the entry in the transport type table.
@@ -913,15 +915,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
@@ -949,15 +951,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.AlertSrcPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.AlertSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Creates a rule that generates an alert when traffic originating from
@@ -971,7 +973,7 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
@@ -981,18 +983,18 @@ script:
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.MuteAlertSrcPort.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.MuteAlertSrcPort.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source port logic block, disabling
@@ -1001,7 +1003,7 @@ script:
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
+      description: The IP address and mask of the destination IP address(es), in the
         format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
@@ -1023,15 +1025,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.BlockDestSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.BlockDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Adds a rule that blocks packets destined for a specific IP address
@@ -1045,7 +1047,7 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
@@ -1055,18 +1057,18 @@ script:
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.UnblockDestSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.UnblockDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the destination subnet logic block. This
@@ -1075,11 +1077,11 @@ script:
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
+      description: The IP address and mask of the destination IP address(es), in the
         format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: vlan_id
       required: true
-      description: The VLAN ID your network switch uses to forward packets to the
+      description: The VLAN ID that your network switch uses to forward packets to the
         Packet Recorder.
     - name: rule_name
       required: true
@@ -1090,7 +1092,7 @@ script:
       - A
       - B
       description: The letter of the interface on the SIA used for forwarding packets.
-        If omitted, interface A is used.
+        Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
@@ -1110,15 +1112,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The
@@ -1145,15 +1147,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.RecordDestSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.RecordDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Creates a rule that redirects traffic destined for a specific IP
@@ -1168,28 +1170,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.StopRecordingDestSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.StopRecordingDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the destination subnet logic block. This
@@ -1198,7 +1200,7 @@ script:
     arguments:
     - name: target_ip
       required: true
-      description: The IP address and mask of the destination IP address(es), in the
+      description: The IP address and mask of the destination IP address(es), in the
         format <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
@@ -1209,7 +1211,7 @@ script:
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog.'
     - name: tti_index
       required: true
       description: The index of the entry in the transport type table.
@@ -1226,15 +1228,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
@@ -1265,12 +1267,12 @@ script:
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.AlertDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Creates a rule that generates an alert when traffic destined for
@@ -1284,28 +1286,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.MuteAlertDestSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertDestSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.MuteAlertDestSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the destination subnet logic block, disabling
@@ -1314,7 +1316,7 @@ script:
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
+      description: The IP address and mask of the source IP address(es), in the format
         <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
@@ -1336,15 +1338,15 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.BlockSrcSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.BlockSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Adds a rule that blocks packets originating from a specific IP address
@@ -1358,28 +1360,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.UnblockSrcSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
-        response code is not 201, this also returns information about the error.'
+        response code is not 201, this also includes information about the error.'
       type: string
     - contextPath: Aria.UnblockSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block. This allows
@@ -1388,7 +1390,7 @@ script:
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
+      description: The IP address and mask of the source IP address(es), in the format
         <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: vlan_id
       required: true
@@ -1403,13 +1405,13 @@ script:
       - A
       - B
       description: The letter of the interface on the SIA used for forwarding packets.
-        If omitted, interface A is used.
+        Can be A or B. If omitted, interface A is used.
     - name: transport_type
       auto: PREDEFINED
       predefined:
       - email
       - syslog
-      description: 'The type of notification to generate. '
+      description: 'The type of notification to generate. Can be email or syslog.'
     - name: tti_index
       description: The index of the entry in the transport type table.
     - name: aio_index
@@ -1423,15 +1425,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The
@@ -1470,7 +1472,7 @@ script:
         SIAs that were modified based on the rule change.'
       type: string
     description: Creates a rule that redirects traffic originating from one or more
-      specific IP addresses to the Packet Recorder. Packets are tagged with the VID
+      specific IP addresses to the Packet Recorder. Packets are tagged with the VID
       specified in the instance.
   - name: aria-stop-recording-src-subnet
     arguments:
@@ -1481,28 +1483,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.StopRecordingSrcSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.StopRecordingSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block. This stops
@@ -1511,7 +1513,7 @@ script:
     arguments:
     - name: src_ip
       required: true
-      description: The IP address and mask of the source IP address(es), in the format
+      description: The IP address and mask of the source IP address(es), in the format
         <IP_address>/<mask>. If the mask is omitted, a value of 32 is used.
     - name: rule_name
       required: true
@@ -1539,15 +1541,15 @@ script:
       - re-trigger-timed-sec
       description: 'The frequency of the alert. one-shot: The alert is triggered when
         the number of packets matching the criteria reaches the threshold specified
-        in the trigger_value field. Once the alert triggers, it is disabled until
+        in the trigger_value field. After the alert triggers, it is disabled until
         the flow expires or times out.  re-trigger-count: The alert is triggered when
-        the number of packets matching the criteria reaches the threshold specified
+        the number of packets that match the criteria reaches the threshold specified
         in the trigger_value field. The counter then resets to 0, and the alert is
-        triggered again the next time the threshold is met.  re-trigger-timed-ms:
-        The alert is triggered, and then the application waits the number of msecs
+        triggered again the next time the threshold is met. re-trigger-timed-ms:
+        The alert is triggered, and then the application waits the amount of time (in msecs)
         defined in the trigger_value field. Once this time passes, the alert is triggered
-        again.  re-trigger-timed-sec: The alert is triggered, and then the application
-        waits the number of seconds defined in the trigger_value field. Once this
+        again. re-trigger-timed-sec: The alert is triggered, and then the application
+        waits the amount of time (in seconds) defined in the trigger_value field. After this
         time passes, the alert is triggered again.'
     - name: trigger_value
       required: true
@@ -1575,19 +1577,19 @@ script:
         is added to every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.AlertSrcSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.AlertSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Adds a rule that generates an alert when traffic originating from
-      a specific IP address or range of IP addresses is detected.
+      a specific IP address or range of IP addresses is detected.
   - name: aria-mute-alert-src-subnet
     arguments:
     - name: rule_name
@@ -1597,28 +1599,28 @@ script:
       description: 'The name of the group to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     - name: label_sia_name
       description: 'The name of the SIA. NOTE: Only two labels are allowed. If you
         enter values for all three labels, the command will fail. Also, if no labels
-        are provided (i.e., they are empty), the rule is deleted to every SIA attached
+        are provided (i.e., they are empty), the rule is deleted from every SIA attached
         to the SDSo.'
     - name: label_sia_region
       description: 'The name of the region to which the SIA belongs. NOTE: Only two
         labels are allowed. If you enter values for all three labels, the command
         will fail. Also, if no labels are provided (i.e., they are empty), the rule
-        is deleted to every SIA attached to the SDSo.'
+        is deleted from every SIA attached to the SDSo.'
     outputs:
     - contextPath: Aria.MuteAlertSrcSubnet.Rule
-      description: 'Specifies the name of the rule and the settings that define the rule.'
+      description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the
+      description: 'The response code, the state of the command, and the
         timestamp indicating when the command completed. If an error occurs or the
         response code is not 201, this also returns information about the error.'
       type: string
     - contextPath: Aria.MuteAlertSrcSubnet.Endpoints
-      description: 'Returns endpoints information, such as the IP address, about the
+      description: 'Endpoint information, such as the IP address, about the
         SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block, disabling
