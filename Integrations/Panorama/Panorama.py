@@ -3907,24 +3907,24 @@ def build_policy_match_query(application=None, category=None,
                              destination=None, destination_port=None, from_=None, to_=None,
                              protocol=None, source=None, source_user=None):
     query = '<test><security-policy-match>'
-    if application:
-        query += f'<application>{application}</application>'
-    if category:
-        query += f'<category>{category}</category>'
-    if destination:
-        query += f'<destination>{destination}</destination>'
-    if destination_port:
-        query += f'<destination-port>{destination_port}</destination-port>'
     if from_:
         query += f'<from>{from_}</from>'
     if to_:
         query += f'<to>{to_}</to>'
-    if protocol:
-        query += f'<protocol>{protocol}</protocol>'
     if source:
         query += f'<source>{source}</source>'
+    if destination:
+        query += f'<destination>{destination}</destination>'
+    if destination_port:
+        query += f'<destination-port>{destination_port}</destination-port>'
+    if protocol:
+        query += f'<protocol>{protocol}</protocol>'
     if source_user:
         query += f'<source-user>{source_user}</source-user>'
+    if application:
+        query += f'<application>{application}</application>'
+    if category:
+        query += f'<category>{category}</category>'
     query += '</security-policy-match></test>'
 
     return query
