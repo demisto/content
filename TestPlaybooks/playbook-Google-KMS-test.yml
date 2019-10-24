@@ -714,10 +714,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: 253d6331-5c89-473e-88e2-a415866c636c
+    taskid: f2ef6a1d-5e74-4954-8a75-8e00f8c01934
     type: regular
     task:
-      id: 253d6331-5c89-473e-88e2-a415866c636c
+      id: f2ef6a1d-5e74-4954-8a75-8e00f8c01934
       version: -1
       name: google-kms-asymmetric-decrypt
       description: Decrypt using an asymmetric CryptoKey
@@ -730,7 +730,7 @@ tasks:
       - "39"
     scriptarguments:
       ciphertext:
-        simple: DF5xqeU9YprPUcJf1xgX/2HMavw1McKfY/U2JE7+xlREshgzPdgm6zDXAM29SXKCYfh1kSQVSQECUTOfhrxbRiub8/3H9WSE9qo+JLAbfa6IhL7C1CLXdpD71HBB2vZrsEDa/P837/YLgOX6sS34XXwRXM78Gg+x/1h4w84So81i8NF+/ODaJdScqr+IK+i2yGIXHJK0TEiuLHLx0//UBfuoMLAdHvN/UwTel5k0igop0eiKDyfWFqm9nxYWyqKkiHx+ElobqksouqXizsVnr/csHNj8HRSiv4p8QWXOTlHLtlKQGmAUSZAKX5vBYlqPxz1iTHQ+/545wPWf7T4VSHCGiig2lB2rCvyQsxtehFtw5nI9oSyaimY8iGja8JMC6V0Lk3IitR2n6ytXXjfDKqKzkeP1jZt4bsLSnfrhRRgkx8ulPfKqc1Uuu3d4Ejy+EN9iT23z1OKxK5FOh5rm5SkVcH0ArBUklcvOaPOasMSa+jXqTc3E8Z8arG09h6A3aAsiuUIrcT7hGbAf6E4OuAzt/Y0ifpDX5v/WXc8Jk1jlJNpX5F3KJ70gSA+7fQS47HtwiHCx/8dL/VfNB+hbYZ2KNbgV+UceffG4J+Ykvzx/x0Wom5E2fJ0Htse9lknnLoIj35AxCvvQwGd5L71XmfTFRFqQ7oWct9HdIeKR9m0=
+        simple: ${GoogleKMS.AsymmetricEncrypt.Ciphertext}
       crypto_key:
         simple: asy256-4
       crypto_key_version:
@@ -825,10 +825,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 0daa2b1e-53bc-4b32-8851-12152388d86f
+    taskid: 1d14b8db-8dce-49ab-85f8-c4ea4eb7938b
     type: regular
     task:
-      id: 0daa2b1e-53bc-4b32-8851-12152388d86f
+      id: 1d14b8db-8dce-49ab-85f8-c4ea4eb7938b
       version: -1
       name: google-kms-symmetric-decrypt
       description: Decrypts data that was protected by Encrypt.
@@ -842,7 +842,7 @@ tasks:
     scriptarguments:
       additional_authenticated_data: {}
       ciphertext:
-        simple: CiQACehADCHxWXJOURaSKEJ+QECCA7lMAjOrizAlp3ub8y0wPxYSNQAZIMlNz+UFV+BD/b644q61xMymuLiGAC8UNojb0Lh2iPnP/pcZEfa2xLYOQt73exrfYHSr
+        simple: ${GoogleKMS.SymmetricEncrypt.Ciphertext}
       crypto_key:
         simple: TestCryptoKey
       is_base64:
