@@ -1,0 +1,103 @@
+id: Symantec Data Loss Prevention-Test
+version: -1
+name: Symantec Data Loss Prevention-Test
+description: ""
+fromversion: ""
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 34cae85e-421e-4f7f-8d14-c4a6efc0529f
+    type: start
+    task:
+      id: 34cae85e-421e-4f7f-8d14-c4a6efc0529f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 5b25d6b9-93f9-4f6f-856a-2146fc392a9a
+    type: regular
+    task:
+      id: 5b25d6b9-93f9-4f6f-856a-2146fc392a9a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: ef3928d5-e053-491d-8287-04db1bc2abab
+    type: title
+    task:
+      id: ef3928d5-e053-491d-8287-04db1bc2abab
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
