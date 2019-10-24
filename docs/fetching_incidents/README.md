@@ -24,7 +24,7 @@ if demisto.command() == 'fetch-incidents':
 ```
 
 ### Last Run
-demisto.getLastRun() is how we retrieve the previous run time. When we are fetching incidents, it's important to get only the events which have occurred since the last time the function has ran. This helps to prevent incidents from being duplicated.
+demisto.getLastRun() is the function that retrieves the previous run time. To avoid duplicating incidents, it's important that Demisto only fetches events that occurred since the last time the function was run. This helps avoid duplicate incidents.
 
 ```python
     # demisto.getLastRun() will returns an obj with the previous run in it.
@@ -71,7 +71,7 @@ Incidents are created by building an array of incident objects. These object all
 ```
 
 ### rawJSON
-When we are fetching incidents, it is important to include the ```rawJson``` key in the incident field. This allows for mapping of the event to take place. Mapping is how an event gets imported into Demisto since it allows a customer to choose which data from the event to be mapped to their proper fields. An example of this is below:
+When fetching incidents, it's important to include the ```rawJson``` key in the incident field, which enables event mapping. Mapping is how an event gets imported into Demisto, since it allows a customer to choose which data from the event to be mapped to their proper fields. An example of this is below:
 
 ```python
         incident = {
@@ -83,7 +83,8 @@ When we are fetching incidents, it is important to include the ```rawJson``` key
 
 
 ### Setting Last Run
-When the last of the events have been retrieved, we need to save the new last run time into the integration context. This timestamp will be used the next time the ```fetch-incidents``` function is ran.
+When the last of the events have been retrieved, we need to save the new last run time to the integration context. This timestamp will be used the next time the ```fetch-incidents``` function is run.
+When setting the last run object, it's important to know that the values of the dictionairy must be of type `string`.
 
 ```python
     demisto.setLastRun({
@@ -91,7 +92,7 @@ When the last of the events have been retrieved, we need to save the new last ru
     })
 ```
 ## Sending the Incidents to Demisto
-When all of the incidents have been created, we return the array of incidents by using ```demisto.incidents()```. This is similar to the ```demisto.results()``` function, but is used exclusively to handle incident objects.
+When all of the incidents have been created, we return the array of incidents by using the ```demisto.incidents()``` function. This is similar to the ```demisto.results()``` function, but is used exclusively to handle incident objects.
 
 An example of it's usage is below:
 
