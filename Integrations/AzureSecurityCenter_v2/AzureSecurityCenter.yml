@@ -1,20 +1,24 @@
 category: Analytics & SIEM
 commonfields:
-  id: Azure Security Center
+  id: Azure Security Center v2
   version: -1
 configuration:
-- defaultvalue: https://management.azure.com
+- defaultvalue: https://management.azure.com/
   display: Microsoft Azure Management URL
   name: server_url
   required: false
   type: 0
-- display: Tenant ID (received from the admin consent - see Detailed Instructions
-    (?) section)
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see detailed instructions (?))
-  name: token
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
   required: true
   type: 4
 - display: Trust any certificate (unsecure)
@@ -25,10 +29,14 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Default subscription ID to use
+  name: default_sub_id
+  required: false
+  type: 0
 description: Unified security management and advanced threat protection across hybrid
   cloud workloads.
-display: Azure Security Center
-name: Azure Security Center
+display: Azure Security Center v2
+name: Azure Security Center v2
 script:
   commands:
   - arguments:
@@ -65,7 +73,14 @@ script:
       name: expand
       required: false
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists alerts for the subscription according to the specified filters.
     execution: false
     name: azure-sc-list-alert
@@ -114,7 +129,14 @@ script:
       name: is_enabled
       required: true
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Updates Advanced Threat Detection settings.
     execution: false
     name: azure-sc-update-atp
@@ -149,7 +171,14 @@ script:
       name: storage_account
       required: true
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Returns the Advanced Threat Protection setting.
     execution: false
     name: azure-sc-get-atp
@@ -179,7 +208,14 @@ script:
       name: auto_provision
       required: true
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Updates a specific auto provisioning setting.
     execution: false
     name: azure-sc-update-aps
@@ -202,7 +238,14 @@ script:
       name: setting_name
       required: true
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Returns details of a specific auto provisioning setting.
     execution: false
     name: azure-sc-get-aps
@@ -217,7 +260,18 @@ script:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Set resource ID
       type: string
-  - deprecated: true
+    - description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists auto provisioning settings in the subscription.
     execution: false
     name: azure-sc-list-aps
@@ -247,7 +301,14 @@ script:
       name: resource_group_name
       required: false
       secret: false
-    deprecated: true
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all policies for protecting resources using Just-in-Time access
       control.
     execution: false
@@ -266,7 +327,15 @@ script:
     - contextPath: AzureSecurityCenter.JITPolicy.Kind
       description: Policy resource type
       type: string
-  - deprecated: true
+  - arguments:
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all the storage accounts available under the subscription.
     execution: false
     name: azure-sc-list-storage
@@ -280,12 +349,26 @@ script:
     - contextPath: AzureSecurityCenter.Storage.Location
       description: The geo-location where the resource resides
       type: string
+  - deprecated: false
+    description: List available subscriptions for this application.
+    execution: false
+    name: azure-sc-list-subscriptions
+    outputs:
+    - contextPath: AzureSecurityCenter.Subscription.ID
+      description: Subscription ID
+      type: String
+    - contextPath: AzureSecurityCenter.Subscription.Name
+      description: Subscription Name
+      type: String
+    - contextPath: AzureSecurityCenter.Subscription.Enabled
+      description: Subscription enabled
+      type: Boolean
+  dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-deprecated: true
 tests:
 - No tests
