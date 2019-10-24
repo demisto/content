@@ -1351,15 +1351,17 @@ def uptycs_get_parent_event_information():
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
     if child_ancestor_list is not None:
-         child_ancestor_list = child_ancestor_list[2:len(child_ancestor_list) - 2].split('}, {')
+        child_ancestor_list = child_ancestor_list[2:len(child_ancestor_list) - 2].split('}, {')
     ancestors = []
     for ancestor in child_ancestor_list:
-         ancestors.append(json.loads("{" + ancestor + "}"))
+        ancestors.append(json.loads("{" + ancestor + "}"))
 
     if ancestors[0].get("upt_rid", None) is not None:
-        query = "SELECT * FROM process_events WHERE upt_day <= {0} AND upt_rid = '{1}'".format(uptday, ancestors[0].get("upt_rid", None))
+        query = "SELECT * FROM process_events WHERE upt_day <= {0} \
+AND upt_rid = '{1}'".format(uptday, ancestors[0].get("upt_rid", None))
     else:
-        query = "SELECT * FROM process_events WHERE upt_day <= {0} AND pid={1} AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
+        query = "SELECT * FROM process_events WHERE upt_day <= {0} AND pid={1} \
+AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
 
     equal_cuts = {
         "upt_asset_id": demisto.args().get('asset_id'),
@@ -1572,12 +1574,12 @@ def uptycs_set_asset_tag():
     for tag in tags:
         if demisto.args().get('tag_key') in tag:
             temp_tag = tag.split('=')
-            new_tag = temp_tag[0]+'='+temp_tag[1]+', '+demisto.args().get('tag_value')
+            new_tag = temp_tag[0] + '=' + temp_tag[1] + ', ' + demisto.args().get('tag_value')
             tags.remove(tag)
             tag_set = True
 
     if tag_set:
-            tags.append(new_tag)
+        tags.append(new_tag)
     else:
         tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
             'tag_value'))
