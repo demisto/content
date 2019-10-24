@@ -1,8 +1,8 @@
 import demistomock as demisto
 
-VALUE = demisto.args()['value']
+value = demisto.args()['value']
 
-if type(VALUE) is list and len(VALUE) > 0:
-    VALUE = VALUE[-1]
+if type(value) is list and len(value) > 0:
+    value = value[-1]
 
-demisto.results(VALUE)
+demisto.results(value)
