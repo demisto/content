@@ -23,7 +23,6 @@ scp $(find ./Beta_Integrations/ -maxdepth 1 -type f) ${USER}@${PUBLIC_IP}:~/Beta
 COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook TrendMicroDDA.yml \
   sudo rm -f /usr/local/demisto/res/script-CommonServer_4_1.yml \
   /usr/local/demisto/res/script-CommonServerPython_4_1.yml \
-  /usr/local/demisto/res/script-FilterByList.yml \
   /usr/local/demisto/res/integration-Windows_Defender_Advanced_Threat_Protection.yml /usr/local/demisto/res/integration-Microsoft_Graph.yml \
   /usr/local/demisto/res/integration-Awake_Security.yml /usr/local/demisto/res/integration-WhatsMyBrowser.yml \
   && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res && sudo unzip -q -o ~/content/content_new.zip -d /usr/local/demisto/res \
