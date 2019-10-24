@@ -27,12 +27,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: 'true'
+- defaultvalue: ''
   display: Use system proxy settings
   name: proxy
   required: false
@@ -1790,4 +1790,5 @@ script:
   isfetch: true
   runonce: true
   script: '-'
-  type: python3
+  type: python
+  subtype: python3
