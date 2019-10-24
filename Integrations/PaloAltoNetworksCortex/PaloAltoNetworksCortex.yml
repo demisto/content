@@ -627,44 +627,44 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: IP or arrays of ip's to search for example 1.1.1.1,2.2.2.2
+      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: Rule or array of rules names to search.
+      description: A rule name or an array of rule names to search.
       isArray: false
       name: rule
       required: false
       secret: false
     - default: false
-      description: Source zone or array of zones name to search.
+      description: A source zone  name or an array of source zone names to search.
       isArray: false
       name: from_zone
       required: false
       secret: false
     - default: false
-      description: Destination zone or array of zones name to search.
+      description: A destination zone name or an array of zone names to search.
       isArray: false
       name: to_zone
       required: false
       secret: false
     - default: false
-      description: Destination port number or array of port numbers to search.
+      description: A destination port number or an array of destination port numbers to search.
       isArray: false
       name: port
       required: false
       secret: false
     - default: false
-      description: Action name or array of action names to search.
+      description: An action name or an array of action names to search.
       isArray: false
       name: action
       required: false
       secret: false
     - default: false
-      description: Free input query to search. This is the WHERE part of the query
-        so an example will be 
+      description: A free-text query for which to search. This forms the WHERE part of the query,
+        for example, 
         !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
       isArray: false
       name: query
@@ -673,7 +673,7 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
+        (same as *) or a list of specific fields in the table.
         List of fields can be found after viewing all the outputed fields with all.
       isArray: false
       name: fields
@@ -688,7 +688,7 @@ script:
       secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
-      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
       isArray: false
       name: endTime
       required: false
@@ -696,8 +696,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: The time range for the query, used with the rangeValue argument.
-        For example, timeRange="weeks" timeValue="1" would run the query on the previous
-        week.
+        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
       isArray: false
       name: timeRange
       predefined:
@@ -708,8 +707,7 @@ script:
       secret: false
     - default: false
       description: The time value for the query, used with the timeRange argument.
-        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
-        week.
+        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
       isArray: false
       name: rangeValue
       required: false
@@ -722,8 +720,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: The command searches the Cortex panw.traffic table which is the traffic
-      logs table for PAN-OS/Panorama.
+    description: Searches the Cortex panw.traffic table, which is the traffic
+      logs table for PAN-OS and Panorama.
     execution: false
     name: cortex-query-traffic-logs
     outputs:
@@ -732,8 +730,8 @@ script:
         traffic.
       type: String
     - contextPath: Cortex.Logging.Traffic.RiskOfApp
-      description: Indicates how risky the application is from a network security
-        perspective. Values range from 1-5, where 5 is the riskiest.
+      description: Indicates the risk of the application, from a network security
+        perspective. The risk range is 1-5, where 5 is the riskiest.
       type: String
     - contextPath: Cortex.Logging.Traffic.Natsport
       description: Post-NAT source port.
@@ -773,7 +771,7 @@ script:
       description: IP protocol associated with the session.
       type: String
     - contextPath: Cortex.Logging.Traffic.TunneledApp
-      description: Is application tunnled.
+      description: Whether the application is tunneled.
       type: String
     - contextPath: Cortex.Logging.Traffic.Natdport
       description: Post-NAT destination port.
@@ -861,11 +859,11 @@ script:
       description: Detected enterprise credential submission by an end user.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
   - arguments:
     - default: false
-      description: IP or array of ip's to search for example 1.1.1.1,2.2.2.2
+      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
       isArray: false
       name: ip
       required: false
@@ -919,13 +917,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Hash (SHA256) or array of hashes to search.
+      description: SHA256 hash or array of SHA256 hashes to search.
       isArray: false
       name: hash
       required: false
       secret: false
     - default: false
-      description: URL or array of urls to search.
+      description: URL or array of URLs to search.
       isArray: false
       name: url
       required: false
@@ -972,7 +970,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: The command searches the Cortex panw.threat table which is the threat
+    description: Searches the Cortex panw.threat table, which is the threat
       logs table for PAN-OS/Panorama.
     execution: false
     name: cortex-query-threat-logs
@@ -1098,7 +1096,7 @@ script:
       description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
       type: String
     - contextPath: Cortex.Logging.Threat.Misc
-      description: 'The meaning of this field differs depending on the log''s subtype:
+      description: 'The meaning of this field differs according to the log''s subtype:
         Subtype is URL, this field contains the requested URI. Subtype is File, this
         field contains the file name or file type. Subtype is Virus, this field contains
         the file name. Subtype is WildFire, this field contains the file name.'
@@ -1135,7 +1133,7 @@ script:
       description: Detected enterprise credential submission by an end user.
       type: Boolean
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -1152,7 +1150,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: IP or array of ip's to search for example 1.1.1.1,2.2.2.2
+      description: IP or array of IPs to search for example 1.1.1.1,2.2.2.2.
       isArray: false
       name: ip
       required: false
@@ -1182,7 +1180,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free input query to search. This is the WHERE part of the query
+      description: Free-text input query to search. This is the WHERE part of the query
         so an example will be src = '1.1.1.1' OR rule = 'test rule'.
       isArray: false
       name: query
@@ -1199,14 +1197,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1970-01-01 00:00:00'
-      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      description: The query start time. For example, startTime="2018-04-26 00:00:00".
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
-      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
       isArray: false
       name: endTime
       required: false
@@ -1240,7 +1238,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: The command searches the Cortex tms.threat table which is the threat
+    description: Searches the Cortex tms.threat table, which is the threat
       logs table for the Traps endpoint protection and response.
     execution: false
     name: cortex-query-traps-logs
@@ -1294,7 +1292,7 @@ script:
       description: Tenant external ID.
       type: String
     - contextPath: Cortex.Logging.Traps.EventType
-      description: Subtype of event.
+      description: Subtype of the event.
       type: String
     - contextPath: Cortex.Logging.Traps.UUID
       description: Unique identifier for the event in Cortex.
@@ -1313,7 +1311,7 @@ script:
       description: Region ID.
       type: String
     - contextPath: Cortex.Logging.Traps.CustomerID
-      description: Customer ID
+      description: Customer ID.
       type: String
     - contextPath: Cortex.Logging.Traps.ServerTime
       description: Universal Time Coordinated (UTC) equivalent of the time at which
@@ -1323,8 +1321,8 @@ script:
       description: Original time on the endpoint device.
       type: String
     - contextPath: Cortex.Logging.Traps.Facility
-      description: The Traps system component that initiated the event For example:,
-        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.
+      description: 'The Traps system component that initiated the event For example:,
+        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.'
       type: Sting
     - contextPath: Cortex.Logging.Traps.MessageData.PreventionKey
       description: Unique identifier for security events.
@@ -1349,16 +1347,16 @@ script:
       description: Termination action taken on the file.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Files.RawFullPath
-      description: Full path for executed file.
+      description: Full path for the executed file.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Files.FileName
-      description: File name
+      description: File name.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Files.SHA256
-      description: File SHA256 hash
+      description: SHA256 hash of the file.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Files.FileSize
-      description: File size
+      description: File size.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.Users.Username
       description: Username of the active user on the endpoint.
@@ -1395,7 +1393,7 @@ script:
       description: Source username initiating the process.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.PID
-      description: Source process id (PID).
+      description: Source process ID (PID).
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.ParentID
       description: Parent ID for the source process.
@@ -1404,7 +1402,7 @@ script:
       description: Source process command line.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InstanceID
-      description: Traps instance ID
+      description: Traps instance ID.
       type: String
     - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.Terminated
       description: Source process termination action taken on the file.
@@ -1502,25 +1500,25 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Agent IP or array of ip's to search.
+      description: Agent IP or array of agent IP  to search.
       isArray: false
       name: ip
       required: false
       secret: false
     - default: false
-      description: Agent Host name or array of hosts to search.
+      description: Agent host name or array of agent host names to search.
       isArray: false
       name: host
       required: false
       secret: false
     - default: false
-      description: Username or array of users to search.
+      description: Username or array of usernames to search.
       isArray: false
       name: user
       required: false
       secret: false
     - default: false
-      description: Event category or array of categories to search.
+      description: Event category or array of event categories to search.
       isArray: false
       name: category
       required: false
@@ -1532,8 +1530,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Free input query to search. This is the WHERE part of the query
-        so an example will be endPointHeader.agentIp = '1.1.1.1'.
+      description: Free-text input query to search. This forms the WHERE part of the query.
+        For example, endPointHeader.agentIp = '1.1.1.1'.
       isArray: false
       name: query
       required: false
@@ -1541,22 +1539,22 @@ script:
     - default: false
       defaultValue: all
       description: The fields that are selected in the query. Selection can be "all"
-        (same as *) or listing of specific fields in the table.
-        List of fields can be found after viewing all the outputed fields with all.
+        (same as *) or a list of specific fields in the table.
+        You can find the list of fields after viewing all the outputed fields with "all".
       isArray: false
       name: fields
       required: false
       secret: false
     - default: false
       defaultValue: '1970-01-01 00:00:00'
-      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      description: The query start time. For example, startTime="2018-04-26 00:00:00".
       isArray: false
       name: startTime
       required: false
       secret: false
     - default: true
       defaultValue: '2020-01-01 00:00:00'
-      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
       isArray: false
       name: endTime
       required: false
@@ -1590,7 +1588,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: The command searches the Cortex tms.analytics table which is the
+    description: Searches the Cortex tms.analytics table, which is the
       endpoint logs table for Traps Analytics.
     execution: false
     name: cortex-query-analytics-logs
@@ -1670,7 +1668,7 @@ script:
       description: Type of file.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.SHA256
-      description: Hash of the file using SHA256 encoding.
+      description: The SHA256 hash of the file.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.FileName
       description: File name, without the path or the file type extension.
@@ -1682,13 +1680,13 @@ script:
       description: Size of the file in bytes.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.Reported
-      description: Was the file reported.
+      description: Whether the file was reported.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.Blocked
-      description: Was the file blocked.
+      description: Whether the file was blocked.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Trusted
-      description: Trusted signer result
+      description: Trusted signer result.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Publishers
       description: File publisher.
@@ -1700,7 +1698,7 @@ script:
       description: File execution count.
       type: String
     - contextPath: Cortex.Logging.Analytics.MessageData.LastSeen
-      description: File last seen date
+      description: The date the file was last seen.
       type: String
     - contextPath: Cortex.Logging.Analytics.Severity
       description: The threat severity.
