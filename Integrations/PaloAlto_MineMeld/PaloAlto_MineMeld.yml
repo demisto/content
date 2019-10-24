@@ -25,8 +25,8 @@ configuration:
   type: 8
 description: MineMeld streamlines the aggregation, enforcement and sharing of threat
   intelligence.
-display: Palo Alto Networks Minemeld
-name: Palo Alto Minemeld
+display: Palo Alto Networks MineMeld
+name: Palo Alto MineMeld
 script:
   commands:
   - arguments:
