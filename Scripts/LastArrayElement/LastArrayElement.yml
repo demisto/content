@@ -16,7 +16,7 @@ args:
 - name: value
   required: true
   default: true
-  description: An array for which to return the the last value.
+  description: An array for which to return the last value.
   isArray: true
 scripttarget: 0
 runonce: false
