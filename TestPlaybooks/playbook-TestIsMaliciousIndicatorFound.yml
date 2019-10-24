@@ -1,6 +1,7 @@
 id: Test-IsMaliciousIndicatorFound
 version: -1
 name: Test-IsMaliciousIndicatorFound
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
