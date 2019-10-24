@@ -13,23 +13,24 @@ if capture_groups:
 
 if dict_keys:
     dict_keys = dict_keys.split(',')
-try:
-    pattern_match = re.search(regex_pattern, match_target)
-    matches = []
-    if pattern_match:
-        for i in pattern_match.groups():
-            matches.append(i)
 
-    if capture_groups:
-        matches = [matches[int(x)] for x in capture_groups]
+pattern_match = re.search(regex_pattern, match_target)
+matches = []
+if pattern_match:
+    for i in pattern_match.groups():
+        matches.append(i)
 
-    if dict_keys:
-        if len(dict_keys) != len(matches):
-            raise ValueError('Error: Number of keys does not match number of items')
-        else:
-            matches = dict(zip(dict_keys, matches))
+if capture_groups:
+    for j in capture_groups:
+        if len(matches) - 1 < int(j):
+            raise ValueError('Error: Regex group (' + j + ') out of range')
+    matches = [matches[int(x)] for x in capture_groups]
 
+if dict_keys:
+    if len(dict_keys) != len(matches):
+        raise ValueError('Error: Number of keys does not match number of items')
+    else:
+        dict_matches = dict(zip(dict_keys, matches))
+        demisto.results(dict_matches)
+else:
     demisto.results(matches)
-
-except Exception:
-    raise
