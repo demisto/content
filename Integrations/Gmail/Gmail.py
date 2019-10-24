@@ -424,8 +424,8 @@ def users_to_entry(title, response, next_page_token=None):
 
         })
     headers = ['Type', 'ID', 'Username',
-               'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory',
-               'nextPageToken']
+               'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory']
+
     human_readable = tableToMarkdown(title, context, headers, removeNull=True)
 
     if next_page_token:
