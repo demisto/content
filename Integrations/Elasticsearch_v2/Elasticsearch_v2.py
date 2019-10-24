@@ -40,12 +40,19 @@ FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
 TIMESTAMP = demisto.params().get('use_timestamp', False)
 
+# if timestamp than set the format to iso.
+if TIMESTAMP:
+    TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
 
 def timestamp_to_date(timestamp_string):
     # cut the timestamp down to size if needed
     timestamp_len = len(str(int(time.time())))
     if len(timestamp_string) > timestamp_len:
         timestamp_number = int(str(timestamp_string)[:timestamp_len])
+
+    else:
+        timestamp_number = int(timestamp_string)
 
     # convert timestamp to datetime
     return datetime.fromtimestamp(timestamp_number)
@@ -305,7 +312,14 @@ def results_to_incidents(response, current_fetch, last_fetch):
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
+            # if not a timestamp convert to date
+            if not TIMESTAMP:
+                hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
+
+            # if timestamp convert to iso format date
+            else:
+                hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
+
             # update last run
             if hit_date > last_fetch:
                 last_fetch = hit_date
@@ -337,10 +351,16 @@ def fetch_incidents():
 
     current_fetch = last_fetch
 
+    if TIMESTAMP:
+        last_fetch_for_query = int(last_fetch.timestamp())
+
+    else:
+        last_fetch_for_query = last_fetch
+
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
-    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
+    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch_for_query}}})
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
@@ -348,7 +368,6 @@ def fetch_incidents():
     incidents = []  # type: List
     if total_results > 0:
         incidents, last_fetch = results_to_incidents(response, current_fetch, last_fetch)
-
         demisto.info('extract {} incidents'.format(len(incidents)))
         demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
 
