@@ -1487,7 +1487,7 @@
         },
         {
             "playbookID": "FilterByList - Test",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
