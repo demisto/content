@@ -494,7 +494,7 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
             {
                 f'{INTEGRATION_CONTEXT_NAME}.SymmetricEncrypt(val.CryptoKey == obj.CryptoKey '
                 f'&& val.IsBase64 == obj.IsBase64 && val.Ciphertext == obj.Ciphertext)': symmetric_encrypt_context,
-            }, None)
+            }, symmetric_encrypt_context)
 
 
 def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -538,7 +538,7 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
             {
                 f'{INTEGRATION_CONTEXT_NAME}.SymmetricDecrypt(val.CryptoKey == obj.CryptoKey '
                 f'&& val.IsBase64 == obj.IsBase64 && val.Plaintext == obj.Plaintext)': symmetric_decrypt_context,
-            }, None)
+            }, symmetric_decrypt_context)
 
 
 def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
@@ -827,7 +827,7 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
             {
                 f'{INTEGRATION_CONTEXT_NAME}.AsymmetricEncrypt(val.CryptoKey == obj.CryptoKey '
                 f'&& val.IsBase64 == obj.IsBase64 && val.Ciphertext == obj.Ciphertext)': asymmetric_encrypt_context,
-            }, None)
+            }, asymmetric_encrypt_context)
 
 
 def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
@@ -868,7 +868,7 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
             {
                 f'{INTEGRATION_CONTEXT_NAME}.AsymmetricDecrypt(val.CryptoKey == obj.CryptoKey '
                 f'&& val.IsBase64 == obj.IsBase64 && val.Plaintext == obj.Plaintext)': asymmetric_decrypt_context,
-            }, None)
+            }, asymmetric_decrypt_context)
 
 
 def test_function(client: Client) -> None:
