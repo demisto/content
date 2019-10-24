@@ -21,6 +21,7 @@ if PROXY:
     HTTPS_PROXY = os.environ.get('https_proxy')
 
 WITH_ERRORS = demisto.params().get('with_error', True)
+DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
@@ -84,8 +85,9 @@ def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time
 
         driver.get(path)
         driver.implicitly_wait(5)
-        if wait_time > 0:
-            time.sleep(wait_time)
+        if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
+            time.sleep(wait_time or DEFAULT_WAIT_TIME)
+
         check_response(driver)
 
         demisto.debug('Navigating to path - COMPLETED')
