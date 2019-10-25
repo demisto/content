@@ -1,5 +1,5 @@
 # Linting
-As part of the build process we run a few linters to catch common programming errors. Linters are run only when working with the package (directory) structure. 
+As part of the build process we run a few linters to catch common programming errors. Linters are run only when working with the [package (directory) structure](../package_directory_structure/README.md). 
 
 All linters are run via the following script:
 ```
