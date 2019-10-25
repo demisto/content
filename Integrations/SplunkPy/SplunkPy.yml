@@ -37,10 +37,10 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: 'Proxy - in format: 127.0.0.1:8080'
+- display: Use system proxy settings
   name: proxy
   required: false
-  type: 0
+  type: 8
 - display: Timezone of the Splunk server, in minutes. For example, GMT is gmt +3, set +180 (set only
     if different than Demisto server). Relevant only for fetching notable events.
   name: timezone
@@ -61,11 +61,28 @@ configuration:
   name: useSplunkTime
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
+- display: Earliest time to fetch (the name of the Splunk field whose value defines the query's
+    earliest time to fetch)
+  name: earliest_fetch_time_fieldname
+  defaultvalue: index_earliest
+  type: 0
+  required: false
+- display: Latest time to fetch (the name of the Splunk field whose value defines the query's
+    latest time to fetch)
+  name: latest_fetch_time_fieldname
+  defaultvalue: index_latest
+  type: 0
+  required: false
+- display: The app context of the namespace
+  name: app
+  defaultvalue: ""
+  type: 0
+  required: false
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy

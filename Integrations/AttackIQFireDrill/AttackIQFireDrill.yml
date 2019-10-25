@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 description: An attack simulation platform that provides validations for security controls, responses, and remediation exercises.
-display: AttackIQ FireDrill
+display: AttackIQ Platform
 name: AttackIQFireDrill
 script:
   commands:
@@ -225,6 +225,7 @@ script:
       required: true
       secret: false
     - default: false
+      auto: PREDEFINED
       description: Runs only on-demand tests in the assessment. True executes
         tests in the assessment that are not scheduled to run. False executes all
         tests in the assessment including scheduled tests. Default is false.
@@ -232,6 +233,9 @@ script:
       name: on_demand_only
       required: false
       secret: false
+      predefined:
+        - 'True'
+        - 'False'
     deprecated: false
     description: Runs all tests in the assessment.
     execution: false
