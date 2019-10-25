@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: Azure Compute
+  id: Azure Compute v2
   version: -1
 configuration:
 - defaultvalue: https://management.azure.com
@@ -8,13 +8,17 @@ configuration:
   name: host
   required: true
   type: 0
-- display: Tenant ID (received from the admin consent - see Detailed Instructions
-    (?) section)
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see detailed instructions (?))
-  name: token
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
   required: true
   type: 4
 - display: Use system proxy
@@ -26,9 +30,13 @@ configuration:
   name: unsecure
   required: false
   type: 8
+- display: Default Subscription ID
+  name: subscription_id
+  required: false
+  type: 0
 description: Create and Manage Azure Virtual Machines
-display: Azure Compute
-name: Azure Compute
+display: Azure Compute v2
+name: Azure Compute v2
 script:
   commands:
   - arguments:
@@ -41,7 +49,7 @@ script:
       name: resource_group
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Lists the virtual machine instances in the given resource group.
     execution: false
     name: azure-vm-list-instances
@@ -85,7 +93,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Powers on a given virtual machine.
     execution: true
     name: azure-vm-start-instance
@@ -117,7 +125,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
@@ -149,7 +157,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Gets the properties of a given virtual machine.
     execution: false
     name: azure-vm-get-instance-details
@@ -348,7 +356,7 @@ script:
       name: admin_password
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Creates a virtual machine instance with the specified OS image.
     execution: true
     name: azure-vm-create-instance
@@ -374,7 +382,7 @@ script:
     - contextPath: Azure.Compute.Location
       description: The region in which the virtual machine is hosted.
       type: string
-  - deprecated: true
+  - deprecated: false
     description: Lists all resource groups that belong to your Azure subscription.
     execution: false
     name: azure-list-resource-groups
@@ -409,16 +417,16 @@ script:
       name: virtual_machine_name
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Deletes a specified virtual machine.
     execution: false
     name: azure-vm-delete-instance
+  dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-deprecated: true
 tests:
 - No test
