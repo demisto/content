@@ -11,23 +11,16 @@ from distutils.util import strtobool
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
+''' GLOBALS '''
 
-USERNAME = demisto.params().get('credentials').get('identifier')
-PASSWORD = demisto.params().get('credentials').get('password')
-TOKEN = demisto.params().get('token')
-SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()['url'].endswith('/')) \
-    else demisto.params()['url']
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-FETCH_THREAT_RANK = int(demisto.params().get('fetch_threshold', 5))
-FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
-BASE_URL = SERVER + '/web/api/v2.0/'
-HEADERS = {
-    'Authorization': 'ApiToken ' + TOKEN,
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
+TOKEN: str
+SERVER: str
+FETCH_TIME: str
+BASE_URL: str
+FETCH_THREAT_RANK: int
+FETCH_LIMIT: int
+USE_SSL: bool
+HEADERS: dict
 
 ''' HELPER FUNCTIONS '''
 
@@ -390,10 +383,13 @@ def get_threats_command():
 
     # Parse response into context & content entries
     if threats:
-        title = 'Sentinel One - Getting Threat List \n' + \
-                'Provides summary information and details for all the threats that matched your search criteria.'
         for threat in threats:
-            if not rank or (rank and threat.get('rank') >= rank):
+            threat_rank = threat.get('rank')
+            try:
+                threat_rank = int(threat_rank)
+            except TypeError:
+                threat_rank = 0
+            if not rank or (rank and threat_rank >= rank):
                 contents.append({
                     'ID': threat.get('id'),
                     'Agent Computer Name': threat.get('agentComputerName'),
@@ -435,9 +431,12 @@ def get_threats_command():
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
-        'Contents': contents,
+        'Contents': threats,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
+                                                                                   'details for all the threats that '
+                                                                                   'matched your search criteria.',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -449,7 +448,7 @@ def get_threats_request(content_hash=None, mitigation_status=None, created_befor
 
     params = {
         'contentHash': content_hash,
-        'mitigationStatus': mitigation_status,
+        'mitigationStatuses': mitigation_status,
         'createdAt__lt': created_before,
         'createdAt__gt': created_after,
         'createdAt__lte': created_until,
@@ -737,7 +736,6 @@ def get_white_list_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     item_ids = argToList(demisto.args().get('item_ids', []))
@@ -750,9 +748,6 @@ def get_white_list_command():
 
     # Parse response into context & content entries
     if exclusion_items:
-        title = 'Sentinel One - Listing exclusion items \n' + \
-                'provides summary information and details for ' \
-                'all the exclusion items that matched your search criteria.'
         for exclusion_item in exclusion_items:
             contents.append({
                 'ID': exclusion_item.get('id'),
@@ -786,7 +781,9 @@ def get_white_list_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Listing exclusion items \n'
+                                         + 'provides summary information and details for all the exclusion items that '
+                                           'matched your search criteria.', contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -897,7 +894,6 @@ def get_sites_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     updated_at = demisto.args().get('updated_at')
@@ -919,8 +915,6 @@ def get_sites_command():
 
     # Parse response into context & content entries
     if sites:
-        title = 'Sentinel One - Gettin List of Sites \n' + \
-                'Provides summary information and details for all sites that matched your search criteria.'
         for site in sites:
             contents.append({
                 'ID': site.get('id'),
@@ -960,7 +954,10 @@ def get_sites_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - Gettin List of Sites \n' + 'Provides summary information and '
+                                                                                    'details for all sites that matched'
+                                                                                    ' your search criteria.', contents,
+                                         removeNull=True),
         'EntryContext': context
     })
 
@@ -1192,7 +1189,6 @@ def list_agents_command():
     contents = []
     context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
     active_threats = demisto.args().get('min_active_threats')
@@ -1206,8 +1202,6 @@ def list_agents_command():
 
     # Parse response into context & content entries
     if agents:
-        title = 'Sentinel One - List of Agents \n ' \
-                'Provides summary information and details for all the agents that matched your search criteria'
         for agent in agents:
             contents.append({
                 'ID': agent.get('id'),
@@ -1251,7 +1245,9 @@ def list_agents_command():
         'ContentsFormat': formats['json'],
         'Contents': contents,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
+        'HumanReadable': tableToMarkdown('Sentinel One - List of Agents \n Provides summary information and details for'
+                                         ' all the agents that matched your search criteria',
+                                         contents, removeNull=True),
         'EntryContext': context
     })
 
@@ -1429,7 +1425,7 @@ def disconnect_agent_from_network():
     agents_id = demisto.args().get('agent_id')
 
     # Make request and get raw response
-    agents = connect_to_network_request(agents_id)
+    agents = disconnect_from_network_request(agents_id)
     agents_affected = agents.get('data', {}).get('affected', 0)
 
     # Parse response into context & content entries
@@ -1758,7 +1754,7 @@ def fetch_incidents():
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if FETCH_THREAT_RANK and rank >= FETCH_THREAT_RANK:
+        if rank >= FETCH_THREAT_RANK:
             incident = threat_to_incident(threat)
             incident_date = date_to_timestamp(incident['occurred'], '%Y-%m-%dT%H:%M:%S.%fZ')
             # update last run
@@ -1780,74 +1776,99 @@ def threat_to_incident(threat):
     return incident
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+def main():
+    ''' PARSE INTEGRATION PARAMETERS '''
 
-LOG('command is %s' % (demisto.command()))
+    global TOKEN, SERVER, USE_SSL, FETCH_TIME
+    global FETCH_THREAT_RANK, FETCH_LIMIT, BASE_URL, HEADERS
 
-try:
-    handle_proxy()
-    if demisto.command() == 'test-module':
-        # This is the call made when pressing the integration test button.
-        test_module()
-        demisto.results('ok')
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() == 'sentinelone-get-activities':
-        get_activities_command()
-    elif demisto.command() == 'sentinelone-get-threats':
-        get_threats_command()
-    elif demisto.command() == 'sentinelone-mark-as-threat':
-        mark_as_threat_command()
-    elif demisto.command() == 'sentinelone-mitigate-threat':
-        mitigate_threat_command()
-    elif demisto.command() == 'sentinelone-resolve-threat':
-        resolve_threat_command()
-    elif demisto.command() == 'sentinelone-threat-summary':
-        get_threat_summary_command()
-    elif demisto.command() == 'sentinelone-get-hash':
-        get_hash_command()
-    elif demisto.command() == 'sentinelone-get-white-list':
-        get_white_list_command()
-    elif demisto.command() == 'sentinelone-create-white-list-item':
-        create_white_item_command()
-    elif demisto.command() == 'sentinelone-get-sites':
-        get_sites_command()
-    elif demisto.command() == 'sentinelone-get-site':
-        get_site_command()
-    elif demisto.command() == 'sentinelone-reactivate-site':
-        reactivate_site_command()
-    elif demisto.command() == 'sentinelone-list-agents':
-        list_agents_command()
-    elif demisto.command() == 'sentinelone-get-agent':
-        get_agent_command()
-    elif demisto.command() == 'sentinelone-get-groups':
-        get_groups_command()
-    elif demisto.command() == 'sentinelone-move-agent':
-        move_agent_to_group_command()
-    elif demisto.command() == 'sentinelone-delete-group':
-        delete_group()
-    elif demisto.command() == 'sentinelone-agent-processes':
-        get_agent_processes()
-    elif demisto.command() == 'sentinelone-connect-agent':
-        connect_agent_to_network()
-    elif demisto.command() == 'sentinelone-disconnect-agent':
-        disconnect_agent_from_network()
-    elif demisto.command() == 'sentinelone-broadcast-message':
-        broadcast_message()
-    elif demisto.command() == 'sentinelone-get-events':
-        get_events()
-    elif demisto.command() == 'sentinelone-create-query':
-        create_query()
-    elif demisto.command() == 'sentinelone-get-processes':
-        get_processes()
-    elif demisto.command() == 'sentinelone-shutdown-agent':
-        shutdown_agents()
-    elif demisto.command() == 'sentinelone-uninstall-agent':
-        uninstall_agent()
+    TOKEN = demisto.params().get('token')
+    SERVER = demisto.params().get('url')[:-1] if (demisto.params().get('url')
+                                                  and demisto.params().get('url').endswith('/')) \
+        else demisto.params().get('url')
+    USE_SSL = not demisto.params().get('insecure', False)
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 0))
+    FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
+    BASE_URL = SERVER + '/web/api/v2.0/'
+    HEADERS = {
+        'Authorization': 'ApiToken ' + TOKEN if TOKEN else 'ApiToken',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
 
-except Exception as e:
-    if demisto.command() == 'fetch-incidents':
-        LOG(str(e))
-        raise
-    else:
-        return_error(e)
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+    LOG('command is %s' % (demisto.command()))
+
+    try:
+        handle_proxy()
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration test button.
+            test_module()
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() == 'sentinelone-get-activities':
+            get_activities_command()
+        elif demisto.command() == 'sentinelone-get-threats':
+            get_threats_command()
+        elif demisto.command() == 'sentinelone-mark-as-threat':
+            mark_as_threat_command()
+        elif demisto.command() == 'sentinelone-mitigate-threat':
+            mitigate_threat_command()
+        elif demisto.command() == 'sentinelone-resolve-threat':
+            resolve_threat_command()
+        elif demisto.command() == 'sentinelone-threat-summary':
+            get_threat_summary_command()
+        elif demisto.command() == 'sentinelone-get-hash':
+            get_hash_command()
+        elif demisto.command() == 'sentinelone-get-white-list':
+            get_white_list_command()
+        elif demisto.command() == 'sentinelone-create-white-list-item':
+            create_white_item_command()
+        elif demisto.command() == 'sentinelone-get-sites':
+            get_sites_command()
+        elif demisto.command() == 'sentinelone-get-site':
+            get_site_command()
+        elif demisto.command() == 'sentinelone-reactivate-site':
+            reactivate_site_command()
+        elif demisto.command() == 'sentinelone-list-agents':
+            list_agents_command()
+        elif demisto.command() == 'sentinelone-get-agent':
+            get_agent_command()
+        elif demisto.command() == 'sentinelone-get-groups':
+            get_groups_command()
+        elif demisto.command() == 'sentinelone-move-agent':
+            move_agent_to_group_command()
+        elif demisto.command() == 'sentinelone-delete-group':
+            delete_group()
+        elif demisto.command() == 'sentinelone-agent-processes':
+            get_agent_processes()
+        elif demisto.command() == 'sentinelone-connect-agent':
+            connect_agent_to_network()
+        elif demisto.command() == 'sentinelone-disconnect-agent':
+            disconnect_agent_from_network()
+        elif demisto.command() == 'sentinelone-broadcast-message':
+            broadcast_message()
+        elif demisto.command() == 'sentinelone-get-events':
+            get_events()
+        elif demisto.command() == 'sentinelone-create-query':
+            create_query()
+        elif demisto.command() == 'sentinelone-get-processes':
+            get_processes()
+        elif demisto.command() == 'sentinelone-shutdown-agent':
+            shutdown_agents()
+        elif demisto.command() == 'sentinelone-uninstall-agent':
+            uninstall_agent()
+
+    except Exception as e:
+        if demisto.command() == 'fetch-incidents':
+            LOG(str(e))
+            raise
+        else:
+            return_error(e)
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

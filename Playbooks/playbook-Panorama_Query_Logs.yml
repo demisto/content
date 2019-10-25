@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 50
         }
       }
@@ -45,6 +45,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "5"
       "yes":
       - "2"
     separatecontext: false
@@ -78,7 +80,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 195
         }
       }
@@ -256,7 +258,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 275,
           "y": 1245
         }
       }
@@ -348,7 +350,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1260,
-        "width": 492.5,
+        "width": 605,
         "x": 50,
         "y": 50
       }
@@ -362,8 +364,9 @@ inputs:
 - key: query
   value: {}
   required: false
-  description: The query string by which to match criteria for the logs. This is similar to the query
-    provided in the web interface under the Monitor tab when viewing the logs.
+  description: The query string by which to match criteria for the logs. This is similar
+    to the query provided in the web interface under the Monitor tab when viewing
+    the logs.
 - key: time-generated
   value: {}
   required: false
@@ -412,7 +415,6 @@ outputs:
 - contextPath: Panorama.Monitor.Logs.Action
   description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
     "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
-  type: string
   type: string
 - contextPath: Panorama.Monitor.Logs.Application
   description: Application associated with the session.
