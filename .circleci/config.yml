@@ -192,22 +192,6 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
       - run:
-          name: Run Tests - Two Before GA
-          shell: /bin/bash
-          when: always
-          command: |
-            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
-              echo "Skipping instance tests for forked PRs"
-              exit 0
-            fi
-            if ./Tests/scripts/is_ami.sh ;
-              then
-                ./Tests/scripts/run_tests.sh "Demisto two before GA"
-
-              else
-                echo "Not AMI run, can't run on this version"
-            fi
-      - run:
           name: Run Tests - Server Master
           shell: /bin/bash
           when: always
