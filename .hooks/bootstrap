@@ -36,7 +36,8 @@ else
         echo "Installing 'pre-commit' hooks"
         ln -s "${HOOKS_DIR}/pre-commit" "${GIT_HOOKS_DIR}/pre-commit"
     else        
-        echo "Skipping install of pre-commit hook as it already exists. If you want to re-install: rm ${GIT_HOOKS_DIR}/pre-commit"        
+        echo "Skipping install of pre-commit hook as it already exists."
+        echo "If you want to re-install: 'rm ${GIT_HOOKS_DIR}/pre-commit' and then run this script again."        
     fi
 fi
 
@@ -71,7 +72,8 @@ else
         echo "Activate the venv by running: . ./venv/bin/activate"
         echo "Deactivate by running: deactivate"        
     else
-        echo "Skipping virtual env setup as directory ${PWD}/venv exists. If you want to re-install: rm -r ${PWD}/venv"
+        echo "Skipping virtual env setup as directory ${PWD}/venv exists."
+        echo "If you want to re-install: 'rm -r ${PWD}/venv' and then run this script again." 
     fi
 fi
 
