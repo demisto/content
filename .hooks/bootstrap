@@ -52,7 +52,7 @@ else
             exit 1
         fi
         if ! command -v python2 >/dev/null 2>&1; then
-            echo "ERROR: python2 is missinge. Please make sure you have python 2 on your system" 1>&2
+            echo "ERROR: python2 is missing. Please make sure you have Python 2 installed on your system" 1>&2
             exit 1
         fi
         if ! command -v python3 >/dev/null 2>&1; then
