@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, List, Optional, Union, Any
+import urllib.parse
 import urllib3
 
 # Disable insecure warnings
@@ -397,7 +398,7 @@ class Client(BaseClient):
         params = assign_params(
             limit=limit,
             offset=offset,
-            created_at=created_at,
+            created_at=urllib.parse.quote_plus(created_at) if created_at else None,
             description=description,
             is_active=is_active and is_active != 'false',
             is_internal=is_internal and is_internal != 'false',
@@ -405,7 +406,7 @@ class Client(BaseClient):
             name=name,
             short_name=short_name,
             type=type,
-            updated_at=updated_at,
+            updated_at=urllib.parse.quote_plus(updated_at) if updated_at else None,
             usage=usage,
             order_by=order_by
         )
@@ -947,7 +948,8 @@ def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             f'{INTEGRATION_CONTEXT_NAME}.List(val.Count).Count': count
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'ContentTypes', 'UpdatedTime'])
+        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'ContentTypes', 'UpdatedTime'],
+                                         headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -968,12 +970,12 @@ def get_list_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     raw_response = client.get_list_by_id(list_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - List {list_id}:'
-        context_entry = build_transformed_dict(raw_response, {})  # TODO: edit this
+        context_entry = build_transformed_dict(raw_response, LISTS_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -1091,9 +1093,9 @@ def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     rules = raw_response.get('rules')
     if rules:
         title = f'{INTEGRATION_NAME} - Successfully updated rule {rule_id}:'
-        context_entry = build_transformed_dict(rules, {})  # TODO: edit this
+        context_entry = build_transformed_dict(rules, RULES_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry)
@@ -1144,7 +1146,6 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
     }
-    demisto.info(f'************ {command}')
     try:
         if command == 'fetch-incidents':
             incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())  # type: ignore
