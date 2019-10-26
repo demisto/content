@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed max messages parameter type.
+-
 
 ## [19.10.1] - 2019-10-15
   - Added partitions outputs to the ***kafka-print-topic*** command.
