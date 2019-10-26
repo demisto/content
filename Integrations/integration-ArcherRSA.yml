@@ -2765,7 +2765,8 @@ script:
             fieldNameToSearchOn = fieldToSearchOn;
         }else{ // performing a general search
             fieldNameToSearchOn = "Date Created";
-            fieldIdToSearchOn = JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id);
+            isFieldNameInMapping = nameToFieldMapping[fieldNameToSearchOn] && typeof nameToFieldMapping[fieldNameToSearchOn] !== 'undefined';
+            fieldIdToSearchOn = isFieldNameInMapping? JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id) : '';
             dateOperator = "GreaterThan";
             var day = 60 * 1000 * 60 * 24;
             searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
