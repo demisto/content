@@ -56,7 +56,7 @@ else
             exit 1
         fi
         if ! command -v python3 >/dev/null 2>&1; then
-            echo "ERROR: python3 is missinge. Please make sure you have python 3 on your system" 1>&2
+            echo "ERROR: python3 is missing. Please make sure you have Python 3 installed on your system" 1>&2
             exit 1
         fi
         virtualenv -p python3 venv
