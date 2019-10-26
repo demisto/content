@@ -78,7 +78,7 @@ If you would like to see all available Docker Images, you may execute the follow
 This command does not accept any arguments and will list all available Docker Images.
 
 ### Via Docker Files (required for production)
-In most cases, if your integration is for public release, we will need to push Docker Files into the dockerfiles repository [located here](https://github.com/demisto/dockerfiles). Pushing into this repository will add teh image (after an approve process) to the docker hub Demisto organization. See [README,md](https://github.com/demisto/dockerfiles/blob/master/README.md) for instructions. 
+In most cases, if your integration is for public release, we will need to push Docker Files into the dockerfiles repository [located here](https://github.com/demisto/dockerfiles). Pushing into this repository will add the image (after an approval process) to the docker hub Demisto organization. See [README,md](https://github.com/demisto/dockerfiles/blob/master/README.md) for instructions. 
 
 ## Important Notes
 When modifying an existing Docker Image, we need to ensure the change will not disrupt other integrations that may use that same package. Thus, all docker images are created with a unique version tag, which we don't allow overriding. 
