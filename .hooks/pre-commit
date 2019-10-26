@@ -42,7 +42,7 @@ if [ -n "$DO_DEACTIVATE" ]; then
     source deactivate
 fi
 if [ -n "$DO_ACTIVATE" ]; then
-    echo "activate back previous virtual env: $DO_ACTIVATE"
+    echo "Activating back previous virtual env: $DO_ACTIVATE"
     source "${DO_ACTIVATE}/bin/activate"
 fi
 if [[ $RES -ne 0 ]]
