@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, List, Optional, Union, Any
-import urllib.parse
 import urllib3
 
 # Disable insecure warnings
@@ -230,12 +229,14 @@ class Client(BaseClient):
         """
         return self._http_request('GET', '/healthcheck', resp_type='content')
 
-    def list_alerts(self, limit: Union[int, str] = None, offset: Union[int, str] = None) -> Dict:
+    def list_alerts(self, limit: Union[int, str] = None, offset: Union[int, str] = None,
+                    created_at__gte: str = None) -> Dict:
         """Returns all alerts by sending a GET request.
 
         Args:
             limit: The maximum number of alerts to return.
             offset: The initial index from which to return the results.
+            created_at__gte: Date time string. Will fetch alerts with a create time greater or equal to this value
 
         Returns:
             Response from API.
@@ -244,7 +245,8 @@ class Client(BaseClient):
         # Dictionary of params for the request
         params = assign_params(
             limit=limit,
-            offset=offset
+            offset=offset,
+            created_at__gte=created_at__gte
         )
         # Send a request using our http_request wrapper
         return self._http_request('GET', suffix, params=params)
@@ -398,7 +400,7 @@ class Client(BaseClient):
         params = assign_params(
             limit=limit,
             offset=offset,
-            created_at=urllib.parse.quote_plus(created_at) if created_at else None,
+            created_at=created_at,
             description=description,
             is_active=is_active and is_active != 'false',
             is_internal=is_internal and is_internal != 'false',
@@ -406,7 +408,7 @@ class Client(BaseClient):
             name=name,
             short_name=short_name,
             type=type,
-            updated_at=urllib.parse.quote_plus(updated_at) if updated_at else None,
+            updated_at=updated_at,
             usage=usage,
             order_by=order_by
         )
@@ -611,6 +613,27 @@ def update_nested_value(src_dict: Dict[str, Any], to_key: str, to_val: Any):
     sub_res[to_key_lst[-1]] = to_val
 
 
+def alert_severity_to_dbot_score(severity_str):
+    """Converts an severity string to DBot score representation
+        alert severity. Can be one of:
+        Low    ->  2
+        Medium ->  2
+        High   ->  3
+
+    Args:
+        severity_str: String representation of severity.
+
+    Returns:
+        Dbot representation of severity
+    """
+    severity_str = severity_str.lower()
+    if severity_str in ('low', 'medium'):
+        return 2
+    elif severity_str == 'high':
+        return 3
+    return 0
+
+
 ''' COMMANDS '''
 
 
@@ -631,46 +654,41 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return 'ok', {}, {}
 
 
-def fetch_incidents(
-        client: Client,
-        fetch_time: str,
-        last_run: Optional[datetime] = None) -> Tuple[List, datetime]:
+def fetch_incidents(client: Client, fetch_time: str, last_run: Dict) -> Tuple[List, Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
     Args:
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
-        last_run: Last fetch object occurs.
+        last_run: Last fetch object.
 
     Returns:
         incidents, new last_run
-
-    Examples:
-        >>> client = Client('https://example.net/v1')
-        >>> fetch_incidents(client, '3 days', datetime(2010, 1, 1, 0, 0))
     """
-    timestamp_format = '%Y-%m-%dT%H:%M:%S'
+    timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
     # Get incidents from API
     if not last_run:  # if first time running
-        new_last_run, _ = parse_date_range(fetch_time)
-        new_last_run = new_last_run.strftime(timestamp_format)
+        new_last_run = {'time': parse_date_range(fetch_time, date_format=timestamp_format)[0]}
     else:
         new_last_run = last_run
     incidents: List = list()
-    # raw_response = client.list_alerts(event_created_date_after=new_last_run)  # TODO: Adjust this
-    raw_response = client.list_alerts()  # TODO: Adjust this
-    events = raw_response.get('event')
-    if events:
+    raw_response = client.list_alerts(created_at__gte=new_last_run.get('time'))
+    alerts = raw_response.get('results')
+    if alerts:
+        last_incident_id = last_run.get('id', 0)
         # Creates incident entry
         incidents = [{
-            'name': f"{INTEGRATION_NAME}: {event.get('eventId')}",
-            'occurred': event.get('createdAt'),
-            'rawJSON': json.dumps(event)
-        } for event in events]
-
-        last_incident_timestamp = incidents[-1].get('occurred')
-        new_last_run = datetime.strptime(last_incident_timestamp, timestamp_format)
+            'name': f"{INTEGRATION_NAME}: {alert.get('id')}",
+            'occurred': alert.get('created_at'),
+            'severity': alert_severity_to_dbot_score(alert.get('severity')),
+            'rawJSON': json.dumps(alert)
+        } for alert in alerts if alert.get('id') > last_incident_id]
+        # New incidents fetched
+        if incidents:
+            last_incident_timestamp = incidents[-1].get('occurred')
+            last_incident_id = alerts[-1].get('id')
+            new_last_run = {'time': last_incident_timestamp, 'id': last_incident_id}
     # Return results
     return incidents, new_last_run
 
@@ -1148,9 +1166,10 @@ def main():  # pragma: no cover
     }
     try:
         if command == 'fetch-incidents':
-            incidents, new_last_run = commands[command](client, last_run=demisto.getLastRun())  # type: ignore
+            fetch_time = params.get('fetch_time')
+            incidents, last_run = commands[command](client, fetch_time, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
-            demisto.setLastRun(new_last_run)
+            demisto.setLastRun(last_run)
         elif command in commands:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
