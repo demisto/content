@@ -90,7 +90,7 @@ a = 1
 b = "2"
 a = b  # type: ignore[assignment]
 ```
-**Note**: mypy introduced the `ignore[<error-name>]` syntax only in version 0.730. See: [error code docs](https://mypy.readthedocs.io/en/latest/error_codes.html#error-codes). You may see in the code ignores of the form: `type: ignore` without the `error-name`. This would usually be from old code written before the support for `error-name` ignores. We do not recommend using this ignore style as it ignores all errors and increases the risk of ignoring unexpected serious errors.
+**Note**: mypy introduced the `ignore[<error-name>]` syntax only in version 0.730. See: [error code docs](https://mypy.readthedocs.io/en/latest/error_codes.html). You may see in the code ignores of the form: `type: ignore` without the `error-name`. This would usually be from old code written before the support for `error-name` ignores. We do not recommend using this ignore style as it ignores all errors and increases the risk of ignoring unexpected serious errors.
 
 Dealing with ***Need type annotation errors***: If you receive such an error instead of simply adding an `ignore` comment it is better to define the type of the variable which is missing type annotation. This error is usually received when an empty dict or list is defined and mypy can not infer the type of the object. In this case it is better to define the type as `dict` or `list`. For example python 2 code:
 ```python
