@@ -6,7 +6,7 @@ DO_DEACTIVATE=""
 DO_ACTIVATE=""
 if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
     # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
-    echo "deactivate current virtual env: $VIRTUAL_ENV"
+    echo "Deactivating current virtual env: $VIRTUAL_ENV"
     DO_ACTIVATE="${VIRTUAL_ENV}"
     source deactivate
 fi
