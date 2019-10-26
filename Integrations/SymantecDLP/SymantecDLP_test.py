@@ -132,25 +132,25 @@ def test_parse_custom_attribute():
     assert custom_attribute_all_list_output == parse_custom_attribute(custom_attribute_group_list, args_all)
     args_none = {'custom_attributes': 'none'}
     assert [] == parse_custom_attribute(custom_attribute_group_list, args_none)
-    args_custom = {'custom_attributes': 'custom'}
+    args_custom = {'custom_attributes': 'specific attributes'}
     with raises(DemistoException, match='When choosing the custom value for custom_attributes argument -'
-                                        ' the custom_values list must be filled with custom attribute names.'
+                                        ' the custom_data list must be filled with custom attribute names.'
                                         ' For example: custom_value=ca1,ca2,ca3'):
         parse_custom_attribute(custom_attribute_group_list, args_custom)
-    args_custom['custom_values'] = 'cn, First Name, bbb'
+    args_custom['custom_data'] = 'cn, First Name, bbb'
     custom_attribute_custom_list_output = [
         {'Name': 'cn'},
         {'Name': 'First Name', 'Value': 'Admin'}
     ]
     assert custom_attribute_custom_list_output == parse_custom_attribute(custom_attribute_group_list, args_custom)
-    args_custom['custom_values'] = 'aaa'
+    args_custom['custom_data'] = 'aaa'
     assert [] == parse_custom_attribute(custom_attribute_group_list, args_custom)
-    args_group = {'custom_attributes': 'group'}
+    args_group = {'custom_attributes': 'custom attributes group name'}
     with raises(DemistoException, match='When choosing the group value for custom_attributes argument -'
-                                        ' the custom_values list must be filled with group names.'
+                                        ' the custom_data list must be filled with group names.'
                                         ' For example: custom_value=g1,g2,g3'):
         parse_custom_attribute(custom_attribute_group_list, args_group)
-    args_group['custom_values'] = 'Default Attribute Group, Predefined, uuu'
+    args_group['custom_data'] = 'Default Attribute Group, Predefined, uuu'
     custom_attribute_group_list_output = [
         {'Name': 'cn'},
         {'Name': 'Resolution'},
