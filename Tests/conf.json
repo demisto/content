@@ -1891,10 +1891,6 @@
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
-        },
-        {
-            "integrations": "ARIA Packet Intelligence",
-            "playbookID": "ARIA Packet Intelligence - Test"
         }
     ],
     "skipped_tests": {
