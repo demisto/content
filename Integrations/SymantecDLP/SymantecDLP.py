@@ -89,30 +89,38 @@ def parse_violating_component(raw_violating_component_list: list) -> list:
     return violating_component_list
 
 
-def parse_violated_policy_rule(violated_policy_rule_list: list) -> list:
+def parse_violated_policy_rule(raw_violated_policy_rule_list: list) -> list:
     """
     Parses a list of rules to context paths
-    :param violated_policy_rule_list: the raw rules list
+    :param raw_violated_policy_rule_list: the raw rules list
     :return: the parsed rules list
     """
-    return [{'Name': rule.get('ruleName'), 'ID': rule.get('ruleId')} for rule in violated_policy_rule_list]
+    violated_policy_rule_list: list = []
+    for raw_violated_policy_rule in raw_violated_policy_rule_list:
+        violated_policy_rule: dict = {
+            'Name': raw_violated_policy_rule.get('ruleName'),
+            'ID': raw_violated_policy_rule.get('ID')
+        }
+        violated_policy_rule_list.append({key: val for key, val in violated_policy_rule.items() if val})
+    return violated_policy_rule_list
 
 
-def parse_other_violated_policy(other_violated_policy_list: list) -> list:
+def parse_other_violated_policy(raw_other_violated_policy_list: list) -> list:
     """
     Parses a list of policies to context paths
-    :param other_violated_policy_list: the raw policies list
+    :param raw_other_violated_policy_list: the raw policies list
     :return: the parsed policies list
     """
-    return [
-        {
-            'Name': policy.get('name'),
-            'Version': policy.get('version'),
-            'Label': policy.get('label'),
-            'ID': policy.get('policyId')
+    other_violated_policy_list: list = []
+    for raw_other_violated_policy in raw_other_violated_policy_list:
+        other_violated_policy: dict = {
+            'Name': raw_other_violated_policy.get('name'),
+            'Version': raw_other_violated_policy.get('version'),
+            'Label': raw_other_violated_policy.get('label'),
+            'ID': raw_other_violated_policy.get('policyId')
         }
-        for policy in other_violated_policy_list
-    ]
+        other_violated_policy_list.append({key: val for key, val in other_violated_policy.items() if val})
+    return other_violated_policy_list
 
 
 def get_all_group_custom_attributes(group: dict) -> list:
@@ -134,14 +142,14 @@ def get_all_group_custom_attributes(group: dict) -> list:
 def parse_custom_attribute(custom_attribute_group_list: list, args: dict) -> list:
     """
     Returns a list of all custom attributes chosen by the user.
-    There are four options to choose from: all, none, custom, group.
+    There are four options to choose from: all, none, specific attributes, custom attributes group name.
     The choosing flag is given in demisto.args value in the field custom_attributes.
     If the user has chosen "all" then the function will return all custom attributes possible (from all groups).
     If the user has chosen "none" then the function won't return any custom attributes.
-    If the user has chosen "custom" then he must also provide a list of all custom attribute names in the demisto.args
-    dict under the field "custom_values". If not provided, an error msg will be shown. If provided, the function
-    will return only the custom attributes mentioned in the custom_values list.
-    If the user has chosen "group" the handling of this option is similiar to the "custom" option.
+    If the user has chosen "specific attributes" then he must also provide a list of all custom attribute names in the
+    demisto.args dict under the field "custom_data". If not provided, an error msg will be shown. If provided,
+    the function will return only the custom attributes mentioned in the custom_data list.
+    If the user has chosen "custom attributes group name" the handling of this option is similar to the "custom" option.
     :param custom_attribute_group_list: the raw list of custom attributes group (as returned from the request)
     :param args: demisto.args
     :return: the parsed custom attributes list
@@ -154,25 +162,25 @@ def parse_custom_attribute(custom_attribute_group_list: list, args: dict) -> lis
         for group in custom_attribute_group_list:
             custom_attributes_list.extend(get_all_group_custom_attributes(group))
 
-    # group case
-    elif custom_attributes_flag == 'group':
-        custom_values = args.get('custom_values')
-        if not custom_values:
-            raise DemistoException('When choosing the group value for custom_attributes argument - the custom_values'
+    # custom attributes group name case
+    elif custom_attributes_flag == 'custom attributes group name':
+        custom_data = args.get('custom_data')
+        if not custom_data:
+            raise DemistoException('When choosing the group value for custom_attributes argument - the custom_data'
                                    ' list must be filled with group names. For example: custom_value=g1,g2,g3')
-        group_name_list: list = argToList(custom_values, ',')
+        group_name_list: list = argToList(custom_data, ',')
         for group in custom_attribute_group_list:
             if group.get('name') in group_name_list:
                 custom_attributes_list.extend(get_all_group_custom_attributes(group))
 
-    # custom case
-    elif custom_attributes_flag == 'custom':
-        custom_values = args.get('custom_values')
-        if not custom_values:
-            raise DemistoException('When choosing the custom value for custom_attributes argument - the custom_values'
+    # specific attributes case
+    elif custom_attributes_flag == 'specific attributes':
+        custom_data = args.get('custom_data')
+        if not custom_data:
+            raise DemistoException('When choosing the custom value for custom_attributes argument - the custom_data'
                                    ' list must be filled with custom attribute names.'
                                    ' For example: custom_value=ca1,ca2,ca3')
-        custom_attribute_name_list: list = argToList(custom_values, ',')
+        custom_attribute_name_list: list = argToList(custom_data, ',')
         for group in custom_attribute_group_list:
             for raw_custom_attribute in group.get('customAttribute', []):
                 custom_attribute_name: str = raw_custom_attribute.get('name')
@@ -345,13 +353,11 @@ def test_module(client: Client, saved_report_id: int):
     """
     helpers.serialize_object(client.service.incidentList(
         savedReportId=saved_report_id,
-        incidentCreationDateLaterThan=parse_date_range('1 year')
+        incidentCreationDateLaterThan=parse_date_range('1 year')[0]
     ))
     demisto.results('ok')
 
 
-# TODO: Add the predefined options
-# TODO: Change custom_values to custom_data
 def get_incident_details_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     incident_id: str = args.get('incident_id', '')
 
@@ -420,7 +426,6 @@ def list_incidents_command(client: Client, args: dict, saved_report_id: str) -> 
     return human_readable, entry_context, raw_response
 
 
-# TODO: Check for wrong ca & status
 def update_incident_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     incident_id: str = args.get('incident_id', '')
     incident_attributes: dict = get_incident_attributes(args)
@@ -454,7 +459,7 @@ def update_incident_command(client: Client, args: dict) -> Tuple[str, dict, dict
     return human_readable, entry_context, raw_response
 
 
-def incident_binaries_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
+def incident_binaries_command(client: Client, args: dict) -> Tuple[str, dict, list, dict]:
     incident_id: str = args.get('incident_id', '')
     include_original_message: bool = bool(args.get('include_original_message', 'True'))
     include_all_components: bool = bool(args.get('include_all_components', 'True'))
@@ -468,34 +473,40 @@ def incident_binaries_command(client: Client, args: dict) -> Tuple[str, dict, di
     human_readable: str
     entry_context: dict = {}
     raw_response: dict = {}
+    file_entries: list = []
 
-    # TODO: Check for returning the file
     if raw_incident_binaries:
         serialized_incident_binaries: dict = helpers.serialize_object(raw_incident_binaries)
-        raw_response = serialized_incident_binaries
-        component = serialized_incident_binaries.get('Component')
+        raw_response = json.loads(json.dumps(serialized_incident_binaries, default=bytes_to_string))
+        raw_components = serialized_incident_binaries.get('Component')
+        components: list = parse_component(raw_components)  # type: ignore
+
         incident_binaries: dict = {
             'ID': serialized_incident_binaries.get('incidentId'),
             'OriginalMessage': serialized_incident_binaries.get('originalMessage'),
-            'Component(val.ID && val.ID === obj.ID)': parse_component(component),  # type: ignore
+            'Component(val.ID && val.ID === obj.ID)': components,
             'LongID': serialized_incident_binaries.get('incidentLongId')
         }
 
-        # TODO: Check for component issue - if component is a list how will it be shown in war-room
-        raw_headers: list = ['ID', 'OriginalMessage', 'Component', 'LongID']
-        headers: list = ['ID', 'Original Message', 'Component', 'Long ID']
+        raw_headers: list = ['ID', 'OriginalMessage', 'LongID']
+        headers: list = ['ID', 'Original Message', 'Long ID']
         outputs: dict = {}
         for raw_header in raw_headers:
             outputs[headers[raw_headers.index(raw_header)]] = incident_binaries.get(raw_header)
         human_readable = tableToMarkdown(f'Symantec DLP incident {incident_id} binaries', outputs,
                                          headers=headers, removeNull=True)
 
-        # TODO: Check for the DT - maybe "dores"
+        for raw_component in raw_components:  # type: ignore
+            filename = raw_component.get('name')
+            data = raw_component.get('content')
+            if isinstance(data, (str, bytes)):
+                file_entries.append(fileResult(filename=filename, data=data))
+
         entry_context = {'SymantecDLP.Incident(val.ID && val.ID === obj.ID)': incident_binaries}
     else:
         human_readable = 'No incident found.'
 
-    return human_readable, entry_context, raw_response
+    return human_readable, entry_context, file_entries, raw_response
 
 
 def list_custom_attributes_command(client: Client) -> Tuple[str, dict, dict]:
@@ -548,9 +559,8 @@ def incident_violations_command(client: Client, args: dict) -> Tuple[str, dict, 
     raw_response: dict = {}
 
     if raw_incident_violations:
-        raw_incident_violations = helpers.serialize_object(raw_incident_violations)
+        raw_incident_violations = helpers.serialize_object(raw_incident_violations[0])
         raw_response = raw_incident_violations
-        # TODO: Check if in generic incident the violating component we parse is what is in the design
         incident_violations: dict = {
             'ID': raw_incident_violations.get('incidentId'),
             'LongID': raw_incident_violations.get('incidentLongId'),
@@ -566,7 +576,6 @@ def incident_violations_command(client: Client, args: dict) -> Tuple[str, dict, 
     return human_readable, entry_context, raw_response
 
 
-# TODO: Check this function
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, saved_report_id: str):
     # We use parse to get out time in datetime format and not iso, that's what Symantec DLP is expecting to get
     if last_run and last_run.get('last_fetched_event_iso'):
@@ -598,7 +607,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
             })
             if incident_id == incidents_ids[-1]:
                 last_incident_time = incident_creation_time
-            # TODO: Check for adding binaries also
         demisto.setLastRun({'last_fetched_event_iso': last_incident_time})
 
     demisto.incidents(incidents)
@@ -607,10 +615,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-# TODO: Check for the long ID issue
-# TODO: Check what version contributor is using
-# TODO: Ask itay what about the proxy handling
+# TODO: Check for wrong ca & status
+# TODO: Check for the data owner issue
+# ￿￿￿￿TODO: Check if violations can be a list
+# TODO: Check fetch incidents
+# TODO: Add binaries to fetch incidents
 # TODO: Improve test PB
+# TODO: Check for the long ID issue
+# TODO: Check proxy handling
 def main():
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
@@ -660,6 +672,11 @@ def main():
         elif command == 'symantec-dlp-list-incident-status' or command == 'symantec-dlp-list-custom-attributes':
             human_readable, context, raw_response = commands[command](client)  # type: ignore
             return_outputs(human_readable, context, raw_response)
+        elif command == 'symantec-dlp-incident-binaries':
+            human_readable, context, file_entries, raw_response = commands[command](client, args)  # type: ignore
+            return_outputs(human_readable, context, raw_response)
+            for file_entry in file_entries:
+                demisto.results(file_entry)
         elif command in commands:
             human_readable, context, raw_response = commands[command](client, args)  # type: ignore
             return_outputs(human_readable, context, raw_response)

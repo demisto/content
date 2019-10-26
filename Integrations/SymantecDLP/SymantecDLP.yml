@@ -70,17 +70,23 @@ script:
       name: incident_id
       required: true
       secret: false
-    - default: true
+    - auto: PREDEFINED
+      default: true
       defaultValue: none
       description: |-
         This argument can get the following values:
         all - If all custom attributes are needed
         none - If none of the custom attributes are needed
-        custom - A list of custom attributes names, seperated by comma. For example: ca1,ca2,ca3
-        group - A list of custom attributes group names, seperated by comma. For example: cag1, cag2, cag3. This value will retrive all custom attributes in the mentioned group.
+        specific attributes - A list of custom attributes names, seperated by comma. For example: ca1,ca2,ca3
+        custom attribute group name - A list of custom attributes group names, seperated by comma. For example: cag1, cag2, cag3. This value will retrive all custom attributes in the mentioned group.
         The value "none" is default.
       isArray: false
       name: custom_attributes
+      predefined:
+      - all
+      - none
+      - specific attributes
+      - custom attribute group name
       required: false
       secret: false
     - default: false
@@ -329,7 +335,7 @@ script:
       secret: false
     deprecated: false
     description: TBD
-    execution: false
+    execution: true
     name: symantec-dlp-incident-binaries
     outputs:
     - contextPath: SymantecDLP.Incident.ID
