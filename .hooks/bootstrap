@@ -48,7 +48,7 @@ else
     if [ ! -e "${PWD}/venv" ]; then
         echo "Initializing virtual env..."
         if ! command -v virtualenv >/dev/null 2>&1; then
-            echo "ERROR: virtualenv is missinge. Please install using: pip install virtualenv" 1>&2
+            echo "ERROR: virtualenv is missing. Please install using: pip install virtualenv" 1>&2
             exit 1
         fi
         if ! command -v python2 >/dev/null 2>&1; then
