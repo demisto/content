@@ -111,7 +111,7 @@ tasks:
       version: -1
       name: Get File Sample By Hash - Generic v2
       description: |-
-        This playbook returns a file sample correlating from a hash to the war-room using the following sub-playbooks:
+        This playbook returns a file sample correlating to a hash from the war-room using the following sub-playbooks:
         - Get File Sample By Hash - Carbon Black Enterprise Response
         - Get File Sample By Hash - Cylance Protect v2
       playbookName: Get File Sample By Hash - Generic v2
@@ -182,7 +182,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Hostname of the host the file is located on.
+  description: Hostname of the machine on which the file is located.
 - key: Path
   value:
     complex:
@@ -195,7 +195,7 @@ inputs:
     simple: "no"
   required: false
   description: |-
-    This value specifies whether there will be use of D2 to retrieve the file.
+    Determines whether a D2 agent will be used to retrieve the file.
     Default is no.
 outputs: []
 tests:
