@@ -330,7 +330,7 @@
                 "tunnel-other-application",
                 "is-saas"
             ],
-            "DeviceName": "Env9_SiteA_FW",
+            "DeviceName": "DEVICE NAME",
             "Dport": 53,
             "Dst": "8.8.8.8",
             "Dstloc": "US",
@@ -346,7 +346,7 @@
             "SessionEndReason": "aged-out",
             "SessionID": 107112,
             "Sport": 34105,
-            "Src": "10.208.209.26",
+            "Src": "8.8.8.8",
             "Srcloc": "10.0.0.0-10.255.255.255",
             "Start": 1571995220,
             "SubcategoryOfApp": "infrastructure",
@@ -356,7 +356,7 @@
             "To": "internet",
             "Tunnel": "N/A",
             "TunneledApp": "untunneled",
-            "Users": "10.208.209.26",
+            "Users": "8.8.8.8",
             "Vsys": "vsys1",
             "VsysID": 1,
             "id": "42635546_lcaas:4:2012540:1",
@@ -373,7 +373,7 @@
                 "tunnel-other-application",
                 "is-saas"
             ],
-            "DeviceName": "Env9_SiteA_FW",
+            "DeviceName": "DEVICE NAME",
             "Dport": 53,
             "Dst": "8.8.8.8",
             "Dstloc": "US",
@@ -388,7 +388,7 @@
             "SessionEndReason": "aged-out",
             "SessionID": 225363,
             "Sport": 50230,
-            "Src": "10.208.209.26",
+            "Src": "8.8.8.8",
             "Srcloc": "10.0.0.0-10.255.255.255",
             "Start": 1571995222,
             "SubcategoryOfApp": "infrastructure",
@@ -398,7 +398,7 @@
             "To": "internet",
             "Tunnel": "N/A",
             "TunneledApp": "untunneled",
-            "Users": "10.208.209.26",
+            "Users": "8.8.8.8",
             "Vsys": "vsys1",
             "VsysID": 1,
             "id": "42635546_lcaas:4:2012540:8",
@@ -407,25 +407,7 @@
     ],
     "IP": [
         {
-            "Address": "10.208.209.26"
-        },
-        {
             "Address": "8.8.8.8"
-        },
-        {
-            "Address": "0.0.0.0"
-        },
-        {
-            "Address": "0.0.0.0"
-        },
-        {
-            "Address": "10.208.209.26"
-        },
-        {
-            "Address": "8.8.8.8"
-        },
-        {
-            "Address": "0.0.0.0"
         },
         {
             "Address": "0.0.0.0"
@@ -449,7 +431,7 @@
   </thead>
   <tbody>
     <tr>
-      <td> 10.208.209.26 </td>
+      <td> 8.8.8.8 </td>
       <td> 8.8.8.8 </td>
       <td> dns </td>
       <td> allow </td>
@@ -457,7 +439,7 @@
       <td> 2019-10-25T09:20:50 </td>
     </tr>
     <tr>
-      <td> 10.208.209.26 </td>
+      <td> 8.8.8.8 </td>
       <td> 8.8.8.8 </td>
       <td> dns </td>
       <td> allow </td>
@@ -849,25 +831,25 @@
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!cortex-query-threat-logs fields=src,dst ip=10.208.210.20 limit=1</code>
+  <code>!cortex-query-threat-logs fields=src,dst ip=8.8.8.8 limit=1</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
     "Cortex.Logging.Threat": [
         {
-            "Dst": "104.244.42.129",
-            "Src": "10.208.210.20",
+            "Dst": "7.7.7.7",
+            "Src": "8.8.8.8",
             "id": "42635546_lcaas:4:2023012:4",
             "score": 4.7690573
         }
     ],
     "IP": [
         {
-            "Address": "10.208.210.20"
+            "Address": "8.8.8.8"
         },
         {
-            "Address": "104.244.42.129"
+            "Address": "7.7.7.7"
         }
     ]
 }
@@ -884,8 +866,8 @@
   </thead>
   <tbody>
     <tr>
-      <td> 10.208.210.20 </td>
-      <td> 104.244.42.129 </td>
+      <td> 8.8.8.8 </td>
+      <td> 7.7.7.7 </td>
     </tr>
   </tbody>
 </table>
@@ -1882,17 +1864,17 @@
         {
             "AgentID": "30e55fb7590b0a907906b5620960931f",
             "EndPointHeader": {
-                "AgentIP": "10.208.210.50",
+                "AgentIP": "8.8.8.8",
                 "AgentTime": "2019-10-26T14:20:08.124Z",
                 "AgentVersion": "6.0.0.4961",
-                "DeviceDomain": "env9.local",
-                "DeviceName": "DC1ENV9APC51",
+                "DeviceDomain": "DEVICE DOMAIN",
+                "DeviceName": "DEVICE NAME",
                 "Is64": "The endpoint is running x64 architecture",
                 "IsVdi": "",
                 "OSVersion": "10.0.17134",
                 "OsType": "Windows",
                 "ProtectionStatus": 0,
-                "UserDomain": "ENV9.LOCAL",
+                "UserDomain": "USER DOMAIN",
                 "Username": "Administrator"
             },
             "EventType": "AgentTimelineEvent",
@@ -1927,17 +1909,17 @@
         {
             "AgentID": "30e55fb7590b0a907906b5620960931f",
             "EndPointHeader": {
-                "AgentIP": "10.208.210.50",
+                "AgentIP": "8.8.8.8",
                 "AgentTime": "2019-10-26T14:19:51.853Z",
                 "AgentVersion": "6.0.0.4961",
-                "DeviceDomain": "env9.local",
-                "DeviceName": "DC1ENV9APC51",
+                "DeviceDomain": "DEVICE DOMAIN",
+                "DeviceName": "DEVICE NAME",
                 "Is64": "The endpoint is running x64 architecture",
                 "IsVdi": "",
                 "OSVersion": "10.0.17134",
                 "OsType": "Windows",
                 "ProtectionStatus": 0,
-                "UserDomain": "ENV9.LOCAL",
+                "UserDomain": "USER DOMAIN",
                 "Username": "Administrator"
             },
             "EventType": "AgentTimelineEvent",
@@ -1972,17 +1954,17 @@
         {
             "AgentID": "30e55fb7590b0a907906b5620960931f",
             "EndPointHeader": {
-                "AgentIP": "10.208.210.50",
+                "AgentIP": "8.8.8.8",
                 "AgentTime": "2019-10-26T14:19:51.884Z",
                 "AgentVersion": "6.0.0.4961",
-                "DeviceDomain": "env9.local",
-                "DeviceName": "DC1ENV9APC51",
+                "DeviceDomain": "DEVICE DOMAIN",
+                "DeviceName": "DEVICE NAME",
                 "Is64": "The endpoint is running x64 architecture",
                 "IsVdi": "",
                 "OSVersion": "10.0.17134",
                 "OsType": "Windows",
                 "ProtectionStatus": 0,
-                "UserDomain": "ENV9.LOCAL",
+                "UserDomain": "USER DOMAIN",
                 "Username": "Administrator"
             },
             "EventType": "AgentTimelineEvent",
@@ -2017,17 +1999,17 @@
         {
             "AgentID": "30e55fb7590b0a907906b5620960931f",
             "EndPointHeader": {
-                "AgentIP": "10.208.210.50",
+                "AgentIP": "8.8.8.8",
                 "AgentTime": "2019-10-26T14:20:08.124Z",
                 "AgentVersion": "6.0.0.4961",
-                "DeviceDomain": "env9.local",
-                "DeviceName": "DC1ENV9APC51",
+                "DeviceDomain": "DEVICE DOMAIN",
+                "DeviceName": "DEVICE NAME",
                 "Is64": "The endpoint is running x64 architecture",
                 "IsVdi": "",
                 "OSVersion": "10.0.17134",
                 "OsType": "Windows",
                 "ProtectionStatus": 0,
-                "UserDomain": "ENV9.LOCAL",
+                "UserDomain": "USER DOMAIN",
                 "Username": "Administrator"
             },
             "EventType": "AgentTimelineEvent",
@@ -2062,17 +2044,17 @@
         {
             "AgentID": "30e55fb7590b0a907906b5620960931f",
             "EndPointHeader": {
-                "AgentIP": "10.208.210.50",
+                "AgentIP": "8.8.8.8",
                 "AgentTime": "2019-10-26T14:20:08.202Z",
                 "AgentVersion": "6.0.0.4961",
-                "DeviceDomain": "env9.local",
-                "DeviceName": "DC1ENV9APC51",
+                "DeviceDomain": "DEVICE DOMAIN",
+                "DeviceName": "DEVICE NAME",
                 "Is64": "The endpoint is running x64 architecture",
                 "IsVdi": "",
                 "OSVersion": "10.0.17134",
                 "OsType": "Windows",
                 "ProtectionStatus": 0,
-                "UserDomain": "ENV9.LOCAL",
+                "UserDomain": "USER DOMAIN",
                 "Username": "Administrator"
             },
             "EventType": "AgentTimelineEvent",
@@ -2107,42 +2089,10 @@
     ],
     "Endpoint": [
         {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
+            "Domain": "DEVICE DOMAIN",
+            "Hostname": "DEVICE NAME",
             "ID": "30e55fb7590b0a907906b5620960931f",
-            "IP": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IP": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IP": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IP": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IP": "10.208.210.50",
+            "IP": "8.8.8.8",
             "OS": "Windows",
             "OSVersion": "10.0.17134"
         }
@@ -2201,42 +2151,10 @@
     ],
     "Host": [
         {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
+            "Domain": "DEVICE DOMAIN",
+            "Hostname": "DEVICE NAME",
             "ID": "30e55fb7590b0a907906b5620960931f",
-            "IPAddress": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IPAddress": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IPAddress": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IPAddress": "10.208.210.50",
-            "OS": "Windows",
-            "OSVersion": "10.0.17134"
-        },
-        {
-            "Domain": "env9.local",
-            "Hostname": "DC1ENV9APC51",
-            "ID": "30e55fb7590b0a907906b5620960931f",
-            "IPAddress": "10.208.210.50",
+            "IP": "8.8.8.8",
             "OS": "Windows",
             "OSVersion": "10.0.17134"
         }
@@ -2260,36 +2178,36 @@
     <tr>
       <td> AgentTimelineEvent </td>
       <td> Administrator </td>
-      <td> 10.208.210.50 </td>
-      <td> DC1ENV9APC51 </td>
+      <td> 8.8.8.8 </td>
+      <td> DEVICE NAME </td>
       <td> 2019-10-26T14:20:08.124Z </td>
     </tr>
     <tr>
       <td> AgentTimelineEvent </td>
       <td> Administrator </td>
-      <td> 10.208.210.50 </td>
-      <td> DC1ENV9APC51 </td>
+      <td> 8.8.8.8 </td>
+      <td> DEVICE NAME </td>
       <td> 2019-10-26T14:19:51.853Z </td>
     </tr>
     <tr>
       <td> AgentTimelineEvent </td>
       <td> Administrator </td>
-      <td> 10.208.210.50 </td>
-      <td> DC1ENV9APC51 </td>
+      <td> 8.8.8.8 </td>
+      <td> DEVICE NAME </td>
       <td> 2019-10-26T14:19:51.884Z </td>
     </tr>
     <tr>
       <td> AgentTimelineEvent </td>
       <td> Administrator </td>
-      <td> 10.208.210.50 </td>
-      <td> DC1ENV9APC51 </td>
+      <td> 8.8.8.8 </td>
+      <td> DEVICE NAME </td>
       <td> 2019-10-26T14:20:08.124Z </td>
     </tr>
     <tr>
       <td> AgentTimelineEvent </td>
       <td> Administrator </td>
-      <td> 10.208.210.50 </td>
-      <td> DC1ENV9APC51 </td>
+      <td> 8.8.8.8 </td>
+      <td> DEVICE NAME </td>
       <td> 2019-10-26T14:20:08.202Z </td>
     </tr>
   </tbody>
