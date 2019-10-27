@@ -67,12 +67,15 @@ def is_correct_content_installed(api_key, ips, content_version, username, passwo
         host = "https://{}".format(ami_instance_ip)
         session = Session()
         r = session.get(host, verify=False)
+        print(r.content)
         xsrf = r.cookies["XSRF-TOKEN"]
         h = {"Accept": "application/json",
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
-        first_time_login = session.request("POST", host+"/login", headers=h, verify=False)
-        print(first_time_login)
+        body = {"user": username, "password": password}
+        first_time_login = session.request("POST", host+"/login", headers=h, verify=False, data=body)
+        print(str(first_time_login.content))
+        sleep(15)
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         # # just signing in for the session
         # body = {"user": username, "password": password}
