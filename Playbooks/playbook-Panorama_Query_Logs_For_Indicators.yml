@@ -2,7 +2,7 @@ id: Panorama Query Logs For Indicators
 version: -1
 name: Panorama Query Logs For Indicators
 fromversion: 4.5.0
-description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
+description: 'Query Panorama Logs of types in one playbook: traffic, threat, url, data-filtering and
   wildfire. The playbook accepts inputs such as IP. hash, url.'
 starttaskid: "0"
 tasks:
