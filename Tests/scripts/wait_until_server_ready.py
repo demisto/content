@@ -33,6 +33,8 @@ def get_api_key():
     if options.non_ami:
         return conf['username'], conf['username'], options.contentVersion
 
+    print(conf['apikeys'][0]['apikey'])
+
     return conf['apikeys'][0]['apikey'] , options.contentVersion
 
 
