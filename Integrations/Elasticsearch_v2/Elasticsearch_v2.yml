@@ -39,7 +39,6 @@ configuration:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  - Timestamp-Float
   required: false
   type: 15
 - defaultvalue: '%Y-%m-%dT%H:%M:%SZ'

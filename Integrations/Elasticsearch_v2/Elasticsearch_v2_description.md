@@ -11,6 +11,5 @@ The types of time-fields supported are:
    - **Simple-Date** - A simple date string. If this option is chosen please insert the format in which the field is saved. For more info about time formatting ,see: http://strftime.org/
    - **Timestamp-Second** - A number referring to seconds since epoch (midnight, 1 January 1970). For example: '1572164838'.
    - **Timestamp-Milliseconds** - A number referring to milliseconds since epoch (midnight, 1 January 1970). For example: '1572164838123'.
-   - **Timestamp-Float** - A floating point number referring to time since epoch (midnight, 1 January 1970). For example: '1572164838.123'.
 
 Note: Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.  The supported result types are boolean, numeric, date, and keyword fields.
