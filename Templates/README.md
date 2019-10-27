@@ -1,13 +1,13 @@
 # Using the templates:
-Every category of integration has its template. Copy the integration from its folder to a new folder under `Integrations`.
-Each template contains standard commands (as `!ip` and `!file`), outputs (as DBotScore, IP, Email, etc...).
+Every category of integration has a unique, corresponding template. Copy the integration from its folder to a new folder under `Integrations`.
+Each template contains standard commands (such as `!ip` and `!file`), outputs (such as DBotScore, IP, Email, etc.).
 
-It also contains examples of how to use basic Demisto's functions (as return_outputs and assign_params) and the code conventions conducted by Demisto.
+It also contains examples of how to use basic Demisto functions (such as return_outputs and assign_params) and Demisto code conventions.
 
-Use the template as a guideline. Don't bother to change things in your integration as needed.
+Use the template as a guideline and feel free to modify as needed.
 # Using the BaseClient:
 ## Overview
-The BaseClient class is meant to contain all of the HTTP requests made to the API. It is used as a wrapper to the API. **Do not use the BaseClient as it is, use a new `Client` class as demonstratedd below**.
+The BaseClient class is meant to contain all of the HTTP requests made to the API. It is used as a wrapper to the API. **Do not use the BaseClient as it is, use a new `Client` class as demonstrated below**.
 Commands in the BaseClient should call the private `BaseClient._http_request` method.
 ## Initiate the BaseClient
 #### Parameters:
@@ -38,7 +38,7 @@ base_client = BaseClient(
 ```
 
 ### **the _http_request method**
-_http_request is a universal method that can handle any request and throw standard errors if needed in a format that the user (and the developer) can understand.
+_http_request is a universal method that can handle any request and throw standard errors if needed. The format is such that users (and the developers) can understand.
 #### Parameters:
 * method (str) **required**:
     The HTTP method, for example, GET, POST, and so on.
@@ -65,28 +65,28 @@ _http_request is a universal method that can handle any request and throw standa
     The data to send in a 'POST' request. **Default is `None`**
 
 * json_data (dict):
-    The dictionary to send in a 'POST' request. **Default is `None`**
+    The dictionary to send in a 'POST' request. **Default is `None`**.
 
 * files (dict):
-    The file data to send in a 'POST' request. **Default is `None`**
+    The file data to send in a 'POST' request. **Default is `None`**.
 
 * timeout: (float):
-    The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. **Default is `10`**
+    The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. **Default is `10`**.
 
 * resp_type (str):
     Determines which data format to return from the HTTP request. The default
     is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
-        to return the full response object. **Default is `json`**
+        to return the full response object. **Default is `json`**.
 
 * ok_codes (tuple):
     The request codes to accept as OK, for example: (200, 201, 204). If you specify
-    `None`, will use self._ok_codes. **Default is `None`**
+    `None`, will use self._ok_codes. **Default is `None`**.
 
 The method returns depends on the resp_type parameter
 can be ``dict``, ``str``, ``requests.Response`` or ``ElemntTree``
 
 # How to use in integration:
-Never use raw `BaseClient`. Base client ment to be inheritate from.
+Never use raw `BaseClient`. Base client is meant to be inherited from.
 ### Example:
 ```python
 class Client(BaseClient):
