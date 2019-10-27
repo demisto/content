@@ -4,7 +4,7 @@ name: Prisma Cloud Remediation - AWS Inactive Users For More Than 30 Days
 description: |-
   To increase the security of your AWS account, it is recommended to find and remove IAM user credentials (passwords, access keys) that have not been used within a specified period of time.
 
-  To remediate Prisma Cloud Alert Inactive users for more than 30 days, this playbook quarantine the user by disabling the access keys (marking them as inactive) as well as resetting the user console password.
+  To remediate Prisma Cloud Alert Inactive users for more than 30 days, this playbook deactivates the user by disabling the access keys (marking them as inactive) as well as resetting the user console password.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       id: 309def38-5643-4406-8fd9-0282a0a4d73d
       version: -1
       name: Check automatic action
-      description: Check whether the user should be automatically quarantined
+      description: Check whether the user should be automatically deactivated.
       type: condition
       iscommand: false
       brand: ""
@@ -82,7 +82,7 @@ tasks:
       id: 10fb9db0-4a1e-41ea-8227-163d3bf497b8
       version: -1
       name: Disable access keys
-      description: Marking access keys as "inactive"
+      description: Marks access keys as "inactive"
       script: '|||aws-iam-update-access-key'
       type: regular
       iscommand: true
@@ -197,7 +197,7 @@ tasks:
       id: 4dbc18f2-3905-4773-81ad-6fc103bc2705
       version: -1
       name: Print user credential report
-      description: Outputs user's credential report which contains access keys attributes
+      description: Outputs user's credential report which contains access key attributes
         and  user login profile
       scriptName: Print
       type: regular
@@ -280,7 +280,7 @@ tasks:
       id: 5f088cbd-ac91-4bc4-8e79-d8f7173e5869
       version: -1
       name: Reset IAM password
-      description: Changes the password for the specified IAM user and require user
+      description: Changes the password for the specified IAM user and requires user
         to change password.
       script: '|||aws-iam-update-login-profile'
       type: regular
@@ -381,9 +381,9 @@ tasks:
     task:
       id: c06de3c2-84f6-433f-8ec8-20d0118e5c4e
       version: -1
-      name: Manually inspect and check to see if IAM user should be quarantined/deleted
+      name: Manually check if IAM user should be deactivated/deleted
       description: |-
-        1. Make sure that the user has legitimate reason to be inactive for such an extended period.
+        1. Examine if the user has a legitimate reason for being inactive for an extended period.
         2. Delete the user account, if the user no longer needs access to the console or no longer exists.
       type: regular
       iscommand: false
@@ -409,8 +409,8 @@ tasks:
     task:
       id: 3bfbd061-832e-4a6b-8685-3fe1840f559b
       version: -1
-      name: Quarantine IAM user?
-      description: Ask analyst whether the user should be quarantined
+      name: Deactivate IAM user?
+      description: Ask analyst whether the user should be deactivated
       type: condition
       iscommand: false
       brand: ""
@@ -454,7 +454,7 @@ tasks:
       id: a5a6a46c-7247-4d7a-8eab-a96c36c363d3
       version: -1
       name: Is password enabled?
-      description: Check to see if user has console login
+      description: Check to see if the user has access to the console.
       type: condition
       iscommand: false
       brand: ""
