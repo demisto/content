@@ -2,7 +2,7 @@ id: PAN-OS - Create Or Edit Rule
 version: -1
 name: PAN-OS - Create Or Edit Rule
 fromversion: 4.0.0
-description: Creates or edits a panorama rule and moves it into the given position
+description: Creates or edits a Panorama rule and moves it into the desired position
 starttaskid: "0"
 tasks:
   "0":
@@ -38,7 +38,7 @@ tasks:
       id: c59ac9a6-2a4c-480b-86ee-9e5796e6f958
       version: -1
       name: List all rules
-      description: Returns a list of predefined Security Rules.
+      description: Returns a list of predefined security rules.
       script: Panorama|||panorama-list-rules
       type: regular
       iscommand: true
@@ -244,7 +244,7 @@ tasks:
       id: d38976b0-3f87-4ee7-8c8d-3d518f7c7688
       version: -1
       name: Add the new destination to the rule
-      description: add the element in the input as the new source of the rule
+      description: Add the element in the input as the new destination of the rule
       script: Panorama|||panorama-edit-rule
       type: regular
       iscommand: true
@@ -280,7 +280,7 @@ tasks:
       id: ba1a3fa3-7a54-4f48-81cd-163e39498c11
       version: -1
       name: Create an inbound rule
-      description: Add the element in the input as the new destination of the rule
+      description: Add the element in the input as the new source of the rule
       script: Panorama|||panorama-create-rule
       type: regular
       iscommand: true
@@ -329,7 +329,7 @@ tasks:
       id: fae8db52-d970-4b1e-84d2-ec0e0f22075f
       version: -1
       name: Create an outbound rule
-      description: Creates a policy rule.
+      description: Add the element in the input as the new destination of the rule.
       script: Panorama|||panorama-create-rule
       type: regular
       iscommand: true
@@ -456,17 +456,20 @@ inputs:
   value: {}
   required: true
   description: |-
-    the position of the rule in the ruleset
-    can be top/bottom/before/after
+    The position of the rule in the ruleset. Valid values are:
+      * Top
+      * Bottom
+      * Before
+      * After
 - key: relative-rule-name
   value: {}
   required: false
-  description: if the position that is chosen is before/after, specify a rule that
-    the position is relative to
+  description: 'If the rule-position that is chosen is before or after, 
+    specify the rule name to which it is related.'
 - key: inbound-or-outbound-rule
   value: {}
   required: false
-  description: if a new rule is created, is the rule inbound or outbound
+  description: Determines if the rule is inbound or outbound.
 - key: element-to-add
   value: {}
   required: true
@@ -475,13 +478,15 @@ inputs:
   value: {}
   required: true
   description: |-
-    The action that will be defined in the rule:
-    allow/deny/drop
+    The action that will be defined in the rule. Valid values are:
+    * allow
+    * deny
+    * drop
 - key: pre-post-rulebase
   value: {}
   required: false
-  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
-    exists only in panorama!
+  description: Determines whether the rule is a pre-rulebase or post-rulebase rule, according to the rule structure.
+    Exists only in panorama!
 outputs: []
 tests:
 - PAN-OS Create Or Edit Rule Test
