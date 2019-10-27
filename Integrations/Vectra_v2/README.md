@@ -651,7 +651,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td> 23 </td>
       <td> 33 </td>
       <td> 0.0.0.0 </td>
-      <td> https://api.demo.vectranetworks.com/api/v2/hosts/7 </td>
+      <td> demist.com/api/v2/hosts/7 </td>
       <td>  </td>
       <td> bthomas </td>
       <td>  </td>
@@ -665,7 +665,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td> 25 </td>
       <td> 46 </td>
       <td> 0.0.0.0 </td>
-      <td> https://api.demo.vectranetworks.com/api/v2/hosts/11 </td>
+      <td> demist.com/api/v2/hosts/11 </td>
       <td>  </td>
       <td> rwilliams </td>
       <td>  </td>
@@ -1303,7 +1303,7 @@ There are no context output for this command.
             "Certainty_Score": 33,
             "Hostname": "BThomas-Win7",
             "ID": 7,
-            "IP": "192.168.173.101",
+            "IP": "0.0.0.0",
             "KeyAsset": true,
             "LastDetection": "2019-10-03T05:56:31Z",
             "State": "active",
@@ -1314,7 +1314,7 @@ There are no context output for this command.
             "Certainty_Score": 46,
             "Hostname": "Robert-MBP",
             "ID": 11,
-            "IP": "192.168.173.194",
+            "IP": "0.0.0.0",
             "KeyAsset": false,
             "LastDetection": "2019-10-03T01:10:43Z",
             "State": "active",
