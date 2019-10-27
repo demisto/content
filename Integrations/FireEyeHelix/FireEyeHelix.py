@@ -263,6 +263,19 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{_id}'
         return self._http_request('GET', suffix)
 
+    def search_alert(self, query: str = None):
+        """Searches for alerts based on query
+
+        Args:
+            query: Search query written in mql
+
+        Returns:
+            Response from API.
+        """
+        suffix = f'/api/v1/search'
+        params = assign_params(query=query)
+        return self._http_request('GET', suffix, params=params)
+
     def update_alert_by_id(self, body: Dict) -> Dict:
         """Updates a single alert by sending a POST request.
 
@@ -596,7 +609,7 @@ def build_transformed_dict(src: Union[Dict, List], trans_dict: Dict) -> Union[Di
     return res
 
 
-def update_nested_value(src_dict: Dict[str, Any], to_key: str, to_val: Any):
+def update_nested_value(src_dict: Dict[str, Any], to_key: str, to_val: Any) -> None:
     """
     Updates nested value according to transformation dict structure where 'a.b' key will create {'a': {'b': val}}
     Args:
@@ -616,7 +629,7 @@ def update_nested_value(src_dict: Dict[str, Any], to_key: str, to_val: Any):
 def alert_severity_to_dbot_score(severity_str):
     """Converts an severity string to DBot score representation
         alert severity. Can be one of:
-        Low    ->  2
+        Low    ->  1
         Medium ->  2
         High   ->  3
 
@@ -627,11 +640,119 @@ def alert_severity_to_dbot_score(severity_str):
         Dbot representation of severity
     """
     severity_str = severity_str.lower()
-    if severity_str in ('low', 'medium'):
+    if severity_str == 'low':
+        return 1
+    if severity_str == 'medium':
         return 2
     elif severity_str == 'high':
         return 3
     return 0
+
+
+def build_mql_query(query: str, start: str = None, end: str = None, page_size: Union[int, str] = None,
+                    limit: Union[str, int] = None, offset: Union[int, str] = None, groupby: str = None,
+                    sort_by: str = None, sort_order: str = None) -> str:
+    """Builds MQL query from given arguments
+
+    Args:
+        query: Query to execute. This is the search clause in an MQL.
+        start: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+        end: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+        page_size: Max amount of results to return.
+        limit: Number of events to search.
+        offset: Offset of the result.
+        groupby: Returns the unique values for the specified field and groups them together.
+        sort_by: Sorts results by this field.
+        sort_order: Controls the order of the results sorted.
+
+    Returns:
+        MQL query
+    """
+    # Filter section
+    if start or end or page_size or offset or limit:
+        query += ' {'
+        if start:
+            query += f' start={start}'
+        if end:
+            query += f' end={end}'
+        if page_size:
+            query += f' page_size={page_size}'
+        if offset:
+            query += f' offset={offset}'
+        if limit:
+            query += f' limit={limit}'
+        query += '}'
+    # Transform section
+    if groupby:
+        query += f'| groupby [{groupby}]'
+    if sort_by:
+        sort_order = '>' if sort_order != 'asc' else '<'
+        query += f'| sort {sort_order} {sort_by}'
+    return query
+
+
+def build_search_groupby_result(aggregations: Dict, separator: str) -> List:
+    """Builds groupby result from search aggregations
+
+    Args:
+        aggregations: Group object
+        separator: Separator used in query and result
+
+    Returns:
+        Groupby result
+    """
+    res = []
+    for key, aggregation in aggregations.items():
+        if key.startswith('groupby'):
+            groupby_fields = demisto.get(aggregation, 'meta.field') or demisto.get(aggregation, 'meta.fields')
+            if isinstance(groupby_fields, str):
+                groupby_fields = [groupby_fields]
+            for bucket in aggregation.get('buckets', []):
+                bucket_vals = bucket.get('key', '').split(separator)
+                group_set = {groupby_field: bucket_vals[idx] for idx, groupby_field in enumerate(groupby_fields)}
+                group_set['DocCount'] = bucket.get('doc_count')
+                res.append(group_set)
+    return res
+
+
+def build_search_result(raw_response):
+    """Builds search result from search raw_response
+
+    Args:
+        raw_response: Search raw response
+
+    Returns:
+        Search result
+    """
+    results = raw_response.get('results')
+    if results:
+        context = {'MQL': raw_response.get('mql')}
+        # Search results
+        hits = demisto.get(results, 'hits.hits')
+        if hits:
+            context['Result'] = []
+            for hit in hits:
+                context['Result'].append(build_transformed_dict(hit.get('_source'), EVENTS_TRANS))
+        # Human readable value is ok for both no result found and result found cases
+        hr = tableToMarkdown(f'{INTEGRATION_NAME} - Search result for {context["MQL"]}', context.get('Result'),
+                             ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
+                             headerTransform=pascalToSpace,
+                             removeNull=True)
+        # Group by results
+        aggregations = results.get('aggregations')
+        if aggregations:
+            separator = demisto.get(raw_response, 'options.groupby.separator') or '|%$,$%|'
+            context['GroupBy'] = build_search_groupby_result(aggregations, separator)
+            if context['GroupBy']:
+                group_by_keys = list(context['GroupBy'][0].keys())
+                group_by_keys.remove('DocCount')
+                group_by_keys.append('DocCount')
+                hr += tableToMarkdown('Group By', context['GroupBy'], headers=group_by_keys)
+
+        return hr, {f'{INTEGRATION_CONTEXT_NAME}Search(val.MQL && val.MQL === obj.MQL)': context}, raw_response
+    else:
+        # API should not return an empty result matching this case, this is a fail safe
+        return f'{INTEGRATION_NAME} - Search did not find any result.', {}, {}
 
 
 ''' COMMANDS '''
@@ -850,6 +971,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry,
                                          ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
+                                         headerTransform=pascalToSpace,
                                          removeNull=True)
         # Return data to Demisto
         return human_readable, context, raw_response
@@ -1123,6 +1245,21 @@ def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find matching rule.', {}, {}
 
 
+def search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Searches FireEye Helix database using MQL
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    query = build_mql_query(**args)
+    raw_response = client.search_alert(query)
+    return build_search_result(raw_response)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1163,6 +1300,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-search': search_command,
     }
     try:
         if command == 'fetch-incidents':

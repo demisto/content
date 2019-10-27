@@ -699,8 +699,8 @@ script:
         or 1.
       type: Number
     - contextPath: FireEyeHelix.Case.Severity
-      description: The potential impact that the case could have on the organization if it
-        is a true positive. It is calculated based on the risk of the alert.
+      description: The potential impact that the case could have on the organization
+        if it is a true positive. It is calculated based on the risk of the alert.
       type: Number
     - contextPath: FireEyeHelix.Case.State
       description: State of the case.
@@ -1513,6 +1513,202 @@ script:
     description: Delete alert note.
     execution: false
     name: fireeye-helix-alert-delete-note
+  - arguments:
+    - default: false
+      description: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+      isArray: false
+      name: start
+      required: false
+      secret: false
+    - default: false
+      description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+      isArray: false
+      name: end
+      required: false
+      secret: false
+    - default: false
+      description: Max amount of results to return.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Offset of the result.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Returns the unique values for the specified field and groups them
+        together based on the specified frequency. e.g. groupby="srcipv4 5 100" will
+        group the top 5 srcipv4 that have at least 100 occurences. Multiple values
+        can be provided using "," to seperate them.
+      isArray: false
+      name: groupby
+      required: false
+      secret: false
+    - default: false
+      description: 'Sorts results by this field. Default is descending order, to change
+        this add to the command the following: argument sort_order="asc"'
+      isArray: false
+      name: sort_by
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: Controls the order of the results sorted by the sort_by argument,
+        ascending or descending.
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: true
+      description: Query to execute. This is the search clause in an MQL.
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: Number of events to search.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search FireEye helix using MQL.
+    execution: false
+    name: fireeye-helix-search
+    outputs:
+      - contextPath: FireEyeHelixSearch.Result.ID
+        description: Event ID.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Type
+        description: Event type.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Result
+        description: Event result.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.MatchedAt
+        description: Time the event was matched at.
+        type: Date
+      - contextPath: FireEyeHelixSearch.Result.Confidence
+        description: Confidence of the event. Can be either low, medium or high.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Status
+        description: Status of the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.EventTime
+        description: Time the event took place.
+        type: Date
+      - contextPath: FireEyeHelixSearch.Result.DetectedRuleID
+        description: ID of the detected rule.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.PID
+        description: Process ID.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Process
+        description: Process details.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.ProcessPath
+        description: Process path.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.FileName
+        description: Name of the file affected by the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.FilePath
+        description: Path of the the file affected by the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.DeviceName
+        description: Device name.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Size
+        description: Size of the file that created the event in bytes.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Virus
+        description: Virus that was detected in the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.MalwareType
+        description: Malware type of the virus that was detected.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.CreatedTime
+        description: Time the event was created at.
+        type: Date
+      - contextPath: FireEyeHelixSearch.Result.Class
+        description: Event class.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.MD5
+        description: MD5 hash of the affected file.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SHA1
+        description: SHA1 has of the affected file.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Protocol
+        description: Protocol used in the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceIPv4
+        description: IPv4 address of the event source.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceIPv6
+        description: IPv6 address of the event source.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourcePort
+        description: Port of the event source address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceLongitude
+        description: Longitude of the event source address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceLatitude
+        description: Latitude of the event source address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.DestinationIPv4
+        description: IPv4 address of the event destination.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.DestinationIPv6
+        description: IPv6 address of the event destination.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.DestinationPort
+        description: Port of the event destination address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.ReportTime
+        description: Time the event was reported at.
+        type: Date
+      - contextPath: FireEyeHelixSearch.Result.FalsePositive
+        description: Boolean flag - is the event false positive.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Domain
+        description: Domain of the recepient.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.From
+        description: Source email address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceDomain
+        description: Domain of the host that created the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.SourceISP
+        description: ISP of the source of the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.DestinationISP
+        description: ISP of the destination of the event.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.To
+        description: Destination email address.
+        type: String
+      - contextPath: FireEyeHelixSearch.Result.Attachment
+        description: Email attachment.
+        type: Unknown
+      - contextPath: FireEyeHelixSearch.MQL
+        description: MQL query that created the result.
+        type: String
+      - contextPath: FireEyeHelixSearch.GroupBy
+        description: Group by values.
+        type: Unknown
+      - contextPath: FireEyeHelixSearch.GroupBy.DocCount
+        description: Number of matches for the group.
+        type: Number
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   longRunning: false
