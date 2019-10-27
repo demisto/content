@@ -1871,7 +1871,7 @@
             "timeout": 1200,
             "integrations": [
                 "Palo Alto Networks Cortex",
-                "Panorama",
+                "palo_alto_panorama",
                 "AutoFocus V2"
             ]
         },
