@@ -451,6 +451,9 @@ def update_incident_command(client: Client, args: dict) -> Tuple[str, dict, dict
             'Inaccessible Incident ID': incidents_update_response.get('InaccessibleIncidentId'),
             'Status Code': incidents_update_response.get('statusCode')
         }
+        if outputs.get('Status Code') == 'VALIDATION_ERROR':
+            raise DemistoException('Update was not successful. ADVICE: If status or custom attribute were changed,'
+                                   ' check that they are configured in Symantec DLP.')
         human_readable = tableToMarkdown(f'Symantec DLP incidents {incident_id} update', outputs, headers=headers,
                                          removeNull=True)
     else:
@@ -615,7 +618,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-# TODO: Check for wrong ca & status
 # TODO: Check for the data owner issue
 # ￿￿￿￿TODO: Check if violations can be a list
 # TODO: Check fetch incidents
