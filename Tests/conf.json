@@ -617,6 +617,9 @@
             "playbookID": "test_delete_context"
         },
         {
+            "playbookID": "DeleteContext-auto-test"
+        },
+        {
             "playbookID": "GmailTest",
             "integrations": "Gmail"
         },
