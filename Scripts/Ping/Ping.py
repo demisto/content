@@ -7,7 +7,9 @@ import re
 def main():
     try:
         dest = demisto.args()['address']
-        ping_out = subprocess.check_output(['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, text=True)
+        ping_out = subprocess.check_output(
+            ['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, universal_newlines=True
+        )
         s = re.search(r"PING.*?\((.+?)\)", ping_out)
         res = {}
         if s:
