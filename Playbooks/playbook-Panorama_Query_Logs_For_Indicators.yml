@@ -11,6 +11,7 @@ tasks:
     taskid: 08b8e29f-c033-4801-83df-a9a9e8d7202d
     type: start
     task:
+      description: Start
       id: 08b8e29f-c033-4801-83df-a9a9e8d7202d
       version: -1
       name: ""
