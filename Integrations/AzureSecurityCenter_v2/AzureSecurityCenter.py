@@ -1554,9 +1554,11 @@ def list_sc_storage():
 
 """ Storage End """
 
+""" Subscriptions Start """
+
 
 def list_sc_subscriptions_command():
-    """Listing all Security Center Subscriptions
+    """Listing Subscriptions for this application
 
     """
     subscriptions = list_sc_subscriptions().get("value")
@@ -1565,14 +1567,14 @@ def list_sc_subscriptions_command():
         outputs.append(
             {
                 "Name": sub.get("displayName"),
-                "Enabled": sub.get("state"),
+                "State": sub.get("state"),
                 "ID": sub.get("id"),
             }
         )
     md = tableToMarkdown(
         "Azure Security Center - Subscriptions",
         outputs,
-        ["ID", "Name", "Enabled"],
+        ["ID", "Name", "State"],
         removeNull=True,
     )
     ec = {"AzureSecurityCenter.Subscription(val.ID && val.ID === obj.ID)": outputs}
@@ -1600,6 +1602,9 @@ def list_sc_subscriptions():
     )
     response = http_request("GET", cmd_url, add_subscription=False)
     return response
+
+
+""" Subscriptions end """
 
 
 """ Functions start """
