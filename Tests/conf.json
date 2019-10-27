@@ -1520,6 +1520,17 @@
             "timeout": 500
         },
         {
+            "playbookID": "Phishing - Core - Test",
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Palo Alto Minemeld",
+                "Rasterize"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1200
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
