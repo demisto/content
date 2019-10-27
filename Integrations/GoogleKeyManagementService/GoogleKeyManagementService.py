@@ -946,7 +946,6 @@ def main():
 
         results = cmd_func(client, demisto.args())  # type: ignore
         return_outputs(*results)
-        return_error("this should kill the playbook")
 
     except Exception as e:
         return_error(f'{INTEGRATION_NAME}: {str(e)}', e)
