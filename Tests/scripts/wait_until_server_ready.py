@@ -52,7 +52,8 @@ def is_correct_content_installed(api_key, ips, content_version):
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-
+        # just signing in for the session
+        client.get_all_reports()
         try:
             resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
