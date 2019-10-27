@@ -1877,12 +1877,12 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "Convert file hash to corresponding hashes",
+            "playbookID": "Test Convert file hash to corresponding hashes",
             "fromversion": "4.5.0",
             "integrations": "VirusTotal - Private API"
         },
         {
-            "playbookID": "Panorama Query Logs For Indicators",
+            "playbookID": "Panorama Query Logs For Indicators Test",
             "fromversion": "4.5.0",
             "integrations": "Panorama"
         },
