@@ -47,10 +47,12 @@ if 'Timestamp' in TIME_METHOD:
 
 
 def get_timestamp_first_fetch(last_fetch):
-    if TIME_METHOD == 'Timestamp-Float':
-        return float(last_fetch.timestamp())
+    """Gets the last fetch time as a datetime and converts it to the relavent timestamp format.
 
-    elif TIME_METHOD == 'Timestamp-Seconds':
+    Args:
+        last_fetch(datetime): A datetime object setting up the last fetch time
+    """
+    if TIME_METHOD == 'Timestamp-Seconds':
         return int(last_fetch.timestamp())
 
     elif TIME_METHOD == 'Timestamp-Milliseconds':
@@ -58,15 +60,17 @@ def get_timestamp_first_fetch(last_fetch):
 
 
 def timestamp_to_date(timestamp_string):
+    """Converts a timestamp string to a datetime object in the format '%Y-%m-%d %H:%M:%S.%f'
+
+    Args:
+        timestamp_string(string): A string with a timestamp in it.
+
+    """
     # find current len of timestamp in seconds since epoch
     timestamp_in_seconds_len = len(str(int(time.time())))
 
-    # find timestamp in form of milliseconds as a float: 1572164838.000
-    if TIME_METHOD == 'Timestamp-Float':
-        timestamp_number = float(timestamp_string)
-
     # find timestamp in form of more than seconds since epoch: 1572164838000
-    elif TIME_METHOD == 'Timestamp-Milliseconds':
+    if TIME_METHOD == 'Timestamp-Milliseconds':
         len_diff = len(timestamp_string) - timestamp_in_seconds_len
         power_ten_divide = pow(10, len_diff)
         timestamp_number = float(int(timestamp_string) / power_ten_divide)
@@ -80,6 +84,9 @@ def timestamp_to_date(timestamp_string):
 
 
 def elasticsearch_builder():
+    """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection.
+
+    """
     if USERNAME:
         if PROXY:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
@@ -99,6 +106,14 @@ def elasticsearch_builder():
 
 
 def get_hit_table(hit):
+    """Create context for a single hit in the search.
+
+    Args:
+        hit(Dict): a dictionary representing a single hit in the search.
+
+    Returns:
+        The hit context and the headers of the hit.
+    """
     table_context = {
         '_index': hit.get('_index'),
         '_id': hit.get('_id'),
@@ -115,6 +130,16 @@ def get_hit_table(hit):
 
 
 def results_to_context(index, query, base_page, size, total_dict, response):
+    """Creates context for the full results of a search.
+
+    Args:
+        index(str): the index in which the search was made.
+        query(str): the query of the search.
+        base_page(int): the base page from which the search is made.
+        size(int): the amount of results to return.
+        total_dict(dict): a dictionary containing the info about thenumber of total results found
+        response(Dict): the raw response of the results.
+    """
     search_context = {
         'Server': SERVER,
         'Index': index,
@@ -142,6 +167,12 @@ def results_to_context(index, query, base_page, size, total_dict, response):
 
 
 def get_total_results(response_dict):
+    """Creates a dictionary with all for the number of total results found
+
+    Args:
+        response_dict(dict): the raw response from elastic search.
+
+    """
     total_results = response_dict.get('hits', {}).get('total')
     if not str(total_results).isdigit():
         # if in version 7 - total number of hits has value field
@@ -157,6 +188,8 @@ def get_total_results(response_dict):
 
 
 def search_command():
+    """Performs a search in Elasticsearch.
+    """
     index = demisto.args().get('index')
     query = demisto.args().get('query')
     fields = demisto.args().get('fields')  # fields to display
@@ -198,6 +231,9 @@ def search_command():
 
 
 def fetch_params_check():
+    """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered.
+
+    """
     str_error = []  # type:List
     if TIME_FIELD == '' or TIME_FIELD is None:
         str_error.append("Index time field is not configured.")
@@ -208,7 +244,7 @@ def fetch_params_check():
     if FETCH_QUERY == '' or FETCH_QUERY is None:
         str_error.append("Query by which to fetch incidents is not configured.")
 
-    if TIME_FORMAT == '' or TIME_FORMAT is None:
+    if (TIME_FORMAT == '' or TIME_FORMAT is None) and TIME_METHOD == 'Simple-Date':
         str_error.append("Time format is not configured.")
 
     if len(str_error) > 0:
@@ -216,6 +252,12 @@ def fetch_params_check():
 
 
 def test_general_query(es):
+    """if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
+        from the FETCH_INDEX.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
     try:
         query = QueryString(query='*')
         search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -227,6 +269,11 @@ def test_general_query(es):
 
 
 def test_time_field_query(es):
+    """if is_fetch is ticked, this function checks if the entered TIME_FIELD returns results.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
     response = search.execute().to_dict()
@@ -241,6 +288,11 @@ def test_time_field_query(es):
 
 
 def test_fetch_query(es):
+    """if is_fetch is ticked, this function checks if the FETCH_QUERY returns results.
+
+    Args:
+        es(Elasticsearch): an Elasticsearch object to which we run the test.
+    """
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
     response = search.execute().to_dict()
@@ -254,6 +306,23 @@ def test_fetch_query(es):
         # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
         # Thus this does not return an error message
         return None
+
+
+def test_timestamp_format(timestamp):
+    """if is_fetch is ticked and the TIME_METHOD chosen is a type of timestamp - this function checks that
+        the timestamp is in the correct format.
+
+    Args:
+        timestamp(sting): a timestamp string.
+    """
+    timestamp_in_seconds_len = len(str(int(time.time())))
+
+    if TIME_METHOD == 'Timestamp-Seconds' and (len(timestamp) > timestamp_in_seconds_len or not timestamp.isdigit()):
+        return_error(f"The timestamp fetched is not in seconds.\nFetched: {timestamp}")
+
+    elif TIME_METHOD == 'Timestamp-Milliseconds' \
+            and (len(timestamp) <= timestamp_in_seconds_len or not timestamp.isdigit()):
+        return_error(f"The timestamp fetched is not in milliseconds.\nFetched: {timestamp}")
 
 
 def test_func():
@@ -311,8 +380,9 @@ def test_func():
             if 'Timestamp' not in TIME_METHOD:
                 datetime.strptime(hit_date, TIME_FORMAT)
 
-            # test conversion to date
+            # test timestamp format and conversion to date
             else:
+                test_timestamp_format(hit_date)
                 timestamp_to_date(hit_date)
 
         except ValueError as e:
@@ -322,6 +392,12 @@ def test_func():
 
 
 def incident_label_maker(source):
+    """Creates labels for the created incident.
+
+    Args:
+        source(dict): the _source fields of a hit.
+
+    """
     labels = []
     for field in source.keys():
         labels.append({'type': str(field), 'value': str(source.get(field))})
@@ -330,6 +406,17 @@ def incident_label_maker(source):
 
 
 def results_to_incidents(response, current_fetch, last_fetch):
+    """Converts the current results into incidents.
+
+    Args:
+        response(dict): the raw search results from Elasticsearch.
+        current_fetch(datetime): the date of the last fetch before this fetch.
+        last_fetch(datetime): the date of the last fetch before this fetch - this will hold the last date of the
+            incident brought by this fetch.
+
+    Returns:
+        the inicidents and the date of the last incident brought by this fetch.
+    """
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
