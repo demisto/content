@@ -101,10 +101,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: a8965242-8e81-489d-8a56-a00468b4fb4d
+    taskid: fa4c3b6a-44cb-4bef-81a0-73a80fd671bb
     type: regular
     task:
-      id: a8965242-8e81-489d-8a56-a00468b4fb4d
+      id: fa4c3b6a-44cb-4bef-81a0-73a80fd671bb
       version: -1
       name: google-kms-destroy-key
       description: Destroy the primary CryptoKeyVersion of a given CryptoKey
@@ -117,7 +117,7 @@ tasks:
       - "9"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       crypto_key_version: {}
@@ -138,10 +138,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 991267f3-972e-40f7-831b-f63b6affbad8
+    taskid: 64b50ef2-9781-4ae7-8006-3d9767949885
     type: regular
     task:
-      id: 991267f3-972e-40f7-831b-f63b6affbad8
+      id: 64b50ef2-9781-4ae7-8006-3d9767949885
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -155,7 +155,7 @@ tasks:
       - "10"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       key_ring: {}
@@ -175,10 +175,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 4c532a9d-2257-4b3d-825b-8a1e1581cf2e
+    taskid: 0660a6ee-b4f5-43ab-8ca2-577289f3ac8d
     type: condition
     task:
-      id: 4c532a9d-2257-4b3d-825b-8a1e1581cf2e
+      id: 0660a6ee-b4f5-43ab-8ca2-577289f3ac8d
       version: -1
       name: Check key destruction
       type: condition
@@ -204,7 +204,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name
+                        simple: new_name1
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -222,10 +222,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 8a81cb6a-fd70-4081-8fdb-b275bdbe91c5
+    taskid: 2a1fbba6-7d30-43b2-843a-b3ce799c0d03
     type: regular
     task:
-      id: 8a81cb6a-fd70-4081-8fdb-b275bdbe91c5
+      id: 2a1fbba6-7d30-43b2-843a-b3ce799c0d03
       version: -1
       name: google-kms-restore-key
       description: Restore the primary CryptoKeyVersion of a given CryptoKey
@@ -238,7 +238,7 @@ tasks:
       - "12"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       crypto_key_version: {}
@@ -259,10 +259,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: ca67ee52-1bcf-4e65-8972-0f1cdb39b1f1
+    taskid: 3ebc1f45-7bfa-4565-8499-64ed331ad91b
     type: regular
     task:
-      id: ca67ee52-1bcf-4e65-8972-0f1cdb39b1f1
+      id: 3ebc1f45-7bfa-4565-8499-64ed331ad91b
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -276,7 +276,7 @@ tasks:
       - "13"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       key_ring: {}
@@ -296,10 +296,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: ea6f6631-43e3-4a98-869b-619815a1f87e
+    taskid: 5a9f0c30-2b4b-4893-850a-fa6fa789bd17
     type: condition
     task:
-      id: ea6f6631-43e3-4a98-869b-619815a1f87e
+      id: 5a9f0c30-2b4b-4893-850a-fa6fa789bd17
       version: -1
       name: Check key restoration
       type: condition
@@ -325,7 +325,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name
+                        simple: new_name1
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -343,10 +343,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 963b7bc9-cb4d-414e-8b86-1aa7e409e1d6
+    taskid: 4a9823e5-88da-46f0-8cff-eaa76e6b4e75
     type: regular
     task:
-      id: 963b7bc9-cb4d-414e-8b86-1aa7e409e1d6
+      id: 4a9823e5-88da-46f0-8cff-eaa76e6b4e75
       version: -1
       name: google-kms-enable-key
       description: Enable the primary CryptoKeyVersion of a given CryptoKey
@@ -359,7 +359,7 @@ tasks:
       - "15"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       crypto_key_version: {}
@@ -380,10 +380,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 10cefc95-83bf-46ad-811d-2f102415c874
+    taskid: b56a42b0-36c7-4c22-8d47-b3debd758ae1
     type: regular
     task:
-      id: 10cefc95-83bf-46ad-811d-2f102415c874
+      id: b56a42b0-36c7-4c22-8d47-b3debd758ae1
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -397,7 +397,7 @@ tasks:
       - "16"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       key_ring: {}
@@ -417,10 +417,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: c528c217-37b3-412e-84b3-5f3f0b2d0a0a
+    taskid: 7a3f28d6-41ad-4a37-878e-60b88f76858c
     type: condition
     task:
-      id: c528c217-37b3-412e-84b3-5f3f0b2d0a0a
+      id: 7a3f28d6-41ad-4a37-878e-60b88f76858c
       version: -1
       name: Check key enabled
       type: condition
@@ -446,7 +446,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name
+                        simple: new_name1
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -464,10 +464,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 5a88bc94-8e27-4f76-806c-8a1729a55e1b
+    taskid: a7c7fde5-d935-4ad5-8df4-969ed1493405
     type: regular
     task:
-      id: 5a88bc94-8e27-4f76-806c-8a1729a55e1b
+      id: a7c7fde5-d935-4ad5-8df4-969ed1493405
       version: -1
       name: google-kms-disable-key
       description: Disable the primary CryptoKeyVersion of a given CryptoKey
@@ -480,7 +480,7 @@ tasks:
       - "18"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       crypto_key_version: {}
@@ -501,10 +501,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 5dd7454b-f058-453e-8a1a-0aa78a4a9627
+    taskid: 876c5f24-4a6f-42a8-80ad-041fd9d0984f
     type: regular
     task:
-      id: 5dd7454b-f058-453e-8a1a-0aa78a4a9627
+      id: 876c5f24-4a6f-42a8-80ad-041fd9d0984f
       version: -1
       name: google-kms-get-key
       description: Returns metadata for a given CryptoKey, as well as its primary
@@ -518,7 +518,7 @@ tasks:
       - "19"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       key_ring: {}
@@ -538,10 +538,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 02a7af6c-831f-4375-8314-5ae7094de088
+    taskid: 3268fced-b409-4644-87a2-bc62e97f0385
     type: condition
     task:
-      id: 02a7af6c-831f-4375-8314-5ae7094de088
+      id: 3268fced-b409-4644-87a2-bc62e97f0385
       version: -1
       name: Check key disabled
       type: condition
@@ -567,7 +567,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: new_name
+                        simple: new_name1
                 accessor: CryptoKey.PrimaryCryptoKeyVersion.State
             iscontext: true
           right:
@@ -585,10 +585,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 8275ebec-d1c2-4705-8dc7-01bd731f90d3
+    taskid: 015bf721-4d45-48ca-85a9-9708066e9c3f
     type: regular
     task:
-      id: 8275ebec-d1c2-4705-8dc7-01bd731f90d3
+      id: 015bf721-4d45-48ca-85a9-9708066e9c3f
       version: -1
       name: google-kms-enable-key
       description: Enable the primary CryptoKeyVersion of a given CryptoKey
@@ -601,7 +601,7 @@ tasks:
       - "34"
     scriptarguments:
       crypto_key:
-        simple: new_name
+        simple: new_name1
       crypto_key_id:
         simple: new_name1
       crypto_key_version: {}
