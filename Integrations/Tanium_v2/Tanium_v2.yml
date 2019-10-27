@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Tanium-Rest
+  id: Tanium v2
   version: -1
 configuration:
 - display: Hostname, IP address, or server URL.
@@ -24,8 +24,8 @@ configuration:
   required: false
   type: 8
 description: Tanium endpoint security and systems management
-display: Tanium Rest
-name: Tanium-Rest
+display: Tanium v2
+name: Tanium v2
 script:
   commands:
   - arguments:
@@ -1406,4 +1406,4 @@ script:
   type: python
   subtype: python3
 tests:
-- Tanium Rest Test
+- Tanium v2 Test

@@ -918,7 +918,7 @@ def main():
             return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
         # Log exceptions
     except Exception as e:
-        err_msg = f'Error in Tanium Rest Integration [{e}]'
+        err_msg = f'Error in Tanium v2 Integration [{e}]'
         return_error(err_msg, error=e)
     finally:
         LOG.print_log()
