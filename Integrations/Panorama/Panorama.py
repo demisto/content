@@ -3979,6 +3979,25 @@ def prettify_matching_rules(matching_rules):
     return pretty_matching_rules_arr
 
 
+def prettify_query_fields(application=None, category=None,
+                          destination=None, destination_port=None, from_=None, to_=None,
+                          protocol=None, source=None, source_user=None):
+    pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
+    if application:
+        pretty_query_fields['Application'] = application
+    if category:
+        pretty_query_fields['Category'] = category
+    if destination_port:
+        pretty_query_fields['DestinationPort'] = destination_port
+    if from_:
+        pretty_query_fields['From'] = from_
+    if to_:
+        pretty_query_fields['To'] = to_
+    if source_user:
+        pretty_query_fields['SourceUser'] = source_user
+    return pretty_query_fields
+
+
 def panorama_security_policy_match_command():
     if not VSYS:
         return_error("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
@@ -3998,18 +4017,20 @@ def panorama_security_policy_match_command():
     if not matching_rules:
         demisto.results('The query did not match a Security policy.')
     else:
-        pretty_matching_rules = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
-                                 'Query': build_policy_match_query(application, category, destination, destination_port,
-                                                                   from_, to_, protocol, source, source_user)}
+        ec_ = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
+               'QueryFields': prettify_query_fields(application, category, destination, destination_port,
+                                                    from_, to_, protocol, source, source_user),
+               'Query': build_policy_match_query(application, category, destination, destination_port,
+                                                 from_, to_, protocol, source, source_user)}
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': matching_rules,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Matching Security Policies:', pretty_matching_rules['Rules'],
+            'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
                                              ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
                                              removeNull=True),
-            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": pretty_matching_rules}
+            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
         })
 
 

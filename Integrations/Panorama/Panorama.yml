@@ -2864,8 +2864,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks whether a session matches the specified security policy. This command
-      is only available on Firewall instances.
+    description: Checks whether a session matches the specified security policy. This
+      command is only available on Firewall instances.
     execution: false
     name: panorama-security-policy-match
     outputs:
@@ -2892,6 +2892,33 @@ script:
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.Rules.To
       description: The matching rule to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Application
+      description: The application name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Category
+      description: The category name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Destination
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+      description: The destination port.
+      type: Number
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
+      description: The from zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
+      description: The to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+      description: The IP protocol value.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Source
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+      description: The source user.
       type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
