@@ -354,15 +354,15 @@ script:
     execution: false
     name: azure-list-subscriptions
     outputs:
-    - contextPath: AzureSecurityCenter.Subscription.ID
+    - contextPath: Azure.Subscription.ID
       description: Subscription ID
       type: String
-    - contextPath: AzureSecurityCenter.Subscription.Name
+    - contextPath: Azure.Subscription.Name
       description: Subscription Name
       type: String
-    - contextPath: AzureSecurityCenter.Subscription.Enabled
-      description: Subscription enabled
-      type: Boolean
+    - contextPath: Azure.Subscription.Enabled
+      description: Subscription state
+      type: String
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
