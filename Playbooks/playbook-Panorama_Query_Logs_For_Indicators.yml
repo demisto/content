@@ -1,0 +1,1474 @@
+id: Panorama Query Logs For Indicators
+version: -1
+name: Panorama Query Logs For Indicators
+fromversion: 4.5.0
+description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and
+  wildfire. The playbook accepts inputs such as IP. hash, url.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08b8e29f-c033-4801-83df-a9a9e8d7202d
+    type: start
+    task:
+      id: 08b8e29f-c033-4801-83df-a9a9e8d7202d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 46bab627-cd26-406e-8059-798bec0fbbc3
+    type: condition
+    task:
+      id: 46bab627-cd26-406e-8059-798bec0fbbc3
+      version: -1
+      name: Is Palo Alto Networks PAN-OS enabled?
+      description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+      - "20"
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama V2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: df85d1e4-475c-4efd-8c48-7861e3ba8973
+    type: regular
+    task:
+      id: df85d1e4-475c-4efd-8c48-7861e3ba8973
+      version: -1
+      name: Panorama query traffic logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: traffic
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 815e353e-6597-4efd-8490-1b1a5de72926
+    type: playbook
+    task:
+      id: 815e353e-6597-4efd-8490-1b1a5de72926
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Panorama
+          accessor: Monitor.JobID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-check-logs-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Panorama.Monitor(val.Status != 'Completed' && val.Status != 'Failed').JobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0843a172-3f3c-4e7a-8a6a-70e32e21c456
+    type: regular
+    task:
+      id: 0843a172-3f3c-4e7a-8a6a-70e32e21c456
+      version: -1
+      name: Panorama Get Logs
+      description: Retrieves logs query data by job ID.
+      script: '|||panorama-get-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ignore_auto_extract: {}
+      job_id:
+        complex:
+          root: Panorama
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Panorama.Monitor.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Completed
+          accessor: Monitor.JobID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: ad2ca30f-252a-4665-8c4c-eb638a091803
+    type: title
+    task:
+      description: Header
+      id: ad2ca30f-252a-4665-8c4c-eb638a091803
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 583be7f7-7667-4ec6-80cd-54577d3d3d87
+    type: regular
+    task:
+      id: 583be7f7-7667-4ec6-80cd-54577d3d3d87
+      version: -1
+      name: Panorama Check Logs Status
+      description: Checks the status of a logs query.
+      script: '|||panorama-check-logs-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      job_id:
+        complex:
+          root: Panorama
+          accessor: Monitor.JobID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: dc243818-9e35-4e7f-878e-7effa857f3b6
+    type: condition
+    task:
+      id: dc243818-9e35-4e7f-878e-7effa857f3b6
+      description: Filter JobID
+      version: -1
+      name: Filter JobID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Panorama
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Panorama.Monitor.Status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Pending
+                accessor: Monitor.JobID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: c0bd410c-2179-4615-8c34-94088c9f6407
+    type: condition
+    task:
+      id: c0bd410c-2179-4615-8c34-94088c9f6407
+      description: Search ip in traffic logs?
+      version: -1
+      name: Search ip in traffic logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: traffic
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 46925eaa-c4b2-459f-80af-764364a4d766
+    type: regular
+    task:
+      id: 46925eaa-c4b2-459f-80af-764364a4d766
+      version: -1
+      name: Panorama query threat logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: threat
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 041f4f5e-cdae-40bf-8bbd-b7041e167bb7
+    type: condition
+    task:
+      id: 041f4f5e-cdae-40bf-8bbd-b7041e167bb7
+      description: Search ip in threat logs?
+      version: -1
+      name: Search ip in threat logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: threat
+    view: |-
+      {
+        "position": {
+          "x": 2890,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 93197282-50c0-4c15-8bc2-7e78a948b5e6
+    type: title
+    task:
+      id: 93197282-50c0-4c15-8bc2-7e78a948b5e6
+      description: Header
+      version: -1
+      name: IP search
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 274d8fd4-b255-40dc-8adb-f1fa7078e228
+    type: condition
+    task:
+      id: 274d8fd4-b255-40dc-8adb-f1fa7078e228
+      description: Is there an IP?
+      version: -1
+      name: Is there an IP?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+      - "10"
+      - "13"
+      - "15"
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 01307e37-d664-471a-842b-8c30d276ccb7
+    type: condition
+    task:
+      id: 01307e37-d664-471a-842b-8c30d276ccb7
+      description: Search ip in wildfire logs?
+      version: -1
+      name: Search ip in wildfire logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: wildfire
+    view: |-
+      {
+        "position": {
+          "x": 3300,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 433b635a-3335-437e-8ead-4292624ae24e
+    type: regular
+    task:
+      id: 433b635a-3335-437e-8ead-4292624ae24e
+      version: -1
+      name: Panorama query wildfire logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: wildfire
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: abab5609-2e98-44e0-8963-dce941d0b23b
+    type: condition
+    task:
+      id: abab5609-2e98-44e0-8963-dce941d0b23b
+      description: Search ip in data logs?
+      version: -1
+      name: Search ip in data logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: data
+    view: |-
+      {
+        "position": {
+          "x": 3700,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 680fe8ad-c9e4-4b64-8044-22eab4286aba
+    type: title
+    task:
+      id: 680fe8ad-c9e4-4b64-8044-22eab4286aba
+      description: Header
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3300,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 7e92169a-e278-4a73-8bed-fe815cf5429f
+    type: regular
+    task:
+      id: 7e92169a-e278-4a73-8bed-fe815cf5429f
+      version: -1
+      name: Panorama query data logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: data
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 84a17660-82cb-4ec4-8db6-11ca08ef2a3a
+    type: regular
+    task:
+      id: 84a17660-82cb-4ec4-8db6-11ca08ef2a3a
+      version: -1
+      name: Panorama query url logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.ip
+      log-type:
+        simple: url
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2050,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: b9b1b349-679d-492f-8965-1524ded67176
+    type: condition
+    task:
+      id: b9b1b349-679d-492f-8965-1524ded67176
+      description: Search ip in url logs?
+      version: -1
+      name: Search ip in url logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: url
+    view: |-
+      {
+        "position": {
+          "x": 4100,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 2ff96076-2589-41af-83dc-dd00a767dd79
+    type: title
+    task:
+      id: 2ff96076-2589-41af-83dc-dd00a767dd79
+      description: Header
+      version: -1
+      name: Hash Search
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: d56e5752-22d0-4097-8aab-099d70a65705
+    type: condition
+    task:
+      id: d56e5752-22d0-4097-8aab-099d70a65705
+      description: Is there a hash?
+      version: -1
+      name: Is there a hash?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.filedigest
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: ffabee77-4688-4473-8479-046cf6e8f330
+    type: condition
+    task:
+      id: ffabee77-4688-4473-8479-046cf6e8f330
+      description: Search hash in wildfire logs?
+      version: -1
+      name: Search hash in wildfire logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: wildfire
+    view: |-
+      {
+        "position": {
+          "x": -530,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: c7d8781c-df8b-448d-8b02-7bcd3cfba82f
+    type: regular
+    task:
+      id: c7d8781c-df8b-448d-8b02-7bcd3cfba82f
+      version: -1
+      name: Panorama query wildfire logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest:
+        complex:
+          root: inputs.filedigest
+      ip: {}
+      log-type:
+        simple: wildfire
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 7a97a340-7f8e-4547-86c0-9681cab15a14
+    type: title
+    task:
+      id: 7a97a340-7f8e-4547-86c0-9681cab15a14
+      description: Header
+      version: -1
+      name: Url search
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1980,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 1ddae29f-0830-48ab-8f9f-e1f05704fd06
+    type: condition
+    task:
+      id: 1ddae29f-0830-48ab-8f9f-e1f05704fd06
+      description: Is there a url?
+      version: -1
+      name: Is there a url?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "27"
+      - "28"
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3990,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: b784fa3a-f2b1-4e27-8f05-d240b6023e0a
+    type: title
+    task:
+      id: b784fa3a-f2b1-4e27-8f05-d240b6023e0a
+      description: Header
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2480,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d6dda979-efdb-4154-8b07-af42f1b2cb24
+    type: condition
+    task:
+      id: d6dda979-efdb-4154-8b07-af42f1b2cb24
+      description: Search hash in threat logs?
+      version: -1
+      name: Search hash in threat logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: threat
+    view: |-
+      {
+        "position": {
+          "x": -3450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: a5c85264-2361-4305-8fdf-ed4d3db0bdf0
+    type: condition
+    task:
+      id: a5c85264-2361-4305-8fdf-ed4d3db0bdf0
+      description: Search hash in url logs?
+      version: -1
+      name: Search hash in url logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: url
+    view: |-
+      {
+        "position": {
+          "x": -2990,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: bb31a658-f070-46e4-8c72-5b0c9db85027
+    type: condition
+    task:
+      id: bb31a658-f070-46e4-8c72-5b0c9db85027
+      description: Search hash in data logs?
+      version: -1
+      name: Search hash in data logs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.log_type
+            iscontext: true
+          right:
+            value:
+              simple: data
+    view: |-
+      {
+        "position": {
+          "x": -2480,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 5e6470f8-6ac9-4494-8cba-3845298c7e76
+    type: regular
+    task:
+      id: 5e6470f8-6ac9-4494-8cba-3845298c7e76
+      version: -1
+      name: Panorama query threat logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log-type:
+        simple: threat
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url:
+        complex:
+          root: inputs.url
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2160,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 0d89c626-6853-4197-8cb2-8d030f1b6fe3
+    type: regular
+    task:
+      id: 0d89c626-6853-4197-8cb2-8d030f1b6fe3
+      version: -1
+      name: Panorama query data logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log-type:
+        simple: data
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url:
+        complex:
+          root: inputs.url
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1320,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 085440ec-0a84-445d-81c7-d3b73a014c74
+    type: regular
+    task:
+      id: 085440ec-0a84-445d-81c7-d3b73a014c74
+      version: -1
+      name: Panorama query url logs
+      description: Query logs
+      script: '|||panorama-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log-type:
+        simple: url
+      number_of_logs: {}
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url:
+        complex:
+          root: inputs.url
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1750,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_5_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2115,
+        "width": 8470,
+        "x": -3990,
+        "y": -260
+      }
+    }
+  }
+inputs:
+- key: log_type
+  value: {}
+  required: true
+  description: 'Log type to query. can be: traffic, threat, wildfire, url or data-filtering.'
+- key: url
+  value: {}
+  required: false
+  description: 'URL, for example: "safebrowsing.googleapis.com".'
+- key: filedigest
+  value: {}
+  required: false
+  description: File hash (for WildFIre logs only).
+- key: ip
+  value: {}
+  required: false
+  description: Source or destination address
+outputs:
+- contextPath: Panorama.Monitor
+  description: Monitor logs object.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Action
+  description: Action taken for the session. Can be "alert", "allow", "deny", "drop",
+    "drop-all-packets", "reset-client", "reset-server", "reset-both", or "block-url".
+  type: string
+- contextPath: Panorama.Monitor.Logs.Application
+  description: Application associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Category
+  description: For URL subtype, it is the URL category; For WildFire subtype, it is
+    the verdict on the file and is either ‘malicious’, ‘phishing’, ‘grayware’, or
+    ‘benign’; For other subtypes, the value is ‘any’.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceName
+  description: The hostname of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationAddress
+  description: Original session destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationUser
+  description: Username of the user to which the session was destined.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationCountry
+  description: Destination country or internal region for private addresses. Maximum
+    length is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DestinationPort
+  description: Destination port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileDigest
+  description: |-
+    Only for WildFire subtype; all other types do not use this field.
+    The filedigest string shows the binary hash of the file sent to be analyzed by the WildFire service.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileName
+  description: |-
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FileType
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the type of file that the firewall forwarded for WildFire analysis.
+  type: string
+- contextPath: Panorama.Monitor.Logs.FromZone
+  description: Zone the session was sourced from.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLOrFilename
+  description: |-
+    The actual URI when the subtype is url.
+    File name or file type when the subtype is file.
+    File name when the subtype is virus.
+    File name when the subtype is wildfire-virus.
+    File name when the subtype is wildfire.
+    URL or file name when the subtype is vulnerability if applicable.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationIP
+  description: If destination NAT performed, the post-NAT destination IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATDestinationPort
+  description: Post-NAT destination port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourceIP
+  description: If source NAT performed, the post-NAT source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.NATSourcePort
+  description: Post-NAT source port.
+  type: string
+- contextPath: Panorama.Monitor.Logs.PCAPid
+  description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
+    an ID to correlate threat pcap files with extended pcaps taken as a part of that
+    flow. All threat logs will contain either a pcap_id of 0 (no associated pcap),
+    or an ID referencing the extended pcap file.
+  type: string
+- contextPath: Panorama.Monitor.Logs.IPProtocol
+  description: IP protocol associated with the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Recipient
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Rule
+  description: Name of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.RuleID
+  description: ID of the rule that the session matched.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ReceiveTime
+  description: Time the log was received at the management plane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Sender
+  description: |-
+    Only for the WildFire subtype; all other types do not use this field.
+    Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SessionID
+  description: An internal numerical identifier applied to each session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.DeviceSN
+  description: The serial number of the firewall on which the session was logged.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Severity
+  description: Severity associated with the threat. Can be "informational", "low",
+    "medium", "high", or "critical".
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceAddress
+  description: Original session source IP address.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceCountry
+  description: Source country or internal region for private addresses. Maximum length
+    is 32 bytes.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourceUser
+  description: Username of the user who initiated the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.SourcePort
+  description: Source port utilized by the session.
+  type: string
+- contextPath: Panorama.Monitor.Logs.Name
+  description: Palo Alto Networks identifier for the threat. It is a description string
+    followed by a 64-bit numerical identifier.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ID
+  description: Palo Alto Networks ID for the threat.
+  type: string
+- contextPath: Panorama.Monitor.Logs.ToZone
+  description: The zone to which the session was destined.
+  type: string
+- contextPath: Panorama.Monitor.Logs.TimeGenerated
+  description: Time that the log was generated on the dataplane.
+  type: string
+- contextPath: Panorama.Monitor.Logs.URLCategoryList
+  description: A list of the URL filtering categories that the firewall used to enforce
+    policy.
+  type: string
+- contextPath: Panorama.Monitor.JobID
+  description: Job ID of the logs query.
+- contextPath: Panorama.Monitor.Status
+  description: Status of the logs query.
+  type: string
+- contextPath: Panorama.Monitor.Message
+  description: Message  of the logs query.
+  type: string
+
+tests:
+- Panorama Query Logs For Indicators Test
