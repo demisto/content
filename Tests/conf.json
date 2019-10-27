@@ -1894,7 +1894,7 @@
         },
         {
             "integrations": "Tanium v2",
-            "playbookID": "Tanium v2 Test"
+            "playbookID": "Tanium v2 - Test"
         }
     ],
     "skipped_tests": {
