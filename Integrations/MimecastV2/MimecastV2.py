@@ -1560,7 +1560,7 @@ def find_groups_api_response_to_context(api_response):
         group_entry = {
             'Name': group['description'],
             'Source': group['source'],
-            'GroupID': group['id'],
+            'ID': group['id'],
             'NumberOfUsers': group['userCount'],
             'ParentID': group['parentId'],
             'NumberOfChildGroups': group['folderCount']
@@ -1636,6 +1636,8 @@ def group_members_api_response_to_markdown(api_response):
 
 
 def group_members_api_response_to_context(api_response):
+    group_id = demisto.args().get('groupID').encode('utf-8')
+
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
@@ -1648,7 +1650,7 @@ def group_members_api_response_to_context(api_response):
 
         users_list.append(user_entry)
 
-    return {'Mimecast.Group.(val.ID && val.ID == obj.ID)': users_list}
+    return {'Mimecast.Group_{}.User(val.Name && val.Name == obj.Name)'.format(group_id): users_list}
 
 
 def add_remove_member_to_group(action_type):
