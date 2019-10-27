@@ -1894,6 +1894,7 @@
         }
     ],
     "skipped_tests": {
+        "urlscan_malicious_Test": "Issue 19727",
         "FilterByList - Test": "Issue 19469",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
