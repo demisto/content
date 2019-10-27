@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Updated RegexGroups transformer to python3 to support special ASCII characters and additional error handling.
+Updated the RegexGroups transformer to Python 3 in order to support special ASCII characters and additional error handling.
