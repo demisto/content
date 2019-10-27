@@ -55,7 +55,7 @@ def is_correct_content_installed(api_key, ips, content_version):
 
         try:
             resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
-                                                            method='POST')
+                                                            method='POST', accept='application/json', content_type='application/json')
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
