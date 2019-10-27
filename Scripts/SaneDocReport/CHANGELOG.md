@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 - When generatung a DOCX reports fails, users receive an error message.
 - Added the *itemsSection* element to DOCX reports (mainly used for investigation reports).
 
