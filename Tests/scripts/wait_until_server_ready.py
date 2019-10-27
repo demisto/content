@@ -35,10 +35,14 @@ def get_api_key():
 
     print(conf['apikeys'][0]['apikey'])
 
-    return conf['apikeys'][0]['apikey'] , options.contentVersion
+    user = conf['username']
+    password = conf['userPassword']
+    api_key = conf['apikeys'][0]['apikey']
+
+    return api_key, options.contentVersion, user, password
 
 
-def is_correct_content_installed(api_key, ips, content_version):
+def is_correct_content_installed(api_key, ips, content_version, username, password):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
@@ -55,7 +59,11 @@ def is_correct_content_installed(api_key, ips, content_version):
         host = "https://{}".format(ami_instance_ip)
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         # just signing in for the session
-        client.get_all_reports()
+        body = {"user": username, "password": password}
+        demisto_client.generic_request_func(self=client, path='/login',
+                                            method='POST', accept='application/json',
+                                            content_type='application/json', body=body)
+        # client.get_all_reports()
         try:
             resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
@@ -86,7 +94,7 @@ def is_correct_content_installed(api_key, ips, content_version):
 
 
 def main():
-    api_key, content_version = get_api_key()
+    api_key, content_version, username, password = get_api_key()
 
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
@@ -123,7 +131,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_correct_content_installed(api_key, instance_ips, content_version):
+    if not is_correct_content_installed(api_key, instance_ips, content_version, username=username, password=password):
         sys.exit(1)
 
 
