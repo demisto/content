@@ -1475,7 +1475,7 @@ def find_groups():
     api_response = create_find_groups_request()
 
     markdown_output = find_groups_api_response_to_markdown(api_response)
-    entry_context = find_groups_api_response_to_context
+    entry_context = find_groups_api_response_to_context()
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1575,13 +1575,12 @@ def get_group_members():
     api_response = create_get_group_members_request()
 
     markdown_output = group_members_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    entry_context = group_members_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_group_members_request():
+def create_get_group_members_request(group_id=-1, pagination=100):
     api_endpoint = '/api/directory/get-group-members'
     group_id = demisto.args().get('group_id').encode('utf-8')
     pagination = demisto.args().get('pagination')
@@ -1635,17 +1634,19 @@ def group_members_api_response_to_markdown(api_response):
     return md
 
 
-def group_members_api_response_to_context(api_response):
-    group_id = demisto.args().get('groupID').encode('utf-8')
+def group_members_api_response_to_context(api_response, group_id=-1):
+    if group_id != -1:
+        group_id = demisto.args().get('groupID').encode('utf-8')
 
     users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
             'Name': user['name'],
-            'Email address': user['emailAddress'],
+            'EmailAddress': user['emailAddress'],
             'Domain': user['domain'],
             'Type': user['type'],
-            'InternalUser': str(user['internal'])
+            'InternalUser': str(user['internal']),
+            'IsRemoved': 'False'
         }
 
         users_list.append(user_entry)
@@ -1662,7 +1663,7 @@ def add_remove_member_to_group(action_type):
     api_response = create_add_remove_group_member_request(api_endpoint)
 
     markdown_output = add_remove_api_response_to_markdown(api_response, action_type)
-    # entry_context = dict()  # type: [str, Any]
+    entry_context = add_remove_api_response_to_context(api_response, action_type)
     entry_context = None
 
     return_outputs(markdown_output, entry_context, api_response)
@@ -1698,12 +1699,29 @@ def add_remove_api_response_to_markdown(api_response, action_type):
     return '###' + address_modified + ' has been removed from group ID ' + group_id + '###'
 
 
+def add_remove_api_response_to_context(api_response, action_type):
+    group_id = api_response['data'][0]['folderId']
+
+    if action_type == 'add':
+        # Run get group members again, to get all relevant data, the response from add user
+        # does not match the get group members.
+        api_response = create_get_group_members_request(group_id=group_id)
+        entry_context = group_members_api_response_to_context(api_response, group_id=group_id)
+        return entry_context
+    else:
+        address_removed = api_response['data'][0]['emailAddress']
+        removed_user = {
+            'Email': address_removed,
+            'IsRemoved': 'True'
+        }
+        return {'Mimecast.Group_{}.User(val.Name && val.Name == obj.Name)'.format(group_id): removed_user}
+
+
 def create_group():
     api_response = create_group_request()
 
     markdown_output = create_group_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    entry_context = create_group_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1742,12 +1760,24 @@ def create_group_api_response_to_markdown(api_response):
     return md
 
 
+def create_group_api_response_to_context(api_response):
+    group_created = {
+        'Name': api_response['data'][0]['description'],
+        'Source': api_response['data'][0]['source'],
+        'ID': api_response['data'][0]['id'],
+        'NumberOfUsers': 0,
+        'ParentID': api_response['data'][0]['parentId'],
+        'NumberOfChildGroups': 0
+    }
+
+    return {'Mimecast.Group(val.Name && val.Name == obj.Name)': group_created}
+
+
 def update_group():
     api_response = create_update_group_request()
 
     markdown_output = update_group_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    entry_context = update_group_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1784,12 +1814,21 @@ def update_group_api_response_to_markdown(api_response):
     return '###' + group_name + ' has been updated###'
 
 
+def update_group_api_response_to_context(api_response):
+    group_updated = {
+        'ID': api_response['data'][0]['id'],
+        'Name': api_response['data'][0]['description'],
+        'ParentID': api_response['data'][0]['parentId']
+    }
+
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': group_updated}
+
+
 def create_mimecast_incident():
     api_response = create_mimecast_incident_request()
 
-    markdown_output = create_mimecast_incident_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    markdown_output = mimecast_incident_api_response_to_markdown(api_response)
+    entry_context = mimecast_incident_api_response_to_context(api_response, 'create')
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1824,52 +1863,16 @@ def create_mimecast_incident_request():
     return response.content
 
 
-def create_mimecast_incident_api_response_to_markdown(api_response):
-    incident_code = api_response['data'][0]['code']
-    incident_type = api_response['data'][0]['type']
-    incident_reason = api_response['data'][0]['reason']
-    incident_identified_messages_amount = api_response['data'][0]['Identified']
-    incident_successful_messages_amount = api_response['data'][0]['Successful']
-    incident_failed_messages_amount = api_response['data'][0]['Failed']
-    incident_restored_messages_amount = api_response['data'][0]['Restored']
-    incident_id = api_response['data'][0]['id']
-
-    md = '###Incident with code ' + incident_code + ' and id ' + incident_id + ' has been created###\n'
-    md += 'Type: ' + incident_type
-    md += '\nreason: ' + incident_reason
-    md += '\nThe number of messages identified based on the search criteria: ' + incident_identified_messages_amount
-    md += '\nThe number successfully remediated messages: ' + incident_successful_messages_amount
-    md += '\nThe number of messages that failed to remediate: ' + incident_failed_messages_amount
-    md += '\nThe number of messages that were restored from the incident: ' + incident_restored_messages_amount
-
-    messages_table_list = list()
-    for message in api_response['data'][0]['searchCriteria']:
-        message_entry = {
-            'From': message['from'],
-            'To': message['to'],
-            'Message ID': message['messageId'],
-            'Mimecast code used to restore a previously remediated message': message['unremediateCode']
-        }
-
-        messages_table_list.append(message_entry)
-
-    md = tableToMarkdown(md, messages_table_list,
-                         ['From', 'To', 'Message ID', 'Mimecast code used to restore a previously remediated message'])
-
-    return md
-
-
 def get_mimecast_incident():
-    api_response = create_get_mimecast_incident_request()
+    api_response = get_mimecast_incident_request()
 
-    markdown_output = get_mimecast_incident_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'get')
+    entry_context = mimecast_incident_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
 
-def create_get_mimecast_incident_request():
+def get_mimecast_incident_request():
     api_endpoint = '/api/ttp/remediation/get-incident'
     incident_id = demisto.args().get('incident_id').encode('utf-8')
 
@@ -1887,7 +1890,7 @@ def create_get_mimecast_incident_request():
     return response.content
 
 
-def get_mimecast_incident_api_response_to_markdown(api_response):
+def mimecast_incident_api_response_to_markdown(api_response, action_type):
     incident_code = api_response['data'][0]['code']
     incident_type = api_response['data'][0]['type']
     incident_reason = api_response['data'][0]['reason']
@@ -1897,7 +1900,10 @@ def get_mimecast_incident_api_response_to_markdown(api_response):
     incident_restored_messages_amount = api_response['data'][0]['Restored']
     incident_id = api_response['data'][0]['id']
 
-    md = '###Incident ' + incident_id + ' has been found###\n'
+    if action_type == 'create':
+        md = '###Incident ' + incident_id + ' has been created###\n'
+    else:
+        md = '###Incident ' + incident_id + ' has been found###\n'
     md += 'Code: ' + incident_code
     md += 'Type: ' + incident_type
     md += '\nReason: ' + incident_reason
@@ -1911,31 +1917,54 @@ def get_mimecast_incident_api_response_to_markdown(api_response):
         message_entry = {
             'From': message['from'],
             'To': message['to'],
-            'Start date from the remediation incident creation': message['start'],
-            'End date from the remediation incident creation': message['end'],
+            'Start date': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+            'End date': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ'),
             'Message ID': message['messageId'],
-            'File hash': message['fileHash'],
-            'Code provided to restore a message': message['restoreCode'],
-            'Mimecast code used to restore a previously remediated message': message['unremediateCode']
+            'File hash': message['fileHash']
         }
 
         messages_table_list.append(message_entry)
 
     md = tableToMarkdown(md, messages_table_list,
-                         ['From', 'To', 'Start date from the remediation incident creation',
-                          'End date from the remediation incident creation', 'Message ID',
-                          'File hash', 'Code provided to restore a message',
-                          'Mimecast code used to restore a previously remediated message'])
+                         ['From', 'To', 'Start', 'End date', 'Message ID', 'File hash'])
 
     return md
+
+
+def mimecast_incident_api_response_to_context(api_response):
+    messages_table_list = list()
+    for message in api_response['data'][0]['searchCriteria']:
+        message_entry = {
+            'From': message['from'],
+            'To': message['to'],
+            'Message ID': message['messageId'],
+            'FileHash': message['fileHash'],
+            'StartDate': datetime.strptime(message['start'], '%Y-%m-%dT%H:%M:%SZ'),
+            'EndDate': datetime.strptime(message['end'], '%Y-%m-%dT%H:%M:%SZ')
+        }
+    messages_table_list.append(message_entry)
+
+    incident_created = {
+        'ID': api_response['data'][0]['id'],
+        'Code': api_response['data'][0]['code'],
+        'Type': api_response['data'][0]['type'],
+        'Reason': api_response['data'][0]['reason'],
+        'IdentifiedMessages': api_response['data'][0]['identified'],
+        'SuccessfullyRemediatedMessages': api_response['data'][0]['successful'],
+        'FailedRemediatedMessages': api_response['data'][0]['failed'],
+        'MessagesRestored': api_response['data'][0]['restored'],
+        'LastModified': datetime.strptime(api_response['data'][0]['modified'], '%Y-%m-%dT%H:%M:%SZ'),
+        'SearchCriteria': messages_table_list
+    }
+
+    return {'Mimecast.Incident(val.ID && val.ID == obj.ID)': incident_created}
 
 
 def search_file_hash():
     api_response = create_search_file_hash_request()
 
     markdown_output = search_file_hash_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    entry_context = search_file_hash_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1977,6 +2006,19 @@ def search_file_hash_api_response_to_markdown(api_response):
     md += str(failed_hash_list)[1:-1] + '\n'
 
     return md
+
+
+def search_file_hash_api_response_to_context(api_response):
+    detected_hashes_list = list()
+    for detected_hash in api_response['data'][0]['hashStatus']:
+        detected_hash_entry = {
+            'Hash': detected_hash['hash'],
+            'Detected': detected_hash['detected']
+        }
+
+        detected_hashes_list.append(detected_hash_entry)
+
+    return {'Mimecast.Hash(val.Hash && val.Hash == obj.Hash)': detected_hashes_list}
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
