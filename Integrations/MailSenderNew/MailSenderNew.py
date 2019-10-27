@@ -218,14 +218,17 @@ def header(s):
     return Header(s_no_newlines, UTF_8)
 
 
-def create_msg(to, bcc, cc, subject):
+def create_msg():
     """
     Will get args from demisto object
     Return: a string representation of the message, to, cc, bcc
     """
     # Collect all parameters
-
+    to = argToList(demisto.getArg('to'))
+    cc = argToList(demisto.getArg('cc'))
+    bcc = argToList(demisto.getArg('bcc'))
     additional_header = argToList(demisto.getArg('additionalHeader'))
+    subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
     htmlBody = demisto.getArg('htmlBody') or ''
     replyTo = demisto.getArg('replyTo')
@@ -293,7 +296,7 @@ def create_msg(to, bcc, cc, subject):
             header_name_and_value = h.split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
-    return msg.as_string()
+    return msg.as_string(), to, cc, bcc
 
 
 def main():
@@ -332,16 +335,14 @@ def main():
             SERVER.quit()
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
-            to = argToList(demisto.getArg('to'))
-            cc = argToList(demisto.getArg('cc'))
-            bcc = argToList(demisto.getArg('bcc'))
-            subject = demisto.getArg('subject', '')
             raw_message = demisto.getArg('raw_message')
-
             if raw_message:
+                to = argToList(demisto.getArg('to'))
+                cc = argToList(demisto.getArg('cc'))
+                bcc = argToList(demisto.getArg('bcc'))
                 str_msg = raw_message
             else:
-                str_msg = create_msg(to, cc, bcc, subject)
+                (str_msg, to, cc, bcc) = create_msg()
 
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
             SERVER.quit()  # type: ignore
