@@ -6,7 +6,7 @@ Integration with Tanium with REST api. You can ask questions and get the questio
 This is the network address of the Tanium server host.
 
 **Domain**  
-The Tanium user domain.
+The Tanium user domain, Relevant when there is more than one domain inside Tanium.
 
 **Credentials**  
 The credentials entered here should be the same one to enter Tanium client.

@@ -38,7 +38,7 @@ tasks:
       id: 22bd1506-813b-4c50-8d9d-9d1b019f2908
       version: -1
       description: ""
-      name: ask question
+      name: Ask question
       script: '|||tn-ask-question'
       type: regular
       iscommand: true
@@ -173,4 +173,4 @@ outputs:
 - contextPath: Tanium.Question.ID
   description: The unique ID of the question object
 tests:
-  - Tanium v2 Test
+  - Tanium v2 - Test
