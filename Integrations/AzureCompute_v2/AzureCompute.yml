@@ -50,8 +50,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -101,8 +101,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -140,8 +140,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -179,8 +179,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -385,8 +385,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -419,8 +419,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -461,8 +461,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription ID to use. To see all available subscriptions, use
-        the azure-list-subscriptions command.
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
       isArray: false
       name: subscription_id
       required: false
