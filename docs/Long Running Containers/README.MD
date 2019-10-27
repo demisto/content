@@ -4,7 +4,7 @@ You can use long running containers to run specific processes in an integration 
 ## Getting Started
 
 ### Prerequisites
-In order to implement and run long running integrations, you need a Demisto server in a version of 5.0 and up.
+In order to implement and run long running integrations, you need a Demisto v5.0 and later.
 
 The integration must be written in Python.
 
