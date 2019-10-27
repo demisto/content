@@ -72,7 +72,7 @@ def is_correct_content_installed(api_key, ips, content_version, username, passwo
         h = {"Accept": "application/json",
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
-        body = {"user": username, "password": password}
+        body = json.dumps({"user": username, "password": password})
         first_time_login = session.request("POST", host+"/login", headers=h, verify=False, data=body)
         print(str(first_time_login.content))
         sleep(15)
