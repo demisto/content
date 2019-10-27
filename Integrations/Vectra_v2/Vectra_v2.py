@@ -10,7 +10,6 @@ from typing import Dict, List, Union
 urllib3.disable_warnings()
 
 # CONSTANTS #
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_FETCH_SIZE = 20
 
 
@@ -210,37 +209,6 @@ def get_detections_command(client: Client, **kwargs):
     outputs = {'Vectra.Detection(val.ID==obj.ID)': context}
 
     return readable_output, outputs, raw_response
-
-
-# def update_detections_command(client: Client, id_list, **kwargs):
-#     """
-#     Detection objects contain all the information related to security events detected on the network.
-#
-#     :param id_list: list of Detection ID's to edit
-#
-#     :EDITABLE FIELDS:
-#     :keyword detection: The name of the threat detected.
-#     :keyword detection_type: The type of the threat detected.
-#     :keyword category: The category of the vname attack detected
-#     :keyword detection_category: The category type of the vname attack detected
-#     :keyword src_ip: The source IP address of the host attributed to the security event.
-#     :keyword state: The state of the detection.
-#     :keyword t_score: The threat score attributed to the detection.
-#     :keyword threat: The threat score attributed to the detection.
-#     :keyword c_score: The certainty score attributed to the detection.
-#     :keyword certainty: The certainty score attributed to the detection.
-#     :keyword description: description of the event.
-#     :keyword summary: The summary information for the detection
-#     :keyword grouped_details: The detection details for the detection
-#     :keyword tags: User defined tags added to the detection
-#     :keyword note: User defined note for this detection.
-#     """
-#     kwargs['detectionIdList'] = argToList(id_list)
-#     mock = {"detectionIdList": [30], 'mark_as_fixed': str(False)}
-#     _ = client.http_request(method='PATCH', params=kwargs, url_suffix='detections', data=json.dumps(mock))
-#     readable_output, outputs, raw_response = get_detections_command(client)
-#
-#     return readable_output, outputs, raw_response
 
 
 def get_hosts_command(client: Client, **kwargs):
@@ -465,7 +433,7 @@ def get_proxies_command(client: Client, proxy_id: int = None):
     :param proxy_id: The id of the Proxy object.
     :param client: Vectra Client
     """
-    raw_response = client.http_request(url_suffix=f'proxies/{proxy_id}')
+    raw_response = client.http_request(url_suffix=f'proxies/{proxy_id}' if proxy_id else 'proxies')
     count = demisto.get(raw_response, 'meta.count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -498,7 +466,7 @@ def get_threatfeed_command(client: Client, threatfeed_id: int = None):
     :param threatfeed_id: The id of the ThreatFeed object.
     :param client: Vectra Client
     """
-    raw_response = client.http_request(url_suffix=f'threatFeeds/{threatfeed_id}')
+    raw_response = client.http_request(url_suffix=f'threatFeeds/{threatfeed_id}' if threatfeed_id else 'threatFeeds')
     count = demisto.get(raw_response, 'meta.count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -529,7 +497,7 @@ def get_threatfeed_command(client: Client, threatfeed_id: int = None):
     return readable_output, outputs, raw_response
 
 
-def test_module(client: Client, last_run: dict):
+def module_test(client: Client, last_run: dict):
     """
     Performs basic tests to insure API connection, and to test integration's parameters
     """
@@ -569,7 +537,7 @@ def main():
 
         # execute the current command
         if demisto.command() == 'test-module':
-            results = test_module(client, last_run=demisto.getLastRun())
+            results = module_test(client, last_run=demisto.getLastRun())
             demisto.results(results)
 
         elif demisto.command() == 'fetch-incidents':
@@ -606,15 +574,6 @@ def main():
             query_string = f'detection.id:{demisto.args().get("detection_id")}'
             return_outputs(*search_command(client, search_type='detections', query_string=query_string))
 
-        # elif demisto.command() == 'vectra-update-users':
-        # return_outputs(*update_users_command(client, **demisto.args()))
-
-        # elif demisto.command() == 'vectra-update-detections':
-        #     return_outputs(*update_detections_command(client, **demisto.args()))
-
-        # elif demisto.command() == 'vectra-update-hosts':
-        #     return_outputs(*update_hosts_command(client, **demisto.args()))
-
     # Log exceptions
     except Exception as ex:
         if demisto.command() == 'fetch-incidents':
@@ -626,5 +585,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-# todo: go over each command params and make sure it's in the keywords
