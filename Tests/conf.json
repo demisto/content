@@ -944,7 +944,10 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Test-IsMaliciousIndicatorFound"
+            "playbookID": "Test-IsMaliciousIndicatorFound",
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "TestExtractHTMLTables"
@@ -1133,7 +1136,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "AWS - IAM Test Playbook"
+            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
         },
         {
             "integrations": "McAfee Active Response",
@@ -1497,7 +1500,7 @@
         },
         {
             "playbookID": "FilterByList - Test",
-            "fromversion": "4.5.0"
+            "fromversion": "4.1.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1515,6 +1518,17 @@
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
+        },
+        {
+            "playbookID": "Phishing - Core - Test",
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Palo Alto Minemeld",
+                "Rasterize"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1200
         },
         {
             "integrations": "McAfee Active Response",
@@ -1894,6 +1908,7 @@
         }
     ],
     "skipped_tests": {
+        "urlscan_malicious_Test": "Issue 19727",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -1917,7 +1932,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
-        "Test-IsMaliciousIndicatorFound": "Issue 15940",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
@@ -1970,6 +1984,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "intsights": "Issue 19694",
         "ThreatX": "Issue 19551",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
