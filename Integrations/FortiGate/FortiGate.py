@@ -47,8 +47,8 @@ def login():
     # check for the csrf token in cookies we got, add it to headers of session,
     # or else we can't perform HTTP request that is not get.
     for cookie in session.cookies:
-        if cookie.name == 'ccsrftoken':
-            csrftoken = cookie.value[1:-1]  # strip quotes
+        if cookie.name == 'ccsrftoken':  # type: ignore
+            csrftoken = cookie.value[1:-1]  # type: ignore
             session.headers.update({'X-CSRFTOKEN': csrftoken})
     return session
 
