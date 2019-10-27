@@ -50,9 +50,12 @@ def sign_email(client: Client, args: Dict):
 
     client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
     signed = out.read().decode('utf-8')
+    signed_message = signed.split('\n\n')
+    headers = signed_message[0].replace(': ', '=').replace('\n', ',')
     context = {
         'SMIME.Signed': {
-            'Message': signed
+            'Message': signed,
+            'Headers': headers
         }
     }
 
@@ -80,10 +83,14 @@ def encrypt_email_body(client: Client, args: Dict):
 
     client.smime.write(out, p7)
     encrypted_message = out.read().decode('utf-8')
+    message = encrypted_message.split('\n\n')
+    headers = message[0]
+    new_headers = headers.replace(': ', '=').replace('\n', ',')
 
     entry_context = {
         'SMIME.Encrypted': {
-            'Message': encrypted_message
+            'Message': encrypted_message,
+            'Headers': new_headers
         }
     }
     return encrypted_message, entry_context
