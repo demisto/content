@@ -1475,8 +1475,7 @@ def find_groups():
     api_response = create_find_groups_request()
 
     markdown_output = find_groups_api_response_to_markdown(api_response)
-    # entry_context = dict()  # type: [str, Any]
-    entry_context = None
+    entry_context = find_groups_api_response_to_context
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1536,7 +1535,7 @@ def find_groups_api_response_to_markdown(api_response):
     if query_source:
         md += ' source: ' + query_source
 
-    groups_table_list = list()
+    groups_list = list()
     for group in api_response['data'][0]['folders']:
         group_entry = {
             'Name': group['description'],
@@ -1547,12 +1546,29 @@ def find_groups_api_response_to_markdown(api_response):
             'Number of child groups': group['folderCount']
         }
 
-        groups_table_list.append(group_entry)
+        groups_list.append(group_entry)
 
-    md = tableToMarkdown(md, groups_table_list,
+    md = tableToMarkdown(md, groups_list,
                          ['Name', 'Source', 'Group ID', 'Number of users', 'Parent ID', 'Number of child groups'])
 
     return md
+
+
+def find_groups_api_response_to_context(api_response):
+    groups_list = list()
+    for group in api_response['data'][0]['folders']:
+        group_entry = {
+            'Name': group['description'],
+            'Source': group['source'],
+            'GroupID': group['id'],
+            'NumberOfUsers': group['userCount'],
+            'ParentID': group['parentId'],
+            'NumberOfChildGroups': group['folderCount']
+        }
+
+        groups_list.append(group_entry)
+
+    return {'Mimecast.Group(val.ID && val.ID == obj.ID)': groups_list}
 
 
 def get_group_members():
@@ -1601,7 +1617,7 @@ def group_members_api_response_to_markdown(api_response):
 
     md = '###Found ' + str(num_users_found) + ' users for group ID: ' + group_id + '###'
 
-    users_table_list = list()
+    users_list = list()
     for user in api_response['data'][0]['groupMembers']:
         user_entry = {
             'Name': user['name'],
@@ -1611,12 +1627,28 @@ def group_members_api_response_to_markdown(api_response):
             'Internal user': str(user['internal'])
         }
 
-        users_table_list.append(user_entry)
+        users_list.append(user_entry)
 
-    md = tableToMarkdown(md, users_table_list,
+    md = tableToMarkdown(md, users_list,
                          ['Name', 'Email address', 'Domain', 'Type', 'Internal user'])
 
     return md
+
+
+def group_members_api_response_to_context(api_response):
+    users_list = list()
+    for user in api_response['data'][0]['groupMembers']:
+        user_entry = {
+            'Name': user['name'],
+            'Email address': user['emailAddress'],
+            'Domain': user['domain'],
+            'Type': user['type'],
+            'InternalUser': str(user['internal'])
+        }
+
+        users_list.append(user_entry)
+
+    return {'Mimecast.Group.(val.ID && val.ID == obj.ID)': users_list}
 
 
 def add_remove_member_to_group(action_type):
