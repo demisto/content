@@ -272,7 +272,7 @@ script:
       default: true
       description: The id of the required host
     description: Get host by id
-  - name: vectra-get-detetctions-by-id
+  - name: vectra-get-detection-by-id
     arguments:
     - name: detection_id
       required: true
