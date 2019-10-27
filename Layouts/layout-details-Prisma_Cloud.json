@@ -4,15 +4,10 @@
 	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
-		"commitMessage": "",
 		"id": "Prisma Cloud",
 		"kind": "details",
 		"modified": "2019-10-27T12:58:31.287819473Z",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "Prisma Cloud",
-		"shouldCommit": false,
-		"sortValues": null,
 		"system": false,
 		"tabs": [
 			{
@@ -807,7 +802,6 @@
 			}
 		],
 		"typeId": "Prisma Cloud",
-		"vcShouldIgnore": false,
 		"version": 21
 	},
 	"typeId": "Prisma Cloud",
