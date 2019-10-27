@@ -40,21 +40,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Search for IP
+    description: Searches for an IP address.
     execution: false
     name: data-enrichment-threat-intelligence-search-ip
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.IP
-      description: IP of sample
+      description: The IP address of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -70,7 +70,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: url to get analysis on
+      description: The URL for which to get an analysis.
       isArray: false
       name: url
       required: true
@@ -82,21 +82,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Get analysis of given URL
+    description: Runs an analysis on the specified URL.
     execution: false
     name: data-enrichment-threat-intelligence-search-url
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.URL
-      description: URL of sample
+      description: The URL of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -112,7 +112,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Hash to search for results
+      description: The file hash for which to search.
       isArray: false
       name: file
       required: true
@@ -124,30 +124,30 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Searching for file
+    description: Searches for the specified file (by file hash).
     execution: false
     name: data-enrichment-threat-intelligence-search-file
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.MD5
-      description: MD5 Hash of sample
+      description: The MD5 hash of sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SHA1
-      description: SHA1 Hash of sample.
+      description: The SHA1 hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SHA256
-      description: SHA256 Hash of sample.
+      description: The SHA256 hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SSDeep
-      description: SSDeep Hash of sample.
+      description: The SSDeep hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -163,7 +163,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Domain to check
+      description: The domain to check.
       isArray: false
       name: domain
       required: true
@@ -175,21 +175,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks domain reputation.
+    description: Checks the reputation of the specified domain.
     execution: false
     name: data-enrichment-threat-intelligence-search-domain
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Domain
-      description: URL of sample
+      description: The URL of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -204,30 +204,30 @@ script:
       description: The actual score.
       type: Number
   - deprecated: false
-    description: Checks File hash reputation.
+    description: Checks the reputation of the specified file hash.
     execution: false
     name: file
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.MD5
-      description: MD5 Hash of sample
+      description: The MD5 hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SHA1
-      description: SHA1 Hash of sample.
+      description: The SHA1 hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SHA256
-      description: SHA256 Hash of sample.
+      description: The SHA256 hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.SSDeep
-      description: SSDeep Hash of sample.
+      description: The SSDeep hash of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -243,7 +243,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: IP address to check.
+      description: The IP address to check.
       isArray: false
       name: ip
       required: true
@@ -255,21 +255,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks IP reputation.
+    description: Checks the reputation of the specified IP address.
     execution: false
     name: ip
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.IP
-      description: IP of sample
+      description: The IP address of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -285,7 +285,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: URL to check.
+      description: The URL to check.
       isArray: false
       name: url
       required: true
@@ -297,21 +297,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks URL reputation.
+    description: Checks the reputation of the specified URL.
     execution: false
     name: url
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.URL
-      description: URL of sample
+      description: The URL of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -327,7 +327,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Domain to check
+      description: The domain to check.
       isArray: false
       name: domain
       required: true
@@ -339,21 +339,21 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks domain reputation.
+    description: Checks the reputation of the specified domain.
     execution: false
     name: domain
     outputs:
     - contextPath: DataEnrichmentThreatIntelligence.ID
-      description: ID of analysis
+      description: The ID of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Severity
-      description: Severity of analysis
+      description: The severity of the analysis.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Domain
-      description: URL of sample
+      description: The URL of the sample.
       type: String
     - contextPath: DataEnrichmentThreatIntelligence.Description
-      description: Description of analysis.
+      description: The description of the analysis.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
