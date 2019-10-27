@@ -1475,7 +1475,7 @@ def find_groups():
     api_response = create_find_groups_request()
 
     markdown_output = find_groups_api_response_to_markdown(api_response)
-    entry_context = find_groups_api_response_to_context()
+    entry_context = find_groups_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
@@ -1827,8 +1827,8 @@ def update_group_api_response_to_context(api_response):
 def create_mimecast_incident():
     api_response = create_mimecast_incident_request()
 
-    markdown_output = mimecast_incident_api_response_to_markdown(api_response)
-    entry_context = mimecast_incident_api_response_to_context(api_response, 'create')
+    markdown_output = mimecast_incident_api_response_to_markdown(api_response, 'create')
+    entry_context = mimecast_incident_api_response_to_context(api_response)
 
     return_outputs(markdown_output, entry_context, api_response)
 
