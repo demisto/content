@@ -62,8 +62,8 @@ def test_valid_docker_image(mocker, image):
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
     assert len(results) == 1
-    # current latest tag is 2.7.16.214 or 3.7.2.214 disable-secrets-detection
-    assert int(results[0].split('.')[3]) >= 214
+    # current latest tag is 2.7.16.2728 or 3.7.2.2728 disable-secrets-detection
+    assert int(results[0].split('.')[3]) >= 2728
 
 
 def test_invalid_docker_image(mocker):
