@@ -25,7 +25,7 @@ For further information about the API used in the integration see:
 
 INTEGRATION_NAME = 'Google Key Management System'
 # lowercase with `-` dividers
-INTEGRATION_COMMAND_NAME = 'google-kms-'
+INTEGRATION_COMMAND_NAME = 'google-kms'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'GoogleKMS'
 
@@ -893,37 +893,37 @@ def test_function(client: Client) -> None:
 
 def main():
     COMMANDS = {
-        f'{INTEGRATION_COMMAND_NAME}create-key': (create_crypto_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-create-key': (create_crypto_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}symmetric-decrypt': (symmetric_decrypt_key_command, ['Decrypter',
-                                                                                         'Encrypter/Decrypter',
-                                                                                         'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-symmetric-decrypt': (symmetric_decrypt_key_command, ['Decrypter',
+                                                                                          'Encrypter/Decrypter',
+                                                                                          'Project-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}symmetric-encrypt': (symmetric_encrypt_key_command, ['Encrypter',
-                                                                                         'Encrypter/Decrypter',
-                                                                                         'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-symmetric-encrypt': (symmetric_encrypt_key_command, ['Encrypter',
+                                                                                          'Encrypter/Decrypter',
+                                                                                          'Project-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}get-key': (get_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-get-key': (get_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}update-key': (update_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-update-key': (update_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}destroy-key': (destroy_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-destroy-key': (destroy_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}restore-key': (restore_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-restore-key': (restore_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}disable-key': (disable_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-disable-key': (disable_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}enable-key': (enable_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-enable-key': (enable_key_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}list-keys': (list_keys_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-list-keys': (list_keys_command, ['Project-Admin', 'KMS-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}asymmetric-encrypt': (asymmetric_encrypt_command, ['Encrypter',
-                                                                                       'Encrypter/Decrypter',
-                                                                                       'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-asymmetric-encrypt': (asymmetric_encrypt_command, ['Encrypter',
+                                                                                        'Encrypter/Decrypter',
+                                                                                        'Project-Admin']),
 
-        f'{INTEGRATION_COMMAND_NAME}asymmetric-decrypt': (asymmetric_decrypt_command, ['Decrypter',
-                                                                                       'Encrypter/Decrypter',
-                                                                                       'Project-Admin'])
+        f'{INTEGRATION_COMMAND_NAME}-asymmetric-decrypt': (asymmetric_decrypt_command, ['Decrypter',
+                                                                                        'Encrypter/Decrypter',
+                                                                                        'Project-Admin'])
     }
 
     command = demisto.command()
