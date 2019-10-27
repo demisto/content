@@ -1,5 +1,4 @@
 ## [Unreleased]
-  - Added the ***smime-sign-and-encrypt*** command.
   - The integration ignores the FQDN configuration parameter if it is empty or contains only white spaces.
   - Added the *raw_message* argument to the ***send-mail*** command.
 
