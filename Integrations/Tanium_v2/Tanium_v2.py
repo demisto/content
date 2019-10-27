@@ -34,7 +34,7 @@ class Client(BaseClient):
             return res
 
         if res.status_code == 404 or res.status_code == 400:
-            raise ValueError(res.json().get('text'))
+            raise requests.HTTPError(res.json().get('text'))
 
         return res.json()
 
@@ -455,7 +455,7 @@ def get_packages(client, data_args):
     raw_response = client.do_request('GET', 'packages')
     packages = []
 
-    for package in raw_response.get('data')[:-1][:count]:
+    for package in raw_response.get('data', [])[:-1][:count]:
         package = client.get_package_item(package)
 
         del package['Files']
@@ -498,7 +498,7 @@ def get_sensors(client, data_args):
     res = client.do_request('GET', 'sensors/')
 
     sensors = []
-    for sensor in res.get('data')[:-1][:count]:
+    for sensor in res.get('data', [])[:-1][:count]:
         sensor = client.get_sensor_item(sensor)
         del sensor['Parameters']
         sensors.append(sensor)
@@ -609,7 +609,7 @@ def get_saved_questions(client, data_args):
     raw_response = client.do_request('GET', 'saved_questions')
 
     questions = []
-    for question in raw_response.get('data')[:-1][:count]:
+    for question in raw_response.get('data', [])[:-1][:count]:
         question = client.get_saved_question_item(question)
         questions.append(question)
 
@@ -689,7 +689,7 @@ def get_actions(client, data_args):
     raw_response = client.do_request('GET', 'actions')
 
     actions = []
-    for action in raw_response.get('data')[:-1][:count]:
+    for action in raw_response.get('data', [])[:-1][:count]:
         action = client.get_action_item(action)
         actions.append(action)
 
@@ -739,7 +739,7 @@ def get_saved_actions(client, data_args):
     raw_response = client.do_request('GET', 'saved_actions')
 
     actions = []
-    for action in raw_response.get('data')[:-1][:count]:
+    for action in raw_response.get('data', [])[:-1][:count]:
         action = client.get_saved_action_item(action)
         actions.append(action)
 
@@ -754,7 +754,7 @@ def get_saved_actions_pending(client, data_args):
     raw_response = client.do_request('GET', 'saved_action_approvals')
 
     actions = []
-    for action in raw_response.get('data')[:count]:
+    for action in raw_response.get('data', [])[:count]:
         action = client.get_saved_action_pending_item(action)
         actions.append(action)
 
@@ -842,7 +842,8 @@ def get_groups(client, data_args):
     groups = []
 
     raw_response = client.do_request('GET', 'groups')
-    for group in raw_response.get('data')[:-1][:count]:
+    # ignoring the last item because its not a group object
+    for group in raw_response.get('data', [])[:-1][:count]:
         groups.append(client.get_group_item(group))
 
     context = createContext(groups, removeNull=True)
@@ -853,9 +854,9 @@ def get_groups(client, data_args):
 
 def delete_group(client, data_args):
     id_ = data_args.get('id')
-    raw_response = client.do_request('DELETE', 'groups/' + str(id_))
+    raw_response = client.do_request('DELETE', f'groups/{id_}')
     group = {'ID': int(id_), 'Deleted': True}
-    human_readable = 'Group has been deleted. ID = ' + str(id_)
+    human_readable = f'Group has been deleted. ID = {id_}'
     context = createContext(group, removeNull=True)
     outputs = {'Tanium.Group(val.ID && val.ID === obj.ID)': context}
     return human_readable, outputs, raw_response
@@ -870,7 +871,7 @@ def main():
     password = params.get('credentials').get('password')
     domain = params.get('domain')
     # Remove trailing slash to prevent wrong URL path to service
-    server = params['url'][:-1] \
+    server = params['url'].strip('/') \
         if (params['url'] and params['url'].endswith('/')) else params['url']
     # Service base URL
     base_url = server + '/api/v2/'
