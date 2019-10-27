@@ -5,7 +5,7 @@
 	"name": "Email Headers",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "A list of all the headers of the email.",
+	"description": "A list of all of the email headers.",
 	"cliName": "emailheaders",
 	"type": "grid",
 	"closeForm": false,
