@@ -34,7 +34,7 @@ DEFAULT_THRESHOLD = 70
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, threshold: int = 70, *args, **kwargs):
+    def __init__(self, base_url, threshold: int = DEFAULT_THRESHOLD, *args, **kwargs):
         """Wrapper of CommonServerPython.BaseClient
         Params:
             threshold: arg will be used in calculate_dbot_score. if None, will use default value of 70.
@@ -142,6 +142,7 @@ def build_entry_context(results: Union[Dict, List], indicator_type: str) -> Unio
     """
     if isinstance(results, list):
         return [build_entry_context(entry, indicator_type) for entry in results]  # pragma: no cover
+
     return {
         'ID': results.get('id'),
         'Severity': results.get('severity'),
