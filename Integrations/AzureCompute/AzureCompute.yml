@@ -17,12 +17,12 @@ configuration:
   name: token
   required: true
   type: 4
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: Trust any certificate (unsecure)
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
@@ -419,6 +419,7 @@ script:
   runonce: false
   script: '-'
   type: python
-deprecated: true
+  subtype: python2
 tests:
 - No test
+deprecated: true
