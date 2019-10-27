@@ -477,10 +477,10 @@ view: |-
     }
   }
 inputs:
-  - key: device-group
-    value: {}
-    required: false
-    description: The device group to work on. Exists only in panorama!
+- key: device-group
+  value: {}
+  required: false
+  description: The device group to work on. Exists only in panorama!
 - key: rule_name
   value: {}
   required: true
