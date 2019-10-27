@@ -21,6 +21,10 @@ configuration:
   name: enc_key
   required: true
   type: 4
+- display: Default Subscription ID
+  name: subscription_id
+  required: false
+  type: 0
 - display: Use system proxy
   name: proxy
   required: false
@@ -30,10 +34,6 @@ configuration:
   name: unsecure
   required: false
   type: 8
-- display: Default Subscription ID
-  name: subscription_id
-  required: false
-  type: 0
 description: Create and Manage Azure Virtual Machines
 display: Azure Compute v2
 name: Azure Compute v2
@@ -48,6 +48,13 @@ script:
       isArray: false
       name: resource_group
       required: true
+      secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
       secret: false
     deprecated: false
     description: Lists the virtual machine instances in the given resource group.
@@ -93,6 +100,13 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Powers on a given virtual machine.
     execution: true
@@ -125,6 +139,13 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Powers off a given virtual machine.
     execution: true
@@ -156,6 +177,13 @@ script:
       isArray: false
       name: virtual_machine_name
       required: true
+      secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
       secret: false
     deprecated: false
     description: Gets the properties of a given virtual machine.
@@ -356,6 +384,13 @@ script:
       name: admin_password
       required: false
       secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Creates a virtual machine instance with the specified OS image.
     execution: true
@@ -382,7 +417,15 @@ script:
     - contextPath: Azure.Compute.Location
       description: The region in which the virtual machine is hosted.
       type: string
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all resource groups that belong to your Azure subscription.
     execution: false
     name: azure-list-resource-groups
@@ -417,10 +460,31 @@ script:
       name: virtual_machine_name
       required: false
       secret: false
+    - default: false
+      description: Subscription ID to use. To see all available subscriptions, use
+        the azure-list-subscriptions command.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a specified virtual machine.
     execution: false
     name: azure-vm-delete-instance
+  - deprecated: false
+    description: Lists the subscriptions for this application.
+    execution: false
+    name: azure-list-subscriptions
+    outputs:
+    - contextPath: Azure.Subscription.ID
+      description: Subscription ID
+      type: String
+    - contextPath: Azure.Subscription.Name
+      description: Subscription Name
+      type: String
+    - contextPath: Azure.Subscription.State
+      description: Subscription State
+      type: String
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
