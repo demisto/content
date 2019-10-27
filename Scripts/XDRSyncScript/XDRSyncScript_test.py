@@ -100,9 +100,10 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
-                                                                          incident_id,
-                                                                          fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
     assert not is_modified
 
 
