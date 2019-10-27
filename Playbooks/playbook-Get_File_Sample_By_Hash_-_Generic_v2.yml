@@ -3,7 +3,7 @@ version: -1
 name: Get File Sample By Hash - Generic v2
 fromversion: 4.0.0
 description: |-
-  This playbook returns a file sample correlating from a hash to the war-room using the following sub-playbooks:
+  This playbook returns a file sample correlating to a hash in the war-room using the following sub-playbooks:
   - Get File Sample By Hash - Carbon Black Enterprise Response
   - Get File Sample By Hash - Cylance Protect v2
 starttaskid: "0"
@@ -101,8 +101,8 @@ tasks:
       id: 5989c92e-a48a-4546-8fab-5a879606db38
       version: -1
       name: Get File Sample By Hash - Cylance Protect v2
-      description: This playbook returns a file sample to the war-room given the file'a
-        sha256, using Cylance Protect v2 integration.
+      description: This playbook returns a file sample to the war-room given the file's
+        SHA256 hash, using Cylance Protect v2 integration.
       playbookName: Get File Sample By Hash - Cylance Protect v2
       type: playbook
       iscommand: false
