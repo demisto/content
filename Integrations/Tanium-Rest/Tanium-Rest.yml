@@ -170,7 +170,7 @@ script:
       defaultValue: '5'
       description: Number of sensors to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -346,7 +346,7 @@ script:
       defaultValue: '5'
       description: Number of saved questions to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -542,7 +542,7 @@ script:
       defaultValue: '5'
       description: Number of packages to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -650,7 +650,7 @@ script:
       defaultValue: '5'
       description: Number of saved actions to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1096,7 +1096,7 @@ script:
       defaultValue: '5'
       description: Number of actions to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1255,7 +1255,7 @@ script:
       defaultValue: '5'
       description: Number of saved actions to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
@@ -1363,7 +1363,7 @@ script:
       defaultValue: '5'
       description: Number of groups to return.
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
