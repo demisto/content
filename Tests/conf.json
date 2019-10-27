@@ -944,7 +944,10 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Test-IsMaliciousIndicatorFound"
+            "playbookID": "Test-IsMaliciousIndicatorFound",
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "TestExtractHTMLTables"
@@ -1517,6 +1520,17 @@
             "timeout": 500
         },
         {
+            "playbookID": "Phishing - Core - Test",
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Palo Alto Minemeld",
+                "Rasterize"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1200
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
@@ -1923,7 +1937,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
-        "Test-IsMaliciousIndicatorFound": "Issue 15940",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
