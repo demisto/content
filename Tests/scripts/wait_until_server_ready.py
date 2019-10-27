@@ -4,6 +4,7 @@ import json
 import argparse
 from time import sleep
 import datetime
+from requests import Session
 
 import demisto_client.demisto_api
 from demisto_client.demisto_api.rest import ApiException
@@ -42,6 +43,13 @@ def get_api_key():
     return api_key, options.contentVersion, user, password
 
 
+def get_xsrf_token(ips):
+    for ami_instance_name, ami_instance_ip in ips:
+        host = "https://{}".format(ami_instance_ip)
+        session = Session()
+        r = session.get(host, verify=False)
+
+
 def is_correct_content_installed(api_key, ips, content_version, username, password):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
@@ -57,6 +65,14 @@ def is_correct_content_installed(api_key, ips, content_version, username, passwo
 
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
+        session = Session()
+        r = session.get(host, verify=False)
+        xsrf = r.cookies["XSRF-TOKEN"]
+        h = {"Accept": "application/json",
+             "Content-type": "application/json",
+             "X-XSRF-TOKEN": xsrf}
+        first_time_login = session.request("POST", host+"login", headers=h, verify=False)
+        print(first_time_login)
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         # just signing in for the session
         body = {"user": username, "password": password}
