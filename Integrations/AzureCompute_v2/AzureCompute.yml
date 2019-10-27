@@ -49,13 +49,6 @@ script:
       name: resource_group
       required: true
       secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
-      required: false
-      secret: false
     deprecated: false
     description: Lists the virtual machine instances in the given resource group.
     execution: false
@@ -100,13 +93,6 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
-      required: false
-      secret: false
     deprecated: false
     description: Powers on a given virtual machine.
     execution: true
@@ -139,13 +125,6 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
-      required: false
-      secret: false
     deprecated: false
     description: Powers off a given virtual machine.
     execution: true
@@ -177,13 +156,6 @@ script:
       isArray: false
       name: virtual_machine_name
       required: true
-      secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
-      required: false
       secret: false
     deprecated: false
     description: Gets the properties of a given virtual machine.
@@ -384,13 +356,6 @@ script:
       name: admin_password
       required: false
       secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
-      required: false
-      secret: false
     deprecated: false
     description: Creates a virtual machine instance with the specified OS image.
     execution: true
@@ -458,13 +423,6 @@ script:
         `azure-vm-list-instances` command.
       isArray: false
       name: virtual_machine_name
-      required: false
-      secret: false
-    - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
-      isArray: false
-      name: subscription_id
       required: false
       secret: false
     deprecated: false

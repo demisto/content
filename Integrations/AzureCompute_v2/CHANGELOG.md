@@ -1,0 +1,1 @@
+New integration - Allow working with different subscriptions, new auth flow. See the integration documentation for further details.
