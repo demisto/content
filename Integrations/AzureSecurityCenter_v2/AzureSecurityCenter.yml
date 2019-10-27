@@ -352,7 +352,7 @@ script:
   - deprecated: false
     description: List available subscriptions for this application.
     execution: false
-    name: azure-sc-list-subscriptions
+    name: azure-list-subscriptions
     outputs:
     - contextPath: AzureSecurityCenter.Subscription.ID
       description: Subscription ID
