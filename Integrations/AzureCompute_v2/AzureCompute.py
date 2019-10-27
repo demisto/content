@@ -141,7 +141,7 @@ def screen_errors(error_message, *args, **kwargs):
         # Format Exception object as String
         error_as_dict = vars(error_message)
         updated_error_message = ''
-        for key, val in error_as_dict.iteritems():
+        for key, val in error_as_dict.items():
             if updated_error_message != '':
                 updated_error_message += '\n' + str(key) + ': ' + str(val)
             else:
@@ -989,7 +989,7 @@ commands = {
 try:
     # Initial setup
     if not SUBSCRIPTION_ID:
-        return_error('A subscription ID must be specified.')
+        return_error('A subscription ID must be provided.')
     BASE_URL = SERVER + '/subscriptions/' + SUBSCRIPTION_ID + '/resourceGroups/'
 
     if demisto.command() == 'test-module':
