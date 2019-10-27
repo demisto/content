@@ -71,14 +71,14 @@ def is_correct_content_installed(api_key, ips, content_version, username, passwo
         h = {"Accept": "application/json",
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
-        first_time_login = session.request("POST", host+"login", headers=h, verify=False)
+        first_time_login = session.request("POST", host+"/login", headers=h, verify=False)
         print(first_time_login)
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-        # just signing in for the session
-        body = {"user": username, "password": password}
-        demisto_client.generic_request_func(self=client, path='/login',
-                                            method='POST', accept='application/json',
-                                            content_type='application/json', body=body)
+        # # just signing in for the session
+        # body = {"user": username, "password": password}
+        # demisto_client.generic_request_func(self=client, path='/login',
+        #                                     method='POST', accept='application/json',
+        #                                     content_type='application/json', body=body)
         # client.get_all_reports()
         try:
             resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
