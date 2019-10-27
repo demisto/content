@@ -5,7 +5,7 @@
 	"name": "URL SSL Verification",
 	"ownerOnly": false,
 	"placeholder": "",
-	"description": "Whether URLs passed the SSL certificate verification.",
+	"description": "Indicates whether the URLs passed the SSL certificate verification.",
 	"cliName": "urlsslverification",
 	"type": "grid",
 	"closeForm": false,
