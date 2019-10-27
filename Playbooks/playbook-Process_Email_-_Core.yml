@@ -39,9 +39,9 @@ tasks:
       id: 64fb00a1-ae02-41d5-8dc0-7659d01f90cc
       version: -1
       name: Is there an email file attached?
-      description: Identify whether the incident includes an email message attached
-        as an eml or msg file and return the answer to playbook. Also saves the identified
-        entry ID to context for use for later. Commonly used in automated playbooks
+      description: Identifies whether the incident includes an email message attached
+        as an eml or msg file, and returns the answer to the playbook. Also saves the identified
+        entry ID to context for later use. Commonly used in automated playbooks
         that handle phishing reports sent to a special phishing mailbox set up by
         the security team.
       scriptName: IdentifyAttachedEmail
@@ -600,7 +600,7 @@ inputs:
     complex:
       root: File
   required: false
-  description: An EML or MSG file with
+  description: An EML or MSG file
 - key: Email
   value:
     complex:
@@ -635,14 +635,14 @@ inputs:
       root: incident
       accessor: labels.Email/text
   required: false
-  description: The email’s text
+  description: The email text
 - key: Email/html
   value:
     complex:
       root: incident
       accessor: labels.Email/html
   required: false
-  description: The emai’sl html
+  description: The html version of the email.
 - key: Email/headers
   value:
     complex:
@@ -659,7 +659,7 @@ inputs:
   description: The email’s format
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body if exists
+  description: Email 'html' body, if exists
   type: string
 - contextPath: Email
   description: Email object
@@ -677,7 +677,7 @@ outputs:
   description: Email 'to' addresses
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists
+  description: Email 'text' body, if exists
   type: string
 - contextPath: Email.Headers
   description: The full email headers as a single string
@@ -686,7 +686,7 @@ outputs:
   description: The list of attachment names in the email
   type: string
 - contextPath: Email.Format
-  description: The format of the email if available
+  description: The format of the email, if available
   type: string
 - contextPath: File
   description: The File object
