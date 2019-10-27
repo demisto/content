@@ -15,6 +15,7 @@ tasks:
       id: 54a20b97-8d74-433e-8d85-654a352c47e6
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -151,6 +152,7 @@ tasks:
       id: 8fd903d2-aad6-4dce-8432-41ad2f7b1fd1
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -373,6 +375,7 @@ tasks:
       id: 2eefa1ba-e662-4fd2-8327-435b99c7d466
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -399,6 +402,7 @@ tasks:
       id: 4adc4ddf-8cbc-4665-8a3d-562f55c364e9
       version: -1
       name: PAN-OS-Commit-Configuration
+      description: ""
       playbookName: PAN-OS Commit Configuration
       type: playbook
       iscommand: false
@@ -576,6 +580,7 @@ tasks:
       id: 0a29b0bd-db3c-428c-8892-8441eab72736
       version: -1
       name: PAN-OS - Create Or Edit Rule
+      description: ""
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false

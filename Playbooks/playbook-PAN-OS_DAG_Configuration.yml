@@ -19,6 +19,7 @@ tasks:
       id: 5ee527a7-506f-4f02-88c0-c8a2701138cd
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -208,6 +209,7 @@ tasks:
       id: 7686cb45-06bb-4891-8aeb-8ff9b29f1fbf
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -363,6 +365,7 @@ tasks:
       id: b00ee451-174f-413c-8abb-8ade578bb706
       version: -1
       name: PAN-OS - Create Or Edit Rule
+      description: ""
       playbookName: PAN-OS - Create Or Edit Rule
       type: playbook
       iscommand: false
