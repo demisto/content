@@ -279,6 +279,7 @@ def test_context_creation_es6():
     assert str(hit_headers) == "['_id', '_index', '_type', '_score', 'Date']"
 
 
+@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
 @patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2.FETCH_INDEX", "users")
@@ -291,6 +292,7 @@ def test_incident_creation_e6():
     assert str(incidents) == MOCK_ES6_INCIDETNS
 
 
+@patch("Elasticsearch_v2.TIME_METHOD", 'Simple-Date')
 @patch("Elasticsearch_v2.TIME_FORMAT", '%Y-%m-%dT%H:%M:%SZ')
 @patch("Elasticsearch_v2.TIME_FIELD", 'Date')
 @patch("Elasticsearch_v2.FETCH_INDEX", "customer")
@@ -303,11 +305,22 @@ def test_incident_creation_e7():
     assert str(incidents) == MOCK_ES7_INCIDENTS
 
 
-def test_timestamp_to_date_converter():
+@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Seconds')
+def test_timestamp_to_date_converter_seconds():
     from Elasticsearch_v2 import timestamp_to_date
     seconds_since_epoch = "1572164838"
-    milliseconds_since_epoch = "1572164838123"
-    float_timestmap = "1572164838.123"
     assert str(timestamp_to_date(seconds_since_epoch)) == "2019-10-27 08:27:18"
+
+
+@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Milliseconds')
+def test_timestamp_to_date_converter_milliseconds():
+    from Elasticsearch_v2 import timestamp_to_date
+    milliseconds_since_epoch = "1572164838123"
     assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
+
+
+@patch("Elasticsearch_v2.TIME_METHOD", 'Timestamp-Float')
+def test_timestamp_to_date_converter_float():
+    from Elasticsearch_v2 import timestamp_to_date
+    float_timestmap = "1572164838.123"
     assert str(timestamp_to_date(float_timestmap)) == "2019-10-27 08:27:18.123000"

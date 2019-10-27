@@ -39,11 +39,22 @@ FETCH_QUERY = demisto.params().get('fetch_query', '')
 FETCH_TIME = demisto.params().get('fetch_time', '3 days')
 FETCH_SIZE = int(demisto.params().get('fetch_size', 50))
 INSECURE = not demisto.params().get('insecure', False)
-TIMESTAMP = demisto.params().get('use_timestamp', False)
+TIME_METHOD = demisto.params().get('time_method', 'Simple-Date')
 
 # if timestamp than set the format to iso.
-if TIMESTAMP:
+if 'Timestamp' in TIME_METHOD:
     TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
+
+def get_timestamp_first_fetch(last_fetch):
+    if TIME_METHOD == 'Timestamp-Float':
+        return float(last_fetch.timestamp())
+
+    elif TIME_METHOD == 'Timestamp-Seconds':
+        return int(last_fetch.timestamp())
+
+    elif TIME_METHOD == 'Timestamp-Milliseconds':
+        return int(last_fetch.timestamp() * 1000)
 
 
 def timestamp_to_date(timestamp_string):
@@ -51,17 +62,17 @@ def timestamp_to_date(timestamp_string):
     timestamp_in_seconds_len = len(str(int(time.time())))
 
     # find timestamp in form of milliseconds as a float: 1572164838.000
-    if '.' in timestamp_string:
+    if TIME_METHOD == 'Timestamp-Float':
         timestamp_number = float(timestamp_string)
 
     # find timestamp in form of more than seconds since epoch: 1572164838000
-    elif len(timestamp_string) > timestamp_in_seconds_len:
+    elif TIME_METHOD == 'Timestamp-Milliseconds':
         len_diff = len(timestamp_string) - timestamp_in_seconds_len
         power_ten_divide = pow(10, len_diff)
         timestamp_number = float(int(timestamp_string) / power_ten_divide)
 
     # find timestamp in form of seconds since epoch: 1572164838
-    else:
+    elif TIME_METHOD == 'Timestamp-Seconds':
         timestamp_number = float(timestamp_string)
 
     # convert timestamp to datetime
@@ -297,7 +308,7 @@ def test_func():
             hit_date = str(response.get('hits', {}).get('hits')[0].get('_source').get(str(TIME_FIELD)))
 
             # if not a timestamp test the conversion to datetime object
-            if not TIMESTAMP:
+            if 'Timestamp' not in TIME_METHOD:
                 datetime.strptime(hit_date, TIME_FORMAT)
 
             # test conversion to date
@@ -323,7 +334,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
             # if not a timestamp convert to date
-            if not TIMESTAMP:
+            if 'Timestamp' not in TIME_METHOD:
                 hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
 
             # if timestamp convert to iso format date
@@ -361,8 +372,8 @@ def fetch_incidents():
 
     current_fetch = last_fetch
 
-    if TIMESTAMP:
-        last_fetch_for_query = int(last_fetch.timestamp())
+    if 'Timestamp' in TIME_METHOD:
+        last_fetch_for_query = get_timestamp_first_fetch(last_fetch)
 
     else:
         last_fetch_for_query = last_fetch
