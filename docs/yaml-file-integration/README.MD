@@ -70,7 +70,15 @@ An explanation of these fields is as follows:
 | **display** | The display name for the field. |
 | **name** | The parameter which is used within the integration |
 | **defaultvalue** | If there is a default for the field, it should be located here |
-| **type** | An Integer that represents the type for the field. [See Entry Types Here](https://github.com/demisto/etc/wiki/_new#entry-types) |
+| **type** | An Integer that represents the type for the field. |
+| | Type 0 - Short text field |
+| | Type 4 - Encrypted text field |
+| | Type 8 - Boolean checkbox |
+| | Type 9 - Authentication text - allows switching to credentials |
+| | Type 12 - Long text block |
+| | Type 13 - special use - automatically added - Incident type single select dropdown |
+| | Type 15 - Single select dropdown | 
+| | Type 16 - Multiple select dropdown |
 | **required** | Boolean value to indicate that the parameter is required |
 
 ## Script
