@@ -47,10 +47,13 @@ if 'Timestamp' in TIME_METHOD:
 
 
 def get_timestamp_first_fetch(last_fetch):
-    """Gets the last fetch time as a datetime and converts it to the relavent timestamp format.
+    """Gets the last fetch time as a datetime and converts it to the relevant timestamp format.
 
     Args:
         last_fetch(datetime): A datetime object setting up the last fetch time
+
+    Returns:
+        The formatted timestamp (int)
     """
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(last_fetch.timestamp())
@@ -60,11 +63,13 @@ def get_timestamp_first_fetch(last_fetch):
 
 
 def timestamp_to_date(timestamp_string):
-    """Converts a timestamp string to a datetime object in the format '%Y-%m-%d %H:%M:%S.%f'
+    """Converts a timestamp string to a datetime object.
 
     Args:
         timestamp_string(string): A string with a timestamp in it.
 
+    Returns:
+        the datetime represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
     """
     # find current len of timestamp in seconds since epoch
     timestamp_in_seconds_len = len(str(int(time.time())))
@@ -253,7 +258,10 @@ def fetch_params_check():
 
 
 def test_general_query(es):
-    """if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
+    """Test executing query in fetch index.
+
+    Notes:
+        if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
         from the FETCH_INDEX.
 
     Args:
@@ -270,10 +278,16 @@ def test_general_query(es):
 
 
 def test_time_field_query(es):
-    """if is_fetch is ticked, this function checks if the entered TIME_FIELD returns results.
+    """Test executing query of fetch time field.
+
+    Notes:
+        if is_fetch is ticked, this function checks if the entered TIME_FIELD returns results.
 
     Args:
         es(Elasticsearch): an Elasticsearch object to which we run the test.
+
+    Returns:
+        the results of the query if they are returned.
     """
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -289,10 +303,16 @@ def test_time_field_query(es):
 
 
 def test_fetch_query(es):
-    """if is_fetch is ticked, this function checks if the FETCH_QUERY returns results.
+    """Test executing fetch query.
+
+    Notes:
+        if is_fetch is ticked, this function checks if the FETCH_QUERY returns results.
 
     Args:
         es(Elasticsearch): an Elasticsearch object to which we run the test.
+
+    Returns:
+        the results of the query if they are returned.
     """
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -318,12 +338,19 @@ def test_timestamp_format(timestamp):
     """
     timestamp_in_seconds_len = len(str(int(time.time())))
 
-    if TIME_METHOD == 'Timestamp-Seconds' and (len(timestamp) > timestamp_in_seconds_len or not timestamp.isdigit()):
-        return_error(f"The timestamp fetched is not in seconds.\nFetched: {timestamp}")
+    if TIME_METHOD == 'Timestamp-Seconds':
+        if not timestamp.isdigit():
+            return_error(f"The time field does not contain a standard timestamp.\nFetched: {timestamp}")
 
-    elif TIME_METHOD == 'Timestamp-Milliseconds' \
-            and (len(timestamp) <= timestamp_in_seconds_len or not timestamp.isdigit()):
-        return_error(f"The timestamp fetched is not in milliseconds.\nFetched: {timestamp}")
+        elif len(timestamp) > timestamp_in_seconds_len:
+            return_error(f"Fetched timestamp is not in seconds since epoch.\nFetched: {timestamp}")
+
+    elif TIME_METHOD == 'Timestamp-Milliseconds':
+        if not timestamp.isdigit():
+            return_error(f"The timestamp fetched is not in milliseconds.\nFetched: {timestamp}")
+
+        elif len(timestamp) <= timestamp_in_seconds_len:
+            return_error(f"Fetched timestamp is not in milliseconds since epoch.\nFetched: {timestamp}")
 
 
 def test_func():
@@ -398,6 +425,8 @@ def incident_label_maker(source):
     Args:
         source(dict): the _source fields of a hit.
 
+    Returns:
+        The labels.
     """
     labels = []
     for field in source.keys():
@@ -416,7 +445,7 @@ def results_to_incidents(response, current_fetch, last_fetch):
             incident brought by this fetch.
 
     Returns:
-        the inicidents and the date of the last incident brought by this fetch.
+        the incidents (list) and the date of the last incident brought by this fetch (datetime).
     """
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
