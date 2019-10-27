@@ -1133,7 +1133,7 @@
         },
         {
             "integrations": "AWS - IAM",
-            "playbookID": "AWS - IAM Test Playbook"
+            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
         },
         {
             "integrations": "McAfee Active Response",
@@ -1894,6 +1894,7 @@
         }
     ],
     "skipped_tests": {
+        "urlscan_malicious_Test": "Issue 19727",
         "FilterByList - Test": "Issue 19469",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
@@ -1971,6 +1972,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "intsights": "Issue 19694",
         "ThreatX": "Issue 19551",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
