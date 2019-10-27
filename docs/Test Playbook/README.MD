@@ -1,21 +1,21 @@
 # Overview
-We currently use CircleCI to test each of our integrations. The tests run for **your** integration each time you commit to the content repo. Tests for **every** integration runs nightly. Perhaps the easiest way to create a test playbook is via the Demisto Playbook Editor and remains the preferred way to create one.
+Demisto uses CircleCI to test each of our integrations. The tests run for **your** integration each time you commit to the content repo. Tests for **every** integration run nightly. Perhaps the easiest way to create a test playbook is via the Demisto Playbook Editor. This is the preferred way to create one.
 
 ### Every pull request _must_ have a test playbook. 
 
 ## Creating a Test Playbook
 
 ### Getting Started
-To create a test playbook, we begin by navigating to the **Playbooks** tab in Demisto and clicking **New Playbook**. When running a test, it is often necessary for the first step to be **DeleteContext** which is found under the **Utilities** section in the Task Library. 
+To create a test playbook, navigate to the **Playbooks** tab in Demisto and click **New Playbook**. When running a test, it is often necessary for the first step to be **DeleteContext**, which is located under the **Utilities** section in the Task Library. 
 
 "Delete Context" does just that, it deletes all of the context data. While not always vital, it ensures that a test playbook has a clean beginning to test from without conflicting data. This allows for a test to be "sterile" and can help us to eliminate unrelated issues from the test. 
 
-Make sure to select "yes" for the field "all". Finally click okay and connect the **Playbook Triggered** task to the **DeleteContext** task as shown below:
+Make sure to select "yes" for the field "all". Finally, click **okay** and connect the **Playbook Triggered** task to the **DeleteContext** task as shown below:
 
 <img src="https://user-images.githubusercontent.com/42912128/50275566-51eaa780-0448-11e9-8089-b3631fff1274.png" width="250" align="middle">
 
 ### Testing a Command
-It is important to test as many parts of the integration as possible and it is suggested to have a task for each command. For this example we will look at the Integration IPInfo. IPInfo accepts only one command called ```!ip```. A search for ipinfo in the Task Library will display the command "ip". Click **Add** to bring up the configuration options. 
+It is important to test as many parts of the integration as possible, and we recommend that you have a task for each command. For this example we will look at the integration IPInfo, which accepts only one command called ```!ip```. A search for IPInfo in the Task Library will display the command "ip". Click **Add** to bring up the configuration options. 
 
 When we run a test against an entity such as an IP address, or domain, we must select an entity that will give us the most *consistent* results. We will use Google's 8.8.8.8 as an example in the configuration below.
 
@@ -27,15 +27,15 @@ Click **OK** to save your changes and finally connect the "ip" task to the "Dele
 
 
 ### Verifying Results
-Once we have built a command task, we must next verify that the results are what we expected to receive. For example, we know that the ip address 8.8.8.8 resolves to "Google". If we wanted to test that the IPInfo integration is working, we would use the 8.8.8.8 ip address and *verify* that the owner is "Google". 
+When a command task is built we then need to verify that the results are what we expected to receive. For example, we know that the IP address 8.8.8.8 resolves to "Google". If we wanted to test that the IPInfo integration is working, we would use the 8.8.8.8 ip address and *verify* that the owner is "Google". 
 
 To do this, we will open the **Task Library** and select **Create Task**. Click the radio button next to "Conditional" to open the options for conditions as seen below:
 
 <img src="https://user-images.githubusercontent.com/42912128/50276352-6fb90c00-044a-11e9-8210-a4df27b9500c.png" width="400" align="middle">
 
-Under the section "Condition for yes", we will click the **{}** option to bring up the source tool. You will see an option for the task we have just created called "#2 ip". Click the "Address" option. 
+Under the section "Condition for yes", click the **{}** option to bring up the source tool. You will see an option for the task we have just created called "#2 ip". Click the "Address" option. 
 
-**Please note:** If you need to filter or format the result, click "Filter and Operations" to do so.
+**Note:** If you need to filter or format the result, click "Filter and Operations" to do so.
 
 <img src="https://user-images.githubusercontent.com/42912128/50276603-fff75100-044a-11e9-97ef-c848cc051985.png" width="400" align="middle">
 
@@ -43,7 +43,7 @@ We now must wrap the Context Path like this **${IP.Address}**. This tells Demist
 
 Next, in the "Equals (String)" field enter our expected value of "8.8.8.8" and click ✅ followed by **Save**. Connect the tasks together. 
 
-Lastly we will close the investigation if the test is successful. To do this find "closeInvestigation" in the Task Library and click "add". For the "id" field, select "ID" path found under "Incident details" in the source tool. Click "OK" and connect the task to the others.
+Lastly, we will close the investigation if the test is successful. To do this find "closeInvestigation" in the Task Library and click "add". For the "id" field, select "ID" path found under "Incident details" in the source tool. Click "OK" and connect the task to the others.
 
 ### Naming and Exporting the Playbook
 We use a standard naming convention for our playbook tests which follows the format below:
