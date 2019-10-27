@@ -33,6 +33,65 @@ class SymantecAuth(AuthBase):
 ''' HELPER FUNCTIONS '''
 
 
+def get_incident_binaries(client: Client, incident_id: str, include_original_message: bool = True,
+                          include_all_components: bool = True) -> Tuple[str, dict, list, dict]:
+    """
+    This function get's the binaries of a specific incident with the id incident_id
+    It generates the human readable, entry context & raw response. It also generates the binary files.
+    :param client: The client
+    :param incident_id: The ID of the incident
+    :param include_original_message: Indicates whether the Web Service should include the original message
+        in the response document.
+    :param include_all_components: Indicates whether the Web Service should include all message components
+        (for example, headers and file attachments) in the response document.
+    :return: The human readable, entry context, file entries & raw response
+    """
+
+    raw_incident_binaries = client.service.incidentBinaries(
+        incidentId=incident_id,
+        includeOriginalMessage=include_original_message,
+        includeAllComponents=include_all_components,
+    )
+
+    human_readable: str
+    entry_context: dict = {}
+    raw_response: dict = {}
+    file_entries: list = []
+
+    if raw_incident_binaries:
+        serialized_incident_binaries: dict = helpers.serialize_object(raw_incident_binaries)
+        raw_response = json.loads(json.dumps(serialized_incident_binaries, default=bytes_to_string))
+        raw_components = serialized_incident_binaries.get('Component')
+        components: list = parse_component(raw_components)  # type: ignore
+
+        incident_binaries: dict = {
+            'ID': serialized_incident_binaries.get('incidentId'),
+            'OriginalMessage': serialized_incident_binaries.get('originalMessage'),
+            'Component(val.ID && val.ID === obj.ID)': components,
+            'LongID': serialized_incident_binaries.get('incidentLongId')
+        }
+
+        raw_headers: list = ['ID', 'OriginalMessage', 'LongID']
+        headers: list = ['ID', 'Original Message', 'Long ID']
+        outputs: dict = {}
+        for raw_header in raw_headers:
+            outputs[headers[raw_headers.index(raw_header)]] = incident_binaries.get(raw_header)
+        human_readable = tableToMarkdown(f'Symantec DLP incident {incident_id} binaries', outputs,
+                                         headers=headers, removeNull=True)
+
+        for raw_component in raw_components:  # type: ignore
+            filename = raw_component.get('name')
+            data = raw_component.get('content')
+            if isinstance(data, (str, bytes)):
+                file_entries.append(fileResult(filename=filename, data=data))
+
+        entry_context = {'SymantecDLP.Incident(val.ID && val.ID === obj.ID)': incident_binaries}
+    else:
+        human_readable = 'No incident found.'
+
+    return human_readable, entry_context, file_entries, raw_response
+
+
 def parse_text(raw_text_list: list) -> list:
     """
     Return the parsed text list
@@ -467,47 +526,9 @@ def incident_binaries_command(client: Client, args: dict) -> Tuple[str, dict, li
     include_original_message: bool = bool(args.get('include_original_message', 'True'))
     include_all_components: bool = bool(args.get('include_all_components', 'True'))
 
-    raw_incident_binaries = client.service.incidentBinaries(
-        incidentId=incident_id,
-        includeOriginalMessage=include_original_message,
-        includeAllComponents=include_all_components,
-    )
-
-    human_readable: str
-    entry_context: dict = {}
-    raw_response: dict = {}
-    file_entries: list = []
-
-    if raw_incident_binaries:
-        serialized_incident_binaries: dict = helpers.serialize_object(raw_incident_binaries)
-        raw_response = json.loads(json.dumps(serialized_incident_binaries, default=bytes_to_string))
-        raw_components = serialized_incident_binaries.get('Component')
-        components: list = parse_component(raw_components)  # type: ignore
-
-        incident_binaries: dict = {
-            'ID': serialized_incident_binaries.get('incidentId'),
-            'OriginalMessage': serialized_incident_binaries.get('originalMessage'),
-            'Component(val.ID && val.ID === obj.ID)': components,
-            'LongID': serialized_incident_binaries.get('incidentLongId')
-        }
-
-        raw_headers: list = ['ID', 'OriginalMessage', 'LongID']
-        headers: list = ['ID', 'Original Message', 'Long ID']
-        outputs: dict = {}
-        for raw_header in raw_headers:
-            outputs[headers[raw_headers.index(raw_header)]] = incident_binaries.get(raw_header)
-        human_readable = tableToMarkdown(f'Symantec DLP incident {incident_id} binaries', outputs,
-                                         headers=headers, removeNull=True)
-
-        for raw_component in raw_components:  # type: ignore
-            filename = raw_component.get('name')
-            data = raw_component.get('content')
-            if isinstance(data, (str, bytes)):
-                file_entries.append(fileResult(filename=filename, data=data))
-
-        entry_context = {'SymantecDLP.Incident(val.ID && val.ID === obj.ID)': incident_binaries}
-    else:
-        human_readable = 'No incident found.'
+    human_readable, entry_context, file_entries, raw_response = get_incident_binaries(client, incident_id,
+                                                                                      include_original_message,
+                                                                                      include_all_components)
 
     return human_readable, entry_context, file_entries, raw_response
 
@@ -603,13 +624,26 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
                 incidentId=incident_id
             )[0]), default=datetime_to_iso_format))
             incident_creation_time = incident_details.get('incident', {}).get('incidentCreationDate')
-            incidents.append({
+            incident: dict = {
                 'rawJSON': incident_details,
                 'name': f'Symantec DLP incident {incident_id}',
                 'occurred': incident_creation_time
-            })
+            }
+
+            _, _, file_entries, _ = get_incident_binaries(client, incident_id, False, False)
+            if file_entries:
+                attachments: list = []
+                for file_entry in file_entries:
+                    attachments.append({
+                        'path': file_entry['FileID'],
+                        'name': file_entry['File']
+                    })
+                incident['attachment'] = attachments
+
+            incidents.append(incident)
             if incident_id == incidents_ids[-1]:
                 last_incident_time = incident_creation_time
+
         demisto.setLastRun({'last_fetched_event_iso': last_incident_time})
 
     demisto.incidents(incidents)
@@ -618,12 +652,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-# TODO: Add binaries to fetch incidents
 # TODO: Implement proxy handling
 # TODO: Check for the data owner issue
 # ￿￿￿￿TODO: Check if violations can be a list
 # TODO: Check for the long ID issue
-# TODO: Check fetch incidents d
+# TODO: Check fetch incidents + binaries
 def main():
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
