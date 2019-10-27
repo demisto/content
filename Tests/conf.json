@@ -750,6 +750,12 @@
             "timeout": 500
         },
         {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
@@ -1126,6 +1132,10 @@
             "playbookID": "Remedy AR Test"
         },
         {
+            "integrations": "AWS - IAM",
+            "playbookID": "AWS - IAM Test Playbook"
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "McAfee-MAR_Test",
             "timeout": 700
@@ -1452,6 +1462,12 @@
         {
             "integrations": "Google Resource Manager",
             "playbookID": "GoogleResourceManager-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
+            "integrations": "SlashNext Phishing Incident Response",
+            "playbookID": "SlashNextPhishingIncidentResponse-Test",
             "timeout": 500,
             "nightly": true
         },
