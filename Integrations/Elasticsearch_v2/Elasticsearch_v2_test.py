@@ -301,3 +301,13 @@ def test_incident_creation_e7():
 
     assert str(last_fetch2) == '2019-08-27 18:01:00'
     assert str(incidents) == MOCK_ES7_INCIDENTS
+
+
+def test_timestamp_to_date_converter():
+    from Elasticsearch_v2 import timestamp_to_date
+    seconds_since_epoch = "1572164838"
+    milliseconds_since_epoch = "1572164838123"
+    float_timestmap = "1572164838.123"
+    assert str(timestamp_to_date(seconds_since_epoch)) == "2019-10-27 08:27:18"
+    assert str(timestamp_to_date(milliseconds_since_epoch)) == "2019-10-27 08:27:18.123000"
+    assert str(timestamp_to_date(float_timestmap)) == "2019-10-27 08:27:18.123000"

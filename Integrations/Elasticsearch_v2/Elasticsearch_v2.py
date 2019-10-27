@@ -10,6 +10,7 @@ from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
 import requests
+from math import pow
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -46,13 +47,22 @@ if TIMESTAMP:
 
 
 def timestamp_to_date(timestamp_string):
-    # cut the timestamp down to size if needed
-    timestamp_len = len(str(int(time.time())))
-    if len(timestamp_string) > timestamp_len:
-        timestamp_number = int(str(timestamp_string)[:timestamp_len])
+    # find current len of timestamp in seconds since epoch
+    timestamp_in_seconds_len = len(str(int(time.time())))
 
+    # find timestamp in form of milliseconds as a float: 1572164838.000
+    if '.' in timestamp_string:
+        timestamp_number = float(timestamp_string)
+
+    # find timestamp in form of more than seconds since epoch: 1572164838000
+    elif len(timestamp_string) > timestamp_in_seconds_len:
+        len_diff = len(timestamp_string) - timestamp_in_seconds_len
+        power_ten_divide = pow(10, len_diff)
+        timestamp_number = float(int(timestamp_string) / power_ten_divide)
+
+    # find timestamp in form of seconds since epoch: 1572164838
     else:
-        timestamp_number = int(timestamp_string)
+        timestamp_number = float(timestamp_string)
 
     # convert timestamp to datetime
     return datetime.fromtimestamp(timestamp_number)
