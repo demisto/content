@@ -1878,8 +1878,8 @@
         },
         {
             "playbookID": "Convert file hash to corresponding hashes",
-            "fromversion": "VirusTotal - Private API",
-            "integrations": "Panorama"
+            "fromversion": "4.5.0",
+            "integrations": "VirusTotal - Private API"
         },
         {
             "playbookID": "Panorama Query Logs For Indicators",
