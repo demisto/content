@@ -451,7 +451,7 @@ def create_package(client, data_args):
 
 
 def get_packages(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     raw_response = client.do_request('GET', 'packages')
     packages = []
 
@@ -494,7 +494,7 @@ def get_sensor(client, data_args):
 
 
 def get_sensors(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     res = client.do_request('GET', 'sensors/')
 
     sensors = []
@@ -605,7 +605,7 @@ def get_saved_question_result(client, data_args):
 
 
 def get_saved_questions(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     raw_response = client.do_request('GET', 'saved_questions')
 
     questions = []
@@ -685,7 +685,7 @@ def get_action(client, data_args):
 
 
 def get_actions(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     raw_response = client.do_request('GET', 'actions')
 
     actions = []
@@ -735,7 +735,7 @@ def get_saved_action(client, data_args):
 
 
 def get_saved_actions(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     raw_response = client.do_request('GET', 'saved_actions')
 
     actions = []
@@ -750,7 +750,7 @@ def get_saved_actions(client, data_args):
 
 
 def get_saved_actions_pending(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     raw_response = client.do_request('GET', 'saved_action_approvals')
 
     actions = []
@@ -838,7 +838,7 @@ def get_group(client, data_args):
 
 
 def get_groups(client, data_args):
-    count = int(data_args.get('count'))
+    count = int(data_args.get('limit'))
     groups = []
 
     raw_response = client.do_request('GET', 'groups')
