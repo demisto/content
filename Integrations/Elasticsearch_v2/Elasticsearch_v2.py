@@ -84,9 +84,7 @@ def timestamp_to_date(timestamp_string):
 
 
 def elasticsearch_builder():
-    """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection.
-
-    """
+    """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
     if USERNAME:
         if PROXY:
             return Elasticsearch(hosts=[SERVER], connection_class=RequestsHttpConnection,
@@ -112,7 +110,7 @@ def get_hit_table(hit):
         hit(Dict): a dictionary representing a single hit in the search.
 
     Returns:
-        The hit context and the headers of the hit.
+        The hit context (dict) and the headers of the hit (list).
     """
     table_context = {
         '_index': hit.get('_index'),
@@ -139,6 +137,10 @@ def results_to_context(index, query, base_page, size, total_dict, response):
         size(int): the amount of results to return.
         total_dict(dict): a dictionary containing the info about thenumber of total results found
         response(Dict): the raw response of the results.
+
+    Returns:
+        The full context for the search results (dict), the metadata headers of the search (list),
+        the context for the hits (list) and thee headers of the hits (list).
     """
     search_context = {
         'Server': SERVER,
@@ -172,6 +174,8 @@ def get_total_results(response_dict):
     Args:
         response_dict(dict): the raw response from elastic search.
 
+    Returns:
+        a dictionary containing the total results info for the context (dict) the the number of total results (int)
     """
     total_results = response_dict.get('hits', {}).get('total')
     if not str(total_results).isdigit():
@@ -188,8 +192,7 @@ def get_total_results(response_dict):
 
 
 def search_command():
-    """Performs a search in Elasticsearch.
-    """
+    """Performs a search in Elasticsearch."""
     index = demisto.args().get('index')
     query = demisto.args().get('query')
     fields = demisto.args().get('fields')  # fields to display
@@ -231,9 +234,7 @@ def search_command():
 
 
 def fetch_params_check():
-    """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered.
-
-    """
+    """If is_fetch is ticked, this function checks that all the necessary parameters for the fetch are entered."""
     str_error = []  # type:List
     if TIME_FIELD == '' or TIME_FIELD is None:
         str_error.append("Index time field is not configured.")
