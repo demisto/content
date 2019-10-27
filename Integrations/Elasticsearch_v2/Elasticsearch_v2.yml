@@ -32,10 +32,16 @@ configuration:
   name: fetch_time_field
   required: false
   type: 0
-- display: Use timestamp in the fetch time field
-  name: use_timestamp
+- defaultvalue: Simple-Date
+  display: Which type is the time field
+  name: time_method
+  options:
+  - Simple-Date
+  - Timestamp-Seconds
+  - Timestamp-Milliseconds
+  - Timestamp-Float
   required: false
-  type: 8
+  type: 15
 - defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
   display: Time format as kept in Elasticsearch
   name: fetch_time_format
