@@ -1,0 +1,143 @@
+id: Panorama Query Logs For Indicators Test
+version: -1
+fromversion: 4.5.0
+name: Panorama Query Logs For Indicators Test
+description: This is a test playbook for Panorama Query Logs For Indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 76c17328-4ca8-4656-8a99-df48fc6b601a
+    type: start
+    task:
+      id: 76c17328-4ca8-4656-8a99-df48fc6b601a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 625e87a1-e072-40a1-8ab5-4dcb26b6e6c6
+    type: playbook
+    task:
+      id: 625e87a1-e072-40a1-8ab5-4dcb26b6e6c6
+      version: -1
+      name: Panorama Query Logs For Indicators
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
+        and wildfire. The playbook accepts inputs such as IP. hash, url.'
+      playbookName: Panorama Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      filedigest:
+        simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
+      ip:
+        simple: 192.168.1.12,8.8.8.8
+      log_type:
+        simple: traffic,threat,wildfire,data,url
+      url:
+        simple: microsoft.com,windowsupdate.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8d5e063c-2c0d-47b0-87b2-d3bf025719fe
+    type: title
+    task:
+      id: 8d5e063c-2c0d-47b0-87b2-d3bf025719fe
+      description: Header
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f7468682-d376-4eb2-80f1-bdeff2b936f0
+    type: regular
+    task:
+      id: f7468682-d376-4eb2-80f1-bdeff2b936f0
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
