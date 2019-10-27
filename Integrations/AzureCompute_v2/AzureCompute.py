@@ -546,6 +546,48 @@ def list_resource_groups_command():
     })
 
 
+# <-------- Subscriptions --------> #
+
+
+def list_subscriptions():
+    parameters = {'api-version': '2017-05-10'}
+    url = SERVER + '/subscriptions'
+    response = http_request('GET', full_url=url, params=parameters, codes={200})
+    return response
+
+
+def list_subscriptions_command():
+    """
+    List all subscriptions for this application
+
+    returns:
+        Subscription Objects
+    """
+    response = list_subscriptions()
+    # Retrieve relevant properties to return to context
+    value = response.get('value')
+    subscriptions = []
+    for subscription in value:
+        subscription_context = {
+            'Name': subscription.get('displayName'),
+            'ID': subscription.get('id'),
+            'State': subscription.get('state')
+        }
+        subscriptions.append(subscription_context)
+
+    title = 'List of Subscriptions'
+    human_readable = tableToMarkdown(title, subscriptions, removeNull=True)
+    entry_context = {'Azure.Subscription(val.ID && val.ID === obj.ID)': subscriptions}
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['text'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': entry_context
+    })
+
+
 # <-------- Virtual Machines --------> #
 
 def list_vms(resource_group):
@@ -938,7 +980,8 @@ commands = {
     'azure-vm-poweroff-instance': poweroff_vm_command,
     'azure-vm-create-instance': create_vm_command,
     'azure-vm-delete-instance': delete_vm_command,
-    'azure-list-resource-groups': list_resource_groups_command
+    'azure-list-resource-groups': list_resource_groups_command,
+    'azure-list-subscriptions': list_subscriptions_command
 }
 
 '''EXECUTION'''
