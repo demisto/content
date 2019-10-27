@@ -2,7 +2,7 @@ from Vectra_v2 import *
 
 GET_DETECTIONS_RAW_RES = {
     "count": 2,
-    "next": "https://api.demo.vectranetworks.com/api/v2.1/detections?page=2",
+    "next": "demisto.com/api/v2.1/detections?page=2",
     "previous": None,
     "results": [
         {
@@ -16,14 +16,14 @@ GET_DETECTIONS_RAW_RES = {
             "detection": "Suspicious HTTP",
             "detection_category": "COMMAND \u0026 CONTROL",
             "detection_type": "Suspicious HTTP",
-            "detection_url": "https://api.demo.vectranetworks.com/api/v2/detections/81",
+            "detection_url": "demisto.com/api/v2/detections/81",
             "first_timestamp": "2019-10-11T06:39:48Z",
             "grouped_details": [
                 {
                     "bytes_received": 534,
                     "bytes_sent": 354,
                     "dst_ips": [
-                        "95.108.142.138"
+                        "0.0.0.0"
                     ],
                     "events": [
                         {
@@ -34,8 +34,7 @@ GET_DETECTIONS_RAW_RES = {
                             "http_method": "GET",
                             "referrer": "",
                             "reply_cache_control": "private",
-                            "url": "/country.asp?st=im\u0026uid=235601974\u0026tuid=3101429\u0026sref=SMD_18-3_0_ie_"
-                                   "putlocker\u0026bld=18I\u0026cnt=br",
+                            "url": "/country.asp?st=im\u0026uid=235601974\u0026tuid=3101429\u0026sref=SMD_18-3_0_ie_",
                             "user_agent": ""
                         }
                     ],
@@ -63,13 +62,13 @@ GET_DETECTIONS_RAW_RES = {
                 "certainty": 0,
                 "groups": [],
                 "id": 48,
-                "ip": "192.168.197.211",
+                "ip": "0.0.0.0",
                 "is_key_asset": True,
                 "name": "morpheus",
                 "threat": 0,
-                "url": "https://api.demo.vectranetworks.com/api/v2.1/hosts/48"
+                "url": "demisto.com/api/v2.1/hosts/48"
             },
-            "src_ip": "192.168.197.211",
+            "src_ip": "0.0.0.0",
             "state": "inactive",
             "summary": {
                 "bad_user_agent": 0,
@@ -83,7 +82,7 @@ GET_DETECTIONS_RAW_RES = {
             "targets_key_asset": False,
             "threat": 40,
             "triage_rule_id": None,
-            "url": "https://api.demo.vectranetworks.com/api/v2/detections/81"
+            "url": "demisto.com/api/v2/detections/81"
         },
         {
             "assigned_date": None,
@@ -96,7 +95,7 @@ GET_DETECTIONS_RAW_RES = {
             "detection": "Outbound DoS",
             "detection_category": "BOTNET ACTIVITY",
             "detection_type": "Outbound DoS",
-            "detection_url": "https://api.demo.vectranetworks.com/api/v2/detections/80",
+            "detection_url": "demisto.com/api/v2/detections/80",
             "first_timestamp": "2019-10-10T13:33:27Z",
             "grouped_details": [
                 {
@@ -110,7 +109,7 @@ GET_DETECTIONS_RAW_RES = {
                     "dst_geo_lat": None,
                     "dst_geo_lon": None,
                     "dst_ips": [
-                        "128.128.128.204"
+                        "0.0.0.0"
                     ],
                     "dst_ports": [],
                     "first_timestamp": "2019-10-10T13:33:27Z",
@@ -121,7 +120,7 @@ GET_DETECTIONS_RAW_RES = {
                     "last_timestamp": "2019-10-10T13:45:08Z",
                     "num_sessions": 25001,
                     "protocol": "tcp",
-                    "src_ip": "192.168.173.206",
+                    "src_ip": "0.0.0.0",
                     "target_domains": []
                 }
             ],
@@ -141,13 +140,13 @@ GET_DETECTIONS_RAW_RES = {
                 "certainty": 0,
                 "groups": [],
                 "id": 140,
-                "ip": "192.168.173.206",
+                "ip": "0.0.0.0",
                 "is_key_asset": False,
                 "name": "desktop06",
                 "threat": 0,
-                "url": "https://api.demo.vectranetworks.com/api/v2.1/hosts/140"
+                "url": "demisto.com/api/v2.1/hosts/140"
             },
-            "src_ip": "192.168.173.206",
+            "src_ip": "0.0.0.0",
             "state": "inactive",
             "summary": {
                 "bytes_received": 1000040,
@@ -156,7 +155,7 @@ GET_DETECTIONS_RAW_RES = {
                     "syn_flood"
                 ],
                 "dst_ips": [
-                    "128.128.128.204"
+                    "0.0.0.0"
                 ],
                 "num_sessions": 25001
             },
@@ -165,7 +164,7 @@ GET_DETECTIONS_RAW_RES = {
             "targets_key_asset": False,
             "threat": 19,
             "triage_rule_id": None,
-            "url": "https://api.demo.vectranetworks.com/api/v2/detections/80"
+            "url": "demisto.com/api/v2/detections/80"
         }
     ]
 }
@@ -186,8 +185,8 @@ GET_HOSTS_RAW_RES = {
                 "81"
             ],
             "detection_set": [
-                "https://api.demo.vectranetworks.com/api/v2/detections/39",
-                "https://api.demo.vectranetworks.com/api/v2/detections/81"
+                "demisto.com/api/v2/detections/39",
+                "demisto.com/api/v2/detections/81"
             ],
             "groups": [],
             "has_active_traffic": False,
@@ -206,15 +205,15 @@ GET_HOSTS_RAW_RES = {
                 "c-4.QlWP",
                 "dCK.QlWP"
             ],
-            "host_url": "https://api.demo.vectranetworks.com/api/v2/hosts/48",
+            "host_url": "demisto.com/api/v2/hosts/48",
             "id": 48,
-            "ip": "192.168.197.211",
+            "ip": "0.0.0.0",
             "is_key_asset": True,
             "is_targeting_key_asset": False,
             "key_asset": True,
             "last_detection_timestamp": "2019-10-11T06:59:43Z",
             "last_modified": "2019-10-03T05:30:06Z",
-            "last_source": "192.168.197.211",
+            "last_source": "0.0.0.0",
             "name": "morpheus",
             "note": None,
             "note_modified_by": None,
@@ -231,7 +230,7 @@ GET_HOSTS_RAW_RES = {
             "tags": [],
             "targets_key_asset": False,
             "threat": 0,
-            "url": "https://api.demo.vectranetworks.com/api/v2/hosts/48"
+            "url": "demisto.com"
         },
         {
             "active_traffic": False,
@@ -246,10 +245,10 @@ GET_HOSTS_RAW_RES = {
                 "79"
             ],
             "detection_set": [
-                "https://api.demo.vectranetworks.com/api/v2/detections/41",
-                "https://api.demo.vectranetworks.com/api/v2/detections/54",
-                "https://api.demo.vectranetworks.com/api/v2/detections/74",
-                "https://api.demo.vectranetworks.com/api/v2/detections/79"
+                "demisto.com/api/v2/detections/41",
+                "demisto.com/api/v2/detections/54",
+                "demisto.com/api/v2/detections/74",
+                "demisto.com/api/v2/detections/79"
             ],
             "groups": [],
             "has_active_traffic": False,
@@ -269,15 +268,15 @@ GET_HOSTS_RAW_RES = {
                 "cme.D4-N",
                 "d2O.D4-N"
             ],
-            "host_url": "https://api.demo.vectranetworks.com/api/v2/hosts/80",
+            "host_url": "demisto.com/api/v2/hosts/80",
             "id": 80,
-            "ip": "192.168.174.114",
+            "ip": "0.0.0.0",
             "is_key_asset": True,
             "is_targeting_key_asset": False,
             "key_asset": True,
             "last_detection_timestamp": "2019-10-10T07:23:49Z",
             "last_modified": "2019-10-03T13:53:06Z",
-            "last_source": "192.168.174.114",
+            "last_source": "0.0.0.0",
             "name": "jacobb",
             "note": None,
             "note_modified_by": None,
@@ -294,7 +293,7 @@ GET_HOSTS_RAW_RES = {
             "tags": [],
             "targets_key_asset": False,
             "threat": 6,
-            "url": "https://api.demo.vectranetworks.com/api/v2/hosts/80"
+            "url": "demisto.comapi/v2/hosts/80"
         }
     ]
 }
@@ -354,7 +353,7 @@ SEARCH_HOSTS_RAW_RESPONSE = {
                     "summary": {
                         "bytes_sent": 73616289,
                         "dst_ips": [
-                            "209.64.61.103"
+                            "0.0.0.0"
                         ],
                         "subnet": None
                     },
@@ -440,14 +439,14 @@ SEARCH_HOSTS_RAW_RESPONSE = {
                 "c80.1f0j"
             ],
             "id": 103,
-            "ip": "192.168.11.5",
+            "ip": "0.0.0.0",
             "is_key_asset": False,
             "is_targeting_key_asset": False,
             "key_asset": False,
             "last_detection_timestamp": "2019-10-04T19:24:04Z",
             "last_modified": "2019-10-04T12:40:38Z",
             "last_seen": "2019-10-04T18:56:40Z",
-            "last_source": "192.168.11.5",
+            "last_source": "0.0.0.0",
             "name": "winfs06r3u17",
             "note": None,
             "note_modified_by": None,
@@ -515,7 +514,7 @@ SEARCH_HOSTS_RAW_RESPONSE = {
                     "summary": {
                         "common_shares": [],
                         "dst_ips": [
-                            "192.168.13.219"
+                            "0.0.0.0"
                         ],
                         "num_accounts": 1,
                         "shares": [
@@ -629,14 +628,14 @@ SEARCH_HOSTS_RAW_RESPONSE = {
                 "bvi.5tXk"
             ],
             "id": 31,
-            "ip": "192.168.173.102",
+            "ip": "0.0.0.0",
             "is_key_asset": False,
             "is_targeting_key_asset": False,
             "key_asset": False,
             "last_detection_timestamp": "2019-10-03T02:11:12Z",
             "last_modified": "2019-10-03T02:25:06Z",
             "last_seen": "2019-10-03T02:21:54Z",
-            "last_source": "192.168.173.102",
+            "last_source": "0.0.0.0",
             "name": "Cindy-Mac",
             "note": None,
             "note_modified_by": None,
@@ -687,7 +686,7 @@ HOST_BY_ID_RAW_RES = {
                     "summary": {
                         "bytes_received": 149147729,
                         "dst_ips": [
-                            "192.168.12.5"
+                            "0.0.0.0"
                         ],
                         "num_files": 61,
                         "num_shares": 2,
@@ -713,7 +712,7 @@ HOST_BY_ID_RAW_RES = {
                         "bytes_received": 492040,
                         "bytes_sent": 18644,
                         "dst_ips": [
-                            "10.16.0.1"
+                            "0.0.0.0"
                         ],
                         "num_sessions": 0
                     },
@@ -734,7 +733,7 @@ HOST_BY_ID_RAW_RES = {
                         "bytes_received": 492040,
                         "bytes_sent": 18644,
                         "dst_ips": [
-                            "10.16.0.1"
+                            "0.0.0.0"
                         ],
                         "num_sessions": 0
                     },
@@ -767,14 +766,14 @@ HOST_BY_ID_RAW_RES = {
                 "buC.e33V"
             ],
             "id": 4,
-            "ip": "192.168.152.194",
+            "ip": "0.0.0.0",
             "is_key_asset": False,
             "is_targeting_key_asset": False,
             "key_asset": False,
             "last_detection_timestamp": "2019-10-03T04:40:40Z",
             "last_modified": "2019-10-02T22:54:06Z",
             "last_seen": "2019-10-03T04:51:53Z",
-            "last_source": "192.168.152.194",
+            "last_source": "0.0.0.0",
             "name": "DJComp",
             "note": None,
             "note_modified_by": None,
@@ -836,7 +835,7 @@ DETECTION_BY_ID_RAW_RES = {
                     "last_timestamp": "2019-10-02T22:29:19Z",
                     "num_ad_sessions": 184,
                     "num_sessions": 2076,
-                    "src_ip": "192.168.173.101",
+                    "src_ip": "0.0.0.0",
                     "target_domains": []
                 },
                 {
@@ -857,7 +856,7 @@ DETECTION_BY_ID_RAW_RES = {
                     "last_timestamp": "2019-10-02T22:05:19Z",
                     "num_ad_sessions": 114,
                     "num_sessions": 1924,
-                    "src_ip": "192.168.173.101",
+                    "src_ip": "0.0.0.0",
                     "target_domains": []
                 }
             ],
@@ -878,12 +877,12 @@ DETECTION_BY_ID_RAW_RES = {
                 "certainty": 33,
                 "groups": [],
                 "id": 7,
-                "ip": "192.168.173.101",
+                "ip": "0.0.0.0",
                 "is_key_asset": True,
                 "name": "BThomas-Win7",
                 "threat": 23
             },
-            "src_ip": "192.168.173.101",
+            "src_ip": "0.0.0.0",
             "state": "inactive",
             "summary": {
                 "duration": 1653,
