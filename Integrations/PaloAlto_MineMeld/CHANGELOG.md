@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed lowercase hash types in the outputs.
 
 ## [19.9.1] - 2019-09-18
   - Improved error handling for API errors.
