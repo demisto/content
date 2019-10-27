@@ -618,13 +618,12 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
+# TODO: Add binaries to fetch incidents
+# TODO: Implement proxy handling
 # TODO: Check for the data owner issue
 # ￿￿￿￿TODO: Check if violations can be a list
-# TODO: Check fetch incidents
-# TODO: Add binaries to fetch incidents
-# TODO: Improve test PB
 # TODO: Check for the long ID issue
-# TODO: Check proxy handling
+# TODO: Check fetch incidents d
 def main():
     params: Dict = demisto.params()
     server: str = params.get('server', '').rstrip('/')
