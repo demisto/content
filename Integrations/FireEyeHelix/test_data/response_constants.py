@@ -422,6 +422,39 @@ ALERTS_RESP = {
     ]
 }
 
+ENDPOINTS_BY_ALERT_RESP = {
+    "meta": {
+        "count": 1,
+        "previous": None,
+        "limit": 30,
+        "offset": 0,
+        "next": None
+    },
+    "results": {
+        "status": "completed",
+        "endpoints": [
+            {
+                "id": 191,
+                "customer_id": "demisto",
+                "agent_id": "agent_id",
+                "containment_queued": False,
+                "containment_state": "normal",
+                "created_at": "created_at",
+                "device_id": "device_id",
+                "domain": "WORKGROUP",
+                "hostname": "Demisto",
+                "mac_address": "mac_address",
+                "operating_system": "Windows 10 Pro",
+                "primary_ip_address": "primary_ip_address",
+                "updated_at": "updated_at",
+                "timezone": "timezone",
+                "hash": "hash",
+                "source_url": "source_url"
+            }
+        ]
+    }
+}
+
 EVENTS_BY_ALERT_RESP = {
     "meta": {
         "count": 10,

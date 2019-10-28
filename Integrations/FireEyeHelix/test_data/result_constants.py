@@ -218,6 +218,24 @@ EXPECTED_NOTES_CREATE_RSLT = {
     }
 }
 
+EXPECTED_ENDPOINTS_BY_ALERT_RSLT = {
+    "FireEye.Endpoint(val.ID && val.ID === obj.ID)": [
+        {
+            "ID": 191,
+            "CustomerID": "demisto",
+            "DeviceID": "device_id",
+            "Domain": "WORKGROUP",
+            "Hostname": "Demisto",
+            "MACAddress": "mac_address",
+            "OS": "Windows 10 Pro",
+            "IP": "primary_ip_address",
+            "UpdatedTime": "updated_at",
+            "ContainmentState": "normal"
+        }
+    ],
+    "FireEye.Endpoint(val.Count).Count": 1
+}
+
 EXPECTED_EVENTS_BY_ALERT_RSLT = {
     "FireEye.Event(val.ID && val.ID === obj.ID)": [
         {

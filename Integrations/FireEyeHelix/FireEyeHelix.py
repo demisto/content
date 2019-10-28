@@ -339,17 +339,21 @@ class Client(BaseClient):
         suffix = f'/api/v3/alerts/{alert_id}/events'
         return self._http_request('GET', suffix)
 
-    def get_endpoints_by_alert(self, alert_id: Optional[Any]) -> Dict:
+    def get_endpoints_by_alert(self, alert_id: Optional[Any], offset: Optional[Any] = None) -> Dict:
         """Fetches endpoints for an alert by sending a GET request.
 
         Args:
             alert_id: Alert ID to get endpoints for.
+            offset: Offset to the result
 
         Returns:
             Response from API.
         """
         suffix = f'/api/v3/alerts/{alert_id}/endpoints'
-        return self._http_request('GET', suffix)
+        params = assign_params(
+            offset=offset
+        )
+        return self._http_request('GET', suffix, params=params)
 
     def get_cases_by_alert(self, alert_id: Optional[Any], limit: Optional[Any] = None, offset: Optional[Any] = None,
                            order_by: Optional[Any] = None) -> Dict:
@@ -990,7 +994,7 @@ def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dic
         Outputs
     """
     alert_id = args.get('alert_id')
-    raw_response = client.get_endpoints_by_alert(alert_id=alert_id)
+    raw_response = client.get_endpoints_by_alert(alert_id=alert_id, offset=args.get('offset'))
     endpoints = demisto.get(raw_response, 'results.endpoints')
     if endpoints:
         title = f'{INTEGRATION_NAME} - Endpoints for alert {alert_id}:'

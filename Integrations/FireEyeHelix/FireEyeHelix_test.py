@@ -1,11 +1,11 @@
 import pytest
 from FireEyeHelix import Client, build_search_groupby_result, list_alerts_command, get_alert_by_id_command, \
-    get_alert_notes_command, create_alert_note_command, get_events_by_alert_command
+    get_alert_notes_command, create_alert_note_command, get_events_by_alert_command, get_endpoints_by_alert_command
 from test_data.response_constants import ALERT_RESP, ALERTS_RESP, SEARCH_AGGREGATIONS_SINGLE_RESP, \
-    SEARCH_AGGREGATIONS_MULTI_RESP, NOTES_GET_RESP, NOTES_CREATE_RESP, EVENTS_BY_ALERT_RESP
+    SEARCH_AGGREGATIONS_MULTI_RESP, NOTES_GET_RESP, NOTES_CREATE_RESP, EVENTS_BY_ALERT_RESP, ENDPOINTS_BY_ALERT_RESP
 from test_data.result_constants import EXPECTED_AGGREGATIONS_MULTI_RSLT, EXPECTED_AGGREGATIONS_SINGLE_RSLT, \
     EXPECTED_ALERT_RSLT, EXPECTED_ALERTS_RSLT, EXPECTED_NOTES_GET_RSLT, EXPECTED_NOTES_CREATE_RSLT, \
-    EXPECTED_EVENTS_BY_ALERT_RSLT
+    EXPECTED_EVENTS_BY_ALERT_RSLT, EXPECTED_ENDPOINTS_BY_ALERT_RSLT
 
 
 def test_build_search_groupby_result():
@@ -20,7 +20,8 @@ def test_build_search_groupby_result():
     (get_alert_notes_command, {'id': 3232}, NOTES_GET_RESP, EXPECTED_NOTES_GET_RSLT),
     (create_alert_note_command, {'note': 'This is a note test', 'alert_id': 3232}, NOTES_CREATE_RESP,
      EXPECTED_NOTES_CREATE_RSLT),
-    (get_events_by_alert_command, {'alert_id': 3232}, EVENTS_BY_ALERT_RESP, EXPECTED_EVENTS_BY_ALERT_RSLT)
+    (get_events_by_alert_command, {'alert_id': 3232}, EVENTS_BY_ALERT_RESP, EXPECTED_EVENTS_BY_ALERT_RSLT),
+    (get_endpoints_by_alert_command, {'alert_id': 3232, 'offset': 0}, ENDPOINTS_BY_ALERT_RESP, EXPECTED_ENDPOINTS_BY_ALERT_RSLT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     headers = {
