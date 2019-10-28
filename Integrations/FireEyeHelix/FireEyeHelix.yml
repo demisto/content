@@ -440,7 +440,7 @@ script:
     - default: true
       description: Alert ID to get event by.
       isArray: false
-      name: id
+      name: alert_id
       required: true
       secret: false
     deprecated: false

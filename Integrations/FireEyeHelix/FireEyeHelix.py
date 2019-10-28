@@ -957,7 +957,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     Returns:
         Outputs
     """
-    alert_id = args.get('id')
+    alert_id = args.get('alert_id')
     raw_response = client.get_events_by_alert(alert_id=alert_id)
     events = raw_response.get('results')
     if events:
