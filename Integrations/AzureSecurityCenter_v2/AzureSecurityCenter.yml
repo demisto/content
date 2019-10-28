@@ -49,7 +49,7 @@ script:
       secret: false
     - default: false
       description: The location where Azure Security Center stores the data of the
-        subscription. Run the 'azure-sc-location-list' command to get the ascLocation.
+        subscription. Run the 'azure-sc-list-location' command to get the ascLocation.
         This command requires the resourceGroupName argument.
       isArray: false
       name: asc_location
@@ -363,6 +363,11 @@ script:
     - contextPath: Azure.Subscription.Enabled
       description: Subscription state
       type: String
+  - deprecated: false
+    description: The location of the responsible ASC of the specific subscription.
+      For each subscription there is only one responsible location.
+    execution: false
+    name: azure-sc-list-location
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
   longRunning: false
