@@ -1571,10 +1571,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
-        },
-        {
             "playbookID": "Account Enrichment - Generic v2 - Test",
             "integrations": "activedir"
         },
