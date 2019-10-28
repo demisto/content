@@ -85,6 +85,7 @@ outputs:
   description: Region of the security group
   type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - Amazon Web Services

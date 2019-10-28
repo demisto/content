@@ -101,6 +101,7 @@ def ssh_execute(command: str):
 
 
 def scp_execute(file_name: str, file_path: str):
+
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
             file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
@@ -173,11 +174,14 @@ def edl_search_external_file_command():
     })
 
 
-def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
+def edl_update_external_file(file_path: str, list_name: str, verbose: bool):
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name)
 
-    file_name = file_path.rsplit('/', 1)[-1] + '.txt'
+    file_name = file_path.rsplit('/', 1)[-1]
+    if not file_name.endswith('.txt'):
+        file_name += '.txt'
+
     try:
         with open(file_name, 'w') as file:
             file.write("\n".join(list_data))
@@ -186,12 +190,83 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> b
         shutil.rmtree(file_name, ignore_errors=True)
 
     if not success:
-        return False
+        return_error('External file was not updated successfully.')
     else:
         if verbose:
-            return ssh_execute(f'cat {file_path}')
+            external_file_items = ssh_execute(f'cat {file_path}')
+            if external_file_items:
+                md = tableToMarkdown('Updated File Data:', external_file_items, headers=['Data'])
+            else:
+                md = 'External file has no items.'
         else:
-            return True
+            md = 'External file updated successfully.'
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'Contents': md,
+            'ContentsFormat': formats['markdown']
+        })
+
+
+def edl_update_external_file_command():
+    """
+    Overrides external file path with internal list
+    """
+    file_path = demisto.args().get('file_path')
+    if DOCUMENT_ROOT:
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
+    list_name = demisto.args().get('list_name')
+    verbose = demisto.args().get('verbose') == 'true'
+
+    edl_update_external_file(file_path, list_name, verbose)
+
+
+def edl_update_internal_list(list_name: str, list_items, add, verbose: bool):
+    dict_of_lists = demisto.getIntegrationContext()
+    if not dict_of_lists:
+        dict_of_lists = {list_name: list_items}
+        if verbose:
+            md = tableToMarkdown('List items:', list_items, headers=[list_name])
+        else:
+            md = 'Instance context updated successfully.'
+    else:
+        if not dict_of_lists.get(list_name, None) and not add:
+            return_error('Cannot remove items from an empty list.')
+        if dict_of_lists.get(list_name, None):
+            if add:
+                list_items = list(set(dict_of_lists.get(list_name) + list_items))
+            else:
+                list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
+
+        if len(list_items) == 0:  # delete list from instance context
+            dict_of_lists.pop(list_name, None)
+            md = 'List is empty, deleted from instance context.'
+        else:
+            dict_of_lists.update({list_name: list_items})
+            if verbose:
+                md = tableToMarkdown('List items:', list_items, headers=[list_name])
+            else:
+                md = 'Instance context updated successfully.'
+
+    demisto.setIntegrationContext(dict_of_lists)
+
+    demisto.results({
+        'ContentsFormat': formats['markdown'],
+        'Type': entryTypes['note'],
+        'Contents': md
+    })
+
+
+def edl_update_internal_list_command():
+    """
+        Updates the instance context with the list name and items given
+    """
+    list_name = demisto.args().get('list_name')
+    list_items = argToList(demisto.args().get('list_items'))
+    add = demisto.args().get('add_or_remove') == 'add'
+    verbose = demisto.args().get('verbose') == 'true'
+
+    edl_update_internal_list(list_name, list_items, add, verbose)
 
 
 def edl_update():
@@ -208,52 +283,10 @@ def edl_update():
     verbose = demisto.args().get('verbose') == 'true'
 
     # update internal list
-    dict_of_lists = demisto.getIntegrationContext()
-    if not dict_of_lists:
-        dict_of_lists = {list_name: list_items}
-        if verbose:
-            md = tableToMarkdown('List items:', list_items, headers=[list_name])
-        else:
-            md = 'Instance context updated successfully'
-    else:
-        if not dict_of_lists.get(list_name, None) and not add:
-            return_error('Cannot remove items from an empty list')
-        if dict_of_lists.get(list_name, None):
-            if add:
-                list_items = list(set(dict_of_lists.get(list_name) + list_items))
-            else:
-                list_items = [item for item in dict_of_lists.get(list_name) if item not in list_items]
-
-        if len(list_items) == 0:  # delete list from instance context
-            dict_of_lists.pop(list_name, None)
-            md = 'List is empty, deleted from instance context.'
-        else:
-            dict_of_lists.update({list_name: list_items})
-            if verbose:
-                md = tableToMarkdown('List items:', list_items, headers=[list_name])
-            else:
-                md = 'Instance context updated successfully'
-
-    demisto.setIntegrationContext(dict_of_lists)
-    demisto.results({
-        'ContentsFormat': formats['markdown'],
-        'Type': entryTypes['note'],
-        'Contents': md
-    })
+    edl_update_internal_list(list_name, list_items, add, verbose)
 
     # scp internal list to file_path
-    result = edl_update_external_file(file_path, list_name, verbose)
-    if result:
-        if verbose:
-            md = tableToMarkdown('Updated File Data:', result, headers=['Data'])
-        else:
-            md = 'External file updated successfully'
-
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': md,
-            'ContentsFormat': formats['markdown']
-        })
+    edl_update_external_file(file_path, list_name, verbose)
 
 
 def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
@@ -483,7 +516,7 @@ def edl_compare_command():
         md += '#### Please check who has writing permissions to the external file.\n'
         md += tableToMarkdown('', list(unique_internal), headers=[list_name])
     if len(md) == 0:
-        md = 'Internal list and External file have the same values'
+        md = 'Internal list and External file have the same values.'
 
     demisto.results({
         'Type': 11 if unique_external or unique_internal else entryTypes['note'],
@@ -541,6 +574,12 @@ def main():
 
         elif demisto.command() == 'pan-os-edl-search-external-file':
             edl_search_external_file_command()
+
+        elif demisto.command() == 'pan-os-edl-update-internal-list':
+            edl_update_internal_list_command()
+
+        elif demisto.command() == 'pan-os-edl-update-external-file':
+            edl_update_external_file_command()
 
         elif demisto.command() == 'pan-os-edl-update':
             edl_update()
