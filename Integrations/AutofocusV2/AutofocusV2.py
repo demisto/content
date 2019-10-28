@@ -472,6 +472,7 @@ def parse_tag_details_response(resp):
         'tag_class',
         'count',
         'lasthit',
+        'description'
     ]
     new_tag_info = {}
     for field in fields_to_extract_from_tag_details:
