@@ -11,6 +11,8 @@ To get you started, refer to our [Getting Started article](https://github.com/de
 After you finish developing, there are two steps left before you can create a pull request:
 
  - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
+ 
+ - Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
 
  - Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes).
 
@@ -24,6 +26,13 @@ If you are a first time GitHub contributor, please look at these links explainin
 * https://help.github.com/articles/creating-a-pull-request-from-a-fork/
 
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
+
+## Contributor License Agreement
+Before merging any PRs, we need all contributors to sign a contributor license agreement. By signing a contributor license agreement, we ensure that the community is free to use your contributions.
+
+When you contribute a new pull request, a bot will evaluate whether you have signed the CLA. If required, the bot will comment on the pull request, including a link to accept the agreement. The CLA document is available for review as a [PDF](docs/cla.pdf).
+
+If the `license/cla` status check remains on *Pending*, even though all contributors have accepted the CLA, you can recheck the CLA status by visiting the following link (replace **[PRID]** with the ID of your PR): https://cla-assistant.io/check/demisto/content?pullRequest=[PRID] .
 
 ## Contributing Playbooks
 

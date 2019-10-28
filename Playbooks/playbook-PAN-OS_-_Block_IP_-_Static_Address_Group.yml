@@ -7,7 +7,7 @@ description: |-
 
   ***Note - The playbook does not block the address group communication using a policy block rule. This step will be taken once outside of the playbook.
 starttaskid: "0"
-fromversion: 4.5.0
+fromversion: 4.0.0
 tasks:
   "0":
     id: "0"

@@ -25,7 +25,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -55,7 +55,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Search term.
+      description: 'The term for which to search. This argument cannot contain reserved characters such as !, $, #, @, etc.
+        For further information, see https://tools.ietf.org/html/rfc3986#section-2.2'
       isArray: false
       name: search
       required: false
