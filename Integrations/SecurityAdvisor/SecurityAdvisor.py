@@ -116,5 +116,4 @@ try:
 except Exception, e:
     demisto.debug('Error in SecurityAdvisor')
     LOG(e.message)
-    LOG.print_log()
     return_error(e.message)
