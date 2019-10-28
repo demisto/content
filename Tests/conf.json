@@ -1799,7 +1799,7 @@
             "playbookID": "Detonate File - FireEye AX - Test"
         },
         {
-            "integrations": "Rasterize",
+            "integrations": ["Rasterize","Image OCR"],
             "playbookID": "Rasterize Test"
         },
         {
@@ -2098,7 +2098,6 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "Rasterize": "No API calls "
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
