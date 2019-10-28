@@ -8,8 +8,7 @@ def test_get_depth_one(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -81,8 +80,7 @@ def test_set_default(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -105,8 +103,7 @@ def test_set_depth_one(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -131,8 +128,7 @@ def test_set_depth_two(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -157,8 +153,7 @@ def test_set_depth_five(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -183,8 +178,7 @@ def test_get_and_set_multi_depth(mocker):
         if name == 'getContext':
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
-                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                 }
+                    "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}}
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
