@@ -26,6 +26,7 @@ def get_by_incident_id(incident_id, get_key, set_key=""):
 
 
 def main():
+    '''Get arguments and call primary function'''
     inc_id = demisto.args().get('incident_id', demisto.incidents()[0]['id'])
     get_k = demisto.args()['get_key']
     set_k = demisto.args().get('set_key', get_k)
