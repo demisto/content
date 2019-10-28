@@ -1293,9 +1293,9 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-delete-note': delete_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,  # todo: Not tested properly
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert': get_cases_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,

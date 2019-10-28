@@ -422,6 +422,50 @@ ALERTS_RESP = {
     ]
 }
 
+CASES_BY_ALERT_RESP = {
+    "meta": {
+        "count": 1,
+        "previous": None,
+        "limit": 30,
+        "offset": 0,
+        "next": None
+    },
+    "results": [
+        {
+            "assigned_to": None,
+            "created_at": "created_at",
+            "created_by": {
+                "id": "id",
+                "avatar": "avatar",
+                "name": "name",
+                "username": "username",
+                "primary_email": "primary_email"
+            },
+            "description": "",
+            "events_count": 10,
+            "id": 35,
+            "info_links": [],
+            "name": "demisto test case",
+            "notes_count": 0,
+            "priority": "Critical",
+            "priority_order": 4,
+            "severity": 10,
+            "state": "Testing",
+            "status": "Declared",
+            "tags": [],
+            "total_days_unresolved": "16 23:52:09.819390",
+            "updated_at": "updated_at",
+            "updated_by": {
+                "id": "id",
+                "avatar": "avatar",
+                "name": "name",
+                "username": "username",
+                "primary_email": "primary_email"
+            }
+        }
+    ]
+}
+
 ENDPOINTS_BY_ALERT_RESP = {
     "meta": {
         "count": 1,

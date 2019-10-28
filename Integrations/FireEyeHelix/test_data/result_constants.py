@@ -182,40 +182,46 @@ EXPECTED_ALERTS_RSLT = {
     "FireEye.Alert(val.Count).Count": 115
 }
 
-EXPECTED_NOTES_GET_RSLT = {
-    "FireEye.Note(val.ID && val.ID === obj.ID)": [
-        {
-            "ID": 9,
-            "CreatedTime": "2019-10-28T07:41:30.396000Z",
-            "UpdatedTime": "2019-10-28T07:41:42.000123Z",
-            "Message": "This is a note test",
-            "CreatorID": "a",
-            "CreatorName": "George",
-            "AlertID": None
-        },
-        {
-            "ID": 91,
-            "CreatedTime": "2019-10-24T13:52:19.021299Z",
-            "UpdatedTime": "2019-10-24T13:52:19.021399Z",
-            "Message": "What a great note this is",
-            "CreatorID": "a",
-            "CreatorName": "George",
-            "AlertID": None
-        }
-    ],
-    "FireEye.Note(val.Count && val.AlertID === None).Count": 2
-}
+EXPECTED_AGGREGATIONS_SINGLE_RSLT = [
+    {'subject': 'Test 1', 'DocCount': 1},
+    {'subject': 'Test 2', 'DocCount': 2},
+    {'subject': 'Test 3', 'DocCount': 3},
+    {'subject': 'Test 4', 'DocCount': 4}
+]
 
-EXPECTED_NOTES_CREATE_RSLT = {
-    "FireEye.Note(val.ID && val.ID === obj.ID)": {
-        "ID": 9,
-        "CreatedTime": "2019-10-28T07:41:30.396000Z",
-        "UpdatedTime": "2019-10-28T07:41:42.000123Z",
-        "Message": "This is a note test",
-        "CreatorID": "a",
-        "CreatorName": "George",
-        "AlertID": 3232
-    }
+EXPECTED_AGGREGATIONS_MULTI_RSLT = [
+    {'srcipv4': '192.168.0.1', 'to': 'test1@demisto.com', 'subject': 'accepted', 'DocCount': 1},
+    {'srcipv4': '192.168.0.2', 'to': 'test2@demisto.com', 'subject': 'resume', 'DocCount': 2},
+    {'srcipv4': '192.168.0.3', 'to': 'test3@demisto.com', 'subject': 'position', 'DocCount': 3}
+]
+
+EXPECTED_CASES_NY_ALERT_RSLT = {
+    "FireEye.Case(val.ID && val.ID === obj.ID)": [
+        {
+            "ID": 35,
+            "Name": "demisto test case",
+            "AlertsCount": None,
+            "AssigneeID": None,
+            "AssigneeName": None,
+            "CreatorID": "id",
+            "CreatorName": "name",
+            "UpdaterID": "id",
+            "UpdaterName": "name",
+            "CreatedTime": "created_at",
+            "ModifiedTime": "updated_at",
+            "Description": "",
+            "EventsCount": 10,
+            "InfoLinks": [],
+            "NotesCount": 0,
+            "Priority": "Critical",
+            "PriorityOrder": 4,
+            "Severity": 10,
+            "State": "Testing",
+            "Status": "Declared",
+            "Tags": [],
+            "TotalDaysUnresolved": "16 23:52:09.819390"
+        }
+    ]
 }
 
 EXPECTED_ENDPOINTS_BY_ALERT_RSLT = {
@@ -285,15 +291,38 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
     "FireEye.Event(val.Count).Count": 10
 }
 
-EXPECTED_AGGREGATIONS_SINGLE_RSLT = [
-    {'subject': 'Test 1', 'DocCount': 1},
-    {'subject': 'Test 2', 'DocCount': 2},
-    {'subject': 'Test 3', 'DocCount': 3},
-    {'subject': 'Test 4', 'DocCount': 4}
-]
+EXPECTED_NOTES_GET_RSLT = {
+    "FireEye.Note(val.ID && val.ID === obj.ID)": [
+        {
+            "ID": 9,
+            "CreatedTime": "2019-10-28T07:41:30.396000Z",
+            "UpdatedTime": "2019-10-28T07:41:42.000123Z",
+            "Message": "This is a note test",
+            "CreatorID": "a",
+            "CreatorName": "George",
+            "AlertID": None
+        },
+        {
+            "ID": 91,
+            "CreatedTime": "2019-10-24T13:52:19.021299Z",
+            "UpdatedTime": "2019-10-24T13:52:19.021399Z",
+            "Message": "What a great note this is",
+            "CreatorID": "a",
+            "CreatorName": "George",
+            "AlertID": None
+        }
+    ],
+    "FireEye.Note(val.Count && val.AlertID === None).Count": 2
+}
 
-EXPECTED_AGGREGATIONS_MULTI_RSLT = [
-    {'srcipv4': '192.168.0.1', 'to': 'test1@demisto.com', 'subject': 'accepted', 'DocCount': 1},
-    {'srcipv4': '192.168.0.2', 'to': 'test2@demisto.com', 'subject': 'resume', 'DocCount': 2},
-    {'srcipv4': '192.168.0.3', 'to': 'test3@demisto.com', 'subject': 'position', 'DocCount': 3}
-]
+EXPECTED_NOTES_CREATE_RSLT = {
+    "FireEye.Note(val.ID && val.ID === obj.ID)": {
+        "ID": 9,
+        "CreatedTime": "2019-10-28T07:41:30.396000Z",
+        "UpdatedTime": "2019-10-28T07:41:42.000123Z",
+        "Message": "This is a note test",
+        "CreatorID": "a",
+        "CreatorName": "George",
+        "AlertID": 3232
+    }
+}
