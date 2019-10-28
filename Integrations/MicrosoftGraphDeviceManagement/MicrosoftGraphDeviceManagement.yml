@@ -1,0 +1,157 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: MicrosoftGraphDeviceManagement
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: '70'
+  display: Minimum severity to consider an indicator as malicious.
+  name: threshold
+  required: false
+  type: 0
+description: Integration Template
+display: Microsoft Graph Device Management
+name: MicrosoftGraphDeviceManagement
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Get devices managed by Microsoft Graph.
+    execution: false
+    name: microsoft-graph-device-management-get-managed-devices
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description:  The Retire action removes managed app data (where applicable), settings, and email profiles that were assigned by using Intune.
+    execution: false
+    name: microsoft-graph-retire-action
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Wipe the device.
+    execution: false
+    name: microsoft-graph-device-management-wipe-action
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Reset device passcode.
+    execution: false
+    name: microsoft-graph-device-management-reset-passcode
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Lock the device.
+    execution: false
+    name: microsoft-graph-device-management-remote-lock
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: To get the location of a lost or stolen iOS device on a map, use the Locate device action.
+    execution: false
+    name: microsoft-graph-device-management-locate-device
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Reboot the device.
+    execution: false
+    name: microsoft-graph-device-management-reboot-now
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  - arguments:
+    - default: true
+      description: examp
+      isArray: false
+      name: example
+      required: true
+      secret: false
+    deprecated: false
+    description: Clean windows of device.
+    execution: false
+    name: microsoft-graph-device-management-clean-window
+    outputs:
+    - contextPath: EndPoint
+      description: need to complete
+      type: String
+  
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
