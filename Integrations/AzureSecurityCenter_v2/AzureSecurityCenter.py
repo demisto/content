@@ -1580,7 +1580,7 @@ def list_sc_subscriptions_command():
         ["ID", "Name", "State"],
         removeNull=True,
     )
-    ec = {"AzureSecurityCenter.Subscription(val.ID && val.ID === obj.ID)": outputs}
+    ec = {"Azure.Subscription(val.ID && val.ID === obj.ID)": outputs}
 
     entry = {
         "Type": entryTypes["note"],
