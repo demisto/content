@@ -1,5 +1,6 @@
 ## [Unreleased]
 The integration ignores the FQDN configuration parameter if it is empty or contains only white spaces.
+Support newer `smtplib` (one that does not expose stderr)
 
 ## [19.9.0] - 2019-09-04
 Improved debug failure logging when testing the integration instance configuration.
