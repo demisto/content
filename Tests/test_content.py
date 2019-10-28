@@ -11,6 +11,7 @@ from datetime import datetime
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
+from requests import Session
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
@@ -373,10 +374,24 @@ def extract_filtered_tests():
     return filtered_tests, is_filter_configured, run_all
 
 
-def generate_demisto_api_key():
-    with open("./conf_secret.json", "r") as conf_json:
-        data = json.load(conf_json)
-        demisto_api_key = data['apikeys'][0]['apikey']
+def generate_demisto_api_key(server, username, password):
+    host = "https://{}".format(server)
+    session = Session()
+    r = session.get(host, verify=False)
+    print(r.content)
+    xsrf = r.cookies["XSRF-TOKEN"]
+    h = {"Accept": "application/json",
+         "Content-type": "application/json",
+         "X-XSRF-TOKEN": xsrf}
+    body = json.dumps({"user": username, "password": password})
+    session.request("POST", host + "/login", headers=h, verify=False, data=body)
+    demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+    apikey_json = {
+        'name': 'test_apikey',
+        'apikey': demisto_api_key
+    }
+    resp = session.request("POST", host + "/apikeys", headers=h, verify=False, data=json.dumps(apikey_json))
+    print(str(resp))
     return demisto_api_key
 
 
@@ -518,6 +533,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
 
     options = options_handler()
+    username = options.user
+    password = options.password
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
@@ -527,7 +544,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_number = options.buildNumber
     build_name = options.buildName
 
-    demisto_api_key = generate_demisto_api_key()
+    demisto_api_key = generate_demisto_api_key(server, username=username, password=password)
     c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)

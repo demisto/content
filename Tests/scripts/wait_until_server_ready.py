@@ -1,6 +1,8 @@
 """Wait for server to be ready for tests"""
 import sys
 import json
+import string
+import random
 import argparse
 from time import sleep
 import datetime
@@ -20,7 +22,7 @@ MAX_TRIES = 20
 SLEEP_TIME = 45
 
 
-def get_api_key():
+def get_username_password():
     parser = argparse.ArgumentParser(description='Utility for batch action on incidents')
     parser.add_argument('-c', '--confPath', help='The path for the secret conf file', required=True)
     parser.add_argument('-v', '--contentVersion', help='Content version to install', required=True)
@@ -34,13 +36,7 @@ def get_api_key():
     if options.non_ami:
         return conf['username'], conf['username'], options.contentVersion
 
-    print(conf['apikeys'][0]['apikey'])
-
-    user = conf['username']
-    password = conf['userPassword']
-    api_key = conf['apikeys'][0]['apikey']
-
-    return api_key, options.contentVersion, user, password
+    return conf['username'], conf['userPassword'], options.contentVersion
 
 
 def get_xsrf_token(ips):
@@ -50,7 +46,7 @@ def get_xsrf_token(ips):
         r = session.get(host, verify=False)
 
 
-def is_correct_content_installed(api_key, ips, content_version, username, password):
+def is_correct_content_installed(ips, content_version, username, password):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
@@ -76,6 +72,15 @@ def is_correct_content_installed(api_key, ips, content_version, username, passwo
         first_time_login = session.request("POST", host+"/login", headers=h, verify=False, data=body)
         print(str(first_time_login.content))
         sleep(15)
+        demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+        apikey_json = {
+            'name': 'test_apikey',
+            'apikey': demisto_api_key
+        }
+        resp = session.request("POST", host + "/apikeys", headers=h, verify=False,
+                               data=json.dumps(apikey_json))
+        print(str(resp))
+        api_key = resp
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         # # just signing in for the session
         # body = {"user": username, "password": password}
