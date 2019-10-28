@@ -1,0 +1,292 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PolySwarm
+  version: -1
+configuration:
+- display: PolySwarm API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: https://api.polyswarm.network/v1
+  display: The Base URL to connect to
+  name: base_url
+  required: true
+  type: 0
+- defaultvalue: lima
+  display: PolySwarm Community
+  name: polyswarm_community
+  required: true
+  type: 0
+description: Real-time threat intelligence from a crowdsourced network of security experts and antivirus companies.
+display: PolySwarm
+name: PolySwarm
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: UUID string
+      isArray: false
+      name: scan_uuid
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a report from the UUID.
+    execution: false
+    name: polyswarm-get-report
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: The results of the PolySwarm Permalink.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: The total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The hash for the file reputation information. Can be be: "SHA256", "SHA1" or "MD5".'
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Polyswarm for file reputation information.
+    execution: false
+    name: file
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  - arguments:
+    - default: true
+      description: The IP Address for the reputation information.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Polyswarm for IP reputation information.
+    execution: false
+    name: ip
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink Results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives Found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: URL for reputation information.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Polyswarm for URL reputation information.
+    execution: false
+    name: url
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain for the reputation information.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Queries Polyswarm for Domain reputation information.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink Results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives Found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: true
+      description: The URL to scan.
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a URL to Polyswarm and retrieves analysis results.
+    execution: false
+    name: url-scan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total Scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: Artifact Queried.
+      type: String
+  - arguments:
+    - default: false
+      description: 'The hash to rescan. Can be: "SHA256", "SHA1", or "MD5".'
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Rescans the uploaded artifact by hash.
+    execution: false
+    name: file-rescan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: The total scan.
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm Scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  - arguments:
+    - default: true
+      description: 'The hash file to download. Can be: "SHA256", "SHA1", or "MD5".'
+      isArray: false
+      name: hash
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads a file from Polyswarm.
+    execution: false
+    name: get-file
+    outputs:
+    - contextPath: File.Size
+      description: The file size.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The sample name.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The War-Room Entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: Basic information of the file.
+      type: String
+    - contextPath: File.Type
+      description: File type. For example, "PE".
+      type: String
+    - contextPath: File MD5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: PolySwarm.FileID
+      description: The File ID.
+      type: String
+  - arguments:
+    - default: true
+      description: The War-room Entry ID.
+      isArray: false
+      name: entryID
+      required: true
+      secret: false
+    deprecated: false
+    description: Uploads a file to Polyswarm and retrieves analysis results.
+    execution: false
+    name: file-scan
+    outputs:
+    - contextPath: PolySwarm.Total
+      description: Total Scan
+      type: Number
+    - contextPath: PolySwarm.Permalink
+      description: PolySwarm Permalink results.
+      type: String
+    - contextPath: PolySwarm.Positives
+      description: Total Positives found.
+      type: Number
+    - contextPath: PolySwarm.Scan_UUID
+      description: The PolySwarm scan UUID.
+      type: String
+    - contextPath: PolySwarm.Artifact
+      description: The Artifact queried.
+      type: String
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
