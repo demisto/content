@@ -1,4 +1,4 @@
-from typing import Tuple, Dict, Union
+from typing import Tuple, Dict, Union, Optional
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -43,12 +43,36 @@ class Client(BaseClient):
         return self._http_request('POST', url_suffix='', params=params)
 
 
-def fetch_incident_command(client: Client, args: dict):
-    pass
+def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first_fetch_time: str,
+                            table_name: str, columns: str, date_name: str
+                            ) -> Tuple[dict, list]:
+    date_format = "%Y-%m-%dT%H:%M:%SZ"
+    if not last_run_dict:
+        last_fetch, _ = parse_date_range(first_fetch_time, date_format=date_format, utc=True)
+    else:
+        last_fetch = last_run_dict.get('last_run')
+    query = f"SELECT "
+    for column in argToList(columns):
+        query += f"{column}, "
+    query = query.rstrip(',')
+    query += f"FROM {table_name} WHERE {date_name} > {last_fetch}"
+    raw_response = client.query(query)
+    incidents = [
+        {
+            'name': f'Database incident: {row[0]}',
+            'occurred': row[1],
+            'rawJSON': json.dumps(raw_response)
+        } for row in raw_response
+    ]
+    # Get last fetch from incidents
+    if incidents:
+        incidents.sort(key=lambda row: row.get('occurred'))
+        last_fetch = incidents[-1]['occurred']
+    return {'last_run': last_fetch}, incidents
 
 
 def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
-    query = args.get('query')
+    query = args.get('query', '')
     raw_response = client.query(query)
     context = list()
     if raw_response:
@@ -63,9 +87,9 @@ def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
             f"Results from {INTEGRATION_NAME}",
             context,
         )
-        context = {"Database(var.ID === obj.ID": context}
-        return readable_output, context, raw_response
-    return f"{INTEGRATION_NAME} - found no results for query", {}, raw_response
+        context = {"Database(var.ID === obj.ID": context}  # type: ignore
+        return readable_output, context, raw_response  # type: ignore
+    return f"{INTEGRATION_NAME} - Found no results for given query.", {}, raw_response  # type: ignore
 
 
 def main():
@@ -80,8 +104,6 @@ def main():
     # Should we use SSL
     use_ssl = not params.get('insecure') == 'true'
     use_proxy = params.get('proxy') == 'true'
-    # How many time before the first fetch to retrieve incidents
-    fetch_time = params.get('fetch_time', '3 days')
     # Service base URL
     # Headers to be sent in requests
     headers = {
@@ -97,23 +119,15 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-query': query_command
     }
     if command == 'fetch-incidents':
-        fetch_incident_command(client, )
+        # How many time before the first fetch to retrieve incidents
+        fetch_time = params.get('fetch_time', '3 days')
+        columns = params.get('columns')
+        table_name = params.get('table_name')
+        date_name = params.get('date_name')
+        last_run, incidents = fetch_incidents_command(
+            client, demisto.getLastRun(), fetch_time, table_name, columns, date_name
+        )
+        demisto.setLastRun(last_run)
+        demisto.incidents(incidents)
     elif command in commands:
         return_outputs(*commands[command](client, demisto.args()))
-
-
-''' HELPER FUNCTIONS '''
-
-
-def item_to_incident(item):
-    incident = {}
-    # Incident Title
-    incident['name'] = 'Example Incident: ' + item.get('name')
-    # Incident occurrence time, usually item creation date in service
-    incident['occurred'] = item.get('createdDate')
-    # The raw response from the service, providing full info regarding the item
-    incident['rawJSON'] = json.dumps(item)
-    return incident
-
-
-''' COMMANDS + REQUESTS FUNCTIONS '''

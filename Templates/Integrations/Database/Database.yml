@@ -20,12 +20,11 @@ configuration:
   name: token
   required: true
   type: 4
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -80,7 +79,8 @@ script:
     - contextPath: Example.Item.CreatedDate
       description: Item creation date
       type: date
-  isfetch: false
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

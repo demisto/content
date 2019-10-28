@@ -74,7 +74,7 @@ class Client(BaseClient):
         if limit:
             params['limit'] = limit
         elif self._limit:
-            params['limit'] = limit
+            params['limit'] = limit  # type: ignore
         params.update(
             assign_params(
                 id=ticket_id,
@@ -135,7 +135,7 @@ class Client(BaseClient):
         # Send a request using our http_request wrapper
         return self._http_request('POST', suffix, params=params)
 
-    def assign_ticket(self, ticket_id: AnyStr, users: List[str]) -> Dict:
+    def assign_ticket(self, ticket_id: str, users: List[str]) -> dict:
         """Locks vault
 
         Args:
@@ -270,7 +270,7 @@ def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """
     ticket_id = args.get('ticket_id')
     users = argToList(args.get('users'))
-    raw_response = client.assign_ticket(ticket_id, users)
+    raw_response = client.assign_ticket(ticket_id, users)  # type: ignore
     tickets = raw_response.get('ticket')
     if tickets:
         title = f'{INTEGRATION_NAME} - Users has been assigned to {ticket_id}.'
@@ -362,20 +362,21 @@ def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 
 def fetch_incidents_command(client: Client, last_fetch: dict, fetch_time: str) -> Tuple[list, dict]:
     if last_fetch:
-        last_fetch_datetime = datetime.strptime(last_fetch.get('timestamp'), TIME_FORMAT)
+        last_fetch_datetime = datetime.strptime(last_fetch.get('timestamp', ''), TIME_FORMAT)
     else:
         last_fetch_datetime, _ = parse_date_range(fetch_time if fetch_time else DEFAULT_FETCH_TIME)
     raw_response = client.list_tickets(from_time=last_fetch_datetime)
     tickets = raw_response.get('ticket')
     incidents = list()
-    for ticket in tickets:
-        incidents.append({
-            'name': f'{INTEGRATION_NAME} - ticket number: {ticket.get("id")}',
-            'rawJSON': json.dumps(ticket)
-        })
-        new_time = datetime.strptime(ticket.get('timestamp'), TIME_FORMAT)
-        if last_fetch_datetime < new_time:
-            last_fetch_datetime = new_time
+    if tickets:
+        for ticket in tickets:
+            incidents.append({
+                'name': f'{INTEGRATION_NAME} - ticket number: {ticket.get("id")}',
+                'rawJSON': json.dumps(ticket)
+            })
+            new_time = datetime.strptime(ticket.get('timestamp'), TIME_FORMAT)
+            if last_fetch_datetime < new_time:
+                last_fetch_datetime = new_time
     return incidents, {'timestamp': last_fetch_datetime.strftime(TIME_FORMAT)}
 
 
