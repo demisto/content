@@ -202,10 +202,10 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
 
 def get_test_ids(check_nightly_status=False):
     """Get the test ids from conf.json
-    
+
     Keyword Arguments:
         check_nightly_status {bool} -- if we are running nightly test (default: {False})
-    
+
     Returns:
         tuple: (test_ids, skipped_tests)
     """
@@ -218,7 +218,6 @@ def get_test_ids(check_nightly_status=False):
         if not check_nightly_status or not t.get('nightly', False):
             playbook_id = t['playbookID']
             test_ids.append(playbook_id)
-
 
     return test_ids, list(conf['skipped_tests'].keys())
 
