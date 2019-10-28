@@ -6,6 +6,7 @@ import random
 import argparse
 from time import sleep
 import datetime
+import requests
 from requests import Session
 
 import demisto_client.demisto_api
@@ -130,20 +131,16 @@ def main():
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
                     host = "https://{}".format(ami_instance_ip)
-                    client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-
-                    try:
-                        path = '/health'
-                        method = 'GET'
-                        res = demisto_client.generic_request_func(self=client, path=path, method=method)
-                        print(res)
-                        if int(res[1]) == 200:
-                            print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
-                            ready_ami_list.append(ami_instance_name)
-                    except ApiException:
-                        if i % 30 == 0:  # printing the message every 30 seconds
-                            print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
-                        pass
+                    path = '/health'
+                    method = 'GET'
+                    res = requests.request(method=method, url=(host+path))
+                    # res = demisto_client.generic_request_func(self=client, path=path, method=method)
+                    print(res)
+                    if res.status_code == 200:
+                        print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
+                        ready_ami_list.append(ami_instance_name)
+                    elif i % 30 == 0:  # printing the message every 30 seconds
+                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
 
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
@@ -155,7 +152,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_correct_content_installed(api_key, instance_ips, content_version, username=username, password=password):
+    if not is_correct_content_installed(instance_ips, content_version, username=username, password=password):
         sys.exit(1)
 
 
