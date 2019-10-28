@@ -4,3 +4,5 @@ Added 4 new commands.
   - ***cortex-query-threat-logs***
   - ***cortex-query-traps-logs***
   - ***cortex-query-analytics-logs*** 
+
+Test module bug fixed.
