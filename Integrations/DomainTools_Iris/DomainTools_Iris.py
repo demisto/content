@@ -53,7 +53,7 @@ def http_request(method, path, other_params=None):
     try:
         res_json = res.json()
     except json.JSONDecodeError as json_error:
-        demisto.error(json_error)
+        demisto.error(res.text)
         raise
 
     if not res.ok:
@@ -125,7 +125,7 @@ def prune_context_data(data_obj):
         for k, v in data_obj.items():
             if isinstance(data_obj[k], dict) or isinstance(data_obj[k], list):
                 prune_context_data(data_obj[k])
-            if not isinstance(v, int) and v:
+            if not isinstance(v, int) and not v:
                 items_to_prune.append(k)
             elif k == 'count' and v == 0:
                 items_to_prune.append(k)
@@ -134,7 +134,7 @@ def prune_context_data(data_obj):
     elif isinstance(data_obj, list) and len(data_obj):
         for index, item in enumerate(data_obj):
             prune_context_data(item)
-            if not isinstance(item, int) and item:
+            if not isinstance(item, int) and not item:
                 items_to_prune.append(index)
         data_obj[:] = [item for index, item in enumerate(data_obj) if index not in items_to_prune and len(item)]
 
@@ -254,12 +254,17 @@ def create_domain_context_outputs(domain_result):
 
     domain_context = {
         'Name': domain,
-        'DNS': ip_addresses,
+        'DNS': [ip.get('address') for ip in ip_addresses],
         'CreationDate': create_date,
         'DomainStatus': domain_status,
         'ExpirationDate': expiration_date,
-        'NameServers': name_servers,
-        'Registrant': contact_dict.get('registrant_contact')
+        'NameServers': [name_server.get('host', {}).get('value') for name_server in name_servers],
+        'Registrant': {
+            'Country': contact_dict.get('registrant_contact', {}).get('Country', {}).get('value'),
+            'Email': [email.get('value') for email in contact_dict.get('registrant_contact', {}).get('Email', {})],
+            'Name': contact_dict.get('registrant_contact', {}).get('Name', {}).get('value'),
+            'Phone': contact_dict.get('registrant_contact', {}).get('Phone', {}).get('value')
+        }
     }
 
     dbot_score = 0
@@ -268,11 +273,11 @@ def create_domain_context_outputs(domain_result):
         dbot_score = get_dbot_score(proximity_risk_score, domain_age, threat_profile_risk_score)
     dbot_context = {'Indicator': domain,
                     'Type': 'domain',
-                    'Vendor': 'DomainTools',
+                    'Vendor': 'DomainTools Iris',
                     'Score': dbot_score}
     if dbot_score == 3:
         domain_context['Malicious'] = {
-            'Vendor': 'DomainTools',
+            'Vendor': 'DomainTools Iris',
             'Description': threat_profile_evidence if threat_profile_evidence is not None and len(
                 threat_profile_evidence) else 'This domain has been profiled as a threat.'
         }
@@ -621,6 +626,7 @@ def test_module():
         demisto.results('ok')
     except Exception as test_error:
         return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command(), str(test_error)))
+        raise
 
 
 def main():

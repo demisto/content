@@ -52,43 +52,7 @@ script:
       type: String
     - contextPath: Domain.DNS
       description: Domain DNS
-      type: Unknown
-    - contextPath: Domain.DNS.address
-      description: Domain DNS address
-      type: Unknown
-    - contextPath: Domain.DNS.address.value
-      description: Domain DNS address value
       type: String
-    - contextPath: Domain.DNS.address.count
-      description: Domain DNS address count
-      type: Number
-    - contextPath: Domain.DNS.asn
-      description: Domain DNS asn
-      type: Unknown
-    - contextPath: Domain.DNS.asn.value
-      description: Domain DNS asn value
-      type: String
-    - contextPath: Domain.DNS.asn.count
-      description: Domain DNS asn count
-      type: Number
-    - contextPath: Domain.DNS.country_code
-      description: Domain DNS country_code
-      type: Unknown
-    - contextPath: Domain.DNS.country_code.value
-      description: Domain DNS country_code value
-      type: String
-    - contextPath: Domain.DNS.country_code.count
-      description: Domain DNS country_code count
-      type: Number
-    - contextPath: Domain.DNS.isp
-      description: Domain DNS isp
-      type: Unknown
-    - contextPath: Domain.DNS.isp.value
-      description: Domain DNS isp value
-      type: String
-    - contextPath: Domain.DNS.isp.count
-      description: Domain DNS isp count
-      type: Number
     - contextPath: Domain.DomainStatus
       description: Domain Status
       type: Boolean
@@ -100,112 +64,46 @@ script:
       type: Date
     - contextPath: Domain.NameServers
       description: Domain NameServers
-      type: Unknown
-    - contextPath: Domain.NameServers.domain
-      description: Domain NameServers domain
-      type: Unknown
-    - contextPath: Domain.NameServers.domain.value
-      description: Domain NameServers domain value
       type: String
-    - contextPath: Domain.NameServers.domain.count
-      description: Domain NameServers domain count
-      type: Number
-    - contextPath: Domain.NameServers.host
-      description: Domain NameServers host
-      type: Unknown
-    - contextPath: Domain.NameServers.host.value
-      description: Domain NameServers host value
-      type: String
-    - contextPath: Domain.NameServers.host.count
-      description: Domain NameServers host count
-      type: Number
-    - contextPath: Domain.NameServers.ip
-      description: Domain NameServers ip
-      type: Unknown
-    - contextPath: Domain.NameServers.ip.value
-      description: Domain NameServers ip value
-      type: String
-    - contextPath: Domain.NameServers.ip.count
-      description: Domain NameServers ip count
-      type: Number
-    - contextPath: Domain.Registrant
-      description: Domain Registrant
-      type: Unknown
     - contextPath: Domain.Registrant.Country
       description: Domain Registrant Country
-      type: Unknown
-    - contextPath: Domain.Registrant.Country.value
-      description: Domain Registrant Country value
       type: String
-    - contextPath: Domain.Registrant.Country.count
-      description: Domain Registrant Country count
-      type: Number
     - contextPath: Domain.Registrant.Email
       description: Domain Registrant Email
-      type: Unknown
-    - contextPath: Domain.Registrant.Email.value
-      description: Domain Registrant Email value
       type: String
-    - contextPath: Domain.Registrant.Email.count
-      description: Domain Registrant Email count
-      type: Number
     - contextPath: Domain.Registrant.Name
       description: Domain Registrant Name
-      type: Unknown
-    - contextPath: Domain.Registrant.Name.value
-      description: Domain Registrant Name value
       type: String
-    - contextPath: Domain.Registrant.Name.count
-      description: Domain Registrant Name count
-      type: Number
     - contextPath: Domain.Registrant.Phone
       description: Domain Registrant Phone
-      type: Unknown
-    - contextPath: Domain.Registrant.Phone.value
-      description: Domain Registrant Phone value
       type: String
-    - contextPath: Domain.Registrant.Phone.count
-      description: Domain Registrant Phone count
-      type: Number
-    - contextPath: Domain.Malicious
-      description: Is the Domain Malicious
-      type: Unknown
     - contextPath: Domain.Malicious.Vendor
       description: Vendor that saw domain as malicious
       type: String
     - contextPath: Domain.Malicious.Description
       description: Description of why domain was found to be malicious
-      type: Unknown
-    - contextPath: DomainTools.Domains
-      description: DomainTools Domains
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Name
       description: DomainTools Domain Name
       type: String
     - contextPath: DomainTools.Domains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: DomainTools.Domains.Analytics
-      description: Analytics Data about the Domain from DomainTools
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore
-      description: DomainTools Threat Profile Info
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Number
@@ -214,49 +112,31 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Analytics.Tags
       description: DomainTools Tags
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity
-      description: DomainTools Identity Info about the Domain
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantName
       description: Registrant Name
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantOrg
       description: Registrant Org
       type: String
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact
-      description: Registrant Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country
-      description: Registrant Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.value
       description: Registrant Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.count
       description: Registrant Contact Country count
-      type: Count
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email
-      description: Registrant Contact Email
-      type: Unknown
+      type: Number
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
       description: Registrant Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
       description: Registrant Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name
-      description: Registrant Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.value
       description: Registrant Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.count
       description: Registrant Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone
-      description: Registrant Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.value
       description: Registrant Contact Phone value
       type: String
@@ -265,121 +145,76 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.SOAEmail
       description: SOA Record Email
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact
-      description: Admin Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Country
-      description: Admin Contact Country
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.value
       description: Admin Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.count
       description: Admin Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Email
-      description: Admin Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.value
       description: Admin Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.count
       description: Admin Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Name
-      description: Admin Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.value
       description: Admin Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.count
       description: Admin Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Phone
-      description: Admin Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.value
       description: Admin Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.count
       description: Admin Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact
-      description: Technical Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country
-      description: Technical Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
       description: Technical Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
       description: Technical Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email
-      description: Technical Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.value
       description: Technical Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.count
       description: Technical Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name
-      description: Technical Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.value
       description: Technical Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.count
       description: Technical Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone
-      description: Technical Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.value
       description: Technical Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.count
       description: Technical Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact
-      description: Billing Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Country
-      description: Billing Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.value
       description: Billing Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.count
       description: Billing Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Email
-      description: Billing Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.value
       description: Billing Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
       description: Billing Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Name
-      description: Billing Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
       description: Billing Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.count
       description: Billing Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Phone
-      description: Billing Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Phone.value
       description: Billing Contact Phone value
       type: String
@@ -388,25 +223,19 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.EmailDomains
       description: Email Domains
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails
-      description: Additional Whois Emails
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.value
       description: Additional Whois Emails value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.count
       description: Additional Whois Emails count
       type: Number
-    - contextPath: DomainTools.Domains.Registration
-      description: DomainTools Registration Info about the Domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Registration.DomainRegistrant
       description: Domain Registrant
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Registration.RegistrarStatus
-      description: Reistrar Status
-      type: Unknown
+      description: Registrar Status
+      type: String
     - contextPath: DomainTools.Domains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
@@ -416,42 +245,24 @@ script:
     - contextPath: DomainTools.Domains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: DomainTools.Domains.Hosting
-      description: DomainTools Hosting Info about the Domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses
-      description: IP Addresses Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.address
-      description: IP Addresses Info address
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.value
       description: IP Addresses Info address value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.count
       description: IP Addresses Info address count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn
-      description: IP Addresses Info asn
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.value
       description: IP Addresses Info asn value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.count
       description: IP Addresses Info asn count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code
-      description: IP Addresses Info country_code
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
       description: IP Addresses Info country_code value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
       description: IP Addresses Info country_code count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp
-      description: IP Addresses Info isp
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
       description: IP Addresses Info isp value
       type: String
@@ -461,30 +272,18 @@ script:
     - contextPath: DomainTools.Domains.Hosting.IPCountryCode
       description: IP Country Code
       type: String
-    - contextPath: DomainTools.Domains.Hosting.MailServers
-      description: Mail Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.MailServers.domain
-      description: Mail Servers Info domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
       description: Mail Servers Info domain value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
       description: Mail Servers Info domain count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.host
-      description: Mail Servers Info host
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.value
       description: Mail Servers Info host value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.count
       description: Mail Servers Info host count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.ip
-      description: Mail Servers Info ip
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
       description: Mail Servers Info ip value
       type: String
@@ -493,85 +292,55 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SPFRecord
       description: SPF Record Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.NameServers
-      description: Name Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain
-      description: DomainTools Domains NameServers domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain.value
+      type: String
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.value
       description: DomainTools Domains NameServers domain value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.domain.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
       description: DomainTools Domains NameServers domain count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.host
-      description: DomainTools Domains NameServers host
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.host.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.value
       description: DomainTools Domains NameServers host value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.host.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.count
       description: DomainTools Domains NameServers host count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.ip
-      description: DomainTools Domains NameServers ip
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.ip.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
       description: DomainTools Domains NameServers ip value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.ip.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
       description: DomainTools Domains NameServers ip count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate
-      description: SSL Certificate Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash
-      description: SSL Certificate Info hash
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
       description: SSL Certificate Info hash value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
       description: SSL Certificate Info hash count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization
-      description: SSL Certificate Info organization
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
       description: SSL Certificate Info organization value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
       description: SSL Certificate Info organization count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject
-      description: SSL Certificate Info subject
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
       description: SSL Certificate Info subject value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
       description: SSL Certificate Info subject count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.RedirectsTo
-      description: Domains it Redirects To
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
       description: Domains it Redirects To value
       type: String
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.count
       description: Domains it Redirects To count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.GoogleAnalyticTrackingCode
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
-      type: Unknown
-    - contextPath: DBotScore
-      description: DBot Score
-      type: Unknown
+      type: Number
     - contextPath: DBotScore.Indicator
       description: DBotScore Indicator
       type: String
@@ -596,48 +365,13 @@ script:
     execution: false
     name: domaintoolsiris-analytics
     outputs:
+    outputs:
     - contextPath: Domain.Name
       description: Domain Name
       type: String
     - contextPath: Domain.DNS
       description: Domain DNS
-      type: Unknown
-    - contextPath: Domain.DNS.address
-      description: Domain DNS address
-      type: Unknown
-    - contextPath: Domain.DNS.address.value
-      description: Domain DNS address value
       type: String
-    - contextPath: Domain.DNS.address.count
-      description: Domain DNS address count
-      type: Number
-    - contextPath: Domain.DNS.asn
-      description: Domain DNS asn
-      type: Unknown
-    - contextPath: Domain.DNS.asn.value
-      description: Domain DNS asn value
-      type: String
-    - contextPath: Domain.DNS.asn.count
-      description: Domain DNS asn count
-      type: Number
-    - contextPath: Domain.DNS.country_code
-      description: Domain DNS country_code
-      type: Unknown
-    - contextPath: Domain.DNS.country_code.value
-      description: Domain DNS country_code value
-      type: String
-    - contextPath: Domain.DNS.country_code.count
-      description: Domain DNS country_code count
-      type: Number
-    - contextPath: Domain.DNS.isp
-      description: Domain DNS isp
-      type: Unknown
-    - contextPath: Domain.DNS.isp.value
-      description: Domain DNS isp value
-      type: String
-    - contextPath: Domain.DNS.isp.count
-      description: Domain DNS isp count
-      type: Number
     - contextPath: Domain.DomainStatus
       description: Domain Status
       type: Boolean
@@ -649,112 +383,46 @@ script:
       type: Date
     - contextPath: Domain.NameServers
       description: Domain NameServers
-      type: Unknown
-    - contextPath: Domain.NameServers.domain
-      description: Domain NameServers domain
-      type: Unknown
-    - contextPath: Domain.NameServers.domain.value
-      description: Domain NameServers domain value
       type: String
-    - contextPath: Domain.NameServers.domain.count
-      description: Domain NameServers domain count
-      type: Number
-    - contextPath: Domain.NameServers.host
-      description: Domain NameServers host
-      type: Unknown
-    - contextPath: Domain.NameServers.host.value
-      description: Domain NameServers host value
-      type: String
-    - contextPath: Domain.NameServers.host.count
-      description: Domain NameServers host count
-      type: Number
-    - contextPath: Domain.NameServers.ip
-      description: Domain NameServers ip
-      type: Unknown
-    - contextPath: Domain.NameServers.ip.value
-      description: Domain NameServers ip value
-      type: String
-    - contextPath: Domain.NameServers.ip.count
-      description: Domain NameServers ip count
-      type: Number
-    - contextPath: Domain.Registrant
-      description: Domain Registrant
-      type: Unknown
     - contextPath: Domain.Registrant.Country
       description: Domain Registrant Country
-      type: Unknown
-    - contextPath: Domain.Registrant.Country.value
-      description: Domain Registrant Country value
       type: String
-    - contextPath: Domain.Registrant.Country.count
-      description: Domain Registrant Country count
-      type: Number
     - contextPath: Domain.Registrant.Email
       description: Domain Registrant Email
-      type: Unknown
-    - contextPath: Domain.Registrant.Email.value
-      description: Domain Registrant Email value
       type: String
-    - contextPath: Domain.Registrant.Email.count
-      description: Domain Registrant Email count
-      type: Number
     - contextPath: Domain.Registrant.Name
       description: Domain Registrant Name
-      type: Unknown
-    - contextPath: Domain.Registrant.Name.value
-      description: Domain Registrant Name value
       type: String
-    - contextPath: Domain.Registrant.Name.count
-      description: Domain Registrant Name count
-      type: Number
     - contextPath: Domain.Registrant.Phone
       description: Domain Registrant Phone
-      type: Unknown
-    - contextPath: Domain.Registrant.Phone.value
-      description: Domain Registrant Phone value
       type: String
-    - contextPath: Domain.Registrant.Phone.count
-      description: Domain Registrant Phone count
-      type: Number
-    - contextPath: Domain.Malicious
-      description: Is the Domain Malicious
-      type: Unknown
     - contextPath: Domain.Malicious.Vendor
       description: Vendor that saw domain as malicious
       type: String
     - contextPath: Domain.Malicious.Description
       description: Description of why domain was found to be malicious
-      type: Unknown
-    - contextPath: DomainTools.Domains
-      description: DomainTools Domains
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Name
       description: DomainTools Domain Name
       type: String
     - contextPath: DomainTools.Domains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: DomainTools.Domains.Analytics
-      description: Analytics Data about the Domain from DomainTools
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore
-      description: DomainTools Threat Profile Info
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Number
@@ -763,49 +431,31 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Analytics.Tags
       description: DomainTools Tags
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity
-      description: DomainTools Identity Info about the Domain
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantName
       description: Registrant Name
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantOrg
       description: Registrant Org
       type: String
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact
-      description: Registrant Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country
-      description: Registrant Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.value
       description: Registrant Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.count
       description: Registrant Contact Country count
-      type: Count
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email
-      description: Registrant Contact Email
-      type: Unknown
+      type: Number
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
       description: Registrant Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
       description: Registrant Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name
-      description: Registrant Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.value
       description: Registrant Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.count
       description: Registrant Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone
-      description: Registrant Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.value
       description: Registrant Contact Phone value
       type: String
@@ -814,121 +464,76 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.SOAEmail
       description: SOA Record Email
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact
-      description: Admin Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Country
-      description: Admin Contact Country
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.value
       description: Admin Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.count
       description: Admin Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Email
-      description: Admin Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.value
       description: Admin Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.count
       description: Admin Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Name
-      description: Admin Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.value
       description: Admin Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.count
       description: Admin Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Phone
-      description: Admin Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.value
       description: Admin Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.count
       description: Admin Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact
-      description: Technical Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country
-      description: Technical Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
       description: Technical Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
       description: Technical Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email
-      description: Technical Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.value
       description: Technical Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.count
       description: Technical Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name
-      description: Technical Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.value
       description: Technical Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.count
       description: Technical Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone
-      description: Technical Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.value
       description: Technical Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.count
       description: Technical Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact
-      description: Billing Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Country
-      description: Billing Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.value
       description: Billing Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.count
       description: Billing Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Email
-      description: Billing Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.value
       description: Billing Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
       description: Billing Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Name
-      description: Billing Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
       description: Billing Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.count
       description: Billing Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Phone
-      description: Billing Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Phone.value
       description: Billing Contact Phone value
       type: String
@@ -937,25 +542,19 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.EmailDomains
       description: Email Domains
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails
-      description: Additional Whois Emails
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.value
       description: Additional Whois Emails value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.count
       description: Additional Whois Emails count
       type: Number
-    - contextPath: DomainTools.Domains.Registration
-      description: DomainTools Registration Info about the Domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Registration.DomainRegistrant
       description: Domain Registrant
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Registration.RegistrarStatus
-      description: Reistrar Status
-      type: Unknown
+      description: Registrar Status
+      type: String
     - contextPath: DomainTools.Domains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
@@ -965,42 +564,24 @@ script:
     - contextPath: DomainTools.Domains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: DomainTools.Domains.Hosting
-      description: DomainTools Hosting Info about the Domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses
-      description: IP Addresses Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.address
-      description: IP Addresses Info address
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.value
       description: IP Addresses Info address value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.count
       description: IP Addresses Info address count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn
-      description: IP Addresses Info asn
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.value
       description: IP Addresses Info asn value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.count
       description: IP Addresses Info asn count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code
-      description: IP Addresses Info country_code
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
       description: IP Addresses Info country_code value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
       description: IP Addresses Info country_code count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp
-      description: IP Addresses Info isp
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
       description: IP Addresses Info isp value
       type: String
@@ -1010,30 +591,18 @@ script:
     - contextPath: DomainTools.Domains.Hosting.IPCountryCode
       description: IP Country Code
       type: String
-    - contextPath: DomainTools.Domains.Hosting.MailServers
-      description: Mail Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.MailServers.domain
-      description: Mail Servers Info domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
       description: Mail Servers Info domain value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
       description: Mail Servers Info domain count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.host
-      description: Mail Servers Info host
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.value
       description: Mail Servers Info host value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.count
       description: Mail Servers Info host count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.ip
-      description: Mail Servers Info ip
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
       description: Mail Servers Info ip value
       type: String
@@ -1042,85 +611,55 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SPFRecord
       description: SPF Record Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.NameServers
-      description: Name Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain
-      description: DomainTools Domains NameServers domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain.value
+      type: String
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.value
       description: DomainTools Domains NameServers domain value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.domain.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
       description: DomainTools Domains NameServers domain count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.host
-      description: DomainTools Domains NameServers host
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.host.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.value
       description: DomainTools Domains NameServers host value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.host.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.count
       description: DomainTools Domains NameServers host count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.ip
-      description: DomainTools Domains NameServers ip
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.ip.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
       description: DomainTools Domains NameServers ip value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.ip.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
       description: DomainTools Domains NameServers ip count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate
-      description: SSL Certificate Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash
-      description: SSL Certificate Info hash
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
       description: SSL Certificate Info hash value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
       description: SSL Certificate Info hash count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization
-      description: SSL Certificate Info organization
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
       description: SSL Certificate Info organization value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
       description: SSL Certificate Info organization count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject
-      description: SSL Certificate Info subject
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
       description: SSL Certificate Info subject value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
       description: SSL Certificate Info subject count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.RedirectsTo
-      description: Domains it Redirects To
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
       description: Domains it Redirects To value
       type: String
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.count
       description: Domains it Redirects To count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.GoogleAnalyticTrackingCode
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
-      type: Unknown
-    - contextPath: DBotScore
-      description: DBot Score
-      type: Unknown
+      type: Number
     - contextPath: DBotScore.Indicator
       description: DBotScore Indicator
       type: String
@@ -1150,43 +689,7 @@ script:
       type: String
     - contextPath: Domain.DNS
       description: Domain DNS
-      type: Unknown
-    - contextPath: Domain.DNS.address
-      description: Domain DNS address
-      type: Unknown
-    - contextPath: Domain.DNS.address.value
-      description: Domain DNS address value
       type: String
-    - contextPath: Domain.DNS.address.count
-      description: Domain DNS address count
-      type: Number
-    - contextPath: Domain.DNS.asn
-      description: Domain DNS asn
-      type: Unknown
-    - contextPath: Domain.DNS.asn.value
-      description: Domain DNS asn value
-      type: String
-    - contextPath: Domain.DNS.asn.count
-      description: Domain DNS asn count
-      type: Number
-    - contextPath: Domain.DNS.country_code
-      description: Domain DNS country_code
-      type: Unknown
-    - contextPath: Domain.DNS.country_code.value
-      description: Domain DNS country_code value
-      type: String
-    - contextPath: Domain.DNS.country_code.count
-      description: Domain DNS country_code count
-      type: Number
-    - contextPath: Domain.DNS.isp
-      description: Domain DNS isp
-      type: Unknown
-    - contextPath: Domain.DNS.isp.value
-      description: Domain DNS isp value
-      type: String
-    - contextPath: Domain.DNS.isp.count
-      description: Domain DNS isp count
-      type: Number
     - contextPath: Domain.DomainStatus
       description: Domain Status
       type: Boolean
@@ -1198,112 +701,46 @@ script:
       type: Date
     - contextPath: Domain.NameServers
       description: Domain NameServers
-      type: Unknown
-    - contextPath: Domain.NameServers.domain
-      description: Domain NameServers domain
-      type: Unknown
-    - contextPath: Domain.NameServers.domain.value
-      description: Domain NameServers domain value
       type: String
-    - contextPath: Domain.NameServers.domain.count
-      description: Domain NameServers domain count
-      type: Number
-    - contextPath: Domain.NameServers.host
-      description: Domain NameServers host
-      type: Unknown
-    - contextPath: Domain.NameServers.host.value
-      description: Domain NameServers host value
-      type: String
-    - contextPath: Domain.NameServers.host.count
-      description: Domain NameServers host count
-      type: Number
-    - contextPath: Domain.NameServers.ip
-      description: Domain NameServers ip
-      type: Unknown
-    - contextPath: Domain.NameServers.ip.value
-      description: Domain NameServers ip value
-      type: String
-    - contextPath: Domain.NameServers.ip.count
-      description: Domain NameServers ip count
-      type: Number
-    - contextPath: Domain.Registrant
-      description: Domain Registrant
-      type: Unknown
     - contextPath: Domain.Registrant.Country
       description: Domain Registrant Country
-      type: Unknown
-    - contextPath: Domain.Registrant.Country.value
-      description: Domain Registrant Country value
       type: String
-    - contextPath: Domain.Registrant.Country.count
-      description: Domain Registrant Country count
-      type: Number
     - contextPath: Domain.Registrant.Email
       description: Domain Registrant Email
-      type: Unknown
-    - contextPath: Domain.Registrant.Email.value
-      description: Domain Registrant Email value
       type: String
-    - contextPath: Domain.Registrant.Email.count
-      description: Domain Registrant Email count
-      type: Number
     - contextPath: Domain.Registrant.Name
       description: Domain Registrant Name
-      type: Unknown
-    - contextPath: Domain.Registrant.Name.value
-      description: Domain Registrant Name value
       type: String
-    - contextPath: Domain.Registrant.Name.count
-      description: Domain Registrant Name count
-      type: Number
     - contextPath: Domain.Registrant.Phone
       description: Domain Registrant Phone
-      type: Unknown
-    - contextPath: Domain.Registrant.Phone.value
-      description: Domain Registrant Phone value
       type: String
-    - contextPath: Domain.Registrant.Phone.count
-      description: Domain Registrant Phone count
-      type: Number
-    - contextPath: Domain.Malicious
-      description: Is the Domain Malicious
-      type: Unknown
     - contextPath: Domain.Malicious.Vendor
       description: Vendor that saw domain as malicious
       type: String
     - contextPath: Domain.Malicious.Description
       description: Description of why domain was found to be malicious
-      type: Unknown
-    - contextPath: DomainTools.Domains
-      description: DomainTools Domains
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Name
       description: DomainTools Domain Name
       type: String
     - contextPath: DomainTools.Domains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: DomainTools.Domains.Analytics
-      description: Analytics Data about the Domain from DomainTools
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore
-      description: DomainTools Threat Profile Info
-      type: Unknown
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Number
@@ -1312,49 +749,31 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Analytics.Tags
       description: DomainTools Tags
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity
-      description: DomainTools Identity Info about the Domain
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantName
       description: Registrant Name
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantOrg
       description: Registrant Org
       type: String
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact
-      description: Registrant Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country
-      description: Registrant Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.value
       description: Registrant Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Country.count
       description: Registrant Contact Country count
-      type: Count
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email
-      description: Registrant Contact Email
-      type: Unknown
+      type: Number
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.value
       description: Registrant Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Email.count
       description: Registrant Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name
-      description: Registrant Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.value
       description: Registrant Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Name.count
       description: Registrant Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone
-      description: Registrant Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.RegistrantContact.Phone.value
       description: Registrant Contact Phone value
       type: String
@@ -1363,121 +782,76 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.SOAEmail
       description: SOA Record Email
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact
-      description: Admin Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Country
-      description: Admin Contact Country
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.value
       description: Admin Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Country.count
       description: Admin Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Email
-      description: Admin Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.value
       description: Admin Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Email.count
       description: Admin Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Name
-      description: Admin Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.value
       description: Admin Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Name.count
       description: Admin Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.AdminContact.Phone
-      description: Admin Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.value
       description: Admin Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdminContact.Phone.count
       description: Admin Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact
-      description: Technical Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country
-      description: Technical Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.value
       description: Technical Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Country.count
       description: Technical Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email
-      description: Technical Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.value
       description: Technical Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Email.count
       description: Technical Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name
-      description: Technical Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.value
       description: Technical Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Name.count
       description: Technical Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone
-      description: Technical Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.value
       description: Technical Contact Phone value
       type: String
     - contextPath: DomainTools.Domains.Identity.TechnicalContact.Phone.count
       description: Technical Contact Phone count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact
-      description: Billing Contact Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Country
-      description: Billing Contact Country
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.value
       description: Billing Contact Country value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Country.count
       description: Billing Contact Country count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Email
-      description: Billing Contact Email
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.value
       description: Billing Contact Email value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Email.count
       description: Billing Contact Email count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Name
-      description: Billing Contact Name
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.value
       description: Billing Contact Name value
       type: String
     - contextPath: DomainTools.Domains.Identity.BillingContact.Name.count
       description: Billing Contact Name count
       type: Number
-    - contextPath: DomainTools.Domains.Identity.BillingContact.Phone
-      description: Billing Contact Phone
-      type: Unknown
     - contextPath: DomainTools.Domains.Identity.BillingContact.Phone.value
       description: Billing Contact Phone value
       type: String
@@ -1486,25 +860,19 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Identity.EmailDomains
       description: Email Domains
-      type: Unknown
-    - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails
-      description: Additional Whois Emails
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.value
       description: Additional Whois Emails value
       type: String
     - contextPath: DomainTools.Domains.Identity.AdditionalWhoisEmails.count
       description: Additional Whois Emails count
       type: Number
-    - contextPath: DomainTools.Domains.Registration
-      description: DomainTools Registration Info about the Domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Registration.DomainRegistrant
       description: Domain Registrant
-      type: Unknown
+      type: String
     - contextPath: DomainTools.Domains.Registration.RegistrarStatus
-      description: Reistrar Status
-      type: Unknown
+      description: Registrar Status
+      type: String
     - contextPath: DomainTools.Domains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
@@ -1514,42 +882,24 @@ script:
     - contextPath: DomainTools.Domains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: DomainTools.Domains.Hosting
-      description: DomainTools Hosting Info about the Domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses
-      description: IP Addresses Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.address
-      description: IP Addresses Info address
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.value
       description: IP Addresses Info address value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.address.count
       description: IP Addresses Info address count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn
-      description: IP Addresses Info asn
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.value
       description: IP Addresses Info asn value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.asn.count
       description: IP Addresses Info asn count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code
-      description: IP Addresses Info country_code
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.value
       description: IP Addresses Info country_code value
       type: String
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.country_code.count
       description: IP Addresses Info country_code count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp
-      description: IP Addresses Info isp
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.IPAddresses.isp.value
       description: IP Addresses Info isp value
       type: String
@@ -1559,30 +909,18 @@ script:
     - contextPath: DomainTools.Domains.Hosting.IPCountryCode
       description: IP Country Code
       type: String
-    - contextPath: DomainTools.Domains.Hosting.MailServers
-      description: Mail Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.MailServers.domain
-      description: Mail Servers Info domain
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.value
       description: Mail Servers Info domain value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.domain.count
       description: Mail Servers Info domain count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.host
-      description: Mail Servers Info host
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.value
       description: Mail Servers Info host value
       type: String
     - contextPath: DomainTools.Domains.Hosting.MailServers.host.count
       description: Mail Servers Info host count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.MailServers.ip
-      description: Mail Servers Info ip
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.MailServers.ip.value
       description: Mail Servers Info ip value
       type: String
@@ -1591,85 +929,55 @@ script:
       type: Number
     - contextPath: DomainTools.Domains.Hosting.SPFRecord
       description: SPF Record Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.NameServers
-      description: Name Servers Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain
-      description: DomainTools Domains NameServers domain
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.domain.value
+      type: String
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.value
       description: DomainTools Domains NameServers domain value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.domain.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.domain.count
       description: DomainTools Domains NameServers domain count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.host
-      description: DomainTools Domains NameServers host
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.host.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.value
       description: DomainTools Domains NameServers host value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.host.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.host.count
       description: DomainTools Domains NameServers host count
       type: Number
-    - contextPath: DomainTools.Domains.NameServers.ip
-      description: DomainTools Domains NameServers ip
-      type: Unknown
-    - contextPath: DomainTools.Domains.NameServers.ip.value
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.value
       description: DomainTools Domains NameServers ip value
       type: String
-    - contextPath: DomainTools.Domains.NameServers.ip.count
+    - contextPath: DomainTools.Domains.Hosting.NameServers.ip.count
       description: DomainTools Domains NameServers ip count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate
-      description: SSL Certificate Info
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash
-      description: SSL Certificate Info hash
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.value
       description: SSL Certificate Info hash value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.hash.count
       description: SSL Certificate Info hash count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization
-      description: SSL Certificate Info organization
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.value
       description: SSL Certificate Info organization value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.organization.count
       description: SSL Certificate Info organization count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject
-      description: SSL Certificate Info subject
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.value
       description: SSL Certificate Info subject value
       type: String
     - contextPath: DomainTools.Domains.Hosting.SSLCertificate.subject.count
       description: SSL Certificate Info subject count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.RedirectsTo
-      description: Domains it Redirects To
-      type: Unknown
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.value
       description: Domains it Redirects To value
       type: String
     - contextPath: DomainTools.Domains.Hosting.RedirectsTo.count
       description: Domains it Redirects To count
       type: Number
-    - contextPath: DomainTools.Domains.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.Domains.Analytics.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
-      type: Unknown
-    - contextPath: DomainTools.Domains.Hosting.GoogleAnalyticTrackingCode
+      type: Number
+    - contextPath: DomainTools.Domains.Analytics.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
-      type: Unknown
-    - contextPath: DBotScore
-      description: DBot Score
-      type: Unknown
+      type: Number
     - contextPath: DBotScore.Indicator
       description: DBotScore Indicator
       type: String
@@ -1725,36 +1033,27 @@ script:
     execution: false
     name: domaintoolsiris-pivot
     outputs:
-    - contextPath: DomainTools.PivotedDomains
-      description: DomainTools PivotedDomains
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Name
       description: DomainTools Domain Name
       type: String
     - contextPath: DomainTools.PivotedDomains.LastEnriched
       description: Last Time DomainTools Enriched Domain Data
       type: Date
-    - contextPath: DomainTools.PivotedDomains.Analytics
-      description: Analytics Data about the Domain from DomainTools
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Analytics.OverallRiskScore
       description: DomainTools Overall Risk Score
       type: Number
     - contextPath: DomainTools.PivotedDomains.Analytics.ProximityRiskScore
       description: DomainTools Proximity Risk Score
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore
-      description: DomainTools Threat Profile Info
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
       description: DomainTools Threat Profile Risk Score
       type: Number
     - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
       description: DomainTools Threat Profile Threats
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
       description: DomainTools Threat Profile Evidence
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Analytics.WebsiteResponseCode
       description: Website Response Code
       type: Number
@@ -1763,49 +1062,31 @@ script:
       type: Number
     - contextPath: DomainTools.PivotedDomains.Analytics.Tags
       description: DomainTools Tags
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity
-      description: DomainTools Identity Info about the Domain
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantName
       description: Registrant Name
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantOrg
       description: Registrant Org
       type: String
-    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact
-      description: Registrant Contact Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country
-      description: Registrant Contact Country
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.value
       description: Registrant Contact Country value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.count
       description: Registrant Contact Country count
-      type: Count
-    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email
-      description: Registrant Contact Email
-      type: Unknown
+      type: Number
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.value
       description: Registrant Contact Email value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.count
       description: Registrant Contact Email count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name
-      description: Registrant Contact Name
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.value
       description: Registrant Contact Name value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.count
       description: Registrant Contact Name count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone
-      description: Registrant Contact Phone
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.value
       description: Registrant Contact Phone value
       type: String
@@ -1814,121 +1095,76 @@ script:
       type: Number
     - contextPath: DomainTools.PivotedDomains.Identity.SOAEmail
       description: SOA Record Email
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Identity.SSLCertificateEmail
       description: SSL Certificate Email
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact
-      description: Admin Contact Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country
-      description: Admin Contact Country
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.value
       description: Admin Contact Country value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.count
       description: Admin Contact Country count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email
-      description: Admin Contact Email
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.value
       description: Admin Contact Email value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.count
       description: Admin Contact Email count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name
-      description: Admin Contact Name
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.value
       description: Admin Contact Name value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.count
       description: Admin Contact Name count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone
-      description: Admin Contact Phone
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.value
       description: Admin Contact Phone value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.count
       description: Admin Contact Phone count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact
-      description: Technical Contact Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country
-      description: Technical Contact Country
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.value
       description: Technical Contact Country value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.count
       description: Technical Contact Country count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email
-      description: Technical Contact Email
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.value
       description: Technical Contact Email value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.count
       description: Technical Contact Email count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name
-      description: Technical Contact Name
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.value
       description: Technical Contact Name value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.count
       description: Technical Contact Name count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone
-      description: Technical Contact Phone
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.value
       description: Technical Contact Phone value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.count
       description: Technical Contact Phone count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact
-      description: Billing Contact Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country
-      description: Billing Contact Country
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.value
       description: Billing Contact Country value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.count
       description: Billing Contact Country count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email
-      description: Billing Contact Email
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.value
       description: Billing Contact Email value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.count
       description: Billing Contact Email count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name
-      description: Billing Contact Name
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.value
       description: Billing Contact Name value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.count
       description: Billing Contact Name count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone
-      description: Billing Contact Phone
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.value
       description: Billing Contact Phone value
       type: String
@@ -1937,25 +1173,19 @@ script:
       type: Number
     - contextPath: DomainTools.PivotedDomains.Identity.EmailDomains
       description: Email Domains
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails
-      description: Additional Whois Emails
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.value
       description: Additional Whois Emails value
       type: String
     - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.count
       description: Additional Whois Emails count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Registration
-      description: DomainTools Registration Info about the Domain
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Registration.DomainRegistrant
       description: Domain Registrant
-      type: Unknown
+      type: String
     - contextPath: DomainTools.PivotedDomains.Registration.RegistrarStatus
-      description: Reistrar Status
-      type: Unknown
+      description: Registrar Status
+      type: String
     - contextPath: DomainTools.PivotedDomains.Registration.DomainStatus
       description: Domain Active Status
       type: Boolean
@@ -1965,42 +1195,24 @@ script:
     - contextPath: DomainTools.PivotedDomains.Registration.ExpirationDate
       description: Expiration Date
       type: Date
-    - contextPath: DomainTools.PivotedDomains.Hosting
-      description: DomainTools Hosting Info about the Domain
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses
-      description: IP Addresses Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address
-      description: IP Addresses Info address
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.value
       description: IP Addresses Info address value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.count
       description: IP Addresses Info address count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn
-      description: IP Addresses Info asn
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.value
       description: IP Addresses Info asn value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.count
       description: IP Addresses Info asn count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code
-      description: IP Addresses Info country_code
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.value
       description: IP Addresses Info country_code value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.count
       description: IP Addresses Info country_code count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp
-      description: IP Addresses Info isp
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.value
       description: IP Addresses Info isp value
       type: String
@@ -2010,30 +1222,18 @@ script:
     - contextPath: DomainTools.PivotedDomains.Hosting.IPCountryCode
       description: IP Country Code
       type: String
-    - contextPath: DomainTools.PivotedDomains.Hosting.MailServers
-      description: Mail Servers Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain
-      description: Mail Servers Info domain
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.value
       description: Mail Servers Info domain value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.count
       description: Mail Servers Info domain count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host
-      description: Mail Servers Info host
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.value
       description: Mail Servers Info host value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.count
       description: Mail Servers Info host count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip
-      description: Mail Servers Info ip
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.value
       description: Mail Servers Info ip value
       type: String
@@ -2042,82 +1242,55 @@ script:
       type: Number
     - contextPath: DomainTools.PivotedDomains.Hosting.SPFRecord
       description: SPF Record Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers
-      description: Name Servers Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.NameServers.domain
-      description: DomainTools Domains NameServers domain
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.NameServers.domain.value
+      type: String
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.value
       description: DomainTools Domains NameServers domain value
       type: String
-    - contextPath: DomainTools.PivotedDomains.NameServers.domain.count
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.count
       description: DomainTools Domains NameServers domain count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.NameServers.host
-      description: DomainTools Domains NameServers host
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.NameServers.host.value
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.value
       description: DomainTools Domains NameServers host value
       type: String
-    - contextPath: DomainTools.PivotedDomains.NameServers.host.count
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.count
       description: DomainTools Domains NameServers host count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.NameServers.ip
-      description: DomainTools Domains NameServers ip
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.NameServers.ip.value
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.value
       description: DomainTools Domains NameServers ip value
       type: String
-    - contextPath: DomainTools.PivotedDomains.NameServers.ip.count
+    - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.count
       description: DomainTools Domains NameServers ip count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate
-      description: SSL Certificate Info
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash
-      description: SSL Certificate Info hash
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.value
       description: SSL Certificate Info hash value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.count
       description: SSL Certificate Info hash count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization
-      description: SSL Certificate Info organization
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.value
       description: SSL Certificate Info organization value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.count
       description: SSL Certificate Info organization count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject
-      description: SSL Certificate Info subject
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.value
       description: SSL Certificate Info subject value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.count
       description: SSL Certificate Info subject count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo
-      description: Domains it Redirects To
-      type: Unknown
     - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.value
       description: Domains it Redirects To value
       type: String
     - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.count
       description: Domains it Redirects To count
       type: Number
-    - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAdsenseTrackingCode
+    - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAdsenseTrackingCode
       description: Google Adsense Tracking Code
-      type: Unknown
-    - contextPath: DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode
+      type: Number
+    - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
       description: Google Analytics Tracking Code
-      type: Unknown
+      type: Number
   dockerimage: demisto/python3:3.7.4.2728
   isfetch: false
   longRunning: false
