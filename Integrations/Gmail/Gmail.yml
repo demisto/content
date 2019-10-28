@@ -579,6 +579,8 @@ script:
       description: 'Whether to fetch either the administrator or public view of the user.
       Can be admin_view (default), which includes both administrator and domain-public fields or "domain_public"(includes fields for the user that are publicly visible to other users in the domain).'
       defaultValue: admin_view
+    - name: page-token
+      description: Token to specify next page in the list
     outputs:
     - contextPath: Account.Type
       description: 'The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on.'
