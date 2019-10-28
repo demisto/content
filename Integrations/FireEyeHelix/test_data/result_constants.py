@@ -291,6 +291,17 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
     "FireEye.Event(val.Count).Count": 10
 }
 
+EXPECTED_SINGLE_LIST_ITEM_RSLT = {
+    "FireEye.List(val.ID && val.ID === 3232).Item": {
+        "ID": 23232323,
+        "Value": "aTest list",
+        "Type": "misc",
+        "Risk": "Medium",
+        "Notes": "test ok",
+        "List": 3232
+    }
+}
+
 EXPECTED_NOTES_GET_RSLT = {
     "FireEye.Note(val.ID && val.ID === obj.ID)": [
         {

@@ -36,7 +36,10 @@ Attributes:
     LISTS_TRANS
         Transformation map for lists to be used with build_transformed_dict
 
-    NOTES_TRANS
+    LIST_ITEM_TRANS
+        Transformation map for list items to be used with build_transformed_dict
+
+    NOTxES_TRANS
         Transformation map for notes to be used with build_transformed_dict
 
     RULES_TRANS
@@ -192,6 +195,14 @@ LISTS_TRANS = {
     'is_internal': 'Internal',
     'is_protected': 'Protected',
     'is_active': 'Active',
+}
+LIST_ITEM_TRANS = {
+    'id': 'ID',
+    'value': "Value",
+    'type': "Type",
+    'risk': "Risk",
+    'notes': 'Notes',
+    'list': 'List'
 }
 NOTES_TRANS = {
     'id': 'ID',
@@ -579,6 +590,29 @@ class Client(BaseClient):
         suffix = f'/api/v1/rules/{rule_id}'
         body = assign_params(enabled=enabled and enabled != 'false')
         return self._http_request('PATCH', suffix, json_data=body)
+
+    def add_list_item(self, list_id: Union[str, int], type: str, value: str, risk: str = None,
+                      notes: str = None) -> Dict:
+        """Adds a single item list to a list
+
+        Args:
+            list_id: List id.
+            type: Type of list item.
+            value: Value of list item.
+            risk: Risk of list item.
+            notes: Notes for list item.
+
+        Returns:
+            Respone from API
+        """
+        suffix = f'/api/v3/lists/{list_id}/items'
+        body = assign_params(
+            type=type,
+            value=value,
+            risk=risk,
+            notes=notes
+        )
+        return self._http_request('POST', suffix, json_data=body)
 
 
 ''' HELPER FUNCTIONS '''
@@ -1190,6 +1224,32 @@ def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Deleted list successfully.', {}, raw_response
 
 
+def add_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Adds a list item. return outputs in Demisto's format
+
+    Args:
+        client:
+        args:
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('list_id')
+    raw_response = client.add_list_item(**args)
+    if raw_response:
+        item_id = raw_response.get('id')
+        title = f'{INTEGRATION_NAME} - List item {item_id} was added successfully to {list_id}'
+        context_entry = build_transformed_dict(raw_response, LIST_ITEM_TRANS)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Item': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not create list item.', {}, raw_response
+
+
 def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Lists all sensors and return outputs in Demisto's format
 
@@ -1320,12 +1380,16 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,  # todo: Not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
+        # f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,
+        f'{INTEGRATION_COMMAND_NAME}-add-list-items': add_list_items_command,
+        # f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_items_command,
+        # f'{INTEGRATION_COMMAND_NAME}-remove-list-item': update_list_items_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
-        f'{INTEGRATION_COMMAND_NAME}-search': search_command,
+        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-search': search_command,  # todo: not tested properly
     }
     try:
         if command == 'fetch-incidents':

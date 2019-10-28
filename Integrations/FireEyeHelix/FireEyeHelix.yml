@@ -1702,6 +1702,56 @@ script:
     - contextPath: FireEyeHelixSearch.GroupBy.DocCount
       description: Number of matches for the group.
       type: Number
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Item type.
+      isArray: false
+      name: type
+      predefined:
+      - email
+      - fqdn
+      - ipv4
+      - ipv6
+      - md5
+      - misc
+      - sha-1
+      required: true
+      secret: false
+    - default: false
+      description: Item value.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: ID of the list.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Risk of the item. Can be Low, Medium, High, or Critical.
+      isArray: false
+      name: risk
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Item notes.
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds an item to a list.
+    execution: false
+    name: fireeye-helix-add-list-items
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   longRunning: false

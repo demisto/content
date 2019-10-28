@@ -954,6 +954,15 @@ NOTES_CREATE_RESP = {
     "note": "This is a note test"
 }
 
+LIST_ITEMS_RESP = {
+    "id": 23232323,
+    "value": "aTest list",
+    "type": "misc",
+    "risk": "Medium",
+    "notes": "test ok",
+    "list": 3232
+}
+
 SEARCH_AGGREGATIONS_SINGLE_RESP = {
     "groupby:subject": {
         "buckets": [
