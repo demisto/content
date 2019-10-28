@@ -86,16 +86,47 @@ def test_module(client):
 
 
 ''' EXECUTION '''
-LOG('command is %s' % (demisto.command(), ))
-try:
-    if demisto.command() == 'coach-end-user':
-        coach_end_user_command()
-    elif demisto.command() == 'test-module':
-        user = 'track@securityadvisor.io'
-        context = "malware"
-        send_message(user, context)
-        demisto.results('ok')
-except Exception, e:
-    demisto.debug('Error in SecurityAdvisor')
-    LOG(e.message)
-    return_error(e.message)
+
+
+def main():
+    """
+    PARSE AND VALIDATE INTEGRATION PARAMS
+    """
+    base_url = demisto.params().get('url', 'https://www.securityadvisor.io/')
+    proxy = demisto.params().get('proxy')
+    api_key = demisto.params().get('apikey')
+    verify_certificate = not demisto.params().get('insecure', False)
+    if not demisto.params().get('proxy', False):
+        try:
+            del os.environ['HTTP_PROXY']
+            del os.environ['HTTPS_PROXY']
+            del os.environ['http_proxy']
+            del os.environ['https_proxy']
+        except KeyError:
+            pass
+    LOG('Command being called is %s' % (demisto.command()))
+
+    try:
+        headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': 'Token ' + api_key
+        }
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            headers=headers,
+            proxy=proxy)
+        if demisto.command() == 'coach-end-user':
+            return_outputs(*coach_end_user_command(client, demisto.args()))
+        elif demisto.command() == 'test-module':
+            test_module(client)
+            demisto.results('ok')
+    # Log exceptions
+    except Exception as e:
+        return_error('Failed to execute %s command. Error: %s' %
+                     (demisto.command(), str(e)))
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
