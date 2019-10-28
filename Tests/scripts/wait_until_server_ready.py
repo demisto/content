@@ -121,7 +121,7 @@ def is_correct_content_installed(ips, content_version, username, password):
 
 
 def main():
-    content_version, username, password = get_username_password()
+    username, password, content_version = get_username_password()
 
     print(username+"......"+password)
 
