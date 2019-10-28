@@ -11,7 +11,7 @@ def get_by_incident_id(incident_id, get_key, set_key=""):
     try:
         context = demisto.executeCommand("getContext", {"id": incident_id})[0]['Contents']['context']
         res = reduce(lambda x, y: x[y], keys, context)
-    except:
+    except KeyError:
         error_msg = "Cannot find {} in incident #{}".format(get_key, incident_id)
         return_error(message=error_msg,
                      error='GetByIncidentId: ' + error_msg,
