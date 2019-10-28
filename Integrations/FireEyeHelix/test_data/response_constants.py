@@ -954,13 +954,33 @@ NOTES_CREATE_RESP = {
     "note": "This is a note test"
 }
 
-LIST_ITEMS_RESP = {
+LIST_SINGLE_ITEM_RESP = {
     "id": 23232323,
     "value": "aTest list",
     "type": "misc",
     "risk": "Medium",
     "notes": "test ok",
     "list": 3232
+}
+
+LIST_ITEMS_RESP = {
+    "meta": {
+        "count": 1,
+        "previous": None,
+        "limit": 30,
+        "offset": 0,
+        "next": None
+    },
+    "results": [
+        {
+            "id": 163,
+            "value": "Test list",
+            "type": "misc",
+            "risk": "Low",
+            "notes": "",
+            "list": 3232
+        }
+    ]
 }
 
 SEARCH_AGGREGATIONS_SINGLE_RESP = {

@@ -1426,8 +1426,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-add-list-item': add_list_item_command,
-        # f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_items_command,
-        # f'{INTEGRATION_COMMAND_NAME}-remove-list-item': update_list_items_command,
+        # f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_item_command,
+        # f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,  # todo: not tested properly
