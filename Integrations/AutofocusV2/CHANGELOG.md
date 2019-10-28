@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Added description to ***autofocus-tag-details***
 
 ## [19.10.0] - 2019-10-03
   - Improved handling of empty responses for the  ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
