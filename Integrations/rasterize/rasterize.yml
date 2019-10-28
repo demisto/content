@@ -8,12 +8,17 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- defaultvalue: 'true'
-  display: Use system proxy settings
+- display: 'Time to wait before taking screen shot (in seconds)'
+  name: wait_time
+  defaultvalue: "0"
+  type: 0
+  required: false
+- display: Use system proxy settings
   name: proxy
   required: false
+  defaultvalue: ''
   type: 8
-description: Rasterize URLs or emails given to it
+description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
 fromversion: '5.0.0'
@@ -21,86 +26,133 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The URL to rasterize. Must be full URL including http prefix.
+      description: The URL to rasterize. Must be the full URL, including the http prefix.
       isArray: false
       name: url
       required: true
       secret: false
     - default: false
-      description: The page width, e.g. 50px (empty is entire page)
+      description: The page width, for example, 50px. If empty, the width is the entire page.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
-      description: The page height, e.g. 50px (empty is entire page)
+      description: The page height, for example, 50px. If empty, the height is the entire page.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: pdf or png. Default is png.
+      description: The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png".
       isArray: false
       name: type
       required: false
       secret: false
     deprecated: false
-    description: Rasterize a URL into image or PDF
+    description: Converts the contents of a URL to an image file or a PDF file.
     execution: false
     name: rasterize
   - arguments:
     - default: true
-      description: HTML body of the email
+      description: The HTML body of the email.
       isArray: false
       name: htmlBody
       required: true
       secret: false
     - default: false
-      description: The email width, e.g. 50px (empty is entire email)
+      description: The email width, for example, 50px. If empty, the height is the entire email.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
-      description: The page height, e.g. 50px (empty is entire email)
+      description: The page height, for example, 50px. If empty, the height is the entire email.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: pdf or png. Default is png.
+      description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       isArray: false
       name: type
       required: false
       secret: false
+    - name: offline
+      auto: PREDEFINED
+      predefined:
+        - "true"
+        - "false"
+      description: If "true", will block all outgoing communication.
+    - default: false
+      description: Time in seconds to wait before taking a screenshot
+      isArray: false
+      name: wait_time
+      required: false
+      secret: false
     deprecated: false
-    description: Rasterize an email body into an image
+    description: Converts the body of an email to an image file or a PDF file.
     execution: false
     name: rasterize-email
   - arguments:
     - default: true
-      description: Entry ID of image file
+      description: The entry ID of the image file.
       isArray: false
       name: EntryID
       required: true
       secret: false
     - default: false
-      description: The image width, e.g. 50px (empty is entire image)
+      description: The image width, for example, 50px. If empty, the height is the entire image.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
-      description: The image height, e.g. 50px (empty is entire image)
+      description: The image height, for example, 50px. If empty, the height is the entire image.
       isArray: false
       name: height
       required: false
       secret: false
     deprecated: false
-    description: Rasterize an image file
+    description: Converts an image file to a PDF file.
     execution: false
     name: rasterize-image
-  dockerimage: demisto/chromium:1.0.0.1848
+  - arguments:
+    - default: true
+      description: The entry ID of PDF file.
+      isArray: false
+      name: EntryID
+      required: true
+      secret: false
+    - default: false
+      description: The maximum number of pages to render. Default is "3".
+      defaultValue: "3"
+      isArray: false
+      name: maxPages
+      required: false
+      secret: false
+    - default: false
+      description: The password to access the PDF.
+      isArray: false
+      name: pdfPassword
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false".
+      defaultValue: "false"
+      isArray: false
+      name: horizontal
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Converts a PDF file to an image file.
+    execution: false
+    name: rasterize-pdf
+  dockerimage: demisto/chromium:1.0.0.2889
   isfetch: false
   runonce: false
   script: '-'
