@@ -17,7 +17,8 @@ def exec_command_for_IsInCidrRanges():
         [function] -- function to be used for mocking
     """
 
-    sys.path.append('../IsInCidrRanges')
+    sys.path.append('./Scripts/IsInCidrRanges')  # For CI
+    sys.path.append('../IsInCidrRanges')  # For local
     from IsInCidrRanges import main as cidr_checker
 
     def executeCommand(name, args=None):
