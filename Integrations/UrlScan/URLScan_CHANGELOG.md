@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+  - Fix parsing of content no longer returned by the API.
+  - Support batches.
 
 ## [19.9.1] - 2019-09-18
   - Added support for the _Verdict_ result from the urlscan.io API.
