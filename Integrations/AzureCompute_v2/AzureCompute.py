@@ -481,11 +481,15 @@ def http_request(method, url_suffix=None, data=None, headers=None,
         )
         green_codes = codes if codes else {200, 201, 202, 204}
         if r.status_code not in green_codes:
-            err_msg = 'Error in API call to Azure Compute Integration [{}] - {}'.format(r.status_code, r.reason)
-            err = r.json().get('error')
-            if err:
-                err_msg1 = '\nError code: {}\nError message: {}'.format(err.get('code'), err.get('message'))
-                err_msg += err_msg1
+            if r.status_code in {401, 403}:
+                err_msg = ('Permission error in API call to Azure Compute Integration, make sure the application'
+                           ' has access to the relevant resources.')
+            else:
+                err_msg = 'Error in API call to Azure Compute Integration [{}] - {}'.format(r.status_code, r.reason)
+                err = r.json().get('error')
+                if err:
+                    err_msg1 = '\nError code: {}\nError message: {}'.format(err.get('code'), err.get('message'))
+                    err_msg += err_msg1
             raise Exception(err_msg)
         response = json.loads(r.content)
     except ValueError:
