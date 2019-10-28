@@ -785,6 +785,6 @@
   "createdBy": "DBot",
   "type": "pdf",
   "id": "ShiftSummaryReport",
-  "fromVersion": "5.0.0",
+  "fromVersion": "3.1.0",
   "description": "Shift summary which includes the last 6 hours open and closed incidents."
 }
