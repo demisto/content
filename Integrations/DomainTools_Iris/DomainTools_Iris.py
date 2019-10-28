@@ -17,7 +17,7 @@ USERNAME = demisto.params().get('username')
 API_KEY = demisto.params().get('apikey')
 RISK_THRESHOLD = int(demisto.params().get('risk_threshold'))
 YOUNG_DOMAIN_TIMEFRAME = int(demisto.params().get('young_domain_timeframe'))
-VERIFY_CERT = demisto.params().get('insecure', False)
+VERIFY_CERT = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
 
 ''' HELPER FUNCTIONS '''
@@ -125,7 +125,7 @@ def prune_context_data(data_obj):
         for k, v in data_obj.items():
             if isinstance(data_obj[k], dict) or isinstance(data_obj[k], list):
                 prune_context_data(data_obj[k])
-            if not isinstance(v, int) and (v is None or len(v) == 0):
+            if not isinstance(v, int) and v:
                 items_to_prune.append(k)
             elif k == 'count' and v == 0:
                 items_to_prune.append(k)
@@ -134,7 +134,7 @@ def prune_context_data(data_obj):
     elif isinstance(data_obj, list) and len(data_obj):
         for index, item in enumerate(data_obj):
             prune_context_data(item)
-            if not isinstance(item, int) and (item is None or len(item) == 0):
+            if not isinstance(item, int) and item:
                 items_to_prune.append(index)
         data_obj[:] = [item for index, item in enumerate(data_obj) if index not in items_to_prune and len(item)]
 
@@ -642,5 +642,5 @@ def main():
         return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command(), str(e)))
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
