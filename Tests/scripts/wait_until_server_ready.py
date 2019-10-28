@@ -133,7 +133,7 @@ def main():
                     host = "https://{}".format(ami_instance_ip)
                     path = '/health'
                     method = 'GET'
-                    res = requests.request(method=method, url=(host+path))
+                    res = requests.request(method=method, url=(host+path), verify=False)
                     # res = demisto_client.generic_request_func(self=client, path=path, method=method)
                     print(res)
                     if res.status_code == 200:
