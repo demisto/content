@@ -1,7 +1,7 @@
 import pytest
 from FireEyeHelix import Client, build_search_groupby_result, list_alerts_command, get_alert_by_id_command, \
     get_alert_notes_command, create_alert_note_command, get_events_by_alert_command, get_endpoints_by_alert_command, \
-    get_cases_by_alert_command, add_list_items_command
+    get_cases_by_alert_command, add_list_item_command
 from test_data.response_constants import ALERT_RESP, ALERTS_RESP, SEARCH_AGGREGATIONS_SINGLE_RESP, \
     SEARCH_AGGREGATIONS_MULTI_RESP, NOTES_GET_RESP, NOTES_CREATE_RESP, EVENTS_BY_ALERT_RESP, ENDPOINTS_BY_ALERT_RESP, \
     CASES_BY_ALERT_RESP, LIST_ITEMS_RESP
@@ -28,7 +28,7 @@ def test_build_search_groupby_result():
      EXPECTED_ENDPOINTS_BY_ALERT_RSLT),
     (get_cases_by_alert_command, {'alert_id': 3232, 'offset': 0, 'limit': 1}, CASES_BY_ALERT_RESP,
      EXPECTED_CASES_NY_ALERT_RSLT),
-    (add_list_items_command, {'list_id': 3232, 'value': 'test', 'type': 'misc', 'risk': 'Low'}, LIST_ITEMS_RESP,
+    (add_list_item_command, {'list_id': 3232, 'value': 'test', 'type': 'misc', 'risk': 'Low'}, LIST_ITEMS_RESP,
      EXPECTED_SINGLE_LIST_ITEM_RSLT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):

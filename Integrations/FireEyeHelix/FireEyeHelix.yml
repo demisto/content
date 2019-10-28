@@ -1749,9 +1749,25 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Adds an item to a list.
+    description: Add an item to a list.
     execution: false
-    name: fireeye-helix-add-list-items
+    name: fireeye-helix-add-list-item
+  - arguments:
+    - default: true
+      description: List ID.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    - default: false
+      description: Item offset. Default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: fireeye-helix-get-list-items
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   longRunning: false

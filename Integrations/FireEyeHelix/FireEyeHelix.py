@@ -614,6 +614,20 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix, json_data=body)
 
+    def get_list_items(self, list_id: Optional[Any], offset: Optional[Any]) -> Dict:
+        """Gets items of a list
+
+        Args:
+            list_id: List ID.
+            offset: Offset in database.
+
+        Returns:
+            Response from API
+        """
+        suffix = f'/api/v3/lists/{list_id}/items'
+        params = assign_params(offset=offset)
+        return self._http_request('GET', suffix, params=params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -1224,12 +1238,12 @@ def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'{INTEGRATION_NAME} - Deleted list successfully.', {}, raw_response
 
 
-def add_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def add_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Adds a list item. return outputs in Demisto's format
 
     Args:
-        client:
-        args:
+        client: Client object with request
+        args: Usually demisto.args()
 
     Returns:
         Outputs
@@ -1248,6 +1262,34 @@ def add_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not create list item.', {}, raw_response
+
+
+def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Fetches list items
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('list_id')
+    raw_response = client.get_list_items(list_id, args.get('offset'))
+    results = raw_response.get('results')
+    if results:
+        title = f'{INTEGRATION_NAME} - List items for list {list_id}'
+        context_entry = build_transformed_dict(results, LIST_ITEM_TRANS)
+        count = demisto.get(raw_response, 'meta.count')
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Count(val.Count)': count
+        }
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - No items were found for list {list_id}.', {}, raw_response
 
 
 def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1382,14 +1424,15 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
         f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
-        # f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,
-        f'{INTEGRATION_COMMAND_NAME}-add-list-items': add_list_items_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-add-list-item': add_list_item_command,
         # f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_items_command,
         # f'{INTEGRATION_COMMAND_NAME}-remove-list-item': update_list_items_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,  # todo: not tested properly
+        # f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,  # todo: not tested properly
     }
     try:
         if command == 'fetch-incidents':
