@@ -25,7 +25,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Retrieve items from the service.
+    description: Retrieves items from the service.
     execution: false
     name: smime-sign-email
     outputs:
@@ -79,6 +79,22 @@ script:
     outputs:
     - contextPath: SMIME.Decrypted.Message
       description: The decrypted message.
+      type: String
+  - arguments:
+    - default: false
+      description: The message body to encrypt and sign.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Encrypts and signs an email message with S/MIME protocol by using a public
+      RSA certificate.
+    execution: false
+    name: smime-sign-and-encrypt
+    outputs:
+    - contextPath: SMIME.SignedAndEncrypted.Message
+      description: The raw message to send.
       type: String
   dockerimage: demisto/m2crypto:1.0.0.1850
   isfetch: false

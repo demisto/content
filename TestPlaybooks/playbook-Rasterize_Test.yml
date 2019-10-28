@@ -1,6 +1,7 @@
 id: Rasterize Test
 version: -1
 name: Rasterize Test
+toversion: 4.5.9
 starttaskid: "0"
 tasks:
   "0":
