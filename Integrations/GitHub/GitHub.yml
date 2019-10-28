@@ -732,6 +732,66 @@ script:
       type: Unknown
   - arguments:
     - default: false
+      description: GitHub login or email address by which to filter by commit author
+      isArray: false
+      name: author
+      required: false
+      secret: false
+    - default: false
+      description: Limit number of commits
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get list of commits
+    execution: false
+    name: GitHub-list-commits
+    outputs:
+    - contextPath: GitHub.Commit.SHA
+      description: The SHA hash of the commit
+      type: String
+    - contextPath: GitHub.Commit.Author.Date
+      description: The commit author date
+      type: String
+    - contextPath: GitHub.Commit.Author.Name
+      description: The name of the author
+      type: String
+    - contextPath: GitHub.Commit.Author.Email
+      description: The email of the author
+      type: String
+    - contextPath: GitHub.Commit.Committer.Date
+      description: The date the commiter committed
+      type: String
+    - contextPath: GitHub.Commit.Committer.Name
+      description: The name of the committer
+      type: String
+    - contextPath: GitHub.Commit.Committer.Email
+      description: The email of the committer
+      type: String
+    - contextPath: GitHub.Commit.Message
+      description: The message associated with the commit
+      type: String
+    - contextPath: GitHub.Commit.Parent
+      description: List of parent SHA hashes
+      type: Unknown
+    - contextPath: GitHub.Commit.TreeSHA
+      description: The SHA hash of the commit's tree
+      type: String
+    - contextPath: GitHub.Commit.Verification.Verified
+      description: Whether the commit was verified or not
+      type: Boolean
+    - contextPath: GitHub.Commit.Verification.Reason
+      description: The reason why the commit was or was not verified
+      type: String
+    - contextPath: GitHub.Commit.Verification.Signature
+      description: The commit verification signature
+      type: Unknown
+    - contextPath: GitHub.Commit.Verification.Payload
+      description: The commit verification payload
+      type: Unknown
+  - arguments:
+    - default: false
       description: The number of the issue to add labels to
       isArray: false
       name: issue_number

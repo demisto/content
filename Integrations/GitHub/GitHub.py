@@ -25,6 +25,7 @@ USER_SUFFIX = '/repos/{}/{}'.format(USER, REPOSITORY)
 ISSUE_SUFFIX = USER_SUFFIX + '/issues'
 RELEASE_SUFFIX = USER_SUFFIX + '/releases'
 PULLS_SUFFIX = USER_SUFFIX + '/pulls'
+COMMITS_SUFFIX = USER_SUFFIX + '/commits'
 
 RELEASE_HEADERS = ['ID', 'Name', 'Download_count', 'Body', 'Created_at', 'Published_at']
 ISSUE_HEADERS = ['ID', 'Repository', 'Title', 'State', 'Body', 'Created_at', 'Updated_at', 'Closed_at', 'Closed_by',
@@ -671,6 +672,28 @@ def get_commit_command():
     return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
 
 
+def list_commits(author):
+    params = {'author': author} if author else {}
+    return http_request('GET', url_suffix=f'{USER_SUFFIX}/commits',
+                        params=params)
+
+
+def list_commits_command():
+    args = demisto.args()
+    response = list_commits(author=args.get('author'))
+    limit = args.get('limit')
+    if limit:
+        response = response[:int(limit)]
+    commits = [format_commit_outputs(c['commit']) for c in response]
+    ec = {
+        'GitHub': {
+            'Commit': commits
+        }
+    }
+    human_readable = tableToMarkdown('Commits', commits, removeNull=True)
+    return_outputs(readable_output=human_readable, outputs=ec, raw_response=response)
+
+
 def list_pr_reviews(pull_number: Union[int, str]) -> list:
     suffix = PULLS_SUFFIX + f'/{pull_number}/reviews'
     response = http_request('GET', url_suffix=suffix)
@@ -1148,7 +1171,8 @@ COMMANDS = {
     'GitHub-list-pr-review-comments': list_pr_review_comments_command,
     'GitHub-update-pull-request': update_pull_request_command,
     'GitHub-is-pr-merged': is_pr_merged_command,
-    'GitHub-create-pull-request': create_pull_request_command
+    'GitHub-create-pull-request': create_pull_request_command,
+    'GitHub-list-commits': list_commits_command,
 }
 
 

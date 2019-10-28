@@ -5,6 +5,7 @@
     - ***GitHub-update-pull-request***
     - ***GitHub-is-pr-merged***
     - ***GitHub-create-pull-request***
+    - ***GitHub-list-commits***
 
 ## [19.10.0] - 2019-10-03
 -
