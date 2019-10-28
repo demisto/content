@@ -1,28 +1,18 @@
 import demistomock as demisto
 from CommonServerPython import *
+''' IMPORTS '''
 import requests
 import json
 import collections
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-BASE_URL = demisto.params().get('url', 'https://www.securityadvisor.io')
-INSECURE = demisto.params().get('insecure')
-PROXY = demisto.params().get('proxy')
-API_KEY = demisto.params().get('apikey')
-URL_SUFFIX = 'apis/coachuser/'
-if not demisto.params().get('proxy', False):
-    try:
-        del os.environ['HTTP_PROXY']
-        del os.environ['HTTPS_PROXY']
-        del os.environ['http_proxy']
-        del os.environ['https_proxy']
-    except KeyError:
-        pass
+''' CONSTANTS '''
+URL_SUFFIX_COACH_USER = 'apis/coachuser/'
+
 
 # Allows nested keys to be accesible
-
-
 def makehash():
     return collections.defaultdict(makehash)
 
@@ -30,77 +20,69 @@ def makehash():
 '''MAIN FUNCTIONS'''
 
 
-def send_message(user, context):
-    query = {'username': user, 'context': context}
-    search = json.dumps(query)
-    r = http_request('POST', URL_SUFFIX, search)
-    return r
+class Client(BaseClient):
+    """
+    Calls SecurityAdvisor API and returns results
+    """
+
+    def http_request_coachuser(self, data):
+        """
+        calls coach user api
+        """
+        response_data_json = self._http_request(
+            method='POST',
+            url_suffix=URL_SUFFIX_COACH_USER,
+            json_data=data,
+            data=data,
+        )
+        return response_data_json
 
 
-def coach_end_user_command():
-    user = demisto.args().get('user')
-    context = demisto.args().get('context')
-    res = send_message(user, context)
-    # demisto.log(json.dumps(res))
-    # contents = res['message']
-    res_message = res['message']
-    res_coaching_status = res['coaching_status']
-    res_coaching_score = res['coaching_score']
-    res_coaching_date = res['coaching_date']
+def coach_end_user_command(client, args):
+    """
+    Returns Coaching status of user
+
+    Args:
+        client: SecurityAdvisor client
+        args: all command arguments
+
+    Returns:
+        json version of coaching status for user
+        readable_output: This will be presented in Warroom - should be in markdown syntax - human readable
+        outputs: Dictionary/JSON - saved in incident context in order to be used as input for other tasks in the
+                 playbook
+        raw_response: Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                      raw-response=true
+    """
+    user = args.get('user')
+    context = args.get('context')
+    data = json.dumps({"username": user, "context": context})
+    result = client.http_request_coachuser(data)
+    readable_output = "## {0}".format(result)
     contxt = makehash()
-    human_readable = makehash()
-    human_readable['user'] = user
-    human_readable['context'] = context
-    human_readable['message'] = res_message
-    human_readable['coaching_status'] = res_coaching_status
-    human_readable['coaching_score'] = res_coaching_score
-    human_readable['coaching_date'] = res_coaching_date
     contxt['user'] = user
     contxt['context'] = context
-    contxt['message'] = res_message
-    contxt['coaching_status'] = res_coaching_status
-    contxt['coaching_score'] = res_coaching_score
-    contxt['coaching_date'] = res_coaching_date
-    ec = {'SecurityAdvisor.CoachUser(val.user == obj.user && val.context == obj.context)': contxt}
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': res,
-        'HumanReadable': tableToMarkdown('SecurityAdvisorBot says...', human_readable),
-        'EntryContext': ec
+    contxt['message'] = result['message']
+    contxt['coaching_status'] = result['coaching_status']
+    contxt['coaching_score'] = result['coaching_score']
+    contxt['coaching_date'] = result['coaching_date']
+    outputs = ({
+        'SecurityAdvisor.CoachUser(val.user == obj.user && val.context == obj.context)': contxt,
     })
 
-
-'''HELPER FUNCTIONS'''
-
-
-def http_request(method, URL_SUFFIX, json=None):
-    if method == 'GET':
-        headers = {}  # type: Dict
-    elif method == 'POST':
-        if not API_KEY:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        else:
-            headers = {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': 'Token ' + API_KEY
-            }
-    # LOG(json)
-    # LOG.print_log()
-    r = requests.request(
-        method,
-        BASE_URL + URL_SUFFIX,
-        data=json,
-        headers=headers,
-        verify=INSECURE
+    return (
+        readable_output,
+        outputs,
+        result  # raw response - the original response
     )
-    if r.status_code != 200:
-        return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
-    return r.json()
+
+
+def test_module(client):
+    """Test Module when testing integration"""
+    data = json.dumps(
+        {"username": "track@securityadvisor.io", "context": "malware"})
+    client.http_request_coachuser(data)
+    return('ok')
 
 
 ''' EXECUTION '''
