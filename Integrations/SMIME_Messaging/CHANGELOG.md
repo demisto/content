@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the ***smime-sign-and-encrypt*** command.
 
 ## [19.10.1] - 2019-10-15
 #### New Integration
