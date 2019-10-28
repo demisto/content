@@ -52,7 +52,7 @@ def http_request(method, path, other_params=None):
 
     try:
         res_json = res.json()
-    except json.JSONDecodeError as json_error:
+    except json.JSONDecodeError:
         demisto.error(res.text)
         raise
 
