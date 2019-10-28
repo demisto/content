@@ -118,7 +118,7 @@ def is_correct_content_installed(ips, content_version, username, password):
 
 
 def main():
-    api_key, content_version, username, password = get_api_key()
+    content_version, username, password = get_username_password()
 
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
