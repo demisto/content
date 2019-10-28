@@ -10,7 +10,7 @@ from typing import Dict, List, Union
 urllib3.disable_warnings()
 
 # CONSTANTS #
-MAX_FETCH_SIZE = 20
+MAX_FETCH_SIZE = 50
 
 
 # HELPER FUNCTIONS #
@@ -31,7 +31,7 @@ def create_incident_from_detection(detection: dict):
 
 class Client:
     def __init__(self, vectra_url: str, api_token: str, verify: bool, proxies: dict, fetch_size: int, t_score_gte: int,
-                 c_score_gte: int):
+                 c_score_gte: int, state: str):
         """
         :param vectra_url: IP or hostname of Vectra brain (ex https://www.example.com) - required
         :param api_token: API token for authentication when using API v2*
@@ -40,7 +40,9 @@ class Client:
         :param fetch_size: Max number of incidents to fetch in each cycle
         :param c_score_gte: Fetch only Detections with greater/equal Certainty score
         :param t_score_gte: Fetch only Detections with greater/equal Threat score
+        :param state: Fetch only Detections with matching State (e.g., active, inactive, ignored)
         """
+        self.state = state
         self.t_score_gte = t_score_gte
         self.c_score_gte = c_score_gte
         self.fetch_size = fetch_size
@@ -60,16 +62,18 @@ class Client:
         :return: .json() of the response if exists
         """
         full_url = self.base_url + url_suffix
-
-        res = requests.request(
-            method=method,
-            url=full_url,
-            headers=self.headers,
-            params=params,
-            data=data,
-            verify=self.verify,
-            proxies=self.proxies,
-        )
+        try:
+            res = requests.request(
+                method=method,
+                url=full_url,
+                headers=self.headers,
+                params=params,
+                data=data,
+                verify=self.verify,
+                proxies=self.proxies,
+            )
+        except requests.exceptions.ConnectionError:
+            return_error(f'Failed to connect to - {self.base_url} \nPlease check the URL')
 
         if not res.ok:
             raise ValueError(f'Error in API call to Vectra [{res.status_code:d}]. Reason: {res.text}')
@@ -80,24 +84,25 @@ class Client:
         except Exception:
             raise ValueError(f"Failed to parse http response to JSON format. Original response body: \n{res.text}")
 
-    def fetch_incidents(self, last_run: Dict, ):
+    def fetch_incidents(self, last_run: Dict):
         """
         Fetches Detections from Vectra into Demisto Incidents
 
 
         :param last_run: Integration's last run
         """
-        # Get the last id, if exists
-        min_id = int(last_run.get('id')) if last_run and 'id' in last_run else 1  # type: ignore
+        # get the lower boundary on IDs to fetch
+        last_id = int(last_run.get('id')) if last_run and 'id' in last_run else 1  # type: ignore
 
         # Fetch Detections
         params = {
-            'min_id': min_id,
+            'min_id': last_id,
             'page_size': self.fetch_size,
             'page': 1,
             'ordering': 'last_timestamp',
             't_score_gte': self.t_score_gte,
-            'c_score_gte': self.c_score_gte
+            'c_score_gte': self.c_score_gte,
+            'state': self.state if self.state != 'all' else None
         }
         raw_response = self.http_request(params=params, url_suffix='detections')  # type: ignore
 
@@ -110,10 +115,10 @@ class Client:
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
-                    min_id = max(min_id, int(detection.get('id', 0)))  # update last fetched id
+                    last_id = max(last_id, int(detection.get('id', 0)))  # update last fetched id
 
                 if incidents:
-                    last_run = {'id': min_id + 1 if min_id > 0 else 1}
+                    last_run = {'id': last_id + 1 if last_id > 0 else 1}
 
             except ValueError:
                 raise
@@ -515,6 +520,7 @@ def main():
 
     # Fetch only detections that have greater or equal Certainty and Threat scores
     c_score_gte, t_score_gte = int(demisto.params().get('c_score_gte', 0)), int(demisto.params().get('t_score_gte', 0))
+    state = demisto.params().get('state')
 
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
@@ -530,9 +536,10 @@ def main():
             verify=verify_certificate,
             api_token=api_token,
             proxies=proxies,
-            fetch_size=min(fetch_size, MAX_FETCH_SIZE),
+            fetch_size=max(0, min(fetch_size, MAX_FETCH_SIZE)),
             c_score_gte=c_score_gte,
-            t_score_gte=t_score_gte
+            t_score_gte=t_score_gte,
+            state=state
         )
 
         # execute the current command
