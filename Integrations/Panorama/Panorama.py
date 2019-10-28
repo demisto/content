@@ -19,6 +19,7 @@ if not demisto.params().get('port'):
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
+PANOS_VER = 0
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -302,6 +303,23 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
 ''' FUNCTIONS'''
 
 
+def panorama_make_sure_version():
+    global PANOS_VER
+    
+    context = demisto.getIntegrationContext()
+    if not context:
+      context = {}
+    
+    if PANOS_VER == 0:
+      PANOS_VER = context.get('PANOS_VER')
+      if PANOS_VER:
+        return
+    
+    PANOS_VER = int(panorama_get_version().split('.')[0])
+    context['PANOS_VER'] = PANOS_VER
+    demisto.setIntegrationContext(context)
+
+
 def panorama_test():
     """
     test module
@@ -369,9 +387,9 @@ def panorama_command():
     Executes a command
     """
     params = {}
-    params['key'] = API_KEY
     for arg in demisto.args().keys():
         params[arg] = demisto.args()[arg]
+    params['key'] = API_KEY
 
     result = http_request(
         URL,
@@ -386,6 +404,20 @@ def panorama_command():
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'Command was executed successfully.',
     })
+
+
+@logger
+def panorama_get_version():
+    params = {
+        'type': 'version',
+        'key': API_KEY
+    }
+    result = http_request(
+        URL,
+        'GET',
+        params=params,
+    )
+    return result['response']['result']['sw-version']
 
 
 @logger
@@ -1802,11 +1834,16 @@ def panorama_get_custom_url_category_command():
 
 @logger
 def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
+    if PANOS_VER >= 9:
+        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + add_argument("URL List", 'type', False)
+    else:
+        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
+    
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
@@ -1893,13 +1930,20 @@ def panorama_delete_custom_url_category_command():
 
 @logger
 def panorama_edit_custom_url_category(custom_url_category_name, sites, description=None):
+    
+    description = add_argument(description, 'description', False)
+    list = add_argument_list(sites, 'list', True)
+    if PANOS_VER >= 9:
+        type = add_argument("URL List", 'type', False)
+        element = f"<entry name='{custom_url_category_name}'>{description}{list}{type}</entry>"
+    else:
+        element = f"<entry name='{custom_url_category_name}'>{description}{list}</entry>"
+    
     params = {
         'action': 'edit',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': "<entry name='" + custom_url_category_name + "'>"
-                   + add_argument(description, 'description', False)
-                   + add_argument_list(sites, 'list', True) + "</entry>",
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
@@ -2682,7 +2726,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ('address-group','edl'):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -4044,6 +4088,9 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
 
+        # Make sure PAN-OS/Panorama version
+        panorama_make_sure_version()
+        
         if demisto.command() == 'test-module':
             panorama_test()
 
