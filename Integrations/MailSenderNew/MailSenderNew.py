@@ -293,7 +293,7 @@ def create_msg():
         msg['CC'] = header(','.join(cc))
     if additional_header:
         for h in additional_header:
-            header_name_and_value = h.split('=')
+            header_name_and_value = h.split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
@@ -335,7 +335,15 @@ def main():
             SERVER.quit()
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
-            (str_msg, to, cc, bcc) = create_msg()
+            raw_message = demisto.getArg('raw_message')
+            if raw_message:
+                to = argToList(demisto.getArg('to'))
+                cc = argToList(demisto.getArg('cc'))
+                bcc = argToList(demisto.getArg('bcc'))
+                str_msg = raw_message
+            else:
+                (str_msg, to, cc, bcc) = create_msg()
+
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
             SERVER.quit()  # type: ignore
             demisto.results('Mail sent successfully')
