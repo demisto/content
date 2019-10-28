@@ -39,7 +39,7 @@ After completing, you can activate the newly created virtual env by running:
 ```
 . ./venv/bin/activate
 ```
-**Congratulations!** You now have a fully configured virtual env, where you can run our different validation and utility scripts. For example, to convert an exported yml integration to our [package (directory) format](../package_directory_structure/README.md), you can use the `package_extractor.py` script. Try:
+**Congratulations!** You now have a fully configured virtual env, where you can run our different validation and utility scripts. For example, to convert an exported yml integration to our [package (directory) format](../package_directory_structure/README.MD), you can use the `package_extractor.py` script. Try:
 ```
 ./package_extractor.py --help
 ```
