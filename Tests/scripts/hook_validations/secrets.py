@@ -4,6 +4,8 @@ import re
 import math
 import json
 import string
+from bs4 import BeautifulSoup
+import PyPDF2
 
 from Tests.test_utils import run_command, print_error
 from Tests.scripts.constants import *
@@ -289,7 +291,7 @@ def get_white_list():
         ioc_white_list = []
         files_while_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
-        for name, white_list in secrets_white_list_file.iteritems():
+        for name, white_list in secrets_white_list_file.items():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
@@ -304,14 +306,19 @@ def get_white_list():
 
 def get_file_contents(file_path, file_extension):
     try:
-        # if pdf file, parse text
+        # if pdf or README.md file, parse text
+        file_contents = ''
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
+                                      string=file_path,
+                                      flags=re.IGNORECASE)
         if file_extension == '.pdf':
             file_contents = extract_text_from_pdf(file_path)
+        elif file_extension == '.md' and integration_readme:
+            file_contents = extract_text_from_md_html(file_path)
         else:
             # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
             with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
                 file_contents = commited_file.read()
-
         file_contents = ignore_base64(file_contents)
         return file_contents
     except Exception as ex:
@@ -334,7 +341,16 @@ def extract_text_from_pdf(file_path):
         page_num += 1
         file_contents += pdf_page.extractText()
 
-    return file_contents
+
+def extract_text_from_md_html(file_path):
+    try:
+        with open(file_path, mode='r') as html_page:
+            soup = BeautifulSoup(html_page, features="html.parser")
+            file_contents = soup.text
+            return file_contents
+    except Exception as ex:
+        print_error('Unable to parse the following file {} due to error {}'.format(file_path, ex))
+        raise
 
 
 def remove_false_positives(line):
