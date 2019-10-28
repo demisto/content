@@ -7,7 +7,7 @@ category: Authentication
 description: Gmail API and user management (This integration replaces the Gmail functionality
   in the GoogleApps API and G Suite integration).
 configuration:
-- display: Email of user with admin capabilities
+- display: Email of user with admin privileges (the Password refers to the Service Account private key)
   name: adminEmail
   defaultvalue: ""
   type: 9
@@ -32,12 +32,12 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
   required: false
-- display: Use System Proxy
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -579,6 +579,8 @@ script:
       description: 'Whether to fetch either the administrator or public view of the user.
       Can be admin_view (default), which includes both administrator and domain-public fields or "domain_public"(includes fields for the user that are publicly visible to other users in the domain).'
       defaultValue: admin_view
+    - name: page-token
+      description: Token to specify next page in the list
     outputs:
     - contextPath: Account.Type
       description: 'The account type. For example, "AD", "LocalOS", "Google", "AppleID", and so on.'

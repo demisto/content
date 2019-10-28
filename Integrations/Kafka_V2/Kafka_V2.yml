@@ -7,12 +7,8 @@ configuration:
   name: brokers
   required: true
   type: 0
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- display: Trust any certificate (not secure)
-  name: insecure
+- display: Use TLS for connection
+  name: use_ssl
   required: false
   type: 8
 - display: |-
@@ -30,20 +26,28 @@ configuration:
   name: client_cert_key
   required: false
   type: 12
-- display: Additonal password (if required)
+- display: Client certificate key password (if required)
   name: additional_password
   required: false
   type: 4
 - display: |-
     ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
     ‎                                        Fetch Incidents Settings
-    Topic to fetch incidents from
+    Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
   type: 0
-- defaultvalue: '0'
-  display: Offset to fetch incidents from
+- display: CSV list of partitions to fetch messages from
+  name: partition
+  required: false
+  type: 0
+- display: Offset to fetch messages from
   name: offset
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Max number of messages to fetch
+  name: max_messages
   required: false
   type: 0
 - display: Fetch incidents
@@ -54,14 +58,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Enable debug (will post Kafka connection logs to the War Room)
-  name: enable_debug
-  required: false
-  type: 8
-- display: partition
-  name: partition
-  required: false
-  type: 0
 description: The Open source distributed streaming platform
 display: Kafka V2
 name: Kafka V2
@@ -74,7 +70,16 @@ script:
     outputs:
     - contextPath: Kafka.Topic.Name
       description: Kafka topic name
-      type: string
+      type: String
+    - contextPath: Kafka.Topic.Partitions.ID
+      description: Topic partition ID
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.EarliestOffset
+      description: Topic partition earliest offset
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.LatestOffset
+      description: Topic partition latest offset
+      type: Number
   - arguments:
     - default: false
       description: A topic to filter messages by
@@ -125,13 +130,13 @@ script:
     name: kafka-consume-msg
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Name of the topic
+      description: Name of the topic.
       type: string
     - contextPath: Kafka.Topic.Message.Value
-      description: Value of the message
+      description: Value of the message.
       type: string
     - contextPath: Kafka.Topic.Message.Offset
-      description: Offset of the value in the topic
+      description: Offset of the value in the topic.
       type: number
   - arguments:
     - default: false
@@ -146,7 +151,7 @@ script:
     name: kafka-fetch-partitions
     outputs:
     - contextPath: Kafka.Topic.Name
-      description: Name of topic
+      description: Name of topic.
       type: string
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.

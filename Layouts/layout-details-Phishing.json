@@ -6,7 +6,7 @@
 		"TypeName": "",
 		"id": "Phishing",
 		"kind": "details",
-		"modified": "2019-07-24T11:36:45.713461799Z",
+		"modified": "2019-10-16T12:35:43.807823117Z",
 		"name": "",
 		"system": false,
 		"tabs": [
@@ -19,7 +19,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"i": "1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [
 							{
@@ -99,7 +99,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -118,7 +118,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "1vduzkpmlh-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -175,7 +175,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -194,7 +194,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -213,7 +213,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "4a31afa0-98ba-11e9-a519-93a53c759fe0",
+						"i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -232,7 +232,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -251,7 +251,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
+						"i": "1vduzkpmlh-c9b7ded0-a863-11e9-aeb8-c3448b5d692d",
 						"isVisible": true,
 						"items": [
 							{
@@ -333,7 +333,7 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "e462ffc0-a864-11e9-aeb8-c3448b5d692d",
+						"i": "1vduzkpmlh-e462ffc0-a864-11e9-aeb8-c3448b5d692d",
 						"isVisible": true,
 						"items": [
 							{
@@ -394,14 +394,14 @@
 						"h": 3,
 						"hideItemTitleOnlyOne": true,
 						"hideName": false,
-						"i": "57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
+						"i": "swtuqptgvs-57f33cc0-97ee-11e9-b8bd-0b00be54d2d3",
 						"isVisible": true,
 						"items": [
 							{
 								"endCol": 2,
 								"fieldId": "emailhtml",
-								"height": 24,
-								"id": "dedb61d0-9beb-11e9-9544-87d23fcd7cfc",
+								"height": 110,
+								"id": "7138aa00-f011-11e9-9295-4f5342c6f6e8",
 								"index": 0,
 								"startCol": 0
 							}
@@ -413,7 +413,7 @@
 						"name": "Raw Email HTML",
 						"static": false,
 						"w": 1,
-						"x": 1,
+						"x": 2,
 						"y": 0
 					},
 					{
@@ -421,7 +421,7 @@
 						"h": 3,
 						"hideItemTitleOnlyOne": true,
 						"hideName": false,
-						"i": "5a552190-97ee-11e9-b8bd-0b00be54d2d3",
+						"i": "swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
 						"isVisible": true,
 						"items": [
 							{
@@ -440,24 +440,22 @@
 						"name": "Email Text",
 						"static": false,
 						"w": 1,
-						"x": 2,
+						"x": 1,
 						"y": 0
 					},
 					{
 						"displayType": "ROW",
 						"h": 3,
 						"hideName": false,
-						"i": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+						"i": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
 						"isVisible": true,
 						"items": [
 							{
-								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "emailsubject",
+								"fieldId": "emailmessageid",
 								"height": 24,
-								"id": "53c5a330-97ef-11e9-b8bd-0b00be54d2d3",
+								"id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
 								"index": 0,
-								"listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
 								"startCol": 0
 							},
 							{
@@ -471,21 +469,39 @@
 								"startCol": 0
 							},
 							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "emailreplyto",
+								"height": 24,
+								"id": "a64be380-97ef-11e9-b8bd-0b00be54d2d3",
+								"index": 2,
+								"listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+								"startCol": 0
+							},
+							{
 								"endCol": 2,
 								"fieldId": "emailreturnpath",
 								"height": 24,
 								"id": "87054c00-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 2,
+								"index": 3,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "emailsenderip",
+								"height": 24,
+								"id": "97d4e2c0-97ef-11e9-b8bd-0b00be54d2d3",
+								"index": 4,
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "emailto",
+								"fieldId": "reporteremailaddress",
 								"height": 24,
-								"id": "6136a5a0-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 3,
-								"listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+								"id": "93c5bbb0-df83-11e9-9d3d-b355b2831118",
+								"index": 5,
+								"listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
 								"startCol": 0
 							},
 							{
@@ -493,7 +509,7 @@
 								"fieldId": "emailcc",
 								"height": 24,
 								"id": "66500950-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 4,
+								"index": 6,
 								"startCol": 0
 							},
 							{
@@ -502,8 +518,18 @@
 								"fieldId": "emailtocount",
 								"height": 24,
 								"id": "8d6c3e50-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 5,
+								"index": 7,
 								"listId": "d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "emailsubject",
+								"height": 24,
+								"id": "53c5a330-97ef-11e9-b8bd-0b00be54d2d3",
+								"index": 8,
+								"listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
 								"startCol": 0
 							},
 							{
@@ -511,31 +537,17 @@
 								"fieldId": "emailbcc",
 								"height": 24,
 								"id": "69b68ce0-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 6,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "emailsenderip",
-								"height": 24,
-								"id": "97d4e2c0-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 7,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "emailreplyto",
-								"height": 24,
-								"id": "a64be380-97ef-11e9-b8bd-0b00be54d2d3",
-								"index": 8,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "emailmessageid",
-								"height": 24,
-								"id": "b8a85bd0-97ef-11e9-b8bd-0b00be54d2d3",
 								"index": 9,
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "emailto",
+								"height": 24,
+								"id": "6136a5a0-97ef-11e9-b8bd-0b00be54d2d3",
+								"index": 10,
+								"listId": "swtuqptgvs-d431b9b0-97ee-11e9-b8bd-0b00be54d2d3",
 								"startCol": 0
 							}
 						],
@@ -547,21 +559,23 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 3
+						"y": 0
 					},
 					{
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "49052550-97f0-11e9-b8bd-0b00be54d2d3",
+						"i": "swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
 						"isVisible": true,
 						"items": [
 							{
+								"dropEffect": "move",
 								"endCol": 2,
 								"fieldId": "attachment",
 								"height": 55,
 								"id": "9cd0f990-ac6b-11e9-bb03-dd1b065c10a8",
 								"index": 0,
+								"listId": "swtuqptgvs-49052550-97f0-11e9-b8bd-0b00be54d2d3",
 								"startCol": 0
 							},
 							{
@@ -582,17 +596,17 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "attachmentextension",
+								"fieldId": "attachmentsize",
 								"height": 24,
-								"id": "bf294950-97f0-11e9-b8bd-0b00be54d2d3",
+								"id": "c2b35a70-97f0-11e9-b8bd-0b00be54d2d3",
 								"index": 3,
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "attachmentsize",
+								"fieldId": "attachmentextension",
 								"height": 24,
-								"id": "c2b35a70-97f0-11e9-b8bd-0b00be54d2d3",
+								"id": "bf294950-97f0-11e9-b8bd-0b00be54d2d3",
 								"index": 4,
 								"startCol": 0
 							},
@@ -612,14 +626,14 @@
 						"name": "Email Attachments",
 						"static": false,
 						"w": 1,
-						"x": 0,
-						"y": 6
+						"x": 2,
+						"y": 3
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"hideName": false,
-						"i": "067d4900-98b4-11e9-97d7-ed26ef9e46c8",
+						"i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -631,10 +645,12 @@
 							"categories": [
 								"attachments"
 							],
-							"lastId": "",
-							"pageSize": 100,
+							"notTags": [
+								"email_html_image",
+								"url_screenshots"
+							],
 							"tags": [],
-							"users": []
+							"tagsAndOperator": true
 						},
 						"queryType": "warRoomFilter",
 						"readOnly": true,
@@ -642,13 +658,13 @@
 						"type": "invTimeline",
 						"w": 1,
 						"x": 1,
-						"y": 6
+						"y": 8
 					},
 					{
 						"displayType": "ROW",
 						"h": 3,
 						"hideName": false,
-						"i": "cc557320-98b7-11e9-b34a-852d068f44fe",
+						"i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -663,14 +679,14 @@
 						"type": "indicators",
 						"w": 2,
 						"x": 1,
-						"y": 3
+						"y": 5
 					},
 					{
 						"description": "",
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "3205ebf0-98cc-11e9-a519-93a53c759fe0",
+						"i": "swtuqptgvs-3205ebf0-98cc-11e9-a519-93a53c759fe0",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -684,14 +700,14 @@
 						"static": false,
 						"type": "dynamic",
 						"w": 1,
-						"x": 2,
-						"y": 6
+						"x": 0,
+						"y": 8
 					},
 					{
 						"displayType": "ROW",
 						"h": 3,
 						"hideName": false,
-						"i": "0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
+						"i": "swtuqptgvs-0e149ea0-9d8e-11e9-a715-f7bbe72c84a2",
 						"isVisible": true,
 						"items": [],
 						"maxW": 3,
@@ -710,7 +726,119 @@
 						"type": "invTimeline",
 						"w": 1,
 						"x": 0,
-						"y": 0
+						"y": 3
+					},
+					{
+						"description": "The category of the email. In case of a phishing email, also shows the phishing sub-type.",
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "swtuqptgvs-ac6702e0-df84-11e9-9d3d-b355b2831118",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "phishingsubtype",
+								"height": 24,
+								"id": "fb88e280-df84-11e9-9d3d-b355b2831118",
+								"index": 1,
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "emailclassification",
+								"height": 24,
+								"id": "136ce9a0-df85-11e9-9d3d-b355b2831118",
+								"index": 2,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Email Type Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 10
+					},
+					{
+						"h": 4,
+						"hideName": false,
+						"i": "swtuqptgvs-b5924880-df88-11e9-9d3d-b355b2831118",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "URL Screenshots",
+						"query": {
+							"tags": [
+								"url_screenshots"
+							]
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 8
+					},
+					{
+						"description": "The result of SPF, DKIM and DMARC checks on the email.",
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "emailauthenticitycheck",
+								"height": 24,
+								"id": "ae4f25c0-e032-11e9-9c9e-41d82f09b6f1",
+								"index": 0,
+								"listId": "swtuqptgvs-a12ae3c0-e032-11e9-9c9e-41d82f09b6f1",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Email Authenticity Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "swtuqptgvs-8fd72e00-e837-11e9-9c9e-41d82f09b6f1",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "criticalassets",
+								"height": 24,
+								"id": "cb074f50-e837-11e9-9c9e-41d82f09b6f1",
+								"index": 0,
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Critical Assets",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
 					}
 				],
 				"type": "custom"
