@@ -2,7 +2,6 @@ from CommonServerPython import *
 
 ''' IMPORTS '''
 from typing import Dict, Tuple, List, AnyStr, Optional, Union
-
 import urllib3
 
 # Disable insecure warnings

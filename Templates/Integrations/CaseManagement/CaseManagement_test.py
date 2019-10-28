@@ -1,10 +1,9 @@
+import copy
 import json
 
 import pytest
-import copy
 from CaseManagement import Client
 from pytest import raises
-import demistomock as demisto
 
 from CommonServerPython import urljoin, DemistoException
 
@@ -51,16 +50,36 @@ class TestInputs:
             }
         ]
     }
-    EXCEPTED_CONTEXT_ONE_TICKET = {'CaseManagement.Ticket(val.ID && val.ID === obj.ID)': [
-        {'ID': '111', 'Name': 'nameofticket', 'Category': 'ticketCategory', 'Description': 'This is a description',
-         'Timestamp': '2010-01-01T00:00:00', 'IsOpen': True, 'Assignee': [
-            {'ID': 'user1', 'Name': 'User Name1'}, {'ID': 'user2', 'Name': 'User Name2'}]}]
+    EXCEPTED_CONTEXT_ONE_TICKET = {
+        'CaseManagement.Ticket(val.ID && val.ID === obj.ID)': [
+            {
+                'ID': '111',
+                'Name': 'nameofticket',
+                'Category': 'ticketCategory',
+                'Description': 'This is a description',
+                'Timestamp': '2010-01-01T00:00:00',
+                'IsOpen': True,
+                'Assignee': [
+                    {'ID': 'user1', 'Name': 'User Name1'}, {'ID': 'user2', 'Name': 'User Name2'}]
+            }
+        ]
     }
 
-    EXCEPTED_CONTEXT_TICKET_LIST = {'CaseManagement.Ticket(val.ID && val.Name ==== obj.ID)': [
-        {'ID': '111', 'Name': 'nameofticket', 'Category': 'ticketCategory', 'Description': 'This is a description',
-         'Timestamp': '2010-01-01T00:00:00', 'IsOpen': True, 'Assignee': [
-            {'ID': 'user1', 'Name': 'User Name1'}, {'ID': 'user2', 'Name': 'User Name2'}]}]
+    EXCEPTED_CONTEXT_TICKET_LIST = {
+        'CaseManagement.Ticket(val.ID && val.Name ==== obj.ID)':
+            [
+                {
+                    'ID': '111',
+                    'Name': 'nameofticket',
+                    'Category': 'ticketCategory',
+                    'Description': 'This is a description',
+                    'Timestamp': '2010-01-01T00:00:00',
+                    'IsOpen': True,
+                    'Assignee': [
+                        {'ID': 'user1', 'Name': 'User Name1'}, {'ID': 'user2', 'Name': 'User Name2'}
+                    ]
+                }
+            ]
     }
     GET_TICKET_INPUT = [
         (TICKET_MOCK, 'Case Management Integration - Ticket ID: `111`', EXCEPTED_CONTEXT_ONE_TICKET),
