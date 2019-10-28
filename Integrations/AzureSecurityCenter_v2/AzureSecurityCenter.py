@@ -151,7 +151,6 @@ def http_request(method, url_suffix, body=None, params=None, add_subscription=Tr
     else:
         url = SERVER + url_suffix
 
-    demisto.log(url)
     r = requests.request(method, url, json=body, params=params, headers=headers)
     if r.status_code not in {200, 201, 202, 204}:
         if r.status_code in {401, 403}:
