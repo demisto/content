@@ -180,9 +180,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: get forensic evidence
+    description: gets forensics evidence
     execution: false
-    name: proofpoint-get-forensic
+    name: proofpoint-get-forensics
     outputs:
     - contextPath: Proofpoint.Report.ID
       description: ID of report

@@ -500,7 +500,7 @@ def main():
         client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
         commands = {
             'proofpoint-get-events': get_events_command,
-            'proofpoint-get-forensic': get_forensic_command
+            'proofpoint-get-forensics': get_forensic_command
         }
         if command == 'test-module':
             results = test_module(client, fetch_time, event_type_filter)
