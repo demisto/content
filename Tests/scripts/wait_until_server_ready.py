@@ -66,10 +66,12 @@ def is_correct_content_installed(ips, content_version, username, password):
         r = session.get(host, verify=False)
         print(r.content)
         xsrf = r.cookies["XSRF-TOKEN"]
+        print(xsrf)
         h = {"Accept": "application/json",
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
         body = json.dumps({"user": username, "password": password})
+        print(username+"......"+password)
         first_time_login = session.request("POST", host+"/login", headers=h, verify=False, data=body)
         print(str(first_time_login.content))
         sleep(15)
@@ -121,6 +123,8 @@ def is_correct_content_installed(ips, content_version, username, password):
 def main():
     content_version, username, password = get_username_password()
 
+    print(username+"......"+password)
+
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
@@ -135,7 +139,7 @@ def main():
                     method = 'GET'
                     res = requests.request(method=method, url=(host+path), verify=False)
                     # res = demisto_client.generic_request_func(self=client, path=path, method=method)
-                    print(res)
+                    # print(res)
                     if res.status_code == 200:
                         print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                         ready_ami_list.append(ami_instance_name)
