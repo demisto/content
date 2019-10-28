@@ -22,6 +22,9 @@ def exec_command_for_IsInCidrRanges():
     print('working dir: ' + cwd)
     scriptpath = os.path.realpath(__file__)
     print("Script path is: " + scriptpath)
+    ld = os.listdir(cwd)
+    from pprint import pprint
+    pprint(ld)
     assert False
 
     sys.path.append('./Scripts/IsInCidrRanges')  # For CI
