@@ -154,6 +154,10 @@ def http_request(method, url_suffix, body=None, params=None, add_subscription=Tr
     demisto.log(url)
     r = requests.request(method, url, json=body, params=params, headers=headers)
     if r.status_code not in {200, 201, 202, 204}:
+        if r.status_code in {401, 403}:
+            return_error(
+                "Permission error in API call to Azure Security Center, make sure the application has access "
+                "to the relevant resources.")
         return_error(
             "Error in API call to Azure Security Center [{}] - {}".format(
                 r.status_code, r.text
