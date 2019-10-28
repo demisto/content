@@ -5,9 +5,7 @@
 	"defaultIncidentType": "",
 	"id": "prismaCloud_app",
 	"keyTypeMap": {
-		"aws": "Prisma Cloud",
-		"azure": "Prisma Cloud",
-		"gcp": "Prisma Cloud"
+		"Prisma Cloud": "Prisma Cloud"
 	},
 	"mapping": {
 		"Prisma Cloud": {
@@ -500,8 +498,26 @@
 		}
 	},
 	"transformer": {
-		"complex": null,
-		"simple": "resource.cloudType"
+		"complex": {
+			"accessor": "",
+			"filters": [],
+			"root": "id",
+			"transformers": [
+				{
+					"args": {
+						"dt": {
+							"isContext": false,
+							"value": {
+								"complex": null,
+								"simple": ".=\"Prisma Cloud\""
+							}
+						}
+					},
+					"operator": "DT"
+				}
+			]
+		},
+		"simple": ""
 	},
 	"unclassifiedCases": {},
 	"version": -1
