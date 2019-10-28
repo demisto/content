@@ -18,6 +18,7 @@ def exec_command_for_IsInCidrRanges():
     """
 
     sys.path.append('../IsInCidrRanges')
+    sys.path.append('./TestData')
     from IsInCidrRanges import main as cidr_checker
 
     def executeCommand(name, args=None):
