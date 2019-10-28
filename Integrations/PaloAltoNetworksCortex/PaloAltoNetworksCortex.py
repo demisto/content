@@ -191,7 +191,6 @@ VALUE_TRANSFORM_DICT: Dict[object, Dict[object, Dict]] = {
     }
 }
 
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -397,12 +396,14 @@ def analytics_context_transformer(row_content: dict) -> dict:
             <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['osType']) else '',
             'IsVdi': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'][end_point_header.get('isVdi')]
             if end_point_header.get('isVdi')
-            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
+            and 0 <= end_point_header.get('isVdi') <= len(
+                VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['isVdi'])
             else '',
             'OSVersion': end_point_header.get('osVersion'),
             'Is64': VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'][end_point_header.get('is64')]
             if end_point_header.get('is64')
-            and 0 <= end_point_header.get('isVdi') <= len(VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
+            and 0 <= end_point_header.get('isVdi') <= len(
+                VALUE_TRANSFORM_DICT['analytics']['endPointHeader']['is64'])
             else '',
             'AgentIP': end_point_header.get('agentIp'),
             'DeviceName': end_point_header.get('deviceName'),
@@ -1117,6 +1118,18 @@ def convert_log_to_incident(log):
 ''' COMMANDS FUNCTIONS '''
 
 
+def test_module():
+    if demisto.params().get('isFetch'):
+        last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
+    test_args = {
+        "query": "SELECT * FROM panw.threat LIMIT 1",
+        "startTime": 0,
+        "endTime": 1609459200,
+    }
+    query_loggings(test_args)
+    demisto.results('ok')
+
+
 def query_logs_command():
     """
     Return the result of querying the Logging service
@@ -1644,17 +1657,7 @@ def main():
     LOG('command is %s' % (demisto.command(),))
     try:
         if demisto.command() == 'test-module':
-            if demisto.params().get('isFetch'):
-                last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
-            test_args = {
-                "query": "SELECT * FROM panw.threat LIMIT 1",
-                "startTime": 0,
-                "endTime": 1609459200,
-            }
-            if query_loggings(test_args):
-                demisto.results('ok')
-            else:
-                demisto.results('test failed')
+            test_module()
         elif demisto.command() == 'cortex-query-logs':
             demisto.results(query_logs_command())
         elif demisto.command() == 'cortex-get-critical-threat-logs':
