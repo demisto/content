@@ -83,7 +83,7 @@ def is_correct_content_installed(ips, content_version, username, password):
         resp = session.request("POST", host + "/apikeys", headers=h, verify=False,
                                data=json.dumps(apikey_json))
         print(str(resp))
-        api_key = resp
+        api_key = demisto_api_key
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         # # just signing in for the session
         # body = {"user": username, "password": password}
