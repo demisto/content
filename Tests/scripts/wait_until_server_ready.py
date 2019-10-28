@@ -98,7 +98,7 @@ def is_correct_content_installed(ips, content_version, username, password):
             resp_json = ast.literal_eval(resp_json[0])
             resp_json = json.dumps(resp_json)
 
-            if not isinstance(resp_json[0], dict):
+            if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
