@@ -3,6 +3,7 @@ import sys
 import json
 import string
 import random
+import ast
 import argparse
 from time import sleep
 import datetime
@@ -94,12 +95,15 @@ def is_correct_content_installed(ips, content_version, username, password):
         try:
             resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
+            resp_json = ast.literal_eval(resp_json[0])
+            resp_json = json.dumps(resp_json)
+
             if not isinstance(resp_json[0], dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
-            release = resp_json[0].get("release")
-            notes = resp_json[0].get("releaseNotes")
-            installed = resp_json[0].get("installed")
+            release = resp_json.get("release")
+            notes = resp_json.get("releaseNotes")
+            installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
                 print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
                             "".format(ami_instance_name, release, content_version))
@@ -112,8 +116,8 @@ def is_correct_content_installed(ips, content_version, username, password):
         except ValueError as exception:
             err_msg = "Failed to verify content version on server [{}]\n" \
                       "Error: [{}]\n".format(ami_instance_name, str(exception))
-            if resp_json[0] is not None:
-                err_msg += "Server response: {}".format(resp_json[0])
+            if resp_json is not None:
+                err_msg += "Server response: {}".format(resp_json)
             print_error(err_msg)
             return False
     print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
