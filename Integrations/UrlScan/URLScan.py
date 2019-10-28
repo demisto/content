@@ -272,13 +272,6 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-    if 'url' in scan_meta['processors']['gsb']['data'] is None:
-        mal_url_list = []
-        matches = scan_meta['processors']['gsb']['data']['matches']
-        for match in matches:
-            mal_url = match['threat']['url']
-            mal_url_list.append(mal_url)
-        human_readable['Related Malicious URLs'] = mal_url_list
     if len(scan_meta['processors']['download']['data']) > 0:
         meta_data = scan_meta['processors']['download']['data'][0]
         sha256 = meta_data['sha256']
@@ -357,7 +350,11 @@ def get_urlscan_submit_results_polling(uuid):
 
 
 def urlscan_submit_command():
-    get_urlscan_submit_results_polling(urlscan_submit_url())
+    urls = argToList(demisto.args().get('url'))
+    for url in urls:
+        demisto.args()['url'] = url
+        uuid = urlscan_submit_url()
+        get_urlscan_submit_results_polling(uuid)
 
 
 def urlscan_search(search_type, query):
