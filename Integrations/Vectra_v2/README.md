@@ -22,6 +22,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
    <li><strong>API Token</strong></li>
    <li><strong>Fetch only Detections with greater/equal Certainty score</strong></li>
    <li><strong>Fetch only Detections with greater/equal Threat score</strong></li>
+   <li><strong>Fetch only Detections with matching State</strong></li>
    <li><strong>The number of results returned in each fetch</strong></li>
    <li><strong>Fetch incidents</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>

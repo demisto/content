@@ -26,6 +26,16 @@ configuration:
   name: t_score_gte
   required: false
   type: 0
+- display: 'Fetch only Detections with matching State '
+  name: state
+  defaultvalue: all
+  type: 15
+  required: false
+  options:
+  - all
+  - ignored
+  - active
+  - inactive
 - defaultvalue: '20'
   display: The number of results returned in each fetch
   name: fetch_size

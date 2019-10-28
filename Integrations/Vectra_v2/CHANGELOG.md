@@ -3,7 +3,7 @@
   - Added support for API token authentication 
   - Added Proxy support
   - Better error handling, and Context outputs
-  - Improved fetching incidents method, and added Threshold parameters (Threat score, Certainty score)
+  - Improved fetching incidents method, and added Threshold parameters (Threat score, Certainty score, State)
   - Added the following commands:
     - `vectra-search` command, which allows users to perform advanced search for Hosts and Detections
     - `vectra-get-proxies` command, which retrieves the current list of proxy IP addresses
