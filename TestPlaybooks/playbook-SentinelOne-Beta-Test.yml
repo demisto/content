@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 83597dae-ec05-4b08-8365-4d4b885734c2
+    taskid: 372e23d6-59d4-428e-8fa6-cc39c0a83ac2
     type: start
     task:
-      id: 83597dae-ec05-4b08-8365-4d4b885734c2
+      id: 372e23d6-59d4-428e-8fa6-cc39c0a83ac2
       version: -1
       name: ""
       iscommand: false
@@ -16,6 +16,7 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "22"
     separatecontext: false
     view: |-
       {
@@ -29,10 +30,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 58f526fc-d7ab-41e0-8538-b0725f62227a
+    taskid: 8c69a666-0427-4d4a-8bcf-745e4784b9dc
     type: regular
     task:
-      id: 58f526fc-d7ab-41e0-8538-b0725f62227a
+      id: 8c69a666-0427-4d4a-8bcf-745e4784b9dc
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -68,10 +69,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: cbf1b7f3-0ce9-4568-892f-20045c3cd998
+    taskid: ffa0cb5b-302d-48cc-84f2-68fa45140dbf
     type: regular
     task:
-      id: cbf1b7f3-0ce9-4568-892f-20045c3cd998
+      id: ffa0cb5b-302d-48cc-84f2-68fa45140dbf
       version: -1
       name: Get Threats
       description: Get threats using a variety of filters.
@@ -109,10 +110,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a7cb4db9-f563-4d39-836d-76e80da14c6e
+    taskid: f0a21eb8-d655-4a4d-8bc9-46a1be03183a
     type: regular
     task:
-      id: a7cb4db9-f563-4d39-836d-76e80da14c6e
+      id: f0a21eb8-d655-4a4d-8bc9-46a1be03183a
       version: -1
       name: Get Activities
       description: Get a list of activities.
@@ -151,10 +152,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 420559d3-dca0-4ceb-8e5b-376870705a29
+    taskid: aa1e18d3-a6c0-4a9e-8a9b-070b09e95501
     type: regular
     task:
-      id: 420559d3-dca0-4ceb-8e5b-376870705a29
+      id: aa1e18d3-a6c0-4a9e-8a9b-070b09e95501
       version: -1
       name: Get All agents
       description: List all agents matching the input filter.
@@ -184,10 +185,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 27b9a968-4184-4a98-855d-b13e479679ce
+    taskid: 192b4a05-e7ac-4342-8329-3521b7c431d0
     type: regular
     task:
-      id: 27b9a968-4184-4a98-855d-b13e479679ce
+      id: 192b4a05-e7ac-4342-8329-3521b7c431d0
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -214,10 +215,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: a2ad6c62-8a66-4a78-85d9-d65fd0d89fd8
+    taskid: 5877b73d-eb2a-45d7-8ecf-eda0eaea13a9
     type: regular
     task:
-      id: a2ad6c62-8a66-4a78-85d9-d65fd0d89fd8
+      id: 5877b73d-eb2a-45d7-8ecf-eda0eaea13a9
       version: -1
       name: Get Agent Processess
       description: Retrieve running processes for a specific agent.
@@ -244,10 +245,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: d1082305-e9f6-4306-8015-01835a2896f6
+    taskid: b952481e-cc6a-4bb4-8feb-7a89848eed74
     type: regular
     task:
-      id: d1082305-e9f6-4306-8015-01835a2896f6
+      id: b952481e-cc6a-4bb4-8feb-7a89848eed74
       version: -1
       name: Get all groups
       description: Gets the group data.
@@ -280,10 +281,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 73dbc8cf-91f3-4260-801f-90059dc3291e
+    taskid: 0e99af0e-c732-41ee-8155-1b8828c4a0af
     type: regular
     task:
-      id: 73dbc8cf-91f3-4260-801f-90059dc3291e
+      id: 0e99af0e-c732-41ee-8155-1b8828c4a0af
       version: -1
       name: Get threat summary
       description: Get dashboard threat summary.
@@ -307,10 +308,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 255b5108-7e45-415b-822a-a4967ddc450a
+    taskid: eb36a271-0d54-4a49-8f40-fff09e306f1a
     type: regular
     task:
-      id: 255b5108-7e45-415b-822a-a4967ddc450a
+      id: eb36a271-0d54-4a49-8f40-fff09e306f1a
       version: -1
       name: Mark as threat
       description: Mark suspicious threats as threats
@@ -336,10 +337,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 89b1439b-2013-48b9-8b26-a5a26083cef2
+    taskid: 6e027afa-be19-44e6-8c27-cc5a0e1070c4
     type: regular
     task:
-      id: 89b1439b-2013-48b9-8b26-a5a26083cef2
+      id: 6e027afa-be19-44e6-8c27-cc5a0e1070c4
       version: -1
       name: Disconnect agent to network
       description: Disconnect agents from network
@@ -349,7 +350,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "23"
     scriptarguments:
       agent_id:
         simple: ${SentinelOne.Agent.ID}
@@ -364,39 +365,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
-    type: regular
-    task:
-      id: 9e0b73ea-5a24-4376-85d6-bdd22257eb55
-      version: -1
-      name: Connect agent to network
-      description: Connect agents to network
-      script: '|||sentinelone-connect-agent'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      agent_id:
-        simple: ${SentinelOne.Agent.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 1080
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "12":
     id: "12"
-    taskid: fab84b80-797e-4ab6-86ab-e067aff8da24
+    taskid: 6c169566-ebb8-4de5-8da9-c3bc11260722
     type: regular
     task:
-      id: fab84b80-797e-4ab6-86ab-e067aff8da24
+      id: 6c169566-ebb8-4de5-8da9-c3bc11260722
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -425,10 +399,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+    taskid: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
     type: regular
     task:
-      id: 0df4a8ff-955e-4078-8f6b-1fc72b0b1103
+      id: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -442,11 +416,11 @@ tasks:
       - "16"
     scriptarguments:
       from_date:
-        simple: 2019-08-02T04:49:26.257525Z
+        simple: 2019-08-03T04:49:26.257525Z
       query:
         simple: AgentName Is Not Empty
       to_date:
-        simple: 2019-08-04T04:49:26.257525Z
+        simple: 2019-08-05T04:49:26.257525Z
     separatecontext: false
     view: |-
       {
@@ -460,10 +434,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 35378106-47fd-4273-8fae-a05e56acbd8d
+    taskid: 70f10008-7b6b-4aa8-896f-609c861178f9
     type: regular
     task:
-      id: 35378106-47fd-4273-8fae-a05e56acbd8d
+      id: 70f10008-7b6b-4aa8-896f-609c861178f9
       version: -1
       name: Get events
       description: Get all Deep Visibility events from query
@@ -492,10 +466,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+    taskid: 4ce16d55-cc16-4968-870e-0456f686eb75
     type: regular
     task:
-      id: 7bb1e635-2061-4f95-81b4-470e08d5eea6
+      id: 4ce16d55-cc16-4968-870e-0456f686eb75
       version: -1
       name: Get processes
       description: Get Deep Visibility events from query by event type - process
@@ -523,10 +497,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+    taskid: 07ee9ab9-6ede-4e3f-81f6-a48ce326a4c5
     type: regular
     task:
-      id: fb1d65bb-a0fc-4643-883f-cd5f639622b9
+      id: 07ee9ab9-6ede-4e3f-81f6-a48ce326a4c5
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -554,14 +528,14 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+    taskid: 07200a42-c98d-4621-80ca-aa1ff851bb02
     type: regular
     task:
-      id: 04604a2f-bd27-425e-87e2-40fca8fff6b8
+      id: 07200a42-c98d-4621-80ca-aa1ff851bb02
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
-      script: "|||sentinelone-get-activities"
+      script: '|||sentinelone-get-activities'
       type: regular
       iscommand: true
       brand: ""
@@ -602,10 +576,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: b05e81f0-881f-463d-886a-f44ddc02ddea
+    taskid: a5eaaea6-9842-4af0-8627-db86976f4e88
     type: condition
     task:
-      id: b05e81f0-881f-463d-886a-f44ddc02ddea
+      id: a5eaaea6-9842-4af0-8627-db86976f4e88
       version: -1
       name: Verify Context
       type: condition
@@ -640,10 +614,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 7659b866-89b0-471f-87fa-fcbd38279535
+    taskid: bddb32d8-876a-4c8c-8dbf-b6633f87c1a0
     type: title
     task:
-      id: 7659b866-89b0-471f-87fa-fcbd38279535
+      id: bddb32d8-876a-4c8c-8dbf-b6633f87c1a0
       version: -1
       name: Done
       type: title
@@ -662,10 +636,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 1f101b28-6fff-4952-8655-4a81bc2784a0
+    taskid: f3c5d128-78e1-40ae-83a5-43b99cdcad57
     type: condition
     task:
-      id: 1f101b28-6fff-4952-8655-4a81bc2784a0
+      id: f3c5d128-78e1-40ae-83a5-43b99cdcad57
       version: -1
       name: Verify context
       type: condition
@@ -700,10 +674,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 9b3bfbb8-ef3a-436d-8fe6-d440703a9437
+    taskid: 07701c13-23b1-4762-8319-94e85b2b246c
     type: condition
     task:
-      id: 9b3bfbb8-ef3a-436d-8fe6-d440703a9437
+      id: 07701c13-23b1-4762-8319-94e85b2b246c
       version: -1
       name: Verify outputs
       type: condition
@@ -736,14 +710,245 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "22":
+    id: "22"
+    taskid: c00d738c-090a-402d-8c98-1168433c55a8
+    type: regular
+    task:
+      id: c00d738c-090a-402d-8c98-1168433c55a8
+      version: -1
+      name: Fetch Incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context: {}
+      brand_name:
+        simple: SentinelOne V2
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -930,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+    type: regular
+    task:
+      id: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+      version: -1
+      name: Get agent
+      description: Returns details of an agent, by agent ID.
+      script: '|||sentinelone-get-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 0b353d10-fcb6-498f-8aaa-29e29f2bd375
+    type: condition
+    task:
+      id: 0b353d10-fcb6-498f-8aaa-29e29f2bd375
+      version: -1
+      name: 'Is the agent disconnected? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SentinelOne
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SentinelOne.Agents.NetworkStatus
+                      iscontext: true
+                    right:
+                      value:
+                        simple: disconnected
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: SentinelOne.Agents.NetworkStatus
+                      iscontext: true
+                    right:
+                      value:
+                        simple: disconnecting
+                accessor: Agent.NetworkStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: f3102884-292b-4dff-8eba-d31c720b771d
+    type: regular
+    task:
+      id: f3102884-292b-4dff-8eba-d31c720b771d
+      version: -1
+      name: Connect agent to network
+      description: Connects agents to network.
+      script: '|||sentinelone-connect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: f6f4daef-acbe-4598-86d0-c702020db1f6
+    type: regular
+    task:
+      id: f6f4daef-acbe-4598-86d0-c702020db1f6
+      version: -1
+      name: Get agent
+      description: Returns details of an agent, by agent ID.
+      script: '|||sentinelone-get-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d3f8002e-3b0d-418f-82dc-f287af8808f7
+    type: condition
+    task:
+      id: d3f8002e-3b0d-418f-82dc-f287af8808f7
+      version: -1
+      name: 'Is the agent reconnect? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SentinelOne.Agent.NetworkStatus
+            iscontext: true
+          right:
+            value:
+              simple: connecting
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 67c1d758-51eb-492b-8e88-559894fe49cb
+    type: title
+    task:
+      id: 67c1d758-51eb-492b-8e88-559894fe49cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1305,
-        "width": 2910,
-        "x": -470,
+        "height": 2285,
+        "width": 3370,
+        "x": -930,
         "y": 50
       }
     }

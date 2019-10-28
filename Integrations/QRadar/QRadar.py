@@ -5,12 +5,12 @@ import os
 import json
 import requests
 import traceback
+import urllib
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' GLOBAL VARS '''
 SERVER = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
@@ -209,7 +209,8 @@ def send_request(method, url, headers=AUTH_HEADERS, params=None):
         if TOKEN:
             res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL)
         else:
-            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL, auth=(USERNAME, PASSWORD))
+            res = requests.request(method, url, headers=headers, params=params, verify=USE_SSL,
+                                   auth=(USERNAME, PASSWORD))
         res.raise_for_status()
     except HTTPError:
         err_json = res.json()
@@ -379,7 +380,10 @@ def get_offense_types():
 
 # Returns the result of a get note request
 def get_note(offense_id, note_id, fields):
-    url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    if note_id:
+        url = '{0}/api/siem/offenses/{1}/notes/{2}'.format(SERVER, offense_id, note_id)
+    else:
+        url = '{0}/api/siem/offenses/{1}/notes'.format(SERVER, offense_id)
     params = {'fields': fields} if fields else {}
     return send_request('GET', url, AUTH_HEADERS, params=params)
 
@@ -394,7 +398,7 @@ def create_note(offense_id, note_text, fields):
 
 # Returns the result of a reference request
 def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
     if _fields:
@@ -415,12 +419,12 @@ def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
 
 
 def delete_reference_set(ref_name):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     return send_request('DELETE', url)
 
 
 def update_reference_set_value(ref_name, value, source=None):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'name': ref_name, 'value': value}
     if source:
         params['source'] = source
@@ -428,7 +432,8 @@ def update_reference_set_value(ref_name, value, source=None):
 
 
 def delete_reference_set_value(ref_name, value):
-    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''),
+                                                       urllib.quote(convert_to_str(value), safe=''))
     params = {'name': ref_name, 'value': value}
     return send_request('DELETE', url, params=params)
 
@@ -585,9 +590,9 @@ def enrich_offense_res_with_source_and_destination_address(response):
                 enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
         else:
             enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
-    except ValueError:
-        pass
-    return response
+    # The function is meant to be safe, so it shouldn't raise any error
+    finally:
+        return response
 
 
 # Helper method: Extracts all source and destination addresses ids from an offense result
@@ -674,7 +679,7 @@ def update_offense_command():
     args = demisto.args()
     if 'closing_reason_name' in args:
         args['closing_reason_id'] = convert_closing_reason_name_to_id(args.get('closing_reason_name'))
-    elif 'CLOSED' == args.get('status') and not args.get('closing_reasond_id'):
+    elif 'CLOSED' == args.get('status') and not args.get('closing_reason_id'):
         raise ValueError(
             'Invalid input - must provide closing reason name or id (may use "qradar-get-closing-reasons" command to '
             'get them) to close offense')
@@ -870,10 +875,14 @@ def get_note_command():
         'create_time': 'CreateTime',
         'username': 'CreatedBy'
     }
-    note = replace_keys(raw_note, note_names_map)
-    if 'CreateTime' in note:
-        note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
-    return get_entry_for_object('QRadar note created successfully', note, raw_note, demisto.args().get('headers'),
+    notes = replace_keys(raw_note, note_names_map)
+    if not isinstance(notes, list):
+        notes = [notes]
+    for note in notes:
+        if 'CreateTime' in note:
+            note['CreateTime'] = epoch_to_ISO(note['CreateTime'])
+    return get_entry_for_object('QRadar note for offense: {0}'.format(str(demisto.args().get('offense_id'))), notes,
+                                raw_note, demisto.args().get('headers'),
                                 'QRadar.Note(val.ID === "{0}")'.format(demisto.args().get('note_id')))
 
 

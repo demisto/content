@@ -11,6 +11,7 @@ tasks:
       id: 9a5bf4d8-203c-4163-8f01-6df980d0157b
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -142,7 +143,6 @@ tasks:
       version: -1
       name: Dump internal list content to context
       description: Dumps (copies) instance context to either the incident context
-        or a file.
       script: '|||pan-os-edl-dump-internal-list'
       type: regular
       iscommand: true
@@ -219,7 +219,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "11"
     scriptarguments:
       all:
         simple: "yes"
@@ -233,50 +233,6 @@ tasks:
         "position": {
           "x": 50,
           "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 78b60476-ed5f-4c9f-85a8-cbbeac4dd278
-    type: playbook
-    task:
-      id: 78b60476-ed5f-4c9f-85a8-cbbeac4dd278
-      version: -1
-      name: PAN-OS EDL Setup
-      playbookName: PAN-OS EDL Setup
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      action-type:
-        simple: deny
-      auto-commit:
-        simple: "Yes"
-      ioc-type:
-        simple: IP
-      list-name:
-        simple: ${inputs.list-name}
-      log-forwarding-server: {}
-      pre-post-rulebase:
-        simple: pre-rulebase
-      web-server-ip:
-        simple: 18.219.190.57
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
         }
       }
     note: false
@@ -382,6 +338,57 @@ tasks:
         "position": {
           "x": 50,
           "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 74e187e3-9524-4045-8019-fe7938b3ffce
+    type: playbook
+    task:
+      id: 74e187e3-9524-4045-8019-fe7938b3ffce
+      version: -1
+      name: PAN-OS EDL Setup
+      description: ""
+      playbookName: PAN-OS EDL Setup
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        simple: "No"
+      inbound-or-outbound-rule: {}
+      ioc-type:
+        simple: IP
+      list-name:
+        simple: ${inputs.list-name}
+      log-forwarding-object-name: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-name:
+        simple: edl-test-rule
+      rule-position:
+        simple: bottom
+      web-server-ip:
+        simple: 18.219.190.57
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
         }
       }
     note: false

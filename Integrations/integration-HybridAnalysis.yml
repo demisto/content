@@ -294,7 +294,9 @@ script:
             } else {
             // Build Crowd Strike query syntax from arguments, i.e. key:value
                 for (var key in args) {
-                    body += key + '=' + args[key] + '&';
+                    if (key != 'min_malicious_scanners') {
+                        body += key + '=' + args[key] + '&';
+                    }
                 }
             }
         var res = sendRequest('POST', '/api/v2/search/terms', body);
