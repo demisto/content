@@ -312,3 +312,417 @@ def test_get_fetch_times():
     before_two_hours = now - timedelta(hours=2)
     times = get_fetch_times(before_two_hours)
     assert len(times) == 3
+
+
+class TestGetForensics:
+    PLATFORMS_OBJECT = [
+        {
+            "name": "windows 7 sp1",
+            "os": "windows 7",
+            "version": "4.5.661",
+        }
+    ]
+    EVIDENCE_OBJECT_URL = {
+        "type": "url",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "url": "string",
+            "blacklisted": "boolean",
+            "ip": "string",
+            "httpStatus": "string",
+            "md5": "string",
+            "offset": "integer",
+            "rule": "string",
+            "sha256": "string",
+            "size": "integer",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_REGISTRY = {
+        "type": "registry",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "key": "string",
+            "name": "string",
+            "rule": "string",
+            "value": "string",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_PROCESS = {
+        "type": "process",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "path": "string",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_NETWORK = {
+        "type": "network",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "ip": "string",
+            "port": "string",
+            "type": "string",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_MUTEX = {
+        "type": "mutex",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "name": "string",
+            "path": "string",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_IDS = {
+        "type": "ids",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "name": "string",
+            "signatureId": "integer",
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_FILE = {
+        "type": "file",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "md5": "string",
+            "path": "string",
+            "rule": "string",
+            "sha256": "string",
+            "size": "integer"
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_DROPPER = {
+        "type": "dropper",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "path": "string",
+            "rule": "string",
+            "url": "string"
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_DNS = {
+        "type": "dns",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "host": "string",
+            "cnames": ["string1", "string2"],
+            "ips": ["string1", "string2"],
+            "nameservers": ["string1", "string2"],
+            "nameserversList": ["string1", "string2"]
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_COOKIE = {
+        "type": "cookie",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "domain": "string",
+            "key": "string",
+            "value": "string"
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_OBJECT_ATTACHMENT = {
+        "type": "attachment",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "sha256": "string",
+            "md5": "string",
+            "offset": "integer",
+            "rule": "string",
+            "size": "integer"
+        },
+        "platforms": PLATFORMS_OBJECT
+    }
+    EVIDENCE_LIST = [
+        EVIDENCE_OBJECT_ATTACHMENT,
+        EVIDENCE_OBJECT_COOKIE,
+        EVIDENCE_OBJECT_DNS,
+        EVIDENCE_OBJECT_DROPPER,
+        EVIDENCE_OBJECT_FILE,
+        EVIDENCE_OBJECT_IDS,
+        EVIDENCE_OBJECT_MUTEX,
+        EVIDENCE_OBJECT_NETWORK,
+        EVIDENCE_OBJECT_PROCESS,
+        EVIDENCE_OBJECT_REGISTRY,
+        EVIDENCE_OBJECT_URL,
+    ]
+    REPORT_OBJECT = [{
+        'name': 'string',
+        'scope': 'string',
+        'type': 'string',
+        'id': 'string',
+        'forensics': EVIDENCE_LIST,
+    }]
+
+    REPORT = {
+        'generated': 'string',
+        'reports': REPORT_OBJECT * 2,
+    }
+
+    EXPECTED_OUTPUT_REPORT = {
+        "Scope": "string",
+        "Type": "string",
+        "ID": "string",
+        "Attachment": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "SHA256": "string",
+                "MD5": "string",
+                "Offset": "integer",
+                "Size": "integer"
+            }
+        ],
+        "Cookie": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Action": "string",
+                "Domain": "string",
+                "Key": "string",
+                "Value": "string"
+            }
+        ],
+        "DNS": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Host": "string",
+                "CNames": [
+                    "string1",
+                    "string2"
+                ],
+                "IP": [
+                    "string1",
+                    "string2"
+                ],
+                "NameServers": [
+                    "string1",
+                    "string2"
+                ],
+                "NameServersList": [
+                    "string1",
+                    "string2"
+                ]
+            }
+        ],
+        "Dropper": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Path": "string",
+                "URL": "string",
+                "Rule": "string"
+            }
+        ],
+        "File": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Path": "string",
+                "Action": "string",
+                "SHA256": "string",
+                "MD5": "string",
+                "Size": "integer"
+            }
+        ],
+        "IDS": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Name": "string",
+                "SignatureID": "integer"
+            }
+        ],
+        "Mutex": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Name": "string",
+                "Path": "string"
+            }
+        ],
+        "Network": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Action": "string",
+                "IP": "string",
+                "Port": "string",
+                "Protocol": "string"
+            }
+        ],
+        "Process": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Action": "string",
+                "Path": "string"
+            }
+        ],
+        "Registry": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "Name": "string",
+                "Action": "string",
+                "Key": "string",
+                "Value": "string"
+            }
+        ],
+        "URL": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [
+                    {
+                        "Name": "windows 7 sp1",
+                        "OS": "windows 7",
+                        "Version": "4.5.661"
+                    }
+                ],
+                "URL": "string",
+                "Blacklisted": "boolean",
+                "SHA256": "string",
+                "MD5": "string",
+                "Size": "integer",
+                "HTTPStatus": "string",
+                "IP": "string"
+            }
+        ]
+    }
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None
+    )
+
+    def test_get_forensics(self, requests_mock):
+        from ProofpointTAP_v2 import get_forensic_command
+        requests_mock.get('http://123-fake-api.com/v2/forensics?threatId=1256', json=self.REPORT)
+        _, output, _ = get_forensic_command(self.client, {'threatId': '1256'})
+        reports = output['Proofpoint.Report(var.ID === obj.ID)']
+        assert len(reports) == 2
+        report = reports[0]
+        assert all(report)
+        assert self.EXPECTED_OUTPUT_REPORT == report
