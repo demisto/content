@@ -282,14 +282,7 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    test_url = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
-    }
-    json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
-    if json_res:
+    if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
 
@@ -492,6 +485,10 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
     dns_response = []
     evidence_md5 = []
     evidence_text = []
+
+    # When only one report is in response, it's returned as a single json object and not a list.
+    if not isinstance(reports, list):
+        reports = [reports]
 
     for report in reports:
         if 'network' in report and report["network"]:

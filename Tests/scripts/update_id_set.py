@@ -172,7 +172,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -207,8 +207,8 @@ def get_depends_on(data_dict):
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
     change_string = run_command("git diff HEAD {0}".format(file_path))
-    is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
-    is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
+    is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
+    is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
@@ -297,7 +297,7 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
@@ -390,13 +390,13 @@ def re_create_id_set():
 
 
 def sort(data):
-    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    data.sort(key=lambda r: list(r.keys())[0].lower())  # Sort data by key value
     return data
 
 
 def update_id_set():
     branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name_reg = re.search(r"\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")

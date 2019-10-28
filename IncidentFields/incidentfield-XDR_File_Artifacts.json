@@ -81,7 +81,7 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
@@ -97,7 +97,7 @@
 	"locked": false,
 	"name": "XDR File Artifacts",
 	"neverSetAsRequired": false,
-	"ownerOnly": true,
+	"ownerOnly": false,
 	"placeholder": "",
 	"required": false,
 	"script": "",
