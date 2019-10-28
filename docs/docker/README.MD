@@ -12,7 +12,7 @@ Demisto maintains a large repository of docker images. All docker images are ava
 
 **Important:** For security reasons, we cannot accept images which are not part of the docker hub Demisto organization. 
 
-If you can not find an existing image, follow through to read below on how to create a docker images for testing and production use.
+If you can not find an existing image, follow through to read below on how to create a docker image for testing and production use.
 
 # Package Requirements
 We cannot just choose any package to be used in our integrations and there are many things to consider before we select a package. 
