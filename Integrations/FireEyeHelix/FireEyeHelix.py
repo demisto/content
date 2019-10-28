@@ -181,6 +181,7 @@ LISTS_TRANS = {
     'short_name': 'ShortName',
     'name': 'Name',
     'type': 'Type',
+    'description': 'Description',
     'types': 'ContentTypes',
     'created_by.id': 'CreatorID',
     'created_by.name': 'CreatorName',
@@ -443,9 +444,9 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('GET', suffix)
 
-    def create_list(self, name: str, short_name: str, is_internal: Union[str, bool], is_active: Union[str, bool],
-                    is_protected: Union[str, bool], is_hidden: Union[str, bool], usage: str, type: str,
-                    description: str, **kwargs) -> Dict:
+    def create_list(self, name: str, usage: str = None, short_name: str = None, is_internal: Union[str, bool] = None,
+                    is_active: Union[str, bool] = None, is_protected: Union[str, bool] = None,
+                    is_hidden: Union[str, bool] = None, type: str = None, description: str = None, **kwargs) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -466,19 +467,20 @@ class Client(BaseClient):
         body = assign_params(
             name=name,
             short_name=short_name,
-            is_internal=is_internal and is_internal != 'false',
-            is_active=is_active and is_active != 'false',
-            is_protected=is_protected and is_protected != 'false',
-            is_hidden=is_hidden and is_hidden,
-            usage=usage,
+            is_internal=is_internal != 'false' if is_internal else is_internal,
+            is_active=is_active != 'false' if is_active else is_active,
+            is_protected=is_protected != 'false' if is_protected else is_protected,
+            is_hidden=is_hidden != 'false' if is_hidden else is_hidden,
             type=type,
             description=description
         )
+        body['usage'] = argToList(usage)
         return self._http_request('POST', suffix, json_data=body)
 
-    def update_list(self, list_id: Union[str, int], name: str, short_name: str, is_internal: Union[str, bool],
-                    is_active: Union[str, bool], is_protected: Union[str, bool], is_hidden: Union[str, bool],
-                    usage: str, type: str, description: str, **kwargs) -> Dict:
+    def update_list(self, list_id: Union[str, int], name: str = None, usage: str = None, short_name: str = None,
+                    is_internal: Union[str, bool] = None, is_active: Union[str, bool] = None,
+                    is_protected: Union[str, bool] = None, is_hidden: Union[str, bool] = None, type: str = None,
+                    description: str = None, **kwargs) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -500,14 +502,14 @@ class Client(BaseClient):
         body = assign_params(
             name=name,
             short_name=short_name,
-            is_internal=is_internal and is_internal != 'false',
-            is_active=is_active and is_active != 'false',
-            is_protected=is_protected and is_protected != 'false',
-            is_hidden=is_hidden and is_hidden,
-            usage=usage,
+            is_internal=is_internal != 'false' if is_internal else is_internal,
+            is_active=is_active != 'false' if is_active else is_active,
+            is_protected=is_protected != 'false' if is_protected else is_protected,
+            is_hidden=is_hidden != 'false' if is_hidden else is_hidden,
             type=type,
             description=description
         )
+        body['usage'] = argToList(usage)
         return self._http_request('PATCH', suffix, json_data=body)
 
     def delete_list(self, list_id: Optional[Any]) -> Dict:
@@ -520,7 +522,7 @@ class Client(BaseClient):
             Response from API
         """
         suffix = f'/api/v3/lists/{list_id}'
-        return self._http_request('DELETE', suffix)
+        return self._http_request('DELETE', suffix, resp_type='content')
 
     def list_sensors(self, limit: Union[int, str] = None, offset: Union[int, str] = None, hostname: str = None,
                      status: str = None) -> Dict:
@@ -757,6 +759,27 @@ def build_search_result(raw_response):
     else:
         # API should not return an empty result matching this case, this is a fail safe
         return f'{INTEGRATION_NAME} - Search did not find any result.', {}, {}
+
+
+def build_single_list_result(raw_response):
+    """Builds a list result from API response
+
+    Args:
+        raw_response: API response to alert call
+
+    Returns:
+        List result
+    """
+    list_id = raw_response.get('id')
+    title = f'{INTEGRATION_NAME} - List {list_id}:'
+    context_entry = build_transformed_dict(raw_response, LISTS_TRANS)
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry
+    }
+    # Creating human readable for War room
+    human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+    # Return data to Demisto
+    return human_readable, context, raw_response
 
 
 ''' COMMANDS '''
@@ -1113,17 +1136,9 @@ def get_list_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     list_id = args.get('id')
     raw_response = client.get_list_by_id(list_id)
     if raw_response:
-        title = f'{INTEGRATION_NAME} - List {list_id}:'
-        context_entry = build_transformed_dict(raw_response, LISTS_TRANS)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry
-        }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
-        # Return data to Demisto
-        return human_readable, context, raw_response
+        return build_single_list_result(raw_response)
     else:
-        return f'{INTEGRATION_NAME} - Could not find the list.', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find the list.', {}, raw_response
 
 
 def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1137,7 +1152,10 @@ def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     raw_response = client.create_list(**args)
-    return f'{INTEGRATION_NAME} - Created list successfully.', {}, raw_response
+    if raw_response:
+        return build_single_list_result(raw_response)
+    else:
+        return f'{INTEGRATION_NAME} - Created list successfully.', {}, raw_response
 
 
 def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1151,7 +1169,10 @@ def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     raw_response = client.update_list(**args)
-    return f'{INTEGRATION_NAME} - Updated list successfully.', {}, raw_response
+    if raw_response:
+        return build_single_list_result(raw_response)
+    else:
+        return f'{INTEGRATION_NAME} - Updated list successfully.', {}, raw_response
 
 
 def delete_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1299,7 +1320,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-get-list-by-id': get_list_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,  # todo: Not tested properly
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,

@@ -953,48 +953,51 @@ script:
     - contextPath: FireEyeHelix.List.ID
       description: List ID.
       type: Number
-    - contextPath: FireEyeHelix.Rule.ShortName
-      description: Short name of the list.l
+    - contextPath: FireEyeHelix.List.Description
+      description: List description.
+      type: Number
+    - contextPath: FireEyeHelix.List.ShortName
+      description: Short name of the list.
       type: String
-    - contextPath: FireEyeHelix.Rule.Name
+    - contextPath: FireEyeHelix.List.Name
       description: Name of the list.
       type: String
-    - contextPath: FireEyeHelix.Rule.ContentTypes
+    - contextPath: FireEyeHelix.List.ContentTypes
       description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
       type: String
-    - contextPath: FireEyeHelix.Rule.CreatorID
+    - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
       type: String
-    - contextPath: FireEyeHelix.Rule.CreatorName
+    - contextPath: FireEyeHelix.List.CreatorName
       description: Name of the creator.
       type: String
-    - contextPath: FireEyeHelix.Rule.UpdatedByID
+    - contextPath: FireEyeHelix.List.UpdatedByID
       description: ID of the user who last updated the list.
       type: String
-    - contextPath: FireEyeHelix.Rule.UpdatedByName
+    - contextPath: FireEyeHelix.List.UpdatedByName
       description: Name of the user who last updated the list.
       type: String
-    - contextPath: FireEyeHelix.Rule.CreatedTime
+    - contextPath: FireEyeHelix.List.CreatedTime
       description: Time the rule was created at.
       type: Date
-    - contextPath: FireEyeHelix.Rule.UpdatedTime
+    - contextPath: FireEyeHelix.List.UpdatedTime
       description: Time the rule was last updated at.
       type: Date
-    - contextPath: FireEyeHelix.Rule.Type
+    - contextPath: FireEyeHelix.List.Type
       description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
       type: String
-    - contextPath: FireEyeHelix.Rule.UpdatedByName
+    - contextPath: FireEyeHelix.List.UpdatedByName
       type: Unknown
-    - contextPath: FireEyeHelix.Rule.Internal
+    - contextPath: FireEyeHelix.List.Internal
       description: Internal flag, set to true if internal.
       type: Boolean
-    - contextPath: FireEyeHelix.Rule.Protected
+    - contextPath: FireEyeHelix.List.Protected
       description: Protected flag, set to true if protected.
       type: Boolean
-    - contextPath: FireEyeHelix.Rule.Active
+    - contextPath: FireEyeHelix.List.Active
       description: Active flag, set to true if active.
       type: Unknown
-    - contextPath: FireEyeHelix.Rule.Count
+    - contextPath: FireEyeHelix.List.Count
       description: Total amount of lists.
       type: Number
   - arguments:
@@ -1009,165 +1012,53 @@ script:
     execution: false
     name: fireeye-helix-get-list-by-id
     outputs:
-    - contextPath: FireEyeHelix.Alert.ID
-      description: Primary ID of alert.
+    - contextPath: FireEyeHelix.List.ID
+      description: List ID.
       type: Number
-    - contextPath: FireEyeHelix.Alert.AlertTypeID
-      description: ID of the alert type.
+    - contextPath: FireEyeHelix.List.Description
+      description: List description.
       type: Number
-    - contextPath: FireEyeHelix.Alert.AlertTypeName
-      description: Name of the alert type.
+    - contextPath: FireEyeHelix.List.ShortName
+      description: Short name of the list.
       type: String
-    - contextPath: FireEyeHelix.Alert.AssigneeID
-      description: ID of the assignee.
+    - contextPath: FireEyeHelix.List.Name
+      description: Name of the list.
       type: String
-    - contextPath: FireEyeHelix.Alert.AssigneeName
-      description: Assignee display name.
+    - contextPath: FireEyeHelix.List.ContentTypes
+      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
       type: String
-    - contextPath: FireEyeHelix.Alert.CreatorID
-      description: ID of the user who created the alert.
+    - contextPath: FireEyeHelix.List.CreatorID
+      description: ID of the creator.
       type: String
-    - contextPath: FireEyeHelix.Alert.CreatorName
-      description: Name of the user who created the alert.
+    - contextPath: FireEyeHelix.List.CreatorName
+      description: Name of the creator.
       type: String
-    - contextPath: FireEyeHelix.Alert.UpdaterID
-      description: Name of the user who updated the alert.
+    - contextPath: FireEyeHelix.List.UpdatedByID
+      description: ID of the user who last updated the list.
       type: String
-    - contextPath: FireEyeHelix.Alert.UpdaterName
-      description: Name of the user who updated the alert.
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      description: Name of the user who last updated the list.
       type: String
-    - contextPath: FireEyeHelix.Alert.CreatedTime
-      description: Time the alert was created at.
+    - contextPath: FireEyeHelix.List.CreatedTime
+      description: Time the rule was created at.
       type: Date
-    - contextPath: FireEyeHelix.Alert.ModifiedTime
-      description: Time the alert was modified at.
+    - contextPath: FireEyeHelix.List.UpdatedTime
+      description: Time the rule was last updated at.
       type: Date
-    - contextPath: FireEyeHelix.Alert.ProcessPath
-      description: Path of the process
+    - contextPath: FireEyeHelix.List.Type
+      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
       type: String
-    - contextPath: FireEyeHelix.Alert.Confidence
-      description: FireEye helix confidence with the result.
-      type: String
-    - contextPath: FireEyeHelix.Alert.SHA1
-      description: SHA1 hash of the file.
-      type: String
-    - contextPath: FireEyeHelix.Alert.MD5
-      description: MD5 hash of the file.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Hostname
-      description: Hostname of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.PID
-      description: Process ID.
-      type: Number
-    - contextPath: FireEyeHelix.Alert.Size
-      description: Size of the process in bytes.
-      type: Number
-    - contextPath: FireEyeHelix.Alert.Virues
-      description: Virus name.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Result
-      description: Result of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.MalwareType
-      description: Malware type.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Filename
-      description: Name of the file the contains the virus.
-      type: String
-    - contextPath: FireEyeHelix.Alert.RegPath
-      description: Registry key path.
-      type: String
-    - contextPath: FireEyeHelix.Alert.EventTime
-      description: Time of the event.
-      type: Date
-    - contextPath: FireEyeHelix.Alert.IOCNames
-      description: Indicator of Compromise names.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Process
-      description: Name of the process that created the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.ParentProcess
-      description: Name of the parent process to the process that created the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.SourceIPv4
-      description: Source IP of the event (IP v4).
-      type: String
-    - contextPath: FireEyeHelix.Alert.SourceIPv6
-      description: Source IP of the event (IP v6).
-      type: String
-    - contextPath: FireEyeHelix.Alert.DestinationIPv4
-      description: Destination IP of the event (IP v4).
-      type: String
-    - contextPath: FireEyeHelix.Alert.DestinationIPv6
-      description: Destination IP of the event (IP v6).
-      type: String
-    - contextPath: FireEyeHelix.Alert.DestinationPort
-      description: Destination port of the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.URI
-      description: URI address that created the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.HttpMethod
-      description: Http method of the that was called.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Domain
-      description: Domain of the URI that created the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.UserAgent
-      description: User agent related to the event.
-      type: String
-    - contextPath: FireEyeHelix.Alert.EventsCount
-      description: Number of events in alert.
-      type: Number
-    - contextPath: FireEyeHelix.Alert.NotesCount
-      description: Number of notes in alert.
-      type: Number
-    - contextPath: FireEyeHelix.Alert.ClosedState
-      description: State the alert in regards to it being closed.
-      type: String
-    - contextPath: FireEyeHelix.Alert.ClosedReason
-      description: Reason the alert was closed.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Confidence
-      description: Amount of confidence helix has with the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Description
-      description: Description of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.FirstEventTime
-      description: Time of the first event.
-      type: Date
-    - contextPath: FireEyeHelix.Alert.LastEventTime
-      description: Time of the last event.
-      type: Date
-    - contextPath: FireEyeHelix.Alert.ExternalIP
-      description: External IPs for the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.InternalIP
-      description: Internal IPs for the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Message
-      description: Message of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Products
-      description: Source of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Risk
-      description: Risk of the events in the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Severity
-      description: Severity of the events in the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.State
-      description: State of the alert. Can be either Open, Suppressed, Closed, Reopened.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Tag
-      description: Tag of the alert.
-      type: String
-    - contextPath: FireEyeHelix.Alert.Type
-      description: Type of the alert.
-      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      type: Unknown
+    - contextPath: FireEyeHelix.List.Internal
+      description: Internal flag, set to true if internal.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Protected
+      description: Protected flag, set to true if protected.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Active
+      description: Active flag, set to true if active.
+      type: Unknown
   - arguments:
     - default: true
       description: Name of the list.
@@ -1212,10 +1103,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Usage of the list.
-      isArray: false
+      description: Usage of the list. Can be multiple values comma seperated.
+      isArray: true
       name: usage
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1243,6 +1134,54 @@ script:
     description: Create a list.
     execution: false
     name: fireeye-helix-create-list
+    outputs:
+    - contextPath: FireEyeHelix.List.ID
+      description: List ID.
+      type: Number
+    - contextPath: FireEyeHelix.List.Description
+      description: List description.
+      type: Number
+    - contextPath: FireEyeHelix.List.ShortName
+      description: Short name of the list.
+      type: String
+    - contextPath: FireEyeHelix.List.Name
+      description: Name of the list.
+      type: String
+    - contextPath: FireEyeHelix.List.ContentTypes
+      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      type: String
+    - contextPath: FireEyeHelix.List.CreatorID
+      description: ID of the creator.
+      type: String
+    - contextPath: FireEyeHelix.List.CreatorName
+      description: Name of the creator.
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByID
+      description: ID of the user who last updated the list.
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      description: Name of the user who last updated the list.
+      type: String
+    - contextPath: FireEyeHelix.List.CreatedTime
+      description: Time the rule was created at.
+      type: Date
+    - contextPath: FireEyeHelix.List.UpdatedTime
+      description: Time the rule was last updated at.
+      type: Date
+    - contextPath: FireEyeHelix.List.Type
+      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      type: Unknown
+    - contextPath: FireEyeHelix.List.Internal
+      description: Internal flag, set to true if internal.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Protected
+      description: Protected flag, set to true if protected.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Active
+      description: Active flag, set to true if active.
+      type: Unknown
   - arguments:
     - default: false
       description: Name of the list.
@@ -1287,10 +1226,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: Usage of the list.
+      description: Usage of the list. Can be multiple values comma seperated.
       isArray: false
       name: usage
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
@@ -1324,6 +1263,54 @@ script:
     description: Update a list.
     execution: false
     name: fireeye-helix-update-list
+    outputs:
+    - contextPath: FireEyeHelix.List.ID
+      description: List ID.
+      type: Number
+    - contextPath: FireEyeHelix.List.Description
+      description: List description.
+      type: Number
+    - contextPath: FireEyeHelix.List.ShortName
+      description: Short name of the list.
+      type: String
+    - contextPath: FireEyeHelix.List.Name
+      description: Name of the list.
+      type: String
+    - contextPath: FireEyeHelix.List.ContentTypes
+      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      type: String
+    - contextPath: FireEyeHelix.List.CreatorID
+      description: ID of the creator.
+      type: String
+    - contextPath: FireEyeHelix.List.CreatorName
+      description: Name of the creator.
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByID
+      description: ID of the user who last updated the list.
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      description: Name of the user who last updated the list.
+      type: String
+    - contextPath: FireEyeHelix.List.CreatedTime
+      description: Time the rule was created at.
+      type: Date
+    - contextPath: FireEyeHelix.List.UpdatedTime
+      description: Time the rule was last updated at.
+      type: Date
+    - contextPath: FireEyeHelix.List.Type
+      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      type: String
+    - contextPath: FireEyeHelix.List.UpdatedByName
+      type: Unknown
+    - contextPath: FireEyeHelix.List.Internal
+      description: Internal flag, set to true if internal.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Protected
+      description: Protected flag, set to true if protected.
+      type: Boolean
+    - contextPath: FireEyeHelix.List.Active
+      description: Active flag, set to true if active.
+      type: Unknown
   - arguments:
     - default: true
       description: ID of the list to delete.
@@ -1498,7 +1485,7 @@ script:
     - contextPath: FireEyeHelix.Note.AlertID
       description: ID of the related alert.
       type: Number
-    - contextPath: FireEye.Note.Count
+    - contextPath: FireEyeHelix.Note.Count
       description: Total number of notes for the alert.
       type: Number
   - arguments:
