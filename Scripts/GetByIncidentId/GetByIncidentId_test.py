@@ -1,7 +1,4 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import pytest
 from GetByIncidentId import main
 
 
@@ -12,7 +9,7 @@ def test_get_depth_one(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -85,7 +82,7 @@ def test_set_default(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -109,7 +106,7 @@ def test_set_depth_one(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -135,7 +132,7 @@ def test_set_depth_two(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
@@ -161,13 +158,14 @@ def test_set_depth_five(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
 
-    mocker.patch.object(demisto, 'args', return_value={'incident_id': '1', 'get_key': "test1key", 'set_key':
-                                                                        "testSet1.testSet2.testSet3.testSet4.testSet5"})
+    mocker.patch.object(demisto, 'args', return_value={'incident_id': '1',
+                                                       'get_key': "test1key",
+                                                       'set_key': 'testSet1.testSet2.testSet3.testSet4.testSet5'})
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
     mocker.patch.object(demisto, 'results')
@@ -186,7 +184,7 @@ def test_get_and_set_multi_depth(mocker):
             return [{'Contents': {'context': {"test1key": "test1value",
                     "test2key1": {"test2key2": "test2value"},
                     "test3key1": {"test3key2": {"test3key3": {"test3key4": {"test3key5": {"test3value"}}}}}}
-                                  }
+                                 }
             }]
         else:
             raise ValueError('Unimplemented command called: {}'.format(name))
