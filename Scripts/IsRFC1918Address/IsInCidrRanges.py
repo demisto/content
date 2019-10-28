@@ -1,7 +1,4 @@
 import demistomock as demisto
-# !!!IMPORTANT!!! If this script should be modified, the updated version must be copied to Scripts/IsRFC1918Address to
-# fulfill its unit test.  This is a necessary workaround for CI configuration
-
 # borrowed from https://stackoverflow.com/questions/819355/how-can-i-check-if-an-ip-is-in-a-network-in-python
 
 import socket
