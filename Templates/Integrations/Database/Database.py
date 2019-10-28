@@ -1,3 +1,5 @@
+from typing import Tuple, Dict, Union
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -5,15 +7,30 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import json
-import requests
-from distutils.util import strtobool
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+"""GLOBALS/PARAMS
+Attributes:
+    INTEGRATION_NAME:
+        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+    INTEGRATION_COMMAND_NAME:
+        Command names should be written in all lower-case letters,
+        and each word separated with a hyphen, for example: msgraph-user.
+
+    INTEGRATION_CONTEXT_NAME:
+        Context output names should be written in camel case, for example: MSGraphUser.
+"""
+INTEGRATION_NAME = 'Database Integration'
+# lowercase with `-` dividers
+INTEGRATION_COMMAND_NAME = 'database'
+# No dividers
+INTEGRATION_CONTEXT_NAME = 'Database'
 
 
 class Client(BaseClient):
-    def query(self, query_string: str) -> list:
+    def query(self, query_string: str) -> Union[Dict, list]:
         """Send query as is to server. note it's unsecured (can drop tables etc.).
 
         Args:
@@ -23,14 +40,32 @@ class Client(BaseClient):
              List of lines from DB
         """
         params = {'query': query_string}
-        return self._http_request('POST', url_suffix='', params=params).json()
+        return self._http_request('POST', url_suffix='', params=params)
 
 
 def fetch_incident_command(client: Client, args: dict):
     pass
 
-def query_command(client: Client, args: dict):
-    pass
+
+def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
+    query = args.get('query')
+    raw_response = client.query(query)
+    context = list()
+    if raw_response:
+        for row in raw_response:
+            context.append({
+                "ID": row[0],
+                "Timestamp": row[1],
+                "Name": row[2],
+                "Urgency": row[3]
+            })
+        readable_output = tableToMarkdown(
+            f"Results from {INTEGRATION_NAME}",
+            context,
+        )
+        context = {"Database(var.ID === obj.ID": context}
+        return readable_output, context, raw_response
+    return f"{INTEGRATION_NAME} - found no results for query", {}, raw_response
 
 
 def main():
@@ -40,7 +75,7 @@ def main():
     host = params.get('host')
     # Remove trailing slash to prevent wrong URL path to service
     port = params.get('port')
-    server = urljoin(params.get('url')+port, '/api/v2.0/')
+    server = urljoin(params.get('url') + port, '/api/v2.0/')
 
     # Should we use SSL
     use_ssl = not params.get('insecure') == 'true'
@@ -59,11 +94,12 @@ def main():
     # Commands switch case
     command = demisto.command()
     commands = {
-        'query': query_command,
-        'fetch-incidents': fetch_incident_command,
+        f'{INTEGRATION_COMMAND_NAME}-query': query_command
     }
     if command == 'fetch-incidents':
-
+        fetch_incident_command(client, )
+    elif command in commands:
+        return_outputs(*commands[command](client, demisto.args()))
 
 
 ''' HELPER FUNCTIONS '''
