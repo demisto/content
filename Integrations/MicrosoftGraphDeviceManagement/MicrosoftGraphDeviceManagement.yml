@@ -146,7 +146,6 @@ script:
     - contextPath: EndPoint
       description: need to complete
       type: String
-  
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   longRunning: false

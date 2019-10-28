@@ -3,7 +3,7 @@ from typing import Dict
 import pytest
 
 from CommonServerPython import *
-from DataEnrichmentThreatIntelligence import Client
+from MicrosoftGraphDeviceManagement import Client
 from pytest import raises
 
 BASE_URL = 'https://example.com/api/v1/'
