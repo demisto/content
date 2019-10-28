@@ -1500,7 +1500,7 @@
         },
         {
             "playbookID": "FilterByList - Test",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1620,6 +1620,12 @@
         },
         {
             "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
@@ -1793,7 +1799,7 @@
             "playbookID": "Detonate File - FireEye AX - Test"
         },
         {
-            "integrations": "Rasterize",
+            "integrations": ["Rasterize","Image OCR"],
             "playbookID": "Rasterize Test"
         },
         {
@@ -1905,11 +1911,14 @@
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "PolySwarm",
+            "playbookID": "PolySwarm-Test"
         }
     ],
     "skipped_tests": {
         "urlscan_malicious_Test": "Issue 19727",
-        "FilterByList - Test": "Issue 19469",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -1982,6 +1991,7 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
+        "PolySwarm": "contribution",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
@@ -2093,7 +2103,6 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "Rasterize": "No API calls "
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
