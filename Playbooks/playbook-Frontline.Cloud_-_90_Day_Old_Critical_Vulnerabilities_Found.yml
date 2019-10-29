@@ -1,0 +1,179 @@
+id: 6f8e5d0b-edbd-4d40-8d2d-dfa6f084ac0f
+version: -1
+name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
+description: This will query Frontline.Cloud's active view for any critical level
+  vulnerabilities found to be older than 90 days.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ee129af-486b-4c38-8a49-9320f10ce172
+    type: start
+    task:
+      id: 5ee129af-486b-4c38-8a49-9320f10ce172
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6adec74a-c52b-47f5-8052-ce63cedd9c2c
+    type: regular
+    task:
+      id: 6adec74a-c52b-47f5-8052-ce63cedd9c2c
+      version: -1
+      name: Frontline-get-vulns (critical vulns older than 90 days)
+      script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
+      type: regular
+      iscommand: true
+      brand: Digital Defense Inc. FrontlineVM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      days_newer_than: {}
+      days_older_than:
+        simple: "90"
+      daysNewerThan: {}
+      daysOlderThan:
+        simple: "90"
+      host_id: {}
+      hostId: {}
+      ip_address: {}
+      min_severity: {}
+      minSeverity: {}
+      severity:
+        simple: critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8e32639d-b91e-49f5-8a28-a3e4f3d05aca
+    type: condition
+    task:
+      id: 8e32639d-b91e-49f5-8a28-a3e4f3d05aca
+      version: -1
+      name: Were vulnerabilities found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FrontlineVM.IPList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 90751ddc-d35b-4060-8092-f9a0e93bb254
+    type: regular
+    task:
+      id: 90751ddc-d35b-4060-8092-f9a0e93bb254
+      version: -1
+      name: Critical vulnerabilities found existing older than 90 days.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        complex:
+          root: FrontlineVM
+          accessor: Vulns
+          transformers:
+          - operator: count
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: eec94249-178b-4b33-8055-83afc4777dc8
+    type: regular
+    task:
+      id: eec94249-178b-4b33-8055-83afc4777dc8
+      version: -1
+      name: No critical vulnerabilities were found older than 90 days.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: No critical vulnerabilities older than 90 days were found within Frontline.Cloud's
+          active view.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
