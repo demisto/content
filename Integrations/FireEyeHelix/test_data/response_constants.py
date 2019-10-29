@@ -983,6 +983,258 @@ LIST_ITEMS_RESP = {
     ]
 }
 
+SEARCH_MULTI_RESP = {
+    "dsl": {
+        "from": 0,
+        "aggs": {
+            "groupby:subject": {
+                "meta": {
+                    "field": "subject",
+                    "type": "groupby"
+                },
+                "terms": {
+                    "field": "subject.raw",
+                    "order": {
+                        "_count": "desc"
+                    },
+                    "min_doc_count": 1,
+                    "size": 50
+                }
+            }
+        },
+        "terminate_after": 1,
+        "directives": {
+            "scroll_id": "",
+            "page_size": 2,
+            "start": "2019-10-28T08:00:00.000Z",
+            "highlight_terms": [],
+            "limit": 1,
+            "timeout": 120000,
+            "offset": 0,
+            "indices": [
+                "events",
+                "alerts",
+                "appliance_health"
+            ],
+            "end": "2019-10-29T08:36:16.947Z",
+            "search_customer_ids": [
+                "demisto"
+            ],
+            "customer_id": "demisto",
+            "scroll": False
+        },
+        "timeout": "120000ms",
+        "query": {
+            "bool": {
+                "filter": [
+                    {
+                        "range": {
+                            "meta_ts": {
+                                "gte": "2019-10-28T08:00:00.000Z",
+                                "lte": "2019-10-29T08:36:16.947Z"
+                            }
+                        }
+                    },
+                    {
+                        "common": {
+                            "domain": {
+                                "cutoff_frequency": 0.001,
+                                "query": "google.com",
+                                "high_freq_operator": "and",
+                                "low_freq_operator": "and"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "size": 2
+    },
+    "highlight_terms": None,
+    "options": {
+        "disable_regex": False,
+        "default_timestamp": "meta_ts",
+        "analyzer_impl": "legacy",
+        "indices": [
+            "events",
+            "alerts",
+            "appliance_health"
+        ],
+        "quick_mode": True,
+        "filters": [],
+        "offset": 0,
+        "default_field": "rawmsg",
+        "use_terminate_after": True,
+        "scroll": False,
+        "page_size": 10,
+        "groupby": {
+            "threshold": 1,
+            "separator": "|%$,$%|",
+            "size": 50
+        },
+        "search_customer_ids": [
+            "demisto"
+        ],
+        "limit": -1,
+        "list_type": "indicator",
+        "es6_compatible": True,
+        "use_limit_filters": False,
+        "customer_id": "demisto",
+        "script_impl": "native"
+    },
+    "mql": "domain:google.com and meta_ts>=2019-10-25T09:07:43.810Z {page_size:2 offset:1 limit:1} | groupby subject sep=`|%$,$%|`",  # noqa: E501
+    "results": {
+        "hits": {
+            "hits": [
+                {
+                    "_score": 0.0,
+                    "_type": "event",
+                    "_id": "demisto",
+                    "_source": {
+                        "status": "delivered",
+                        "domain": "mx.google.com",
+                        "_eventid": "demisto",
+                        "rawmsg": "raw_msg",
+                        "meta_cbname": "helix-etp_stats",
+                        "srcipv4": "8.8.8.8",
+                        "meta_ts": "2019-10-28T10:49:27.210Z",
+                        "srclongitude": -122.0785140991211,
+                        "size": "21.23",
+                        "srccountry": "united states",
+                        "eventtype": "trace",
+                        "srccity": "mountain view",
+                        "to": "demisto@demisto.com",
+                        "srclatitude": 37.40599060058594,
+                        "subject": "google",
+                        "metaclass": "email",
+                        "eventid": "demisto",
+                        "inreplyto": "demisto",
+                        "eventtime": "2019-10-28T10:43:11.000Z",
+                        "srcregion": "california",
+                        "meta_oml": 1036,
+                        "class": "fireeye_etp",
+                        "mailfrom": "de@demisto.com",
+                        "rawmsghostname": "helix-etp_stats-demisto-etp_stats",
+                        "__metadata__": {
+                            "raw_batch_id": "demisto",
+                            "data_type": "passthrough",
+                            "disable_index": False,
+                            "dynamic_taxonomy": False,
+                            "num_events": 1,
+                            "source_type": "json",
+                            "target_index": "",
+                            "batch_id": "demisto",
+                            "customer_id": "demisto",
+                            "id": "demisto",
+                            "sequence_number": 0
+                        },
+                        "srcdomain": "google.com",
+                        "srcisp": "google llc",
+                        "srcusagetype": "dch",
+                        "srccountrycode": "us",
+                        "meta_rts": "2019-10-28T10:49:27.000Z",
+                        "meta_cbid": 99999
+                    },
+                    "_index": "2019-10-28t00:00:00.000z"
+                },
+                {
+                    "_score": 0.0,
+                    "_type": "event",
+                    "_id": "demisto",
+                    "_source": {
+                        "status": "delivered",
+                        "domain": "gmr-mx.google.com",
+                        "_eventid": "demisto",
+                        "rawmsg": "demisto",
+                        "meta_cbname": "helix-etp_stats",
+                        "srcipv4": "8.8.8.8",
+                        "meta_ts": "2019-10-29T05:13:24.009Z",
+                        "srclongitude": -122.0785140991211,
+                        "size": "315.29",
+                        "srccountry": "united states",
+                        "eventtype": "trace",
+                        "srccity": "mountain view",
+                        "to": "demisto@demisto.com",
+                        "srclatitude": 37.40599060058594,
+                        "subject": "Demisto subj",
+                        "metaclass": "email",
+                        "eventid": "demisto",
+                        "inreplyto": "demisto@demisto.com",
+                        "eventtime": "2019-10-29T05:08:39.000Z",
+                        "srcregion": "california",
+                        "meta_oml": 1178,
+                        "class": "fireeye_etp",
+                        "mailfrom": "dem@demisto.com",
+                        "rawmsghostname": "helix-etp_stats-demisto-etp_stats",
+                        "__metadata__": {
+                            "raw_batch_id": "demisto",
+                            "data_type": "passthrough",
+                            "disable_index": False,
+                            "dynamic_taxonomy": False,
+                            "num_events": 4,
+                            "source_type": "json",
+                            "target_index": "",
+                            "batch_id": "demisto",
+                            "customer_id": "demisto",
+                            "id": "demisto",
+                            "sequence_number": 1
+                        },
+                        "srcdomain": "google.com",
+                        "srcisp": "google llc",
+                        "srcusagetype": "dch",
+                        "srccountrycode": "us",
+                        "meta_rts": "2019-10-29T05:13:24.000Z",
+                        "meta_cbid": 99999
+                    },
+                    "_index": "2019-10-29t00:00:00.000z"
+                }
+            ],
+            "total": 11,
+            "max_score": 0.0
+        },
+        "_shards": {
+            "successful": 66,
+            "failed": 0,
+            "total": 66
+        },
+        "took": 3046,
+        "aggregations": {
+            "groupby:subject": {
+                "buckets": [
+                    {
+                        "key": "google alert - gold",
+                        "doc_count": 3
+                    },
+                    {
+                        "key": "accepted: meeting",
+                        "doc_count": 1
+                    },
+                    {
+                        "key": "invitation: Declined",
+                        "doc_count": 1
+                    }
+                ],
+                "meta": {
+                    "field": "subject",
+                    "type": "groupby"
+                },
+                "sum_other_doc_count": 0,
+                "doc_count_error_upper_bound": 0
+            }
+        },
+        "metrics": {
+            "load": 2.8539999999999996,
+            "regex": False,
+            "list": False,
+            "aggregation": True,
+            "subsearch": False
+        },
+        "terminated_early": True,
+        "timed_out": False,
+        "failures": []
+    }
+}
+
 SEARCH_AGGREGATIONS_SINGLE_RESP = {
     "groupby:subject": {
         "buckets": [

@@ -284,7 +284,9 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
             "SourceDomain": None,
             "SourceISP": None,
             "DestinationISP": None,
+            "RcpTo": None,
             "To": None,
+            "InReplyTo": None,
             "Attachment": None
         }
     ],
@@ -352,6 +354,114 @@ EXPECTED_LIST_ITEMS_UPDATE_RSLT = {
         "Risk": "Medium",
         "Notes": "test ok",
         "ListID": 3232
+    }
+}
+
+EXPECTED_SEARCH_RSLT = {
+    "FireEyeHelixSearch(val.MQL && val.MQL === obj.MQL)": {
+        "MQL": "domain:google.com and meta_ts>=2019-10-25T09:07:43.810Z {page_size:2 offset:1 limit:1} | groupby subject sep=`|%$,$%|`",  # noqa: E501
+        "Result": [
+            {
+                "ID": "demisto",
+                "Type": "trace",
+                "Result": None,
+                "MatchedAt": None,
+                "Confidence": None,
+                "Status": "delivered",
+                "EventTime": "2019-10-28T10:43:11.000Z",
+                "DetectedRuleID": None,
+                "PID": None,
+                "Process": None,
+                "ProcessPath": None,
+                "FileName": None,
+                "FilePath": None,
+                "DeviceName": None,
+                "Size": None,
+                "Virus": None,
+                "MalwareType": None,
+                "CreatedTime": None,
+                "Class": "fireeye_etp",
+                "MD5": None,
+                "SHA1": None,
+                "Protocol": None,
+                "SourceIPv4": "8.8.8.8",
+                "SourceIPv6": None,
+                "SourcePort": None,
+                "SourceLongitude": -122.0785140991211,
+                "DestinationIPv4": None,
+                "SourceLatitude": 37.40599060058594,
+                "DestinationIPv6": None,
+                "DestinationPort": None,
+                "ReportTime": None,
+                "FalsePositive": None,
+                "Domain": "mx.google.com",
+                "From": "de@demisto.com",
+                "SourceDomain": "google.com",
+                "SourceISP": "google llc",
+                "DestinationISP": None,
+                "RcpTo": None,
+                "To": "demisto@demisto.com",
+                "InReplyTo": "demisto",
+                "Attachment": None
+            },
+            {
+                "ID": "demisto",
+                "Type": "trace",
+                "Result": None,
+                "MatchedAt": None,
+                "Confidence": None,
+                "Status": "delivered",
+                "EventTime": "2019-10-29T05:08:39.000Z",
+                "DetectedRuleID": None,
+                "PID": None,
+                "Process": None,
+                "ProcessPath": None,
+                "FileName": None,
+                "FilePath": None,
+                "DeviceName": None,
+                "Size": None,
+                "Virus": None,
+                "MalwareType": None,
+                "CreatedTime": None,
+                "Class": "fireeye_etp",
+                "MD5": None,
+                "SHA1": None,
+                "Protocol": None,
+                "SourceIPv4": "8.8.8.8",
+                "SourceIPv6": None,
+                "SourcePort": None,
+                "SourceLongitude": -122.0785140991211,
+                "DestinationIPv4": None,
+                "SourceLatitude": 37.40599060058594,
+                "DestinationIPv6": None,
+                "DestinationPort": None,
+                "ReportTime": None,
+                "FalsePositive": None,
+                "Domain": "gmr-mx.google.com",
+                "From": "dem@demisto.com",
+                "SourceDomain": "google.com",
+                "SourceISP": "google llc",
+                "DestinationISP": None,
+                "RcpTo": None,
+                "To": "demisto@demisto.com",
+                "InReplyTo": "demisto@demisto.com",
+                "Attachment": None
+            }
+        ],
+        "GroupBy": [
+            {
+                "subject": "google alert - gold",
+                "DocCount": 3
+            },
+            {
+                "subject": "accepted: meeting",
+                "DocCount": 1
+            },
+            {
+                "subject": "invitation: Declined",
+                "DocCount": 1
+            }
+        ]
     }
 }
 

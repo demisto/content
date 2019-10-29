@@ -39,7 +39,7 @@ Attributes:
     LIST_ITEM_TRANS
         Transformation map for list items to be used with build_transformed_dict
 
-    NOTxES_TRANS
+    NOTES_TRANS
         Transformation map for notes to be used with build_transformed_dict
 
     RULES_TRANS
@@ -176,7 +176,9 @@ EVENTS_TRANS = {
     'srcdomain': 'SourceDomain',
     'srcisp': 'SourceISP',
     'dstisp': 'DestinationISP',
-    'rcptto': 'To',
+    'rcptto': 'RcpTo',
+    'to': 'To',
+    'inreplyto': 'InReplyTo',
     'attachment': 'Attachment',
 }
 LISTS_TRANS = {
@@ -751,12 +753,12 @@ def build_mql_query(query: str, start: str = None, end: str = None, page_size: U
         MQL query
     """
     # Filter section
-    if start or end or page_size or offset or limit:
+    if start:
+        query += f' start="{start}"'
+    if end:
+        query += f' end="{end}"'
+    if page_size or offset or limit:
         query += ' {'
-        if start:
-            query += f' start={start}'
-        if end:
-            query += f' end={end}'
         if page_size:
             query += f' page_size={page_size}'
         if offset:

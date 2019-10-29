@@ -1702,6 +1702,12 @@ script:
     - contextPath: FireEyeHelixSearch.GroupBy.DocCount
       description: Number of matches for the group.
       type: Number
+    - contextPath: FireEyeHelixSearch.Result.RcpTo
+      description: Recepeient to email address.
+      type: String
+    - contextPath: FireEyeHelixSearch.Result.InReplyTo
+      description: Reply email address.
+      type: String
   - arguments:
     - auto: PREDEFINED
       default: false
