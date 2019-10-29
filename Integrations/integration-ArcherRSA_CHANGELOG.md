@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Fixed the default field on which the search is performed.
-- Improved errors returned by several commands.
+- Improved the errors returned by several commands.
 
 ## [19.10.1] - 2019-10-15
 Added support for European timestamps.
