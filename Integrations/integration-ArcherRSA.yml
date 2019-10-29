@@ -2522,7 +2522,7 @@ script:
             throw 'Invalid Argument fieldToValue';
         }
 
-        logDebug("\n\n\n" + "App ID is: {0}, \n Fields To Value is: {1}, \n Search value is: {2}".format(appId, JSON.stringify(fieldsToValue), searchValue) + "\n\n\n");
+        logDebug("\n\n\n" + "App ID is: {0}, \n Fields To Value is: {1}".format(appId, JSON.stringify(fieldsToValue)) + "\n\n\n");
 
         var cache = getIntegrationContext();
         var updateRecordMapping;
