@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 32a2ac41-4b38-4869-8ede-0bf9cd114c43
+    taskid: cbd2af76-2356-494d-81e7-cfced7245bdf
     type: start
     task:
-      id: 32a2ac41-4b38-4869-8ede-0bf9cd114c43
+      id: cbd2af76-2356-494d-81e7-cfced7245bdf
       version: -1
       name: ""
       iscommand: false
@@ -18,6 +18,7 @@ tasks:
       - "1"
       - "3"
       - "4"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -25,12 +26,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 1c401ee2-3c06-4ee3-80dc-423d90dfaac5
+    taskid: a7566261-8a6f-4f47-88d2-dd7ec49159c0
     type: regular
     task:
-      id: 1c401ee2-3c06-4ee3-80dc-423d90dfaac5
+      id: a7566261-8a6f-4f47-88d2-dd7ec49159c0
       version: -1
       name: kenna-get-connectors
       description: Returns all of your connectors
@@ -38,9 +42,7 @@ tasks:
       type: regular
       iscommand: true
       brand: Kenna
-    nexttasks:
-      '#none#':
-      - "2"
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -48,36 +50,15 @@ tasks:
           "y": 230
         }
       }
-  "2":
-    id: "2"
-    taskid: 7a66ece3-faf3-4e32-85c7-39d6aa03c76d
-    type: regular
-    task:
-      id: 7a66ece3-faf3-4e32-85c7-39d6aa03c76d
-      version: -1
-      name: kenna-run-connector
-      description: Schedules a run of a connector. If file based, it will use most
-        recently uploaded data file
-      script: Kenna|||kenna-run-connector
-      type: regular
-      iscommand: true
-      brand: Kenna
-    scriptarguments:
-      id:
-        simple: ${Kenna.ConnectorsList.ID}
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 410
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: baa1d405-a1f9-45f4-87ee-3eb5d9a466a3
+    taskid: 5b630c94-902f-4816-82bc-49ca39c01283
     type: regular
     task:
-      id: baa1d405-a1f9-45f4-87ee-3eb5d9a466a3
+      id: 5b630c94-902f-4816-82bc-49ca39c01283
       version: -1
       name: kenna-search-vulnerabilities
       description: Filters vulnerabilities by a given set of parameters and returns
@@ -95,6 +76,7 @@ tasks:
       min-score: {}
       status: {}
       top-priority: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -102,12 +84,15 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 85961c79-693c-4883-82b5-8f87d9e7ad91
+    taskid: 870fb157-cc65-4e9b-89d2-dc7b8a060ede
     type: regular
     task:
-      id: 85961c79-693c-4883-82b5-8f87d9e7ad91
+      id: 870fb157-cc65-4e9b-89d2-dc7b8a060ede
       version: -1
       name: kenna-search-fixes
       description: Filters fixes by a given set of vulnerability and asset parameters
@@ -121,6 +106,7 @@ tasks:
       min-score: {}
       status: {}
       top-priority: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -128,12 +114,15 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 67541e6d-281e-430e-8b4c-f92d228d913c
+    taskid: 9b78d38c-9b75-4a17-8157-14ad411cd8a7
     type: regular
     task:
-      id: 67541e6d-281e-430e-8b4c-f92d228d913c
+      id: 9b78d38c-9b75-4a17-8157-14ad411cd8a7
       version: -1
       name: kenna-update-asset
       description: Update a single asset's attributes by ID
@@ -146,6 +135,7 @@ tasks:
         simple: ${Kenna.[1].AssetID}
       notes:
         simple: Test Notes
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -153,12 +143,15 @@ tasks:
           "y": 410
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 19bcfdf6-85e7-4e34-8a16-2e2f780b7def
+    taskid: d1532ce1-17b1-4834-8f30-e75c441fd635
     type: regular
     task:
-      id: 19bcfdf6-85e7-4e34-8a16-2e2f780b7def
+      id: d1532ce1-17b1-4834-8f30-e75c441fd635
       version: -1
       name: kenna-update-vulnerability
       description: Update a single vulnerability's attributes by ID
@@ -172,6 +165,7 @@ tasks:
       notes:
         simple: Test Notes
       status: {}
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -179,6 +173,9 @@ tasks:
           "y": 410
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
