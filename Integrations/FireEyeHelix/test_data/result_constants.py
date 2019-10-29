@@ -1,5 +1,5 @@
 EXPECTED_ALERT_RSLT = {
-    "FireEye.Alert(val.ID && val.ID === obj.ID)": {
+    "FireEyeHelix.Alert(val.ID && val.ID === obj.ID)": {
         "ID": 123,
         "AlertTypeID": 1793,
         "Name": "HX",
@@ -60,7 +60,7 @@ EXPECTED_ALERT_RSLT = {
 }
 
 EXPECTED_ALERTS_RSLT = {
-    "FireEye.Alert(val.ID && val.ID === obj.ID)": [
+    "FireEyeHelix.Alert(val.ID && val.ID === obj.ID)": [
         {
             "ID": 123,
             "AlertTypeID": 1793,
@@ -179,7 +179,7 @@ EXPECTED_ALERTS_RSLT = {
             "Type": "fireeye_rule"
         }
     ],
-    "FireEye.Alert(val.Count).Count": 115
+    "FireEyeHelix.Alert(val.Count).Count": 115
 }
 
 EXPECTED_AGGREGATIONS_SINGLE_RSLT = [
@@ -196,7 +196,7 @@ EXPECTED_AGGREGATIONS_MULTI_RSLT = [
 ]
 
 EXPECTED_CASES_NY_ALERT_RSLT = {
-    "FireEye.Case(val.ID && val.ID === obj.ID)": [
+    "FireEyeHelix.Case(val.ID && val.ID === obj.ID)": [
         {
             "ID": 35,
             "Name": "demisto test case",
@@ -225,7 +225,7 @@ EXPECTED_CASES_NY_ALERT_RSLT = {
 }
 
 EXPECTED_ENDPOINTS_BY_ALERT_RSLT = {
-    "FireEye.Endpoint(val.ID && val.ID === obj.ID)": [
+    "FireEyeHelix.Endpoint(val.ID && val.ID === obj.ID)": [
         {
             "ID": 191,
             "CustomerID": "demisto",
@@ -239,11 +239,11 @@ EXPECTED_ENDPOINTS_BY_ALERT_RSLT = {
             "ContainmentState": "normal"
         }
     ],
-    "FireEye.Endpoint(val.Count).Count": 1
+    "FireEyeHelix.Endpoint(val.Count).Count": 1
 }
 
 EXPECTED_EVENTS_BY_ALERT_RSLT = {
-    "FireEye.Event(val.ID && val.ID === obj.ID)": [
+    "FireEyeHelix.Event(val.ID && val.ID === obj.ID)": [
         {
             "ID": "101",
             "Type": "processevent",
@@ -288,36 +288,47 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
             "Attachment": None
         }
     ],
-    "FireEye.Event(val.Count).Count": 10
+    "FireEyeHelix.Event(val.Count).Count": 10
 }
 
 EXPECTED_SINGLE_LIST_ITEM_RSLT = {
-    "FireEye.List(val.ID && val.ID === 3232).Item": {
-        "ID": 23232323,
+    "FireEyeHelixList(val.ID && val.ID === 3232).Item": {
+        "ID": 163,
         "Value": "aTest list",
         "Type": "misc",
         "Risk": "Medium",
         "Notes": "test ok",
-        "List": 3232
+        "ListID": 3232
     }
 }
 
 EXPECTED_LIST_ITEMS_RSLT = {
-    "FireEye.List(val.ID && val.ID === 3232).Item(val.ID === obj.ID)": [
+    "FireEyeHelixList(val.ID && val.ID === 3232).Item(val.ID === obj.ID)": [
         {
             "ID": 163,
             "Value": "Test list",
             "Type": "misc",
             "Risk": "Low",
             "Notes": "",
-            "List": 3232
+            "ListID": 3232
         }
     ],
-    "FireEye.List(val.ID && val.ID === 3232).Count(val.Count)": 1
+    "FireEyeHelixList(val.ID && val.ID === 3232).Count(val.Count)": 1
+}
+
+EXPECTED_LIST_ITEMS_UPDATE_RSLT = {
+    "FireEyeHelixList(val.ID && val.ID === 3232).Item(val.ID === obj.ID)": {
+        "ID": 163,
+        "Value": "aTest list",
+        "Type": "misc",
+        "Risk": "Medium",
+        "Notes": "test ok",
+        "ListID": 3232
+    }
 }
 
 EXPECTED_NOTES_GET_RSLT = {
-    "FireEye.Note(val.ID && val.ID === obj.ID)": [
+    "FireEyeHelix.Note(val.ID && val.ID === obj.ID)": [
         {
             "ID": 9,
             "CreatedTime": "2019-10-28T07:41:30.396000Z",
@@ -337,11 +348,11 @@ EXPECTED_NOTES_GET_RSLT = {
             "AlertID": None
         }
     ],
-    "FireEye.Note(val.Count && val.AlertID === None).Count": 2
+    "FireEyeHelix.Note(val.Count && val.AlertID === None).Count": 2
 }
 
 EXPECTED_NOTES_CREATE_RSLT = {
-    "FireEye.Note(val.ID && val.ID === obj.ID)": {
+    "FireEyeHelix.Note(val.ID && val.ID === obj.ID)": {
         "ID": 9,
         "CreatedTime": "2019-10-28T07:41:30.396000Z",
         "UpdatedTime": "2019-10-28T07:41:42.000123Z",

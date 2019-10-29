@@ -1752,6 +1752,25 @@ script:
     description: Add an item to a list.
     execution: false
     name: fireeye-helix-add-list-item
+    outputs:
+    - contextPath: FireEyeHelixList.Item.ID
+      description: Item ID.
+      type: Number
+    - contextPath: FireEyeHelixList.Item.Value
+      description: Item value.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Type
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      type: String
+    - contextPath: FireEyeHelixList.Item.Risk
+      description: Risk of the item. Can be Low, Medium, High, or Critical.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Notes
+      description: Item notes.
+      type: String
+    - contextPath: FireEyeHelixList.Item.ListID
+      description: List ID the item is assosciated with.
+      type: String
   - arguments:
     - default: true
       description: List ID.
@@ -1766,8 +1785,123 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Fetches items of a list.
     execution: false
     name: fireeye-helix-get-list-items
+    outputs:
+    - contextPath: FireEyeHelixList.Item.ID
+      description: Item ID.
+      type: Number
+    - contextPath: FireEyeHelixList.Item.Value
+      description: Item value.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Type
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      type: String
+    - contextPath: FireEyeHelixList.Item.Risk
+      description: Risk of the item. Can be Low, Medium, High, or Critical.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Notes
+      description: Item notes.
+      type: String
+    - contextPath: FireEyeHelixList.Item.ListID
+      description: List ID the item is assosciated with.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Count
+      description: Number of items in the list.
+      type: Number
+  - arguments:
+    - default: true
+      description: ID of item to update.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Item type.
+      isArray: false
+      name: type
+      predefined:
+      - email
+      - fqdn
+      - ipv4
+      - ipv6
+      - md5
+      - misc
+      - sha-1
+      required: false
+      secret: false
+    - default: false
+      description: Item value.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: ID of the list.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Risk of the item. Can be Low, Medium, High, or Critical.
+      isArray: false
+      name: risk
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      required: false
+      secret: false
+    - default: false
+      description: Item notes.
+      isArray: false
+      name: notes
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a single list item.
+    execution: false
+    name: fireeye-helix-update-list-item
+    outputs:
+    - contextPath: FireEyeHelixList.Item.ID
+      description: Item ID.
+      type: Number
+    - contextPath: FireEyeHelixList.Item.Value
+      description: Item value.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Type
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      type: String
+    - contextPath: FireEyeHelixList.Item.Risk
+      description: Risk of the item. Can be Low, Medium, High, or Critical.
+      type: String
+    - contextPath: FireEyeHelixList.Item.Notes
+      description: Item notes.
+      type: String
+    - contextPath: FireEyeHelixList.Item.ListID
+      description: List ID the item is assosciated with.
+      type: String
+  - arguments:
+    - default: false
+      description: List ID.
+      isArray: false
+      name: list_id
+      required: true
+      secret: false
+    - default: false
+      description: Item ID.
+      isArray: false
+      name: item_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes an item from a list.
+    execution: false
+    name: fireeye-helix-remove-list-item
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   longRunning: false

@@ -955,7 +955,7 @@ NOTES_CREATE_RESP = {
 }
 
 LIST_SINGLE_ITEM_RESP = {
-    "id": 23232323,
+    "id": 163,
     "value": "aTest list",
     "type": "misc",
     "risk": "Medium",

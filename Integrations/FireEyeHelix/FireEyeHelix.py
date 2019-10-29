@@ -47,7 +47,7 @@ Attributes:
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
-INTEGRATION_CONTEXT_NAME = 'FireEye'
+INTEGRATION_CONTEXT_NAME = 'FireEyeHelix'
 ALERTS_TRANS = {
     'id': 'ID',
     'alert_type.id': 'AlertTypeID',
@@ -202,7 +202,7 @@ LIST_ITEM_TRANS = {
     'type': "Type",
     'risk': "Risk",
     'notes': 'Notes',
-    'list': 'List'
+    'list': 'ListID'
 }
 NOTES_TRANS = {
     'id': 'ID',
@@ -614,6 +614,30 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix, json_data=body)
 
+    def update_list_item(self, list_id: Union[str, int], item_id: Union[str, int], type: str = None, value: str = None,
+                         risk: str = None, notes: str = None) -> Dict:
+        """Updates a single item list
+
+        Args:
+            list_id: List id.
+            item_id: Item id.
+            type: Type of list item.
+            value: Value of list item.
+            risk: Risk of list item.
+            notes: Notes for list item.
+
+        Returns:
+            Respone from API
+        """
+        suffix = f'/api/v3/lists/{list_id}/items/{item_id}'
+        body = assign_params(
+            type=type,
+            value=value,
+            risk=risk,
+            notes=notes
+        )
+        return self._http_request('PATCH', suffix, json_data=body)
+
     def get_list_items(self, list_id: Optional[Any], offset: Optional[Any]) -> Dict:
         """Gets items of a list
 
@@ -627,6 +651,10 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}/items'
         params = assign_params(offset=offset)
         return self._http_request('GET', suffix, params=params)
+
+    def remove_list_item(self, list_id: Optional[Any], item_id: Optional[Any]) -> Dict:
+        suffix = f'/api/v3/lists/{list_id}/items/{item_id}'
+        return self._http_request('DELETE', suffix, resp_type='content')
 
 
 ''' HELPER FUNCTIONS '''
@@ -1255,13 +1283,55 @@ def add_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         title = f'{INTEGRATION_NAME} - List item {item_id} was added successfully to {list_id}'
         context_entry = build_transformed_dict(raw_response, LIST_ITEM_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Item': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item': context_entry
         }
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not create list item.', {}, raw_response
+
+
+def update_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Updates a list item. return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('list_id')
+    raw_response = client.update_list_item(**args)
+    if raw_response:
+        item_id = raw_response.get('id')
+        title = f'{INTEGRATION_NAME} - List item {item_id} from list {list_id} was updated successfully'
+        context_entry = build_transformed_dict(raw_response, LIST_ITEM_TRANS)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry
+        }
+        human_readable = tableToMarkdown(title, context_entry)
+        # Return data to Demisto
+        return human_readable, context, raw_response
+    else:
+        return f'{INTEGRATION_NAME} - Could not update list item.', {}, raw_response
+
+
+def remove_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Updates a list item. return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    list_id = args.get('list_id')
+    item_id = args.get('item_id')
+    raw_response = client.remove_list_item(list_id=list_id, item_id=item_id)
+    return f'{INTEGRATION_NAME} - Removed item {item_id} from list {list_id} successfully', {}, raw_response
 
 
 def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1282,8 +1352,8 @@ def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         context_entry = build_transformed_dict(results, LIST_ITEM_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry,
-            f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === {list_id}).Count(val.Count)': count
+            f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Count(val.Count)': count
         }
         human_readable = tableToMarkdown(title, context_entry)
         # Return data to Demisto
@@ -1424,10 +1494,10 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-list': create_list_command,
         f'{INTEGRATION_COMMAND_NAME}-update-list': update_list_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-list': delete_list_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-get-list-items': get_list_items_command,
         f'{INTEGRATION_COMMAND_NAME}-add-list-item': add_list_item_command,
-        # f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_item_command,
-        # f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
+        f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_item_command,
+        f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,  # todo: not tested properly
