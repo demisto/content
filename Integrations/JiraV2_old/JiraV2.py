@@ -5,8 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from requests_oauthlib import OAuth1, OAuth2
-from oauthlib.oauth2 import Client
+from base64 import b64encode
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -16,10 +15,25 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
+IS_OAUTH = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+IS_BASIC = USERNAME and (PASSWORD or API_TOKEN)
+
+# if not OAuth, check for valid parameters for basic auth, i.e. username & pass, or just APItoken
+if not IS_OAUTH and not IS_BASIC:
+    return_error('Please provide Authorization information, Basic(userName & password / API-token) or OAuth1.0')
+B64_AUTH = (b64encode((USERNAME + ":" + (API_TOKEN if API_TOKEN else PASSWORD)).encode('ascii'))).decode('ascii')
+BASIC_AUTH = 'Basic ' + B64_AUTH
+OAUTH = {
+    "ConsumerKey": demisto.getParam('consumerKey'),
+    "AccessToken": demisto.getParam('accessToken'),
+    "PrivateKey": demisto.getParam('privateKey')
+} if IS_OAUTH else ''
 
 HEADERS = {
     'Content-Type': 'application/json',
 }
+if not IS_OAUTH:
+    HEADERS['Authorization'] = BASIC_AUTH
 
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth"
@@ -34,7 +48,7 @@ def jira_req(method, resource_url, body='', link=False):
         data=body,
         headers=HEADERS,
         verify=USE_SSL,
-        auth=get_auth(),
+        params=OAUTH,
     )
     if not result.ok:
         demisto.debug(result.text)
@@ -50,7 +64,7 @@ def jira_req(method, resource_url, body='', link=False):
             demisto.debug(str(ve))
             if result.status_code == 401:
                 return_error('Unauthorized request, please check authentication related parameters.'
-                             f'{BASIC_AUTH_ERROR_MSG}')
+                             f'{BASIC_AUTH_ERROR_MSG if IS_BASIC else ""}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
             else:
@@ -58,54 +72,6 @@ def jira_req(method, resource_url, body='', link=False):
                     f"Failed reaching the server. status code: {result.status_code}")
 
     return result
-
-
-def generate_oauth1():
-    oauth = OAuth1(
-        client_key=demisto.getParam('consumerKey'),
-        rsa_key=demisto.getParam('privateKey'),
-        signature_method='RSA-SHA1',
-        resource_owner_key=demisto.getParam('accessToken'),
-        resource_owner_secret=demisto.getParam('tokenSecret')
-    )
-    return oauth
-
-
-def generate_oauth2():
-    oauth2_client = Client(
-        demisto.getParam('consumerKey'),
-        demisto.getParam('privateKey'),
-        accessToken=demisto.getParam('accessToken')
-    )
-    oauth = OAuth2(client=oauth2_client)
-    return oauth
-
-
-def generate_basic_oauth():
-    return USERNAME, (API_TOKEN or PASSWORD)
-
-
-def get_auth():
-    is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth2 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
-    is_oauth1 = is_oauth2 and demisto.getParam('tokenSecret')
-
-    if is_basic:
-        return generate_basic_oauth()
-
-    elif is_oauth1:
-        HEADERS.update({'X-Atlassian-Token': 'nocheck'})
-        return generate_oauth1()
-
-    elif is_oauth2:
-        return generate_oauth2()
-
-    return_error(
-        'Please provide the required Authorization information:'
-        '- Basic Authentication requires user name and password or just API'
-        '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-        '- OAuth 2.0 requires ConsumerKey, AccessToken,PrivateKey and TokenSecret'
-    )
 
 
 def run_query(query, start_at='', max_results=None):
@@ -129,13 +95,14 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
+    if OAUTH:
+        query_params.update(OAUTH)  # type: ignore
 
     result = requests.get(
         url=url,
         headers=HEADERS,
         verify=USE_SSL,
-        params=query_params,
-        auth=get_auth(),
+        params=query_params
     )
     try:
         rj = result.json()
@@ -527,19 +494,18 @@ def issue_upload_command(issue_id, upload):
 def upload_file(entry_id, issue_id):
     headers = {
         'X-Atlassian-Token': 'no-check',
-        'Content-Type': 'application/json;charset=UTF-8'
     }
     res = requests.post(
         url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
         files={'file': get_file(entry_id)},
-        auth=get_auth(),
+        auth=(USERNAME, API_TOKEN or PASSWORD),
         verify=USE_SSL
     )
 
     if not res.ok:
-        return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}'
-                     + "\nMake sure file name doesn't contain any special characters" if res.status_code == 500 else "")
+        return_error(
+            f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}')
 
     return res.json()
 
@@ -548,8 +514,8 @@ def get_file(entry_id):
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
-    with open(file_path, 'rb') as f:
-        file_bytes = f.read()
+    with open(file_path, 'rb') as fopen:
+        file_bytes = fopen.read()
     return file_name, file_bytes
 
 

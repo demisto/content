@@ -3,7 +3,8 @@ commonfields:
   version: -1
 name: jira-v2
 display: Atlassian Jira (v2)
-fromversion: 5.0.0
+fromversion: 2.6.0
+toversion: 4.5.9
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
 configuration:
@@ -27,11 +28,6 @@ configuration:
   defaultvalue: OauthKey
   type: 0
   required: false
-- display: TokenSecret
-  name: tokenSecret
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: AccessToken
   name: accessToken
   defaultvalue: ""
@@ -52,9 +48,9 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -80,7 +76,7 @@ configuration:
 - display: API token
   name: APItoken
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 script:
   script: ''
@@ -303,7 +299,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/oauthlib:1.0.0.2609
+  dockerimage: demisto/python3:3.7.2.200
   isfetch: true
   runonce: false
 tests:
