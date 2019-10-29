@@ -24,13 +24,12 @@ configuration:
 - display: Default Subscription ID
   name: subscription_id
   required: false
-  type: 0
+  type: 4
 - display: Use system proxy
   name: proxy
   required: false
   type: 8
-- defaultvalue: ''
-  display: Trust any certificate (unsecure)
+- display: Trust any certificate (unsecure)
   name: unsecure
   required: false
   type: 8
