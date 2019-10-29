@@ -30,7 +30,6 @@ def update_playbook_task_name(playbook):
         if task.get("type") == "playbook":
             task["task"]["name"] = task["task"]["playbookName"]
 
-
     return playbook
 
 
@@ -93,7 +92,7 @@ def update_replace_copy_dev(playbook):
 
 
 def update_playbook(source_path, destination_path):
-    print "Starting..."
+    print("Starting...")
 
     with open(source_path) as f:
         playbook = yaml.load(f, Loader=yamlordereddictloader.Loader)
@@ -124,12 +123,12 @@ def update_playbook(source_path, destination_path):
             Dumper=yamlordereddictloader.Dumper,
             default_flow_style=False)
 
-    print "Finished - new yml saved at {}".format(destination_path)
+    print("Finished - new yml saved at {}".format(destination_path))
 
 
 def main(argv):
     if len(argv) < 1:
-        print "Please provide <source playbook path>, <optional - destination playbook path>"
+        print("Please provide <source playbook path>, <optional - destination playbook path>")
         sys.exit(1)
 
     source_path = argv[0]
