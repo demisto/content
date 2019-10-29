@@ -1235,6 +1235,86 @@ SEARCH_MULTI_RESP = {
     }
 }
 
+SEARCH_ARCHIVE_RESP = {
+    "meta": {
+        "totalCount": 2,
+        "limit": 30,
+        "offset": 0
+    },
+    "data": [
+        {
+            "_createdBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "demisto@demisto.com"
+            },
+            "_updatedBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "demisto@demisto.com"
+            },
+            "completeAfterCount": 0,
+            "completeAfterDuration": 0,
+            "createDate": "2019-10-09T11:19:38.253848Z",
+            "customer_id": "demisto",
+            "emailNotify": False,
+            "errors": [],
+            "id": "82",
+            "is_part_of_report": False,
+            "name": "",
+            "numResults": 457,
+            "percentComplete": 100.0,
+            "query": "domain:[google,com] | groupby eventtype",
+            "queryAST": "{}",
+            "searchEndDate": "2019-10-09T11:19:00Z",
+            "searchStartDate": "2019-10-09T11:19:00Z",
+            "sourceBucket": "",
+            "state": "completed",
+            "timeRemaining": 0.0,
+            "updateDate": "2019-10-09T11:19:00.686503Z"
+        },
+        {
+            "_createdBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "demisto@demisto.com"
+            },
+            "_updatedBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "demisto@demisto.com"
+            },
+            "completeAfterCount": 0,
+            "completeAfterDuration": 0,
+            "createDate": "2019-10-09T11:18:52.250000Z",
+            "customer_id": "demisto",
+            "emailNotify": False,
+            "errors": [],
+            "id": "83",
+            "is_part_of_report": False,
+            "name": "",
+            "numResults": 20,
+            "percentComplete": 100.0,
+            "query": "domain:[google] | groupby eventtype",
+            "queryAST": "{}",
+            "searchEndDate": "2019-10-09T11:18:28Z",
+            "searchStartDate": "2019-10-09T11:18:28Z",
+            "sourceBucket": "",
+            "state": "completed",
+            "timeRemaining": 0.0,
+            "updateDate": "2019-10-09T11:19:21.916006Z"
+        }
+    ]
+}
+
 SEARCH_AGGREGATIONS_SINGLE_RESP = {
     "groupby:subject": {
         "buckets": [

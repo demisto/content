@@ -465,6 +465,23 @@ EXPECTED_SEARCH_RSLT = {
     }
 }
 
+EXPECTED_SEARCH_ARCHIVE_RSLT = {
+    "FireEyeHelixSearch(val.ID === obj.ID)": [
+        {
+            "ID": "82",
+            "PercentComplete": 100.0,
+            "Query": "domain:[google,com] | groupby eventtype",
+            "State": "completed"
+        },
+        {
+            "ID": "83",
+            "PercentComplete": 100.0,
+            "Query": "domain:[google] | groupby eventtype",
+            "State": "completed"
+        }
+    ]
+}
+
 EXPECTED_NOTES_GET_RSLT = {
     "FireEyeHelix.Note(val.ID && val.ID === obj.ID)": [
         {
