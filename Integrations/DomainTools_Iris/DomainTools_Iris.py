@@ -624,8 +624,7 @@ def test_module():
     try:
         http_request('GET', '/v1/iris-investigate/', {'domain': 'demisto.com'})
         demisto.results('ok')
-    except Exception as test_error:
-        return_error('Unable to perform command : {}, Reason: {}'.format(demisto.command(), str(test_error)))
+    except Exception:
         raise
 
 
