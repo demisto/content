@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },
