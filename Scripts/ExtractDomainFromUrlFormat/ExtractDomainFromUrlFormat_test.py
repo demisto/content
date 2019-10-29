@@ -6,6 +6,8 @@ import pytest
 
 @pytest.mark.parametrize('input,domain', [
                         ('http://this.is.test.com', 'test.com'),
+                        ('http:example.com', 'example.com'),
+                        ('http:\\\\example.com', 'example.com'),
                         ('https://caseapi.phishlabs.com', 'phishlabs.com'),
                          # output needs to be bytes string utf-8 encoded (otherwise python loop demisto.results fails)
                         (u'www.bücher.de', u'bücher.de'.encode('utf-8')),
