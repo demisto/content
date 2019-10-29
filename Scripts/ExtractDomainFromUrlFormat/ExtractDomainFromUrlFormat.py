@@ -41,7 +41,7 @@ def unescape_url(escaped_url):
     url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
         .replace('http:\\\\', 'http://')
     # Normalize the URL with http prefix
-    if url.find('http:') > 0 and url.find('http://') != 0:
+    if url.find('http:') == 0 and url.find('http://') == -1:
         url = url.replace('http:', 'http://')
     if url.find('http') != 0 and url.find('ftp') != 0:
         return 'http://' + url
