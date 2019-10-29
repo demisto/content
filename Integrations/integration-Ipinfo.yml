@@ -41,17 +41,21 @@ script:
         return json && res.Body ? JSON.parse(res.Body) : res.Body;
     };
 
-    var getInfoForOneIP = function(ip) {
-        var o = sendRequest(base + ip + jsonSuffix, 'GET', true);
-        var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: o.org, Geo: {
-            Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}}};
-        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
-        var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o), EntryContext: ec}];
-        if (o.loc) {
-            var parts = o.loc.split(',');
+    var formatOutputs = function(resp) {
+        var ec = {IP: {Address: resp.ip, Hostname: resp.hostname, ASN: resp.org, Geo: {
+            Location: resp.loc, Country: resp.country, Description: resp.city + ', ' + resp.region + ', ' + resp.postal + ', ' + resp.country}}};
+        ec.DBotScore = {Indicator: resp.ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
+        var reply = [{Type: entryTypes.note, Contents: resp, ContentsFormat: formats.json, HumanReadable: objToMd(resp), EntryContext: ec}];
+        if (resp.loc) {
+            var parts = resp.loc.split(',');
             reply.push({Type: entryTypes.map, Contents: {lat: parseFloat(parts[0]), lng: parseFloat(parts[1])}, ContentsFormat: formats.json});
         }
         return reply;
+    };
+
+    var getInfoForOneIP = function(ip) {
+        var o = sendRequest(base + ip + jsonSuffix, 'GET', true);
+        return formatOutputs(o);
     };
 
     var batch_size = 100;
@@ -74,14 +78,8 @@ script:
                     var res = sendRequest(base + 'batch' + token, 'POST', true, JSON.stringify(batch));
                     for (var property in res) {
                         var ip_info = res[property];
-                        var ec = {IP: {Address: ip_info.ip, Hostname: ip_info.hostname, ASN: ip_info.org, Geo: {
-                            Location: ip_info.loc, Country: ip_info.country, Description: ip_info.city + ', ' + ip_info.region + ', ' + ip_info.postal + ', ' + ip_info.country}}};
-                        ec.DBotScore = {Indicator: property, Type: 'ip', Vendor: 'ipinfo', Score: 0};
-                        reply.push({Type: entryTypes.note, Contents: ip_info, ContentsFormat: formats.json, HumanReadable: objToMd(ip_info), EntryContext: ec});
-                        if (ip_info.loc) {
-                            var parts = ip_info.loc.split(',');
-                            reply.push({Type: entryTypes.map, Contents: {lat: parseFloat(parts[0]), lng: parseFloat(parts[1])}, ContentsFormat: formats.json});
-                        }
+                        var ip_info_entries = formatOutputs(ip_info);
+                        reply = reply.concat(ip_info_entries);
                     i += batch_size;
                     }
                 }
