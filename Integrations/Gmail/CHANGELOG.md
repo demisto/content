@@ -1,5 +1,9 @@
 ## [Unreleased]
+  - Added page-token parameter to ***gmail-list-users*** to get further results.
+  - ***gmail-search-all-mailboxes*** now runs on all users.
 
+## [19.10.1] - 2019-10-15
+-
 
 ## [19.9.1] - 2019-09-18
   - Added 7 commands:
