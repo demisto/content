@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 67ff5b4b-4318-4082-8760-274aa8f9212b
+    taskid: a6c3ede7-6336-4795-8c55-5242486211c0
     type: start
     task:
-      id: 67ff5b4b-4318-4082-8760-274aa8f9212b
+      id: a6c3ede7-6336-4795-8c55-5242486211c0
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: e9b6f208-2712-49cf-8f1a-01e4f1ce0dbb
+    taskid: ce5e9387-550f-4374-86e9-b04e1d2a7545
     type: regular
     task:
-      id: e9b6f208-2712-49cf-8f1a-01e4f1ce0dbb
+      id: ce5e9387-550f-4374-86e9-b04e1d2a7545
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -60,7 +60,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1555,
           "y": 195
         }
       }
@@ -69,10 +69,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 0b4ab07f-07a9-4cad-805b-907eaf4fb988
+    taskid: dcbd8e0f-59f4-4b66-8bca-16de10c03a38
     type: regular
     task:
-      id: 0b4ab07f-07a9-4cad-805b-907eaf4fb988
+      id: dcbd8e0f-59f4-4b66-8bca-16de10c03a38
       version: -1
       name: UnescapeUrl
       scriptName: UnEscapeURLs
@@ -98,10 +98,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: c75e56df-8dd5-4461-84ac-613705dede5d
+    taskid: d5eeb0fc-46da-4538-860e-2b6e7b9a34c4
     type: regular
     task:
-      id: c75e56df-8dd5-4461-84ac-613705dede5d
+      id: d5eeb0fc-46da-4538-860e-2b6e7b9a34c4
       version: -1
       name: UnEscapeUrl
       scriptName: UnEscapeURLs
@@ -127,10 +127,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: fd5b011a-285b-41a1-8223-c156f0916255
+    taskid: a197d385-a224-4ee0-8be8-b25d34f411c9
     type: regular
     task:
-      id: fd5b011a-285b-41a1-8223-c156f0916255
+      id: a197d385-a224-4ee0-8be8-b25d34f411c9
       version: -1
       name: Check Url
       scriptName: VerifyHumanReadableContains
@@ -158,10 +158,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: da181b79-28a9-4118-8b8e-a5f1fb3b6021
+    taskid: b13da75b-a668-4d4b-8939-0a08ea235773
     type: title
     task:
-      id: da181b79-28a9-4118-8b8e-a5f1fb3b6021
+      id: b13da75b-a668-4d4b-8939-0a08ea235773
       version: -1
       name: Done
       type: title
@@ -171,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
+          "x": 1770,
           "y": 720
         }
       }
@@ -180,10 +180,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: ecb547a5-cdc2-43b8-870e-40b6652b23d0
+    taskid: 941d0bb5-77ec-4c2e-8091-687c808166fa
     type: regular
     task:
-      id: ecb547a5-cdc2-43b8-870e-40b6652b23d0
+      id: 941d0bb5-77ec-4c2e-8091-687c808166fa
       version: -1
       name: Check Url
       scriptName: VerifyHumanReadableContains
@@ -211,10 +211,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: fcc4b9cb-49df-4d9a-8db9-3aeea7fcd953
+    taskid: 41c4898a-c7cd-4de9-8169-d66205d9fdf5
     type: regular
     task:
-      id: fcc4b9cb-49df-4d9a-8db9-3aeea7fcd953
+      id: 41c4898a-c7cd-4de9-8169-d66205d9fdf5
       version: -1
       name: UnEscapeURL - ATP Safelink
       scriptName: UnEscapeURLs
@@ -226,7 +226,7 @@ tasks:
       - "12"
     scriptarguments:
       input:
-        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com # disable-secrets-detection
+        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com
     separatecontext: false
     view: |-
       {
@@ -240,10 +240,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 440c4c82-81b0-4ce3-88f9-b90582ae2943
+    taskid: a1b2d7fc-c644-43af-8494-be28aa019973
     type: regular
     task:
-      id: 440c4c82-81b0-4ce3-88f9-b90582ae2943
+      id: a1b2d7fc-c644-43af-8494-be28aa019973
       version: -1
       name: UnEscapeURL - ATP Safelink
       scriptName: UnEscapeURLs
@@ -255,7 +255,7 @@ tasks:
       - "13"
     scriptarguments:
       input:
-        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C # disable-secrets-detection
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C
     separatecontext: false
     view: |-
       {
@@ -269,10 +269,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 07e44c95-5611-4e89-828a-270a37dd4c15
+    taskid: c9ca5797-b091-4e24-8d9f-8bca1cbd75a0
     type: regular
     task:
-      id: 07e44c95-5611-4e89-828a-270a37dd4c15
+      id: c9ca5797-b091-4e24-8d9f-8bca1cbd75a0
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -286,7 +286,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://www.avanan.com # disable-secrets-detection
+        simple: http://www.avanan.com
     separatecontext: false
     view: |-
       {
@@ -300,10 +300,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: c7dd1dcd-4cf1-41e3-8a29-540ffb3d9315
+    taskid: 31f2ab5b-145b-463a-8751-04cf9b4355d0
     type: regular
     task:
-      id: c7dd1dcd-4cf1-41e3-8a29-540ffb3d9315
+      id: 31f2ab5b-145b-463a-8751-04cf9b4355d0
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -331,10 +331,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: e974f51c-554d-4e81-89ea-c6cf7859d4aa
+    taskid: f1fb8001-e42d-41b9-8144-d2b58508b6d4
     type: regular
     task:
-      id: e974f51c-554d-4e81-89ea-c6cf7859d4aa
+      id: f1fb8001-e42d-41b9-8144-d2b58508b6d4
       version: -1
       name: UnEscapeURL
       scriptName: UnEscapeURLs
@@ -360,10 +360,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: a865917e-76e1-4dcc-8786-8f3f6ba3125f
+    taskid: 77f41c5d-5192-4e50-8115-c51456cd8b5e
     type: regular
     task:
-      id: a865917e-76e1-4dcc-8786-8f3f6ba3125f
+      id: 77f41c5d-5192-4e50-8115-c51456cd8b5e
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -391,10 +391,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: f93ecb22-6a20-448f-8ed6-7ff2c889d7df
+    taskid: 01e79183-d7c5-4389-816a-05aeb3267264
     type: regular
     task:
-      id: f93ecb22-6a20-448f-8ed6-7ff2c889d7df
+      id: 01e79183-d7c5-4389-816a-05aeb3267264
       version: -1
       name: UnEscapeURLs an Array of urls
       description: |-
@@ -426,10 +426,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: d3085e18-f36c-4c04-8c86-057ce3520a59
+    taskid: 4f33e48e-1142-4fa8-820b-aabd26b9c3b6
     type: regular
     task:
-      id: d3085e18-f36c-4c04-8c86-057ce3520a59
+      id: 4f33e48e-1142-4fa8-820b-aabd26b9c3b6
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -464,10 +464,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 22fba21b-39cb-4e1f-8604-d7d489846e56
+    taskid: bc08f43f-580a-4641-8546-064f03f71838
     type: regular
     task:
-      id: 22fba21b-39cb-4e1f-8604-d7d489846e56
+      id: bc08f43f-580a-4641-8546-064f03f71838
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -502,10 +502,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 06270b0a-166d-44f1-8fec-200debe2dfb2
+    taskid: 10573170-0e85-40db-8de7-c46fa3377a71
     type: regular
     task:
-      id: 06270b0a-166d-44f1-8fec-200debe2dfb2
+      id: 10573170-0e85-40db-8de7-c46fa3377a71
       version: -1
       name: UnEscapeURL with capitalized 'HTTPS'
       description: |-
@@ -538,10 +538,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 6fc0ec78-e509-472c-8b87-a05c89507d7f
+    taskid: 9a753c1d-ff82-4ce0-8560-699d3adba881
     type: condition
     task:
-      id: 6fc0ec78-e509-472c-8b87-a05c89507d7f
+      id: 9a753c1d-ff82-4ce0-8560-699d3adba881
       version: -1
       name: Verify that the output URL is correct
       description: Check whether the values provided in arguments are equal. If either
@@ -574,12 +574,12 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 70351a89-19b7-4dfe-801b-81e51f112043
+    taskid: 19bd9528-0d70-45fa-8bc1-ecd10cd8afb7
     type: regular
     task:
-      id: 70351a89-19b7-4dfe-801b-81e51f112043
+      id: 19bd9528-0d70-45fa-8bc1-ecd10cd8afb7
       version: -1
-      name: UnEscapeURLs - Proofpoint V3 Link
+      name: UnEscapeURL - backward slash
       description: |-
         Extract URLs redirected by security tools like Proofpoint.
         Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
@@ -593,12 +593,12 @@ tasks:
       - "23"
     scriptarguments:
       input:
-        simple: https://urldefense.com/v3/__http:/www.nintendo.com__;!83Wvu-Cv-B_8k64!-XmeoAPIhKFgj4X-lVVmbQXWouodrfqiYRhDEj7kMbX6Kx_EZpL_Nh1iKyoLTt4QjpI$
+        simple: https:\\example.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -380,
+          "x": 3490,
           "y": 370
         }
       }
@@ -607,12 +607,12 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 1408ef07-5df2-4583-8e12-e71456a9b61a
+    taskid: bc2789f2-244e-4eac-8c70-235da5e655d2
     type: regular
     task:
-      id: 1408ef07-5df2-4583-8e12-e71456a9b61a
+      id: bc2789f2-244e-4eac-8c70-235da5e655d2
       version: -1
-      name: Check URL
+      name: Check Url
       description: Verify given entry contains a string
       scriptName: VerifyHumanReadableContains
       type: regular
@@ -625,12 +625,12 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://www.nintendo.com
+        simple: http://example.com
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -380,
+          "x": 3490,
           "y": 545
         }
       }
@@ -644,7 +644,7 @@ view: |-
       "dimensions": {
         "height": 735,
         "width": 3820,
-        "x": -380,
+        "x": 50,
         "y": 50
       }
     }
