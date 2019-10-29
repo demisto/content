@@ -508,12 +508,12 @@ def edl_compare_command():
     md = ''
     if unique_external:
         md += '### Warning: External file contain values which are not in the internal demisto list.\n'
-        md += '#### Please check who has writing permissions to the external file.\n'
+        md += '#### If these changes are unexpected, Please check who has writing permissions to the external file.\n'
         md += tableToMarkdown('', list(unique_external),
                               headers=[file_path.rsplit('/')[-1]])
     if unique_internal:
         md += '### Warning: Internal list has values which are not in the external file.\n'
-        md += '#### Please check who has writing permissions to the external file.\n'
+        md += '#### If these changes are unexpected, Please check who has writing permissions to the external file.\n'
         md += tableToMarkdown('', list(unique_internal), headers=[list_name])
     if len(md) == 0:
         md = 'Internal list and External file have the same values.'
