@@ -312,8 +312,8 @@ class Client(BaseClient):
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
-    def archive_search(self, query: str = None):
-        """Searches for alerts based on query
+    def archive_search(self, query: str = None) -> Dict:
+        """Searches for events using archive search
 
         Args:
             query: Search query written in mql
@@ -325,11 +325,11 @@ class Client(BaseClient):
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
-    def get_archive_search(self, search_id: Union[int, str] = None):
-        """Searches for alerts based on query
+    def get_archive_search(self, search_id: Union[int, str] = None) -> Dict:
+        """Gets archive search
 
         Args:
-            query: Search query written in mql
+            search_id: Search id
 
         Returns:
             Response from API.
@@ -1544,6 +1544,37 @@ def archive_search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
         return f'{INTEGRATION_NAME} - Failed to create archive search', {}, raw_response
 
 
+def archive_search_status_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Fetches the status of an archive search
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    search_ids = argToList(args.get('search_id'))
+    raw_res_lst = []
+    context_entry = []
+    for s_id in search_ids:
+        raw_res = client.get_archive_search(s_id)
+        if raw_res:
+            data = raw_res.get('data')
+            if isinstance(data, list):
+                context_entry.append(build_transformed_dict(data[0], ARCHIVE_SEARCH_TRANS))
+            raw_res_lst.append(raw_res)
+    if raw_res_lst:
+        title = f'{INTEGRATION_NAME} - Search status'
+        human_readable = tableToMarkdown(title, context_entry, headerTransform=pascalToSpace)
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}Search(val.ID === obj.ID)': context_entry
+        }
+        return human_readable, context, raw_res_lst  # type: ignore
+    else:
+        return f'{INTEGRATION_NAME} - Failed to get archive search details', {}, {}
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1589,8 +1620,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,
-        f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,  # todo: not tested properly
-        # f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,
+        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,
         # f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,  # todo: not tested properly
     }
     try:

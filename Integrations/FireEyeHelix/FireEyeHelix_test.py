@@ -2,7 +2,7 @@ import pytest
 from FireEyeHelix import Client, build_search_groupby_result, list_alerts_command, get_alert_by_id_command, \
     get_alert_notes_command, create_alert_note_command, get_events_by_alert_command, get_endpoints_by_alert_command, \
     get_cases_by_alert_command, add_list_item_command, get_list_items_command, update_list_item_command, \
-    list_rules_command, edit_rule_command, search_command, archive_search_command
+    list_rules_command, edit_rule_command, search_command, archive_search_command, archive_search_status_command
 from test_data.response_constants import ALERT_RESP, ALERTS_RESP, SEARCH_AGGREGATIONS_SINGLE_RESP, \
     SEARCH_AGGREGATIONS_MULTI_RESP, NOTES_GET_RESP, NOTES_CREATE_RESP, EVENTS_BY_ALERT_RESP, ENDPOINTS_BY_ALERT_RESP, \
     CASES_BY_ALERT_RESP, LIST_ITEMS_RESP, LIST_SINGLE_ITEM_RESP, RULE_RESP, SEARCH_MULTI_RESP, SEARCH_ARCHIVE_RESP
@@ -10,7 +10,7 @@ from test_data.result_constants import EXPECTED_AGGREGATIONS_MULTI_RSLT, EXPECTE
     EXPECTED_ALERT_RSLT, EXPECTED_ALERTS_RSLT, EXPECTED_NOTES_GET_RSLT, EXPECTED_NOTES_CREATE_RSLT, \
     EXPECTED_EVENTS_BY_ALERT_RSLT, EXPECTED_ENDPOINTS_BY_ALERT_RSLT, EXPECTED_CASES_NY_ALERT_RSLT, \
     EXPECTED_SINGLE_LIST_ITEM_RSLT, EXPECTED_LIST_ITEMS_RSLT, EXPECTED_LIST_ITEMS_UPDATE_RSLT, EXPECTED_RULES_RSLT, \
-    EXPECTED_SEARCH_RSLT, EXPECTED_SEARCH_ARCHIVE_RSLT
+    EXPECTED_SEARCH_RSLT, EXPECTED_SEARCH_ARCHIVE_RSLT, EXPECTED_SEARCH_ARCHIVE_STATUS_RSLT
 
 
 def test_build_search_groupby_result():
@@ -41,7 +41,8 @@ def test_build_search_groupby_result():
      {'query': 'domain:google.com', 'start': '4 days ago', 'groupby': 'subject', 'limit': 1, 'page_size': 2,
       'offset': 1}, SEARCH_MULTI_RESP, EXPECTED_SEARCH_RSLT),
     (archive_search_command, {'query': 'domain:google.com', 'start': '4 days ago', 'groupby': 'subject', 'limit': 1,
-      'offset': 1}, SEARCH_ARCHIVE_RESP, EXPECTED_SEARCH_ARCHIVE_RSLT)
+                              'offset': 1}, SEARCH_ARCHIVE_RESP, EXPECTED_SEARCH_ARCHIVE_RSLT),
+    (archive_search_status_command, {'search_id': '82,83'}, SEARCH_ARCHIVE_RESP, EXPECTED_SEARCH_ARCHIVE_STATUS_RSLT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     headers = {

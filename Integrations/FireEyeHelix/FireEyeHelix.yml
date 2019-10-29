@@ -2128,6 +2128,30 @@ script:
     - contextPath: FireEyeHelixSearch.State
       description: State of the search.
       type: String
+  - arguments:
+    - default: true
+      description: Archive search ID.
+      isArray: true
+      name: search_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates an archive search using query.
+    execution: false
+    name: fireeye-helix-archive-search-get-status
+    outputs:
+    - contextPath: FireEyeHelixSearch.ID
+      description: ID of an archive search.
+      type: Number
+    - contextPath: FireEyeHelixSearch.PercentComplete
+      description: Percentage of the search that was completed.
+      type: String
+    - contextPath: FireEyeHelixSearch.Query
+      description: Query of the search.
+      type: String
+    - contextPath: FireEyeHelixSearch.State
+      description: State of the search.
+      type: String
   dockerimage: demisto/python3:3.7.4.2245
   isfetch: true
   longRunning: false
