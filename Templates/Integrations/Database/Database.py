@@ -16,7 +16,7 @@ Attributes:
         Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
 
     INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
+        Command names should be written ina all lower-case letters,
         and each word separated with a hyphen, for example: msgraph-user.
 
     INTEGRATION_CONTEXT_NAME:
