@@ -79,4 +79,4 @@ Example of a Playbook Image - https://user-images.githubusercontent.com/7270217/
 
 ***
 
-[Next step - Documentation](https://github.com/demisto/etc/wiki/Creating-an-Integration-in-Demisto-%5BDocumentation%5D)
+[Next step - Documentation](https://github.com/demisto/content/tree/master/docs/integration_documentation)
