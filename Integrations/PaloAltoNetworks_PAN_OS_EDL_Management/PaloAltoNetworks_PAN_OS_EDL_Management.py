@@ -263,6 +263,8 @@ def edl_update_internal_list_command():
     """
     list_name = demisto.args().get('list_name')
     list_items = argToList(demisto.args().get('list_items'))
+    if demisto.args().get('add_or_remove') not in ['add', 'remove']:
+        return_error('add_or_remove argument is not \'add\' neither \'remove\'.')
     add = demisto.args().get('add_or_remove') == 'add'
     verbose = demisto.args().get('verbose') == 'true'
 
@@ -279,6 +281,8 @@ def edl_update():
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
     list_name = demisto.args().get('list_name')
     list_items = argToList(demisto.args().get('list_items'))
+    if demisto.args().get('add_or_remove') not in ['add', 'remove']:
+        return_error('add_or_remove argument is not \'add\' neither \'remove\'.')
     add = demisto.args().get('add_or_remove') == 'add'
     verbose = demisto.args().get('verbose') == 'true'
 
