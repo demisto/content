@@ -33,6 +33,18 @@ configuration:
   name: fetch_time
   required: false
   type: 0
+- display: Name of table to fetch incidents from.
+  name: table_name
+  required: false
+  type: 0
+- display: Name of the column which contains date of incident.
+  name: date_name
+  required: false
+  type: 0
+- display: 'Columns the select. order must be in order: ID, Date, Name, Urgency.'
+  name: columns
+  required: false
+  type: 0
 description: Integration Template
 display: Database
 name: Database

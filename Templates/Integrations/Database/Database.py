@@ -96,21 +96,14 @@ def main():
     params = demisto.params()
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
-    host = params.get('host')
-    # Remove trailing slash to prevent wrong URL path to service
-    port = params.get('port')
-    server = urljoin(params.get('url') + port, '/api/v2.0/')
-
+    server = urljoin(params.get('url'), '/api/v2.0/')
     # Should we use SSL
     use_ssl = not params.get('insecure') == 'true'
     use_proxy = params.get('proxy') == 'true'
-    # Service base URL
     # Headers to be sent in requests
     headers = {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
-        'Host': host
-
     }
     client = Client(server, use_ssl, use_proxy, headers=headers, auth=(username, password))
     # Commands switch case
