@@ -527,7 +527,7 @@ script:
     - contextPath: AutoFocus.Tag.TagGroup
       description: The tag group of the tag.
       type: String
-    - contextPath: AutoFocus.Tag.TagGroup
+    - contextPath: AutoFocus.Tag.Description
       description: Tag description.
       type: String
   - arguments:
