@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
   - Added page-token parameter to ***gmail-list-users*** to get further results.
   - ***gmail-search-all-mailboxes*** now runs on all users.
   - Fixed an issue where emails without labels were not retrieved.

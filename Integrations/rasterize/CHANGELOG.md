@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
   - Added the ___rasterize-pdf___ command, which converts a PDF file to an image file.
   - ___rasterize-email___ now available in offline mode. 
   - Added the _wait_time_ - parameter to the ___rasterize___ command and to the instance configuration, which sets the time to wait before taking a screenshot.
