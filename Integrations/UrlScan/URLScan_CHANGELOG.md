@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Fix parsing of content no longer returned by the API.
+  - Fixed breaking change in the API.
   - Support batches.
 
 ## [19.9.1] - 2019-09-18
