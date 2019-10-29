@@ -38,7 +38,7 @@ tasks:
     task:
       id: be00a185-8d20-4e46-8012-4ae44b3687fc
       version: -1
-      name: ExtraHop Track Incident
+      name: Track the incident status in ExtraHop Reveal(x)
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
         uses the ExtraHop ticket tracking functionality to properly display ticket
         status within ExtraHop.
@@ -112,7 +112,7 @@ tasks:
     task:
       id: 6f9852cc-7a6e-4d2f-8bef-86fb205e5408
       version: -1
-      name: Update Detection Ticketed Status
+      name: Mark the incident as tracked
       description: Update the incident to reflect the Detection Ticketed status.
       script: Builtin|||setIncident
       type: regular
@@ -250,7 +250,7 @@ tasks:
     task:
       id: 8185a734-72c0-4461-83d4-774c4cc8652a
       version: -1
-      name: Search Untracked Incidents
+      name: Search for any untracked ExtraHop Detections
       description: Searches Demisto incidents for any ExtraHop Detections that are
         untracked.
       scriptName: SearchIncidents
@@ -300,7 +300,7 @@ tasks:
     task:
       id: 75eb04ec-c770-4120-8d70-56513ce2201b
       version: -1
-      name: Update Detection Ticketed Status
+      name: Mark the incident as tracked
       description: Update the incident to reflect the Detection Ticketed status.
       script: Builtin|||setIncident
       type: regular
@@ -438,7 +438,7 @@ tasks:
     task:
       id: 50b89e52-0733-477b-8929-8b595f704ca4
       version: -1
-      name: ExtraHop Track Incident
+      name: Track the incident status in ExtraHop Reveal(x)
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This
         uses the ExtraHop ticket tracking functionality to properly display ticket
         status within ExtraHop.
@@ -479,7 +479,7 @@ tasks:
     task:
       id: 40271f8c-840d-4e71-86c5-57a28bc24aea
       version: -1
-      name: Required Fields Present?
+      name: Are the required fields present?
       description: Checks if the required detection and incident IDs are present.
       type: condition
       iscommand: false
@@ -520,7 +520,7 @@ tasks:
     task:
       id: 76071ff8-9c4d-494d-8b73-aa4368199fb5
       version: -1
-      name: Found Results?
+      name: Were there any incidents found?
       description: Checks if there were any untracked ExtraHop Detections found.
       type: condition
       iscommand: false
@@ -556,7 +556,7 @@ tasks:
     task:
       id: e553a569-662c-460e-87f0-f69efaf2901a
       version: -1
-      name: Ticket Tracked?
+      name: Was the incident successfully tracked?
       description: Check if the ticket tracking was successful.
       type: condition
       iscommand: false
@@ -592,7 +592,7 @@ tasks:
     task:
       id: 624c3b07-31d8-45ca-8f6f-332974515fef
       version: -1
-      name: Ticket Tracked?
+      name: Was the incident successfully tracked?
       description: Check if the ticket tracking was successful.
       type: condition
       iscommand: false
@@ -628,7 +628,7 @@ tasks:
     task:
       id: 1619242b-d813-4dfb-8801-cd45a61906f3
       version: -1
-      name: Assign ExtraHop Analyst
+      name: Assign an ExtraHop analyst to the incident
       description: Assign an analyst randomly from the pool of users with the ExtraHop
         role.
       scriptName: AssignAnalystToIncident
