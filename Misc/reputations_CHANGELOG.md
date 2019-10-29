@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Support for prefixed with 'http:' and 'http:\\' URLs and Domains.
 
 ## [19.10.1] - 2019-10-15
 The regex now recognizes URL query syntax.
