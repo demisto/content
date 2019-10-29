@@ -63,7 +63,7 @@ tasks:
     task:
       id: 416da4b1-f8f7-4845-82c0-cb389d224631
       version: -1
-      name: ExtraHop Get Peers
+      name: Search for peer devices in ExtraHop Reveal(x)
       description: Get the list of all of the peers that communicated with the given
         host in the specified time range.
       script: '|||extrahop-get-peers'
@@ -126,7 +126,7 @@ tasks:
     task:
       id: 62105272-7fd7-4799-87e8-e41c0ade44c8
       version: -1
-      name: ExtraHop Device Search
+      name: Search for device in ExtraHop Reveal(x)
       description: Search for the device within ExtraHop using the provided name,
         IP address, and MAC address.
       script: '|||extrahop-device-search'
@@ -223,7 +223,7 @@ tasks:
     task:
       id: 281c54f6-e598-4b2a-8eda-cb0291c125e2
       version: -1
-      name: Found Device?
+      name: Was a device found?
       description: Check if a device was found.
       type: condition
       iscommand: false
@@ -314,7 +314,7 @@ tasks:
     task:
       id: bd13a6e0-af76-4c8a-8940-9acbe86c4926
       version: -1
-      name: ExtraHop Get Activity Map
+      name: Get a link to a live activity map in ExtraHop Reveal(x)
       description: Get a link to a live activity map for the given device in the specified
         time range.
       script: '|||extrahop-get-activity-map'
