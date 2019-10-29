@@ -4,7 +4,6 @@ from CommonServerPython import *
 import requests
 import base64
 import os
-import binascii
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import ast
 from datetime import datetime
@@ -951,7 +950,7 @@ def list_ipp_command(args):
                     ]
                 )
             else:
-                label_names, information_type_names = None, None
+                label_names, information_type_names = '', ''
             outputs.append(
                 {
                     "Name": policy.get("name"),
