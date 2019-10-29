@@ -638,8 +638,8 @@ inputs:
 - key: EmailAddress
   value:
     complex:
-      root: Email
-      accessor: Address
+      root: Account
+      accessor: Email.Address
       transformers:
       - operator: uniq
   required: false
@@ -649,21 +649,11 @@ inputs:
   required: false
   description: Name Server IP address to try and pivot on.
 - key: SSLHash
-  value:
-    complex:
-      root: File
-      accessor: SHA256
-      transformers:
-      - operator: uniq
+  value: {}
   required: false
   description: SSL Hash to try and pivot on.
 - key: NameServerHostName
-  value:
-    complex:
-      root: Domain
-      accessor: NameServers
-      transformers:
-      - operator: uniq
+  value: {}
   required: false
   description: Name Server Host Name to try and pivot on.
 - key: MailServerHostName
@@ -671,33 +661,27 @@ inputs:
   required: false
   description: Mail Server Host Name to try and pivot on.
 - key: IPAddressCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that IP address.
 - key: EmailAddressCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that Email address.
 - key: NameServerIPAddressCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that Name Server IP address.
 - key: SSLHashCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that SSL Hash.
 - key: NameServerHostNameCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that Name Server Host Name.
 - key: MailServerHostNameCount
-  value:
-    simple: "501"
+  value: {}
   required: false
   description: Number of matches for that Mail Server Host Name.
 - key: PivotThreshold
