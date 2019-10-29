@@ -20,7 +20,7 @@ def test_extract_domain(input, domain):
 
 @pytest.mark.parametrize('input,url', [
                         ('http:example.com', 'http://example.com'),
-                        ('http:\\\\example.com', 'http://example.com')
+                        ('http:\\\\example.com', 'http://example.com'),
                         ])
 def test_unescaped_url(input, url):
     unescaped_urls = unescape_url(input)
