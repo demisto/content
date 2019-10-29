@@ -93,9 +93,9 @@ def is_correct_content_installed(ips, content_version, username, password):
         #                                     content_type='application/json', body=body)
         # client.get_all_reports()
         try:
-            resp_json = demisto_client.generic_request_func(self=client, path='/content/installed/',
+            resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
-            resp_json = ast.literal_eval(resp_json[0])
+            resp_json = ast.literal_eval(resp[0])
             resp_json = json.dumps(resp_json)
 
             if not isinstance(resp_json, dict):
