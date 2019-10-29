@@ -73,21 +73,26 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
 
 def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
     query = args.get('query', '')
+    columns = argToList(args.get('columns', ''))
+    limit = int(args.get('limit')) if args.get('limit') else None
     raw_response = client.query(query)
     context = list()
     if raw_response:
-        for row in raw_response:
-            context.append({
-                "ID": row[0],
-                "Timestamp": row[1],
-                "Name": row[2],
-                "Urgency": row[3]
-            })
+        if limit and limit < len(raw_response):
+            raw_response = raw_response[:limit]
+        if columns:
+            for row in raw_response:
+                context_entry = dict()
+                for i in range(len(columns)):
+                    context_entry[columns[i]] = row[i]
+                context.append(context_entry)
+        else:
+            context = raw_response
         readable_output = tableToMarkdown(
             f"Results from {INTEGRATION_NAME}",
             context,
         )
-        context = {"Database(var.ID === obj.ID": context}  # type: ignore
+        context = {"Database": {"Result": context}}  # type: ignore
         return readable_output, context, raw_response  # type: ignore
     return f"{INTEGRATION_NAME} - Found no results for given query.", {}, raw_response  # type: ignore
 

@@ -53,45 +53,34 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
+      description: SQL query to perform.
       isArray: true
-      name: item_ids
+      name: query
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
+    - default: false
+      description: Title of each column. if provided, will add a dict to context
       isArray: false
-      name: is_active
+      name: columns
       predefined:
-      - 'true'
-      - 'false'
+      - ''
       required: false
       secret: false
     - default: false
       defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
+      description: limit number of returned results, to avoid flooding context.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Get items from service.
+    description: Send query to DB
     execution: false
-    name: example-get-items
+    name: database--query
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
-      type: number
-    - contextPath: Example.Item.Name
-      description: Item name
-      type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+    - contextPath: Database.Result
+      description: Results from query, in a list
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
