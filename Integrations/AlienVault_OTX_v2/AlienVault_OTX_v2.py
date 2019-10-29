@@ -374,11 +374,14 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
         title = f'{INTEGRATION_NAME} - Results for Hostname query'
         context: dict = {
             'Endpoint': {
-                'Hostname': raw_response.get('indicator'),
-                'AlienVaultOTX': {
-                    'Alexa': raw_response.get('alexa'),
-                    'Whois': raw_response.get('whois')
-                }
+                'Hostname': raw_response.get('indicator')
+            },
+            'AlienVaultOTX': {
+                'Endpint': {
+                    'Hostname': raw_response.get('indicator')
+                },
+                'Alexa': raw_response.get('alexa'),
+                'Whois': raw_response.get('whois')
             },
             'DBotScore': {
                 'Indicator': raw_response.get('indicator'),
