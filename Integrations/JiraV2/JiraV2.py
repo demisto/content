@@ -526,8 +526,7 @@ def issue_upload_command(issue_id, upload):
 
 def upload_file(entry_id, issue_id):
     headers = {
-        'X-Atlassian-Token': 'no-check',
-        'Content-Type': 'application/json;charset=UTF-8'
+        'X-Atlassian-Token': 'no-check'
     }
     res = requests.post(
         url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
