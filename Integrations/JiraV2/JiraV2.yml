@@ -27,6 +27,11 @@ configuration:
   defaultvalue: OauthKey
   type: 0
   required: false
+- display: TokenSecret
+  name: tokenSecret
+  defaultvalue: ""
+  type: 0
+  required: false
 - display: AccessToken
   name: accessToken
   defaultvalue: ""
@@ -298,7 +303,7 @@ script:
       description: The ID offset.
       type: string
     description: Returns the ID offset, for example, the first issue ID.
-  dockerimage: demisto/python3:3.7.2.200
+  dockerimage: demisto/oauthlib:1.0.0.2609
   isfetch: true
   runonce: false
 tests:
