@@ -1,10 +1,11 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 import zipfile
-import os
 from os.path import isfile
 import pyminizip
+import shutil
 
 try:  # in order to support compression of the file
     compression = zipfile.ZIP_DEFLATED
@@ -57,7 +58,7 @@ if not isfile(filePath):  # in case that the user will send a directory
     sys.exit(0)
 
 # copying the file to current location
-os.system('cp ' + filePath + ' ' + fileCurrentName)
+shutil.copy(filePath, fileCurrentName)
 # zipping the file
 if password:
     pyminizip.compress(fileCurrentName, zipName, password, 5)
