@@ -24,7 +24,7 @@ configuration:
 - display: Default subscription ID to use
   name: default_sub_id
   required: false
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
