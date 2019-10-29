@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added the ***panorama-security-policy-match*** command.
 
 ## [19.9.1] - 2019-09-18
 - Added the *tag* argument to several commands.

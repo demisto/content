@@ -309,7 +309,7 @@ tasks:
       version: -1
       name: Multiple url submission(rate limit test)
       description: Submit a url to scan
-      script: '|||url'
+      script: 'urlscan.io|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -348,7 +348,7 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: '|||url'
+      script: 'urlscan.io|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -387,7 +387,7 @@ tasks:
       version: -1
       name: url
       description: Submit a url to scan
-      script: '|||url'
+      script: 'urlscan.io|||url'
       type: regular
       iscommand: true
       brand: urlscan.io
@@ -426,7 +426,7 @@ tasks:
       version: -1
       name: Check another Malicious url
       description: Submit a url to scan
-      script: '|||url'
+      script: 'urlscan.io|||url'
       type: regular
       iscommand: true
       brand: urlscan.io

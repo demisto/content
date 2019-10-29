@@ -12,6 +12,7 @@ import tempfile
 from io import BytesIO
 import sys
 import base64
+import time
 
 PROXY = demisto.getParam('proxy')
 
@@ -20,6 +21,7 @@ if PROXY:
     HTTPS_PROXY = os.environ.get('https_proxy')
 
 WITH_ERRORS = demisto.params().get('with_error', True)
+DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
 DEFAULT_STDOUT = sys.stdout
 
 URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for one of several reasons. " \
@@ -66,7 +68,7 @@ def init_driver(offline_mode=False):
     return driver
 
 
-def rasterize(path: str, width: int, height: int, r_type='png', offline_mode=False):
+def rasterize(path: str, width: int, height: int, r_type: str = 'png', wait_time: int = 0, offline_mode: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -74,6 +76,7 @@ def rasterize(path: str, width: int, height: int, r_type='png', offline_mode=Fal
     :param width: desired snapshot width in pixels
     :param height: desired snapshot height in pixels
     :param r_type: result type: .png/.pdf
+    :param wait_time: time in seconds to wait before taking a screenshot
     """
     driver = init_driver(offline_mode)
 
@@ -82,6 +85,9 @@ def rasterize(path: str, width: int, height: int, r_type='png', offline_mode=Fal
 
         driver.get(path)
         driver.implicitly_wait(5)
+        if wait_time > 0 or DEFAULT_WAIT_TIME > 0:
+            time.sleep(wait_time or DEFAULT_WAIT_TIME)
+
         check_response(driver)
 
         demisto.debug('Navigating to path - COMPLETED')
@@ -192,6 +198,7 @@ def rasterize_command():
     w = demisto.args().get('width', DEFAULT_W)
     h = demisto.args().get('height', DEFAULT_H)
     r_type = demisto.args().get('type', 'png')
+    wait_time = int(demisto.args().get('wait_time', 0))
 
     if not (url.startswith('http')):
         url = f'http://{url}'
@@ -201,7 +208,7 @@ def rasterize_command():
         proxy_flag = f"--proxy={HTTPS_PROXY if url.startswith('https') else HTTP_PROXY}"  # type: ignore
     demisto.debug('rasterize proxy settings: ' + proxy_flag)
 
-    output = rasterize(path=url, r_type=r_type, width=w, height=h)
+    output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time)
     res = fileResult(filename=filename, data=output)
     if r_type == 'png':
         res['Type'] = entryTypes['image']
