@@ -95,13 +95,22 @@ def is_correct_content_installed(ips, content_version, username, password):
         try:
             resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
+            print("This is the raw response\n\n\n")
+            print(resp)
             resp_json = ast.literal_eval(resp[0])
+            print("This is the response with literals stripped\n\n\n")
+            print(resp_json)
             resp_json = json.dumps(resp_json)
+            print("This is the response dumped as JSON\n\n\n")
+            print(resp_json)
+            print("\n\n\nOBJECT TYPE: "+type(resp_json))
+
 
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
+            print("Release is: "+str(release))
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
