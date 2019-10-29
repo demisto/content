@@ -280,14 +280,14 @@ script:
     - name: host_id
       required: true
       default: true
-      description: The id of the required host
+      description: The id of the required host (Can get from vectra-get-hosts)
     description: Get host by id
   - name: vectra-get-detection-by-id
     arguments:
     - name: detection_id
       required: true
       default: true
-      description: The id of the required detection
+      description: The id of the required detection (Can get from vectra-get-detections)
     description: Get detections by detetction id
   - name: vectra-get-users
     description: Retrieves the current list of Users

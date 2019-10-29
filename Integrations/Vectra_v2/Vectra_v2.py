@@ -23,20 +23,20 @@ def create_incident_from_detection(detection: dict):
         labels.append({'type': key, 'value': json.dumps(value)})
 
         return {
-            "name": f'{detection.get("id")} {detection.get("type_vname")}',
+            "name": f'Detection from Vectra with ID: {detection.get("id")}',
             "labels": labels,
             "rawJSON": json.dumps(detection)
         }
 
 
 class Client:
-    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxies: dict, fetch_size: int, t_score_gte: int,
+    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxy: dict, fetch_size: int, t_score_gte: int,
                  c_score_gte: int, state: str):
         """
         :param vectra_url: IP or hostname of Vectra brain (ex https://www.example.com) - required
         :param api_token: API token for authentication when using API v2*
         :param verify: Boolean, controls whether we verify the server's TLS certificate
-        :param proxies: Dictionary mapping protocol to the URL of the proxy.
+        :param proxy: Dictionary mapping protocol to the URL of the proxy.
         :param fetch_size: Max number of incidents to fetch in each cycle
         :param c_score_gte: Fetch only Detections with greater/equal Certainty score
         :param t_score_gte: Fetch only Detections with greater/equal Threat score
@@ -49,7 +49,7 @@ class Client:
         self.headers = {'Authorization': f'Token {api_token}'}
         self.base_url = vectra_url + '/api/v2.1/'
         self.verify = verify
-        self.proxies = proxies
+        self.proxies = proxy
 
     def http_request(self, method='GET', url_suffix='', params=None, data=None) -> Dict:
         """
@@ -72,8 +72,15 @@ class Client:
                 verify=self.verify,
                 proxies=self.proxies,
             )
+        except requests.exceptions.ConnectTimeout:
+            raise Exception('Connection Timeout Error - potential reasons might be that the Server URL parameter is'
+                            ' incorrect or that the Server is not accessible from your host.')
+
+        except requests.exceptions.SSLError:
+            raise Exception('SSL Certificate Verification Failed \nTry selecting \'Trust any certificate\'')
+
         except requests.exceptions.ConnectionError:
-            return_error(f'Failed to connect to - {self.base_url} \nPlease check the URL')
+            raise Exception(f'Failed to connect to - {self.base_url} \nPlease check the URL')
 
         if not res.ok:
             raise ValueError(f'Error in API call to Vectra [{res.status_code:d}]. Reason: {res.text}')
@@ -175,7 +182,12 @@ def get_detections_command(client: Client, **kwargs):
 
     headers = ['id', 'category', 'src_ip', 'threat', 'certainty', 'state', 'first_timestamp', 'tags',
                'targets_key_asset', 'type_vname']
-    readable_output = tableToMarkdown(name='Detection table', t=dets, headers=headers)
+    pages = -(-count // len(res)) if count > 0 else 0
+    readable_output = tableToMarkdown(
+        name=f'Detection table (Showing Page {kwargs.get("page", 1)} out of {pages})',
+        t=dets,
+        headers=headers
+    )
 
     if 'detection_id' in kwargs:
         if 'summary' in dets[0]:  # type: ignore
@@ -254,7 +266,12 @@ def get_hosts_command(client: Client, **kwargs):
 
     headers = ['id', 'name', 'state', 'threat', 'certainty', 'last_source', 'url', 'assigned_to', 'owner_name',
                'first_timestamp', 'tags', 'note']
-    readable_output = tableToMarkdown(name='Hosts table', t=hosts, headers=headers)
+    pages = -(-count // len(res)) if count > 0 else 0
+    readable_output = tableToMarkdown(
+        name=f'Hosts table (Showing Page {kwargs.get("page", 1)} out of {pages})',
+        t=hosts,
+        headers=headers
+    )
 
     context = []
     for host in hosts:
@@ -298,7 +315,12 @@ def get_users_command(client: Client, **kwargs):
     users: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
     headers = ['id', 'last_login', 'username', 'email', 'account_type', 'authentication_profile', 'role']
-    readable_output = tableToMarkdown(name='Users table', t=users, headers=headers)
+    pages = -(-count // len(res)) if count > 0 else 0
+    readable_output = tableToMarkdown(
+        name=f'Users table (Showing Page {kwargs.get("page", 1)} out of {pages})',
+        t=users,
+        headers=headers
+    )
 
     context = []
     for user in users:
@@ -535,7 +557,7 @@ def main():
             vectra_url=server_url,
             verify=verify_certificate,
             api_token=api_token,
-            proxies=proxies,
+            proxy=proxies,
             fetch_size=max(0, min(fetch_size, MAX_FETCH_SIZE)),
             c_score_gte=c_score_gte,
             t_score_gte=t_score_gte,
@@ -592,3 +614,11 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
+
+# todo: HOST? DBOT? ask michal
+# todo: list options for state
+# todo: more outputs arseny (all)
+# todo: add last date param for fetch
+# todo: ip whitelist for office ip
+# todo: add json to readme fetch!
+# todo: api token - from where to get?
