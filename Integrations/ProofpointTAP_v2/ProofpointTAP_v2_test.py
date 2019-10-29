@@ -494,7 +494,7 @@ class TestGetForensics:
         'reports': REPORT_OBJECT * 2,
     }
 
-    EXPECTED_OUTPUT_REPORT = {
+    FORENSICS_REPORT = {
         "Scope": "string",
         "Type": "string",
         "ID": "string",
@@ -725,4 +725,4 @@ class TestGetForensics:
         assert len(reports) == 2
         report = reports[0]
         assert all(report)
-        assert self.EXPECTED_OUTPUT_REPORT == report
+        assert self.FORENSICS_REPORT == report

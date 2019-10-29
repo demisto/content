@@ -58,18 +58,18 @@ def get_fetch_times(last_fetch):
 
 class Client:
     def __init__(self, proofpoint_url, api_version, verify, service_principal, secret, proxies):
-        self.base_url = urljoin(proofpoint_url, api_version)
-        self.base_url_no_api_version = proofpoint_url
+        self.base_url = proofpoint_url
+        self.api_version = api_version
         self.verify = verify
         self.service_principal = service_principal
         self.secret = secret
         self.proxies = proxies
 
-    def http_request(self, method, url_suffix, params=None, data=None, include_version=None):
-        if include_version:
-            full_url = urljoin(self.base_url_no_api_version, include_version)
+    def http_request(self, method, url_suffix, params=None, data=None, forensics_api=False):
+        if forensics_api:
+            full_url = urljoin(self.base_url, '/v2/forensics')
         else:
-            full_url = urljoin(self.base_url, url_suffix)
+            full_url = urljoin(urljoin(self.base_url, self.api_version), url_suffix)
 
         res = requests.request(
             method,
@@ -130,7 +130,7 @@ class Client:
             threatId=threat_id,
             campaingId=campaign_id,
             includeCampaignForensics=include_campaign_forensics)
-        return self.http_request('GET', None, params=params, include_version='v2/forensics')
+        return self.http_request('GET', None, params=params, forensics_api=True)
 
 
 def test_module(client, first_fetch_time, event_type_filter):
