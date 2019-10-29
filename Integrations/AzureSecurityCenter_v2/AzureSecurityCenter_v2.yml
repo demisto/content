@@ -384,4 +384,4 @@ script:
   script: '-'
   type: python
 tests:
-- No tests
+- Azure SecurityCenter Test
