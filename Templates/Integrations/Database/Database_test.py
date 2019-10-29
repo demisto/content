@@ -25,7 +25,8 @@ test_inputs_query = [
 
 test_inputs_fetch_incidents = [
     (
-    response_mock, {'last_run': '2010-01-01T00:00:00Z'}, '3 days', 'incidents', '*', 'DATE', 3, '2012-01-01T00:00:00Z'),
+        response_mock, {'last_run': '2010-01-01T00:00:00Z'}, '3 days', 'incidents', '*', 'DATE', 3,
+        '2012-01-01T00:00:00Z'),
     ([], {'last_run': '2010-01-01T00:00:00Z'}, '3 days', 'incidents', '*', 'DATE', 0, '2010-01-01T00:00:00Z')
 ]
 

@@ -28,6 +28,8 @@ INTEGRATION_COMMAND_NAME = 'database'
 # No dividers
 INTEGRATION_CONTEXT_NAME = 'Database'
 
+ROWS_LIMIT = 50
+
 
 class Client(BaseClient):
     def query(self, query_string: str) -> Union[Dict, list]:
@@ -35,10 +37,12 @@ class Client(BaseClient):
 
         Args:
             query_string: query to send
+            limit: limit number of rows
 
         Returns:
              List of lines from DB
         """
+
         params = {'query': query_string}
         return self._http_request('POST', url_suffix='', params=params)
 
@@ -74,20 +78,20 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
 def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
     query = args.get('query', '')
     columns = argToList(args.get('columns', ''))
-    limit = int(args.get('limit')) if args.get('limit') else None
+    limit = args.get('limit') if args.get('limit') else ROWS_LIMIT  # type: ignore
+    if 'limit' not in query.lower():
+        query += f'LIMIT {limit}'
     raw_response = client.query(query)
-    context = list()
     if raw_response:
-        if limit and limit < len(raw_response):
-            raw_response = raw_response[:limit]
         if columns:
+            context = list()
             for row in raw_response:
                 context_entry = dict()
                 for i in range(len(columns)):
                     context_entry[columns[i]] = row[i]
                 context.append(context_entry)
         else:
-            context = raw_response
+            context = raw_response  # type: ignore
         readable_output = tableToMarkdown(
             f"Results from {INTEGRATION_NAME}",
             context,
