@@ -577,7 +577,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def edit_rule(self, rule_id: Optional[Any], enabled: Union[str, bool]) -> Dict:
+    def edit_rule(self, rule_id: Optional[Any], enabled: Union[str, bool] = None) -> Dict:
         """Edit a single rule using PATCH request
 
         Args:
@@ -588,7 +588,7 @@ class Client(BaseClient):
             Response from API
         """
         suffix = f'/api/v1/rules/{rule_id}'
-        body = assign_params(enabled=enabled and enabled != 'false')
+        body = assign_params(enabled=enabled != 'false' if enabled else None)
         return self._http_request('PATCH', suffix, json_data=body)
 
     def add_list_item(self, list_id: Union[str, int], type: str, value: str, risk: str = None,
@@ -1435,7 +1435,8 @@ def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry,
+                                         ['ID', 'Type', 'Description', 'Risk', 'Confidence', 'Severity'])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -1500,9 +1501,11 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
         f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
-        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,  # todo: not tested properly
         # f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,  # todo: not tested properly
+        # f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,  # todo: not tested properly
+        # f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,  # todo: not tested properly
     }
     try:
         if command == 'fetch-incidents':

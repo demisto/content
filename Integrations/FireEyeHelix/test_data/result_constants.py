@@ -291,6 +291,34 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
     "FireEyeHelix.Event(val.Count).Count": 10
 }
 
+EXPECTED_RULES_RSLT = {
+    "FireEyeHelix.Rule(val.ID && val.ID === obj.ID)": [
+        {
+            "ID": "1.1.1",
+            "RulePack": "1.1.1",
+            "Description": "demisto",
+            "Internal": True,
+            "Deleted": False,
+            "Enabled": True,
+            "Supported": False,
+            "CreatorID": "demisto",
+            "CreatorName": "Demisto",
+            "UpdatedByID": "demisto",
+            "UpdatedByName": "Demisto",
+            "Risk": "Medium",
+            "Confidence": "Medium",
+            "Severity": "Medium",
+            "Tags": [
+                "demisto",
+                "malware",
+                "http",
+                "md-info"
+            ],
+            "Type": "alert"
+        }
+    ]
+}
+
 EXPECTED_SINGLE_LIST_ITEM_RSLT = {
     "FireEyeHelixList(val.ID && val.ID === 3232).Item": {
         "ID": 163,

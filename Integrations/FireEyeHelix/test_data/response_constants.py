@@ -1010,6 +1010,139 @@ SEARCH_AGGREGATIONS_SINGLE_RESP = {
     }
 }
 
+RULE_RESP = {
+    "rules": [
+        {
+            "customer_id": "demisto",
+            "id": "1.1.1",
+            "_rulePack": "1.1.1",
+            "assertions": [],
+            "assertionsCount": 0,
+            "alertType": "demisto",
+            "dependencies": [],
+            "dependenciesCount": 0,
+            "description": "demisto",
+            "internal": True,
+            "deleted": False,
+            "enabled": True,
+            "supported": False,
+            "createDate": "2019-03-30T19:25:00.11113Z",
+            "_createdBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "Demisto",
+                "username": "demisto",
+                "primary_email": "demisto@demisto.com"
+            },
+            "updateDate": "2019-10-30T20:07:27.330083Z",
+            "_updatedBy": {
+                "id": "demisto",
+                "avatar": "avatar",
+                "name": "Demisto",
+                "username": "demisto",
+                "primary_email": "demisto@demisto.com"
+            },
+            "classification": 40,
+            "confidence": "Medium",
+            "disabledReason": "",
+            "distinguishers": [
+                "srcipv4",
+                "srcipv6",
+                "category"
+            ],
+            "eventsThreshold": 1,
+            "hash": "demisto",
+            "infoLinks": [],
+            "isTuned": False,
+            "protected": False,
+            "killChain": [
+                "6 - C2"
+            ],
+            "message": "demisto",
+            "output": [
+                "alert"
+            ],
+            "playbooks": [],
+            "queues": [
+                "Default Queue"
+            ],
+            "risk": "Medium",
+            "search": "demisto",
+            "searches": [
+                {
+                    "header": "demisto",
+                    "category": "",
+                    "search": "demisto",
+                    "relativeTime": 860
+                },
+                {
+                    "header": "demisto",
+                    "category": "",
+                    "search": "class=demisto msg=<%=msg%> | groupby [srcipv4]",
+                    "relativeTime": 864
+                }
+            ],
+            "secondsThreshold": 60,
+            "severity": "Medium",
+            "sourceRevision": 0,
+            "tags": [
+                "demisto",
+                "malware",
+                "http",
+                "md-info"
+            ],
+            "threatType": 5,
+            "type": "alert",
+            "tuningEventsThreshold": 0,
+            "tuningSearch": "",
+            "tuningSecondsThreshold": 0,
+            "revisions": [
+                {
+                    "enabled": True,
+                    "_updatedBy": {
+                        "id": "demisto",
+                        "avatar": "avatar",
+                        "name": "Demisto",
+                        "username": "demisto",
+                        "primary_email": "demisto@demisto.com"
+                    },
+                    "updateDate": "2019-10-29T30:07:27.380007Z"
+                },
+                {
+                    "enabled": False,
+                    "_updatedBy": {
+                        "id": "demisto",
+                        "avatar": "avatar",
+                        "name": "Demisto",
+                        "username": "demisto",
+                        "primary_email": "demisto@demisto.com"
+                    },
+                    "updateDate": "2019-10-29T23:07:14.560140Z"
+                },
+                {
+                    "updateDate": "2019-08-19T23:38:19.518212Z",
+                    "_updatedBy": {
+                        "id": "demisto",
+                        "avatar": "avatar",
+                        "name": "Demisto",
+                        "username": "demisto",
+                        "primary_email": "demisto@demisto.com"
+                    },
+                    "distinguishers": "[\"srcipv4\", \"srcipv6\", \"category\"]"
+                }
+            ],
+            "revision": 3
+        }
+    ],
+    "meta": {
+        "count": 2,
+        "previous": None,
+        "offset": 1,
+        "limit": 30,
+        "next": None
+    }
+}
+
 SEARCH_AGGREGATIONS_MULTI_RESP = {
     "groupby:srcipv4_to_subject": {
         "buckets": [
