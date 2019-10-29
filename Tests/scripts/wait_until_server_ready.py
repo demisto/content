@@ -61,6 +61,9 @@ def is_correct_content_installed(ips, content_version, username, password):
         True: if all tests passed, False if one failure
     """
 
+    print("EXPECTED CONTENT VERSION IS: ")
+    print(repr(content_version))
+
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
         session = Session()
@@ -103,7 +106,7 @@ def is_correct_content_installed(ips, content_version, username, password):
             resp_json = json.dumps(resp_json)
             print("This is the response dumped as JSON\n\n\n")
             print(resp_json)
-            print("\n\n\nOBJECT TYPE: "+type(resp_json))
+            print("\n\n\nOBJECT TYPE: "+str(type(resp_json)))
 
 
             if not isinstance(resp_json, dict):
