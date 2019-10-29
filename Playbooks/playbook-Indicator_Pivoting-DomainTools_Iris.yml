@@ -1,15 +1,17 @@
 id: Indicator Pivoting - DomainTools Iris
 version: -1
 name: Indicator Pivoting - DomainTools Iris
-description: Pivot on indicator data.
+description: Pivots are used to gather data that shares a common attribute with a
+  domain. For instance, pivoting on an IP Address will give you back all domains related
+  to that IP address.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a13a77ee-6363-4560-8c55-bc661493ca25
+    taskid: a8ce28a7-1083-45bb-8c3c-311bf5a43932
     type: start
     task:
-      id: a13a77ee-6363-4560-8c55-bc661493ca25
+      id: a8ce28a7-1083-45bb-8c3c-311bf5a43932
       version: -1
       name: ""
       description: Start of playbook.
@@ -36,10 +38,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a10d9921-2880-4298-87d4-cc6aad63a67c
+    taskid: 776aa67e-951c-42db-8258-9ae384c13030
     type: title
     task:
-      id: a10d9921-2880-4298-87d4-cc6aad63a67c
+      id: 776aa67e-951c-42db-8258-9ae384c13030
       version: -1
       name: Done
       description: End of playbook.
@@ -59,10 +61,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 4c258be6-f06b-479b-841f-209851f17d05
+    taskid: 4101f161-91b9-4d5d-8be7-8412255ce7f8
     type: condition
     task:
-      id: 4c258be6-f06b-479b-841f-209851f17d05
+      id: 4101f161-91b9-4d5d-8be7-8412255ce7f8
       version: -1
       name: Pivot on E-mail address?
       description: Pivot on E-mail address conditional
@@ -112,10 +114,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: d48ff4cc-bc15-4ac8-8d04-41a48854e370
+    taskid: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
     type: regular
     task:
-      id: d48ff4cc-bc15-4ac8-8d04-41a48854e370
+      id: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
       version: -1
       name: E-mail Pivot
       description: Pivot on E-mail
@@ -150,10 +152,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 14d51092-2c5f-4014-8514-7db09ead8ff2
+    taskid: 33062c78-7259-4717-8cf4-3b56d33bd085
     type: regular
     task:
-      id: 14d51092-2c5f-4014-8514-7db09ead8ff2
+      id: 33062c78-7259-4717-8cf4-3b56d33bd085
       version: -1
       name: IP Pivot
       description: Pivot on IP
@@ -188,10 +190,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 96fddb6e-9aaf-48b4-8b68-b1344661a897
+    taskid: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
     type: regular
     task:
-      id: 96fddb6e-9aaf-48b4-8b68-b1344661a897
+      id: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
       version: -1
       name: NameServer IP Pivot
       description: Pivot on NameServer IP
@@ -226,10 +228,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 792f798d-198c-4040-8fad-11a21280a777
+    taskid: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
     type: regular
     task:
-      id: 792f798d-198c-4040-8fad-11a21280a777
+      id: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
       version: -1
       name: SSL Hash Pivot
       description: Pivot on SSL Hash
@@ -264,10 +266,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 91551c53-4d8c-48bb-8ac8-0953e4dc746f
+    taskid: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
     type: regular
     task:
-      id: 91551c53-4d8c-48bb-8ac8-0953e4dc746f
+      id: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
       version: -1
       name: NameServer HostName Pivot
       description: Pivot on NameServer HostName
@@ -283,7 +285,10 @@ tasks:
       ip: {}
       mailserver_host: {}
       nameserver_host:
-        simple: ${DomainTools.Domains.NameServers.host.value}
+        complex:
+          root: inputs.NameServerHostName
+          transformers:
+          - operator: uniq
       nameserver_ip: {}
       ssl_hash: {}
     separatecontext: false
@@ -299,10 +304,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: a6264e1e-5324-4da1-87fd-78e9e1fad3dc
+    taskid: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
     type: regular
     task:
-      id: a6264e1e-5324-4da1-87fd-78e9e1fad3dc
+      id: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
       version: -1
       name: MailServer HostName
       description: Pivot on MailServer HostName
@@ -337,10 +342,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 848b1a29-0657-493b-8d34-5a115ed93b48
+    taskid: 116e7c75-54e2-4947-8332-171ea2fcc051
     type: condition
     task:
-      id: 848b1a29-0657-493b-8d34-5a115ed93b48
+      id: 116e7c75-54e2-4947-8332-171ea2fcc051
       version: -1
       name: Pivot on IP address?
       description: Pivot on IP Address conditional
@@ -390,10 +395,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: e0ad2021-af2b-4e84-8bb7-1b3d75761366
+    taskid: 3f0eb85b-f974-4845-805a-297bc7166dec
     type: condition
     task:
-      id: e0ad2021-af2b-4e84-8bb7-1b3d75761366
+      id: 3f0eb85b-f974-4845-805a-297bc7166dec
       version: -1
       name: Pivot on NameServer IP?
       description: Pivot on NameServer IP conditional
@@ -445,10 +450,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 1c9b0736-6602-461c-8620-645f9df68460
+    taskid: 92e7c263-9249-44d6-852c-c02eb4f4de75
     type: condition
     task:
-      id: 1c9b0736-6602-461c-8620-645f9df68460
+      id: 92e7c263-9249-44d6-852c-c02eb4f4de75
       version: -1
       name: Pivot on SSL Hash?
       description: Pivot on SSL Hash conditional
@@ -500,10 +505,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 451a273e-0a17-4f4b-8420-4fae1d9da091
+    taskid: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
     type: condition
     task:
-      id: 451a273e-0a17-4f4b-8420-4fae1d9da091
+      id: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
       version: -1
       name: Pivot on NameServer HostName?
       description: Pivot on NameServer HostName conditional
@@ -555,10 +560,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 91cefc7b-16e7-4a6f-85b6-3bf2be0cd3cc
+    taskid: 08927281-b7fa-4735-8fef-fd4cafddf63e
     type: condition
     task:
-      id: 91cefc7b-16e7-4a6f-85b6-3bf2be0cd3cc
+      id: 08927281-b7fa-4735-8fef-fd4cafddf63e
       version: -1
       name: Pivot on MailServer HostName?
       description: Pivot on MailServer HostName conditional
@@ -622,11 +627,21 @@ view: |-
   }
 inputs:
 - key: IPAddress
-  value: {}
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
   required: false
   description: IP address to try and pivot on.
 - key: EmailAddress
-  value: {}
+  value:
+    complex:
+      root: Email
+      accessor: Address
+      transformers:
+      - operator: uniq
   required: false
   description: Email address to try and pivot on.
 - key: NameServerIPAddress
@@ -634,11 +649,21 @@ inputs:
   required: false
   description: Name Server IP address to try and pivot on.
 - key: SSLHash
-  value: {}
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
   required: false
   description: SSL Hash to try and pivot on.
 - key: NameServerHostName
-  value: {}
+  value:
+    complex:
+      root: Domain
+      accessor: NameServers
+      transformers:
+      - operator: uniq
   required: false
   description: Name Server Host Name to try and pivot on.
 - key: MailServerHostName
@@ -646,64 +671,62 @@ inputs:
   required: false
   description: Mail Server Host Name to try and pivot on.
 - key: IPAddressCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that IP address.
 - key: EmailAddressCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that Email address.
 - key: NameServerIPAddressCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that Name Server IP address.
 - key: SSLHashCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that SSL Hash.
 - key: NameServerHostNameCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that Name Server Host Name.
 - key: MailServerHostNameCount
-  value: {}
+  value:
+    simple: "501"
   required: false
   description: Number of matches for that Mail Server Host Name.
 - key: PivotThreshold
-  value: {}
-  required: true
+  value:
+    simple: "500"
+  required: false
   description: 'The threshold for matches less than that to pivot on. '
 outputs:
-- contextPath: DomainTools.PivotedDomains
-  description: DomainTools PivotedDomains
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Name
   description: DomainTools Domain Name
   type: String
 - contextPath: DomainTools.PivotedDomains.LastEnriched
   description: Last Time DomainTools Enriched Domain Data
   type: Date
-- contextPath: DomainTools.PivotedDomains.Analytics
-  description: Analytics Data about the Domain from DomainTools
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Analytics.OverallRiskScore
   description: DomainTools Overall Risk Score
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.ProximityRiskScore
   description: DomainTools Proximity Risk Score
   type: Number
-- contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore
-  description: DomainTools Threat Profile Info
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
   description: DomainTools Threat Profile Risk Score
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
   description: DomainTools Threat Profile Threats
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
   description: DomainTools Threat Profile Evidence
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Analytics.WebsiteResponseCode
   description: Website Response Code
   type: Number
@@ -712,49 +735,31 @@ outputs:
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.Tags
   description: DomainTools Tags
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity
-  description: DomainTools Identity Info about the Domain
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantName
   description: Registrant Name
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantOrg
   description: Registrant Org
   type: String
-- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact
-  description: Registrant Contact Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country
-  description: Registrant Contact Country
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.value
   description: Registrant Contact Country value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.count
   description: Registrant Contact Country count
-  type: Count
-- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email
-  description: Registrant Contact Email
-  type: Unknown
+  type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.value
   description: Registrant Contact Email value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.count
   description: Registrant Contact Email count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name
-  description: Registrant Contact Name
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.value
   description: Registrant Contact Name value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.count
   description: Registrant Contact Name count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone
-  description: Registrant Contact Phone
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.value
   description: Registrant Contact Phone value
   type: String
@@ -763,121 +768,76 @@ outputs:
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.SOAEmail
   description: SOA Record Email
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Identity.SSLCertificateEmail
   description: SSL Certificate Email
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.AdminContact
-  description: Admin Contact Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country
-  description: Admin Contact Country
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.value
   description: Admin Contact Country value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.count
   description: Admin Contact Country count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email
-  description: Admin Contact Email
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.value
   description: Admin Contact Email value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.count
   description: Admin Contact Email count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name
-  description: Admin Contact Name
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.value
   description: Admin Contact Name value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.count
   description: Admin Contact Name count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone
-  description: Admin Contact Phone
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.value
   description: Admin Contact Phone value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.count
   description: Admin Contact Phone count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact
-  description: Technical Contact Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country
-  description: Technical Contact Country
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.value
   description: Technical Contact Country value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.count
   description: Technical Contact Country count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email
-  description: Technical Contact Email
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.value
   description: Technical Contact Email value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.count
   description: Technical Contact Email count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name
-  description: Technical Contact Name
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.value
   description: Technical Contact Name value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.count
   description: Technical Contact Name count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone
-  description: Technical Contact Phone
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.value
   description: Technical Contact Phone value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.count
   description: Technical Contact Phone count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.BillingContact
-  description: Billing Contact Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country
-  description: Billing Contact Country
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.value
   description: Billing Contact Country value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.count
   description: Billing Contact Country count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email
-  description: Billing Contact Email
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.value
   description: Billing Contact Email value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.count
   description: Billing Contact Email count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name
-  description: Billing Contact Name
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.value
   description: Billing Contact Name value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.count
   description: Billing Contact Name count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone
-  description: Billing Contact Phone
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.value
   description: Billing Contact Phone value
   type: String
@@ -886,25 +846,19 @@ outputs:
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.EmailDomains
   description: Email Domains
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails
-  description: Additional Whois Emails
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.value
   description: Additional Whois Emails value
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.count
   description: Additional Whois Emails count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Registration
-  description: DomainTools Registration Info about the Domain
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Registration.DomainRegistrant
   description: Domain Registrant
-  type: Unknown
+  type: String
 - contextPath: DomainTools.PivotedDomains.Registration.RegistrarStatus
-  description: Reistrar Status
-  type: Unknown
+  description: Registrar Status
+  type: String
 - contextPath: DomainTools.PivotedDomains.Registration.DomainStatus
   description: Domain Active Status
   type: Boolean
@@ -914,42 +868,24 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Registration.ExpirationDate
   description: Expiration Date
   type: Date
-- contextPath: DomainTools.PivotedDomains.Hosting
-  description: DomainTools Hosting Info about the Domain
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses
-  description: IP Addresses Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address
-  description: IP Addresses Info address
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.value
   description: IP Addresses Info address value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.count
   description: IP Addresses Info address count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn
-  description: IP Addresses Info asn
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.value
   description: IP Addresses Info asn value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.count
   description: IP Addresses Info asn count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code
-  description: IP Addresses Info country_code
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.value
   description: IP Addresses Info country_code value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.count
   description: IP Addresses Info country_code count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp
-  description: IP Addresses Info isp
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.value
   description: IP Addresses Info isp value
   type: String
@@ -959,30 +895,18 @@ outputs:
 - contextPath: DomainTools.PivotedDomains.Hosting.IPCountryCode
   description: IP Country Code
   type: String
-- contextPath: DomainTools.PivotedDomains.Hosting.MailServers
-  description: Mail Servers Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain
-  description: Mail Servers Info domain
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.value
   description: Mail Servers Info domain value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.count
   description: Mail Servers Info domain count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host
-  description: Mail Servers Info host
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.value
   description: Mail Servers Info host value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.count
   description: Mail Servers Info host count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip
-  description: Mail Servers Info ip
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.value
   description: Mail Servers Info ip value
   type: String
@@ -991,82 +915,55 @@ outputs:
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.SPFRecord
   description: SPF Record Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.NameServers
-  description: Name Servers Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.NameServers.domain
-  description: DomainTools Domains NameServers domain
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.NameServers.domain.value
+  type: String
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.value
   description: DomainTools Domains NameServers domain value
   type: String
-- contextPath: DomainTools.PivotedDomains.NameServers.domain.count
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.count
   description: DomainTools Domains NameServers domain count
   type: Number
-- contextPath: DomainTools.PivotedDomains.NameServers.host
-  description: DomainTools Domains NameServers host
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.NameServers.host.value
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.value
   description: DomainTools Domains NameServers host value
   type: String
-- contextPath: DomainTools.PivotedDomains.NameServers.host.count
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.count
   description: DomainTools Domains NameServers host count
   type: Number
-- contextPath: DomainTools.PivotedDomains.NameServers.ip
-  description: DomainTools Domains NameServers ip
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.NameServers.ip.value
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.value
   description: DomainTools Domains NameServers ip value
   type: String
-- contextPath: DomainTools.PivotedDomains.NameServers.ip.count
+- contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.count
   description: DomainTools Domains NameServers ip count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate
-  description: SSL Certificate Info
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash
-  description: SSL Certificate Info hash
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.value
   description: SSL Certificate Info hash value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.count
   description: SSL Certificate Info hash count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization
-  description: SSL Certificate Info organization
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.value
   description: SSL Certificate Info organization value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.count
   description: SSL Certificate Info organization count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject
-  description: SSL Certificate Info subject
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.value
   description: SSL Certificate Info subject value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.count
   description: SSL Certificate Info subject count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo
-  description: Domains it Redirects To
-  type: Unknown
 - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.value
   description: Domains it Redirects To value
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.count
   description: Domains it Redirects To count
   type: Number
-- contextPath: DomainTools.PivotedDomains.Hosting.GoogleAdsenseTrackingCode
+- contextPath: DomainTools.PivotedDomains.Analytics.GoogleAdsenseTrackingCode
   description: Google Adsense Tracking Code
-  type: Unknown
-- contextPath: DomainTools.PivotedDomains.Hosting.GoogleAnalyticTrackingCode
+  type: Number
+- contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
   description: Google Analytics Tracking Code
-  type: Unknown
+  type: Number
 tests:
 - DomainTools Iris - Test
 fromversion: 4.1.0
