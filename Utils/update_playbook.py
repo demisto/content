@@ -28,7 +28,8 @@ def update_playbook_task_name(playbook):
     """
     for task_id, task in playbook.get("tasks", {}).items():
         if task.get("type") == "playbook":
-            playbook["tasks"][task_id]["task"]["name"] = playbook["tasks"][task_id]["task"]["playbookName"]
+            task["task"]["name"] = task["task"]["playbookName"]
+
 
     return playbook
 
