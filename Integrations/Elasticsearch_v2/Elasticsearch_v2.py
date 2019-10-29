@@ -10,7 +10,6 @@ from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
 import requests
-from math import pow
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -53,7 +52,7 @@ def get_timestamp_first_fetch(last_fetch):
         last_fetch(datetime): A datetime object setting up the last fetch time
 
     Returns:
-        The formatted timestamp (int)
+        (num).The formatted timestamp
     """
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(last_fetch.timestamp())
@@ -69,22 +68,17 @@ def timestamp_to_date(timestamp_string):
         timestamp_string(string): A string with a timestamp in it.
 
     Returns:
-        the datetime represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
+        (datetime).represented by the timestamp in the format '%Y-%m-%d %H:%M:%S.%f'
     """
-    # find current len of timestamp in seconds since epoch
-    timestamp_in_seconds_len = len(str(int(time.time())))
-
     # find timestamp in form of more than seconds since epoch: 1572164838000
     if TIME_METHOD == 'Timestamp-Milliseconds':
-        len_diff = len(timestamp_string) - timestamp_in_seconds_len
-        power_ten_divide = pow(10, len_diff)
-        timestamp_number = float(int(timestamp_string) / power_ten_divide)
+        timestamp_number = float(int(timestamp_string) / 1000)
 
     # find timestamp in form of seconds since epoch: 1572164838
     elif TIME_METHOD == 'Timestamp-Seconds':
         timestamp_number = float(timestamp_string)
 
-    # convert timestamp to datetime
+    # convert timestamp (a floating point number representing time since epoch) to datetime
     return datetime.fromtimestamp(timestamp_number)
 
 
@@ -115,7 +109,8 @@ def get_hit_table(hit):
         hit(Dict): a dictionary representing a single hit in the search.
 
     Returns:
-        The hit context (dict) and the headers of the hit (list).
+        (dict).The hit context.
+        (list).the headers of the hit.
     """
     table_context = {
         '_index': hit.get('_index'),
@@ -144,8 +139,10 @@ def results_to_context(index, query, base_page, size, total_dict, response):
         response(Dict): the raw response of the results.
 
     Returns:
-        The full context for the search results (dict), the metadata headers of the search (list),
-        the context for the hits (list) and thee headers of the hits (list).
+        (dict).The full context for the search results.
+        (list).The metadata headers of the search.
+        (list).the context for the hits.
+        (list).the headers of the hits.
     """
     search_context = {
         'Server': SERVER,
@@ -180,7 +177,8 @@ def get_total_results(response_dict):
         response_dict(dict): the raw response from elastic search.
 
     Returns:
-        a dictionary containing the total results info for the context (dict) the the number of total results (int)
+        (dict).The total results info for the context.
+        (num).The number of total results.
     """
     total_results = response_dict.get('hits', {}).get('total')
     if not str(total_results).isdigit():
@@ -287,7 +285,7 @@ def test_time_field_query(es):
         es(Elasticsearch): an Elasticsearch object to which we run the test.
 
     Returns:
-        the results of the query if they are returned.
+        (dict).The results of the query if they are returned.
     """
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -312,7 +310,7 @@ def test_fetch_query(es):
         es(Elasticsearch): an Elasticsearch object to which we run the test.
 
     Returns:
-        the results of the query if they are returned.
+        (dict).The results of the query if they are returned.
     """
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
@@ -426,7 +424,7 @@ def incident_label_maker(source):
         source(dict): the _source fields of a hit.
 
     Returns:
-        The labels.
+        (list).The labels.
     """
     labels = []
     for field in source.keys():
@@ -445,7 +443,8 @@ def results_to_incidents(response, current_fetch, last_fetch):
             incident brought by this fetch.
 
     Returns:
-        the incidents (list) and the date of the last incident brought by this fetch (datetime).
+        (list).The incidents.
+        (datetime).The date of the last incident brought by this fetch.
     """
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
