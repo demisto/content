@@ -93,7 +93,8 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 
 ![image](https://user-images.githubusercontent.com/50324325/67759623-76d87f80-fa48-11e9-9dc7-3f8d5ef4341c.png)
 ![image](https://user-images.githubusercontent.com/50324325/67759719-a5565a80-fa48-11e9-9a91-b5ce555197d4.png)
-Also, it prevents a common mistake where data is passed by value instead of reference:
+
+* Also, it prevents a common mistake where data is passed by value instead of reference:
 
 ![image](https://user-images.githubusercontent.com/50324325/67759760-bb641b00-fa48-11e9-82a0-e028e50efa02.png)
 
@@ -103,10 +104,6 @@ One place where this won’t work, is when using `Set`, where you choose a key t
 ![image](https://user-images.githubusercontent.com/43602124/62229948-7983f400-b3c9-11e9-9a9f-92be482d3992.png)
 
 * Remember to confirm task changes in **ALL RELEVANT SUB-WINDOWS**. Do not cancel, do not switch task, or the changes won't be saved, and you won't always get a warning about it!
-
-
-![image](https://user-images.githubusercontent.com/43602124/62230160-e7302000-b3c9-11e9-90b0-fa5fbd2c679c.png )
-![image](https://user-images.githubusercontent.com/43602124/62230203-fc0cb380-b3c9-11e9-9412-37d40db055a2.png)
 
 -   If you’re working on a playbook that has a sub-playbook, and you changed the inputs / outputs of that sub-playbook, the changes won’t be reflected in the parent playbook. You must refresh the page to see the changes. not just saving the playbook and re-opening it, using the browser refresh (F5) to refresh.
 
