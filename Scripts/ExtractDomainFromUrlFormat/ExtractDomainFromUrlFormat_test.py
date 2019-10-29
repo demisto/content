@@ -18,10 +18,9 @@ def test_extract_domain(input, domain):
     assert res == domain
 
 
-# @pytest.mark.parametrize('input,url', [
-#                         ('http:example.com', 'http://example.com'),
-#                         ('http:\\\\example.com', 'http://example.com'),
-#                         ])
-# def test_unescaped_url(input, url):
-#     unescaped_urls = unescape_url(input)
-#     assert unescaped_urls == url
+@pytest.mark.parametrize('input,url', [
+                        ('http:example.com', 'http://example.com'),
+                        ('http:\\\\example.com', 'http://example.com')])  # noqa: E124
+def test_unescaped_url(input, url):
+    unescaped_urls = unescape_url(input)
+    assert unescaped_urls == url
