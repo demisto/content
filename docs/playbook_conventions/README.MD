@@ -66,14 +66,19 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 
 -   When outputting to context in integrations or scripts, use generic descriptions. For example - Extract Indicators From File - Generic v2, has 2 different tasks outputting to File.Text, but in the playbook outputs we have a description for only one.
 
-!!!!!! Add photos
+
+![image](https://user-images.githubusercontent.com/50324325/67759127-9622dd00-fa47-11e9-90d5-a88c616bd8fe.png)
+
+![image](https://user-images.githubusercontent.com/50324325/67759239-c9656c00-fa47-11e9-803b-a18005c63b52.png)
+
 
 
 
 -   Set defaults for playbook inputs when needed
 
+<img src="https://user-images.githubusercontent.com/50324325/67758301-18aa9d00-fa46-11e9-84e9-cba48d639766.png" width="300" height="100">
 
-![image](https://user-images.githubusercontent.com/43602124/62229573-9cfa6f00-b3c8-11e9-9b87-1b9fef445838.png)
+![image](https://user-images.githubusercontent.com/50324325/67759434-121d2500-fa48-11e9-871b-dac447da1b8e.png)
 
 
 -   The playbooks are used by everyone, try to avoid “programming” terms when possible.
@@ -86,12 +91,11 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 
 -   Avoid using [DT](https://github.com/demisto/content/tree/master/docs) wherever things can be done without it. Use our user friendly selectors and transformers, both because it looks better, and because you can add filters / operations to it.
 
-![image](https://user-images.githubusercontent.com/43602124/62229811-3590ef00-b3c9-11e9-9dda-2adb6076f624.png)
-![image](https://user-images.githubusercontent.com/43602124/62229816-375ab280-b3c9-11e9-8073-3f504b2329ab.png)
-
+![image](https://user-images.githubusercontent.com/50324325/67759623-76d87f80-fa48-11e9-9dc7-3f8d5ef4341c.png)
+![image](https://user-images.githubusercontent.com/50324325/67759719-a5565a80-fa48-11e9-9a91-b5ce555197d4.png)
 Also, it prevents a common mistake where data is passed by value instead of reference:
 
-![image](https://user-images.githubusercontent.com/43602124/62229827-3aee3980-b3c9-11e9-8dfe-acbac0e1f79a.png)
+![image](https://user-images.githubusercontent.com/50324325/67759760-bb641b00-fa48-11e9-82a0-e028e50efa02.png)
 
 One place where this won’t work, is when using `Set`, where you choose a key to set a value to, and you cannot really “get” that key, since it doesn’t exist.
 
@@ -101,7 +105,7 @@ One place where this won’t work, is when using `Set`, where you choose a key t
 * Remember to confirm task changes in **ALL RELEVANT SUB-WINDOWS**. Do not cancel, do not switch task, or the changes won't be saved, and you won't always get a warning about it!
 
 
-![image](https://user-images.githubusercontent.com/43602124/62230160-e7302000-b3c9-11e9-90b0-fa5fbd2c679c.png)
+![image](https://user-images.githubusercontent.com/43602124/62230160-e7302000-b3c9-11e9-90b0-fa5fbd2c679c.png )
 ![image](https://user-images.githubusercontent.com/43602124/62230203-fc0cb380-b3c9-11e9-9412-37d40db055a2.png)
 
 -   If you’re working on a playbook that has a sub-playbook, and you changed the inputs / outputs of that sub-playbook, the changes won’t be reflected in the parent playbook. You must refresh the page to see the changes. not just saving the playbook and re-opening it, using the browser refresh (F5) to refresh.
