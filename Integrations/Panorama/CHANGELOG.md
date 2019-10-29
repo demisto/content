@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
 Added the ***panorama-security-policy-match*** command.
 
 ## [19.9.1] - 2019-09-18
