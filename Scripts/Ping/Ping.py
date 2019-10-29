@@ -17,7 +17,7 @@ def main():
         s = re.search(r"rtt min/avg/max/mdev = (.+)/(.+)/(.+)/(.+)\s+ms", ping_out)
         if not s:
             raise ValueError("Couldn't parse ping statistics:\n" + ping_out)
-        res['ret_code'] = 0
+        res['ret_code'] = '0'
         res['destination'] = dest
         res['min_rtt'] = s.group(1)
         res['avg_rtt'] = s.group(2)
