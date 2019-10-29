@@ -276,9 +276,12 @@ def extract_indicators(data):
     """
 
     # Check if is `objects` keyword exists
-    if isinstance(data, dict) and "objects" in data:
+    if isinstance(data, dict):
         # Create objects
-        objects = data.get("objects")
+        if "objects" in data:
+            objects = data.get("objects")
+        else:
+            objects = data
 
         # Use regex to extract indicators
         patterns_lists, entries_dict = get_indicators(objects)
