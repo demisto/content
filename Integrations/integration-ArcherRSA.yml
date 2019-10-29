@@ -2073,20 +2073,29 @@ script:
     }
 
     function createIncidentsArr(records, dataArgs){
+        logDebug("\n\n\n" + "Entering createIncidentsArr" + "\n\n\n");
+
         var incidents = [];
         var lastTime;
         var details = "";
 
         if (records && records.Contents && records.Contents.length > 0) {
             for (var i = 0; i < records.Contents.length; i++) {
+                logDebug("\n\n\n" + "Number of records is: {0}".format(records.Contents.length) + "\n\n\n");
                 var res = records.Contents[i];
+                logDebug("\n\n\n" + "Current value of res is: " + JSON.stringify(res) + "\n\n\n");
+                logDebug("\n\n\n" + "Current value of res.Fields is: " + JSON.stringify(res.Fields) + "\n\n\n");
                 var labels = [];
                 var fields = Object.keys(res.Fields);
+                logDebug("\n\n\n" + "Current value of fields is: " + fields.toString() + "\n\n\n");
                 if (fields) {
+                    logDebug("\n\n\n" + "Number of fields is: {0}".format(fields.length) + "\n\n\n");
                     for (var j = 0; j < fields.length; j++) {
+                        logDebug("\n\n\n" + "Currently handling field number {0}".format(j.toString()) + "\n\n\n");
                         var fieldName = fields[j];
                         var fieldValue;
                         fieldValue = res.Fields[fieldName];
+                        logDebug("\n\n\n" + "Current field:value mapping is {0}:{1}".format(fieldName, fieldValue) + "\n\n\n");
                         if (fieldName === "Record" || fieldName == "innerRecords"){
                             var recordValues = fieldValue;
                             Object.keys(recordValues).forEach(function(key) {
@@ -2372,11 +2381,13 @@ script:
 
     function createRecord(command, dataArgs) {
         // corresponds to 'archer-create-record' command. Creates a new record in Archer
+        logDebug("\n\n\n" + "Entering createRecord" + "\n\n\n");
         var contentId;
         var levels;
         var createRecordMapping;
         var appId = dataArgs.applicationId;
         var fieldsToValue = JSON.parse(dataArgs.fieldsToValues);
+        logDebug("\n\n\n" + "FieldToValue supplied is: " + JSON.stringify(fieldsToValue) + "\n\n\n");
         if (fieldsToValue === null || typeof fieldsToValue !== 'object') {
             throw 'Invalid Argument fieldToValue';
         }
@@ -2385,11 +2396,13 @@ script:
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             createRecordMapping = cache[appId]["mapping"];
+            logDebug("\n\n\n" + "createRecordMapping is: " + (JSON.stringify(createRecordMapping)) + "\n\n\n");
             verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
 
         } else {
             levels = getLevelsByApplicationId(appId);
             createRecordMapping = createMappingNameToFieldId(levels);
+            logDebug("\n\n\n" + "createRecordMapping is: " + (JSON.stringify(createRecordMapping)) + "\n\n\n");
             verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
             var dic = {};
             var innerDic = {};
@@ -2402,6 +2415,7 @@ script:
 
         if (params.useRest){
             // in case that the user wants to use the REST API
+            logDebug("\n\n\n" + "Using REST API" + "\n\n\n");
             var content = {
                 "Content": {
                     "LevelId": levels[0],
@@ -2413,11 +2427,12 @@ script:
             try {
                 contentId = resp['RequestedObject']['Id'];
             } catch (err) {
-                throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
+                throw "Error: Archer returned an error and didn't create a new record.";
             }
 
         } else {
             // use the SOAP API
+            logDebug("\n\n\n" + "Using SOAP API" + "\n\n\n");
             var token;
             var fields = inputToXML(fieldsToValue, createRecordMapping);
             var rawResponse;
@@ -2441,7 +2456,7 @@ script:
                     break;
                 } catch (err) {
                     if (i==14){
-                        throw "Archer didn't create a new record. We received the following response " + JSON.stringify(rawResponse);
+                        throw "Error: Archer returned an error and didn't create a new record. ";
                     }
                     token = getAuthToken();
                     var dic = {};
@@ -2489,6 +2504,8 @@ script:
 
     function updateRecord(command, dataArgs) {
         // corresponds to 'archer-update-record' command. Updates the field/s of a record in Archer
+        logDebug("\n\n\n" + "Entering updateRecords" + "\n\n\n");
+
         var appId = dataArgs.applicationId;
         var contentId = dataArgs.contentId;
         var fieldsToValue;
@@ -2505,14 +2522,18 @@ script:
             throw 'Invalid Argument fieldToValue';
         }
 
+        logDebug("\n\n\n" + "App ID is: {0}, \n Fields To Value is: {1}, \n Search value is: {2}".format(appId, JSON.stringify(fieldsToValue), searchValue) + "\n\n\n");
+
         var cache = getIntegrationContext();
         var updateRecordMapping;
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             updateRecordMapping = cache[appId]["mapping"];
+            logDebug("\n\n\n" + "updateRecordMapping value is: " + JSON.stringify(updateRecordMapping) + "\n\n\n");
         } else {
             levels = getLevelsByApplicationId(appId);
             updateRecordMapping = createMappingNameToFieldId(levels);
+            logDebug("\n\n\n" + "updateRecordMapping value is: " + JSON.stringify(updateRecordMapping) + "\n\n\n");
             var dic = {};
             var innerDic = {};
             innerDic["levels"] = levels;
@@ -2537,7 +2558,7 @@ script:
             try {
                 contentId = resp['RequestedObject']['Id'];
             } catch (err) {
-                throw "Archer didn't create a new record. We received the following response " + JSON.stringify(resp)
+                throw "Error: Archer returned an error and didn't update any record.";
             }
 
         } else {
@@ -2565,7 +2586,7 @@ script:
                     break;
                 } catch (err) {
                     if (i==14){
-                        throw "Archer didn't update the record. We received the following response " + JSON.stringify(rawResponse);
+                        throw "Error: Archer returned an error and didn't update any record.";
                     }
                     token = getAuthToken();
                     var dic = {};
@@ -2726,6 +2747,7 @@ script:
         /* corresponds to 'archer-search-records' command. Returns records from Archer who matches the user's
            search criteria. Looks for incident ids from Archer and then gets each one of them in getSearchRecords
            by using the getRecord function. */
+        logDebug("\n\n\n" + "Entering searchRecords" + "\n\n\n");
 
         var appId = dataArgs.applicationId;
         var fieldsToDisplay = dataArgs.fieldsToDisplay;
@@ -2734,6 +2756,9 @@ script:
         var searchValue = dataArgs.searchValue;
         var numericOperator = dataArgs.numericOperator;
         var dateOperator = dataArgs.dateOperator;
+
+        logDebug("\n\n\n" + "App ID is: {0}, \n Fields To Display is: {1}, \n Fields to search on is: {2}, \n Search value is: {3}".format(appId, fieldsToDisplay, fieldToSearchOn, searchValue) + "\n\n\n");
+
         var isDescending = dataArgs.isDescending === 'true';
         var pageNumber = dataArgs.pageNumber || '1';
         var fetchFilter = dataArgs.fetchFilter;
@@ -2745,9 +2770,11 @@ script:
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             nameToFieldMapping = cache[appId]["mapping"];
+            logDebug("\n\n\n" + "nameToFieldMapping value is: " + JSON.stringify(nameToFieldMapping) + "\n\n\n");
         } else {
             levels = getLevelsByApplicationId(appId);
             nameToFieldMapping = createMappingNameToFieldId(levels);
+            logDebug("\n\n\n" + "nameToFieldMapping value is: " + JSON.stringify(nameToFieldMapping) + "\n\n\n");
             var dic = {};
             var innerDic = {};
             innerDic["levels"] = levels;
@@ -2912,6 +2939,7 @@ script:
 
     function fetchIncidents(dataArgs) {
         // corresponds to 'archer-fetch-incidents' scenario. Fetch incidents from an specific module in Archer
+        logDebug("\n\n\n" + "Entering fetch incidents" + "\n\n\n");
 
         var myTimezone = new Date().getTimezoneOffset() * -1;
         var tz = params.timeZone ? parseInt(params.timeZone) : myTimezone;
@@ -2940,9 +2968,11 @@ script:
         dataArgs.getInnerRecords = 'true';
         dataArgs.fullData = 'true';
 
+
+        logDebug("\n\n\n" + "Entering searchRecords from fetch incidents" + "\n\n\n");
         var results = searchRecords(cmd, dataArgs);
         var incidents = createIncidentsArr(results, dataArgs.applicationId);
-
+        logDebug("\n\n\n" + "Incidents returned are: {0}".format(incidents.toString()) + "\n\n\n");
         if (incidents.length > 0){
             lastTime = incidents[incidents.length-1].occurred;
         }
