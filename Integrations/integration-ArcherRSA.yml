@@ -2361,7 +2361,9 @@ script:
         logInfo("\n\n\n" + "type of actualFieldsOfGivenApp: " + JSON.stringify(actualFieldsOfGivenApp) + "\n\n\n");
         userSpecifiedFields.forEach(function(fieldSpecifiedByUser) {
             if (!(actualFieldsOfGivenApp.indexOf(fieldSpecifiedByUser) > -1)) {
-                throw "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}".format(fieldSpecifiedByUser, appID);
+                var wrongFieldErrorMessage = "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}. \n".format(fieldSpecifiedByUser, appID);
+                var possibleFieldsForGivenAppIDMessage = "The allowed fields for application ID {0} are {1}".format(appID, JSON.stringify(actualFieldsOfGivenApp));
+                throw (wrongFieldErrorMessage + possibleFieldsForGivenAppIDMessage);
             }
         })
     }
