@@ -593,7 +593,7 @@ tasks:
       - "23"
     scriptarguments:
       input:
-        simple: https:\\example.com
+        simple: http:\\example.com
     separatecontext: false
     view: |-
       {
