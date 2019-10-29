@@ -146,7 +146,7 @@ tasks:
     task:
       id: 9d236607-cbcb-403c-8d8c-516c56b13422
       version: -1
-      name: Add Initial Investigation Notes
+      name: Add initial investigation notes
       description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
         Detection that created this Incident.  Used as a method of initial investigation
         and tracking notes within the Work Plan.
