@@ -19,7 +19,6 @@ if not demisto.params().get('port'):
 URL = demisto.params()['server'].rstrip('/:') + ':' + demisto.params().get('port') + '/api/'
 API_KEY = str(demisto.params().get('key'))
 USE_SSL = not demisto.params().get('insecure')
-PANOS_VER = 0
 
 # determine a vsys or a device-group
 VSYS = demisto.params().get('vsys')
@@ -303,21 +302,27 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
 ''' FUNCTIONS'''
 
 
-def panorama_make_sure_version():
-    global PANOS_VER
-    
+def panorama_get_major_version():
+    major_ver = 0
     context = demisto.getIntegrationContext()
     if not context:
-      context = {}
+        context = {}
+    else:
+        major_ver = context.get('PANOS_MAJOR_VER', 0)
     
-    if PANOS_VER == 0:
-      PANOS_VER = context.get('PANOS_VER')
-      if PANOS_VER:
-        return
-    
-    PANOS_VER = int(panorama_get_version().split('.')[0])
-    context['PANOS_VER'] = PANOS_VER
-    demisto.setIntegrationContext(context)
+    if major_ver == 0:
+        # Get PAN-OS Version
+        params = {
+            'type': 'version',
+            'key': API_KEY
+        }
+        result = http_request(URL, 'GET', params=params)
+        version = result['response']['result']['sw-version']
+        major_ver = int(version.split('.')[0])
+        
+        context['PANOS_MAJOR_VER'] = major_ver
+        demisto.setIntegrationContext(context)
+    return  major_ver
 
 
 def panorama_test():
@@ -404,20 +409,6 @@ def panorama_command():
         'ReadableContentsFormat': formats['text'],
         'HumanReadable': 'Command was executed successfully.',
     })
-
-
-@logger
-def panorama_get_version():
-    params = {
-        'type': 'version',
-        'key': API_KEY
-    }
-    result = http_request(
-        URL,
-        'GET',
-        params=params,
-    )
-    return result['response']['result']['sw-version']
 
 
 @logger
@@ -1834,7 +1825,8 @@ def panorama_get_custom_url_category_command():
 
 @logger
 def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
-    if PANOS_VER >= 9:
+    major_ver = panorama_get_major_version()
+    if major_ver >= 9:
         element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + add_argument("URL List", 'type', False)
     else:
         element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
@@ -1933,7 +1925,8 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
     
     description = add_argument(description, 'description', False)
     list = add_argument_list(sites, 'list', True)
-    if PANOS_VER >= 9:
+    major_ver = panorama_get_major_version()
+    if major_ver >= 9:
         type = add_argument("URL List", 'type', False)
         element = f"<entry name='{custom_url_category_name}'>{description}{list}{type}</entry>"
     else:
@@ -4088,9 +4081,6 @@ def main():
         # Remove proxy if not set to true in params
         handle_proxy()
 
-        # Make sure PAN-OS/Panorama version
-        panorama_make_sure_version()
-        
         if demisto.command() == 'test-module':
             panorama_test()
 
