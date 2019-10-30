@@ -692,7 +692,7 @@ tasks:
         complex:
           root: lastCompletedTaskEntries
       substring:
-        simple: ${lastCompletedTaskEntries}
+        simple: http://example.com
     separatecontext: false
     view: |-
       {
