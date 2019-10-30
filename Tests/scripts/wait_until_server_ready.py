@@ -100,7 +100,7 @@ def is_correct_content_installed(ips, content_version, username, password):
                                                             method='POST', accept='application/json', content_type='application/json')
             print("This is the raw response\n\n\n")
             print(resp)
-            resp_json = ast.literal_eval(resp[0])
+            resp_json = ast.literal_eval(resp[0].replace('u\\', ''))
             print("This is the response with literals stripped\n\n\n")
             print(resp_json)
             resp_json = json.loads(str(resp_json))
