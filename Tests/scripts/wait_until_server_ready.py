@@ -108,7 +108,7 @@ def is_correct_content_installed(ips, content_version, username, password):
             print(resp_json)
             print("\n\n\nOBJECT TYPE: "+str(type(resp_json)))
 
-            if not isinstance(resp_json, dict):
+            if not isinstance(dict(resp_json), dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
