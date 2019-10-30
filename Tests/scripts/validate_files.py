@@ -9,7 +9,7 @@ It can be run to check only committed changes (if the first argument is 'true') 
 Note - if it is run for all the files in the repo it won't check releaseNotes, use `release_notes.py`
 for that task.
 """
-from __future__ import print_function
+
 import os
 import re
 import sys
