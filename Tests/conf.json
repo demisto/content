@@ -1649,10 +1649,6 @@
             "playbookID": "Google BigQuery Test"
         },
         {
-            "integrations": "nmap",
-            "playbookID": "af2f5a99-d70b-48c1-8c25-519732b733f2"
-        },
-        {
             "integrations": "Zoom",
             "playbookID": "Zoom_Test"
         },
@@ -1991,7 +1987,6 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "epo": "Issue 19798",
         "intsights": "Issue 19694",
         "ThreatX": "Issue 19551",
         "ZeroFox": "Issue 19161",
