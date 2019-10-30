@@ -1935,7 +1935,6 @@
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
-        "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
         "JoeSecurityTestDetonation": "Issue 16118",
