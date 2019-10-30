@@ -166,7 +166,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
 
     Args:
         client: Client object with request
-        ip_address: ip address
+        ip_address: ip_ec address
         ip_version: IPv4 or IPv6
 
     Returns:
@@ -174,19 +174,16 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
     """
     query_args: list = argToList(ip_address)
     raws: list = []
-    d=[]
-    contexts: dict = {
-        outputPaths.get("ip"): [],
-        f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': [],
-        outputPaths.get("dbotscore"): []
-    }
+    title = f'{INTEGRATION_NAME} - Results for ips query'
+    ip_ec: list = []
+    alienvault_ec: list = []
+    dbotscore_ec: list = []
     for arg in query_args:
         raw_response = client.query(section=ip_version,
                                     argument=arg)
         if raw_response:
             raws.append(raw_response)
-            title = f'{INTEGRATION_NAME} - Results for ips query'
-            contexts.get(outputPaths.get("ip"), []).append({
+            ip_ec.append({
                 'Address': raw_response.get('indicator'),
                 'ASN': raw_response.get('asn'),
                 'Geo': {
@@ -194,72 +191,85 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
                     'Location': f'{raw_response.get("latitude")},{raw_response.get("longitude")}'
                 }
             })
-            contexts.get(f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)', []).append({
+            alienvault_ec.append({
                 'IP': {
                     'Reputation': raw_response.get('reputation'),
                     'IP': arg
                 }
             })
-            contexts.get(outputPaths.get("dbotscore"), []).append({
+            dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
                 'Type': arg,
                 'Vendor': 'AlienVault OTX v2'
             })
-
         else:
             return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
-    human_readable = tableToMarkdown(t=contexts.get(outputPaths.get("ip")),
+    context_entry: dict = {
+        outputPaths.get("ip_ec"): ip_ec,
+        f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
+        outputPaths.get("dbotscore_ec"): dbotscore_ec
+    }
+    human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip_ec")),
                                      name=title)
-    return human_readable, contexts, raws
-
+    return human_readable, context_entry, raws
 
 
 @logger
-def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Dict]:
+def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, list]]:
     """Enrichment for domain
 
     Args:
         client: Client object with request
-        args: Usually demisto.args()
+        domain: domains to query
 
     Returns:
         Outputs
     """
-    raw_response = client.query(section='domain',
-                                argument=domain)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Results for Domain query'
-        context_entry: dict = {
-            outputPaths.get("domain"): {
+    query_args: list = argToList(domain)
+    title = f'{INTEGRATION_NAME} - Results for Domain query'
+    raws = []
+    domain_ec = []
+    dbotscore_ec = []
+    alienvault_ec = []
+    for args in query_args:
+        raw_response = client.query(section='domain',
+                                    argument=args)
+        if raw_response:
+            raws.append(raw_response)
+            domain_ec.append({
                 'Name': raw_response.get('indicator')
-            },
-            f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-            f'val.Whois && val.Whois === obj.Whois)': {
+            })
+            alienvault_ec.append({
                 'Name': raw_response.get('indicator'),
                 'Alexa': raw_response.get('alexa'),
                 'Whois': raw_response.get('whois')
-            },
-            outputPaths.get("dbotscore"): {
+            })
+            dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info')),
                 'Type': 'domain',
                 'Vendor': 'AlienVault OTX v2'
-            }
-        }
-        human_readable = tableToMarkdown(t=context_entry.get(
-            f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
-            f'val.Whois && val.Whois === obj.Whois)'),
-            name=title)
+            })
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+    context_entry: dict = {
+        outputPaths.get("domain"): domain_ec,
+        f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+        f'val.Whois && val.Whois === obj.Whois)': alienvault_ec,
+        outputPaths.get("dbotscore"): dbotscore_ec
+    }
+    human_readable = tableToMarkdown(t=context_entry.get(
+        f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
+        f'val.Whois && val.Whois === obj.Whois)'),
+        name=title)
+    return human_readable, context_entry, raws
 
 
 @logger
-def file_command(client: Client, file: str) -> Tuple[str, Dict, Dict]:
+def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list]]:
     """Enrichment for file hash MD5/SHA1/SHA256
 
     Args:
@@ -269,16 +279,23 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response_analysis = client.query(section='file',
-                                         argument=file,
-                                         sub_section='analysis')
-    raw_response_general = client.query(section='file',
-                                        argument=file)
-    if raw_response_analysis and raw_response_general:
-        title = f'{INTEGRATION_NAME} - Results for File hash query'
-        shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
-        context_entry: dict = {
-            outputPaths.get("file"): {
+    query_args: list = argToList(file)
+    title = f'{INTEGRATION_NAME} - Results for File hash query'
+    raws: list = []
+    file_ec: list = []
+    dbotscore_ec: list = []
+
+    for args in query_args:
+        raw_response_analysis = client.query(section='file',
+                                             argument=args,
+                                             sub_section='analysis')
+        raw_response_general = client.query(section='file',
+                                            argument=args)
+        if raw_response_analysis and raw_response_general:
+            raws.append(raw_response_analysis)
+            raws.append(raw_response_general)
+            shortcut = raw_response_analysis.get('analysis', {}).get('info', {}).get('results', {})
+            file_ec.append({
                 'MD5': shortcut.get('md5'),
                 'SHA1': shortcut.get('sha1'),
                 'SHA256': shortcut.get('sha256'),
@@ -288,24 +305,28 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Dict]:
                 'Malicious': {
                     'PulseIDs': raw_response_general.get('pulse_info', {}).get('pulses')
                 }
-            },
-            outputPaths.get("dbotscore"): {
+            })
+            dbotscore_ec.append({
                 'Indicator': raw_response_general.get('indicator'),
                 'Score': calculate_dbot_score(raw_response_general.get('pulse_info', {})),
                 'Type': 'file',
                 'Vendor': 'AlienVault OTX v2'
-            }
-        }
-        human_readable = tableToMarkdown(name=title,
-                                         t=context_entry.get(outputPaths.get("file")))
+            })
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
 
-        return human_readable, context_entry, {**raw_response_general, **raw_response_analysis}
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
+    context_entry: dict = {
+        outputPaths.get("file"): file_ec,
+        outputPaths.get("dbotscore"): dbotscore_ec
+    }
+    human_readable = tableToMarkdown(name=title,
+                                     t=context_entry.get(outputPaths.get("file")))
+
+    return human_readable, context_entry, raws
 
 
 @logger
-def url_command(client: Client, url: str) -> Tuple[str, Dict, Dict]:
+def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]:
     """Enrichment for url
 
     Args:
@@ -315,34 +336,45 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.query(section='url',
-                                argument=url)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Results for url query'
-        context_entry: dict = {
-            outputPaths.get("url"): {
+    query_args: list = argToList(url)
+    raws: list = []
+    title = f'{INTEGRATION_NAME} - Results for url query'
+    url_ec: list = []
+    alienvault_ec: list = []
+    dbotscore_ec: list = []
+
+    for args in query_args:
+        raw_response = client.query(section='url',
+                                    argument=args)
+        if raw_response:
+            raws.append(raw_response)
+            url_ec.append({
                 'Data': raw_response.get('indicator')
-            },
-            f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': {
-                'Url': url,
+            })
+            alienvault_ec.append({
+                'Url': args,
                 'Hostname': raw_response.get('hostname'),
                 'Domain': raw_response.get('domain'),
                 'Alexa': raw_response.get('alexa'),
                 'Whois': raw_response.get('whois')
-            },
-            outputPaths.get("dbotscore"): {
+            })
+            dbotscore_ec.append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': str(calculate_dbot_score(raw_response.get('pulse_info'))),
                 'Type': 'url',
                 'Vendor': 'AlienVault OTX v2'
-            }
-        }
-        human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
-                                         name=title)
+            })
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+    context_entry: dict = {
+        outputPaths.get("url"): url_ec,
+        f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
+        outputPaths.get("dbotscore"): dbotscore_ec
+    }
+    human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
+                                     name=title)
+    return human_readable, context_entry, raws
 
 
 @logger

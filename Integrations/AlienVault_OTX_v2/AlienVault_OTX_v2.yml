@@ -85,7 +85,7 @@ script:
   - arguments:
     - default: true
       description: The domain to query.
-      isArray: false
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -211,7 +211,7 @@ script:
   - arguments:
     - default: true
       description: The file hash to query.
-      isArray: false
+      isArray: true
       name: file
       required: true
       secret: false
@@ -487,7 +487,7 @@ script:
   - arguments:
     - default: true
       description: The URL to query.
-      isArray: false
+      isArray: true
       name: url
       required: true
       secret: false
@@ -541,6 +541,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Alienvault_OTX_v2 - Test
