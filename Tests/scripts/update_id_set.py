@@ -204,7 +204,7 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
-    change_string = run_command("git diff HEAD {}".format(file_path))
+    change_string = run_command(f'git diff HEAD {file_path}')
     is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
     is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
