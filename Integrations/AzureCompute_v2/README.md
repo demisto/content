@@ -13,7 +13,19 @@ This integration was integrated and tested with version xx of Azure Compute v2
 <ul>
 <li>To allow us access to Azure Compute, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-azure-compute).</li>
 <li>After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
-<li>For more information, see the integration documentation.</li>
+<li>In order to assign a role to the application after consent was given: 
+  <ul>
+    <li>Go to the Azure Portal UI.</li>
+    <li>Go to Subscriptions, and then Access Control (IAM).</li>
+    <li>Click Add.</li>
+    <li>Select a role that includes the following permissions:</li>
+    <ul>
+      <li>Microsoft.Compute/virtualMachines/*</li>
+      <li>Microsoft.Network/networkInterfaces/read</li>
+    </ul>
+    <li>Select the Azure Secruity Center application.</li>
+  </ul>
+</li>
 </ul><h2>Fetch Incidents</h2>
 <p>Populate this section with Fetch incidents data</p>
 <h2>Configure Azure Compute v2 on Demisto</h2>
