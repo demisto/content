@@ -1342,6 +1342,354 @@ SEARCH_AGGREGATIONS_SINGLE_RESP = {
     }
 }
 
+SEARCH_ARCHIVE_RESULTS_RESP = {
+    "data": [
+        {
+            "_createdBy": {
+                "id": "demisto",
+                "avatar": "demisto",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "george@demisto.com"
+            },
+            "_updatedBy": {
+                "id": "demisto",
+                "avatar": "demisto",
+                "name": "George",
+                "username": "george@demisto.com",
+                "primary_email": "george@demisto.com"
+            },
+            "completeAfterCount": 0,
+            "completeAfterDuration": 0,
+            "createDate": "2019-10-06T11:18:38.253848Z",
+            "customer_id": "demisto",
+            "emailNotify": False,
+            "_errors": [],
+            "errors": [],
+            "id": "82",
+            "is_part_of_report": False,
+            "name": "",
+            "numResults": 457,
+            "percentComplete": 100.0,
+            "query": "domain:[google,com] | groupby eventtype",
+            "queryAST": "{}",
+            "searchEndDate": "2019-10-06T11:18:28Z",
+            "searchStartDate": "2019-10-05T11:18:28Z",
+            "sourceBucket": "",
+            "state": "completed",
+            "timeRemaining": 0.0,
+            "updateDate": "2019-10-06T11:18:54.686503Z"
+        }
+    ],
+    "results": {
+        "dsl": {
+            "from": 0,
+            "aggs": {
+                "groupby:eventtype": {
+                    "meta": {
+                        "field": "eventtype",
+                        "type": "groupby"
+                    },
+                    "terms": {
+                        "field": "eventtype",
+                        "order": {
+                            "_count": "desc"
+                        },
+                        "min_doc_count": 1,
+                        "size": 50
+                    }
+                }
+            },
+            "terminate_after": -1,
+            "directives": {
+                "scroll_id": "",
+                "page_size": 10,
+                "start": "2019-10-28T15:00:00.000Z",
+                "highlight_terms": [],
+                "limit": -1,
+                "timeout": 120000,
+                "offset": 0,
+                "indices": [
+                    "events",
+                    "alerts",
+                    "appliance_health"
+                ],
+                "end": "2019-10-29T15:40:48.571Z",
+                "search_customer_ids": None,
+                "customer_id": "",
+                "scroll": False
+            },
+            "timeout": "120000ms",
+            "query": {
+                "bool": {
+                    "filter": [
+                        {
+                            "range": {
+                                "meta_ts": {
+                                    "gte": "2019-10-28T15:00:00.000Z",
+                                    "lte": "2019-10-29T15:40:48.571Z"
+                                }
+                            }
+                        }
+                    ],
+                    "minimum_should_match": 1,
+                    "should": [
+                        {
+                            "common": {
+                                "domain": {
+                                    "cutoff_frequency": 0.001,
+                                    "query": "google",
+                                    "high_freq_operator": "and",
+                                    "low_freq_operator": "and"
+                                }
+                            }
+                        },
+                        {
+                            "common": {
+                                "domain": {
+                                    "cutoff_frequency": 0.001,
+                                    "query": "com",
+                                    "high_freq_operator": "and",
+                                    "low_freq_operator": "and"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            "size": 10
+        },
+        "mql": "domain:[google,com] | groupby eventtype sep=`|%$,$%|`",
+        "results": {
+            "hits": {
+                "stored": 457,
+                "hits": [
+                    {
+                        "_type": "event",
+                        "_id": "demisto",
+                        "_source": {
+                            "status": "delivered",
+                            "domain": "domain.com",
+                            "_eventid": "demsito",
+                            "rawmsg": "{}",
+                            "meta_cbname": "helix-etp",
+                            "srcipv4": "8.8.8.8",
+                            "meta_ts": "2019-10-06T10:55:26.103Z",
+                            "srclongitude": -0.1257400,
+                            "size": "40.04",
+                            "srccountry": "",
+                            "eventtype": "trace",
+                            "srccity": "london",
+                            "to": "demisto@demisto.com",
+                            "srclatitude": 51.8594,
+                            "subject": "dictation users",
+                            "metaclass": "email",
+                            "eventid": "evenid",
+                            "inreplyto": "squidward <squidward@demisto.com>",
+                            "eventtime": "2019-10-06T10:48:13.000Z",
+                            "srcregion": "",
+                            "meta_oml": 908,
+                            "class": "fireeye_etp",
+                            "mailfrom": "squidward@demisto.com",
+                            "rawmsghostname": "helix-etp_stats-etp_stats",
+                            "__metadata__": {
+                                "raw_batch_id": "",
+                                "data_type": "passthrough",
+                                "disable_index": False,
+                                "dynamic_taxonomy": False,
+                                "num_events": 10,
+                                "source_type": "json",
+                                "target_index": "",
+                                "batch_id": "",
+                                "customer_id": "",
+                                "id": "",
+                                "sequence_number": 1
+                            },
+                            "srcdomain": "",
+                            "srcisp": "",
+                            "srcusagetype": "",
+                            "srccountrycode": "",
+                            "meta_rts": "2019-10-06T10:55:26.000Z",
+                            "meta_cbid": 99999
+                        },
+                        "_index": "archive"
+                    },
+                    {
+                        "_type": "event",
+                        "_id": "demisto",
+                        "_source": {
+                            "status": "delivered",
+                            "domain": "demisto.com",
+                            "_eventid": "",
+                            "rawmsg": "{}",
+                            "meta_cbname": "helix-etp_stats",
+                            "srcipv4": "8.8.8.8",
+                            "meta_ts": "2019-10-06T11:09:25.946Z",
+                            "srclongitude": -75.19625,
+                            "size": "10.75",
+                            "srccountry": "",
+                            "eventtype": "trace",
+                            "srccity": "cha",
+                            "to": "squidward@demisto.com",
+                            "srclatitude": 40.282958,
+                            "subject": "meet world",
+                            "metaclass": "email",
+                            "eventid": "demisto",
+                            "inreplyto": "\"squidward\" <fsquidward@demisto.com>",
+                            "eventtime": "2019-10-06T11:02:01.000Z",
+                            "srcregion": "penn",
+                            "meta_oml": 1160,
+                            "class": "fireeye_etp",
+                            "mailfrom": "squidward@demisto.com",
+                            "rawmsghostname": "helix-etp_stats-etp_stats",
+                            "__metadata__": {
+                                "raw_batch_id": "demisto",
+                                "data_type": "passthrough",
+                                "disable_index": False,
+                                "dynamic_taxonomy": False,
+                                "num_events": 5,
+                                "source_type": "json",
+                                "target_index": "",
+                                "batch_id": "",
+                                "customer_id": "",
+                                "id": "",
+                                "sequence_number": 0
+                            },
+                            "srcdomain": "squidward.com",
+                            "srcisp": "squidward",
+                            "srcusagetype": "com",
+                            "srccountrycode": "us",
+                            "meta_rts": "2019-10-06T11:09:25.000Z",
+                            "meta_cbid": 99999
+                        },
+                        "_index": "archive"
+                    },
+                    {
+                        "_type": "event",
+                        "_id": "demisto",
+                        "_source": {
+                            "status": "delivered",
+                            "domain": "demisto.com",
+                            "_eventid": "demiostop",
+                            "rawmsg": "{}",
+                            "meta_cbname": "helix-etp_stats",
+                            "srcipv4": "8.8.8.8",
+                            "meta_ts": "2019-10-06T11:09:25.946Z",
+                            "srclongitude": -93.119,
+                            "size": "26.92",
+                            "srccountry": "united states",
+                            "eventtype": "trace",
+                            "srccity": "",
+                            "to": "squidward@demisto.com",
+                            "srclatitude": 33.50,
+                            "subject": "fw: reminder",
+                            "metaclass": "email",
+                            "eventid": "dwasdkffv",
+                            "inreplyto": "squidward <squidward@demisto.com>",
+                            "eventtime": "2019-10-06T11:02:18.000Z",
+                            "srcregion": "lo",
+                            "meta_oml": 1065,
+                            "class": "fireeye_etp",
+                            "mailfrom": "squidward@demisto.com",
+                            "rawmsghostname": "helix-etp_etp_stats",
+                            "__metadata__": {
+                                "raw_batch_id": "sdfdsfdsdfvbvd",
+                                "data_type": "passthrough",
+                                "disable_index": False,
+                                "dynamic_taxonomy": False,
+                                "num_events": 5,
+                                "source_type": "json",
+                                "target_index": "",
+                                "batch_id": "afasvjbjhsde4",
+                                "customer_id": "",
+                                "id": "outg85cgj5",
+                                "sequence_number": 1
+                            },
+                            "srcdomain": "demisto.com",
+                            "srcisp": "demistos",
+                            "srcusagetype": "dch",
+                            "srccountrycode": "us",
+                            "meta_rts": "2019-10-06T11:09:25.000Z",
+                            "meta_cbid": 99999
+                        },
+                        "_index": "archive"
+                    },
+                    {
+                        "_type": "event",
+                        "_id": "squidsdaasfwardsasd",
+                        "_source": {
+                            "status": "delivered",
+                            "domain": "demisto.com",
+                            "_eventid": "jjdpse3",
+                            "rawmsg": "{}",
+                            "meta_cbname": "helix-etp_stats",
+                            "srcipv4": "8.8.8.8",
+                            "meta_ts": "2019-10-06T11:09:27.091Z",
+                            "srclongitude": -84.377,
+                            "size": "16.46",
+                            "srccountry": "united states",
+                            "eventtype": "trace",
+                            "srccity": "at",
+                            "to": "squidward@demisto.com",
+                            "srclatitude": 33.770843,
+                            "subject": "magic link",
+                            "metaclass": "email",
+                            "eventid": "93730",
+                            "inreplyto": "geroge <hello@demisto.com>",
+                            "eventtime": "2019-10-06T11:03:00.000Z",
+                            "srcregion": "georga",
+                            "meta_oml": 1100,
+                            "class": "fireeye_etp",
+                            "mailfrom": "squidward@demisto.com",
+                            "rawmsghostname": "helix-etp_s",
+                            "__metadata__": {
+                                "raw_batch_id": "ssas7",
+                                "data_type": "passthrough",
+                                "disable_index": False,
+                                "dynamic_taxonomy": False,
+                                "num_events": 5,
+                                "source_type": "json",
+                                "target_index": "",
+                                "batch_id": "94gfjs83",
+                                "customer_id": "",
+                                "id": "skdjf8723d",
+                                "sequence_number": 2
+                            },
+                            "srcdomain": "demisto.com",
+                            "srcisp": "the demisto group",
+                            "srcusagetype": "com",
+                            "srccountrycode": "us",
+                            "meta_rts": "2019-10-06T11:09:27.000Z",
+                            "meta_cbid": 99999
+                        },
+                        "_index": "archive"
+                    }
+                ],
+                "total": 457
+            },
+            "aggregations": {
+                "groupby:eventtype": {
+                    "limited": False,
+                    "buckets": [
+                        {
+                            "key": "trace",
+                            "doc_count": 452
+                        },
+                        {
+                            "key": "dnslookupevent",
+                            "doc_count": 5
+                        }
+                    ],
+                    "doc_count_error_upper_bound": 0,
+                    "sum_other_doc_count": 0
+                }
+            },
+            "took": 4605
+        }
+    }
+}
+
+
 RULE_RESP = {
     "rules": [
         {

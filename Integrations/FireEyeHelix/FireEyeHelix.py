@@ -848,34 +848,41 @@ def build_search_groupby_result(aggregations: Dict, separator: str) -> List:
     for key, aggregation in aggregations.items():
         if key.startswith('groupby'):
             groupby_fields = demisto.get(aggregation, 'meta.field') or demisto.get(aggregation, 'meta.fields')
-            if isinstance(groupby_fields, str):
-                groupby_fields = [groupby_fields]
-            for bucket in aggregation.get('buckets', []):
-                bucket_vals = bucket.get('key', '').split(separator)
-                group_set = {groupby_field: bucket_vals[idx] for idx, groupby_field in enumerate(groupby_fields)}
-                group_set['DocCount'] = bucket.get('doc_count')
-                res.append(group_set)
+            if groupby_fields:
+                if isinstance(groupby_fields, str):
+                    groupby_fields = [groupby_fields]
+                for bucket in aggregation.get('buckets', []):
+                    bucket_vals = bucket.get('key', '').split(separator)
+                    group_set = {groupby_field: bucket_vals[idx] for idx, groupby_field in enumerate(groupby_fields)}
+                    group_set['DocCount'] = bucket.get('doc_count')
+                    res.append(group_set)
     return res
 
 
-def build_search_result(raw_response):
+def build_search_result(raw_response: dict, search_id: Union[str, int] = None):
     """Builds search result from search raw_response
 
     Args:
         raw_response: Search raw response
+        search_id: Search ID (relevant for archive search)
 
     Returns:
         Search result
     """
     results = raw_response.get('results')
+    context = {'MQL': raw_response.get('mql')}
+    if search_id:
+        dt_query = 'val.ID && val.ID === obj.ID'
+        context['ID'] = search_id
+    else:
+        dt_query = 'val.ID && val.ID === obj.ID' if search_id else 'val.MQL && val.MQL === obj.MQL'
     if results:
-        context = {'MQL': raw_response.get('mql')}
         # Search results
         hits = demisto.get(results, 'hits.hits')
         if hits:
             context['Result'] = []
             for hit in hits:
-                context['Result'].append(build_transformed_dict(hit.get('_source'), EVENTS_TRANS))
+                context['Result'].append(build_transformed_dict(hit.get('_source'), EVENTS_TRANS))  # type: ignore
         # Human readable value is ok for both no result found and result found cases
         hr = tableToMarkdown(f'{INTEGRATION_NAME} - Search result for {context["MQL"]}', context.get('Result'),
                              ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
@@ -887,12 +894,13 @@ def build_search_result(raw_response):
             separator = demisto.get(raw_response, 'options.groupby.separator') or '|%$,$%|'
             context['GroupBy'] = build_search_groupby_result(aggregations, separator)
             if context['GroupBy']:
-                group_by_keys = list(context['GroupBy'][0].keys())
+                group_by_keys = list(context['GroupBy'][0].keys())  # type: ignore
+                # move DocCount to tail
                 group_by_keys.remove('DocCount')
                 group_by_keys.append('DocCount')
                 hr += tableToMarkdown('Group By', context['GroupBy'], headers=group_by_keys)
 
-        return hr, {f'{INTEGRATION_CONTEXT_NAME}Search(val.MQL && val.MQL === obj.MQL)': context}, raw_response
+        return hr, {f'{INTEGRATION_CONTEXT_NAME}Search({dt_query})': context}, raw_response
     else:
         # API should not return an empty result matching this case, this is a fail safe
         return f'{INTEGRATION_NAME} - Search did not find any result.', {}, {}
@@ -1202,33 +1210,6 @@ def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, D
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any cases.', {}, {}
-
-
-def get_event_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Get event by id and return outputs in Demisto's format
-
-    Args:
-        client: Client object with request
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    _id = args.get('id')
-    raw_response = client.get_event_by_id(event_id=_id)
-    event = raw_response.get('events')
-    if event:
-        title = f'{INTEGRATION_NAME} - Event {_id}:'
-        context_entry = build_transformed_dict(event, {})  # TODO: edit this
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
-        }
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return human_readable, context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any events.', {}, {}
 
 
 def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -1575,6 +1556,21 @@ def archive_search_status_command(client: Client, args: Dict) -> Tuple[str, Dict
         return f'{INTEGRATION_NAME} - Failed to get archive search details', {}, {}
 
 
+def archive_search_results_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Fetches an archive search result
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    search_id = args.get('search_id')
+    raw_response = client.get_archive_search_results(search_id)
+    return build_search_result(raw_response.get('results'), search_id)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -1604,7 +1600,6 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-alert-create-note': create_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-delete-note': delete_alert_note_command,
         f'{INTEGRATION_COMMAND_NAME}-get-events-by-alert': get_events_by_alert_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-event-by-id': get_event_by_id_command,  # todo: Not tested properly
         f'{INTEGRATION_COMMAND_NAME}-get-endpoints-by-alert': get_endpoints_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-cases-by-alert': get_cases_by_alert_command,
         f'{INTEGRATION_COMMAND_NAME}-get-lists': get_lists_command,
@@ -1622,7 +1617,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,
         f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,
         f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,
-        # f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,  # todo: not tested properly
     }
     try:
         if command == 'fetch-incidents':
