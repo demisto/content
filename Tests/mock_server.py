@@ -87,8 +87,8 @@ class AMIConnection:
             string. The IP of the AMI on the docker bridge.
         """
         out = self.check_output(['/usr/sbin/ip', 'addr', 'show', 'docker0']).split('\n')
-        lines_of_words = map(lambda y: y.strip().split(' '), out)  # Split output to lines[words[]]
-        address_lines = filter(lambda x: x[0] == 'inet', lines_of_words)  # Take only lines with ipv4 addresses
+        lines_of_words = [y.strip().split(' ') for y in out]  # Split output to lines[words[]]
+        address_lines = [x for x in lines_of_words if x[0] == 'inet']  # Take only lines with ipv4 addresses
         if len(address_lines) != 1:
             raise Exception("docker bridge interface has {} ipv4 addresses, should only have one."
                             .format(len(address_lines)))
@@ -228,9 +228,9 @@ class MITMProxy:
         dst_folder = os.path.join(self.repo_folder, get_folder_path(playbook_id))
 
         if not self.has_mock_file(playbook_id):
-            print 'Mock file not created!'
+            print('Mock file not created!')
         elif self.get_mock_file_size(src_filepath) == '0':
-            print 'Mock file is empty, ignoring.'
+            print('Mock file is empty, ignoring.')
             self.empty_files.append(playbook_id)
         else:
             # Move to repo folder
@@ -280,7 +280,7 @@ class MITMProxy:
         if not log_file_exists:
             self.stop()
             raise Exception("Proxy process took to long to go up.")
-        print('Proxy process up and running. Took {} seconds'.format(seconds_since_init))
+        print(('Proxy process up and running. Took {} seconds'.format(seconds_since_init)))
 
     def stop(self):
         if not self.process:
@@ -291,8 +291,8 @@ class MITMProxy:
 
         # Handle logs
         if self.debug:
-            print "proxy outputs:"
-            print self.process.stdout.read()
-            print self.process.stderr.read()
+            print("proxy outputs:")
+            print(self.process.stdout.read())
+            print(self.process.stderr.read())
 
         self.process = None

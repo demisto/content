@@ -1,4 +1,3 @@
-from mock import patch
 from Tests.mock_server import AMIConnection, clean_filename, get_mock_file_path, get_log_file_path, get_folder_path
 from Tests.test_content import organize_tests
 
@@ -26,6 +25,7 @@ with patch('Tests.mock_server.AMIConnection._get_docker_ip') as mock:
     mock.return_value = "2.2.2.2"
 
     ami = AMIConnection('1.1.1.1')
+
 
     def test_ami():
         assert ami.public_ip == '1.1.1.1'
