@@ -1,6 +1,6 @@
-id: Azure SecurityCenter Test
+id: Azure SecurityCenter - Test
 version: -1
-name: Azure SecurityCenter Test
+name: Azure SecurityCenter - Test
 starttaskid: "0"
 tasks:
   "0":
