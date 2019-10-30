@@ -16,6 +16,11 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- defaultvalue: 7 days
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: first_fetch_time
+  required: false
+  type: 0
 - defaultvalue: '0'
   display: Fetch only Detections with greater/equal Certainty score
   name: c_score_gte
@@ -86,6 +91,12 @@ script:
       description: <= the id provided
     - name: state
       description: 'filter by state: active, inactive, ignored, ignored for all'
+      auto: PREDEFINED
+      predefined:
+        - active
+        - inactive
+        - ignored
+        - ignored for all
     - name: type_vname
       description: filter by the detection type (verbose name)
     - name: category
@@ -143,7 +154,7 @@ script:
     - contextPath: Vectra.Detection.TargetsKeyAsset
       description: 'Flag indicating if the host has a detection targeting a key asset'
       type: Boolean
-    - contextPath: Vectra.Detection.Certainty_Score
+    - contextPath: Vectra.Detection.CertaintyScore
       description: 'The current certainty score correlated to this host'
       type: Number
     - contextPath: Vectra.Detection.ID
@@ -185,7 +196,13 @@ script:
     - name: name
       description: filter by name
     - name: state
-      description: 'filter by state: active, inactive, suspended, ignored, ignored4all'
+      description: 'filter by state: active, inactive, suspended, ignored, ignored for all'
+      auto: PREDEFINED
+      predefined:
+        - active
+        - inactive
+        - ignored
+        - ignored for all
     - name: last_source
       description: filter by last_source (ip address)
     - name: t_score
@@ -212,7 +229,7 @@ script:
     - contextPath: Vectra.Host.TargetsKeyAsset
       description: 'Flag indicating if the host has a detection targeting a key asset'
       type: Boolean
-    - contextPath: Vectra.Host.Certainty_Score
+    - contextPath: Vectra.Host.CertaintyScore
       description: 'The current certainty score correlated to this host'
       type: Number
     - contextPath: Vectra.Host.DetectionID

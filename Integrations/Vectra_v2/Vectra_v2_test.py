@@ -902,7 +902,7 @@ DETECTION_BY_ID_RAW_RES = {
 
 class Client_mock(Client):
     def __init__(self, mock, incidents=None, last_run=None):
-        super().__init__('', '', False, {}, 0, 0, 0, '')
+        super().__init__('', '', False, {}, 0, 0, 0, '', state='active')
         self.incidents = incidents
         self.last_run = last_run
         self.mock = mock
