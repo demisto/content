@@ -1,6 +1,6 @@
-id: Azure Compute Test
+id: Azure Compute - Test
 version: -1
-name: Azure Compute Test
+name: Azure Compute - Test
 starttaskid: "0"
 tasks:
   "0":
