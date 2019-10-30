@@ -80,6 +80,7 @@ def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
     columns = argToList(args.get('columns', ''))
     limit = args.get('limit') if args.get('limit') else ROWS_LIMIT  # type: ignore # [assignment]
     if 'limit' not in query.lower():
+        query = query.rstrip(' ') + ' '
         query += f'LIMIT {limit}'
     raw_response = client.query(query)
     if raw_response:
