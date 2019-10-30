@@ -226,9 +226,9 @@ def get_email_context(email_data, mailbox):
     context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
-        'ID': email_data['id'],
-        'ThreadId': email_data['threadId'],
-        'Labels': ', '.join(email_data['labelIds']),
+        'ID': email_data.get('id'),
+        'ThreadId': email_data.get('threadId'),
+        'Labels': ', '.join(email_data.get('labelIds', [])),
         'Headers': context_headers,
         'Attachments': email_data.get('payload', {}).get('filename', ''),
         # only for format 'raw'
@@ -249,7 +249,7 @@ def get_email_context(email_data, mailbox):
     }
 
     context_email = {
-        'ID': email_data['id'],
+        'ID': email_data.get('id'),
         'Headers': context_headers,
         'Attachments': {'entryID': email_data.get('payload', {}).get('filename', '')},
         # only for format 'raw'
@@ -478,7 +478,7 @@ def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, 
         gmail_context.append({
             'Type': "Gmail",
             'ID': mail_results_data.get('id'),
-            'Labels': mail_results_data.get('labelIds'),
+            'Labels': mail_results_data.get('labelIds', []),
             'ThreadId': mail_results_data.get('threadId'),
             'To': ','.join(to),
             'From': emailfrom,
