@@ -23,7 +23,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -66,6 +66,11 @@ configuration:
   required: false
 - display: Use Archer's REST API instead of its SOAP API
   name: useRest
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use European Time format (dd/mm/yyyy) instead of the American one
+  name: useEuropeanTime
   defaultvalue: "false"
   type: 8
   required: false
@@ -1491,28 +1496,50 @@ script:
 
             // convert 7/18/2017 8:17:49 AM to 2017-07-18T20:17:49-0800
             var dateStr = recordTimeStr.split(' ')[0];
-            var monthStr = dateStr.split('/')[0];
-            var dayStr = dateStr.split('/')[1];
+            var monthStr;
+            var dayStr;
+            if (params.useEuropeanTime){
+                // convert 05/03/2019 09:16:43 to 2019-03-05T09:16:43-0800
+                dayStr = dateStr.split('/')[0];
+                monthStr = dateStr.split('/')[1];
+            } else {
+                // convert 7/18/2017 8:17:49 to 2017-07-18T20:17:49-0800
+                monthStr = dateStr.split('/')[0];
+                dayStr = dateStr.split('/')[1];
+            }
+
             var yearStr = dateStr.split('/')[2];
 
             var timeStr = recordTimeStr.split(' ')[1];
-            var extStr = recordTimeStr.split(' ')[2];
-            var hourInt = Number(timeStr.split(':')[0]);
+            var hourInt;
+            var hourStr;
+            if (params.useEuropeanTime){
+                // convert 05/03/2019 09:16:43 to 2019-03-05T09:16:43-0800
+                hourInt = Number(timeStr.split(':')[0]);
+                hourStr = hourInt + '';
+                if (Number(hourInt) < 10 && hourStr.length === 1) {
+                    hourStr = "0" + hourStr;
+                }
+            } else {
+                // convert 7/18/2017 8:17:49 to 2017-07-18T20:17:49-0800
+                var extStr = recordTimeStr.split(' ')[2];
+                hourInt = Number(timeStr.split(':')[0]);
+                if (extStr == "PM" && hourInt < 12) {
+                    hourInt = hourInt + 12;
+                }
+
+                if (extStr == "AM" && hourInt == 12) {
+                    hourInt = hourInt - 12;
+                }
+
+                hourStr = hourInt + '';
+                if (Number(hourInt) < 10 && hourStr.length === 1) {
+                    hourStr = "0" + hourStr;
+                }
+            }
+
             var minStr = timeStr.split(':')[1];
             var secStr = timeStr.split(':')[2];
-
-            if (extStr == "PM" && hourInt < 12) {
-                hourInt = hourInt + 12;
-            }
-
-            if (extStr == "AM" && hourInt == 12) {
-                hourInt = hourInt - 12;
-            }
-
-            var hourStr = hourInt + '';
-            if (Number(hourInt) < 10 && hourStr.length === 1) {
-                hourStr = "0" + hourStr;
-            }
 
             if (Number(minStr) < 10 && minStr.length === 1) {
                 minStr = "0" + minStr;
@@ -1564,7 +1591,10 @@ script:
             seconds = '0' + seconds;
         }
 
-        // format such: 7/22/2017 3:58 PM
+        // format such: 7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
+        if (params.useEuropeanTime){
+            return day + '/' + month + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
+        }
         return month + '/' + day + '/' + year + ' ' + finalHour + ':' + minutes + ':' + seconds + ' ' + ext;
     }
 
@@ -2061,7 +2091,13 @@ script:
                             var recordValues = fieldValue;
                             Object.keys(recordValues).forEach(function(key) {
                                 if (key === "Date Created") {
-                                    lastTime = recordValues[key];
+
+                                    if(params.useEuropeanTime) {
+                                        lastTime = getOccurredTime(recordValues[key], 0);
+
+                                    } else {
+                                        lastTime = recordValues[key];
+                                    }
                                 }
                                 if (recordValues[key] !== null && recordValues[key] !== undefined){
                                     if (Array.isArray(recordValues[key])){ // array of nested objects
@@ -2109,7 +2145,11 @@ script:
                             }
                         }
                         if (fieldName === "Date Created") {
-                            lastTime = fieldValue;
+                            if(params.useEuropeanTime) {
+                                lastTime = getOccurredTime(fieldValue, 0);
+                            } else {
+                                lastTime = fieldValue;
+                            }
                         }
                     }
                 }
@@ -2147,7 +2187,11 @@ script:
                         var recordValues = fieldValue;
                         Object.keys(recordValues).forEach(function(key) {
                             if (key === "Date Created") {
-                                lastTime = recordValues[key];
+                                if(params.useEuropeanTime) {
+                                    lastTime = getOccurredTime(recordValues[key], 0);
+                                } else {
+                                    lastTime = recordValues[key];
+                                }
                             }
                             if (recordValues[key] !== null && recordValues[key] !== undefined){
                                 if (Array.isArray(recordValues[key])){ // array of nested objects
@@ -2195,7 +2239,12 @@ script:
                         }
                     }
                     if (fieldName === "Date Created") {
-                        lastTime = fieldValue;
+                        if(params.useEuropeanTime) {
+                            lastTime = getOccurredTime(fieldValue, 0);
+                        } else {
+                            lastTime = fieldValue;
+                        }
+
                     }
                 }
             }
@@ -2304,6 +2353,21 @@ script:
         return result;
     }
 
+    function verifyFieldsToValue(appFieldMapping, fieldsToValueJSON, appID) {
+        // For each application ID, the records of that application ID have different fields.
+        // This function verifies the fields specified in the fieldsToValue argument are known by Archer to be compatible with the given app ID.
+        var userSpecifiedFields = Object.keys(fieldsToValueJSON);
+        var actualFieldsOfGivenApp = Object.keys(appFieldMapping);
+        logInfo("\n\n\n" + "type of actualFieldsOfGivenApp: " + JSON.stringify(actualFieldsOfGivenApp) + "\n\n\n");
+        userSpecifiedFields.forEach(function(fieldSpecifiedByUser) {
+            if (!(actualFieldsOfGivenApp.indexOf(fieldSpecifiedByUser) > -1)) {
+                var wrongFieldErrorMessage = "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}. \n".format(fieldSpecifiedByUser, appID);
+                var possibleFieldsForGivenAppIDMessage = "The allowed fields for application ID {0} are {1}".format(appID, JSON.stringify(actualFieldsOfGivenApp));
+                throw (wrongFieldErrorMessage + possibleFieldsForGivenAppIDMessage);
+            }
+        })
+    }
+
     // integration commands functions
 
     function createRecord(command, dataArgs) {
@@ -2321,9 +2385,12 @@ script:
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             createRecordMapping = cache[appId]["mapping"];
+            verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
+
         } else {
             levels = getLevelsByApplicationId(appId);
             createRecordMapping = createMappingNameToFieldId(levels);
+            verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
             var dic = {};
             var innerDic = {};
             innerDic["levels"] = levels;
@@ -2716,10 +2783,11 @@ script:
             fieldNameToSearchOn = fieldToSearchOn;
         }else{ // performing a general search
             fieldNameToSearchOn = "Date Created";
-            fieldIdToSearchOn = JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id);
+            isFieldNameInMapping = nameToFieldMapping[fieldNameToSearchOn] && typeof nameToFieldMapping[fieldNameToSearchOn] !== 'undefined';
+            fieldIdToSearchOn = isFieldNameInMapping? JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id) : '';
             dateOperator = "GreaterThan";
             var day = 60 * 1000 * 60 * 24;
-            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 186)));
+            searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
         }
 
         var rawResponse = searchSendSoapRequest(
@@ -2851,6 +2919,7 @@ script:
             tz = 0;
         }
         var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
+        offset = tz ? parseInt(tz) : 0;
 
         var cmd = commands.searchRecords;
         var incidentRes = [];
@@ -3692,7 +3761,8 @@ script:
       This command only works for value list fields (type 4).
   - name: archer-reset-cache
     arguments: []
-    description: Reset Archer's integration cache. Run this command if you change the fields of your Archer application
+    description: Reset Archer's integration cache. Run this command if you change
+      the fields of your Archer application
   isfetch: true
   runonce: false
 tests:

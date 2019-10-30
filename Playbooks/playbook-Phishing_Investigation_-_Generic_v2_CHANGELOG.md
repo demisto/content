@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
+Added a task to save the reporter email address in an incident field, so it can be displayed on the summary page.
+
+## [19.10.0] - 2019-10-03
 Fixed an issue where the email authenticity check task failed to find the relevant script.
 
 ## [19.9.1] - 2019-09-18

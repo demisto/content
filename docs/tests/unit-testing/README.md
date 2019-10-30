@@ -32,7 +32,7 @@ if __name__ == "__builtin__" or __name__ == "builtins":
 ``` 
 
 # Write Your Unit Tests
-Unit test should be written in a separate Python file named: `<you_choice>_test.py`. Within the unit test file, each unit test function should be named: `test_<your name>`. More information on writing unit tests and their format is available at the [PyTest Docs](https://docs.pytest.org/en/latest/contents.html). Good place to see example unit tests: https://github.com/demisto/content/tree/master/Scripts/ParseEmailFiles.
+Unit test should be written in a separate Python file named: `<you_choice>_test.py`. Within the unit test file, each unit test function should be named: `test_<your name>`. More information on writing unit tests and their format is available at the [PyTest Docs](https://docs.pytest.org/en/latest/contents.html). Good place to see example unit tests: [Proofpoint TAP v2 integration](https://github.com/demisto/content/blob/master/Integrations/ProofpointTAP_v2/ProofpointTAP_v2_test.py) 
 
 ## Mocking
 We use [pytest-mock](https://github.com/pytest-dev/pytest-mock/) for mocking. `pytest-mock` is enabled by default and installed in the base environment mentioned above. To use a `mocker` object simply pass it as a parameter to your test function. The `mocker` can then be used to mock both the demisto object and also external APIs. For an example of using a `mocker` object see: https://github.com/demisto/content/blob/master/Scripts/ParseEmailFiles/parse_email_files_test.py#L29 .
@@ -66,6 +66,7 @@ Run the script with `-h` to see command line options:
 ./Tests/scripts/pkg_dev_test_tasks.py -h
 usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
+                             [--cpu-num CPU_NUM]
 
 Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
@@ -83,6 +84,9 @@ optional arguments:
   --no-test             Do NOT test (skip pytest) (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
+  --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
+                        automatic detection of the number of CPUs.) (default:
+                        0)
   ```
 
 Sample output:
@@ -104,4 +108,11 @@ Sample output:
 ```
 docker run --rm -it devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075e sh
 ```
+
+* If you have faced the error `ValueError: unknown locale: UTF-8` when running `pkg_dev_test_tasks.py`, add these lines to your ~/.bash_profile: 
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
 
