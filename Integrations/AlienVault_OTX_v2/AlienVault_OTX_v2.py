@@ -24,7 +24,7 @@ Attributes:
 """
 INTEGRATION_NAME = 'AlienVault OTX v2'
 INTEGRATION_COMMAND_NAME = 'alienvault'
-INTEGRATION_CONTEXT_NAME = 'DataEnrichmentandThreatIntelligence'
+INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 DEFAULT_THRESHOLD = int(demisto.params().get('default_threshold', 2))
 TOKEN = demisto.params().get('api_token')
 
