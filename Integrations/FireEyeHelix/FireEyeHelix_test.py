@@ -57,7 +57,4 @@ def test_commands(command, args, response, expected_result, mocker):
     client = Client(base_url='https://apps.fireeye.com/helix', verify=False, proxy=True, headers=headers)
     mocker.patch.object(client, '_http_request', return_value=response)
     res = command(client, args)
-    import json
-    with open('test_data/test.json', 'w+') as test_data:
-        json.dump(res[1], test_data)
     assert expected_result == res[1]
