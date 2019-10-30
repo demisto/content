@@ -327,7 +327,7 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Dict]:
                 'Vendor': 'AlienVault OTX v2'
             }
         }
-        human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)', {}).get('URL'),
+        human_readable = tableToMarkdown(t=context_entry.get(f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)'),
                                          name=title)
 
         return human_readable, context_entry, raw_response

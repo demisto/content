@@ -1,13 +1,13 @@
 <h1>AlienVault OTX integration</h1>
 <p>
-Query Indicators of Compromise in AlienVault OTX.
-This integration was integrated and tested with version 1.0 of AlienVault OTX v2
+  Query Indicators of Compromise in AlienVault OTX.
+  This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 </p>
 <h2>Use Cases</h2>
 <ul>
   <li>IPv4/v6, domain, hostname, file hashes, dns enrichment</li>
   <li>Pulses searches</li>
-</ul>
+</ul> 
 <h2>Configure AlienVault OTX v2 on Demisto</h2>
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
@@ -15,7 +15,6 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   <li>Search for AlienVault OTX v2.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
    <li><strong>Server address</strong></li>
    <li><strong>API Token</strong></li>
@@ -45,7 +44,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   <li>alienvault-get-passive-dns-data-by-indicator</li>
   <li>alienvault-search-pulses</li>
   <li>alienvault-get-pulse-details</li>
-  <li>url</li>
+  <li>url: url</li>
 </ol>
 <h3>1. ip</h3>
 <hr>
@@ -156,7 +155,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!ip ip=8.8.8.8 using-brand="AlienVault OTX v2"</code>
+  <code>!ip ip=8.8.8.8"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -192,7 +191,6 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
       <th><strong>ASN</strong></th>
       <th><strong>Address</strong></th>
       <th><strong>Geo</strong></th>
-      <th><strong>Reputation</strong></th>
     </tr>
   </thead>
   <tbody>
@@ -200,7 +198,6 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
       <td> AS15169 Google LLC </td>
       <td> 8.8.8.8 </td>
       <td> Country: US<br>Location: 37.751,-97.822 </td>
-      <td>  </td>
     </tr>
   </tbody>
 </table>
@@ -219,6 +216,8 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>domain</code>
 </p>
+
+
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -306,16 +305,17 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!domain domain=google.com using-brand="AlienVault OTX v2"</code>
+  <code>!domain domain=google.com"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
     "AlienVaultOTX": {
-        "Domain": {
-            "Alexa": "http://www.alexa.com/siteinfo/google.com",
-            "Whois": "http://whois.domaintools.com/google.com"
-        }
+      "Domain": {
+        "Alexa": "http://www.alexa.com/siteinfo/google.com",
+        "Name": "google.com",
+        "Whois": "http://whois.domaintools.com/google.com"
+      }
     },
     "DBotScore": {
         "Indicator": "google.com",
@@ -362,6 +362,8 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-search-ipv6</code>
 </p>
+
+
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -449,7 +451,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-search-ipv6 ip=2001:4860:4860::8888 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-search-ipv6 ip=2001:4860:4860::8888</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -462,7 +464,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
     },
     "DBotScore": {
         "Indicator": "2001:4860:4860::8888",
-        "Score": 1,
+        "Score": 0,
         "Type": "IPv6",
         "Vendor": "AlienVault OTX v2"
     },
@@ -485,7 +487,6 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
       <th><strong>ASN</strong></th>
       <th><strong>Address</strong></th>
       <th><strong>Geo</strong></th>
-      <th><strong>Reputation</strong></th>
     </tr>
   </thead>
   <tbody>
@@ -493,7 +494,6 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
       <td> AS15169 Google LLC </td>
       <td> 2001:4860:4860::8888 </td>
       <td> Country: US<br>Location: 37.751,-97.822 </td>
-      <td>  </td>
     </tr>
   </tbody>
 </table>
@@ -512,6 +512,8 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-search-hostname</code>
 </p>
+
+
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -604,26 +606,26 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-search-hostname hostname=google.com using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-search-hostname hostname=demisto.com</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
+    "AlienVaultOTX": {
+        "Endpoint": {
+          "Alexa": "http://www.alexa.com/siteinfo/demisto.com",
+          "Hostname": "demisto.com",
+          "Whois": "http://whois.domaintools.com/demisto.com"
+        } 
+    },
     "DBotScore": {
-        "Indicator": "google.com",
-        "Score": 1,
+        "Indicator": "demisto.com",
+        "Score": 0,
         "Type": "hostname",
         "Vendor": "AlienVault OTX v2"
     },
     "Endpoint": {
-        "Hostname": "google.com"
-    },
-    "AlienVaultOTX": {
-        "Endpoint": {
-            "Hostname": "google.com,
-            "Alexa": "http://www.alexa.com/siteinfo/google.com",
-            "Whois": "http://whois.domaintools.com/google.com"
-        }
+        "Hostname": "demisto.com"
     }
 }
 </pre>
@@ -640,9 +642,9 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   </thead>
   <tbody>
     <tr>
-      <td> http://www.alexa.com/siteinfo/google.com </td>
-      <td> google.com </td>
-      <td> http://whois.domaintools.com/google.com </td>
+      <td> http://www.alexa.com/siteinfo/demisto.com </td>
+      <td> demisto.com </td>
+      <td> http://whois.domaintools.com/demisto.com </td>
     </tr>
   </tbody>
 </table>
@@ -661,6 +663,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>file</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -769,14 +772,14 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!file file=6c5360d41bd2b14b1565f5b18e5c203cf512e493 using-brand="AlienVault OTX v2"</code>
+  <code>!file file=6c5360d41bd2b14b1565f5b18e5c203cf512e493"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
     "DBotScore": {
         "Indicator": "6c5360d41bd2b14b1565f5b18e5c203cf512e493",
-        "Score": 1,
+        "Score": 0,
         "Type": "file",
         "Vendor": "AlienVault OTX v2"
     },
@@ -835,6 +838,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-search-cve</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -933,7 +937,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-search-cve cve_id=CVE-2014-0160 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-search-cve cve_id=CVE-2014-0160</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -992,6 +996,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   <code>alienvault-get-related-urls-by-indicator</code>
 </p>
 
+
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -1049,53 +1054,87 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-get-related-urls-by-indicator indicator_type=IPv4 indicator=8.8.8.8 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-get-related-urls-by-indicator indicator=8.8.8.8 indicator_type=IPv4</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
     "AlienVaultOTX": {
-        "URL": [
-            {
-                "Data": "http://8.8.8.8/w/cohernece.txt"
-            },
-            {
-                "Data": "https://dns.google.com/resolve?name=apv3.stel.com&type=ANY&random_padding=HUmzJ9Da0EHn5FZ7yfdbqJOhiVBKnWl5DjWYk4Ba4ooy3vVFHsQmu1hM5BYEgFSKmUcfu1mcd0sBv10gOvN09oERfhQG2da2sJBpPVpk6rR2AmIxzO7FQ"
-            },
-            {
-                "Data": "http://8.8.8.8/siteepres/horatrtbdg.asp"
-            },
-            {
-                "Data": "https://dns.google.com/experimental?ct=application%2Fdns-udpwireformat&dns"
-            },
-            {
-                "Data": "https://dns.google/dns"
-            },
-            {
-                "Data": "https://dns.google.com/resolve?name=apv2.stel.com&type=ANY&random_padding=FKWsRuGcTpuYcyBx3LEJVC2dx25ihCICFP303ZhUndPC3DwfcCqp2jpO"
-            },
-            {
-                "Data": "https://tagnet.app/itlikf/login.php?l%3D_JeHFUq_VJOXK0QWHtoGYDw1774256418%26fid.13InboxLight.aspxn.1774256418%26fid.125289964252813InboxLight99642_Product-userid%26userid%3D"
-            },
-            {
-                "Data": "http://8.8.8.8/XmWLPDQ2M"
-            },
-            {
-                "Data": "https://paulvmoreau.github.io/BeltFedNPCs"
-            },
-            {
-                "Data": "https://blackhat.al/index.php"
-            }
-        ]
+      "URL": [
+          {
+              "Data": "http://8.8.8.8/w/cohernece.txt"
+          },
+          {
+              "Data": "https://dns.google.com/resolve?name=apv3.stel.com&type=ANY&random_padding=HUmzJ9Da0EHn5FZ7yfdbqJOhiVBKnWl5DjWYk4Ba4ooy3vVFHsQmu1hM5BYEgFSKmUcfu1mcd0sBv10gOvN09oERfhQG2da2sJBpPVpk6rR2AmIxzO7FQ"
+          },
+          {
+              "Data": "http://8.8.8.8/siteepres/horatrtbdg.asp"
+          },
+          {
+              "Data": "https://dns.google.com/experimental?ct=application%2Fdns-udpwireformat&dns"
+          },
+          {
+              "Data": "https://dns.google/dns"
+          },
+          {
+              "Data": "https://dns.google.com/resolve?name=apv2.stel.com&type=ANY&random_padding=FKWsRuGcTpuYcyBx3LEJVC2dx25ihCICFP303ZhUndPC3DwfcCqp2jpO"
+          },
+          {
+              "Data": "https://tagnet.app/itlikf/login.php?l%3D_JeHFUq_VJOXK0QWHtoGYDw1774256418%26fid.13InboxLight.aspxn.1774256418%26fid.125289964252813InboxLight99642_Product-userid%26userid%3D"
+          },
+          {
+              "Data": "http://8.8.8.8/XmWLPDQ2M"
+          },
+          {
+              "Data": "https://paulvmoreau.github.io/BeltFedNPCs"
+          }
+      ]
     }
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
 <h3>AlienVault OTX v2 - Related url list to queried indicator</h3>
-<p>
-**No entries.**
-</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Data</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> https://8.8.8.8/x8me1s </td>
+    </tr>
+    <tr>
+      <td> http://8.8.8.8/w/cohernece.txt </td>
+    </tr>
+    <tr>
+      <td> https://dns.google.com/resolve?name=apv3.stel.com&type=ANY&random_padding=HUmzJ9Da0EHn5FZ7yfdbqJOhiVBKnWl5DjWYk4Ba4ooy3vVFHsQmu1hM5BYEgFSKmUcfu1mcd0sBv10gOvN09oERfhQG2da2sJBpPVpk6rR2AmIxzO7FQ </td>
+    </tr>
+    <tr>
+      <td> http://8.8.8.8/siteepres/horatrtbdg.asp </td>
+    </tr>
+    <tr>
+      <td> https://dns.google.com/experimental?ct=application%2Fdns-udpwireformat&dns </td>
+    </tr>
+    <tr>
+      <td> https://dns.google/dns </td>
+    </tr>
+    <tr>
+      <td> https://dns.google.com/resolve?name=apv2.stel.com&type=ANY&random_padding=FKWsRuGcTpuYcyBx3LEJVC2dx25ihCICFP303ZhUndPC3DwfcCqp2jpO </td>
+    </tr>
+    <tr>
+      <td> https://tagnet.app/itlikf/login.php?l%3D_JeHFUq_VJOXK0QWHtoGYDw1774256418%26fid.13InboxLight.aspxn.1774256418%26fid.125289964252813InboxLight99642_Product-userid%26userid%3D </td>
+    </tr>
+    <tr>
+      <td> http://8.8.8.8/XmWLPDQ2M </td>
+    </tr>
+    <tr>
+      <td> https://paulvmoreau.github.io/BeltFedNPCs </td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- remove the following comments to manually add an image: -->
 <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
@@ -1110,6 +1149,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-get-related-hashes-by-indicator</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1168,24 +1208,43 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-get-related-hashes-by-indicator indicator_type=IPv4 indicator=8.8.8.8 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-get-related-hashes-by-indicator indicator=8.8.8.8 indicator_type=IPv4</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "AlienVaultOTX": {
-        "File": [
-            {
-                "Hash": "ffc2595aefa80b61621023252b5f0ccb22b6e31d7f1640913cd8ff74ddbd8b41"
-            },
-            {
-                "Hash": "0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c"
-            },
-            {
-                "Hash": "d8b8a5c941b6a1c3cb58f7e59489b2554ed14e6c6655d1fbf6852e45404b7516"
-            }
-        ]
-    }
+    "AlienVaultOTX.File": [
+        {
+            "Hash": "ffc2595aefa80b61621023252b5f0ccb22b6e31d7f1640913cd8ff74ddbd8b41"
+        },
+        {
+            "Hash": "0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c"
+        },
+        {
+            "Hash": "d8b8a5c941b6a1c3cb58f7e59489b2554ed14e6c6655d1fbf6852e45404b7516"
+        },
+        {
+            "Hash": "b3d8adc185834ab858ebf55082828cb9fc1170bbe8de222821d225a6056ff5dc"
+        },
+        {
+            "Hash": "e43cf3f5fa5e14972ba3f159dee6e98330bd19dccc1267cfc91b1000aef975d9"
+        },
+        {
+            "Hash": "9e11b1e769da3c8059345b36c62b4a857845bd7e14c7c14af2945ce26570d91f"
+        },
+        {
+            "Hash": "ae695ce9b8ff4bb831721a8c60377c1757d6d4fe579640b54f3c7f62b175f506"
+        },
+        {
+            "Hash": "093bde5d50daba59bfe68b31251cf2c39353bdfe8ad510284935ca027f269637"
+        },
+        {
+            "Hash": "438b531ba399feb19ed7bf73657d3de6996e001ee5054c04af6b2943e41b402e"
+        },
+        {
+            "Hash": "5019a6b3ec69eae63f716b1df74434bf66f090a6c75a594e2392c7a22f1698cc"
+        }
+    ]
 }
 </pre>
 <h5>Human Readable Output</h5>
@@ -1208,6 +1267,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-get-passive-dns-data-by-indicator</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1291,44 +1351,110 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-get-passive-dns-data-by-indicator indicator_type=IPv4 indicator=8.8.8.8 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-get-passive-dns-data-by-indicator indicator=8.8.8.8 indicator_type=IPv4</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "AlienVaultOTX": {
-        "PassiveDNS": [
-            {
-                "FirstSeen": "2019-10-10T10:43:34+00:00",
-                "Hostname": "eg-q4.com",
-                "IP": "8.8.8.8",
-                "LastSeen": "2019-10-10T10:43:34+00:00",
-                "Type:": "domain"
-            },
-            {
-                "FirstSeen": "2019-10-10T07:58:00+00:00",
-                "Hostname": "bvc365.com",
-                "IP": "8.8.8.8",
-                "LastSeen": "2019-10-10T07:58:00+00:00",
-                "Type:": "domain"
-            },
-            {
-                "FirstSeen": "2019-10-10T04:52:29+00:00",
-                "Hostname": "bitvv02.com",
-                "IP": "8.8.8.8",
-                "LastSeen": "2019-10-10T04:52:29+00:00",
-                "Type:": "domain"
-            }
-        ]
-    }
+    "AlienVaultOTX":
+      "PassiveDNS": [
+        {
+            "FirstSeen": "2019-10-29T23:41:54+00:00",
+            "Hostname": "bjnn.com.cn",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-29T23:41:54+00:00",
+            "Type": "hostname"
+        },
+        {
+            "FirstSeen": "2019-10-29T17:01:00+00:00",
+            "Hostname": "api.cloudapps-sand.dhcs.ca.gov",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-29T17:01:00+00:00",
+            "Type": "hostname"
+        },
+        {
+            "FirstSeen": "2019-10-29T13:21:44+00:00",
+            "Hostname": "1",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-29T13:21:46+00:00",
+            "Type": "domain"
+        },
+        {
+            "FirstSeen": "2019-10-29T04:10:19+00:00",
+            "Hostname": "ronssr.xyz",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-29T04:10:19+00:00",
+            "Type": "domain"
+        },
+        {
+            "FirstSeen": "2019-10-29T01:56:59+00:00",
+            "Hostname": "true.nxtv.cn",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-29T01:56:59+00:00",
+            "Type": "hostname"
+        },
+        {
+            "FirstSeen": "2019-10-28T04:57:51+00:00",
+            "Hostname": "furymice.com",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-28T04:57:51+00:00",
+            "Type": "domain"
+        },
+        {
+            "FirstSeen": "2019-10-27T23:25:58+00:00",
+            "Hostname": "diogroup.vn",
+            "IP": "8.8.8.8",
+            "LastSeen": "2019-10-27T23:25:58+00:00",
+            "Type": "domain"
+        }
+    ]
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
 <h3>AlienVault OTX v2 - Related passive dns list to queried indicator</h3>
-<p>
-**No entries.**
-</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>FirstSeen</strong></th>
+      <th><strong>Hostname</strong></th>
+      <th><strong>IP</strong></th>
+      <th><strong>LastSeen</strong></th>
+      <th><strong>Type</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> 2019-10-29T23:41:54+00:00 </td>
+      <td> bjnn.com.cn </td>
+      <td> 8.8.8.8 </td>
+      <td> 2019-10-29T23:41:54+00:00 </td>
+      <td> hostname </td>
+    </tr>
+    <tr>
+      <td> 2019-10-29T17:01:00+00:00 </td>
+      <td> api.cloudapps-sand.dhcs.ca.gov </td>
+      <td> 8.8.8.8 </td>
+      <td> 2019-10-29T17:01:00+00:00 </td>
+      <td> hostname </td>
+    </tr>
+    <tr>
+      <td> 2019-10-29T13:21:44+00:00 </td>
+      <td> 2</td>
+      <td> 8.8.8.8 </td>
+      <td> 2019-10-29T13:21:46+00:00 </td>
+      <td> domain </td>
+    </tr>
+    <tr>
+      <td> 2019-10-29T04:10:19+00:00 </td>
+      <td> ronssr.xyz </td>
+      <td> 8.8.8.8 </td>
+      <td> 2019-10-29T04:10:19+00:00 </td>
+      <td> domain </td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- remove the following comments to manually add an image: -->
 <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
@@ -1343,6 +1469,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-search-pulses</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1386,7 +1513,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   </thead>
   <tbody>
     <tr>
-      <td> AlienVaultOTX.Pulses.ID </td>
+      <td>AlienVaultOTX.Pulses.ID</td>
       <td>String</td>
       <td>The ID of the pulse.</td>
     </tr>
@@ -1441,52 +1568,145 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-search-pulses page=1 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-search-pulses page=1</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "AlienVaultOTX": {
-        "Pulses": [
-            {
-                "Author": {
-                    "ID": "2",
-                    "Username": "AlienVault"
-                },
-                "Count": 28,
-                "ID": "546ce8eb11d40838dc6e43f1",
-                "Modified": "708 days ago ",
-                "Name": "PoS Scammers Toolbox",
-                "Source": "web",
-                "SubscriberCount": 92611
+    "AlienVaultOTX.Pulses": [
+        {
+            "Author": {
+                "ID": "2",
+                "Username": "AlienVault"
             },
-            {
-                "Author": {
-                    "ID": "2",
-                    "Username": "AlienVault"
-                },
-                "Count": 11,
-                "ID": "546cf5ba11d40839ea8821ca",
-                "Modified": "1533 days ago ",
-                "Name": " RAZOR BLADES IN THE CANDY JAR",
-                "Source": "web",
-                "SubscriberCount": 92593
+            "Count": 28,
+            "ID": "546ce8eb11d40838dc6e43f1",
+            "Modified": "728 days ago ",
+            "Name": "PoS Scammers Toolbox",
+            "Source": "web",
+            "SubscriberCount": 94133
+        },
+        {
+            "Author": {
+                "ID": "2",
+                "Username": "AlienVault"
             },
-            {
-                "Author": {
-                    "ID": "2",
-                    "Username": "AlienVault"
-                }
-        ]
-    }
+            "Count": 11,
+            "ID": "546cf5ba11d40839ea8821ca",
+            "Modified": "1553 days ago ",
+            "Name": " RAZOR BLADES IN THE CANDY JAR",
+            "Source": "web",
+            "SubscriberCount": 94115
+        },
+        {
+            "Author": {
+                "ID": "2",
+                "Username": "AlienVault"
+            },
+            "Count": 10,
+            "ID": "546e2e4f11d4083bc021c37d",
+            "Modified": "796 days ago ",
+            "Name": "Linking Asprox, Zemot, Rovix and  Rerdom Malware Families ",
+            "Source": "web",
+            "SubscriberCount": 94108,
+            "Tags": [
+                "Asprox",
+                "Zemot",
+                "Rovix"
+            ]
+        },
+        {
+            "Author": {
+                "ID": "2",
+                "Username": "AlienVault"
+            },
+            "Count": 23,
+            "ID": "546fc7bf11d4083bc021c37f",
+            "Modified": "796 days ago ",
+            "Name": "Operation Double Tap",
+            "Source": "web",
+            "SubscriberCount": 94113
+        },
+        {
+            "Author": {
+                "ID": "2",
+                "Username": "AlienVault"
+            },
+            "Count": 60,
+            "Description": "Regin is a multi-purpose data collection tool which dates back several years. Symantec first began looking into this threat in the fall of 2013. Multiple versions of Regin were found in the wild, targeting several corporations, institutions, academics, and individuals.\nRegin has a wide range of standard capabilities, particularly around monitoring targets and stealing data. It also has the ability to load custom features tailored to individual targets. Some of Regin\u2019s custom payloads point to a high level of specialist knowledge in particular sectors, such as telecoms infrastructure software, on the part of\nthe developers.",
+            "ID": "5473709d11d4083bc021c387",
+            "Modified": "279 days ago ",
+            "Name": "Regin",
+            "Source": "web",
+            "SubscriberCount": 94092
+        }
+    ]
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
 <h3>AlienVault OTX v2 - pulse page 1</h3>
-<p>
-**No entries.**
-</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Author</strong></th>
+      <th><strong>Count</strong></th>
+      <th><strong>ID</strong></th>
+      <th><strong>Modified</strong></th>
+      <th><strong>Name</strong></th>
+      <th><strong>Source</strong></th>
+      <th><strong>SubscriberCount</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> ID: 2<br>Username: AlienVault </td>
+      <td> 28 </td>
+      <td> 546ce8eb11d40838dc6e43f1 </td>
+      <td> 728 days ago  </td>
+      <td> PoS Scammers Toolbox </td>
+      <td> web </td>
+      <td> 94133 </td>
+    </tr>
+    <tr>
+      <td> ID: 2<br>Username: AlienVault </td>
+      <td> 11 </td>
+      <td> 546cf5ba11d40839ea8821ca </td>
+      <td> 1553 days ago  </td>
+      <td>  RAZOR BLADES IN THE CANDY JAR </td>
+      <td> web </td>
+      <td> 94115 </td>
+    </tr>
+    <tr>
+      <td> ID: 2<br>Username: AlienVault </td>
+      <td> 10 </td>
+      <td> 546e2e4f11d4083bc021c37d </td>
+      <td> 796 days ago  </td>
+      <td> Linking Asprox, Zemot, Rovix and  Rerdom Malware Families  </td>
+      <td> web </td>
+      <td> 94108 </td>
+    </tr>
+    <tr>
+      <td> ID: 2<br>Username: AlienVault </td>
+      <td> 23 </td>
+      <td> 546fc7bf11d4083bc021c37f </td>
+      <td> 796 days ago  </td>
+      <td> Operation Double Tap </td>
+      <td> web </td>
+      <td> 94113 </td>
+    </tr>
+    <tr>
+      <td> ID: 2<br>Username: AlienVault </td>
+      <td> 60 </td>
+      <td> 5473709d11d4083bc021c387 </td>
+      <td> 279 days ago  </td>
+      <td> Regin </td>
+      <td> web </td>
+      <td> 94092 </td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- remove the following comments to manually add an image: -->
 <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
@@ -1501,6 +1721,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>alienvault-get-pulse-details</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1584,41 +1805,61 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!alienvault-get-pulse-details pulse_id=57204e9b3c4c3e015d93cb12 using-brand="AlienVault OTX v2"</code>
+  <code>!alienvault-get-pulse-details pulse_id=57204e9b3c4c3e015d93cb12</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "AlienVaultOTX": {
-        "Pulses": {
-            "Author": {
-                "Username": "AlienVault"
-            },
-            "Created": "2016-04-27T05:31:06.941000",
-            "Description": "The infamous Remote Access Trojan (RAT) Poison Ivy (hereafter referred to as PIVY) has resurfaced recently, and exhibits some new behaviors. PIVY has been observed targeting a number of Asian countries for various purposes over the past year. Palo Alto Networks\u2019 Unit 42 recently blogged about a new Poison Ivy variant targeting Hong Kong activists dubbed SPIVY that uses DLL sideloading and operates quite differently from a variant recently observed by ASERT that has been active for at least the past 12 months.",
-            "ID": "57204e9b3c4c3e015d93cb12",
-            "Name": "Poison Ivy Activity Targeting Myanmar, Asian Countries",
-            "Tags": [
-                "rat",
-                "remote access trojan",
-                "poison ivy",
-                "pivy",
-                "Myanmar",
-                "asia",
-                "Hong Kong",
-                "arbornetworks"
-            ],
-            "TargetedCountries": []
-        }
+    "AlienVaultOTX.Pulses": {
+        "Author": {
+            "Username": "AlienVault"
+        },
+        "Created": "2016-04-27T05:31:06.941000",
+        "Description": "The infamous Remote Access Trojan (RAT) Poison Ivy (hereafter referred to as PIVY) has resurfaced recently, and exhibits some new behaviors. PIVY has been observed targeting a number of Asian countries for various purposes over the past year. Palo Alto Networks\u2019 Unit 42 recently blogged about a new Poison Ivy variant targeting Hong Kong activists dubbed SPIVY that uses DLL sideloading and operates quite differently from a variant recently observed by ASERT that has been active for at least the past 12 months.",
+        "ID": "57204e9b3c4c3e015d93cb12",
+        "Name": "Poison Ivy Activity Targeting Myanmar, Asian Countries",
+        "Tags": [
+            "rat",
+            "remote access trojan",
+            "poison ivy",
+            "pivy",
+            "Myanmar",
+            "asia",
+            "Hong Kong",
+            "arbornetworks"
+        ],
+        "TargetedCountries": []
     }
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
 <h3>AlienVault OTX v2 - pulse id details</h3>
-<p>
-**No entries.**
-</p>
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th><strong>Author</strong></th>
+      <th><strong>Created</strong></th>
+      <th><strong>Description</strong></th>
+      <th><strong>ID</strong></th>
+      <th><strong>Name</strong></th>
+      <th><strong>Tags</strong></th>
+      <th><strong>TargetedCountries</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td> Username: AlienVault </td>
+      <td> 2016-04-27T05:31:06.941000 </td>
+      <td> The infamous Remote Access Trojan (RAT) Poison Ivy (hereafter referred to as PIVY) has resurfaced recently, and exhibits some new behaviors. PIVY has been observed targeting a number of Asian countries for various purposes over the past year. Palo Alto Networks’ Unit 42 recently blogged about a new Poison Ivy variant targeting Hong Kong activists dubbed SPIVY that uses DLL sideloading and operates quite differently from a variant recently observed by ASERT that has been active for at least the past 12 months. </td>
+      <td> 57204e9b3c4c3e015d93cb12 </td>
+      <td> Poison Ivy Activity Targeting Myanmar, Asian Countries </td>
+      <td> rat,<br>remote access trojan,<br>poison ivy,<br>pivy,<br>Myanmar,<br>asia,<br>Hong Kong,<br>arbornetworks </td>
+      <td>  </td>
+    </tr>
+  </tbody>
+</table>
+
 <!-- remove the following comments to manually add an image: -->
 <!--
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
@@ -1633,6 +1874,7 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>
   <code>url</code>
 </p>
+
 
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
@@ -1736,28 +1978,26 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!url url=demisto.com using-brand="AlienVault OTX v2"</code>
+  <code>!url url=http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"</code>
 </p>
 <h5>Context Example</h5>
 <pre>
 {
-    "AlienVaultOTX": {
-        "URL": {
-            "Alexa": "http://www.alexa.com/siteinfo/demisto.com",
-            "Domain": "demisto.com",
-            "Hostname": "Unavailable",
-            "Url": "demisto.com",
-            "Whois": "http://whois.domaintools.com/demisto.com"
-        }
+    "AlienVaultOTX.URL": {
+        "Alexa": "http://www.alexa.com/siteinfo/fotoidea.com",
+        "Domain": "fotoidea.com",
+        "Hostname": "www.fotoidea.com",
+        "Url": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list",
+        "Whois": "http://whois.domaintools.com/fotoidea.com"
     },
     "DBotScore": {
-        "Indicator": "http://demisto.com",
-        "Score": 1,
+        "Indicator": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list",
+        "Score": "0",
         "Type": "url",
         "Vendor": "AlienVault OTX v2"
     },
     "URL": {
-        "Data": "http://demisto.com"
+        "Data": "http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list"
     }
 }
 </pre>
@@ -1776,11 +2016,11 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
   </thead>
   <tbody>
     <tr>
-      <td> http://www.alexa.com/siteinfo/demisto.com </td>
-      <td> demisto.com </td>
-      <td> Unavailable </td>
-      <td> demisto.com </td>
-      <td> http://whois.domaintools.com/demisto.com </td>
+      <td> http://www.alexa.com/siteinfo/fotoidea.com </td>
+      <td> fotoidea.com </td>
+      <td> www.fotoidea.com </td>
+      <td> http://www.fotoidea.com/sport/4x4_san_ponso/slides/IMG_0068.html/url_list </td>
+      <td> http://whois.domaintools.com/fotoidea.com </td>
     </tr>
   </tbody>
 </table>
@@ -1790,4 +2030,4 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
 <a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
  alt="image" width="749" height="412"></a>
  -->
-
+</p>
