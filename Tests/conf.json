@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "nmap",
+            "playbookID": "Nmap - Test"
+        },
+        {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
@@ -94,6 +98,13 @@
             "playbookID": "SMB test"
         },
         {
+            "playbookID": "ConvertFile-Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "TestAwsEC2GetPublicSGRules-Test"
+        },
+        {
             "playbookID": "TestParseEmailHeaders"
         },
         {
@@ -158,11 +169,6 @@
         },
         {
             "playbookID": "CompareIncidentsLabels-test-playbook"
-        },
-        {
-            "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned test",
-            "nightly": true
         },
         {
             "integrations": "Have I Been Pwned? V2",
@@ -938,7 +944,10 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Test-IsMaliciousIndicatorFound"
+            "playbookID": "Test-IsMaliciousIndicatorFound",
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "TestExtractHTMLTables"
@@ -1124,6 +1133,10 @@
         {
             "integrations": "Remedy AR",
             "playbookID": "Remedy AR Test"
+        },
+        {
+            "integrations": "AWS - IAM",
+            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
         },
         {
             "integrations": "McAfee Active Response",
@@ -1420,6 +1433,12 @@
             "integrations": "Active Directory Query v2"
         },
         {
+            "playbookID": "AD v2 - debug-mode - Test",
+            "instance_names": "active_directory_query_v2",
+            "integrations": "Active Directory Query v2",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Active Directory Query v2",
             "instance_names": "active_directory_query_v2_with_port_configuration",
             "playbookID": "Active Directory Query V2 configuration with port"
@@ -1450,6 +1469,12 @@
             "nightly": true
         },
         {
+            "integrations": "SlashNext Phishing Incident Response",
+            "playbookID": "SlashNextPhishingIncidentResponse-Test",
+            "timeout": 500,
+            "nightly": true
+        },
+        {
             "integrations": "Google Cloud Storage",
             "playbookID": "GCS - Test",
             "timeout": 500,
@@ -1475,7 +1500,7 @@
         },
         {
             "playbookID": "FilterByList - Test",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1495,6 +1520,17 @@
             "timeout": 500
         },
         {
+            "playbookID": "Phishing - Core - Test",
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Palo Alto Minemeld",
+                "Rasterize"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1200
+        },
+        {
             "integrations": "McAfee Active Response",
             "playbookID": "MAR - Endpoint data collection test",
             "timeout": 500
@@ -1503,6 +1539,11 @@
 
             "integrations": "DUO Admin",
             "playbookID": "DuoAdmin API test playbook"
+        },
+        {
+            "integrations": "Traps",
+            "playbookID": "Traps test",
+            "timeout": 600
         },
         {
             "playbookID": "TestShowScheduledEntries"
@@ -1528,10 +1569,6 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -1579,6 +1616,12 @@
         },
         {
             "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
@@ -1696,6 +1739,10 @@
             "playbookID": "DomainTools-Test"
         },
         {
+            "integrations": "Exabeam",
+            "playbookID": "Exabeam - Test"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1748,7 +1795,7 @@
             "playbookID": "Detonate File - FireEye AX - Test"
         },
         {
-            "integrations": "Rasterize",
+            "integrations": ["Rasterize","Image OCR"],
             "playbookID": "Rasterize Test"
         },
         {
@@ -1838,6 +1885,10 @@
             "playbookID": "ThreatCrowd - Test"
         },
         {
+            "integrations": "GoogleDocs",
+            "playbookID": "GoogleDocs-test"
+        },
+        {
             "playbookID": "Request Debugging - Test",
             "fromversion": "5.0.0"
         },
@@ -1856,35 +1907,41 @@
             "integrations": "Elasticsearch v2",
             "instance_names": "es_v6",
             "playbookID": "Elasticsearch_v2_test-v6"
+        },
+        {
+            "integrations": "PolySwarm",
+            "playbookID": "PolySwarm-Test"
         }
     ],
     "skipped_tests": {
-        "TestParseEmailHeaders": "Fails on conditional task (Issue 18815)",
-        "Pwned v2 test": "Pwned v2 test fails on conditional task (Issue 18793).",
-        "CheckpointFW-test": "Test is not stable (Issue 18643)",
-        "search_endpoints_by_hash_-_tie_-_test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
-        "McAfee-TIE Test": "Test is unstable - from time to time fails to create an instance (issue #18350)",
-        "Autoextract - Test": "See issue #18343 for further information",
-        "rsa_packets_and_logs_test": "A command searches for a session ID which doesn't exist on our local server - asked RSA to help (issue #18332)",
-        "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
-        "InfoArmorVigilanteATITest": "Test fails on verify context (issue 17358)",
-        "calculate_severity_-_critical_assets_-_test": "Fails on verify context (issue 17924)",
-        "Forescout-Test": "Should be skipped (issue 17016)",
+        "urlscan_malicious_Test": "Issue 19727",
+        "VxStream Test": "Issue 19439",
+        "SentinelOne V2 - test": "Issue 19361",
+        "CuckooTest": "Issue 19425",
+        "TestParseEmailHeaders": "Issue 18815",
+        "CheckpointFW-test": "Issue 18643",
+        "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
+        "McAfee-TIE Test": "Issue #18350",
+        "Autoextract - Test": "Issue #18343",
+        "rsa_packets_and_logs_test": "Issue #18332",
+        "TestUptycs": "Issue 19750",
+        "InfoArmorVigilanteATITest": "Test issue 17358",
+        "calculate_severity_-_critical_assets_-_test": "Issue 17924",
+        "Forescout-Test": "issue 17016",
         "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
-        "entity_enrichment_generic_test": "Flaky test - fails for changing reasons, requires more investigation (issue 16490)",
-        "ArcSight Logger test": "Possibly outdated API calls",
-        "Qualys-Test": "Test is failing on qualys-report-list not returning results, and also seems there's a proxy issue (issue 16486)",
-        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
+        "entity_enrichment_generic_test": "Issue 16490",
+        "ArcSight Logger test": "Issue 19117",
+        "Qualys-Test": "Issue 16486",
+        "TruSTAR Test": "Issue 19756",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
-        "TestSafeBreach": "Instance configuration change causes test failure (issue 15909)",
-        "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
-        "Test-IsMaliciousIndicatorFound": "Unstable test (issue 15940)",
+        "TestSafeBreach": "Issue 15909",
+        "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
-        "JoeSecurityTestDetonation": "command joe-download-report fails (issue 16118)",
+        "JoeSecurityTestDetonation": "Issue 16118",
         "af2f5a99-d70b-48c1-8c25-519732b733f2": "Added here because test existed but was not configured - need to review the test",
         "Zoom_test": "Added here because test existed but was not configured - need to review the test",
         "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
@@ -1905,17 +1962,17 @@
         "Detonate File - FireEye AX - Test": "No instance",
         "Cofense Triage Test": "Creds only works on demo4",
         "Intezer Testing": "Old test for old version of inteze",
-        "Test - Windows Defender Advanced Threat Protection": "One of the commands has an internal server error. Check again 20/08/2019. Issue - #18552",
-        "CarbonBlackLiveResponseTest": "Task: cb-session-create-and-wait fails (issue 18691)",
-        "nexpose_test": "Failed to create site (issue 18694)",
-        "Recorded Future Test": "Looks like a bug in the product, pending support answer (issue 18922)",
-        "IntSights Mssp Test": "Account Expired (issue #16351)",
-        "CarbonBlackResponseTest": "Instance content has been altered causing test failure #19180",
+        "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
+        "CarbonBlackLiveResponseTest": "Issue 18691",
+        "nexpose_test": "Issue 18694",
+        "Recorded Future Test": "ssue 18922",
+        "IntSights Mssp Test": "Issue #16351",
+        "CarbonBlackResponseTest": "Issue #19180",
         "Pwned test": "API Deprecated, use Pwned test v2 instead",
-        "CheckPhish-Test": "Test is unstable, requires redesign #19188",
+        "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
-        "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
-        "AlphaSOC-Wisdom-Test": "Test is unstable. #19235"
+        "PAN-OS DAG Configuration Test": "Issue #19205",
+        "AlphaSOC-Wisdom-Test": "Issue #19235"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1929,62 +1986,64 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "No instance (Issue 18835)",
+        "Minerva Labs Anti-Evasion Platform": "Issue 18835",
+        "PolySwarm": "contribution",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "ZeroFox": "No data (Alerts) in the product, which is required because record isn't working (issue 19161)",
-        "Jask": "Returning 401 (issue 18879)",
-        "SumoLogic": "No credentials (Issue 18441)",
+        "intsights": "Issue 19694",
+        "ZeroFox": "Issue 19161",
+        "Jask": "Issue 18879",
+        "SumoLogic": "Issue 18441",
         "Lastline": "Temporally moved to skipped in order to not fail nightly",
-        "vmray": "VMRay license expired (Issue 18752)",
-        "Anomali ThreatStream v2": "Credentials are invalid (issue 18561)",
-        "Anomali ThreatStream": "Credentials are invalid (issue 18561)",
-        "RSA Archer": "Instance does not seem to be working, Arian is checking",
-        "SCADAfence CNM": "Once in a while SCADAfence CNM integration fails to create an instance, throwing a '502 bad gateway' error (issue #18376)",
-        "Cortex XDR - IR": "Instance seems to have problems - returning 500 internal server error (issue #18377)",
-        "ArcSight ESM v2": "License expired (issue #18328)",
-        "AlienVault USM Anywhere": "License expired (issue #18273)",
-        "Tufin": "Calls to instance return 502 error. @itay reached out (issue 16441)",
+        "vmray": "Issue 18752",
+        "Anomali ThreatStream v2": "Issue 18561",
+        "Anomali ThreatStream": "Issue 18561",
+        "SCADAfence CNM": "Issue 18376",
+        "Cortex XDR - IR": "Issue #18377",
+        "ArcSight ESM v2": "Issue #18328",
+        "AlienVault USM Anywhere": "Issue #18273",
+        "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
         "MimecastV2": "Several issues with instance",
         "Netskope": "instance is down",
-        "Farsight DNSDB": "No instance (issue 15512)",
+        "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
-        "icebrg": "Requires BD (issue 14312)",
+        "icebrg": "Issue 14312",
         "Freshdesk": "Trial account expired",
-        "Threat Grid": "instance problem (issue 16197)",
+        "Threat Grid": "Issue 16197",
         "Kafka V2": "Can not connect to instance from remote",
-        "Check Point Sandblast": "No access (issue 15948)",
+        "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
-        "RedLock": "Credentials and API problems (issue 15493)",
-        "Salesforce": "User and password expired (issue 15901)",
-        "Zscaler": "License expired (issue 17784)",
+        "RedLock": "Issue 15493",
+        "Salesforce": "Issue 15901",
+        "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
-        "LogRhythm": "Need to fix SOAP api",
         "ANYRUN": "No instance",
         "Snowflake": "Looks like account expired, needs looking into",
-        "Cisco Spark": "No instance (Issue 18940)",
-        "Phish.AI": "Unauthorized. will be re-branded soon as Cofense (Issue 17291)",
-        "QRadar": "No license (issue 17794)",
-        "MaxMind GeoIP2": "License has expired (Issue 18932).",
+        "Cisco Spark": "Issue 18940",
+        "Phish.AI": "Issue 17291",
+        "QRadar": "Issue 17794",
+        "MaxMind GeoIP2": "Issue 18932.",
+        "Exabeam": "Issue 19371",
 
       "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
-        "Tanium": "Instance is not stable (issue 15497)",
+        "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Unstable instance (issue 16115)",
+        "SlackV2": "(Issue 19558)",
 
       "_comment": "~~~ OTHER ~~~",
-        "EclecticIQ Platform": "Old API is deprecated (Issue 8821)",
+        "EclecticIQ Platform": "Issue 8821",
         "Pwned": "Old API is deprecated",
         "iDefense": "DevOps investigation",
         "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
-        "BitDam": "Changes in service (issue #17247)",
+        "BitDam": "Issue #17247",
         "Zoom": "Added here because test existed but was not configured - need to review the test",
-        "MailListener - POP3": "Failing test module (issue 18580)",
+        "MailListener - POP3": "Issue 18580",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
@@ -1994,9 +2053,11 @@
     },
     "nigthly_integrations": [
         "Lastline",
-        "TruSTAR"
+        "TruSTAR",
+        "SlackV2"
     ],
     "unmockable_integrations": {
+        "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
         "Whois": "Mocks does not support sockets",
@@ -2005,7 +2066,7 @@
         "Server Message Block (SMB)": "Does not perform http communication",
         "Active Directory Query v2": "Does not perform http communication",
         "dnstwist": "Does not peform http communication",
-        "VxStream": "JS integration, problem listed in this issue https://github.com/demisto/etc/issues/15544. Detonate URL: Large mock file.",
+        "VxStream": "Issue 15544",
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
@@ -2028,7 +2089,7 @@
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
-        "carbonblackliveresponse": "Pending check: issue 16072",
+        "carbonblackliveresponse": "Issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",

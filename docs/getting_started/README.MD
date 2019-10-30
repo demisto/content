@@ -1,3 +1,17 @@
+# Getting Started
+
+### Prerequisites
+ - Clone the Demisto Content repository
+ - [Python 3](https://www.python.org/downloads/)
+ - [Python 2](https://www.python.org/download/releases/2.0/)
+ - [pip](https://pip.pypa.io/en/stable/installing/)
+ - [Pipenv](https://pypi.org/project/pipenv/)
+ - [PyYaml](https://pypi.org/project/PyYAML/)
+ - [ruamel.yaml](https://pypi.org/project/ruamel.yaml/)
+ - [Docker](https://www.docker.com/)
+ - [Flake8](http://flake8.pycqa.org/en/latest/)
+ - [Mypy](http://mypy-lang.org/)
+
 Demisto offers two IDEs for developing: IntelliJ Plugin and built-in platform IDE.
 
 ## Demisto IntelliJ Plugin
