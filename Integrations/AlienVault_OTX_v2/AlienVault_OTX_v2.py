@@ -161,7 +161,7 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 
 
 @logger
-def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, Dict, Dict]:
+def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, Dict, Union[Dict, list]]:
     """ Enrichment for IPv4/IPv6
 
     Args:
@@ -172,38 +172,48 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
     Returns:
         Outputs
     """
-    raw_response = client.query(section=ip_version,
-                                argument=ip_address)
-    if raw_response:
-        title = f'{INTEGRATION_NAME} - Results for {ip_version} query'
-        context_entry: dict = {
-            outputPaths.get("ip"): {
+    query_args: list = argToList(ip_address)
+    raws: list = []
+    d=[]
+    contexts: dict = {
+        outputPaths.get("ip"): [],
+        f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': [],
+        outputPaths.get("dbotscore"): []
+    }
+    for arg in query_args:
+        raw_response = client.query(section=ip_version,
+                                    argument=arg)
+        if raw_response:
+            raws.append(raw_response)
+            title = f'{INTEGRATION_NAME} - Results for ips query'
+            contexts.get(outputPaths.get("ip"), []).append({
                 'Address': raw_response.get('indicator'),
                 'ASN': raw_response.get('asn'),
                 'Geo': {
                     'Country': raw_response.get('country_code'),
                     'Location': f'{raw_response.get("latitude")},{raw_response.get("longitude")}'
                 }
-            },
-            f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {
+            })
+            contexts.get(f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)', []).append({
                 'IP': {
                     'Reputation': raw_response.get('reputation'),
-                    'IP': ip_address
+                    'IP': arg
                 }
-            },
-            outputPaths.get("dbotscore"): {
+            })
+            contexts.get(outputPaths.get("dbotscore"), []).append({
                 'Indicator': raw_response.get('indicator'),
                 'Score': calculate_dbot_score(raw_response.get('pulse_info', {})),
-                'Type': ip_version,
+                'Type': arg,
                 'Vendor': 'AlienVault OTX v2'
-            }
-        }
+            })
 
-        human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip")),
-                                         name=title)
-        return human_readable, context_entry, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+        else:
+            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
+
+    human_readable = tableToMarkdown(t=contexts.get(outputPaths.get("ip")),
+                                     name=title)
+    return human_readable, contexts, raws
+
 
 
 @logger
