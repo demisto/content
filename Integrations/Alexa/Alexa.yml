@@ -47,6 +47,9 @@ script:
     - contextPath: DBotScore.Domain
       description: Domain being reported
       type: string
+    - contextPath: DBotScore.Type
+      description: Type of indicator being reported
+      type: string
     - contextPath: DBotScore.Indicator
       description: Domain being reported
       type: string
