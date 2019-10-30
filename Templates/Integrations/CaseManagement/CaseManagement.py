@@ -26,6 +26,8 @@ INTEGRATION_CONTEXT_NAME = 'CaseManagement'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 DEFAULT_FETCH_TIME = '3 days'
 
+"""Helper function"""
+
 
 def build_raw_tickets_to_context(tickets: Union[dict, list]):
     if isinstance(tickets, list):
@@ -73,7 +75,7 @@ class Client(BaseClient):
         if limit:
             params['limit'] = limit
         elif self._limit:
-            params['limit'] = limit  # type: ignore
+            params['limit'] = limit  # type: ignore # [assignment]
         params.update(
             assign_params(
                 id=ticket_id,
@@ -193,8 +195,6 @@ def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     Returns:
         Outputs
     """
-    # Initialize main vars
-    context = dict()
     # Get arguments from user
     ticket_to_get = args.get('ticket_id')
     # Make request and get raw response
@@ -202,6 +202,7 @@ def get_ticket_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     # Parse response into context & content entries
     tickets = raw_response.get('ticket')
     if tickets:
+        context = dict()
         title = f'{INTEGRATION_NAME} - Ticket ID: `{ticket_to_get}`.'
         context_entry = build_raw_tickets_to_context(tickets)
         context[f'{INTEGRATION_CONTEXT_NAME}.Ticket(val.ID && val.ID === obj.ID)'] = context_entry
@@ -269,7 +270,7 @@ def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
     """
     ticket_id = args.get('ticket_id')
     users = argToList(args.get('users'))
-    raw_response = client.assign_ticket(ticket_id, users)  # type: ignore
+    raw_response = client.assign_ticket(ticket_id, users)  # type: ignore # [assignment]
     tickets = raw_response.get('ticket')
     if tickets:
         title = f'{INTEGRATION_NAME} - Users has been assigned to {ticket_id}.'
@@ -359,6 +360,7 @@ def list_tickets_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
+@logger
 def fetch_incidents_command(client: Client, last_fetch: dict, fetch_time: str) -> Tuple[list, dict]:
     if last_fetch:
         last_fetch_datetime = datetime.strptime(last_fetch.get('timestamp', ''), TIME_FORMAT)
@@ -410,5 +412,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == '__builtin__':
+if __name__ == 'builtins':
     main()

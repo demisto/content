@@ -78,7 +78,7 @@ def fetch_incidents_command(client: Client, last_run_dict: Optional[dict], first
 def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
     query = args.get('query', '')
     columns = argToList(args.get('columns', ''))
-    limit = args.get('limit') if args.get('limit') else ROWS_LIMIT  # type: ignore
+    limit = args.get('limit') if args.get('limit') else ROWS_LIMIT  # type: ignore # [assignment]
     if 'limit' not in query.lower():
         query += f'LIMIT {limit}'
     raw_response = client.query(query)
@@ -91,14 +91,14 @@ def query_command(client: Client, args: dict) -> Tuple[str, dict, list]:
                     context_entry[columns[i]] = row[i]
                 context.append(context_entry)
         else:
-            context = raw_response  # type: ignore
+            context = raw_response  # type: ignore # [assignment]
         readable_output = tableToMarkdown(
             f"Results from {INTEGRATION_NAME}",
             context,
         )
-        context = {"Database": {"Result": context}}  # type: ignore
-        return readable_output, context, raw_response  # type: ignore
-    return f"{INTEGRATION_NAME} - Found no results for given query.", {}, raw_response  # type: ignore
+        context = {"Database": {"Result": context}}  # type: ignore # [assignment]
+        return readable_output, context, raw_response  # type: ignore # [assignment]
+    return f"{INTEGRATION_NAME} - Found no results for given query.", {}, raw_response  # type: ignore # [assignment]
 
 
 def main():
@@ -133,3 +133,7 @@ def main():
         demisto.incidents(incidents)
     elif command in commands:
         return_outputs(*commands[command](client, demisto.args()))
+
+
+if __name__ == 'builtins':
+    main()

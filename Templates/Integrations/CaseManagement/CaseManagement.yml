@@ -8,10 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
-  name: token
-  required: true
-  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -65,7 +61,7 @@ script:
     description: Assign ticket to user
     execution: false
     name: case-management-assign-ticket
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.7.5.3066
   isfetch: false
   longRunning: false
   longRunningPort: false
