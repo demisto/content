@@ -302,7 +302,6 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
 ''' FUNCTIONS'''
 
 
-
 def panorama_get_major_version():
     major_ver = 0
     context = demisto.getIntegrationContext()
@@ -310,7 +309,7 @@ def panorama_get_major_version():
         context = {}
     else:
         major_ver = context.get('PANOS_MAJOR_VER', 0)
-    
+
     if major_ver == 0:
         # Get PAN-OS Version
         params = {
@@ -323,7 +322,7 @@ def panorama_get_major_version():
         
         context['PANOS_MAJOR_VER'] = major_ver
         demisto.setIntegrationContext(context)
-    return  major_ver
+    return major_ver
 
 
 def panorama_test():
@@ -393,9 +392,9 @@ def panorama_command():
     Executes a command
     """
     params = {}
-    params['key'] = API_KEY
     for arg in demisto.args().keys():
         params[arg] = demisto.args()[arg]
+    params['key'] = API_KEY
 
     result = http_request(
         URL,
@@ -1828,10 +1827,13 @@ def panorama_get_custom_url_category_command():
 def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
     major_ver = panorama_get_major_version()
     if major_ver >= 9:
-        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True) + add_argument("URL List", 'type', False)
+        element = add_argument(description, 'description', False) + \
+                  add_argument_list(sites, 'list', True) + \
+                  add_argument("URL List", 'type', False)
     else:
-        element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
-    
+        element = add_argument(description, 'description', False) + \
+                  add_argument_list(sites, 'list', True)
+
     params = {
         'action': 'set',
         'type': 'config',
@@ -1923,7 +1925,6 @@ def panorama_delete_custom_url_category_command():
 
 @logger
 def panorama_edit_custom_url_category(custom_url_category_name, sites, description=None):
-    
     description = add_argument(description, 'description', False)
     list = add_argument_list(sites, 'list', True)
     major_ver = panorama_get_major_version()
@@ -1932,7 +1933,7 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
         element = f"<entry name='{custom_url_category_name}'>{description}{list}{type}</entry>"
     else:
         element = f"<entry name='{custom_url_category_name}'>{description}{list}</entry>"
-    
+
     params = {
         'action': 'edit',
         'type': 'config',
@@ -2720,7 +2721,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type in ('address-group','edl'):
+    elif object_type in ('address-group', 'edl'):
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
