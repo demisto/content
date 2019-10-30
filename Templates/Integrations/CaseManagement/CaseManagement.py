@@ -385,8 +385,8 @@ def main():
     params = demisto.params()
     server = params.get('url')
     use_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy') == 'true'
-    client = Client(server, use_ssl=use_ssl, proxy=proxy)
+    use_proxy = params.get('proxy') == 'true'
+    client = Client(server, use_ssl=use_ssl, proxy=use_proxy)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
