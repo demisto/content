@@ -37,7 +37,7 @@ args:
 - name: input
   required: true
   default: true
-  description: Cve ID
+  description: CVE ID
 scripttarget: 0
 dependson:
   must:
