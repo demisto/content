@@ -4,7 +4,13 @@
     "tests": [
         {
             "integrations": "Azure Security Center v2",
-            "playbookID": "Azure SecurityCenter Test"
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms-azure-sc-dev"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms-azure-sc-prod"
         },
         {
             "integrations": "nmap",
