@@ -39,10 +39,8 @@ class Client:
         self.location = params.get('location')
         self.key_ring = params.get('key_ring')
         self.service_account = params.get('service_account')
-        self.role = params.get('role')
 
         handle_proxy()
-
         # Creates an API client for the KMS API.
         try:
             self.kms_client = self._init_kms_client()
@@ -55,6 +53,10 @@ class Client:
         """
         credentials_file_name = demisto.uniqueFile() + '.json'
         credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
+
+        dictionary_test = eval(str(self.service_account))
+        if not isinstance(dictionary_test, dict):
+            raise Exception("Service Account json is not formatted well please re-enter it.")
 
         with open(credentials_file_path, 'w') as creds_file:
             json_object = json.loads(str(self.service_account))
@@ -147,6 +149,9 @@ def key_context_creation(res: Any, project_id: str, location_id: str, key_ring_i
 
     key_context = {
         'Name': name,
+        'Project': project_id,
+        'Location': location_id,
+        'KeyRing': key_ring_id,
         'Purpose': enums.CryptoKey.CryptoKeyPurpose(res.purpose).name,
         'CreationTime': datetime.fromtimestamp(int(res.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
         'NextRotationTime': datetime.fromtimestamp(int(res.next_rotation_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT),
@@ -382,6 +387,23 @@ def get_primary_key_version(project_id: str, location_id: str, key_ring_id: str,
     return str(crypto_key.primary.name)
 
 
+def key_ring_context_and_json_creation(key_ring: Any) -> Tuple[Dict, Dict]:
+    key_ring_context = {
+        'Name': key_ring.name,
+        'CreateTime': datetime.fromtimestamp(int(key_ring.create_time.seconds)).strftime(DEMISTO_DATETIME_FORMAT)
+    }
+
+    key_ring_json = {
+        'name': key_ring.name,
+        'create_time': {
+            'seconds': key_ring.create_time.seconds,
+            'nanos': key_ring.create_time.nanos
+        }
+    }
+
+    return key_ring_context, key_ring_json
+
+
 """GENERAL FUNCTIONS"""
 
 
@@ -442,8 +464,11 @@ def create_crypto_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
 
+    headers = ['CreationTime', 'Name', 'Project', 'Location', 'KeyRing', 'Labels', 'NextRotationTime',
+               'Purpose', 'RotationPeriod', 'PrimaryCryptoKeyVersion', 'VersionTemplate']
+
     return (
-        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
+        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True, headers=headers),
         {
             f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name)': context,
         },
@@ -558,8 +583,11 @@ def get_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Di
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
 
+    headers = ['CreationTime', 'Name', 'Project', 'Location', 'KeyRing', 'Labels', 'NextRotationTime',
+               'Purpose', 'RotationPeriod', 'PrimaryCryptoKeyVersion', 'VersionTemplate']
+
     return (
-        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
+        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True, headers=headers),
         {
             f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name)': context,
         },
@@ -721,8 +749,12 @@ def update_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     response = client.kms_client.update_crypto_key(crypto_key=crypto_key, update_mask=update_mask)
 
     context = key_context_creation(response, project_id, location_id, key_ring_id)
+
+    headers = ['CreationTime', 'Name', 'Project', 'Location', 'KeyRing', 'Labels', 'NextRotationTime',
+               'Purpose', 'RotationPeriod', 'PrimaryCryptoKeyVersion', 'VersionTemplate']
+
     return (
-        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True),
+        tableToMarkdown("Google KMS CryptoKey info:", context, removeNull=True, headers=headers),
         {
             f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name)': context,
         },
@@ -754,8 +786,8 @@ def list_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, 
         overall_context.append(key_context_creation(crypto_key, project_id, location_id, key_ring_id))
         overall_raw.append(crypto_key_to_json(crypto_key))
 
-    headers = ['CreationTime', 'Name', 'Labels', 'NextRotationTime', 'Purpose', 'RotationPeriod',
-               'PrimaryCryptoKeyVersion', 'VersionTemplate']
+    headers = ['CreationTime', 'Name', 'Project', 'Location', 'KeyRing', 'Labels', 'NextRotationTime',
+               'Purpose', 'RotationPeriod', 'PrimaryCryptoKeyVersion', 'VersionTemplate']
 
     return (
         tableToMarkdown(name="CryptoKeys:", t=overall_context, removeNull=True, headers=headers),
@@ -871,59 +903,187 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
             }, asymmetric_decrypt_context)
 
 
+def list_key_rings_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+    """List all KeyRings in a given location
+
+    Args:
+        client(Client): User's client.
+        args(dict): Demisto args.
+    """
+    # listing the KeyRings in order to check responses from the API.
+    locations = []
+    if args.get('location') == 'default':
+        locations.append(client.location)
+
+    else:
+        locations.append(args.get('location'))
+
+    # paramater 'all' checks all possible locations
+    if args.get('all') == 'yes':
+        locations = ['global', 'asia-east1', 'asia-east2', 'asia-northeast1',
+                     'asia-northeast2', 'asia-south1', 'asia-southeast1', 'australia-southeast1',
+                     'europe-north1', 'europe-west1', 'europe-west2', 'europe-west3', 'europe-west4',
+                     'europe-west6', 'northamerica-northeast1', 'us-central1', 'us-east1', 'us-east4',
+                     'us-west1', 'us-west2', 'southamerica-east1', 'eur4', 'nam4', 'asia', 'europe', 'us']
+
+    key_rings_context = []
+    key_rings_json = []
+
+    for location in locations:
+        location_path = client.kms_client.location_path(client.project, location)
+        # the response is a iterable containing the KeyRings info.
+        response = client.kms_client.list_key_rings(location_path)
+
+        for key_ring in list(response):
+            single_context, single_json = key_ring_context_and_json_creation(key_ring)
+            key_rings_context.append(single_context)
+            key_rings_json.append(single_json)
+
+    return (tableToMarkdown(name="KeyRings:", t=key_rings_context, removeNull=True),
+            {
+                f'{INTEGRATION_CONTEXT_NAME}.KeyRing(val.Name == obj.Name)': key_rings_context}, key_rings_json)
+
+
+def list_all_keys_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Any, Any]:
+    """List all CryptokKeys across all KeyRings in a given location.
+
+    Args:
+        client(Client): User's client.
+        args(dict): Demisto args.
+    """
+    locations = []
+    if args.get('location') == 'default':
+        locations.append(client.location)
+
+    else:
+        locations.append(args.get('location'))
+
+    # paramater 'all' checks all possible locations
+    if args.get('all') == 'yes':
+        locations = ['global', 'asia-east1', 'asia-east2', 'asia-northeast1',
+                     'asia-northeast2', 'asia-south1', 'asia-southeast1', 'australia-southeast1',
+                     'europe-north1', 'europe-west1', 'europe-west2', 'europe-west3', 'europe-west4',
+                     'europe-west6', 'northamerica-northeast1', 'us-central1', 'us-east1', 'us-east4',
+                     'us-west1', 'us-west2', 'southamerica-east1', 'eur4', 'nam4', 'asia', 'europe', 'us']
+
+    keys_context = []
+    keys_json = []
+    filter_state = args.get('key_state')
+    for location in locations:
+        location_path = client.kms_client.location_path(client.project, location)
+        # the response is a iterable containing the KeyRings info.
+        response = client.kms_client.list_key_rings(location_path)
+
+        for key_ring in list(response):
+            key_ring_name = key_ring.name
+            pre_name = f"projects/{client.project}/locations/{location}/keyRings/"
+            key_ring_id = str(key_ring_name).replace(pre_name, '')
+            crypto_key_response = client.kms_client.list_crypto_keys(key_ring_name, filter_=filter_state)
+
+            for crypto_key in crypto_key_response:
+                keys_context.append(key_context_creation(crypto_key, str(client.project),
+                                                         str(location), str(key_ring_id)))
+                keys_json.append(crypto_key_to_json(crypto_key))
+
+    headers = ['CreationTime', 'Name', 'Project', 'Location', 'KeyRing', 'Labels', 'NextRotationTime',
+               'Purpose', 'RotationPeriod', 'PrimaryCryptoKeyVersion', 'VersionTemplate']
+
+    return (
+        tableToMarkdown(name="CryptoKeys:", t=keys_context, removeNull=True, headers=headers),
+        {
+            f'{INTEGRATION_CONTEXT_NAME}.CryptoKey(val.Name == obj.Name && val.Location == obj.Location'
+            f'&& val.KeyRing == obj. KeyRing)': keys_context,
+        },
+        keys_json
+    )
+
+
+def get_public_key_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict, Dict]:
+    """Get the public key from an asymmetric CryptoKey
+
+    Args:
+        client(Client): User's client.
+        args(dict): Demisto args.
+    """
+    project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
+    crypto_key_version = args.get('crypto_key_version')
+
+    # Construct the resource name of the CryptoKeyVersion.
+    crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
+                                                                        crypto_key_id, crypto_key_version)
+
+    public_key_response = client.kms_client.get_public_key(crypto_key_version_name)
+
+    public_key_context = {
+        'CryptoKey': crypto_key_id,
+        'PEM': str(public_key_response.pem),
+        'Algorithm': enums.CryptoKeyVersion.CryptoKeyVersionAlgorithm(public_key_response.algorithm).name
+    }
+
+    return (
+        f"The Public Key for CryptoKey {crypto_key_id} is:\n{public_key_context.get('PEM')}",
+        {
+            f'{INTEGRATION_CONTEXT_NAME}.PublicKey(val.CryptoKey == obj.CryptoKey '
+            f'&& val.PEM == obj.PEM': public_key_context
+        },
+        public_key_context
+    )
+
+
 def test_function(client: Client) -> None:
-    """Test's user's input:
-        for Encrypter, Decrypter, Encrypter/Decrypter Roles - checks Service account json formatting only.
-        for Project-Admin and KMS-Admin Roles - checks the Service account json formatting and connection to project.
+    """Test's user's input this checks if the given service account has any of the required permissions
+    to use the integration
 
     Args:
         client(Client): User Client.
     """
-    # if the user role is Encrypt/Decrypt related then no additional checks are possible.
-    if client.role in ['Project-Admin', 'KMS-Admin']:
-        # listing the KeyRings in order to check responses from the API.
-        location_path = client.kms_client.location_path(client.project, client.location)
-        # the response is a iterable containing the KeyRings info.
-        response = client.kms_client.list_key_rings(location_path)
+    # creating a valid resource name
+    key_ring_name = client.kms_client.key_ring_path(client.project, client.location, client.key_ring)
 
-        # Count the number of existing KeyRings.
-        if not list(response):
-            raise Exception("No response - please check Project in Google Cloud KMS and Default Location")
+    # The most general set of permissions needed for this integration - you either encrypt, decrypt or
+    # able to get parameters from the KMS in the project
+    permissions = ['cloudkms.cryptoKeys.list', 'cloudkms.cryptoKeyVersions.useToEncrypt',
+                   'cloudkms.cryptoKeyVersions.useToDecrypt']
+
+    # test if at least one of the above permissions exist in the service account
+    per_list = list(client.kms_client.test_iam_permissions(resource=key_ring_name, permissions=permissions).permissions)
+
+    if not per_list:
+        raise Exception("Check that the Service Account given has the necessary permissions to use this integration."
+                        "\nCheck that the Location and KeyRing given are correct")
 
 
 def main():
     COMMANDS = {
-        f'{INTEGRATION_COMMAND_NAME}-create-key': (create_crypto_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-create-key': create_crypto_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-symmetric-decrypt': (symmetric_decrypt_key_command, ['Decrypter',
-                                                                                          'Encrypter/Decrypter',
-                                                                                          'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-symmetric-decrypt': symmetric_decrypt_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-symmetric-encrypt': (symmetric_encrypt_key_command, ['Encrypter',
-                                                                                          'Encrypter/Decrypter',
-                                                                                          'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-symmetric-encrypt': symmetric_encrypt_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-get-key': (get_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-get-key': get_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-update-key': (update_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-update-key': update_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-destroy-key': (destroy_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-destroy-key': destroy_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-restore-key': (restore_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-restore-key': restore_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-disable-key': (disable_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-disable-key': disable_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-enable-key': (enable_key_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-enable-key': enable_key_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-list-keys': (list_keys_command, ['Project-Admin', 'KMS-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-list-keys': list_keys_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-asymmetric-encrypt': (asymmetric_encrypt_command, ['Encrypter',
-                                                                                        'Encrypter/Decrypter',
-                                                                                        'Project-Admin']),
+        f'{INTEGRATION_COMMAND_NAME}-asymmetric-encrypt': asymmetric_encrypt_command,
 
-        f'{INTEGRATION_COMMAND_NAME}-asymmetric-decrypt': (asymmetric_decrypt_command, ['Decrypter',
-                                                                                        'Encrypter/Decrypter',
-                                                                                        'Project-Admin'])
+        f'{INTEGRATION_COMMAND_NAME}-asymmetric-decrypt': asymmetric_decrypt_command,
+
+        f'{INTEGRATION_COMMAND_NAME}-list-key-rings': list_key_rings_command,
+
+        f'{INTEGRATION_COMMAND_NAME}-list-all-keys': list_all_keys_command,
+
+        f'{INTEGRATION_COMMAND_NAME}-get-public-key': get_public_key_command
     }
 
     command = demisto.command()
@@ -938,11 +1098,7 @@ def main():
         if command not in COMMANDS:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-        cmd_func = COMMANDS.get(command)[0]  # type: ignore
-        cmd_role = list(COMMANDS.get(command)[1])  # type: ignore
-
-        if client.role not in cmd_role:
-            raise PermissionError(f"Your Service Account Role does not permit the use of {command} command.")
+        cmd_func = COMMANDS.get(command)  # type: ignore
 
         results = cmd_func(client, demisto.args())  # type: ignore
         return_outputs(*results)
