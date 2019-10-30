@@ -541,5 +541,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - Alienvault_OTX_v2 - Test
