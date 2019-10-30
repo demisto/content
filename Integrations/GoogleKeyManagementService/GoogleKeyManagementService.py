@@ -54,7 +54,7 @@ class Client:
         credentials_file_name = demisto.uniqueFile() + '.json'
         credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
 
-        dictionary_test = eval(str(self.service_account))
+        dictionary_test = json.loads(str(self.service_account))
         if not isinstance(dictionary_test, dict):
             raise Exception("Service Account json is not formatted well please re-enter it.")
 
