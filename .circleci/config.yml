@@ -26,6 +26,7 @@ jobs:
               pyenv versions
               python --version
               python3 --version
+              pip3 install pytest
               echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
       - add_ssh_keys:
           fingerprints:
@@ -40,7 +41,7 @@ jobs:
           name: Infrastucture testing
           when: always
           command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
+            python3 -m pytest ./Tests/scripts/hook_validations/tests/ -v
             pytest ./Tests/scripts/infrastructure_tests/ -v
             pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
