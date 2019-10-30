@@ -150,10 +150,7 @@ It will download the Demisto installer from the given build number.
 Downloads data from content-test-conf, where all the private data is stored. This includes AWS configurations, API keys, login details, and other configurations needed to create a Demisto server with an instance of an integration.
 If one need to used a modified private configuration, One should create a new branch with the exact same branch name as this repository branch. 
 
-#### Troubleshoot
 <!-- TODO: add troubleshooting errors -->
-* master fallback
-* anar circle link
 
 ## Create Instance
 **Not relevant for contributors**
@@ -166,6 +163,13 @@ Creates AWS instances for the build.
 
 Sets up Demisto on the AWS instances, as well as copies the content from the branch you are working on to the instance itself.
 <!-- TODO: add troubleshooting errors -->
+
+#### Troubleshoot
+If you encounter an error of the form:
+![](SetupInstance1_error.png)
+Check the `conf.json` file in "content-test-conf" repository. 
+In most cases, the syntax error will highlighted:
+![](SetupInstance1_reason.png)
 
 ## Run Tests - Latest GA
 **Not relevant for contributors**
