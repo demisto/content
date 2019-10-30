@@ -103,12 +103,12 @@ def is_correct_content_installed(ips, content_version, username, password):
             resp_json = ast.literal_eval(resp[0])
             print("This is the response with literals stripped\n\n\n")
             print(resp_json)
-            resp_json = json.loads(resp_json)
+            resp_json = json.loads(str(resp_json))
             print("This is the response dumped as JSON\n\n\n")
             print(resp_json)
             print("\n\n\nOBJECT TYPE: "+str(type(resp_json)))
 
-            if not isinstance(dict(resp_json), dict):
+            if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
