@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import re
 import os
@@ -76,7 +76,7 @@ def get_task_ids_from_playbook(param_to_enrich_by, data_dict):
     implementing_ids = set([])
     tasks = data_dict.get('tasks', {})
 
-    for task in tasks.values():
+    for task in list(tasks.values()):
         task_details = task.get('task', {})
 
         enriched_id = task_details.get(param_to_enrich_by)
@@ -90,7 +90,7 @@ def get_commmands_from_playbook(data_dict):
     command_to_integration = {}
     tasks = data_dict.get('tasks', [])
 
-    for task in tasks.values():
+    for task in list(tasks.values()):
         task_details = task.get('task', {})
 
         command = task_details.get('script')
@@ -206,7 +206,7 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
-    change_string = run_command("git diff HEAD {0}".format(file_path))
+    change_string = run_command(f'git diff HEAD {file_path}')
     is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
     is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
@@ -215,7 +215,7 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 
     updated = False
     for instance in instances_set:
-        instance_id = instance.keys()[0]
+        instance_id = list(instance.keys())[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
 
@@ -234,12 +234,12 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 def add_new_object_to_id_set(obj_id, obj_data, instances_set):
     obj_in_set = False
 
-    dict_value = obj_data.values()[0]
+    dict_value = list(obj_data.values())[0]
     file_to_version = dict_value.get('toversion', '99.99.99')
     file_from_version = dict_value.get('fromversion', '0.0.0')
 
     for instance in instances_set:
-        instance_id = instance.keys()[0]
+        instance_id = list(instance.keys())[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
         if obj_id == instance_id and file_from_version == integration_from_version and \
@@ -264,8 +264,7 @@ def get_code_file(package_path, script_type):
     """
 
     ignore_regex = r'^CommonServerPython\.py|^CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py'
-    script_path = list(filter(lambda x: not re.search(ignore_regex, x),
-                              glob.glob(package_path + '*' + script_type)))[0]
+    script_path = list([x for x in glob.glob(package_path + '*' + script_type) if not re.search(ignore_regex, x)])[0]
     return script_path
 
 
@@ -274,8 +273,8 @@ def get_script_package_data(package_path):
         package_path = os.path.join(package_path, '')
     yml_files = glob.glob(package_path + '*.yml')
     if not yml_files:
-        raise Exception("No yml files found in package path: {}. "
-                        "Is this really a package dir? If not remove it.".format(package_path))
+        raise Exception(f'No yml files found in package path: {package_path}.'
+                        f'Is this really a package dir? If not remove it.')
     yml_path = yml_files[0]
     code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
@@ -299,11 +298,11 @@ def process_integration(file_path):
     if os.path.isfile(file_path):
         if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            print("adding {0} to id_set".format(file_path))
+            print(f'adding {file_path} to id_set')
             res.append(get_integration_data(file_path))
     else:  # In case we encountered a package
         for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
-            print("adding {0} to id_set".format(yml_file))
+            print(f'adding {file_path} to id_set')
             res.append(get_integration_data(yml_file))
     return res
 
@@ -311,18 +310,18 @@ def process_integration(file_path):
 def process_script(file_path):
     res = []
     if os.path.isfile(file_path):
-        print("adding {0} to id_set".format(file_path))
+        print(f'adding {file_path} to id_set')
         res.append(get_script_data(file_path))
     else:  # In case we encountered a package
         yml_path, code = get_script_package_data(file_path)
-        print("adding {0} to id_set".format(file_path))
+        print(f'adding {file_path} to id_set')
         res.append(get_script_data(yml_path, script_code=code))
     return res
 
 
 def process_playbook(file_path):
     res = []
-    print("adding {0} to id_set".format(file_path))
+    print(f'adding {file_path} to id_set')
     res.append(get_playbook_data(file_path))
     return res
 
@@ -337,7 +336,7 @@ def process_testplaybook_path(file_path):
     Returns:
         pair -- first element is a playbook second is a script. each may be None
     """
-    print("adding {0} to id_set".format(file_path))
+    print(f'adding {file_path} to id_set')
     script = None
     playbook = None
     if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
@@ -386,7 +385,7 @@ def re_create_id_set():
     with open('./Tests/id_set.json', 'w') as id_set_file:
         json.dump(new_ids_dict, id_set_file, indent=4)
     exec_time = time.time() - start_time
-    print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
+    print_color(f'Finished the creation of the id_set. Total time: {exec_time} seconds', LOG_COLORS.GREEN)
 
 
 def sort(data):
@@ -401,7 +400,7 @@ def update_id_set():
 
     print("Getting added files")
     files_string = run_command("git diff --name-status HEAD")
-    second_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name))
+    second_files_string = run_command(f'git diff --name-status origin/master...{branch_name}')
     added_files, modified_files, added_scripts, modified_scripts = \
         get_changed_files(files_string + '\n' + second_files_string)
 
@@ -433,23 +432,23 @@ def update_id_set():
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(get_script_or_integration_id(file_path), get_integration_data(file_path),
                                          integration_set)
-                print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
+                print(f'Adding {get_script_or_integration_id(file_path)} to id_set'())
             if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(get_script_or_integration_id(file_path), get_script_data(file_path),
                                          script_set)
-                print("Adding {0} to id_set".format(get_script_or_integration_id(file_path)))
+                print(f'Adding {get_script_or_integration_id(file_path)} to id_set')
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(collect_ids(file_path), get_playbook_data(file_path),
                                          playbook_set)
-                print("Adding {0} to id_set".format(collect_ids(file_path)))
+                print(f'Adding {collect_ids(file_path)} to id_set')
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(collect_ids(file_path), get_playbook_data(file_path),
                                          test_playbook_set)
-                print("Adding {0} to id_set".format(collect_ids(file_path)))
+                print(f'Adding {collect_ids(file_path)} to id_set')
             if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
                 add_new_object_to_id_set(get_script_or_integration_id(file_path), get_script_data(file_path),
                                          script_set)
-                print("Adding {0} to id_set".format(collect_ids(file_path)))
+                print(f'Adding {collect_ids(file_path)} to id_set"')
 
     if modified_files:
         for file_path in modified_files:
@@ -458,37 +457,37 @@ def update_id_set():
                 id = get_script_or_integration_id(file_path)
                 integration_data = get_integration_data(file_path)
                 update_object_in_id_set(id, integration_data, file_path, integration_set)
-                print("updated {0} in id_set".format(id))
+                print(f'updated {id} in id_set')
             if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or re.match(TEST_SCRIPT_REGEX,
                                                                             file_path, re.IGNORECASE):
                 id = get_script_or_integration_id(file_path)
                 script_data = get_script_data(file_path)
                 update_object_in_id_set(id, script_data, file_path, script_set)
-                print("updated {0} in id_set".format(id))
+                print(f'updated {id} in id_set')
             if re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 playbook_data = get_playbook_data(file_path)
                 update_object_in_id_set(id, playbook_data, file_path, playbook_set)
-                print("updated {0} in id_set".format(id))
+                print(f'updated {id} in id_set')
             if re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
                 id = collect_ids(file_path)
                 playbook_data = get_playbook_data(file_path)
                 update_object_in_id_set(id, playbook_data, file_path, test_playbook_set)
-                print("updated {0} in id_set".format(id))
+                print(f'updated {id} in id_set')
 
     if added_scripts:
         for added_script_package in added_scripts:
             yml_path, code = get_script_package_data(added_script_package)
             add_new_object_to_id_set(get_script_or_integration_id(yml_path),
                                      get_script_data(yml_path, script_code=code), script_set)
-            print("Adding {0} to id_set".format(get_script_or_integration_id(yml_path)))
+            print(f'Adding {get_script_or_integration_id(yml_path)} to id_set')
 
     if modified_scripts:
         for modified_script_package in added_scripts:
             yml_path, code = get_script_package_data(modified_script_package)
             update_object_in_id_set(get_script_or_integration_id(yml_path),
                                     get_script_data(yml_path, script_code=code), yml_path, script_set)
-            print("Adding {0} to id_set".format(get_script_or_integration_id(yml_path)))
+            print(f'Adding {get_script_or_integration_id(yml_path)} to id_set')
 
     if added_files or modified_files:
         new_ids_dict = OrderedDict()
