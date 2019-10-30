@@ -177,7 +177,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
     if raw_response:
         title = f'{INTEGRATION_NAME} - Results for {ip_version} query'
         context_entry: dict = {
-            'IP': {
+            outputPaths.get("ip"): {
                 'Address': raw_response.get('indicator'),
                 'ASN': raw_response.get('asn'),
                 'Geo': {
@@ -199,6 +199,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
             }
         }
         context: dict = {
+            outputPaths.get("ip")
             f'IP({outputPaths.get("ip")})': context_entry.get('IP'),
             f'DBotScore({outputPaths.get("dbotscore")})': context_entry.get('DBotScore'),
             f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': context_entry.get('AlienVaultOTX', {}).get('IP')
@@ -391,8 +392,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
             }
         }
         human_readable = tableToMarkdown(name=title,
-                                         t={'Hostname': context.get('Endpoint', {}).get('Hostname'),
-                                            **context.get('Endpoint', {}).get('AlienVaultOTX')})
+                                         t=context.get('AlienVaultOTX'))
 
         return human_readable, context, raw_response
     else:
