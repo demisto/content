@@ -190,10 +190,10 @@ script:
     - contextPath: AlienVaultOTX.Endpoint.Hostname
       description: The hostname that is mapped to the endpoint.
       type: String
-    - contextPath: AlienVaultOTX.Alexa
+    - contextPath: AlienVaultOTX.Endpoint.Alexa
       description: The Alexa URL endpoint.
       type: String
-    - contextPath: AlienVaultOTX.Whois
+    - contextPath: AlienVaultOTX.Endpoint.Whois
       description: The Whois URL endpoint.
       type: String
     - contextPath: DBotScore.Score

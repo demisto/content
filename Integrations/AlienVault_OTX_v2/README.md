@@ -564,17 +564,17 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
       <td>The hostname that is mapped to the endpoint.</td>
     </tr>
     <tr>
-      <td>Endpoint.AlienVaultOTX.Hostname</td>
+      <td>AlienVaultOTX.Endpoint.Hostname</td>
       <td>String</td>
       <td>The hostname that is mapped to the endpoint.</td>
     </tr>
     <tr>
-      <td>AlienVaultOTX.Alexa</td>
+      <td>AlienVaultOTX.Endpoint.Alexa</td>
       <td>String</td>
       <td>The Alexa URL endpoint.</td>
     </tr>
     <tr>
-      <td>AlienVaultOTX.Whois</td>
+      <td>AlienVaultOTX.Endpoint.Whois</td>
       <td>String</td>
       <td>The Whois URL endpoint.</td>
     </tr>
@@ -620,10 +620,10 @@ This integration was integrated and tested with version 1.0 of AlienVault OTX v2
     },
     "AlienVaultOTX": {
         "Endpoint": {
-            "Hostname": "google.com"
-        },
-        "Alexa": "http://www.alexa.com/siteinfo/google.com",
-        "Whois": "http://whois.domaintools.com/google.com"
+            "Hostname": "google.com,
+            "Alexa": "http://www.alexa.com/siteinfo/google.com",
+            "Whois": "http://whois.domaintools.com/google.com"
+        }
     }
 }
 </pre>
