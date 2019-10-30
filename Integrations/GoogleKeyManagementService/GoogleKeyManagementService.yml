@@ -7,16 +7,6 @@ configuration:
   name: service_account
   required: true
   type: 4
-- display: Service Account Role
-  name: role
-  options:
-  - Project-Admin
-  - KMS-Admin
-  - Encrypter/Decrypter
-  - Encrypter
-  - Decrypter
-  required: true
-  type: 15
 - display: Project in Google Cloud KMS
   name: project
   required: true
@@ -55,7 +45,7 @@ configuration:
   type: 15
 - display: Default Key Ring
   name: key_ring
-  required: false
+  required: true
   type: 0
 - display: Use system proxy settings
   name: proxy
@@ -571,7 +561,7 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.CreationTime
       description: The time at which this CryptoKey was created.
-      type: String
+      type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
         At nextRotationTime, the Key Management Service will automatically:
@@ -1362,6 +1352,267 @@ script:
       type: Boolean
     - contextPath: GoogleKMS.AsymmetricDecrypt.Plaintext
       description: The decrypted plaintext
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: default
+      description: |-
+        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
+
+        Keyword 'default' to to use Default Location set.
+      isArray: false
+      name: location
+      predefined:
+      - default
+      - global
+      - asia-east1
+      - asia-east2
+      - asia-northeast1
+      - asia-northeast2
+      - asia-south1
+      - asia-southeast1
+      - australia-southeast1
+      - europe-north1
+      - europe-west1
+      - europe-west2
+      - europe-west3
+      - europe-west4
+      - europe-west6
+      - northamerica-northeast1
+      - us-central1
+      - us-east1
+      - us-east4
+      - us-west1
+      - us-west2
+      - southamerica-east1
+      - eur4
+      - nam4
+      - asia
+      - europe
+      - us
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Get all KeyRings from all Locations
+      isArray: false
+      name: all
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    deprecated: false
+    description: List all KeyRings in a given location
+    execution: false
+    name: google-kms-list-key-rings
+    outputs:
+    - contextPath: GoogleKMS.KeyRing.Name
+      description: The name of the KeyRing
+      type: String
+    - contextPath: GoogleKMS.KeyRing.CreateTime
+      description: The creation time of the KeyRing
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: default
+      description: |-
+        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
+
+        Keyword 'default' to to use Default Location set.
+      isArray: false
+      name: location
+      predefined:
+      - default
+      - global
+      - asia-east1
+      - asia-east2
+      - asia-northeast1
+      - asia-northeast2
+      - asia-south1
+      - asia-southeast1
+      - australia-southeast1
+      - europe-north1
+      - europe-west1
+      - europe-west2
+      - europe-west3
+      - europe-west4
+      - europe-west6
+      - northamerica-northeast1
+      - us-central1
+      - us-east1
+      - us-east4
+      - us-west1
+      - us-west2
+      - southamerica-east1
+      - eur4
+      - nam4
+      - asia
+      - europe
+      - us
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: Get all CryptoKey from all KeyRings across all locations
+      isArray: false
+      name: all
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Show only keys with this primary CryptoKeyVersion state. Leave
+        empty to show all.
+      isArray: false
+      name: key_state
+      predefined:
+      - CRYPTO_KEY_VERSION_STATE_UNSPECIFIED
+      - PENDING_GENERATION
+      - ENABLED
+      - DISABLED
+      - DESTROYED
+      - DESTROY_SCHEDULED
+      - PENDING_IMPORT
+      - IMPORT_FAILED
+      required: false
+      secret: false
+    deprecated: false
+    description: List all CryptoKeys across all KeyRings in a given location
+    execution: false
+    name: google-kms-list-all-keys
+    outputs:
+    - contextPath: GoogleKMS.CryptoKey.Name
+      description: The resource name for this CryptoKey.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.Purpose
+      description: The immutable purpose of this CryptoKey.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.CreationTime
+      description: The time at which this CryptoKey was created.
+      type: Date
+    - contextPath: GoogleKMS.CryptoKey.NextRotationTime
+      description: |-
+        At nextRotationTime, the Key Management Service will automatically:
+
+        Create a new version of this CryptoKey.
+        Mark the new version as primary.
+      type: Date
+    - contextPath: GoogleKMS.CryptoKey.RotationPeriod
+      description: nextRotationTime will be advanced by this period when the service
+        automatically rotates a key. Must be at least 24 hours and at most 876,000
+        hours.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.Labels
+      description: Labels with user-defined metadata.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
+      description: The ProtectionLevel describing how crypto operations are performed
+        with this CryptoKeyVersion.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
+      description: The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Name
+      description: The resource name for this CryptoKeyVersion.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.State
+      description: The current state of the CryptoKeyVersion.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.CreationTime
+      description: The time at which this CryptoKeyVersion was created.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
+      description: The ProtectionLevel describing how crypto operations are performed
+        with this CryptoKeyVersion.
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
+      description: The algorithm in use in the primary CryptoKeyVersion
+      type: String
+    - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
+      description: The time this CryptoKeyVersion's key material was generated.
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: default
+      description: |-
+        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
+
+        Keyword 'default' to to use Default Location set.
+      isArray: false
+      name: location
+      predefined:
+      - default
+      - global
+      - asia-east1
+      - asia-east2
+      - asia-northeast1
+      - asia-northeast2
+      - asia-south1
+      - asia-southeast1
+      - australia-southeast1
+      - europe-north1
+      - europe-west1
+      - europe-west2
+      - europe-west3
+      - europe-west4
+      - europe-west6
+      - northamerica-northeast1
+      - us-central1
+      - us-east1
+      - us-east4
+      - us-west1
+      - us-west2
+      - southamerica-east1
+      - eur4
+      - nam4
+      - asia
+      - europe
+      - us
+      required: true
+      secret: false
+    - default: false
+      defaultValue: default
+      description: |-
+        A key ring is a grouping of keys for organizational purposes.
+
+        Keyword 'default' to to use Default KeyRing set.
+      isArray: false
+      name: key_ring
+      required: true
+      secret: false
+    - default: false
+      description: The ID for the crypto-key to use
+      isArray: false
+      name: crypto_key
+      required: true
+      secret: false
+    - default: false
+      description: The CryptoKeyVersion to use.
+      isArray: false
+      name: crypto_key_version
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the public key from a given CryptoKey
+    execution: false
+    name: google-kms-get-public-key
+    outputs:
+    - contextPath: GoogleKMS.PublicKey.CryptoKey
+      description: The CryptoKey to which the public key is connected.
+      type: String
+    - contextPath: GoogleKMS.PublicKey.PEM
+      description: The PEM of the public key.
+      type: String
+    - contextPath: GoogleKMS.PublicKey.Algorithm
+      description: The algorithm used in the CryptoKey
       type: String
   dockerimage: demisto/google-kms:1.0.0.2689
   isfetch: false
