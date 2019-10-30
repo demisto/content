@@ -32,6 +32,8 @@ Before merging any PRs, we need all contributors to sign a contributor license a
 
 When you contribute a new pull request, a bot will evaluate whether you have signed the CLA. If required, the bot will comment on the pull request, including a link to accept the agreement. The CLA document is available for review as a [PDF](docs/cla.pdf).
 
+If the `license/cla` status check remains on *Pending*, even though all contributors have accepted the CLA, you can recheck the CLA status by visiting the following link (replace **[PRID]** with the ID of your PR): https://cla-assistant.io/check/demisto/content?pullRequest=[PRID] .
+
 ## Contributing Playbooks
 
 You can edit or create playbooks visually inside the Demisto Platform and then export to a yaml file.

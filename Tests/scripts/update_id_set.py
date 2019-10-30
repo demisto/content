@@ -390,7 +390,7 @@ def re_create_id_set():
 
 
 def sort(data):
-    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    data.sort(key=lambda r: list(r.keys())[0].lower())  # Sort data by key value
     return data
 
 
