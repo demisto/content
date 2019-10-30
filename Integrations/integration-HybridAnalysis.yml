@@ -397,25 +397,8 @@ script:
     }
 
 
-    function detonateFile(entryId, delay, timeout) {
-        var environmentId;
-        if (args.environmentID) {
-            environmentId = args.environmentID;
-        } else {
-            var environments = getEnvironments().backend.global_environment;
-            for (var i=0; i<environments.length; i++) {
-                if (environments[i]['ID'] === 100) {
-                    environmentId = 100;
-                    break;
-                 } else if (environments[i]['architecture'] === 'WINDOWS') {
-                    environmentId = environments[i]['ID'];
-                    break;
-                    } else {
-                        throw 'Please enter valid environment ID';
-                }
-            }
-        }
-        var file = submitFile(entryId, environmentId.toString());
+    function detonateFile(entryId, environmentId, malicious_threat_levels, delay, timeout) {
+        var file = submitFile(entryId, environmentId);
         var hash = file.sha256;
 
         delayTime = parseInt(delay);
@@ -426,7 +409,7 @@ script:
         while (waitTime<timeOut) {
             var res = scan(hash);
             if (res.length > 0) {
-                return scanToEntry(res);
+                return scanToEntry(res, hash, malicious_threat_levels);
             } else {
                 waitTime = waitTime + delayTime;
                 wait(delayTime);
@@ -705,7 +688,7 @@ script:
         case 'hybrid-analysis-search':
             return searchQuery(args.query, args.min_malicious_scanners);
         case 'hybrid-analysis-detonate-file':
-            return detonateFile(args.entryId, args.delay, args.timeout);
+            return detonateFile(args.entryId, args.environmentID, args.malicious_threat_levels, args.delay, args.timeout);
         case 'hybrid-analysis-get-report-status':
             return reportState();
         //Quick Scan commands
@@ -933,6 +916,7 @@ script:
       required: true
       description: The War Room entry ID of the sample file you want to detonate.
     - name: environmentID
+      required: true
       description: The environment ID to which to submit the file for detonation.
         Run the vx-get-environments command to get all environment IDs. Default is
         100, or other WINDOWS ID.
@@ -942,9 +926,84 @@ script:
     - name: timeout
       description: The total wait time (in seconds) before timeout. Default is "60".
       defaultValue: "60"
+    - name: malicious_threat_levels
+      description: A CSV list of threat level values. Files that have a threat level
+        specified in the list will be considered malicious.
+      isArray: true
+      defaultValue: "2"
+    outputs:
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.environmentId
+      description: 'The environment ID of the file. '
+      type: string
+    - contextPath: File.analysis_start_time
+      description: The start time of the file analysis.
+      type: string
+    - contextPath: File.submitname
+      description: The submission name of the file.
+      type: string
+    - contextPath: File.classification_tags
+      description: A list of classification tags of the file.
+      type: string
+    - contextPath: File.vxfamily
+      description: The family classification of the file.
+      type: string
+    - contextPath: File.total_network_connections
+      description: The total number of network connections of the file.
+      type: string
+    - contextPath: File.total_processes
+      description: The total processes count of the file.
+      type: string
+    - contextPath: File.total_signatures
+      description: The total signatures count of the file.
+      type: string
+    - contextPath: File.hosts
+      description: A list of hosts of the file.
+      type: string
+    - contextPath: File.isinteresting
+      description: Whether the server found the file interesting.
+      type: string
+    - contextPath: File.domains
+      description: A list of domains related to the file.
+      type: string
+    - contextPath: File.isurlanalysis
+      description: Whether the file was analyzed by a URL.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The DBot score vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: number
     description: Submits a file for detonation in Hybrid Analysis.
   - name: hybrid-analysis-get-report-status
-    arguments: []
+    arguments:
+    - name: jobID
+      description: The Job ID of the submission
+    - name: sha256
+      description: The submission SHA256
+    - name: environmentID
+      description: The environmentID of the submission
     outputs:
     - contextPath: HybridAnalysis.Submit.State
       description: The state of the process.
