@@ -1,5 +1,9 @@
 ## [Unreleased]
-Improved handling of the *app context* parameter.
+
+
+## [19.10.2] - 2019-10-29
+  - Improved handling of the *app context* parameter.
+  - Fixed handling of arrays when converting notable events to incidents.
 
 ## [19.10.1] - 2019-10-15
 - Added the *app* parameter, which is the app context of the namespace.

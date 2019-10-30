@@ -66,6 +66,7 @@ Run the script with `-h` to see command line options:
 ./Tests/scripts/pkg_dev_test_tasks.py -h
 usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
+                             [--cpu-num CPU_NUM]
 
 Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
@@ -83,6 +84,9 @@ optional arguments:
   --no-test             Do NOT test (skip pytest) (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
+  --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
+                        automatic detection of the number of CPUs.) (default:
+                        0)
   ```
 
 Sample output:
@@ -104,4 +108,11 @@ Sample output:
 ```
 docker run --rm -it devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075e sh
 ```
+
+* If you have faced the error `ValueError: unknown locale: UTF-8` when running `pkg_dev_test_tasks.py`, add these lines to your ~/.bash_profile: 
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
 
