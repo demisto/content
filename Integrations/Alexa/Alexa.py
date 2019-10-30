@@ -57,13 +57,6 @@ def alexa_domain_command():
         dbot_score = 2
         dbot_score_text = 'suspicious'
     dom_ec = {'Name': domain}
-    dbot_ec = {
-        'Score': dbot_score,
-        'Vendor': 'Alexa Rank Indicator',
-        'Domain': domain,
-        'Indicator': domain,
-        'Type': 'domain'
-    }
     ec = {
         'Domain(val.Name && val.Name == obj.Name)': dom_ec,
         'DBotScore': {
