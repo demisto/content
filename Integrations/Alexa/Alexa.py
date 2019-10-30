@@ -66,7 +66,13 @@ def alexa_domain_command():
     }
     ec = {
         'Domain(val.Name && val.Name == obj.Name)': dom_ec,
-        'DBotScore': dbot_ec,
+        'DBotScore': {
+            'Score': dbot_score,
+            'Vendor': 'Alexa Rank Indicator',
+            'Domain': domain,
+            'Indicator': domain,
+            'Type': 'domain'
+        },
         'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
             'Name': domain,
             'Indicator': domain,
