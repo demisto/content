@@ -244,13 +244,19 @@ RULES_TRANS = {
 
 
 class Client(BaseClient):
-    def test_module(self) -> Dict:
+    def test_module(self):
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
             Response content
         """
-        return self._http_request('GET', '/healthcheck', resp_type='content')
+        suffix = '/api/v3/alerts'
+        try:
+            self._http_request('GET', suffix, params={'limit': 1})
+        except DemistoException as e:
+            return_error(
+                'Encountered an issue accessing the API. Please make sure you entered the right Helix ID and API Token.',
+                error=e)
 
     def list_alerts(self, limit: Union[int, str] = None, offset: Union[int, str] = None,
                     created_at__gte: str = None) -> Dict:
@@ -1418,12 +1424,11 @@ def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     sensors = raw_response.get('results')
     if sensors:
         title = f'{INTEGRATION_NAME} - List sensors:'
-        context_entry = build_transformed_dict(sensors, {})  # TODO: edit this
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Sensor(val.ID && val.ID === obj.ID)': context_entry  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Sensor(val.id && val.ID === obj.id)': sensors  # TODO: Edit this
         }
         # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, sensors)
         # Return data to Demisto
         return human_readable, context, raw_response
     else:
@@ -1617,7 +1622,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,
         f'{INTEGRATION_COMMAND_NAME}-archive-search': archive_search_command,
         f'{INTEGRATION_COMMAND_NAME}-archive-search-get-status': archive_search_status_command,
-        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,
     }
     try:
         if command == 'fetch-incidents':
