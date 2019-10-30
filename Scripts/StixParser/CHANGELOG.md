@@ -1,5 +1,5 @@
 ## [Unreleased]
-Can now parse single-lined STIX2 file.
+Can now parse single-object STIX2 file.
 
 ## [19.8.2] - 2019-08-22
   - Add indicators: CVE and Registry Key.
