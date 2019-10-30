@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
-import re
-import os
+import argparse
 import glob
 import json
-import argparse
+import os
+import time
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
-import time
 
 from Tests.scripts.constants import *
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
     LOG_COLORS, print_color, run_command
-
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
                          TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX)
@@ -206,7 +204,7 @@ def get_depends_on(data_dict):
 
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
-    change_string = run_command(f'git diff HEAD {file_path}')
+    change_string = run_command("git diff HEAD {}".format(file_path))
     is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
     is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
