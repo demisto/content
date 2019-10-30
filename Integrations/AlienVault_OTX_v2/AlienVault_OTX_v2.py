@@ -207,11 +207,11 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
             return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
     context_entry: dict = {
-        outputPaths.get("ip_ec"): ip_ec,
+        outputPaths.get("ip"): ip_ec,
         f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
-        outputPaths.get("dbotscore_ec"): dbotscore_ec
+        outputPaths.get("dbotscore"): dbotscore_ec
     }
-    human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip_ec")),
+    human_readable = tableToMarkdown(t=context_entry.get(outputPaths.get("ip")),
                                      name=title)
     return human_readable, context_entry, raws
 
