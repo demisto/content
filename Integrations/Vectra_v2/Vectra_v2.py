@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 
 # CONSTANTS #
 MAX_FETCH_SIZE = 50
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
 # HELPER FUNCTIONS #
@@ -30,14 +31,15 @@ def create_incident_from_detection(detection: dict):
 
 
 class Client:
-    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxy: dict, fetch_size: int, t_score_gte: int,
-                 c_score_gte: int, state: str):
+    def __init__(self, vectra_url: str, api_token: str, verify: bool, proxy: dict, fetch_size: int,
+                 first_fetch: int, t_score_gte: int, c_score_gte: int, state: str):
         """
         :param vectra_url: IP or hostname of Vectra brain (ex https://www.example.com) - required
         :param api_token: API token for authentication when using API v2*
         :param verify: Boolean, controls whether we verify the server's TLS certificate
         :param proxy: Dictionary mapping protocol to the URL of the proxy.
         :param fetch_size: Max number of incidents to fetch in each cycle
+        :param first_fetch: Fetch only Detections newer than this date
         :param c_score_gte: Fetch only Detections with greater/equal Certainty score
         :param t_score_gte: Fetch only Detections with greater/equal Threat score
         :param state: Fetch only Detections with matching State (e.g., active, inactive, ignored)
@@ -50,6 +52,7 @@ class Client:
         self.base_url = vectra_url + '/api/v2.1/'
         self.verify = verify
         self.proxies = proxy
+        self.first_fetch = first_fetch
 
     def http_request(self, method='GET', url_suffix='', params=None, data=None) -> Dict:
         """
@@ -121,7 +124,8 @@ class Client:
 
             try:
                 for detection in detections:
-                    incidents.append(create_incident_from_detection(detection))  # type: ignore
+                    if date_to_timestamp(detection.get('first_timestamp'), DATE_FORMAT) >= self.first_fetch:
+                        incidents.append(create_incident_from_detection(detection))  # type: ignore
                     last_id = max(last_id, int(detection.get('id', 0)))  # update last fetched id
 
                 if incidents:
@@ -180,9 +184,9 @@ def get_detections_command(client: Client, **kwargs):
     res = raw_response.get('results')  # type: ignore
     dets: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
-    headers = ['id', 'category', 'src_ip', 'threat', 'certainty', 'state', 'first_timestamp', 'tags',
-               'targets_key_asset', 'type_vname']
-    pages = -(-count // len(res)) if count > 0 else 0
+    headers = ['id', 'category', 'src_ip', 'threat', 'certainty', 'state', 'detection', 'detection_category',
+               'detection_type', 'first_timestamp', 'tags', 'targets_key_asset', 'type_vname']
+    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Detection table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=dets,
@@ -212,14 +216,21 @@ def get_detections_command(client: Client, **kwargs):
                 'TypeVName': detection.get('type_vname'),
                 'Category': detection.get('category'),
                 'SourceIP': detection.get('src_ip'),
-                'State': detection.get('state'),
-                'Threat_Score': detection.get('threat'),
-                'Certainty_Score': detection.get('certainty'),
+                'SourceAccount': detection.get('src_account'),
+                'SourceHost': detection.get('src_host'),
+                'Description': detection.get('description'),
+                'Detection': detection.get('detection'),
+                'DetectionCategory': detection.get('detection_category'),
+                'DetectionType': detection.get('detection_type'),
+                'HasActiveTraffic': detection.get('has_active_traffic'),
+                'Note': detection.get('note'),
+                'TriageRuleID': detection.get('triage_rule_id'),
+                'ThreatScore': detection.get('threat'),
+                'CertaintyScore': detection.get('certainty'),
                 'TargetsKeyAsset': detection.get('targets_key_asset'),
                 'FirstTimestamp': detection.get('first_timestamp'),
                 'LastTimestamp': detection.get('last_timestamp'),
                 'Tags': detection.get('tags'),
-                'SourceAccount': detection.get('src_account'),
                 'HostID': detection.get('host', '').split('/')[-1] if 'host' in detection else None
             }, removeNull=True)
         )
@@ -266,7 +277,7 @@ def get_hosts_command(client: Client, **kwargs):
 
     headers = ['id', 'name', 'state', 'threat', 'certainty', 'last_source', 'url', 'assigned_to', 'owner_name',
                'first_timestamp', 'tags', 'note']
-    pages = -(-count // len(res)) if count > 0 else 0
+    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Hosts table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=hosts,
@@ -281,12 +292,20 @@ def get_hosts_command(client: Client, **kwargs):
                 'Name': host.get('name'),
                 'LastDetection': host.get('last_detection_timestamp'),
                 'DetectionID': host.get('detection_ids'),
-                'Threat_Score': host.get('threat'),
-                'Certainty_Score': host.get('certainty'),
                 'KeyAsset': host.get('key_asset'),
-                'TargetsKeyAsset': host.get('targets_key_asset'),
                 'State': host.get('state'),
-                'IP': host.get('last_source')
+                'IP': host.get('last_source'),
+                'Note': host.get('note'),
+                'ThreatScore': host.get('threat'),
+                'CertaintyScore': host.get('certainty'),
+                'HostLuid': host.get('host_luid'),
+                'LastDetectionTimestamp': host.get('last_detection_timestamp'),
+                'LastModified': host.get('last_modified'),
+                'OwnerName': host.get('owner_name'),
+                'Severity': host.get('severity'),
+                'LastSource': host.get('last_source'),
+                'Tags': host.get('tags'),
+                'ActiveTraffic': host.get('active_traffic')
             }
         )
 
@@ -315,7 +334,7 @@ def get_users_command(client: Client, **kwargs):
     users: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
     headers = ['id', 'last_login', 'username', 'email', 'account_type', 'authentication_profile', 'role']
-    pages = -(-count // len(res)) if count > 0 else 0
+    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Users table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=users,
@@ -371,8 +390,8 @@ def search_command(client: Client, search_type: str, **kwargs):
                 'Hostname': r.get('name'),
                 'LastDetection': r.get('last_detection_timestamp'),
                 'DetectionID': r.get('detection_ids'),
-                'Threat_Score': r.get('threat'),
-                'Certainty_Score': r.get('certainty'),
+                'ThreatScore': r.get('threat'),
+                'CertaintyScore': r.get('certainty'),
                 'KeyAsset': r.get('key_asset'),
                 'IP': r.get('last_source'),
                 'TypeVName': r.get('type_vname'),
@@ -535,7 +554,6 @@ def module_test(client: Client, last_run: dict):
 # COMMANDS MANAGER / SWITCH PANEL #
 def main():
     api_token = demisto.getParam('token')
-    dict().values()
 
     # Remove trailing slash to prevent wrong URL path to service
     server_url = demisto.getParam('server').rstrip('/')
@@ -543,6 +561,10 @@ def main():
     # Fetch only detections that have greater or equal Certainty and Threat scores
     c_score_gte, t_score_gte = int(demisto.params().get('c_score_gte', 0)), int(demisto.params().get('t_score_gte', 0))
     state = demisto.params().get('state')
+
+    # How many time before the first fetch to retrieve incidents
+    first_fetch_time = demisto.params().get('first_fetch_time', '7 days')
+    first_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, to_timestamp=True)
 
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
@@ -561,6 +583,7 @@ def main():
             fetch_size=max(0, min(fetch_size, MAX_FETCH_SIZE)),
             c_score_gte=c_score_gte,
             t_score_gte=t_score_gte,
+            first_fetch=first_fetch,
             state=state
         )
 
@@ -614,11 +637,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-
-# todo: HOST? DBOT? ask michal
-# todo: list options for state
-# todo: more outputs arseny (all)
-# todo: add last date param for fetch
-# todo: ip whitelist for office ip
-# todo: add json to readme fetch!
-# todo: api token - from where to get?

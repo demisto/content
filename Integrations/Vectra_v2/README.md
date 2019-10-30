@@ -20,6 +20,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <li><strong>Name</strong>: a textual name for the integration instance.</li>
    <li><strong>Server URL (e.g. https://192.168.0.1)</strong></li>
    <li><strong>API Token</strong></li>
+   <li><strong>First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)</strong></li>
    <li><strong>Fetch only Detections with greater/equal Certainty score</strong></li>
    <li><strong>Fetch only Detections with greater/equal Threat score</strong></li>
    <li><strong>Fetch only Detections with matching State</strong></li>
@@ -270,7 +271,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td>Flag indicating if the host has a detection targeting a key asset</td>
     </tr>
     <tr>
-      <td>Vectra.Detection.Certainty_Score</td>
+      <td>Vectra.Detection.CertaintyScore</td>
       <td>Number</td>
       <td>The current certainty score correlated to this host</td>
     </tr>
@@ -323,32 +324,58 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     "Vectra.Detection": [
         {
             "Category": "LATERAL MOVEMENT",
-            "Certainty_Score": 22,
+            "CertaintyScore": 22,
+            "Detection": "Automated Replication",
+            "DetectionCategory": "LATERAL MOVEMENT",
+            "DetectionType": "Automated Replication",
             "FirstTimestamp": "2019-10-02T22:05:34Z",
             "ID": 3,
             "LastTimestamp": "2019-10-02T22:12:39Z",
+            "SourceHost": {
+                "certainty": 0,
+                "groups": [],
+                "id": 9,
+                "ip": "0.0.0.0",
+                "is_key_asset": false,
+                "name": "sandbox",
+                "threat": 0,
+                "url": ""
+            },
             "SourceIP": "0.0.0.0",
             "State": "inactive",
             "TargetsKeyAsset": false,
-            "Threat_Score": 22
+            "ThreatScore": 22
         },
         {
             "Category": "RECONNAISSANCE",
-            "Certainty_Score": 80,
+            "CertaintyScore": 80,
+            "Detection": "Port Sweep",
+            "DetectionCategory": "RECONNAISSANCE",
+            "DetectionType": "Port Sweep",
             "FirstTimestamp": "2019-10-02T22:38:58Z",
             "ID": 5,
             "LastTimestamp": "2019-10-02T22:54:49Z",
+            "SourceHost": {
+                "certainty": 27,
+                "groups": [],
+                "id": 11,
+                "ip": "0.0.0.0",
+                "is_key_asset": false,
+                "name": "Robert-MBP",
+                "threat": 11,
+                "url": ""
+            },
             "SourceIP": "0.0.0.0",
             "State": "active",
             "TargetsKeyAsset": false,
-            "Threat_Score": 60
+            "ThreatScore": 60            
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
-<h3>Detection table</h3>
+<h3>Detection table (Showing Page 1 out of 1)</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
@@ -358,6 +385,9 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <th><strong>threat</strong></th>
       <th><strong>certainty</strong></th>
       <th><strong>state</strong></th>
+      <th><strong>detection</strong></th>
+      <th><strong>detection_category</strong></th>
+      <th><strong>detection_type</strong></th>
       <th><strong>first_timestamp</strong></th>
       <th><strong>tags</strong></th>
       <th><strong>targets_key_asset</strong></th>
@@ -372,6 +402,9 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td> 22 </td>
       <td> 22 </td>
       <td> inactive </td>
+      <td> Automated Replication </td>
+      <td> LATERAL MOVEMENT </td>
+      <td> Automated Replication </td>
       <td> 2019-10-02T22:05:34Z </td>
       <td>  </td>
       <td> false </td>
@@ -384,6 +417,9 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td> 60 </td>
       <td> 80 </td>
       <td> active </td>
+      <td> Port Sweep </td>
+      <td> RECONNAISSANCE </td>
+      <td> Port Sweep </td>
       <td> 2019-10-02T22:38:58Z </td>
       <td>  </td>
       <td> false </td>
@@ -455,7 +491,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
     </tr>
     <tr>
       <td>state</td>
-      <td>filter by state: active, inactive, suspended, ignored, ignored4all</td>
+      <td>filter by state: active, inactive, suspended, ignored, ignored for all</td>
       <td>Optional</td>
     </tr>
     <tr>
@@ -534,7 +570,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td>Flag indicating if the host has a detection targeting a key asset</td>
     </tr>
     <tr>
-      <td>Vectra.Host.Certainty_Score</td>
+      <td>Vectra.Host.CertaintyScore</td>
       <td>Number</td>
       <td>The current certainty score correlated to this host</td>
     </tr>
@@ -586,47 +622,64 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 {
     "Vectra.Host": [
         {
-            "Certainty_Score": 33,
+            "ActiveTraffic": false,
+            "CertaintyScore": 45,
             "DetectionID": [
-                "2",
-                "4",
-                "6",
-                "17",
-                "20",
-                "25",
-                "26",
-                "31"
+                "22",
+                "23",
+                "37",
+                "42",
+                "61",
+                "62",
+                "63",
+                "64"
             ],
-            "ID": 7,
+            "HostLuid": "duOUtBa4",
+            "ID": 57,
             "IP": "0.0.0.0",
             "KeyAsset": true,
-            "LastDetection": "2019-10-03T05:56:31Z",
-            "Name": "BThomas-Win7",
+            "LastDetection": "2019-10-07T05:37:12Z",
+            "LastDetectionTimestamp": "2019-10-07T05:37:12Z",
+            "LastModified": "2019-10-03T07:04:06Z",
+            "LastSource": "0.0.0.0",
+            "Name": "leroy_brown",
+            "Note": null,
+            "OwnerName": "lbrown",
+            "Severity": "low",
             "State": "active",
-            "TargetsKeyAsset": false,
-            "Threat_Score": 23
+            "Tags": [],
+            "ThreatScore": 34
         },
         {
-            "Certainty_Score": 46,
+            "ActiveTraffic": false,
+            "CertaintyScore": 32,
             "DetectionID": [
-                "5",
-                "8"
+                "53",
+                "56",
+                "60"
             ],
-            "ID": 11,
+            "HostLuid": "dwGUtBaK",
+            "ID": 103,
             "IP": "0.0.0.0",
             "KeyAsset": false,
-            "LastDetection": "2019-10-03T01:10:43Z",
-            "Name": "Robert-MBP",
+            "LastDetection": "2019-10-04T19:24:04Z",
+            "LastDetectionTimestamp": "2019-10-04T19:24:04Z",
+            "LastModified": "2019-10-04T12:40:38Z",
+            "LastSource": "0.0.0.0",
+            "Name": "winfs06r3u17",
+            "Note": null,
+            "OwnerName": null,
+            "Severity": "low",
             "State": "active",
-            "TargetsKeyAsset": false,
-            "Threat_Score": 25
+            "Tags": [],
+            "ThreatScore": 22
         }
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
-<h3>Hosts table</h3>
+<h3>Hosts table (Showing Page 1 out of 1)</h3>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
     <tr>
@@ -840,7 +893,7 @@ Couldn't find any results
   <tbody>
     <tr>
       <td>host_id</td>
-      <td>The id of the required host</td>
+      <td>The id of the required host (Can get from vectra-get-hosts)</td>
       <td>Required</td>
     </tr>
   </tbody>
@@ -859,7 +912,7 @@ There are no context output for this command.
 {
     "Vectra.Host": [
         {
-            "Certainty_Score": 46,
+            "CertaintyScore": 27,
             "Hostname": "Robert-MBP",
             "ID": 11,
             "IP": "0.0.0.0",
@@ -867,7 +920,7 @@ There are no context output for this command.
             "LastDetection": "2019-10-03T01:10:43Z",
             "State": "active",
             "TargetsKeyAsset": false,
-            "Threat_Score": 25
+            "ThreatScore": 11
         }
     ]
 }
@@ -929,7 +982,7 @@ There are no context output for this command.
   <tbody>
     <tr>
       <td>detection_id</td>
-      <td>The id of the required detection</td>
+      <td>The id of the required detection (Can get from vectra-get-detections)</td>
       <td>Required</td>
     </tr>
   </tbody>
