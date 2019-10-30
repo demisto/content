@@ -103,7 +103,7 @@ def is_correct_content_installed(ips, content_version, username, password):
             resp_json = ast.literal_eval(resp[0])
             print("This is the response with literals stripped\n\n\n")
             print(resp_json)
-            resp_json = json.dumps(str(resp_json))
+            resp_json = json.loads(resp_json)
             print("This is the response dumped as JSON\n\n\n")
             print(resp_json)
             print("\n\n\nOBJECT TYPE: "+str(type(resp_json)))
