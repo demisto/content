@@ -37,7 +37,7 @@ configuration:
   name: date_name
   required: false
   type: 0
-- display: 'A CSV list of columns for the SELECT excpression. order must be in order:
+- display: 'A CSV list of columns for the SELECT expression. order must be in order:
     ID, Date, Name, Urgency.'
   name: columns
   required: false
@@ -59,7 +59,6 @@ script:
       isArray: false
       name: columns
       predefined:
-      - ''
       required: false
       secret: false
     - default: false
