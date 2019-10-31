@@ -4,6 +4,7 @@ commonfields:
 name: ProvidesCommand
 script: ''
 type: python
+subtype: python3
 tags:
 - general
 comment: |-
@@ -25,7 +26,6 @@ args:
     instance is either not defined or not enabled.  True means that an integration
     instance is both defined and enabled.
 scripttarget: 0
-subtype: python3
 dependson:
   must:
   - Demisto REST API|||demisto-api-post
@@ -33,3 +33,5 @@ dependson:
 runonce: false
 dockerimage: demisto/python3:3.7.4.977
 runas: DBotWeakRole
+tests:
+  - No test - unit test
