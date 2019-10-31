@@ -1911,7 +1911,6 @@
     ],
     "skipped_tests": {
         "ThreatQ - Test": "Issue 19468",
-        "urlscan_malicious_Test": "Issue 19727",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
