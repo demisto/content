@@ -166,7 +166,7 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
 
     Args:
         client: Client object with request
-        ip_address: ip_ec address
+        ip_address: ip address
         ip_version: IPv4 or IPv6
 
     Returns:
@@ -203,9 +203,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
                 'Type': arg,
                 'Vendor': 'AlienVault OTX v2'
             })
-        else:
-            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
+    if not raws:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("ip"): ip_ec,
         f'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': alienvault_ec,
@@ -252,9 +252,8 @@ def domain_command(client: Client, domain: str) -> Tuple[str, Dict, Union[Dict, 
                 'Type': 'domain',
                 'Vendor': 'AlienVault OTX v2'
             })
-        else:
-            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-
+    if not raws:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("domain"): domain_ec,
         f'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa &&'
@@ -312,9 +311,8 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
                 'Type': 'file',
                 'Vendor': 'AlienVault OTX v2'
             })
-        else:
-            return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
-
+    if not raws:
+        return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("file"): file_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
@@ -364,9 +362,8 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
                 'Type': 'url',
                 'Vendor': 'AlienVault OTX v2'
             })
-        else:
-            return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
-
+    if not raws:
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("url"): url_ec,
         f'AlienVaultOTX.URL(val.Url && val.Url === obj.Url)': alienvault_ec,
