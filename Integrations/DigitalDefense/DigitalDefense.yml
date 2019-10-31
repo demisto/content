@@ -1,0 +1,160 @@
+commonfields:
+  id: Digital Defense Inc. FrontlineVM
+  version: -1
+name: Digital Defense Inc. FrontlineVM
+display: Digital Defense Inc. FrontlineVM
+category: Vulnerability Management
+description: Digital Defense Inc.'s Frontline Vulnerability Management solution comprehensively
+  identifies and evaluates the security and business risk postures of network devices
+  and applications deployed as premise, cloud, or hybrid network-based implementations.
+  Now residing entirely in Amazon Web Services (AWS), Frontline VM easily addresses
+  the security compliance requirements of organizations around the globe.
+configuration:
+- display: API Token to access Frontline.Cloud
+  name: apiToken
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Min vulnerability severity for fetching incidents.
+  name: incidentSeverity
+  defaultvalue: critical
+  type: 15
+  required: false
+  options:
+  - critical
+  - high
+  - medium
+  - low
+  - trivial
+  - info
+- display: Rate at which to check vulnerability events when fetching incidents.
+  name: incidentFrequency
+  defaultvalue: 3 hr
+  type: 15
+  required: true
+  options:
+  - 5 min
+  - 15 min
+  - 30 min
+  - 1 hr
+  - 3 hr
+  - 8 hr
+  - 12 hr
+  - 24 hr
+script:
+  script: ''
+  type: python
+  commands:
+  - name: frontline-get-assets
+    arguments:
+    - name: ip_address
+      description: Get assets for given IP Address
+    - name: label_name
+      description: Get assets with given label name (put name in quotes if spaces
+        are required).
+    - name: scanned_within_last
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "7"
+      - "30"
+      - "60"
+      - "90"
+      - "180"
+      description: Get hosts scanned within the given range (in days)
+    - name: hostname
+      description: Get asset for given hostname
+    outputs:
+    - contextPath: FrontlineVM.Hosts
+      description: Returned host data pulled from Frontline.Cloud
+      type: unknown
+    - contextPath: FrontlineVM.IPList
+      description: IP address list of found hosts.
+      type: unknown
+    - contextPath: FrontlineVM.HostId
+      description: ID number of Host pulled
+    description: Pull asset information from FrontlineVM
+  - name: frontline-get-vulns
+    arguments:
+    - name: min_severity
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - trivial
+      - info
+      description: Select a minimum severity level of vulnerabilities to pull from
+        Frontline. E.g. setting the min_severity=medium will pull all vulnerabilities
+        with severity levels of medium, high, and critical.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - trivial
+      - info
+      description: Will pull all vulnerabilities from Frontline with this severity.
+    - name: days_older_than
+      auto: PREDEFINED
+      predefined:
+      - "30"
+      - "60"
+      - "90"
+      - "180"
+      - "365"
+      description: Will pull vulnerabilities first found older than the given input
+        (in days from now).
+    - name: days_newer_than
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "7"
+      - "30"
+      - "60"
+      - "90"
+      description: Will pull vulnerabilities first found to be newer than the given
+        input (in days from now).
+    - name: host_id
+      description: Pull vulnerabilities from specific host given the host ID.
+    - name: ip_address
+      description: IP address of host to pull vulnerability data from.
+    outputs:
+    - contextPath: FrontlineVM.Vulns
+      description: Returned vulnerability data pulled from Frontline.Cloud
+      type: unknown
+    - contextPath: FrontlineVM.IPList
+      description: IP address list of found vulnerabilities.
+      type: unknown
+    - contextPath: FrontlineVM.Stat
+      description: Statistic overview of vulnerabilities pulled.
+    description: Pull vulnerability information from FrontlineVM
+  - name: frontline-scan-asset
+    arguments:
+    - name: ip_address
+      required: true
+      description: IP address of asset to perform scan. To scan a range of ip addresses,
+        first enter the low ip address and then a high ip address separated by a hyphen.
+        E.g. 192.168.1.1-192.168.1.10
+    - name: scan_policy
+      description: Policy of scan (case sensitive)
+      defaultValue: Default
+    outputs:
+    - contextPath: FrontlineVM.Scan
+      description: The response output of requested scan to perform.
+    description: Performs a scan on a given asset.
+  isfetch: true
+  runonce: false
