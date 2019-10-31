@@ -255,7 +255,10 @@ jobs:
               exit 0
             fi
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
-            echo "hello: ${SECRET_CONF_PATH}"
+
+            export PSWD=$(jq .username < $(cat secret_conf_path))
+            echo "pswd=${PSWD}"
+            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
 
           when: always
       - store_artifacts:
