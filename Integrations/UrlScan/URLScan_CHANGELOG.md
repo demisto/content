@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Fixed breaking change in the API.
-  - Support batches.
+  - Fixed a breaking change in the API.
+  - Added support for batches.
 
 ## [19.9.1] - 2019-09-18
   - Added support for the _Verdict_ result from the urlscan.io API.

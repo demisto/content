@@ -1571,10 +1571,6 @@
             "playbookID": "ExtractDomainFromEmailTest"
         },
         {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
-        },
-        {
             "playbookID": "Account Enrichment - Generic v2 - Test",
             "integrations": "activedir"
         },
@@ -1927,7 +1923,7 @@
         "McAfee-TIE Test": "Issue #18350",
         "Autoextract - Test": "Issue #18343",
         "rsa_packets_and_logs_test": "Issue #18332",
-        "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
+        "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Forescout-Test": "issue 17016",
@@ -1935,12 +1931,12 @@
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
-        "ArcSight Logger test": "Possibly outdated API calls",
+        "ArcSight Logger test": "Issue 19117",
         "Qualys-Test": "Issue 16486",
-        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
+        "TruSTAR Test": "Issue 19756",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
+        "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
@@ -1995,7 +1991,6 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "intsights": "Issue 19694",
-        "ThreatX": "Issue 19551",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "SumoLogic": "Issue 18441",
