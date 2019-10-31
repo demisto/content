@@ -2523,7 +2523,7 @@ script:
             throw 'Invalid Argument fieldToValue';
         }
         var fieldsToValueKeys = Object.keys(fieldsToValue);
-        logDebug("App ID is: {0}, \n Fields To Value keys are: {1}, \n Search value is: {2}".format(appId, fieldsToValueKeys.toString(), searchValue));
+        logDebug("App ID is: {0}, \n Fields To Value keys are: {1}".format(appId, fieldsToValueKeys.toString()));
 
         var cache = getIntegrationContext();
         var updateRecordMapping;
