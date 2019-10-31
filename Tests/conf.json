@@ -1938,8 +1938,7 @@
         "ip_enrichment_generic_test": "Issue 19815",
         "email_test": "Issue 19816",
         "JoeSecurityTestDetonation": "Issue 16118",
-        "Zoom_test": "Added here because test existed but was not configured - need to review the test",
-        "Test - CrowdStrike Falcon": "Test is unmockable, and has its data deleted every few weeks",
+        "Zoom_test": "Issue 19832",
         "DomainTools-Test": "No instance",
         "Beta-Athena-Test": "Beta integration & test is expensive to run",
         "Remedy-On-Demand-Test": "No instance",
@@ -1986,6 +1985,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
