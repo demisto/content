@@ -573,9 +573,13 @@ tasks:
       '#none#':
       - "22"
     scriptarguments:
-      timeout: {}
+      limit: {}
+      timeout:
+        simple: "120"
       url:
         simple: http://demisto.com
+      wait_time_for_polling:
+        simple: "10"
     separatecontext: false
     view: |-
       {
