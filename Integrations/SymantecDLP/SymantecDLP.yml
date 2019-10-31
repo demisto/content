@@ -101,7 +101,7 @@ script:
     execution: false
     name: symantec-dlp-get-incident-details
     outputs:
-    - contextPath: ' SymantecDLP.Incident.ID'
+    - contextPath: SymantecDLP.Incident.ID
       description: The ID of the incident.
       type: Number
     - contextPath: SymantecDLP.Incident.LongID
@@ -449,6 +449,6 @@ script:
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
