@@ -203,7 +203,6 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> Tuple[str, D
                 'Type': arg,
                 'Vendor': 'AlienVault OTX v2'
             })
-
     if not raws:
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
@@ -283,7 +282,6 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
     raws: list = []
     file_ec: list = []
     dbotscore_ec: list = []
-
     for args in query_args:
         raw_response_analysis = client.query(section='file',
                                              argument=args,
@@ -312,7 +310,7 @@ def file_command(client: Client, file: str) -> Tuple[str, Dict, Union[Dict, list
                 'Vendor': 'AlienVault OTX v2'
             })
     if not raws:
-        return f'{INTEGRATION_NAME} - Could not find any raw_response_analysis for given query', {}, {}
+        return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
     context_entry: dict = {
         outputPaths.get("file"): file_ec,
         outputPaths.get("dbotscore"): dbotscore_ec
@@ -340,7 +338,6 @@ def url_command(client: Client, url: str) -> Tuple[str, Dict, Union[Dict, list]]
     url_ec: list = []
     alienvault_ec: list = []
     dbotscore_ec: list = []
-
     for args in query_args:
         raw_response = client.query(section='url',
                                     argument=args)
