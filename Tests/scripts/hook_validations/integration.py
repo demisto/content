@@ -133,7 +133,6 @@ class IntegrationValidator(object):
 
         return self._is_valid
 
-
     def is_isarray_arguments(self):
         """Check if a reputation command's (domain/email/file/ip/url)
             argument of the same name has the 'isArray' attribute set to True
@@ -154,7 +153,6 @@ class IntegrationValidator(object):
                             print_error("The argument '{}' of the command '{}' is not configured with 'isArray' set to True"
                                         .format(arg_name, command_name))
         return self._is_valid
-
 
     def is_outputs_for_reputations_commands_valid(self):
         """Check if a reputation command (domain/email/file/ip/url)
