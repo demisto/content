@@ -750,6 +750,12 @@
             "timeout": 500
         },
         {
+            "integrations": "McAfee ESM-v10",
+            "instance_names": "v11.1.3",
+            "playbookID": "McAfeeESMTest",
+            "timeout": 500
+        },
+        {
             "integrations": "GoogleSafeBrowsing",
             "playbookID": "Google Safe Browsing Test",
             "timeout": 240
@@ -938,7 +944,10 @@
             "playbookID": "ExtractDomainTest"
         },
         {
-            "playbookID": "Test-IsMaliciousIndicatorFound"
+            "playbookID": "Test-IsMaliciousIndicatorFound",
+            "integrations": "VirusTotal",
+            "instance_names": "virus_total_general",
+            "fromversion": "5.0.0"
         },
         {
             "playbookID": "TestExtractHTMLTables"
@@ -1124,6 +1133,10 @@
         {
             "integrations": "Remedy AR",
             "playbookID": "Remedy AR Test"
+        },
+        {
+            "integrations": "AWS - IAM",
+            "playbookID": "d5cb69b1-c81c-4f27-8a40-3106c0cb2620"
         },
         {
             "integrations": "McAfee Active Response",
@@ -1487,7 +1500,7 @@
         },
         {
             "playbookID": "FilterByList - Test",
-            "fromversion": "4.1.0"
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Kafka V2",
@@ -1505,6 +1518,17 @@
             "integrations": "McAfee Active Response",
             "playbookID": "Endpoint data collection test",
             "timeout": 500
+        },
+        {
+            "playbookID": "Phishing - Core - Test",
+            "integrations": [
+                "EWS Mail Sender",
+                "Demisto REST API",
+                "Palo Alto Minemeld",
+                "Rasterize"
+            ],
+            "fromversion": "4.5.0",
+            "timeout": 1200
         },
         {
             "integrations": "McAfee Active Response",
@@ -1545,10 +1569,6 @@
         },
         {
             "playbookID": "ExtractDomainFromEmailTest"
-        },
-        {
-            "integrations": "Threat Grid",
-            "playbookID": "Test-Detonate URL - ThreatGrid"
         },
         {
             "playbookID": "Account Enrichment - Generic v2 - Test",
@@ -1596,6 +1616,12 @@
         },
         {
             "playbookID": "PAN-OS DAG Configuration Test",
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama",
+            "timeout": 1000
+        },
+        {
+            "playbookID": "PAN-OS Create Or Edit Rule Test",
             "integrations": "Panorama",
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
@@ -1769,7 +1795,7 @@
             "playbookID": "Detonate File - FireEye AX - Test"
         },
         {
-            "integrations": "Rasterize",
+            "integrations": ["Rasterize","Image OCR"],
             "playbookID": "Rasterize Test"
         },
         {
@@ -1883,11 +1909,11 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
-            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
+            "integrations": "PolySwarm",
+            "playbookID": "PolySwarm-Test"
         }
     ],
     "skipped_tests": {
-        "FilterByList - Test": "Issue 19469",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -1897,7 +1923,7 @@
         "McAfee-TIE Test": "Issue #18350",
         "Autoextract - Test": "Issue #18343",
         "rsa_packets_and_logs_test": "Issue #18332",
-        "TestUptycs": "There is not enough data in uptycs instance in order the test to pass. Data need to be generated like open connections",
+        "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Forescout-Test": "issue 17016",
@@ -1905,13 +1931,12 @@
         "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
-        "ArcSight Logger test": "Possibly outdated API calls",
+        "ArcSight Logger test": "Issue 19117",
         "Qualys-Test": "Issue 16486",
-        "TruSTAR Test": "The test runs even when not supposed to, which causes its quota to run out",
+        "TruSTAR Test": "Issue 19756",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "Endpoint Enrichment - Generic v2 - Test": "Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
-        "Test-IsMaliciousIndicatorFound": "Issue 15940",
+        "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "Test-Detonate URL - ThreatGrid": "Outdated test",
         "ip_enrichment_generic_test": "Need to check if test is valid, and the playbook is going to be deprecated now.",
         "email_test": "Old test for deprecated playbook. Need to check if test is even valid",
@@ -1961,10 +1986,11 @@
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
+        "PolySwarm": "contribution",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "ThreatX": "Issue 19551",
+        "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "SumoLogic": "Issue 18441",
@@ -2071,7 +2097,6 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "Rasterize": "No API calls "
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
