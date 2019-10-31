@@ -35,16 +35,16 @@ In addition, we'll explain common errors and how to troubleshoot them.
 27. [Destroy Instances](#destroy-instances)
 28. [Uploading artifacts](#uploading-artifacts-final)
 
-## Spin up Environment
+### Spin up Environment
 Sets up the testing environment before starting the build. This usually involves provisioning a test server, setting access rules, etc.
   
-## Checkout code
+### Checkout code
 Download the content source code (clones and checkout to the specific revision).
 
-## Setup a remote Docker engine
+### Setup a remote Docker engine
 Setup a docker engine in preparation for running python unit-tests in later steps.
 
-## Prepare Environment
+### Prepare Environment
 Setup workspace: 
 - Set global variables.
 - Create workspace and artifact folders
@@ -53,10 +53,10 @@ Setup workspace:
   - `NON_AMI_RUN`: Indicates whether the build should use predefined AMI (amazon machine image) or not.
   - `SERVER_BRANCH_NAME`: only relevant in case `NON_AMI_RUN` is set. indicates the Demisto server build the current build should work against.  
 
-## Installing additional ssh keys
+### Installing additional ssh keys
 Add ssh keys to circle machine.
 
-## Create ID Set
+### Create ID Set
 This is the first step in the static validation process of the content code.
 
 By running [Tests/scripts/update_id_set.py](https://github.com/demisto/content/blob/master/Tests/scripts/update_id_set.py), we are able to detect conflict of entities (for example, IDs that are being used more than once).
@@ -66,14 +66,14 @@ This is used in the test [selection step](#Configure-Test-Filter).
 
 <!-- TODO: add troubleshooting errors -->
 
-## Infrastructure testing
+### Infrastructure testing
 This step runs all unit-test files in the following folders:
 - [Tests/scripts/hook_validations/tests](https://github.com/demisto/content/blob/master/Tests/scripts/hook_validations/tests)
 - [Tests/scripts/infrastructure_tests](https://github.com/demisto/content/blob/master/Tests/scripts/infrastructure_tests)
 
 <!-- TODO: add troubleshooting errors -->
 
-## Validate Files and Yaml
+### Validate Files and Yaml
 This step is responsible for the majority of the static validations of the content code.
 - It validates the schema of the yml files you created:
     - [You can learn more about the YAML structure here](/docs/yaml-file-integration)
@@ -91,7 +91,7 @@ This step is responsible for the majority of the static validations of the conte
 
 <!-- TODO: add troubleshooting errors -->
 
-## Configure Test Filter
+### Configure Test Filter
 This step decides and filters which test-playbooks should run.
 Special behavior:
 - nightly: will run all test-playbooks (with the exception of "skip" tests).
@@ -99,7 +99,7 @@ Special behavior:
 
 <!-- TODO: add troubleshooting errors -->
 
-## Spell Checks
+### Spell Checks
 **This will not run on master branch**
 
 By running [Tests/scripts/circleci_spell_checker.py](https://github.com/demisto/content/blob/master/Tests/scripts/circleci_spell_checker.py), we scan yml and md files for typos and spelling mistakes.
@@ -107,10 +107,10 @@ One can whitelist a word (for example acronyms are usually detected as misspelle
 
 At the moment, this step does not break the build.
 
-## Build Content Descriptor
+### Build Content Descriptor
 <!-- TODO: add troubleshooting errors -->
 
-## Common Server Documentation
+### Common Server Documentation
 This Step generates documentation files used to populate the *Script Helper* menu.
 
 #### Troubleshoot
@@ -118,7 +118,7 @@ This Step generates documentation files used to populate the *Script Helper* men
 Errors in this section indicates on a problem with the docstrings of CommonServer / CommonServerPython functions.
 Make sure all docstrings compatible with the [Sphinx format](https://sphinx-doc.org).
 
-## Create Content Artifacts
+### Create Content Artifacts
 This step creates artifact files that are uploaded to the server and contain all of the content for Demisto. 
 They are composed of 3 zip files:
 - `content_new.zip`: Contains all content entities.
@@ -130,21 +130,21 @@ All 3 zip files can be uploaded manually to Demisto as a content update.
 
 <!-- TODO: add troubleshooting errors -->
 
-## Uploading artifacts
+### Uploading artifacts
 This will upload all files stored under the artifact folder as a circle build artifacts.
 ![](artifacts_1.png)
 
-## Run Unit Testing and Lint
+### Run Unit Testing and Lint
 Run all relevant unit tests of integrations and scripts.
 In master branch or due to changes to *CommonServerPython* all unit-tests will be triggered.
 
-## Download Artifacts
+### Download Artifacts
 **Not relevant for contributors**
 
 This step is relevant only for custom builds that uses a specific Demisto server build.
 It will download the Demisto installer from the given build number.
 
-## Download Configuration
+### Download Configuration
 **Not relevant for contributors**
 
 Downloads data from content-test-conf, where all the private data is stored. This includes AWS configurations, API keys, login details, and other configurations needed to create a Demisto server with an instance of an integration.
@@ -152,13 +152,13 @@ If one need to used a modified private configuration, One should create a new br
 
 <!-- TODO: add troubleshooting errors -->
 
-## Create Instance
+### Create Instance
 **Not relevant for contributors**
 
 Creates AWS instances for the build.
 <!-- TODO: add troubleshooting errors -->
 
-## Setup Instance
+### Setup Instance
 **Not relevant for contributors**
 
 Sets up Demisto on the AWS instances, as well as copies the content from the branch you are working on to the instance itself.
@@ -171,29 +171,29 @@ Check the `conf.json` file in "content-test-conf" repository.
 In most cases, the syntax error will highlighted:
 ![](SetupInstance1_reason.png)
 
-## Run Tests - Latest GA
+### Run Tests - Latest GA
 **Not relevant for contributors**
 
 This step iterates over each of the test playbooks. This involves creating an incident, attaching the test playbook to the incident, running the playbook, and finally awaiting the results.
 <!-- TODO: add troubleshooting errors -->
 
 
-## Run Tests - One Before GA
+### Run Tests - One Before GA
 **Not relevant for contributors**
 
 Same as [Latest GA](#run-tests---latest-ga) except uses one version before the latest GA.
 
-## Run Tests - Two Before GA
+### Run Tests - Two Before GA
 **Not relevant for contributors**
 
 Same as [Latest GA](#run-tests---latest-ga) except uses two version before the latest GA.
 
-## Run Tests - Server Master
+### Run Tests - Server Master
 **Not relevant for contributors**
 
 Same as [Latest GA](#run-tests---latest-ga) except uses current master branch of Demisto server.
 
-## Slack Notifier
+### Slack Notifier
 **Not relevant for contributors**
 
 This step runs only in nightly builds of master branch.
@@ -201,22 +201,32 @@ Notifies the `#dmst-content-team` of the results of the build test.
 - **Green** - Awesome. Things aren't broken and the build passed all of its tests. You can share your joy in the content team slack channel with the ```:green-build:``` Anar emoji.
 - **Red** - Bad. You've broken something and your current build will probably cause skynet to form. Try looking at the logs and seeing why it failed.
 
-## Validate Docker Images
+### Validate Docker Images
 **This will not run on master branch (or release branches)**
 <!-- this should be handled by running validate_files.py -->
 
-## Instance Test
+### Instance Test
 **Not relevant for contributors**
 
 This is for the DevOps teams use and runs on the nightly builds only.
 Iterates through all the integrations we have in the content-test-conf repo and tries to create an instance for each of them, after that it will run the test button for each of them.
 Notifies `#dmst-content-lab` slack channel on failures.
 
-## Destroy Instances
+### Destroy Instances
 **Not relevant for contributors**
 
 This step downloads the Demisto server log and destroys the AWS instance in a case of success in the relevant "Run Tests" step.
 If the tests have failed, the instance is preserved for debug purposes. Instances are not persistent and **will be destroyed**.
 
-## Uploading artifacts final
+### Uploading artifacts final
 Once more, will upload artifact folder (which now also contains serverlogs) as circle build artifacts.
+
+# More Build Options 
+Some more capabilities we have enabled for CircleCI is to send parameters with the initiation of the build. The following are currently enabled for use:
+- Nightly
+    - This will make sure we are running all the tests we have in the conf.json file
+    - You can initiate a build with this param via `utils/trigger_content_nightly_build.sh` in content repo
+- NON_AMI_RUN
+    - This will make sure we are not running the build with the AMI created in the nightly process but with the latest server build passed
+    - You can initiate a build with this param via `utils/trigger_content_non_ami_build.sh` in content repo
+ 
