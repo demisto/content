@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "Symantec Data Loss Prevention",
-            "playbookID": "Symantec Data Loss Prevention-Test",
+            "playbookID": "Symantec Data Loss Prevention - Test",
             "fromversion": "4.5.0"
         },
         {
