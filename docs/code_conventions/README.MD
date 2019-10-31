@@ -152,7 +152,7 @@ class Client(BaseClient):
 ## Command Functions
 These are the best practices for defining the command functions.
 - Each integration command should have a corresponding `_command` function.
-- Eeach **_command** function should use `Client` class functions.
+- Each **_command** function should use `Client` class functions.
 - Each **_command** function should be unit testable. This means you should avoid using global functions, such as `demisto.results()`, `return_error()`, or `return_outputs()`.
 - The **_command** function will receive `client` instance and `args` (`demisto.args()` dictionary).
 - The **_command** function will return 3 variables: readable_output, outputs, raw_response
@@ -213,6 +213,13 @@ def main():
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 ```
+
+
+## IOC Reputation Commands
+There are two implementation requirements for reputation commands (aka `!file`, `!email`, `!domain`, `!url`, and `!ip`) that are enforced by checks in the [hook_validations](../../Tests/scripts/hook_validations/integration.py).
+- The reputation command's argument of the same name must have `default` set to `True`.
+- The reputation command's argument of the same name must have `isArray` set to `True`.
+
 
 ## test-module
 - When users click the **Test** button, the `test-module` will execute when the **Test** button pressed in the integration instance setting page.
