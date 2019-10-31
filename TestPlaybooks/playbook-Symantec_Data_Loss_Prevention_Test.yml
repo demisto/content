@@ -1,6 +1,6 @@
-id: Symantec Data Loss Prevention-Test
+id: Symantec Data Loss Prevention - Test
 version: -1
-name: Symantec Data Loss Prevention-Test
+name: Symantec Data Loss Prevention - Test
 starttaskid: "0"
 tasks:
   "0":
