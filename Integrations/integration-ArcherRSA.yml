@@ -2530,7 +2530,7 @@ script:
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             updateRecordMapping = cache[appId]["mapping"];
-            logDebug(updateRecordMapping value is: " + JSON.stringify(updateRecordMapping));
+            logDebug("updateRecordMapping value is: {0}".format(JSON.stringify(updateRecordMapping)));
         } else {
             levels = getLevelsByApplicationId(appId);
             updateRecordMapping = createMappingNameToFieldId(levels);
