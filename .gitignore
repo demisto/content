@@ -19,3 +19,4 @@ Integrations/*/*_unified.yml
 Beta_Integrations/*/*_unified.yml
 conftest.py
 !Tests/scripts/dev_envs/pytest/conftest.py
+venv
