@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.10.1] - 2019-10-15
+Added support for **debug-mode**, which logs extended information when enabled.
+
 ## [19.9.1] - 2019-09-18
   - Fix an issue in the ***custom-field-data*** argument.
   - Fixed an issue in the ***ad-create-contact*** command.

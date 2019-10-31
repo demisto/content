@@ -42,6 +42,14 @@ For single line RNs, follow this format:
 Release note here.
 ```
 
+For single line RNs with a nested list, follow this format:
+```
+## [Unreleased]
+Release note here.
+  - List item 1
+  - List item 2
+```
+
 For multiple line RNs (or appending to existing RN), follow this format:
 ```
 ## [Unreleased]
@@ -68,3 +76,7 @@ One should specify in the corresponding change log file the following changes:
   - adding/updating arguments
   - updating outputs
   - fixing customer bugs
+  
+## Note
+New content entities (with the exception of classifier and reputation) do not require you to submit a change log file.  This file will be automatically generated in the content release process.
+

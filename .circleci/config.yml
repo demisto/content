@@ -2,12 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.2832  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.9.1"
+      CONTENT_VERSION: "19.10.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "117f6b907c87a7a9d1a008285b6643cc1ddd4d18" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -68,10 +68,10 @@ jobs:
           command: |
             if [ -n "${GITHUB_TOKEN}" ] ;
               then
-                python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
 
               else
-                python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
             fi
       - run:
           name: Common Server Documentation
@@ -230,7 +230,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
           name: Validate Docker Images

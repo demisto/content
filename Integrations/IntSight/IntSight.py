@@ -69,7 +69,7 @@ def req(method, path, json_data=None, params=None, json_response=False):
         except ValueError:
             return_error('Error in API call to IntSights service - check your configured URL address')
 
-    return r.text
+    return r
 
 
 def convert_iso_string_to_python_date(date_in_iso_format):
@@ -763,8 +763,8 @@ def get_iocs():
                 'DBotScore': dbot_scores,
                 'Domain': domains,
                 'IP': ip_infos,
-                'URL': url_info,
-                'File': hash_info
+                'URL': url_infos,
+                'File': hash_infos
             },
             'Contents': r,
             'HumanReadable': tableToMarkdown('IOC Information', iocs_readable,

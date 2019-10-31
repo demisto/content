@@ -10,9 +10,13 @@ import glob
 import random
 import argparse
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -91,8 +95,7 @@ def get_modified_files(files_string):
                     re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 is_indicator_json = True
 
             # conf.json
@@ -155,8 +158,8 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     for test_playbook in test_playbooks_set:
         detected_usage = False
-        test_playbook_id = test_playbook.keys()[0]
-        test_playbook_data = test_playbook.values()[0]
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
@@ -218,8 +221,8 @@ def get_test_ids(check_nightly_status=False):
 def get_integration_commands(integration_ids, integration_set):
     integration_to_command = {}
     for integration in integration_set:
-        integration_id = integration.keys()[0]
-        integration_data = integration.values()[0]
+        integration_id = list(integration.keys())[0]
+        integration_data = list(integration.values())[0]
         if integration_id in integration_ids:
             integration_to_command[integration_id] = integration_data.get('commands', [])
 
@@ -360,7 +363,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     :param tests_set: The names of the caught tests.
     """
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -383,7 +386,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                                                updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
@@ -410,7 +413,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
                            updated_playbook_names, catched_playbooks, tests_set):
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -432,7 +435,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
@@ -451,7 +454,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                      tests_set)
 
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -548,7 +551,7 @@ def get_test_list(files_string, branch_name):
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
-            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            print_error("There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
         else:
