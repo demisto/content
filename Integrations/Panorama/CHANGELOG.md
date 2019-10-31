@@ -1,5 +1,6 @@
 ## [Unreleased]
 Added the ***panorama-security-policy-match*** command.
+Fixed: !panorama-create-custom-url-category doesn't work with PAN-OS 9.
 
 ## [19.9.1] - 2019-09-18
 - Added the *tag* argument to several commands.
