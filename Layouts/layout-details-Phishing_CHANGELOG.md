@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
 Tweaked multiple layout widgets including their size and location.
 
 ## [19.10.1] - 2019-10-15
