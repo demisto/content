@@ -257,7 +257,8 @@ jobs:
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
             PSWD=$(cat ${SECRET_CONF_PATH} | jq ".admin")
-            echo $PSWD
+            echo pswd: $PSWD
+            ls $CIRCLE_ARTIFACTS/server*.log
             zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
             ls $CIRCLE_ARTIFACTS/ServerLogs.zip
             rm -f $CIRCLE_ARTIFACTS/server*.log
