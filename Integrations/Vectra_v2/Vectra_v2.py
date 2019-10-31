@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 # CONSTANTS #
 MAX_FETCH_SIZE = 50
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H%M"  # 2019-09-01T1012
 
 
 # HELPER FUNCTIONS #
@@ -28,6 +28,13 @@ def create_incident_from_detection(detection: dict):
             "labels": labels,
             "rawJSON": json.dumps(detection)
         }
+
+
+def calc_pages(total_count: int, this_count: int):
+    """
+    preforms ciel operation to find the total number of pages
+    """
+    return -(-total_count // this_count)  # minus minus so the floor will become ceiling
 
 
 class Client:
@@ -98,23 +105,23 @@ class Client:
         """
         Fetches Detections from Vectra into Demisto Incidents
 
-
         :param last_run: Integration's last run
         """
         # get the lower boundary on IDs to fetch
         last_id = int(last_run.get('id')) if last_run and 'id' in last_run else 1  # type: ignore
 
-        # Fetch Detections
+        query_string = f'detection.id:>={last_id}'
+        query_string += f' and detection.threat:>={self.t_score_gte}'
+        query_string += f' and detection.certainty:>={self.c_score_gte}'
+        query_string += f' and detection.last_timestamp:>={self.first_fetch}'
+        query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
         params = {
-            'min_id': last_id,
+            'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
-            'ordering': 'last_timestamp',
-            't_score_gte': self.t_score_gte,
-            'c_score_gte': self.c_score_gte,
-            'state': self.state if self.state != 'all' else None
         }
-        raw_response = self.http_request(params=params, url_suffix='detections')  # type: ignore
+
+        raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
 
         # Detections -> Incidents, if exists
         incidents = []
@@ -124,8 +131,7 @@ class Client:
 
             try:
                 for detection in detections:
-                    if date_to_timestamp(detection.get('first_timestamp'), DATE_FORMAT) >= self.first_fetch:
-                        incidents.append(create_incident_from_detection(detection))  # type: ignore
+                    incidents.append(create_incident_from_detection(detection))  # type: ignore
                     last_id = max(last_id, int(detection.get('id', 0)))  # update last fetched id
 
                 if incidents:
@@ -186,7 +192,7 @@ def get_detections_command(client: Client, **kwargs):
 
     headers = ['id', 'category', 'src_ip', 'threat', 'certainty', 'state', 'detection', 'detection_category',
                'detection_type', 'first_timestamp', 'tags', 'targets_key_asset', 'type_vname']
-    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
+    pages = calc_pages(this_count=len(res), total_count=count)  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Detection table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=dets,
@@ -277,7 +283,7 @@ def get_hosts_command(client: Client, **kwargs):
 
     headers = ['id', 'name', 'state', 'threat', 'certainty', 'last_source', 'url', 'assigned_to', 'owner_name',
                'first_timestamp', 'tags', 'note']
-    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
+    pages = calc_pages(this_count=len(res), total_count=count)  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Hosts table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=hosts,
@@ -334,7 +340,7 @@ def get_users_command(client: Client, **kwargs):
     users: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
     headers = ['id', 'last_login', 'username', 'email', 'account_type', 'authentication_profile', 'role']
-    pages = -(-count // len(res)) if count > 0 else 0  # type: ignore
+    pages = calc_pages(this_count=len(res), total_count=count)  # type: ignore
     readable_output = tableToMarkdown(
         name=f'Users table (Showing Page {kwargs.get("page", 1)} out of {pages})',
         t=users,
@@ -564,7 +570,7 @@ def main():
 
     # How many time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('first_fetch_time', '7 days')
-    first_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, to_timestamp=True)
+    first_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT)
 
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
