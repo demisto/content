@@ -451,7 +451,7 @@ tasks:
     scriptarguments:
       fullResponse: {}
       ip:
-        simple: 9.9.4.4
+        simple: 4.4.4.4
       long: {}
       retries: {}
       sampleSize: {}
@@ -738,7 +738,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 9.9.4.4
+              simple: 4.4.4.4
       - - operator: isEqualString
           left:
             value:
