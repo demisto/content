@@ -652,10 +652,8 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-# TODO: Implement proxy handling
 # TODO: Check for the data owner issue
 # ￿￿￿￿TODO: Check if violations can be a list
-# TODO: Check for the long ID issue
 # TODO: Check fetch incidents + binaries
 def main():
     params: Dict = demisto.params()
@@ -696,6 +694,7 @@ def main():
         'symantec-dlp-incident-violations': incident_violations_command
     }
     try:
+        handle_proxy()
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore
         elif command == 'test-module':
@@ -717,7 +716,12 @@ def main():
     # Log exceptions
     except Exception as e:
         err_msg = f'Error in Symantec DLP integration: {str(e)}'
-        return_error(err_msg, error=e)
+        if demisto.command() == 'fetch-incidents':
+            LOG(err_msg)
+            LOG.print_log()
+            raise
+        else:
+            return_error(err_msg, error=e)
 
 
 if __name__ == 'builtins':
