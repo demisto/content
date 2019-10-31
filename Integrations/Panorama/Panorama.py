@@ -319,7 +319,7 @@ def panorama_get_major_version():
         result = http_request(URL, 'GET', params=params)
         version = result['response']['result']['sw-version']
         major_ver = int(version.split('.')[0])
-        
+
         context['PANOS_MAJOR_VER'] = major_ver
         demisto.setIntegrationContext(context)
     return major_ver
@@ -1828,11 +1828,11 @@ def panorama_create_custom_url_category(custom_url_category_name: str, sites, de
     major_ver = panorama_get_major_version()
     if major_ver >= 9:
         element = add_argument(description, 'description', False) + \
-                  add_argument_list(sites, 'list', True) + \
-                  add_argument("URL List", 'type', False)
+                   add_argument_list(sites, 'list', True) + \
+                   add_argument("URL List", 'type', False)
     else:
         element = add_argument(description, 'description', False) + \
-                  add_argument_list(sites, 'list', True)
+                   add_argument_list(sites, 'list', True)
 
     params = {
         'action': 'set',
