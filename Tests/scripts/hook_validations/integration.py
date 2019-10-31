@@ -46,6 +46,7 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_isarray_arguments()
         self.is_proxy_configured_correctly()
         self.is_insecure_configured_correctly()
         self.is_valid_category()
@@ -131,6 +132,29 @@ class IntegrationValidator(object):
                                     .format(arg_name, command_name))
 
         return self._is_valid
+
+
+    def is_isarray_arguments(self):
+        """Check if a reputation command's (domain/email/file/ip/url)
+            argument of the same name has the 'isArray' attribute set to True
+
+        Returns:
+            bool. Whether 'isArray' is True
+        """
+        reputation_commands = ['file', 'email', 'domain', 'url', 'ip']
+        commands = self.current_integration.get('script', {}).get('commands', [])
+        for command in commands:
+            command_name = command.get('name')
+            if command_name in reputation_commands:
+                for arg in command.get('arguments', []):
+                    arg_name = arg.get('name')
+                    if arg_name == command_name:
+                        if arg.get('isArray') is False:
+                            self._is_valid = False
+                            print_error("The argument '{}' of the command '{}' is not configured with 'isArray' set to True"
+                                        .format(arg_name, command_name))
+        return self._is_valid
+
 
     def is_outputs_for_reputations_commands_valid(self):
         """Check if a reputation command (domain/email/file/ip/url)
