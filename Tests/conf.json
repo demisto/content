@@ -1911,6 +1911,9 @@
         {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
