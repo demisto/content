@@ -1,0 +1,286 @@
+id: FireEye Helix Archive Search
+version: -1
+name: FireEye Helix Archive Search
+fromversion: 4.5.0
+description: Create an archive search in FireEye Helix, and fetch the results back
+  as events.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e7bbc097-1b79-4498-8b31-d918bbb99724
+    type: start
+    task:
+      id: e7bbc097-1b79-4498-8b31-d918bbb99724
+      version: -1
+      name: ""
+      iscommand: false
+      description: Start.
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 29081bbb-91a7-4dbd-8846-4abaa1816c8d
+    type: regular
+    task:
+      id: 29081bbb-91a7-4dbd-8846-4abaa1816c8d
+      version: -1
+      name: Archive Search
+      description: Initiates a new archive search.
+      script: '|||fireeye-helix-archive-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs.End
+      groupby:
+        complex:
+          root: inputs.Groupby
+      limit:
+        complex:
+          root: inputs.Limit
+      offset:
+        complex:
+          root: inputs.Offset
+      query:
+        complex:
+          root: inputs.Query
+      sort_by:
+        complex:
+          root: inputs.Sort_by
+      sort_order:
+        complex:
+          root: inputs.Sort_order
+      start:
+        complex:
+          root: inputs.Start
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8821e771-89af-48e8-8ee4-28e5c3e4df24
+    type: condition
+    task:
+      id: 8821e771-89af-48e8-8ee4-28e5c3e4df24
+      version: -1
+      name: Are There Searches That Didn't Finish?
+      description: Check status of search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              complex:
+                root: FireEyeHelixSearch
+                accessor: PercentComplete
+                transformers:
+                - operator: floor
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.Threshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: f02961f1-0f64-47d7-802a-7a38a7ab3a48
+    type: regular
+    task:
+      id: f02961f1-0f64-47d7-802a-7a38a7ab3a48
+      version: -1
+      name: Get Search Results
+      description: Fetches archive search results.
+      script: '|||fireeye-helix-archive-search-get-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      search_id:
+        complex:
+          root: FireEyeHelixSearch
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 5e48afa5-4d4b-4f22-871d-1c8e42e040ee
+    type: playbook
+    task:
+      id: 5e48afa5-4d4b-4f22-871d-1c8e42e040ee
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: FireEyeHelixSearch
+          accessor: ID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: fireeye-helix-archive-search-get-status
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: FireEyeHelixSearch.PercentComplete(val < ${inputs.Threshold})
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 630,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Query
+  value: {}
+  required: true
+  description: Query to execute. This is the search clause in an MQL.
+- key: Start
+  value: {}
+  required: false
+  description: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+- key: Offset
+  value: {}
+  required: false
+  description: Offset of the result.
+- key: Groupby
+  value: {}
+  required: false
+  description: Returns the unique values for the specified field and groups them together
+    based on the specified frequency. e.g. groupby="srcipv4 5 100" will group the
+    top 5 srcipv4 that have at least 100 occurences. Multiple values can be provided
+    using "," to seperate them.
+- key: Sort_by
+  value: {}
+  required: false
+  description: 'Sorts results by this field. Default is descending order, to change
+    this add to the command the following: argument sort_order="asc"'
+- key: Sort_order
+  value: {}
+  required: false
+  description: Controls the order of the results sorted by the sort_by argument, ascending
+    or descending.
+- key: Limit
+  value: {}
+  required: false
+  description: Number of events to search.
+- key: Threshold
+  value:
+    simple: "100"
+  required: true
+  description: Target percentage of the search that was completed. Default is 100
+    - the playbook will return a result only once the search is done.
+- key: Timeout
+  value:
+    simple: "10"
+  required: true
+  description: Amount of time to poll before declaring a timeout and resuming the
+    playbook (in minutes).
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: Frequency that the polling command will run (minutes).
+- key: End
+  value: {}
+  required: false
+  description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+outputs: []
+tests:
+  - No test - No instance
