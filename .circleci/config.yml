@@ -256,7 +256,7 @@ jobs:
             fi
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
 
-            export PSWD=$(jq .encryptionPass < $(cat secret_conf_path) | cut -d \" -f 2)
+            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
             zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
             rm -f $CIRCLE_ARTIFACTS/server*.log
           when: always
