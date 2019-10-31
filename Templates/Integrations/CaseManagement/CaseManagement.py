@@ -48,6 +48,15 @@ def build_raw_tickets_to_context(tickets: Union[dict, list]):
     }
 
 
+def build_raw_users_to_context(users: Union[list, dict]):
+    if isinstance(users, list):
+        return [build_raw_users_to_context(user) for user in users]
+    return {
+        'ID': users.get('id'),
+        'Username': users.get('username')
+    }
+
+
 class Client(BaseClient):
 
     def __init__(self, base_url, limit=50, *args, **kwargs):
@@ -284,15 +293,6 @@ def assign_users_command(client: Client, args: dict) -> Tuple[str, dict, dict]:
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not assign users to ticket ID: {ticket_id}', {}, raw_response
-
-
-def build_raw_users_to_context(users: Union[list, dict]):
-    if isinstance(users, list):
-        return [build_raw_users_to_context(user) for user in users]
-    return {
-        'ID': users.get('id'),
-        'Username': users.get('username')
-    }
 
 
 @logger
