@@ -2024,6 +2024,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
+  subtype: python3
   type: python
 tests:
 - No test - no license
