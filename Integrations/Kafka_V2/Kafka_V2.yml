@@ -1,0 +1,168 @@
+category: Messaging
+commonfields:
+  id: Kafka V2
+  version: -1
+configuration:
+- display: CSV list of Kafka brokers to connect to, e.g. 172.16.20.207:9092,172.16.20.234:9093
+  name: brokers
+  required: true
+  type: 0
+- display: Use TLS for connection
+  name: use_ssl
+  required: false
+  type: 8
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Certificate Settings
+    CA certificate of Kafka server (.cer)
+  name: ca_cert
+  required: false
+  type: 12
+- display: Client certificate (.cer)
+  name: client_cert
+  required: false
+  type: 12
+- display: Client certificate key (.key)
+  name: client_cert_key
+  required: false
+  type: 12
+- display: Client certificate key password (if required)
+  name: additional_password
+  required: false
+  type: 4
+- display: |-
+    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
+    ‎                                        Fetch Incidents Settings
+    Topic to fetch incidents from (Required for fetch incidents)
+  name: topic
+  required: false
+  type: 0
+- display: CSV list of partitions to fetch messages from
+  name: partition
+  required: false
+  type: 0
+- display: Offset to fetch messages from
+  name: offset
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Max number of messages to fetch
+  name: max_messages
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: The Open source distributed streaming platform
+display: Kafka V2
+name: Kafka V2
+script:
+  commands:
+  - deprecated: false
+    description: Prints all partitions of a topic.
+    execution: false
+    name: kafka-print-topics
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Kafka topic name
+      type: String
+    - contextPath: Kafka.Topic.Partitions.ID
+      description: Topic partition ID
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.EarliestOffset
+      description: Topic partition earliest offset
+      type: Number
+    - contextPath: Kafka.Topic.Partitions.LatestOffset
+      description: Topic partition latest offset
+      type: Number
+  - arguments:
+    - default: false
+      description: A topic to filter messages by
+      isArray: false
+      name: topic
+      required: true
+      secret: false
+    - default: false
+      description: Message value (string)
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Message partition key (number)
+      isArray: false
+      name: partitioning_key
+      required: false
+      secret: false
+    deprecated: false
+    description: Publishes a message to Kafka.
+    execution: false
+    name: kafka-publish-msg
+  - arguments:
+    - default: false
+      description: A topic to filter by
+      isArray: false
+      name: topic
+      required: true
+      secret: false
+    - default: false
+      defaultValue: Earliest
+      description: Message offset to filter by. Acceptable values are 'Earliest',
+        'Latest', or any other offest number.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Partition (number)
+      isArray: false
+      name: partition
+      required: false
+      secret: false
+    deprecated: false
+    description: Consumes a single Kafka message.
+    execution: false
+    name: kafka-consume-msg
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of the topic.
+      type: string
+    - contextPath: Kafka.Topic.Message.Value
+      description: Value of the message.
+      type: string
+    - contextPath: Kafka.Topic.Message.Offset
+      description: Offset of the value in the topic.
+      type: number
+  - arguments:
+    - default: false
+      description: A topic to filter by
+      isArray: false
+      name: topic
+      required: false
+      secret: false
+    deprecated: false
+    description: Print all partitions for a topic
+    execution: false
+    name: kafka-fetch-partitions
+    outputs:
+    - contextPath: Kafka.Topic.Name
+      description: Name of topic.
+      type: string
+    - contextPath: Kafka.Topic.Partition
+      description: Prints all partitions for a topic.
+      type: number
+  dockerimage: demisto/pykafka:1.0.0.128
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- No Test - Can not connect to instance from remote

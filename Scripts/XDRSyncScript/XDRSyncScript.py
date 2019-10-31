@@ -112,20 +112,14 @@ def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident
                 severity_current = incident_in_demisto.get(field_name_in_demisto)
 
                 severity_mapping = {
-                    0: None,
                     1: "low",
                     2: "medium",
                     3: "high",
                     4: "high"
                 }
-                if severity_mapping[severity_current] != severity_previous:
+                if severity_current != 0 and severity_mapping[severity_current] != severity_previous:
                     incident_in_demisto_was_modified = True
-
-                    if severity_current == 0:
-                        # Unknown severity equals to none
-                        xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = "none"
-                    else:
-                        xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_mapping[severity_current]
+                    xdr_update_args[MANUAL_SEVERITY_XDR_FIELD] = severity_mapping[severity_current]
 
             else:
                 severity_current = incident_in_demisto.get("CustomFields").get(field_name_in_demisto)
@@ -188,7 +182,9 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
     args_to_str = ""
     args_copy = copy.deepcopy(demisto_args)
 
-    args_copy["xdr_incident_from_previous_run"] = json.dumps(latest_incident_in_xdr)
+    if isinstance(latest_incident_in_xdr, dict):
+        args_copy["xdr_incident_from_previous_run"] = json.dumps(latest_incident_in_xdr)
+
     args_copy["first"] = "false"
 
     for arg_key in args_copy:
@@ -202,8 +198,8 @@ def get_latest_incident_from_xdr(incident_id):
     # get the latest incident from xdr
     latest_incident_in_xdr_result = demisto.executeCommand("xdr-get-incident-extra-data", {"incident_id": incident_id})
     if is_error(latest_incident_in_xdr_result):
-        demisto.results(latest_incident_in_xdr_result)
-        return
+        raise ValueError("Failed to execute xdr-get-incident-extra-data command. Error: {}".format(
+            get_error(latest_incident_in_xdr_result)))
 
     latest_incident_in_xdr = latest_incident_in_xdr_result[0]["Contents"].get("incident")
     # no need to pass the whole incident with extra data - it will be too big json to pass
@@ -223,8 +219,8 @@ def get_latest_incident_from_xdr(incident_id):
     return latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown
 
 
-def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_incident_from_previous_run, first_run,
-                      interval, xdr_incident_markdown_field):
+def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run, first_run, xdr_alerts_field,
+                      xdr_file_artifacts_field, xdr_network_artifacts_field, incident_in_demisto, verbose=True):
 
     latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
         get_latest_incident_from_xdr(incident_id)
@@ -236,13 +232,6 @@ def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_inc
             xdr_incident_from_previous_run = json.loads(xdr_incident_from_previous_run)
         else:
             raise ValueError("xdr_incident_from_previous_run expected to contain incident JSON, but passed None")
-
-    # get the incident from demisto
-    incident_in_demisto = demisto.incidents()[0]
-    if not incident_in_demisto:
-        return_error("Error - demisto.incidents()[0] expected to return current incident "
-                     "from context but returned None")
-        return
 
     incident_in_demisto_was_modified, xdr_update_args = compare_incident_in_demisto_vs_xdr_context(
         incident_in_demisto,
@@ -260,34 +249,28 @@ def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_inc
         latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
             get_latest_incident_from_xdr(incident_id)
 
-        update_incident_markdown_field = dict()
-        update_incident_markdown_field[xdr_incident_markdown_field] = latest_incident_in_xdr_markdown
+        xdr_incident = latest_incident_in_xdr_result[0]['Contents']
+        update_incident = dict()
+        update_incident[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
+        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('file_artifacts').get('data', []),
+                                                                    '_', '')
+        update_incident[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('network_artifacts').get('data',
+                                                                                                                 []),
+                                                                       '_', '')
 
-        res = demisto.executeCommand("setIncident", update_incident_markdown_field)
+        res = demisto.executeCommand("setIncident", update_incident)
         if is_error(res):
             raise ValueError(get_error(res))
 
         # update the context with latest incident from xdr
         demisto.results(latest_incident_in_xdr_result)
 
-        args = args_to_str(demisto.args(), latest_incident_in_xdr)
+        if verbose:
+            return_outputs(
+                "Incident in Demisto was modified, updating incident in XDR accordingly.\n\n{}".format(xdr_update_args),
+                None)
 
-        res = demisto.executeCommand("ScheduleCommand", {
-            'command': '''!XDRSyncScript {}'''.format(args),
-            'cron': '*/{} * * * *'.format(interval),
-            'times': 1
-        })
-
-        if is_error(res):
-            raise Exception(get_error(res))
-
-        scheduled_task_id = res[0]["Contents"].get("id")
-        demisto.setContext("XDRSyncScriptTaskID", scheduled_task_id)
-        demisto.results("XDRSyncScriptTaskID: {}".format(scheduled_task_id))
-        return_outputs(
-            "Incident in Demisto was modified, updating incident in XDR accordingly.\n\n{}".format(xdr_update_args),
-            None)
-        return
+        return latest_incident_in_xdr
 
     incident_in_xdr_was_modified, demisto_update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(
         latest_incident_in_xdr,
@@ -298,61 +281,122 @@ def xdr_incident_sync(incident_id, fields_mapping, playbook_name_to_run, xdr_inc
         demisto.debug("the incident in xdr was modified, updating the incident in demisto")
         demisto.debug("demisto_update_args: {}".format(json.dumps(demisto_update_args, indent=4)))
 
-        demisto_update_args[xdr_incident_markdown_field] = latest_incident_in_xdr_markdown
+        xdr_incident = latest_incident_in_xdr_result[0]['Contents']
+        update_incident = dict()
+        update_incident[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
+        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('file_artifacts').get('data', []),
+                                                                    '_', '')
+        update_incident[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('network_artifacts').get('data',
+                                                                                                                 []),
+                                                                       '_', '')
 
-        res = demisto.executeCommand("setIncident", demisto_update_args)
+        res = demisto.executeCommand("setIncident", update_incident)
         if is_error(res):
             raise ValueError(get_error(res))
 
         demisto.results(latest_incident_in_xdr_result)
-        return_outputs(
-            "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(demisto_update_args),
-            None)
+        if verbose:
+            return_outputs(
+                "Incident in XDR was modified, updating incident in Demisto accordingly.\n\n{}".format(demisto_update_args),
+                None)
 
-        # rerun the playbook
-        demisto.executeCommand("setPlaybook", {"name": playbook_name_to_run})
-        return
+        # rerun the playbook the current playbook
+        demisto.executeCommand("setPlaybook", {})
+        return latest_incident_in_xdr
 
     if first_run:
         demisto.results(latest_incident_in_xdr_result)
 
         # set the incident markdown field
-        update_incident_markdown_field = dict()
-        update_incident_markdown_field[xdr_incident_markdown_field] = latest_incident_in_xdr_markdown
+        xdr_incident = latest_incident_in_xdr_result[0]['Contents']
+        update_incident = dict()
+        update_incident[xdr_alerts_field] = replace_in_keys(xdr_incident.get('alerts').get('data', []), '_', '')
+        update_incident[xdr_file_artifacts_field] = replace_in_keys(xdr_incident.get('file_artifacts').get('data', []),
+                                                                    '_', '')
+        update_incident[xdr_network_artifacts_field] = replace_in_keys(xdr_incident.get('network_artifacts').get('data',
+                                                                                                                 []),
+                                                                       '_', '')
 
-        res = demisto.executeCommand("setIncident", update_incident_markdown_field)
+        demisto.results(update_incident)
+        res = demisto.executeCommand("setIncident", update_incident)
         if is_error(res):
             raise ValueError(get_error(res))
 
-    args = args_to_str(demisto.args(), latest_incident_in_xdr)
-    res = demisto.executeCommand("ScheduleCommand", {
-        'command': '''!XDRSyncScript {}'''.format(args),
-        'cron': '*/{} * * * *'.format(interval),
-        'times': 1
-    })
-    scheduled_task_id = res[0]["Contents"].get("id")
-    demisto.setContext("XDRSyncScriptTaskID", scheduled_task_id)
-    demisto.results("XDRSyncScriptTaskID: {}".format(scheduled_task_id))
-    return_outputs("Nothing to sync.", None)
+        if verbose:
+            return_outputs("Nothing to sync.", None)
+
+        return latest_incident_in_xdr
 
 
-def main():
+def main(args):
     fields_mapping = {}
     for xdr_field in XDR_INCIDENT_FIELDS:
-        if xdr_field in demisto.args() and demisto.args().get(xdr_field) is not None:
-            custom_field_in_demisto = demisto.args().get(xdr_field)
+        if xdr_field in args and args.get(xdr_field) is not None:
+            custom_field_in_demisto = args.get(xdr_field)
             fields_mapping[xdr_field] = custom_field_in_demisto
 
-    playbook_to_run = demisto.args().get('playbook_to_run')
-    incident_id = demisto.args().get('incident_id')
-    first_run = demisto.args().get('first') == 'true'
-    interval = int(demisto.args().get('interval'))
-    xdr_incident_from_previous_run = demisto.args().get('xdr_incident_from_previous_run')
-    xdr_incident_markdown_field = demisto.args().get('xdr_incident_markdown_field')
+    incident_id = args.get('incident_id')
+    first_run = args.get('first') == 'true'
+    interval = int(args.get('interval'))
+    xdr_incident_from_previous_run = args.get('xdr_incident_from_previous_run')
+    xdr_alerts_field = args.get('xdr_alerts')
+    xdr_file_artifacts_field = args.get('xdr_file_artifacts')
+    xdr_network_artifacts_field = args.get('xdr_network_artifacts')
+    verbose = args.get('verbose') == 'true'
 
-    xdr_incident_sync(incident_id, fields_mapping, playbook_to_run, xdr_incident_from_previous_run, first_run, interval,
-                      xdr_incident_markdown_field)
+    # get current running incident
+    incident_in_demisto = demisto.incidents()[0]
+    if not incident_in_demisto:
+        raise ValueError("Error - demisto.incidents()[0] expected to return current incident "
+                         "from context but returned None")
+
+    xdr_incident_markdown_field = args.get('xdr_incident_markdown_field')  # deprecated
+    if xdr_incident_markdown_field:
+        # deprecated field
+        return_error('Deprecated xdr_incident_markdown_field argument, instead use xdr_alerts, xdr_file_artifacts, '
+                     'xdr_network_artifacts. For more information follow Demisto documentation.', None)
+
+    latest_incident_in_xdr = None
+
+    previous_scheduled_task_id = demisto.get(demisto.context(), 'XDRSyncScriptTaskID')
+    if first_run and previous_scheduled_task_id:
+        # it means someone rerun the playbook, so we stop the previous scheduled task and set the task ID to be empty.
+        if verbose:
+            demisto.debug('Stopping previous scheduled task with ID: {}'.format(previous_scheduled_task_id))
+
+        demisto.executeCommand('StopScheduledTask', {'taskID': previous_scheduled_task_id})
+        demisto.setContext('XDRSyncScriptTaskID', '')
+
+    try:
+        latest_incident_in_xdr = xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_run,
+                                                   first_run, xdr_alerts_field, xdr_file_artifacts_field,
+                                                   xdr_network_artifacts_field, incident_in_demisto, verbose)
+    except Exception as ex:
+        return_error(str(ex), ex)
+    finally:
+        # even if error occurred keep trigger sync
+        if latest_incident_in_xdr is None:
+            args = args_to_str(args, xdr_incident_from_previous_run)
+        else:
+            args = args_to_str(args, latest_incident_in_xdr)
+
+        res = demisto.executeCommand("ScheduleCommand", {
+            'command': '''!XDRSyncScript {}'''.format(args),
+            'cron': '*/{} * * * *'.format(interval),
+            'times': 1
+        })
+
+        if is_error(res):
+            # return the error entries to warroom
+            demisto.results(res)
+            return
+
+        scheduled_task_id = res[0]["Contents"].get("id")
+        demisto.setContext("XDRSyncScriptTaskID", scheduled_task_id)
+
+        if verbose:
+            demisto.results("XDRSyncScriptTaskID: {}".format(scheduled_task_id))
 
 
 if __name__ == 'builtins':
-    main()
+    main(demisto.args())

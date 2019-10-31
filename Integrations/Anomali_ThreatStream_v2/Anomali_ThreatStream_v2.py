@@ -352,12 +352,16 @@ def parse_indicators_list(iocs_list):
     return iocs_context
 
 
-def build_model_data(name, is_public, tlp, tags, intelligence, description):
+def build_model_data(model, name, is_public, tlp, tags, intelligence, description):
     """
         Builds data dictionary that is used in Threat Model creation/update request.
     """
-    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp), ('description', description))
-            if v}
+    if model == 'tipreport':
+        description_field_name = 'body'
+    else:
+        description_field_name = 'description'
+    data = {k: v for (k, v) in (('name', name), ('is_public', is_public), ('tlp', tlp),
+                                (description_field_name, description)) if v}
     if tags:
         data['tags'] = tags if isinstance(tags, list) else [t.strip() for t in tags.split(',')]
     if intelligence:
@@ -630,7 +634,7 @@ def create_model(model, name, is_public="false", tlp=None, tags=None, intelligen
     """
         Creates Threat Model with basic parameters.
     """
-    data = build_model_data(name, is_public, tlp, tags, intelligence, description)
+    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
     model_id = http_request("POST", F"v1/{model}/", data=json.dumps(data), params=CREDENTIALS).get('id', None)
 
     if model_id:
@@ -645,7 +649,7 @@ def update_model(model, model_id, name=None, is_public="false", tlp=None, tags=N
         Updates a ThreatStream model with parameters. In case one or more optional parameters are
         defined, the previous data is overridden.
     """
-    data = build_model_data(name, is_public, tlp, tags, intelligence, description)
+    data = build_model_data(model, name, is_public, tlp, tags, intelligence, description)
     http_request("PATCH", F"v1/{model}/{model_id}/", data=json.dumps(data), params=CREDENTIALS)
     get_iocs_by_model(model, model_id, limit="50")
 

@@ -1,0 +1,81 @@
+commonfields:
+  id: Exchange 2016 Compliance Search
+  version: -1
+name: Exchange 2016 Compliance Search
+display: Exchange 2016 Compliance Search
+category: Messaging
+description: Exchange Server 2016 Compliance Search enables you to search for and
+  delete an email message from all mailboxes in your organization.
+configuration:
+- display: DOMAIN\USERNAME (e.g., DEMISTO.INT\admin)
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Exchange Server fully qualified domain name (FQDN)
+  name: exchangeFQDN
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: exchange2016-start-compliance-search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: Query for finding mail messages
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Name
+      description: The name of the compliance search
+      type: string
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Initiates a compliance search.
+  - name: exchange2016-get-compliance-search
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Gets the status and results of a compliance search.
+  - name: exchange2016-remove-compliance-search
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    outputs:
+    - contextPath: EWS.ComplianceSearch.Status
+      description: The status of the compliance search
+      type: string
+    description: Removes the compliance search from the Exchange Server.
+  - name: exchange2016-purge-compliance-search-results
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    description: Purges the results found during the compliance search.
+  - name: exchange2016-get-compliance-search-purge-status
+    arguments:
+    - name: search-name
+      required: true
+      default: true
+      description: Name of the compliance search
+    description: Checks the status of the purge operation on the compliance search.
+  runonce: false
+tests:
+- No test

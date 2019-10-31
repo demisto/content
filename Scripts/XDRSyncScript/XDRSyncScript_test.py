@@ -1,7 +1,7 @@
+from CommonServerPython import *
 import copy
 import json
-from XDRSyncScript import compare_incident_in_demisto_vs_xdr_context, \
-    compare_incident_in_xdr_vs_previous_xdr_in_context, args_to_str
+import XDRSyncScript as xdr_script
 
 
 INCIDENT_IN_DEMISTO = {
@@ -100,9 +100,10 @@ def test_compare_incident_in_demisto_vs_xdr_context___incident_not_modified():
     incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
-                                                                          incident_id,
-                                                                          fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
     assert not is_modified
 
 
@@ -132,9 +133,10 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_was_modified():
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
-                                                                          incident_id,
-                                                                          fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
 
     assert is_modified
     assert {
@@ -169,9 +171,10 @@ def test_compare_incident_in_demisto_vs_xdr_context___severity_was_modified():
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
-                                                                          incident_id,
-                                                                          fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
 
     assert is_modified
     assert {
@@ -208,9 +211,10 @@ def test_compare_incident_in_demisto_vs_xdr_context___status_and_severity_was_mo
 
     xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context,
-                                                                          incident_id,
-                                                                          fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
 
     assert is_modified
     assert {
@@ -245,9 +249,10 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
     incident_in_xdr_latest = copy.deepcopy(INCIDENT_FROM_XDR)
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
-                                                                                  incident_from_xdr_in_context,
-                                                                                  fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
+        incident_in_xdr_latest,
+        incident_from_xdr_in_context,
+        fields_mapping)
 
     assert not is_modified
 
@@ -281,9 +286,10 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
-                                                                                  incident_from_xdr_in_context,
-                                                                                  fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
+        incident_in_xdr_latest,
+        incident_from_xdr_in_context,
+        fields_mapping)
 
     assert is_modified
     assert {
@@ -320,9 +326,10 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
-                                                                                  incident_from_xdr_in_context,
-                                                                                  fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
+        incident_in_xdr_latest,
+        incident_from_xdr_in_context,
+        fields_mapping)
 
     assert is_modified
     assert {
@@ -363,9 +370,10 @@ def test_compare_incident_latest_xdr_incident_with_older_xdr_in_context____when_
 
     incident_from_xdr_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
 
-    is_modified, update_args = compare_incident_in_xdr_vs_previous_xdr_in_context(incident_in_xdr_latest,
-                                                                                  incident_from_xdr_in_context,
-                                                                                  fields_mapping)
+    is_modified, update_args = xdr_script.compare_incident_in_xdr_vs_previous_xdr_in_context(
+        incident_in_xdr_latest,
+        incident_from_xdr_in_context,
+        fields_mapping)
 
     assert is_modified
     assert {
@@ -385,7 +393,7 @@ def test_args_to_str_1():
         "first": "true"
     }
 
-    actual = args_to_str(args, xdr_incident)
+    actual = xdr_script.args_to_str(args, xdr_incident)
 
     expected = 'incident_id=`11` assigned_user_mail=`xdrassigneduser` status=`xdrstatus` severity=`xdrseverity` ' \
                'playbook_to_run=`XDR Demo` first=`false` xdr_incident_from_previous_run=`{}` '\
@@ -406,10 +414,90 @@ def test_args_to_str_2():
         "xdr_incident_from_previous_run": "some previous value"
     }
 
-    actual = args_to_str(args, xdr_incident)
+    actual = xdr_script.args_to_str(args, xdr_incident)
 
     expected = 'incident_id=`11` assigned_user_mail=`xdrassigneduser` status=`xdrstatus` severity=`xdrseverity` ' \
                'playbook_to_run=`XDR Demo` first=`false` xdr_incident_from_previous_run=`{}` '\
         .format(json.dumps(xdr_incident))
 
     assert expected == actual
+
+
+def test_compare_incident_in_demisto_when_the_severity_is_unknown():
+    """
+    Given
+    - incident in demisto
+    - incident from xdr - older
+    - fields_mapping:
+        severity: severity
+
+    When
+    - severity in demisto is unknown
+
+    Then
+    - ensure severity is not updated in XDR
+
+    """
+    incident_id = "100"
+    fields_mapping = {
+        "severity": "severity"
+    }
+
+    incident_in_demisto = copy.deepcopy(INCIDENT_IN_DEMISTO)
+    incident_in_demisto["severity"] = 0
+
+    xdr_incident_in_context = copy.deepcopy(INCIDENT_FROM_XDR)
+
+    is_modified, update_args = xdr_script.compare_incident_in_demisto_vs_xdr_context(incident_in_demisto,
+                                                                                     xdr_incident_in_context,
+                                                                                     incident_id,
+                                                                                     fields_mapping)
+
+    assert is_modified is False
+    assert {} == update_args
+
+
+def test_fix_bug_19669(mocker):
+    """
+    bug fix https://github.com/demisto/etc/issues/19669
+
+    The script was throwing `local variable 'latest_incident_in_xdr' referenced before assignment`
+
+    Given
+    - xdr script
+
+    When
+    - script executed and xdr_incident_sync raised an exception
+
+    Then
+    - the xdr_script should not fail on syntax error: `local variable 'latest_incident_in_xdr'
+    referenced before assignment`
+    - the script should return error entry with message `Raised exception`
+    """
+    import XDRSyncScript as xdr_script
+    import demistomock as demisto
+    import sys
+
+    mocker.patch.object(xdr_script, 'xdr_incident_sync', side_effect=Exception('Raised exception'))
+    mocker.patch.object(demisto, 'results')
+
+    # mocking exit we make sure that return_error don't stop the test - bad practice but have no choise for now
+    mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'executeCommand', return_value=[{
+        'Contents': {
+            'id': '1000'
+        },
+        'Type': entryTypes['note'],
+        'Format': formats['json']
+    }])
+    args = {
+        'interval': '1'
+    }
+    xdr_script.main(args)
+
+    assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['error']
+    assert results[0]['Contents'] == 'Raised exception'

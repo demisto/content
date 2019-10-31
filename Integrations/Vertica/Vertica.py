@@ -5,19 +5,29 @@ from datetime import datetime
 # fix for: https://github.com/vertica/vertica-python/issues/296
 # (we need this for running in non-root where getpass will fail as uid doesn't map to a user name)
 import getpass
-getpass_getuser = getpass.getuser
 
 
-def getuser_no_fail():
-    try:
-        user = getpass_getuser()
-    except KeyError:
-        # getuser() fails on some systems. Provide a sane default.
-        user = 'vertica'
-    return user
+class FixGetPass():
+    def __init__(self):
+        self.getpass_getuser_org = getpass.getuser
+
+        def getuser_no_fail():
+            # getuser() fails on some systems. Provide a sane default.
+            user = 'vertica'
+            try:
+                if self.getpass_getuser_org:
+                    user = self.getpass_getuser_org()
+            except (NameError, KeyError):
+                pass
+            return user
+        getpass.getuser = getuser_no_fail
+
+    def __del__(self):
+        if self.getpass_getuser_org and getpass:
+            getpass.getuser = self.getpass_getuser_org
 
 
-getpass.getuser = getuser_no_fail
+_fix_getpass = FixGetPass()
 
 ''' IMPORTS '''
 

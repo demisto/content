@@ -24,7 +24,7 @@ configuration:
   name: offensesPerCall
   required: false
   type: 0
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -1047,7 +1047,7 @@ script:
       description: The note ID
       isArray: false
       name: note_id
-      required: true
+      required: false
       secret: false
     - default: false
       description: 'If used, will filter all fields except for the specified ones.
@@ -1458,49 +1458,52 @@ script:
     execution: false
     name: qradar-get-domain-by-id
     outputs:
-      - contextPath: QRadar.Domains.AssetScannerIDs
-        description: Array of Asset Scanner IDs.
-        type: Number
-      - contextPath: QRadar.Domains.CustomProperties
-        description: Custom properties of the domain.
-        type: String
-      - contextPath: QRadar.Domains.Deleted
-        description: Indicates if the domain is deleted.
-        type: Boolean
-      - contextPath: QRadar.Domains.Description
-        description: Description of the domain.
-        type: String
-      - contextPath: QRadar.Domains.EventCollectorIDs
-        description: Array of Event Collector IDs.
-        type: Number
-      - contextPath: QRadar.Domains.FlowCollectorIDs
-        description: Array of Flow Collector IDs.
-        type: Number
-      - contextPath: QRadar.Domains.FlowSourceIDs
-        description: Array of Flow Source IDs.
-        type: Number
-      - contextPath: QRadar.Domains.ID
-        description: ID of the domain.
-        type: Number
-      - contextPath: QRadar.Domains.LogSourceGroupIDs
-        description: Array of Log Source Group IDs.
-        type: Number
-      - contextPath: QRadar.Domains.LogSourceIDs
-        description: Array of Log Source IDs.
-        type: Number
-      - contextPath: QRadar.Domains.Name
-        description: Name of the Domain.
-        type: String
-      - contextPath: QRadar.Domains.QVMScannerIDs
-        description: Array of QVM Scanner IDs.
-        type: Number
-      - contextPath: QRadar.Domains.TenantID
-        description: ID of the Domain tenant.
-        type: Number
+    - contextPath: QRadar.Domains.AssetScannerIDs
+      description: Array of Asset Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.CustomProperties
+      description: Custom properties of the domain.
+      type: String
+    - contextPath: QRadar.Domains.Deleted
+      description: Indicates if the domain is deleted.
+      type: Boolean
+    - contextPath: QRadar.Domains.Description
+      description: Description of the domain.
+      type: String
+    - contextPath: QRadar.Domains.EventCollectorIDs
+      description: Array of Event Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowCollectorIDs
+      description: Array of Flow Collector IDs.
+      type: Number
+    - contextPath: QRadar.Domains.FlowSourceIDs
+      description: Array of Flow Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.ID
+      description: ID of the domain.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceGroupIDs
+      description: Array of Log Source Group IDs.
+      type: Number
+    - contextPath: QRadar.Domains.LogSourceIDs
+      description: Array of Log Source IDs.
+      type: Number
+    - contextPath: QRadar.Domains.Name
+      description: Name of the Domain.
+      type: String
+    - contextPath: QRadar.Domains.QVMScannerIDs
+      description: Array of QVM Scanner IDs.
+      type: Number
+    - contextPath: QRadar.Domains.TenantID
+      description: ID of the Domain tenant.
+      type: Number
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
+  subtype: python2
 image: data:image/png;base64,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
 tests:
 - test_Qradar

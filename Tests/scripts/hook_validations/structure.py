@@ -1,10 +1,12 @@
+import json
+import yaml
 import os
 import re
 import sys
 
 from Tests.scripts.constants import *
 from Tests.test_utils import print_error, print_warning, run_command, get_yaml, get_json, checked_type, \
-    get_release_notes_file_path
+    get_release_notes_file_path, get_latest_release_notes_text
 
 try:
     from pykwalify.core import Core
@@ -45,7 +47,11 @@ class StructureValidator(object):
         SCRIPT_JS_REGEX,
         INTEGRATION_JS_REGEX,
         INTEGRATION_PY_REGEX,
-        REPUTATION_REGEX
+        REPUTATION_REGEX,
+        BETA_INTEGRATION_YML_REGEX,
+        BETA_INTEGRATION_REGEX,
+        BETA_SCRIPT_REGEX,
+        BETA_PLAYBOOK_REGEX,
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
@@ -59,7 +65,6 @@ class StructureValidator(object):
         CONNECTIONS_REGEX: "canvas-context-connections",
         CLASSIFIER_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
-        INCIDENT_FIELDS_REGEX: "incidentfields",
         INCIDENT_FIELD_REGEX: "incidentfield",
     }
 
@@ -79,12 +84,13 @@ class StructureValidator(object):
         """
         self.is_valid_scheme()
         self.is_valid_version()
+        self.is_file_id_without_slashes()
 
         if not self.is_added_file:  # In case the file is modified
             self.is_id_not_modified()
             self.is_valid_fromversion_on_modified()
-
-            if not self.is_release_branch():  # In case of release branch we allow to remove release notes
+            # In case of release branch we allow to remove release notes
+            if not self.is_release_branch() and not self._is_beta_integration():
                 self.validate_file_release_notes()
 
         return self._is_valid
@@ -196,8 +202,8 @@ class StructureValidator(object):
         if not change_string:
             change_string = run_command("git diff HEAD {0}".format(self.file_path))
 
-        is_added_from_version = re.search("\+([ ]+)?fromversion: .*", change_string)
-        is_added_from_version_secondary = re.search("\+([ ]+)?\"fromVersion\": .*", change_string)
+        is_added_from_version = re.search(r"\+([ ]+)?fromversion: .*", change_string)
+        is_added_from_version_secondary = re.search(r"\+([ ]+)?\"fromVersion\": .*", change_string)
 
         if is_added_from_version or is_added_from_version_secondary:
             print_error("You've added fromversion to an existing file in the system, this is not allowed, please undo. "
@@ -210,10 +216,15 @@ class StructureValidator(object):
     def is_release_branch():
         """Check if we are working on a release branch."""
         diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
-        if re.search('[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+        if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
 
         return False
+
+    def _is_beta_integration(self):
+        """Checks if file is under Beta_integration dir"""
+        return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
+            re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
 
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.
@@ -226,8 +237,10 @@ class StructureValidator(object):
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
+
             # check rn file exists and contain text
-            if not os.path.isfile(rn_path) or os.stat(rn_path).st_size == 0:
+            if rn is None:
                 print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
                 self._is_valid = False
 
@@ -252,3 +265,46 @@ class StructureValidator(object):
             self._is_valid = False
 
         return self._is_valid
+
+    def load_data_from_file(self):
+        file_type_suffix_to_loading_func = {
+            '.yml': yaml.safe_load,
+            '.json': json.load,
+        }
+
+        file_extension = os.path.splitext(self.file_path)[1]
+        if file_extension not in file_type_suffix_to_loading_func:
+            print_error("An unknown error has occurred. Please retry.")
+
+        load_function = file_type_suffix_to_loading_func[file_extension]
+        with open(self.file_path, 'r') as file_obj:
+            loaded_file_data = load_function(file_obj)
+            return loaded_file_data
+
+    @staticmethod
+    def get_file_id_from_loaded_file_data(loaded_file_data):
+        file_id = loaded_file_data.get('id')
+        if not file_id:
+            # In integrations/scripts, the id is under 'commonfields'.
+            file_id = loaded_file_data.get('commonfields', {}).get('id')
+        if not file_id:
+            # In layout, the id is under 'layout'.
+            file_id = loaded_file_data.get('layout', {}).get('id')
+
+        return file_id
+
+    def is_file_id_without_slashes(self):
+        """Check if the ID of the file contains any slashes ('/').
+
+        Returns:
+            bool. Whether the file's ID contains slashes or not.
+        """
+        loaded_file_data = self.load_data_from_file()
+        file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
+        if (not file_id and loaded_file_data['name'] == 'reputations'):
+            return True
+        if not file_id or '/' in file_id:
+            self._is_valid = False
+            print_error("File's ID contains slashes - please remove.")
+            return False
+        return True

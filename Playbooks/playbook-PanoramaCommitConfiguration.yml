@@ -2,8 +2,8 @@ id: PanoramaCommitConfiguration
 version: -1
 name: PanoramaCommitConfiguration
 fromversion: 4.0.0
-description: "Commit PAN-OS Panorama or Firewall Configuration.\nIf specified
-  as Panorama, will also push the Policies to the specified Device Group in the instance "
+description: "DEPRECATED - Use PAN-OS Commit Configuration instead.\nIf specified
+  as Panorama, will also push the Policies to the specified Device Group in the instance. (please use pan-os-commit-configuration instead)"
 starttaskid: "0"
 tasks:
   "0":
@@ -92,7 +92,7 @@ tasks:
       id: e112b079-f6be-4f2e-86b3-ced990700352
       version: -1
       name: panorama-commit
-      description: Commit Palo Alto Firewall or Panorama
+      description: Commit Palo Alto Networks Firewall or Panorama.
       script: '|||panorama-commit'
       type: regular
       iscommand: true
@@ -179,7 +179,7 @@ tasks:
       id: 384cca31-aa07-45d6-8ce9-54c2e8dc19ea
       version: -1
       name: Is instance Palo Alto Firewall or Panorama?
-      description: Checks if the instance is Palo Alto FIrewall or Panorama
+      description: Checks if the instance is Palo Alto Networks Firewall or Panorama.
       type: condition
       iscommand: false
       brand: ""
@@ -251,7 +251,7 @@ tasks:
       id: 2ff73215-8971-475b-860e-6920fe227658
       version: -1
       name: panorama-push-to-device-group
-      description: Push rules from Palo Alto Panorama to the Palo Alto configured
+      description: Push rules from Palo Alto Networks Panorama to the Palo Alto Networks configured
         device group.
       script: '|||panorama-push-to-device-group'
       type: regular
@@ -339,7 +339,7 @@ tasks:
       id: bd75273e-c3cd-4503-8737-856299908727
       version: -1
       name: panorama-commit-status
-      description: Get commit status
+      description: Gets the commit status.
       script: '|||panorama-commit-status'
       type: regular
       iscommand: true
@@ -370,7 +370,7 @@ tasks:
       id: e96b6162-cac9-4c18-8e54-58abf62d0039
       version: -1
       name: panorama-push-status
-      description: Get push status
+      description: Gets the push status.
       script: '|||panorama-push-status'
       type: regular
       iscommand: true
@@ -401,7 +401,7 @@ tasks:
       id: 7fff9e78-fd85-43fe-8331-6a50191e5ffe
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filters by JobID to validate only the new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -436,7 +436,7 @@ tasks:
       id: 3123d9ad-2650-478e-8746-3401631faa14
       version: -1
       name: Filter JobID
-      description: Filter JobID to validate only new push configuration JobIDs
+      description: Filters by JobID to validate only the new push configuration JobIDs.
       type: condition
       iscommand: false
       brand: ""
@@ -480,8 +480,8 @@ inputs:
   value:
     simple: Firewall
   required: false
-  description: States if the instance we have configures is a Palo Alto Networks Firewall or
-    Panorama
+  description: Determines if the configured instance is Palo Alto Networks Firewall or
+    Panorama.
 outputs: []
 tests:
 - palo_alto_firewall_test_pb

@@ -310,6 +310,7 @@ script:
         {from: 'id', to: 'CbID'},
         {from: 'segment_id', to: 'CbSegmentID'},
         {from: 'group', to: 'Group'},
+        {from: 'start', to: 'StartTime'}
     ];
 
     function getProcessesRequest(query, rows, start, sort, facets) {
@@ -388,16 +389,46 @@ script:
         }
     }
 
-    function getProcess() {
-        let result = getProcessRequest(args.pid, args.segid);
-        let entries = [];
+    function getFullProcessRequest(processId, segmentId) {
+        let response = sendRequest(`/v1/process/${processId}/${segmentId}`, 'GET');
+        try {
+            return JSON.parse(response.Body);
+        } catch (err) {
+            throw `Could not parse response.\nError: ${err}.\nResponse: ${response.Body}`;
+        }
+    }
 
+    function getProcess() {
+        let entries = [];
         let title = 'CB Response - Process';
         let dataMap = processData;
         let headers = dataMap.map(cn => cn.to);
-        let processTranslatedData = mapObjFunction(dataMap)(result);
+        let result;
+        let processTranslatedData;
+        let context;
+
+        if (args.get_related === 'true') {
+            result = getFullProcessRequest(args.pid, args.segid)
+            processTranslatedData = mapObjFunction(dataMap)(result.process);
+            let parentProcessTranslatedData = mapObjFunction(dataMap)(result.parent);
+            let siblingsProcessTranslatedData = [];
+            for (var i = 0; i < result.siblings.length; i++) {
+                siblingsProcessTranslatedData.push(mapObjFunction(dataMap)(result.siblings[i]));
+            }
+            let childrenProcessTranslatedData = []
+            for (var i = 0; i < result.children.length; i++) {
+                childrenProcessTranslatedData.push(mapObjFunction(dataMap)(result.children[i]));
+            }
+            context = processTranslatedData;
+            context.Siblings = siblingsProcessTranslatedData
+            context.Parent = parentProcessTranslatedData
+            context.Children = childrenProcessTranslatedData
+        } else {
+            result = getProcessRequest(args.pid, args.segid);
+            processTranslatedData = mapObjFunction(dataMap)(result);
+            context = processTranslatedData;
+        }
         let humanReadable = tableToMarkdown(title, processTranslatedData, headers, undefined, dotToSpace);
-        let context = processTranslatedData;
         entries.push({
             Type: entryTypes.note,
             Contents: result.process,
@@ -405,56 +436,6 @@ script:
             ReadableContentsFormat: formats.markdown,
             HumanReadable: humanReadable
         });
-
-        /*title = 'Parent';
-        let otherDataMap = dataMap.concat([
-            {to: 'Parent.PID', from: 'parent_pid'},
-            {to: 'Parent.Name', from: 'parent_name'}
-        ]);
-        headers = otherDataMap.map(cn => cn.to);
-        let parentTranslatedData = mapObjFunction(otherDataMap)(result.parent);
-        humanReadable = tableToMarkdown(title, parentTranslatedData, headers, undefined, dotToSpace);
-        context['Parent'] = parentTranslatedData;
-        entries.push({
-            Type: entryTypes.note,
-            Contents: result.parent,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable
-        });
-
-        title = 'Siblings';
-        otherDataMap = dataMap.concat([
-            {to: 'Parent.PID', from: 'parent_pid'},
-            {to: 'Parent.Name', from: 'parent_name'}
-        ]);
-        headers = otherDataMap.map(cn => cn.to);
-        let siblingsTranslatedData = mapObjFunction(otherDataMap)(result.siblings);
-        humanReadable = tableToMarkdown(title, siblingsTranslatedData, headers, undefined, dotToSpace);
-        context['Siblings'] = siblingsTranslatedData;
-        entries.push({
-            Type: entryTypes.note,
-            Contents: result.siblings,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable
-        });
-
-        title = 'Children';
-        otherDataMap = dataMap.concat([
-            {to: 'Parent.PID', from: 'parent_pid'}
-        ]);
-        headers = otherDataMap.map(cn => cn.to);
-        let childrenTranslatedData = mapObjFunction(otherDataMap)(result.children);
-        humanReadable = tableToMarkdown(title, childrenTranslatedData, headers, undefined, dotToSpace);
-        context['Children'] = childrenTranslatedData;
-        entries.push({
-            Type: entryTypes.note,
-            Contents: result.children,
-            ContentsType: formats.json,
-            ReadableContentsFormat: formats.markdown,
-            HumanReadable: humanReadable
-        });*/
 
         entries[0].EntryContext = {
             'Process(val.CbID==obj.CbID)': createContext(context)
@@ -608,7 +589,14 @@ script:
         {to: 'ProductName', from: 'product_name'},
         {to: 'OS', from: 'os_type'},
         {to: 'DigSig.Result', from: 'digsig_result'},
-        {to: 'DigSig.Publisher', from: 'digsig_publisher'}
+        {to: 'DigSig.Publisher', from: 'digsig_publisher'},
+        {to: 'Company', from: 'company_name'},
+        {to: 'DigitalSignature.Publisher', from: 'digsig_publisher'},
+        {to: 'Name', from: 'original_filename'},
+        {to: 'Signature.OriginalName', from: 'original_filename'},
+        {to: 'Signature.InternalName', from: 'internal_name'},
+        {to: 'Signature.FileVersion', from: 'file_version'},
+        {to: 'Signature.Description', from: 'file_desc'}
     ];
 
     function getBinariesRequest(query, rows, start, sort, facets) {
@@ -1326,6 +1314,27 @@ script:
       description: The OS
     - contextPath: File.MD5
       description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
     description: Query for binaries based on given parameters
   - name: cb-binary-get
     arguments:
@@ -1368,6 +1377,27 @@ script:
       description: The OS
     - contextPath: File.MD5
       description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+      type: string
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+      type: string
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+      type: string
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+      type: string
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+      type: string
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+      type: string
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+      type: string
     description: Retrieve a binary from CarbonBlack based on hash. Returned file will
       be places in the war room.
   - name: cb-block-hash
@@ -1426,6 +1456,13 @@ script:
     - name: segid
       required: true
       description: the process segment id, the segment_id field in search results.
+    - name: get_related
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: If set to true, will get process siblings, parent and children.
+      defaultValue: "false"
     outputs:
     - contextPath: Process.Siblings.MD5
       description: The sibling Process MD5
@@ -1499,6 +1536,9 @@ script:
       description: The sibling Process Path
     - contextPath: Process.Siblings.PID
       description: The sibling Process PID
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
     description: Gets basic process information for segment (segment_id) of process
       (process_id)
   - name: cb-get-processes
@@ -1551,6 +1591,9 @@ script:
       description: Process Parent PID
     - contextPath: Process.Parent.Name
       description: Process Parent Name
+    - contextPath: Process.StartTime
+      description: Start time of the process.
+      type: date
     description: Query processes based on given parameters
   - name: cb-list-sensors
     arguments: []
@@ -1841,5 +1884,3 @@ script:
     description: Retrieve watchlist in Carbon black Response.
   isfetch: true
   runonce: false
-tests:
-  - CarbonBlackResponseTest

@@ -93,7 +93,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
 
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
-    desc_data, found_desc_path = get_data(dir_name, package_path, '*md')
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
 
     if yml_data.get('detaileddescription'):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
@@ -103,7 +103,12 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
             # for multiline detailed-description, if it's not wrapped in quotation marks
             # add | to the beginning of the description, and shift everything to the right
             desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
-        yml_text = "detaileddescription: " + desc_data + '\n' + yml_text
+        temp_yml_text = u"detaileddescription: "
+        temp_yml_text += desc_data.encode("utf-8")
+        temp_yml_text += u"\n"
+        temp_yml_text += yml_text
+
+        yml_text = temp_yml_text
 
     return yml_text, found_desc_path
 
@@ -182,10 +187,13 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     return yml_text, script_path
 
 
-def clean_python_code(script_code):
+def clean_python_code(script_code, remove_print_future=True):
     script_code = script_code.replace("import demistomock as demisto", "")
     script_code = script_code.replace("from CommonServerPython import *", "")
     script_code = script_code.replace("from CommonServerUserPython import *", "")
+    # print function is imported in python loop
+    if remove_print_future:  # docs generation requires to leave this
+        script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
 
 

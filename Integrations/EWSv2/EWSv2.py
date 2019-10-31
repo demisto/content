@@ -11,19 +11,20 @@ from cStringIO import StringIO
 import logging
 import warnings
 import subprocess
+import email
 from requests.exceptions import ConnectionError
 
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
     ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults
-from exchangelib.items import Item, Message
+    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest
+from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
 from exchangelib.util import create_element, add_xml_child
 from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
     EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
-    Version, Folder, HTMLBody, Body, Build
+    Version, Folder, HTMLBody, Body, Build, ItemAttachment
 from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 
@@ -101,6 +102,213 @@ IS_TEST_MODULE = False
 BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
+MARK_AS_READ = demisto.params().get('markAsRead', False)
+
+START_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$query
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# Generate a unique search name
+$searchName = [guid]::NewGuid().ToString() -replace '[-]'
+$searchName = "DemistoSearch" + $searchName
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+$compliance = New-ComplianceSearch -Name $searchName -ExchangeLocation All -ContentMatchQuery $query -Confirm:$false
+
+Start-ComplianceSearch -Identity $searchName
+
+$complianceSearchName = "Action status: " + $searchName
+
+$complianceSearchName | ConvertTo-Json
+
+# Close the session
+Remove-PSSession $session
+"""
+GET_COMPLIANCE = """[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+
+
+$searchStatus = Get-ComplianceSearch $searchName
+#"Search status: " + $searchStatus.Status
+$searchStatus.Status
+if ($searchStatus.Status -eq "Completed")
+{
+   $searchStatus.SuccessResults | ConvertTo-Json
+}
+
+# Close the session
+Remove-PSSession $session
+"""
+PURGE_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+# Delete mails based on an existing search criteria
+$newActionResult = New-ComplianceSearchAction -SearchName $searchName -Purge -PurgeType SoftDelete -Confirm:$false
+if (!$newActionResult)
+{
+   # Happens when there are no results from the search
+   "No action was created"
+}
+
+# Close the session
+Remove-PSSession $session
+return
+"""
+PURGE_STATUS_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+# open remote PS session to Office 365 Security & Compliance Center
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+$actionName = $searchName + "_Purge"
+$actionStatus = Get-ComplianceSearchAction $actionName
+""
+$actionStatus.Status
+
+# Close the session
+Remove-PSSession $session
+"""
+REMOVE_COMPLIANCE = """
+[CmdletBinding()]
+Param(
+[Parameter(Mandatory=$True)]
+[string]$username,
+
+[Parameter(Mandatory=$True)]
+[string]$searchName
+)
+
+$WarningPreference = "silentlyContinue"
+# Create Credential object
+$password = Read-Host
+$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
+$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
+
+
+# open remote PS session to Office 365 Security & Compliance Center
+
+$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
+https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
+-Authentication Basic -AllowRedirection
+
+if (!$session)
+{
+   "Failed to create remote PS session"
+   return
+}
+
+
+Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
+
+# Remove the search
+Remove-ComplianceSearch $searchName -Confirm:$false
+
+# Close the session
+Remove-PSSession $session
+"""
 
 # initialized in main()
 EWS_SERVER = ''
@@ -176,6 +384,8 @@ def prepare_context(credentials):
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
             return_error("Auto discovery failed. Check credentials or configure manually")
+        except Exception as e:
+            return_error(e.message)
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
@@ -290,13 +500,19 @@ def get_account(account_email, access_type=ACCESS_TYPE):
 
 # LOGGING
 log_stream = None
+log_handler = None
 
 
 def start_logging():
     global log_stream
+    global log_handler
     if log_stream is None:
         log_stream = StringIO()
-        logging.basicConfig(stream=log_stream, level=logging.DEBUG)
+        log_handler = logging.StreamHandler(stream=log_stream)
+        log_handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+        logger = logging.getLogger()
+        logger.addHandler(log_handler)
+        logger.setLevel(logging.DEBUG)
 
 
 # Exchange 2010 Fixes
@@ -689,7 +905,7 @@ def keys_to_camel_case(value):
 
     if value is None:
         return None
-    if isinstance(value, list):
+    if isinstance(value, (list, set)):
         return map(keys_to_camel_case, value)
     if isinstance(value, dict):
         return dict((keys_to_camel_case(k),
@@ -763,7 +979,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
         new_dict = {}
         fields_list = ['datetime_created', 'datetime_received', 'datetime_sent', 'sender',
                        'has_attachments', 'importance', 'message_id', 'last_modified_time',
-                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path']
+                       'size', 'subject', 'text_body', 'headers', 'body', 'folder_path', 'is_read']
 
         # Docker BC
         if exchangelib.__version__ == "1.12.0":
@@ -800,7 +1016,7 @@ def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=Fal
     return raw_dict
 
 
-def parse_incident_from_item(item):
+def parse_incident_from_item(item, is_fetch):
     incident = {}
     labels = []
 
@@ -877,8 +1093,16 @@ def parse_incident_from_item(item):
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
-                                             attachment.item.mime_content)
+                    attached_email = email.message_from_string(attachment.item.mime_content)
+                    if attachment.item.headers:
+                        attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                  attached_email.items()]
+                        for header in attachment.item.headers:
+                            if (header.name, header.value) not in attached_email_headers \
+                                    and header.name != 'Content-Type':
+                                attached_email.add_header(header.name, header.value)
+
+                    file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
 
                 if file_result:
                     # check for error
@@ -915,6 +1139,10 @@ def parse_incident_from_item(item):
     if item.conversation_id:
         labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
+    if MARK_AS_READ and is_fetch:
+        item.is_read = True
+        item.save()
+
     incident['labels'] = labels
     incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
@@ -934,7 +1162,7 @@ def fetch_emails_as_incidents(account_email, folder_name):
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
-                incident = parse_incident_from_item(item)
+                incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
         new_last_run = {
@@ -1187,7 +1415,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None):
+                            is_public=None, selected_fields='all'):
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -1196,32 +1424,51 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
-    if folder_path:
+    if folder_path.lower() == 'inbox':
+        folders = [account.inbox]
+    elif folder_path:
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
         folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
+    selected_all_fields = (selected_fields == 'all')
+
+    if selected_all_fields:
+        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))  # type: ignore
+    else:
+        restricted_fields = set(argToList(selected_fields))  # type: ignore
+        restricted_fields.update(['id', 'message_id'])  # type: ignore
+
     for folder in folders:
         if Message not in folder.supported_item_models:
             continue
         if query:
-            items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            items_qs = folder.filter(query).only(*restricted_fields)
         else:
-            items_qs = folder.filter(message_id=message_id).only(*map(lambda x: x.name, Message.FIELDS))
+            items_qs = folder.filter(message_id=message_id).only(*restricted_fields)
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
+
     items = items[:limit]
     searched_items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-        items)
+        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                        compact_fields=selected_all_fields), items)
+
+    if not selected_all_fields:
+        searched_items_result = [
+            {k: v for (k, v) in i.iteritems()
+             if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
+
+        for item in searched_items_result:
+            item['itemId'] = item.pop('id', '')
 
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
-                                headers=ITEMS_RESULTS_HEADERS)
+                                headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
 
 
 def get_out_of_office_state(target_mailbox=None):
@@ -1281,11 +1528,11 @@ def get_contacts(limit, target_mailbox=None):
         contact_dict = dict((k, v if not isinstance(v, EWSDateTime) else v.ewsformat())
                             for k, v in contact.__dict__.items()
                             if isinstance(v, basestring) or isinstance(v, EWSDateTime))
-        if contact.physical_addresses:
+        if isinstance(contact, Contact) and contact.physical_addresses:
             contact_dict['physical_addresses'] = map(parse_physical_address, contact.physical_addresses)
-        if contact.phone_numbers:
+        if isinstance(contact, Contact) and contact.phone_numbers:
             contact_dict['phone_numbers'] = map(parse_phone_number, contact.phone_numbers)
-        if contact.email_addresses and len(contact.email_addresses) > 0:
+        if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
             contact_dict['emailAddresses'] = map(lambda x: x.email, contact.email_addresses)
         contact_dict = keys_to_camel_case(contact_dict)
         contact_dict = dict((k, v) for k, v in contact_dict.items() if v)
@@ -1295,10 +1542,8 @@ def get_contacts(limit, target_mailbox=None):
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
-    count = 0
-    for contact in account.contacts.all():  # pylint: disable=E1101
-        if count >= limit:
-            break
+
+    for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
     return get_entry_for_object('Email contacts for %s' % target_mailbox,
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
@@ -1318,23 +1563,6 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):
     f.save()
     get_folder_by_path(account, full_path)
     return "Folder %s created successfully" % full_path
-
-
-def mark_item_as_junk(item_id, move_items, target_mailbox=None):
-    account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    move_items = (move_items.lower() == "yes")
-    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
-    mark_as_junk_result = {
-        ITEM_ID: item_id,
-    }
-    if ews_result == "Success":
-        mark_as_junk_result[ACTION] = 'marked-as-junk'
-    else:
-        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
-
-    return get_entry_for_object('Mark item as junk',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                mark_as_junk_result)
 
 
 def find_folders(target_mailbox=None, is_public=None):
@@ -1361,16 +1589,45 @@ def find_folders(target_mailbox=None, is_public=None):
     }
 
 
-def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None):
+def mark_item_as_junk(item_id, move_items, target_mailbox=None):
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    move_items = (move_items.lower() == "yes")
+    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
+    mark_as_junk_result = {
+        ITEM_ID: item_id,
+    }
+    if ews_result == "Success":
+        mark_as_junk_result[ACTION] = 'marked-as-junk'
+    else:
+        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
+
+    return get_entry_for_object('Mark item as junk',
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                mark_as_junk_result)
+
+
+def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
+    get_internal_item = (get_internal_item == 'yes')
     is_public = is_default_folder(folder_path, is_public)
     folder = get_folder_by_path(account, folder_path, is_public)
     qs = folder.filter().order_by('-datetime_created')[:limit]
     items = get_limited_number_of_messages_from_qs(qs, limit)
-    items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-        items)
+    items_result = []
+
+    for item in items:
+        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                             compact_fields=True)
+        for attachment in item.attachments:
+            if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item,
+                                                                                           Message):
+                # if found item attachment - switch item to the attchment
+                item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
+                                                     compact_fields=True)
+                break
+        items_result.append(item_attachment)
+
     hm_headers = ['sender', 'subject', 'hasAttachments', 'datetimeReceived',
                   'receivedBy', 'author', 'toRecipients', ]
     if exchangelib.__version__ == "1.12.0":  # Docker BC
@@ -1388,7 +1645,7 @@ def get_items(item_ids, target_mailbox=None):
 
     items = get_items_from_mailbox(account, item_ids)
     items = [x for x in items if isinstance(x, Message)]
-    items_as_incidents = map(lambda x: parse_incident_from_item(x), items)
+    items_as_incidents = map(lambda x: parse_incident_from_item(x, False), items)
     items_to_context = map(lambda x: parse_item_as_dict(x, account.primary_smtp_address, True, True), items)
 
     return {
@@ -1452,9 +1709,17 @@ def get_cs_status(search_name, status):
 
 def start_compliance_search(query):
     check_cs_prereqs()
-    output = subprocess.Popen(["pwsh", "/usr/local/office365startcompliancesearch.ps1", USERNAME, PASSWORD, query],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    try:
+        with open("startcompliancesearch2.ps1", "w+") as f:
+            f.write(START_COMPLIANCE)
+
+        output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    finally:
+        os.remove("startcompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1464,6 +1729,7 @@ def start_compliance_search(query):
     sub_start = pref_ind + len(prefix)
     sub_end = sub_start + 45
     search_name = stdout[sub_start:sub_end]
+
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1476,15 +1742,23 @@ def start_compliance_search(query):
 
 def get_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(["pwsh", "/usr/local/office365getcompliancesearch.ps1", USERNAME, PASSWORD, search_name],
-                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    try:
+        with open("getcompliancesearch2.ps1", "w+") as f:
+            f.write(GET_COMPLIANCE)
+
+        output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    finally:
+        os.remove("getcompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
 
     # Get search status
-    stdout = stdout.split('\n', 1)
+    stdout = stdout[len(PASSWORD):]
+    stdout = stdout.split('\n', 1)  # type: ignore
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
@@ -1507,10 +1781,16 @@ def get_compliance_search(search_name):
 
 def purge_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365compliancesearchstartpurge.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    try:
+        with open("purgecompliancesearch2.ps1", "w+") as f:
+            f.write(PURGE_COMPLIANCE)
+
+        output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        _, stderr = output.communicate(input=PASSWORD.encode())
+
+    finally:
+        os.remove("purgecompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1520,10 +1800,18 @@ def purge_compliance_search(search_name):
 
 def check_purge_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365compliancesearchcheckpurge.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    try:
+        with open("purgestatuscompliancesearch2.ps1", "w+") as f:
+            f.write(PURGE_STATUS_COMPLIANCE)
+
+        output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
+                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+        stdout = stdout[len(PASSWORD):]
+
+    finally:
+        os.remove("purgestatuscompliancesearch2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1533,10 +1821,17 @@ def check_purge_compliance_search(search_name):
 
 def remove_compliance_search(search_name):
     check_cs_prereqs()
-    output = subprocess.Popen(
-        ["pwsh", "/usr/local/office365removecompliancesearch.ps1", USERNAME, PASSWORD, search_name],
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = output.communicate()
+    try:
+        with open("removecompliance2.ps1", "w+") as f:
+            f.write(REMOVE_COMPLIANCE)
+
+        output = subprocess.Popen(
+            ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
+            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = output.communicate(input=PASSWORD.encode())
+
+    finally:
+        os.remove("removecompliance2.ps1")
 
     if stderr:
         return get_cs_error(stderr)
@@ -1553,6 +1848,49 @@ def get_autodiscovery_config():
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Auto-Discovery Exchange Configuration', config_dict)
     }
+
+
+def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
+    marked_items = []
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    item_ids = argToList(item_ids)
+    items = get_items_from_mailbox(account, item_ids)
+    items = [x for x in items if isinstance(x, Message)]
+
+    for item in items:
+        item.is_read = (operation == 'read')
+        item.save()
+
+        marked_items.append({
+            ITEM_ID: item.item_id,
+            MESSAGE_ID: item.message_id,
+            ACTION: 'marked-as-{}'.format(operation)
+        })
+
+    return get_entry_for_object('Marked items ({} marked operation)'.format(operation),
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                marked_items)
+
+
+def get_item_as_eml(item_id, target_mailbox=None):
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    item = get_item_from_mailbox(account, item_id)
+
+    if item.mime_content:
+        email_content = email.message_from_string(item.mime_content)
+        if item.headers:
+            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                      email_content.items()]
+            for header in item.headers:
+                if (header.name, header.value) not in attached_email_headers \
+                        and header.name != 'Content-Type':
+                    email_content.add_header(header.name, header.value)
+
+        eml_name = item.subject if item.subject else 'demisto_untitled_eml'
+        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = file_result if file_result else "Failed uploading eml file to war room"
+
+        return file_result
 
 
 def test_module():
@@ -1652,6 +1990,10 @@ def main():
             encode_and_submit_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':
             encode_and_submit_results(get_expanded_group(protocol, **args))
+        elif demisto.command() == 'ews-mark-items-as-read':
+            encode_and_submit_results(mark_item_as_read(**args))
+        elif demisto.command() == 'ews-get-items-as-eml':
+            encode_and_submit_results(get_item_as_eml(**args))
 
     except Exception, e:
         import time
@@ -1682,26 +2024,28 @@ def main():
 
         if isinstance(e, ConnectionError):
             error_message_simple = "Could not connect to the server.\n" \
-                "Verify that the Hostname or IP address is correct.\n\n" \
-                "Additional information: {}".format(e.message)
+                                   "Verify that the Hostname or IP address is correct.\n\n" \
+                                   "Additional information: {}".format(e.message)
+        if isinstance(e, ErrorInvalidPropertyRequest):
+            error_message_simple = "Verify that the Exchange version is correct."
         elif exchangelib.__version__ == "1.12.0":
             from exchangelib.errors import MalformedResponseError
 
             if IS_TEST_MODULE and isinstance(e, MalformedResponseError):
                 error_message_simple = "Got invalid response from the server.\n" \
-                    "Verify that the Hostname or IP address is is correct."
+                                       "Verify that the Hostname or IP address is is correct."
 
         # Legacy error handling
         if "Status code: 401" in debug_log:
             error_message_simple = "Got unauthorized from the server. " \
-                "Check credentials are correct and authentication method are supported. "
+                                   "Check credentials are correct and authentication method are supported. "
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
         if "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
-                "Probably the server is not reachable with the current settings. " \
-                "Check proxy parameter. If you are using server URL - change to server IP address. "
+                                   "Probably the server is not reachable with the current settings. " \
+                                   "Check proxy parameter. If you are using server URL - change to server IP address. "
 
         if not error_message_simple:
             error_message = error_message_simple = str(e.message)
@@ -1717,12 +2061,21 @@ def main():
 
         if demisto.command() == 'fetch-incidents':
             raise
+        if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
+            return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:
             demisto.results(error_message_simple)
         else:
             demisto.results(
                 {"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": error_message_simple})
         demisto.error("%s: %s" % (e.__class__.__name__, error_message))
+    finally:
+        if log_stream:
+            try:
+                logging.getLogger().removeHandler(log_handler)  # type: ignore
+                log_stream.close()
+            except Exception as ex:
+                demisto.error("EWS: unexpected exception when trying to remove log handler: {}".format(ex))
 
 
 # python2 uses __builtin__ python3 uses builtins

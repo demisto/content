@@ -1,18 +1,13 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.877  # disable-secrets-detection
+      - image: devdemisto/content-build-2and3:2.0.0.2832  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.7.0"
+      CONTENT_VERSION: "19.10.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "acafc2290bf4e4fa59e0b143a64c154fcdb0b546" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -71,7 +66,14 @@ jobs:
       - run:
           name: Build Content Descriptor
           when: always
-          command: python release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION $GITHUB_TOKEN
+          command: |
+            if [ -n "${GITHUB_TOKEN}" ] ;
+              then
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
+
+              else
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+            fi
       - run:
           name: Common Server Documentation
           when: always
@@ -91,17 +93,26 @@ jobs:
           name: Download Artifacts
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 echo "Using AMI - Not downloading artifacts"
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Download Configuration
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/download_demisto_conf.sh
@@ -113,9 +124,10 @@ jobs:
           name: Create Instance
           when: always
           command: |
-            pip install --upgrade awscli
-            pip install ansible ansible-runner rsa paramiko boto3 requests
-
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 if [ -n "${NIGHTLY}" ] ;
@@ -125,29 +137,37 @@ jobs:
                   else
                     export IFRA_ENV_TYPE=Content-Env
                 fi
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
               else
-                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
@@ -160,6 +180,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto one before GA"
@@ -172,6 +196,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
@@ -184,6 +212,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
@@ -194,7 +226,12 @@ jobs:
       - run:
           name: Slack Notifier
           shell: /bin/bash
-          command: ./Tests/scripts/slack_notifier.sh
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
           name: Validate Docker Images
@@ -203,17 +240,26 @@ jobs:
           when: always
       - run:
           name: Instance Test
-          command: ./Tests/scripts/instance_test.sh
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances
-          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
           when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
           when: always
-
 
 workflows:
   version: 2

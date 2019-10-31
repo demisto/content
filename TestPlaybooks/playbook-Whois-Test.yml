@@ -268,15 +268,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GOOGLE.COM
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Domain.Whois.QueryStatus
-            iscontext: true
-          right:
-            value:
-              simple: Success
+              simple: google.com
       - - operator: isEqualString
           left:
             value:

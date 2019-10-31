@@ -1094,7 +1094,7 @@ def containment():
     host = get_host_by_agent_request(args['agentId'])
     entry = {
         'Type': entryTypes['note'],
-        'Contents': 'Containment rquest for the host was sent and approved successfuly',
+        'Contents': 'Containment rquest for the host was sent and approved successfully',
         'ContentsFormat': formats['text'],
         'EntryContext': {
             "FireEyeHX.Hosts(obj._id==val._id)": host,
@@ -1456,7 +1456,7 @@ def suppress_alert():
 
     entry = {
         'Type': entryTypes['note'],
-        'Contents': 'Alert {} suppressed successfuly.'.format(alert_id),
+        'Contents': 'Alert {} suppressed successfully.'.format(alert_id),
         'ContentsFormat': formats['text']
     }
     demisto.results(entry)
@@ -2035,7 +2035,7 @@ def start_search():
     except Exception as e:
         LOG('{}\n{}'.format(possible_error_message, e))
         pass
-    # add warning entry if neccessery
+    # add warning entry if necessary
     if possible_error_message:
         warning_entry = {
             'Type': entryTypes['note'],
@@ -2131,7 +2131,7 @@ def delete_file_acquisition():
 
     return {
         'Type': entryTypes['note'],
-        'Contents': 'file acquisition {} deleted successfuly'.format(acquisition_id),
+        'Contents': 'file acquisition {} deleted successfully'.format(acquisition_id),
         'ContentsFormat': formats['text'],
     }
 
@@ -2167,7 +2167,7 @@ def file_acquisition():
 
     acquired_file = file_acquisition_package_request(acquisition_id)
 
-    message = '{} acquired successfuly'.format(args.get('fileName'))
+    message = '{} acquired successfully'.format(args.get('fileName'))
     if acquisition_info.get('error_message'):
         message = acquisition_info.get('error_message')
 
@@ -2273,7 +2273,7 @@ def data_acquisition():
         time.sleep(30)
     LOG('Acquisition process has been complete. Fetching mans file.')
 
-    message = '{} acquired successfuly'.format(args.get('fileName'))
+    message = '{} acquired successfully'.format(args.get('fileName'))
     if acquisition_info.get('error_message'):
         message = acquisition_info.get('error_message')
 
@@ -2320,7 +2320,7 @@ def delete_data_acquisition():
 
     return {
         'Type': entryTypes['note'],
-        'Contents': 'data acquisition {} deleted successfuly'.format(acquisition_id),
+        'Contents': 'data acquisition {} deleted successfully'.format(acquisition_id),
         'ContentsFormat': formats['text'],
     }
 
@@ -2334,12 +2334,12 @@ FETCH INCIDENTS
 
 def fetch_incidents():
 
-    lastRun = demisto.getLastRun()
+    last_run = demisto.getLastRun()
     alerts = []  # type: List[Dict[str, str]]
-    if lastRun and lastRun.get('min_id'):
+    if last_run and last_run.get('min_id'):
         # get all alerts with id greater than min_id
         alerts = get_all_alerts(
-            min_id=lastRun.get('min_id'),
+            min_id=last_run.get('min_id'),
             sort='_id+ascending'
         )
         # results are sorted in ascending order - the last alert holds the greatest id
@@ -2371,6 +2371,7 @@ def parse_alert_to_incident(alert):
         'regKeyEvent': 'regKeyEvent/valueName'
     }
     event_indicator = event_indicators_map.get(event_type)
+    event_indicator = 'No Indicator' if not event_indicator else event_indicator
 
     incident_name = '{event_type_parsed}: {indicator}'.format(
         event_type_parsed=re.sub("([a-z])([A-Z])", "\g<1> \g<2>", event_type).title(),
@@ -2538,7 +2539,7 @@ def logout():
     except ValueError as e:
         LOG('Failed to logout with token')
         raise e
-    LOG('logout successfuly')
+    LOG('logout successfully')
 
 
 def parse_error_response(response):

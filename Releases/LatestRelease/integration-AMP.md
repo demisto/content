@@ -1,2 +1,0 @@
-- Changed parameter name `Credential` to `Client ID`
-- Updated detailed instructions with link to how to generate Client ID and API Key

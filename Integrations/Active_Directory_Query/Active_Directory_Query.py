@@ -6,7 +6,9 @@ from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
 import traceback
-
+import os
+from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
+                             set_library_log_hide_sensitive_data, EXTENDED)
 
 # global connection
 conn: Optional[Connection] = None
@@ -70,7 +72,7 @@ def initialize_server(host, port, secure_connection, unsecure):
         demisto.debug("initializing sever with ssl (unsecure: {}). port: {}". format(unsecure, port or 'default(636)'))
         if not unsecure:
             demisto.debug("will require server certificate.")
-            tls = Tls(validate=ssl.CERT_REQUIRED)
+            tls = Tls(validate=ssl.CERT_REQUIRED, ca_certs_file=os.environ.get('SSL_CERT_FILE'))
             if port:
                 return Server(host, port=port, use_ssl=True, tls=tls)
             return Server(host, use_ssl=True, tls=tls)
@@ -261,6 +263,21 @@ def group_dn(group_name, search_base):
     return entry['dn']
 
 
+def convert_special_chars_to_unicode(search_filter):
+    # We allow users to use special chars without explicitly typing their unicode values
+    chars_to_replace = {
+        '\\(': '\\28',
+        '\\)': '\\29',
+        '\\*': '\\2a',
+        '\\/': '\\2f',
+        '\\\\': '\\5c'
+    }
+    for i, j in chars_to_replace.items():
+        search_filter = search_filter.replace(i, j)
+
+    return search_filter
+
+
 def free_search(default_base_dn, page_size):
 
     args = demisto.args()
@@ -271,6 +288,8 @@ def free_search(default_base_dn, page_size):
     search_base = args.get('base-dn') or default_base_dn
     attributes = args.get('attributes')
     context_output = args.get('context-output')
+
+    search_filter = convert_special_chars_to_unicode(search_filter)
 
     # if ALL was specified - get all the object's attributes, else expect a string of comma separated values
     if attributes:
@@ -310,11 +329,11 @@ def search_users(default_base_dn, page_size):
     limit = int(args.get('limit', '0'))
 
     # default query - list all users
-    query = "(objectClass=User)(objectCategory=person)"
+    query = "(&(objectClass=User)(objectCategory=person))"
 
     # query by user DN
     if args.get('dn'):
-        query = "(&(objectClass=User)(objectCategory=person)(dn={}))".format(args['dn'])
+        query = "(&(objectClass=User)(objectCategory=person)(distinguishedName={}))".format(args['dn'])
 
     # query by name
     if args.get('name'):
@@ -333,7 +352,7 @@ def search_users(default_base_dn, page_size):
         if not args.get('custom-field-data'):
             raise Exception('Please specify "custom-field-data" as well when quering by "custom-field-type"')
         query = "(&(objectClass=User)(objectCategory=person)({}={}))".format(
-            args['custom-field-type'], args['ustom-field-data'])
+            args['custom-field-type'], args['custom-field-data'])
 
     if args.get('attributes'):
         custom_attributes = args['attributes'].split(",")
@@ -569,8 +588,8 @@ def create_contact():
             )
 
     # set common user attributes
-    if args.get('diaply-name'):
-        attributes['displayName'] = args['diaply-name']
+    if args.get('display-name'):
+        attributes['displayName'] = args['display-name']
     if args.get('description'):
         attributes['description'] = args['description']
     if args.get('email'):
@@ -896,59 +915,61 @@ def main():
     if PORT:
         # port was configured, cast to int
         PORT = int(PORT)
-
+    last_log_detail_level = None
     try:
-        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
-    except Exception as e:
-        return_error(str(e))
-        return
-    global conn
-    if NTLM_AUTH:
-        # intialize connection to LDAP server with NTLM authentication
-        # user example: domain\user
-        domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-        conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
-    else:
-        # here username should be the user dn
-        conn = Connection(server, user=USERNAME, password=PASSWORD)
+        try:
+            set_library_log_hide_sensitive_data(True)
+            if is_debug_mode():
+                demisto.info('debug-mode: setting library log detail to EXTENDED')
+                last_log_detail_level = get_library_log_detail_level()
+                set_library_log_detail_level(EXTENDED)
+            server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
+        except Exception as e:
+            return_error(str(e))
+            return
+        global conn
+        if NTLM_AUTH:
+            # intialize connection to LDAP server with NTLM authentication
+            # user example: domain\user
+            domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
+            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
+        else:
+            # here username should be the user dn
+            conn = Connection(server, user=USERNAME, password=PASSWORD)
 
-    # bind operation is the “authenticate” operation.
-    try:
-        # open socket and bind to server
-        if not conn.bind():
-            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
-                json.dumps(conn.result))
-            demisto.info(message)
+        # bind operation is the “authenticate” operation.
+        try:
+            # open socket and bind to server
+            if not conn.bind():
+                message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
+                    json.dumps(conn.result))
+                return_error(message)
+                return
+        except Exception as e:
+            exc_msg = str(e)
+            demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
+                         + "\nTrace:\n{}".format(traceback.format_exc())))
+            message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
+            if 'ssl wrapping error' in exc_msg:
+                message = "Failed to access LDAP server. SSL error."
+                if not UNSECURE:
+                    message += ' Try using: "Trust any certificate" option.'
             return_error(message)
             return
-    except Exception as e:
-        exc_msg = str(e)
-        demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
-                     + "\nTrace:\n{}".format(traceback.format_exc())))
-        message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
-        if 'ssl wrapping error' in exc_msg:
-            message = "Failed to access LDAP server. SSL error."
-            if not UNSECURE:
-                message += ' Try using: "Trust any certificate" option.'
-        demisto.info(message)
-        return_error(message)
-        return
 
-    demisto.info('Established connection with AD LDAP server')
+        demisto.info('Established connection with AD LDAP server')
 
-    if not base_dn_verified(DEFAULT_BASE_DN):
-        message = "Failed to verify the base DN configured for the instance.\n" \
-            "Last connection result: {}\n" \
-            "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
-        demisto.info(message)
-        return_error(message)
-        return
+        if not base_dn_verified(DEFAULT_BASE_DN):
+            message = "Failed to verify the base DN configured for the instance.\n" \
+                "Last connection result: {}\n" \
+                "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+            return_error(message)
+            return
 
-    demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
+        demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
-    ''' COMMAND EXECUTION '''
+        ''' COMMAND EXECUTION '''
 
-    try:
         if demisto.command() == 'test-module':
             if conn.user == '':
                 # Empty response means you have no authentication status on the server, so you are an anonymous user.
@@ -1007,14 +1028,18 @@ def main():
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
     except Exception as e:
-        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
-            str(e), json.dumps(conn.result), conn.last_error)
-        demisto.info(message)
+        message = str(e)
+        if conn:
+            message += "\nLast connection result: {}\nLast error from LDAP server: {}".format(
+                json.dumps(conn.result), conn.last_error)
         return_error(message)
         return
     finally:
         # disconnect and close the connection
-        conn.unbind()
+        if conn:
+            conn.unbind()
+        if last_log_detail_level:
+            set_library_log_detail_level(last_log_detail_level)
 
 
 # python2 uses __builtin__ python3 uses builtins

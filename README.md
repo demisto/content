@@ -55,9 +55,12 @@ In some cases, it will be necessary to create a docker image to enable your inte
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
 ## Contributing Content
-For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/docs/contributing/README.MD).
+For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
+
+## Release Notes
+For information about content release notes conventions, refer to our [release notes documentation](https://github.com/demisto/content/blob/master/docs/release_notes/README.md).
 
 ## Git configuration
 Copy the pre-commit hook from .hooks to .git/hooks. Run the following command from the repository root:
@@ -66,16 +69,18 @@ Copy the pre-commit hook from .hooks to .git/hooks. Run the following command fr
 cp .hooks/* .git/hooks
 ```
 
+
 # Documentation Directory
 
 | Link | Description |
 | --- | ---|
 | [Tutorial Video](https://github.com/demisto/content/blob/master/docs/tutorial-video/README.md) | A step-by-step introduction to creating an integration |
 | [Getting Started](https://github.com/demisto/content/blob/master/docs/getting_started/README.MD) | A brief explanation of the Demisto IDE |
+| [Package directory](https://github.com/demisto/content/blob/master/docs/package_directory_structure/README.MD) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD) | Our Code Conventions |
 | [Context and Outputs](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) | Brief overview of Context and Outputs |
 | [Context Conventions](https://github.com/demisto/content/blob/master/docs/context_standards/README.MD) | Conventions for the Demisto Standard Context |
-| [Contributing](https://github.com/demisto/content/blob/master/docs/contributing/README.MD) | How to contribute to the Content Repo |
+| [Contributing](https://github.com/demisto/content/blob/master/CONTRIBUTING.md) | How to contribute to the Content Repo |
 | [Creating Playbooks](https://github.com/demisto/content/blob/master/docs/creating_playbooks/README.MD) | How to create a Playbook |
 | [DBot Score](https://github.com/demisto/content/blob/master/docs/dbot/README.md) | How the DBot Score works |
 | [Demisto Transform Language (DT)](https://github.com/demisto/content/blob/master/docs/DT/README.MD) | Understanding Demisto Transform Language (DT) |

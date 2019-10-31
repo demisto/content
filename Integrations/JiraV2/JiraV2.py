@@ -305,7 +305,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('summary'):
         issue['fields']['summary'] = issue_args['summary']
 
-    if not issue['fields'].get('project'):
+    if not issue['fields'].get('project') and (issue_args.get('projectKey') or issue_args.get('projectName')):
         issue['fields']['project'] = {}
 
     if issue_args.get('projectKey'):
@@ -519,7 +519,8 @@ def get_file(entry_id):
     return file_name, file_bytes
 
 
-def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None):
+def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
+                     application_type=None, application_name=None):
     req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
     link = {
         "object": {
@@ -534,6 +535,12 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['globalId'] = global_id
     if relationship:
         link['relationship'] = relationship
+    if application_type or application_name:
+        link['application'] = {}
+    if application_type:
+        link['application']['type'] = application_type
+    if application_type:
+        link['application']['name'] = application_name
 
     result = jira_req('POST', req_url, json.dumps(link))
     data = result.json()

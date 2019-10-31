@@ -1,0 +1,126 @@
+args:
+- default: false
+  description: The Slack user to which to send the message. Can be either an email
+    address or a Slack user name.
+  isArray: false
+  name: user
+  required: false
+  secret: false
+- default: false
+  description: The Slack channel to which to send the message.
+  isArray: false
+  name: channel
+  required: false
+  secret: false
+- default: false
+  description: The message to send to the user or channel.
+  isArray: false
+  name: message
+  required: true
+  secret: false
+- default: false
+  defaultValue: Yes#green
+  description: The first reply option. The default is "Yes" with a green button. To
+    change the color of the button, add the pound sign (#) followed by the name of
+    the new color (green, red, or black). The default color is "green". For example,
+    "Yes#green".
+  isArray: false
+  name: option1
+  required: false
+  secret: false
+- default: false
+  defaultValue: No#red
+  description: The second reply option. The default is "No" with a red button. To
+    change the button color, add the pound sign (#) followed by the name of the new
+    color (green, red, or black). The default color is "red". For example, "No#red".
+  isArray: false
+  name: option2
+  required: false
+  secret: false
+- default: false
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
+  isArray: false
+  name: task
+  required: false
+  secret: false
+- default: false
+  description: Tag to add to email reply entries.
+  isArray: false
+  name: replyEntriesTag
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or persistent entitlement.
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: buttons
+  description: How the user should response to the question.
+  isArray: false
+  name: responseType
+  predefined:
+  - buttons
+  - thread
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of additional options in the format of "option#color",
+    for example, "maybe#red". The default color is "black".
+  isArray: false
+  name: additionalOptions
+  required: false
+  secret: false
+- default: false
+  defaultValue: Thank you for your response.
+  description: The reply to send to the user.
+  isArray: false
+  name: reply
+  required: false
+  secret: false
+- default: false
+  defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
+  isArray: false
+  name: lifetime
+  required: false
+  secret: false
+- default: false
+  defaultValue: NoReponse
+  description: Default response in case the question expires.
+  isArray: false
+  name: defaultResponse
+  required: false
+  secret: false
+comment: Sends a message (question) to either user (in a direct message) or to a channel.
+  The message includes predefined reply options. The response can also close a task
+  (might be conditional) in a playbook.
+commonfields:
+  id: SlackAsk
+  version: -1
+enabled: true
+name: SlackAsk
+script: '-'
+system: false
+tags:
+- slack
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.4.1900
+runonce: false
+tests:
+- no test - Untestable
+dependson:
+  must:
+  - send-notification
+subtype: python3
+fromversion: 5.0.0

@@ -7,7 +7,7 @@
   "commitMessage": "",
   "shouldPublish": false,
   "shouldCommit": false,
-  "regex": "\\b[a-fA-F\\d]{64}|[a-fA-F\\d]{40}|[a-fA-F\\d]{32}\\b",
+  "regex": "\\b[a-fA-F\\d]{64}|[a-fA-F\\d]{40}|[a-fA-F\\d]{32}|[a-fA-F\\d]{128}\\b",
   "details": "File",
   "prevDetails": "File",
   "reputationScriptName": "",
@@ -24,7 +24,7 @@
   "updateAfter": 0,
   "mergeContext": false,
   "formatScript": "",
-  "contextPath": "",
+  "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256 || val.SHA1 && val.SHA1 === obj.SHA1 || val.MD5 && val.MD5 === obj.MD5 || val.SHA512 && val.SHA512 === obj.SHA512 || val.SSDeep && val.SSDeep === obj.SSDeep)",
   "contextValue": "",
   "excludedBrands": [],
   "defaultMapping": {
@@ -364,6 +364,7 @@
   "manualMapping": null,
   "fileHashesPriority": [
     "ssdeep",
+    "sha512",
     "md5",
     "sha1",
     "sha256"

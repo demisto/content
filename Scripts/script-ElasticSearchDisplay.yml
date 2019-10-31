@@ -36,10 +36,13 @@ script: |-
   }
   return res;
 type: javascript
-comment: "Runs an elasticsearch query and displays results in a nice table."
 tags:
 - Elasticsearch
-system: true
+comment: |-
+  Deprecated. Use the Elasticsearch v2 integration instead.
+
+  Runs an Elasticsearch query and displays results in a table.
+enabled: true
 args:
 - name: query
   required: true
@@ -50,7 +53,10 @@ args:
 - name: fields
   description: What fields should be included. DO NOT SET IF YOU WANT ALL FIELDS!
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - elasticsearch|||search
 timeout: 0s
+tests:
+  - No test - deprecated

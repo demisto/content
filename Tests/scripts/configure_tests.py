@@ -10,9 +10,13 @@ import glob
 import random
 import argparse
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, str2bool, get_from_version, get_to_version, \
-    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning
+    collect_ids, get_script_or_integration_id, run_command, LOG_COLORS, print_error, print_color, print_warning  # noqa: E402
 
 # Search Keyword for the changed file
 NO_TESTS_FORMAT = 'No test( - .*)?'
@@ -28,7 +32,6 @@ ALL_TESTS = ["scripts/script-CommonIntegration.yml", "scripts/script-CommonInteg
 
 # secrets white list file to be ignored in tests to prevent full tests running each time it is updated
 SECRETS_WHITE_LIST = 'secrets_white_list.json'
-
 
 # Global used to indicate if failed during any of the validation states
 _FAILED = False
@@ -51,6 +54,7 @@ def get_modified_files(files_string):
     """Get a string of the modified files"""
     is_conf_json = False
     is_reputations_json = False
+    is_indicator_json = False
 
     sample_tests = []
     all_tests = []
@@ -87,8 +91,12 @@ def get_modified_files(files_string):
                 modified_tests_list.append(file_path)
 
             # reputations.json
-            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(MISC_REPUTATIONS_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(REPUTATION_REGEX, file_path, re.IGNORECASE):
                 is_reputations_json = True
+
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
+                is_indicator_json = True
 
             # conf.json
             elif re.match(CONF_REGEX, file_path, re.IGNORECASE):
@@ -105,7 +113,8 @@ def get_modified_files(files_string):
             elif SECRETS_WHITE_LIST not in file_path:
                 sample_tests.append(file_path)
 
-    return modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json
+    return (modified_files_list, modified_tests_list, all_tests, is_conf_json, sample_tests,
+            is_reputations_json, is_indicator_json)
 
 
 def get_name(file_path):
@@ -149,8 +158,8 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
 
     for test_playbook in test_playbooks_set:
         detected_usage = False
-        test_playbook_id = test_playbook.keys()[0]
-        test_playbook_data = test_playbook.values()[0]
+        test_playbook_id = list(test_playbook.keys())[0]
+        test_playbook_data = list(test_playbook.values())[0]
         test_playbook_name = test_playbook_data.get('name')
         for script in test_playbook_data.get('implementing_scripts', []):
             if script in script_ids:
@@ -171,7 +180,6 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                     if command in integration_commands:
                         if not command_to_integration.get(command) or \
                                 command_to_integration.get(command) == integration_id:
-
                             detected_usage = True
                             tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
@@ -213,8 +221,8 @@ def get_test_ids(check_nightly_status=False):
 def get_integration_commands(integration_ids, integration_set):
     integration_to_command = {}
     for integration in integration_set:
-        integration_id = integration.keys()[0]
-        integration_data = integration.values()[0]
+        integration_id = list(integration.keys())[0]
+        integration_data = list(integration.values())[0]
         if integration_id in integration_ids:
             integration_to_command[integration_id] = integration_data.get('commands', [])
 
@@ -355,7 +363,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     :param tests_set: The names of the caught tests.
     """
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -378,7 +386,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                                                updated_playbook_names, catched_playbooks, tests_set)
 
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
@@ -405,7 +413,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
 def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, script_set, playbook_set,
                            updated_playbook_names, catched_playbooks, tests_set):
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -427,7 +435,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
     for script in script_set:
-        script_data = script.values()[0]
+        script_data = list(script.values())[0]
         script_name = script_data.get('name')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
@@ -446,7 +454,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                      tests_set)
 
     for playbook in playbook_set:
-        playbook_data = playbook.values()[0]
+        playbook_data = list(playbook.values())[0]
         playbook_name = playbook_data.get('name')
         playbook_fromversion = playbook_data.get('fromversion', '0.0.0')
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
@@ -508,8 +516,8 @@ def get_test_from_conf(branch_name):
 
 def get_test_list(files_string, branch_name):
     """Create a test list that should run"""
-    modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json = \
-        get_modified_files(files_string)
+    (modified_files, modified_tests_list, all_tests, is_conf_json, sample_tests, is_reputations_json,
+     is_indicator_json) = get_modified_files(files_string)
 
     tests = set([])
     if modified_files:
@@ -518,6 +526,9 @@ def get_test_list(files_string, branch_name):
     # Adding a unique test for a json file.
     if is_reputations_json:
         tests.add('reputations.json Test')
+
+    if is_indicator_json:
+        tests.add('Test IP Indicator Fields')
 
     for file_path in modified_tests_list:
         test = collect_ids(file_path)
@@ -540,7 +551,7 @@ def get_test_list(files_string, branch_name):
 
     if not tests:
         if modified_files or modified_tests_list or all_tests:
-            print_error("There are no tests that check the changes you've done, please make sure you write one")
+            print_error("There is no test-playbook that checks the changes you've done, please make sure you write one.")
             global _FAILED
             _FAILED = True
         else:

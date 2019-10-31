@@ -146,3 +146,35 @@ def test_prettify_traffic_logs():
     expected = [{'Action': 'my_action1', 'Category': 'my_category1', 'Rule': 'my_rule1'},
                 {'Action': 'my_action2', 'Category': 'my_category2', 'Rule': 'my_rule2'}]
     assert response == expected
+
+
+def test_prettify_logs():
+    from Panorama import prettify_logs
+    traffic_logs = [{'action': 'my_action1', 'category': 'my_category1', 'rule': 'my_rule1', 'natdport': '100'},
+                    {'action': 'my_action2', 'category': 'my_category2', 'rule': 'my_rule2', 'natdport': '101'}]
+    response = prettify_logs(traffic_logs)
+    expected = [{'Action': 'my_action1', 'CategoryOrVerdict': 'my_category1', 'Rule': 'my_rule1',
+                 'NATDestinationPort': '100'},
+                {'Action': 'my_action2', 'CategoryOrVerdict': 'my_category2', 'Rule': 'my_rule2',
+                 'NATDestinationPort': '101'}]
+    assert response == expected
+
+
+def test_build_policy_match_query():
+    from Panorama import build_policy_match_query
+    source = '1.1.1.1'
+    destination = '6.7.8.9'
+    protocol = '1'
+    application = 'gmail-base'
+    response = build_policy_match_query(application, None, destination, None, None, None, protocol, source)
+    expected = '<test><security-policy-match><source>1.1.1.1</source><destination>6.7.8.9</destination>' \
+               '<protocol>1</protocol><application>gmail-base</application></security-policy-match></test>'
+    assert response == expected
+
+
+def test_prettify_matching_rule():
+    from Panorama import prettify_matching_rule
+    matching_rule = {'action': 'my_action1', '@name': 'very_important_rule', 'source': '6.7.8.9', 'destination': 'any'}
+    response = prettify_matching_rule(matching_rule)
+    expected = {'Action': 'my_action1', 'Name': 'very_important_rule', 'Source': '6.7.8.9', 'Destination': 'any'}
+    assert response == expected

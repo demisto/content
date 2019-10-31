@@ -1,0 +1,69 @@
+args:
+- default: true
+  description: The slack user to ask - can be either email or slack username
+  isArray: false
+  name: user
+  required: true
+  secret: false
+- default: false
+  description: The message ask the user
+  isArray: false
+  name: message
+  required: true
+  secret: false
+- default: false
+  description: First option for a user reply. "yes" is the default.
+  isArray: false
+  name: option1
+  required: false
+  secret: false
+- default: false
+  description: Second option for the user reply. "no" is the default.
+  isArray: false
+  name: option2
+  required: false
+  secret: false
+- default: false
+  description: Which task should we close with the reply. If none then no playbook
+    tasks will be closed.
+  isArray: false
+  name: task
+  required: false
+  secret: false
+- default: false
+  description: Tag to add on email reply entries
+  isArray: false
+  name: replyEntriesTag
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or a persistent one
+  isArray: false
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Ask a user a question on Slack and expect a response. The response can also
+  close a task (might be conditional) in a playbook.
+commonfields:
+  id: SlackAskUser
+  version: -1
+enabled: false
+name: SlackAskUser
+script: '-'
+system: true
+tags:
+- slack
+timeout: 0s
+type: python
+dependson:
+  must:
+  - slack-send
+fromversion: 3.5.0
+toversion: 4.5.0
+tests:
+  - No test - entitlement

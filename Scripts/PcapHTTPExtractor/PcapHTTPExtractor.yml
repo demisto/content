@@ -86,7 +86,7 @@ outputs:
 - contextPath: PcapHttpFlows.MetaSniffTimeStamp
   description: Time the packet was sniffed (unixtime).
   type: String
-script: '-'
+script: ''
 system: false
 tags:
 - pcap
@@ -96,3 +96,4 @@ type: python
 dockerimage: demisto/pcap-http-extractor:1.0.0.98
 tests:
 - PcapHTTPExtractor-Test
+subtype: python2

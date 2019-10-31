@@ -7,13 +7,14 @@
     "commitMessage": "",
     "shouldPublish": false,
     "shouldCommit": false,
-    "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+    "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\\[\\.\\]|\\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
     "details": "IP",
     "prevDetails": "IP",
     "reputationScriptName": "",
     "reputationCommand": "ip",
     "enhancementScriptNames": [
-        "IPReputation"
+        "IPReputation",
+        "SplunkPySearch"
     ],
     "system": true,
     "locked": false,
@@ -21,7 +22,7 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "formatScript": "",
+    "formatScript": "UnEscapeIPs",
     "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
     "excludedBrands": [],

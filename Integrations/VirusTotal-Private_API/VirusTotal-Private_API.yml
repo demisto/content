@@ -1,0 +1,507 @@
+commonfields:
+  id: VirusTotal - Private API
+  version: -1
+name: VirusTotal - Private API
+display: VirusTotal - Private API
+category: Data Enrichment & Threat Intelligence
+description: Analyze suspicious hashes, URLs, domains and IP addresses
+configuration:
+- display: Virus Total private API key
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useProxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: File Threshold. Minimum number of positive results from VT scanners to
+    consider the file malicious.
+  name: fileThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: IP Threshold. Minimum number of positive results from VT scanners to consider
+    the IP malicious.
+  name: ipThreshold
+  defaultvalue: "20"
+  type: 0
+  required: false
+- display: URL Threshold. Minimum number of positive results from VT scanners to consider
+    the URL malicious.
+  name: urlThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Domain Threshold. Minimum number of positive results from VT scanners to
+    consider the domain malicious.
+  name: domainThreshold
+  defaultvalue: "10"
+  type: 0
+  required: false
+- display: Preferred Vendors List. List of vendors which are considered more trustworthy,
+    comma separated.
+  name: preferredVendors
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Preferred Vendor Threshold. The minimal number of highly trusted vendors
+    needed to consider a domain, IP, URL or file as malicious.
+  name: preferredVendorsThreshold
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Determines whether to return all results, which can number in the thousands.
+    If "true", returns all results and overrides the _fullResponse_ argument (if set
+    to "false") in a command. If "false", the fullResponse argument in the command
+    determines how results are returned.
+  name: fullResponseGlobal
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: vt-private-check-file-behaviour
+    arguments:
+    - name: resource
+      required: true
+      description: The md5/sha1/sha256 hash of the file whose dynamic behavioural
+        report you want to retrieve.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    - contextPath: File.VirusTotal.RelatedDomains
+      description: Domains that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedURLs
+      description: URLs that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedIPs
+      description: IPs that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedHosts
+      description: Hosts that the hash communicates with
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedFiles
+      description: Files that are related to this hash
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedRegistryKeys
+      description: Keys which are related to this hash
+      type: Unknown
+    - contextPath: File.VirusTotal.RelatedMutexes
+      description: Mutexes which are related to this hash
+      type: Unknown
+    description: VirusTotal runs a distributed setup of Cuckoo sandbox machines that
+      execute the files we receive. This API allows you to retrieve the full JSON
+      report of the file's execution as returned by the Cuckoo JSON report encoder.
+  - name: vt-private-get-domain-report
+    arguments:
+    - name: domain
+      required: true
+      description: A domain name.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the domain
+        will be considered malicious. If threshold is not specified, the default domain
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: Domain.VirusTotal.DownloadedHashes
+      description: Hashes of files who were downloaded from this domain
+      type: string
+    - contextPath: Domain.VirusTotal.CommunicatingHashes
+      description: Hashes of files who communicated with this domain in a sandbox
+      type: string
+    - contextPath: Domain.VirusTotal.Resolutions.ip_address
+      description: IPs who resolved to this domain
+      type: string
+    - contextPath: Domain.VirusTotal.Whois
+      description: Whois report
+      type: string
+    - contextPath: Domain.VirusTotal.Subdomains
+      description: Subdomains
+      type: string
+    - contextPath: Domain.VirusTotal.Resolutions.last_resolved
+      description: Resolution date of IPs who resolved to this domain
+      type: string
+    - contextPath: Domain.VirusTotal.Categories
+      description: Categories
+      type: string
+    description: Retrieves a report on a given domain (including the information recorded
+      by VirusTotal's passive DNS infrastructure). If the domain doesn't exist in
+      VT's dataset you would need to use Virus Total's (Public API integration) url-scan
+      command
+  - name: vt-private-get-file-report
+    arguments:
+    - name: resource
+      required: true
+      description: An md5/sha1/sha256 hash of a file for which you want to retrieve
+        the most recent antivirus report. You may also specify a scan_id (sha256-timestamp
+        as returned by the scan API) to access a specific report.
+    - name: allInfo
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: 'VirusTotal metadata, signature information, structural information,
+        etc. Can be viewed with raw-response=true. '
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: shortFormat
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Choose true if you don't wish to see VT scans tables
+    outputs:
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+      type: number
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.VirusTotal.Scans.Source
+      description: Scan vendor for this hash
+      type: string
+    - contextPath: File.VirusTotal.Scans.Detected
+      description: Scan detection for this hash (True,False)
+      type: boolean
+    - contextPath: File.VirusTotal.Scans.Result
+      description: Scan result for this hash - signature, etc.
+      type: string
+    - contextPath: File.SSDeep
+      description: The ssdeep value for the file
+      type: string
+    - contextPath: File.Type
+      description: File type as determined by Virus Total
+      type: string
+    - contextPath: File.Size
+      description: Size of File in bytes
+      type: number
+    - contextPath: File.VirusTotal.Tags
+      description: File tags
+      type: string
+    - contextPath: File.Tags
+      description: File tags
+      type: string
+    - contextPath: File.VirusTotal.MagicLiteral
+      description: File magic literals
+      type: string
+    - contextPath: File.VirusTotal.FirstSeen
+      description: Time where the File was first seen
+      type: string
+    - contextPath: File.VirusTotal.CommunityReputation
+      description: Community Reputation of the File
+      type: number
+    - contextPath: File.VirusTotal.CommunityComments
+      description: Community Comments about the File
+      type: string
+    - contextPath: File.VirusTotal.AuthentiHash
+      description: AuthentiHash of the File
+      type: string
+    - contextPath: File.Authentihash
+      description: AuthentiHash of the File
+      type: string
+    - contextPath: File.VirusTotal.ImpHash
+      description: ImpHash of the File
+      type: string
+    description: Retrieves a concluded file scan report for a given file.
+  - name: vt-private-get-url-report
+    arguments:
+    - name: resource
+      required: true
+      description: A CSV list of one or more URLs to retrieve the most recent report
+        for. You can also specify a scan_id (sha-256 timestamp returned by the URL
+        submission API) to access a specific report.
+      isArray: true
+    - name: retries
+      description: The number of times the command will try to get the URL report,
+        if the report was not ready on the first attempt.
+      defaultValue: "2"
+    - name: allInfo
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: This additional info includes VirusTotal related metadata (first
+        seen date, last seen date, files downloaded from the given URL, etc.) and
+        the output of other tools and datasets when fed with the URL.
+    - name: shortFormat
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Choose true if you don't wish to see VT scans tables
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    - name: retry_time
+      description: The amount of time (in seconds) that the integration will wait
+        before trying to get a URL report for URLS whose scans have not completed.
+    outputs:
+    - contextPath: URL.Data
+      description: Url address
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: URL.VirusTotal.Resolutions.ip_address
+      description: IPs who resolved to this URL
+      type: string
+    - contextPath: URL.VirusTotal.Resolutions.last_resolved
+      description: Resolve date of IPs who resolved to this URL
+      type: string
+    - contextPath: URL.VirusTotal.Scans.Source
+      description: Scan vendor for this URL
+      type: string
+    - contextPath: URL.VirusTotal.Scans.Detected
+      description: Scan detection for this URL (True/False)
+      type: boolean
+    - contextPath: URL.VirusTotal.Scans.Result
+      description: Scan result for this URL - signature, etc.
+      type: string
+    - contextPath: URL.VirusTotal.DroppedFiles
+      description: Downloaded file hashes from this URL
+      type: string
+    description: Retrieves a concluded url scan report for a given url.
+  - name: vt-private-get-ip-report
+    arguments:
+    - name: ip
+      required: true
+      description: A valid IPv4 address in dotted quad notation, for the time being
+        only IPv4 addresses are supported.
+    - name: threshold
+      description: If the number of positives is bigger than the threshold the file
+        will be considered malicious. If threshold is not specified, the default file
+        threshold, as configured in the instance settings, will be used.
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP Address found
+      type: string
+    - contextPath: IP.ASN
+      description: Bad IP ASN
+      type: string
+    - contextPath: IP.Geo.Country
+      description: Bad IP Country
+      type: string
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs, the vendor that made the decision
+      type: string
+    - contextPath: IP.Malicious.Description
+      description: For malicious IPs, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.VirusTotal.DownloadedHashes
+      description: Latest files that are detected by at least one antivirus solution
+        and were downloaded by VirusTotal from the IP address
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
+      description: Latest files that are not detected by any antivirus solution and
+        were downloaded by VirusTotal from the IP address provided
+      type: string
+    - contextPath: IP.VirusTotal.DetectedURLs
+      description: Latest URLs hosted in this IP address detected by at least one
+        URL scanner
+      type: string
+    - contextPath: IP.VirusTotal.CommunicatingHashes
+      description: Latest detected files that communicate with this IP address
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
+      description: Latest undetected files that communicate with this IP address
+      type: Unknown
+    - contextPath: IP.VirusTotal.Resolutions.hostname
+      description: The following domains resolved to the given IP
+      type: string
+    - contextPath: IP.VirusTotal.ReferrerHashes
+      description: Latest detected files that embed this IP address in their strings
+      type: string
+    - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
+      description: Latest undetected files that embed this IP address in their strings
+      type: string
+    - contextPath: IP.VirusTotal.Resolutions.last_resolved
+      description: The last time the following domains resolved to the given IP
+      type: string
+    description: Retrieves a report on a given IP address (including the information
+      recorded by VirusTotal's Passive DNS infrastructure).
+  - name: vt-private-search-file
+    arguments:
+    - name: query
+      required: true
+      description: File search query. For example, query="type:peexe size:90kb+ positives:5+
+        behaviour:'taskkill'"
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: VirusTotal.SearchResult
+      description: The hashes of files that fit the query
+      type: string
+    - contextPath: VirusTotal.Query
+      description: Original search query
+      type: string
+    description: 'This command is equivalent to VirusTotal Intelligence advanced searches.
+      A very wide variety of search modifiers are available, including: file size,
+      file type, first submission date to VirusTotal, last submission date to VirusTotal,
+      number of positives, dynamic behavioural properties, binary content, submission
+      file name, and a very long etcetera. The full list of search modifiers allowed
+      for file search queries is documented at:  https://www.virustotal.com/intelligence/help/file-search/#search-modifiers'
+  - name: vt-private-hash-communication
+    arguments:
+    - name: hash
+      required: true
+      description: File Hash
+    - name: fullResponse
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Return all of the results, note that it can be thousands of results.
+        Prefer not to use in playbooks. The default value is "false"
+      defaultValue: "false"
+    outputs:
+    - contextPath: File.VirusTotal.CommunicatedDomains
+      description: Domains that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedURLs
+      description: URLs that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedIPs
+      description: IPs that the hash communicates with
+      type: string
+    - contextPath: File.VirusTotal.CommunicatedHosts
+      description: Hosts that the hash communicates with
+      type: string
+    - contextPath: File.MD5
+      description: File's MD5
+      type: string
+    - contextPath: File.SHA1
+      description: File's SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File's SHA256
+      type: string
+    description: Return all Domains, IPs, URLs  that a given hash of malware communicates
+      with
+  - name: vt-private-download-file
+    arguments:
+    - name: hash
+      required: true
+      description: "\tThe md5/sha1/sha256 hash of the file you want to download."
+    description: Downloads a file from VirusTotal's store given one of its hashes.
+      This call can be used in conjuction with the file searching call in order to
+      download samples that match a given set of criteria.
+  runonce: false
+tests:
+- virusTotalPrivateAPI-test-playbook
+- File Enrichment - Virus Total Private API Test

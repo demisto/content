@@ -3,58 +3,54 @@ commonfields:
   id: Proofpoint TAP v2
   version: -1
 configuration:
-- display: 'Server URL (e.g., https://tap-api-v2.proofpoint.com)'
+- defaultvalue: https://tap-api-v2.proofpoint.com
+  display: Server URL (e.g., https://tap-api-v2.proofpoint.com)
   name: url
-  defaultvalue: https://tap-api-v2.proofpoint.com
-  type: 0
   required: true
+  type: 0
 - display: Service Principal (the Password refers to Secret)
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: true
-- display: 'API Version '
+  type: 9
+- defaultvalue: v2
+  display: API Version
   name: api_version
-  defaultvalue: v2
-  type: 15
-  required: false
   options:
   - v1
   - v2
-- display: Trust any certificate (insecure)
+  required: false
+  type: 15
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
-  type: 8
   required: false
-- display: Use system proxy
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
+  required: false
   type: 8
-  required: false
-- display: 'A string specifying which threat type to return. If empty, all threat types are returned. Can be "url", "attachment", or "messageText".'
+- display: A string specifying which threat type to return. If empty, all threat types
+    are returned. Can be "url", "attachment", or "messageText".
   name: threat_type
-  defaultvalue: ""
-  type: 16
-  required: false
   options:
   - url
   - attachment
   - messageText
-- display: 'A string specifying which threat statuses to return.
-    If empty, will return "active" and "cleared" threats. '
-  name: threat_status
-  defaultvalue: ""
-  type: 16
   required: false
+  type: 16
+- display: A string specifying which threat statuses to return. If empty, will return
+    "active" and "cleared" threats.
+  name: threat_status
   options:
   - active
   - cleared
   - falsePositive
-- display: Events to fetch
-  name: events_type
-  defaultvalue: All
-  type: 15
   required: false
+  type: 16
+- defaultvalue: All
+  display: Events to fetch
+  name: events_type
   options:
   - All
   - Issues
@@ -62,30 +58,31 @@ configuration:
   - Permitted Clicks
   - Blocked Messages
   - Delivered Messages
-- display: First fetch time range (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  defaultvalue: 3 days
-  type: 0
   required: false
+  type: 15
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+    - Proofpoint supports maximum 1 hour fetch back
+  name: fetch_time
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: ""
-  type: 8
   required: false
+  type: 8
 - display: Incident type
   name: incidentType
-  defaultvalue: ""
-  type: 13
   required: false
-description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect against and
-  provide additional visibility into phishing and other malicious email attacks.
+  type: 13
+description: Use the Proofpoint Targeted Attack Protection (TAP) integration to protect
+  against and provide additional visibility into phishing and other malicious email
+  attacks.
 display: Proofpoint TAP v2
 name: Proofpoint TAP v2
 script:
   commands:
-  - name: proofpoint-get-events
-    arguments:
-    - name: interval
+  - arguments:
+    - default: false
       description: 'A string containing an ISO8601-formatted interval. If this interval
         overlaps with previous requests for data, records from the previous request
         might be duplicated. The minimum interval is thirty seconds. The maximum interval
@@ -94,35 +91,60 @@ script:
         the thirty minutes beginning at noon UTC on 05-01-2016 and ending at 12:30pm
         UTC 2016-05-01T05:00:00-0700/PT30M - the same interval as above, but using
         -0700 as the time zone'
-    - name: threatType
-      auto: PREDEFINED
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'A string specifying which threat type to return. If empty, all
+        threat types are returned. The following values are accepted: url,attachment,
+        messageText'
+      isArray: false
+      name: threatType
       predefined:
       - url
       - attachment
       - messageText
-      description: 'A string specifying which threat type to return. If empty, all threat types are returned. The following
-        values are accepted: url,attachment, messageText'
-    - name: threatStatus
-      auto: PREDEFINED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A string specifying which threat statuses to return. If empty,
+        active and cleared threats are returned. Can be "active", "cleared", "falsePositive".
+      isArray: false
+      name: threatStatus
       predefined:
       - active
       - cleared
       - falsePositive
-      description: 'A string specifying which threat statuses to return. If empty, active and cleared threats are returned.
-        Can be "active", "cleared", "falsePositive".'
-    - name: sinceTime
+      required: false
+      secret: false
+    - default: false
       description: 'A string containing an ISO8601 date. It represents the start of
         the data retrieval period. The end of the period is determined by the current
         API server time rounded to the nearest minute. If JSON output is selected,
         the end time is included in the returned result. Example: 2016-05-01T12:00:00Z'
-    - name: sinceSeconds
+      isArray: false
+      name: sinceTime
+      required: false
+      secret: false
+    - default: false
       description: An integer representing a time window (in seconds) from the current
         API server time. The start of the window is the current API server time, rounded
         to the nearest minute, less the number of seconds provided. The end of the
         window is the current API server time rounded to the nearest minute. If JSON
         output is selected, the end time is included in the returned result.
-    - name: eventTypes
-      auto: PREDEFINED
+      isArray: false
+      name: sinceSeconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: All
+      description: Event types to return.
+      isArray: false
+      name: eventTypes
       predefined:
       - All
       - Issues
@@ -130,14 +152,18 @@ script:
       - Blocked Messages
       - Permitted Clicks
       - Blocked Clicks
-      description: Event types to return.
-      defaultValue: All
+      required: false
+      secret: false
+    deprecated: false
     description: Fetches events for all clicks and messages relating to known threats
       within the specified time period. Details as per clicks/blocked.
-  isfetch: true
+    execution: false
+    name: proofpoint-get-events
   dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
-  - No test - no instance
+- No test - no instance
