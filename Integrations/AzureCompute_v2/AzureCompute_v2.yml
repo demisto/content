@@ -25,11 +25,11 @@ configuration:
   name: subscription_id
   required: false
   type: 4
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
@@ -449,6 +449,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Azure Compute - Test
