@@ -308,7 +308,7 @@ def swap_stderr(new_stderr):
     if hasattr(smtplib, 'stderr'):
         module = smtplib
     else:
-        module = sys
+        module = sys  # type: ignore
     old_stderr = getattr(module, 'stderr')
     if new_stderr:
         setattr(module, 'stderr', new_stderr)
