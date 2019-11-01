@@ -5,12 +5,12 @@
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms-azure-compute-dev"
+            "instance_names": "ms_azure_compute_dev"
         },
         {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
-            "instance_names": "ms-azure-compute-prod"
+            "instance_names": "ms_azure_compute_prod"
         },
         {
             "integrations": "nmap",
