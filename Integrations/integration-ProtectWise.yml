@@ -905,4 +905,3 @@ script:
 fromversion: 3.5.0
 tests:
   - Protectwise-Test
-  runonce: false
