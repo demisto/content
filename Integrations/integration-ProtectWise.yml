@@ -725,7 +725,7 @@ script:
     - name: threatLevel
       description: 'Filter by Low, Medium, or High threats. Can be: "NONE", "LOW", "MEDIUM", or "HIGH".'
     - name: threatCategory
-      description: 'Filter by threat category. Can be: 'ExploitsAndAttacks',"DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
+      description: 'Filter by threat category. Can be: "ExploitsAndAttacks", "DenialOfService", "Malware", "Scanning", "Botnets", "Phishing", "Suspicious", "MaliciousHost", "APT", "Misc", or "Unknown".'
     - name: signatureId
       description: 'Filter by threat signature. Finds observations of the same type
         of threat). For example, 69020504.'
