@@ -1,6 +1,6 @@
+from CommonServerPython import *
 import demistomock as demisto
 import sys
-# from pprint import pformat
 
 
 def main():
@@ -29,16 +29,14 @@ def main():
         try:
             integration_search = integration_search_res[0]['Contents']['response']
         except KeyError:
-            demisto.error('Did not receive expected response from Demisto API')
+            return_error('Did not receive expected response from Demisto API')
             sys.exit()
-        # demisto.log(pformat(integration_search))
-        # sys.exit()
+
     if integration_search:
         integration_instances = integration_search['instances']
         integration_instances_enabled = {}
         for integration in integration_instances:
             name = integration['brand']
-            # demisto.log(pformat(integration))
             if integration['enabled'] == 'true':
                 integration_instances_enabled[name] = True
 
@@ -47,8 +45,6 @@ def main():
     except KeyError:
         demisto.error('Did not receive expected response from Demisto API')
         sys.exit()
-
-    # demisto.log(pformat(integration_commands))
 
     integrations_that_implement = []
 
@@ -69,7 +65,7 @@ def main():
                         integrations_that_implement.append(integration_name)
 
     if len(integrations_that_implement) == 0:
-        demisto.results(None)
+        demisto.results('No matching commands found')
     else:
         demisto.results(','.join(integrations_that_implement))
 

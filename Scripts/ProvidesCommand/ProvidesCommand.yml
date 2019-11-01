@@ -9,8 +9,6 @@ tags:
 - general
 comment: |-
   Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Demisto REST API" integration must first be enabled.
-
-  This automation is S...L...O...W....
 enabled: true
 args:
 - name: command
