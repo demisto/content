@@ -5,9 +5,9 @@ jobs:
       - image: devdemisto/content-build-2and3:2.0.0.2832  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.10.1"
+      CONTENT_VERSION: "19.10.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "8c2c76794ce844ded59c4c5e9484858c7c3c16d3" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -255,6 +255,10 @@ jobs:
               exit 0
             fi
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+
+            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+            rm -f $CIRCLE_ARTIFACTS/server*.log
           when: always
       - store_artifacts:
           path: artifacts
