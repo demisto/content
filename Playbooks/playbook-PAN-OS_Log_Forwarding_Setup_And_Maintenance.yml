@@ -2,7 +2,10 @@ id: PAN-OS Log Forwarding Setup And Configuration
 version: -1
 name: PAN-OS Log Forwarding Setup And Configuration
 fromversion: 4.0.0
-description: This playbook sets up and maintains log forwarding for the Panorama rulebase.\nIt can be run when setting up a new instance, or as a periodic job to enforce log forwarding policy.\nYou can either update all rules and override previous profiles, or update only rules that do not have a log forwarding profile configured.
+description: |-
+  This playbook sets up and maintains log forwarding for the Panorama rulebase.
+  It can be run when setting up a new instance, or as a periodic job to enforce log forwarding policy.
+  You can either update all rules and override previous profiles, or update only rules that do not have a log forwarding profile configured.
 starttaskid: "0"
 tasks:
   "0":

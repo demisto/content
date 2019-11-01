@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
 import demistomock as demisto
+import copy
+import json
+import os
+import sys
+import requests
+from pytest import raises, mark
+import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, parse_date_range
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
 
-import copy
-import os
-import sys
-import pytest
+try:
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO  # noqa
 
 INFO = {'b': 1,
         'a': {
@@ -419,6 +427,10 @@ def test_is_error_true():
     assert is_error(execute_command_results)
 
 
+def test_is_error_none():
+    assert not is_error(None)
+
+
 def test_is_error_single_entry():
     execute_command_results = {
         "Type": entryTypes["error"],
@@ -485,7 +497,7 @@ def test_get_error_need_raise_error_on_non_error_input():
     assert False
 
 
-@pytest.mark.parametrize('data,data_expected', [
+@mark.parametrize('data,data_expected', [
     ("this is a test", b"this is a test"),
     (u"עברית", u"עברית".encode('utf-8')),
     (b"binary data\x15\x00", b"binary data\x15\x00"),
@@ -535,6 +547,17 @@ def test_logger_write(mocker):
     assert 'This is a test' in args[0]
     assert 'my_password' not in args[0]
     assert '<XX_REPLACED>' in args[0]
+
+
+def test_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'my_apikey',
+    })
+    ilog = IntegrationLogger()
+    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    assert ('' not in ilog.replace_strs)
+    assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
 def test_is_mac_address():
@@ -621,7 +644,7 @@ def test_exception_in_return_error(mocker):
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
     mocker.patch.object(IntegrationLogger, '__call__')
-    with pytest.raises(SystemExit, match='0'):
+    with raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
     assert expected == results
@@ -643,6 +666,202 @@ def test_get_demisto_version(mocker):
         'version': '5.0.0',
         'buildNumber': '50000'
     }
+
+
+def test_assign_params():
+    from CommonServerPython import assign_params
+    res = assign_params(a='1', b=True, c=None, d='')
+    assert res == {'a': '1', 'b': True}
+
+
+class TestBuildDBotEntry(object):
+    def test_build_dbot_entry(self):
+        from CommonServerPython import build_dbot_entry
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 1)
+        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 1}}
+
+    def test_build_dbot_entry_no_malicious(self):
+        from CommonServerPython import build_dbot_entry
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, build_malicious=False)
+        assert res == {'DBotScore': {'Indicator': 'user@example.com', 'Type': 'email', 'Vendor': 'Vendor', 'Score': 3}}
+
+    def test_build_dbot_entry_malicious(self):
+        from CommonServerPython import build_dbot_entry, outputPaths
+        res = build_dbot_entry('user@example.com', 'Email', 'Vendor', 3, 'Malicious email')
+
+        assert res == {
+            "DBotScore": {
+                "Vendor": "Vendor",
+                "Indicator": "user@example.com",
+                "Score": 3,
+                "Type": "email"
+            },
+            outputPaths['email']: {
+                "Malicious": {
+                    "Vendor": "Vendor",
+                    "Description": "Malicious email"
+                },
+                "Address": "user@example.com"
+            }
+        }
+
+    def test_build_malicious_dbot_entry_file(self):
+        from CommonServerPython import build_malicious_dbot_entry, outputPaths
+        res = build_malicious_dbot_entry('md5hash', 'MD5', 'Vendor', 'Google DNS')
+        assert res == {
+            outputPaths['file']:
+                {"Malicious": {"Vendor": "Vendor", "Description": "Google DNS"}, "MD5": "md5hash"}}
+
+    def test_build_malicious_dbot_entry(self):
+        from CommonServerPython import build_malicious_dbot_entry, outputPaths
+        res = build_malicious_dbot_entry('8.8.8.8', 'ip', 'Vendor', 'Google DNS')
+        assert res == {outputPaths['ip']: {
+            'Address': '8.8.8.8', 'Malicious': {'Vendor': 'Vendor', 'Description': 'Google DNS'}}}
+
+    def test_build_malicious_dbot_entry_wrong_indicator_type(self):
+        from CommonServerPython import build_malicious_dbot_entry, DemistoException
+        with raises(DemistoException, match='Wrong indicator type'):
+            build_malicious_dbot_entry('8.8.8.8', 'notindicator', 'Vendor', 'Google DNS')
+
+    def test_illegal_dbot_score(self):
+        from CommonServerPython import build_dbot_entry, DemistoException
+        with raises(DemistoException, match='illegal DBot score'):
+            build_dbot_entry('1', 'ip', 'Vendor', 8)
+
+    def test_illegal_indicator_type(self):
+        from CommonServerPython import build_dbot_entry, DemistoException
+        with raises(DemistoException, match='illegal indicator type'):
+            build_dbot_entry('1', 'NOTHING', 'Vendor', 2)
+
+    def test_file_indicators(self):
+        from CommonServerPython import build_dbot_entry, outputPaths
+        res = build_dbot_entry('md5hash', 'md5', 'Vendor', 3)
+        assert res == {
+            "DBotScore": {
+                "Indicator": "md5hash",
+                "Type": "file",
+                "Vendor": "Vendor",
+                "Score": 3
+            },
+            outputPaths['file']: {
+                "MD5": "md5hash",
+                "Malicious": {
+                    "Vendor": "Vendor",
+                    "Description": None
+                }
+            }
+        }
+
+
+class TestBaseClient:
+    from CommonServerPython import BaseClient
+    text = {"status": "ok"}
+    client = BaseClient('http://example.com/api/v2/', ok_codes=(200, 201))
+
+    def test_http_request_json(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event')
+        assert res == self.text
+
+    def test_http_request_json_negative(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', text='notjson')
+        with raises(DemistoException, match="Failed to parse json"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_text(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
+        res = self.client._http_request('get', 'event', resp_type='text')
+        assert res == json.dumps(self.text)
+
+    def test_http_request_content(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', content=str.encode(json.dumps(self.text)))
+        res = self.client._http_request('get', 'event', resp_type='content')
+        assert json.loads(res) == self.text
+
+    def test_http_request_response(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event')
+        res = self.client._http_request('get', 'event', resp_type='response')
+        assert isinstance(res, requests.Response)
+
+    def test_http_request_not_ok(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        with raises(DemistoException, match="[500]"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_not_ok_but_ok(self, requests_mock):
+        requests_mock.get('http://example.com/api/v2/event', status_code=500)
+        res = self.client._http_request('get', 'event', resp_type='response', ok_codes=(500,))
+        assert res.status_code == 500
+
+    def test_http_request_not_ok_with_json(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException, match="Error in API call"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_timeout(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
+        with raises(DemistoException, match="Connection Timeout Error"):
+            self.client._http_request('get', 'event')
+
+    def test_http_request_ssl_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError)
+        with raises(DemistoException, match="SSL Certificate Verification Failed"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_proxy_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ProxyError)
+        with raises(DemistoException, match="Proxy Error"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_http_request_connection_error(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectionError)
+        with raises(DemistoException, match="Verify that the server URL parameter"):
+            self.client._http_request('get', 'event', resp_type='response')
+
+    def test_is_valid_ok_codes_empty(self):
+        from requests import Response
+        from CommonServerPython import BaseClient
+        new_client = BaseClient('http://example.com/api/v2/')
+        response = Response()
+        response.status_code = 200
+        assert new_client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 200
+        assert self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_empty_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, None)
+
+    def test_is_valid_ok_codes_from_function_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response, (200, 201))
+
+    def test_is_valid_ok_codes_from_self_false(self):
+        from requests import Response
+        response = Response()
+        response.status_code = 400
+        assert not self.client._is_status_code_valid(response)
 
 
 def test_parse_date_string():
@@ -667,6 +886,39 @@ def test_parse_date_string():
     ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
 
 
+def test_override_print(mocker):
+    mocker.patch.object(demisto, 'info')
+    int_logger = IntegrationLogger()
+    int_logger.set_buffering(False)
+    int_logger.print_override("test", "this")
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    demisto.info.reset_mock()
+    int_logger.print_override("test", "this", file=sys.stderr)
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    buf = StringIO()
+    # test writing to custom file (not stdout/stderr)
+    int_logger.print_override("test", "this", file=buf)
+    assert buf.getvalue() == 'test this\n'
+
+
+def test_http_client_debug(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '/')
+    r = con.getresponse()
+    r.read()
+    assert demisto.info.call_count > 5
+    assert debug_log is not None
+
+
 def test_parse_date_range():
     utc_now = datetime.utcnow()
     utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -679,3 +931,40 @@ def test_parse_date_range():
     # testing local datetime and range of 73 minutes
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+
+class TestReturnOutputs:
+    def test_return_outputs(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        return_outputs(md, outputs, raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+
+    def test_return_outputs_only_md(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        return_outputs(md)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert md == results['HumanReadable']
+        assert 'text' == results['ContentsFormat']
+
+    def test_return_outputs_raw_none(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        return_outputs(md, outputs, None)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert outputs == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']

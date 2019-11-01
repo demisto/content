@@ -1,6 +1,10 @@
 ## [Unreleased]
 Added the *Max incidents per fetch* parameter, which specifies the maximum number of incidents to retrieve per fetch. The maximum for this parameter is 50.
 
+## [19.10.2] - 2019-10-29
+- Improved implementation of the ***ews-search-mailbox*** command.
+- Added the ***ews-get-items-as-eml*** command.
+
 ## [19.9.1] - 2019-09-18
 Improved handling of uploaded EMLfiles.
 

@@ -337,10 +337,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: e9cc4731-e152-4eda-8e4b-3da347bb0b49
+    taskid: 6e027afa-be19-44e6-8c27-cc5a0e1070c4
     type: regular
     task:
-      id: e9cc4731-e152-4eda-8e4b-3da347bb0b49
+      id: 6e027afa-be19-44e6-8c27-cc5a0e1070c4
       version: -1
       name: Disconnect agent to network
       description: Disconnect agents from network
@@ -350,7 +350,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "23"
     scriptarguments:
       agent_id:
         simple: ${SentinelOne.Agent.ID}
@@ -360,33 +360,6 @@ tasks:
         "position": {
           "x": -10,
           "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "11":
-    id: "11"
-    taskid: 840b959e-47fc-450c-8905-9e3cf7e053f8
-    type: regular
-    task:
-      id: 840b959e-47fc-450c-8905-9e3cf7e053f8
-      version: -1
-      name: Connect agent to network
-      description: Connect agents to network
-      script: '|||sentinelone-connect-agent'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      agent_id:
-        simple: ${SentinelOne.Agent.ID}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -10,
-          "y": 1080
         }
       }
     note: false
@@ -426,10 +399,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 919c341e-d021-43bd-8dd6-9f1d4cd47783
+    taskid: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
     type: regular
     task:
-      id: 919c341e-d021-43bd-8dd6-9f1d4cd47783
+      id: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -443,11 +416,11 @@ tasks:
       - "16"
     scriptarguments:
       from_date:
-        simple: 2019-08-02T04:49:26.257525Z
+        simple: 2019-08-03T04:49:26.257525Z
       query:
         simple: AgentName Is Not Empty
       to_date:
-        simple: 2019-08-04T04:49:26.257525Z
+        simple: 2019-08-05T04:49:26.257525Z
     separatecontext: false
     view: |-
       {
@@ -493,10 +466,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 9b506163-4d20-4bd4-8058-079711348176
+    taskid: 4ce16d55-cc16-4968-870e-0456f686eb75
     type: regular
     task:
-      id: 9b506163-4d20-4bd4-8058-079711348176
+      id: 4ce16d55-cc16-4968-870e-0456f686eb75
       version: -1
       name: Get processes
       description: Get Deep Visibility events from query by event type - process
@@ -768,12 +741,212 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+    type: regular
+    task:
+      id: 442fb6dd-12b4-4f4a-8fe7-55114a20aede
+      version: -1
+      name: Get agent
+      description: Returns details of an agent, by agent ID.
+      script: '|||sentinelone-get-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 0b353d10-fcb6-498f-8aaa-29e29f2bd375
+    type: condition
+    task:
+      id: 0b353d10-fcb6-498f-8aaa-29e29f2bd375
+      version: -1
+      name: 'Is the agent disconnected? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SentinelOne
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: SentinelOne.Agents.NetworkStatus
+                      iscontext: true
+                    right:
+                      value:
+                        simple: disconnected
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: SentinelOne.Agents.NetworkStatus
+                      iscontext: true
+                    right:
+                      value:
+                        simple: disconnecting
+                accessor: Agent.NetworkStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: f3102884-292b-4dff-8eba-d31c720b771d
+    type: regular
+    task:
+      id: f3102884-292b-4dff-8eba-d31c720b771d
+      version: -1
+      name: Connect agent to network
+      description: Connects agents to network.
+      script: '|||sentinelone-connect-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: f6f4daef-acbe-4598-86d0-c702020db1f6
+    type: regular
+    task:
+      id: f6f4daef-acbe-4598-86d0-c702020db1f6
+      version: -1
+      name: Get agent
+      description: Returns details of an agent, by agent ID.
+      script: '|||sentinelone-get-agent'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      agent_id:
+        simple: ${SentinelOne.Agent.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: d3f8002e-3b0d-418f-82dc-f287af8808f7
+    type: condition
+    task:
+      id: d3f8002e-3b0d-418f-82dc-f287af8808f7
+      version: -1
+      name: 'Is the agent reconnect? '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SentinelOne.Agent.NetworkStatus
+            iscontext: true
+          right:
+            value:
+              simple: connecting
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 67c1d758-51eb-492b-8e88-559894fe49cb
+    type: title
+    task:
+      id: 67c1d758-51eb-492b-8e88-559894fe49cb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1305,
+        "height": 2285,
         "width": 3370,
         "x": -930,
         "y": 50
