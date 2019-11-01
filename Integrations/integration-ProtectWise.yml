@@ -535,7 +535,7 @@ script:
       description: 'Timestamp of the start time of the event. For example, 1401451200000, or 2015-03-25T12:00:00.'
     - name: end
       required: true
-      description: 'Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00'.
+      description: Timestamp of the end of the event. For example, 1401451500000, or 2015-03-25T12:00:00.
     - name: eventType
       description: 'Filters by one or more event types. Can be: "MaliciousFlow:, "KillChainEscalation", or "MaliciousConversation".'
     - name: killChainStage
