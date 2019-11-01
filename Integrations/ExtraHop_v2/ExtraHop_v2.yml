@@ -97,7 +97,7 @@ script:
     - contextPath: Extrahop.Alert.StatName
       description: The statistic name for the alert.
       type: String
-    description: Get all alert rules from ExtraHop.
+    description: Get all alert rules from Reveal(x).
   - name: extrahop-query-records
     arguments:
     - name: query_from
@@ -1875,7 +1875,7 @@ script:
     - contextPath: ExtraHop.Record.Source.xss
       description: Potential XSS
       type: String
-    description: Query records from ExtraHop.
+    description: Query records from Reveal(x).
   - name: extrahop-device-search
     arguments:
     - name: name
@@ -2201,7 +2201,7 @@ script:
     - contextPath: ExtraHop.Device.Url
       description: Link to the device details page in ExtraHop.
       type: string
-    description: Search for devices in ExtraHop.
+    description: Search for devices in Reveal(x).
   - name: extrahop-edit-watchlist
     arguments:
     - name: add
@@ -2212,7 +2212,7 @@ script:
       description: The list of IP Addresses or ExtraHop API IDs of the devices to
         remove, comma separated.
       isArray: true
-    description: Add or remove devices from the watchlist in ExtraHop.
+    description: Add or remove devices from the watchlist in Reveal(x).
   - name: extrahop-get-watchlist
     arguments: []
     outputs:
@@ -2296,7 +2296,7 @@ script:
     - contextPath: ExtraHop.Device.Url
       description: Link to the device details page in ExtraHop.
       type: string
-    description: Get all devices on the watchlist in ExtraHop.
+    description: Get all devices on the watchlist in Reveal(x).
   - name: extrahop-create-alert
     arguments:
     - name: apply_all
@@ -2419,7 +2419,7 @@ script:
     - name: param2
       description: The second alert parameter, which is either a key pattern or a
         data point. Only applicable to threshold alerts.
-    description: Create a new alert rule in ExtraHop.
+    description: Create a new alert rule in Reveal(x).
   - name: extrahop-edit-alert
     arguments:
     - name: alert_id
@@ -2551,7 +2551,7 @@ script:
     - name: param2
       description: The second alert parameter, which is either a key pattern or a
         data point. Only applicable to threshold alerts.
-    description: Modify an alert rule in ExtraHop.
+    description: Modify an alert rule in Reveal(x).
   - name: extrahop-track-ticket
     arguments:
     - name: incident_id
@@ -2570,7 +2570,7 @@ script:
     - contextPath: ExtraHop.TicketId
       description: Demisto Incident ID successfully tracked to ExtraHop Detection
       type: string
-    description: Link an ExtraHop Detection to a Demisto Investigation.
+    description: Link a Reveal(x) detection to a Demisto Investigation.
   - name: extrahop-get-peers
     arguments:
     - name: ip_or_id
@@ -2749,7 +2749,7 @@ script:
     - contextPath: ExtraHop.Device.ServerProtocols
       description: The list of protocols the peer device is communicating as a server.
       type: string
-    description: Get all peers for a device from ExtraHop.
+    description: Get all peers for a device from Reveal(x).
   - name: extrahop-get-protocols
     arguments:
     - name: ip_or_id
@@ -2858,7 +2858,7 @@ script:
     - contextPath: ExtraHop.Device.ServerProtocols
       description: The list of protocols the peer device is communicating as a server.
       type: string
-    description: Get all active network protocols for a device from ExtraHop.
+    description: Get all active network protocols for a device from Reveal(x).
   - name: extrahop-tag-devices
     arguments:
     - name: tag
@@ -2871,7 +2871,7 @@ script:
       description: The list of IP Addresses or ExtraHop API IDs of the devices to
         remove the tag from, comma separated.
       isArray: true
-    description: Add or remove a tag from devices in ExtraHop.
+    description: Add or remove a tag from devices in Reveal(x).
   - name: extrahop-get-activity-map
     arguments:
     - name: ip_or_id
@@ -2977,7 +2977,7 @@ script:
     - contextPath: ExtraHop.ActivityMap
       description: The link to a visual activity map in ExtraHop.
       type: string
-    description: Get a link to a visual activity map in ExtraHop.
+    description: Get a link to a live activity map in Reveal(x).
   - name: extrahop-search-packets
     arguments:
     - name: output
@@ -3028,7 +3028,7 @@ script:
       description: Returns packets sent to or received by the specified IP address.
     - name: port2
       description: Returns packets sent from or received on the specified port.
-    description: Search for specific packets in ExtraHop.
+    description: Search for specific packets in Reveal(x).
   dockerimage: demisto/python3:3.7.2.200
   runonce: false
 tests:
