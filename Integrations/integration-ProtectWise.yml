@@ -210,7 +210,7 @@ script:
                 params.threatCategory, null, null, null, null, null, null, null, token);
             try {
                 var res = JSON.parse(data).events;
-                res.reverse();  # events are fetched in descending order so reversing to process older first
+                res.reverse();  // events are fetched in descending order so reversing to process older first
             } catch (ex) {
                 throw 'Error parsing event fetch - ' + data + ' - ' + ex;
             }
