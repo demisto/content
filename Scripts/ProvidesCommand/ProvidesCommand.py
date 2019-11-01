@@ -43,7 +43,7 @@ def main():
     try:
         integration_commands = integration_commands_res[0]['Contents']['response']
     except KeyError:
-        demisto.error('Did not receive expected response from Demisto API')
+        return_error('Did not receive expected response from Demisto API')
         sys.exit()
 
     integrations_that_implement = []
