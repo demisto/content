@@ -12,7 +12,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - restore_cache:
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".cricleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
       - run:
           name: Prepare Environment
           when: always
@@ -29,19 +29,21 @@ jobs:
               if [ ! -e "venv" ]; then
                 echo "installing venv"
                 NO_HOOKS=1 .hooks/bootstrap
-                . ./venv/bin/activate
+                source ./venv/bin/activate
                 pip install -r .circleci/build-requirements.txt
                 pip3 install -r .circleci/build-requirements.txt
               else
                 echo "venv exists (from cache). activating"
-                . ./venv/bin/activate
+                source ./venv/bin/activate
               fi
+              # store in bash env so we load our venv in each step
+              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
               python --version
               python3 --version
       - save_cache:
           paths:
             - venv
-          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".cricleci/build-requirements.txt" }}
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
 
       - add_ssh_keys:
           fingerprints:
