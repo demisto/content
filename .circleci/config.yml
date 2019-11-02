@@ -67,7 +67,7 @@ jobs:
           command: |
               # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
               ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD

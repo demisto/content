@@ -4,6 +4,6 @@ pyspellchecker==0.5.2
 ansible==2.8.6
 ansible-runner==1.4.2
 rsa==3.4.2
-# paramiko = "*"  deosn't seem to be used
+paramiko==2.6.0
 boto3==1.10.0
 pyminizip===0.2.4
