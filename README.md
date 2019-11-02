@@ -9,6 +9,9 @@ We security folks love to tinker, keep enhancing and sharpening our toolset and 
 
 We invite you to use the playbooks and scripts, modify them to suit your needs and see what works for you, get involved in the community discussion and of course remember to give back and contribute so that others can enjoy and learn from your hard work and build upon it to enhance it even further.
 
+## Contributing
+Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](CONTRIBUTING.md).
+
 
 ## Playbooks
 The Demisto Platform includes a visual playbook editor - you can add and modify tasks, create control flow according to answers returned by your queries, and automate everything with your existing security tools, services and products. You can also export your work to a file in the COPS format, and import playbooks shared by your peers who have done the same.
@@ -54,20 +57,8 @@ In some cases, it will be necessary to create a docker image to enable your inte
 ## Reports
 Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
-## Contributing Content
-For instructions about adding/modifying playbooks and scripts please see our [contributor guide](https://github.com/demisto/content/blob/master/CONTRIBUTING.md).
-
-Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)
-
 ## Release Notes
 For information about content release notes conventions, refer to our [release notes documentation](https://github.com/demisto/content/blob/master/docs/release_notes/README.md).
-
-## Git configuration
-Copy the pre-commit hook from .hooks to .git/hooks. Run the following command from the repository root:
-
-```sh
-cp .hooks/* .git/hooks
-```
 
 
 # Documentation Directory
@@ -90,3 +81,5 @@ cp .hooks/* .git/hooks
 | [Integration Documentation](https://github.com/demisto/content/blob/master/docs/integration_documentation/README.MD) | How to generate documentation for an integration |
 | [YAML File](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) | Explanation of the Demisto YAML structure |
 | [Integration Parameter Types](https://github.com/demisto/content/blob/master/docs/parameter_types/README.md) | Description of the various integration parameter types |
+
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com)

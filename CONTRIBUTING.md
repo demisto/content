@@ -2,13 +2,13 @@
 
 ![Content logo](demisto_content_logo.png)
 
-Welcome to Demisto content repo!
+Welcome to Demisto content repo! Contributions are welcome and appreciated.
 
 ## How to contribute
 
 To get you started, refer to our [Getting Started article](https://github.com/demisto/content/blob/master/docs/README.md)
 
-After you finish developing, there are two steps left before you can create a pull request:
+After you finish developing, there are a few steps left before you can create a pull request:
 
  - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
  
@@ -116,5 +116,6 @@ Some requirements for integrations yaml are:
 
 ------------
 
-If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
+If you have a suggestion or an opportunity for improvement that you've identified, please feel free to open a PR.
+
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)
