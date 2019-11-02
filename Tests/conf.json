@@ -1910,6 +1910,7 @@
         }
     ],
     "skipped_tests": {
+        "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
@@ -1985,6 +1986,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Palo Alto Networks Cortex Test": "Issue 19871",
+        "epo": "Issue 19798",
         "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
