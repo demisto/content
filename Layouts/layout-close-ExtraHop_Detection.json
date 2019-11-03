@@ -5,15 +5,9 @@
 		"id": "ExtraHop Detection",
 		"version": -1,
 		"modified": "2019-06-20T16:01:05.659574019-07:00",
-		"commitMessage": "",
-		"shouldPublish": false,
-		"shouldCommit": false,
-		"shouldPush": false,
 		"name": "",
 		"kind": "close",
-		"prevKind": "close",
 		"typeId": "ExtraHop Detection",
-		"prevTypeId": "ExtraHop Detection",
 		"system": false,
 		"sections": [
 			{
