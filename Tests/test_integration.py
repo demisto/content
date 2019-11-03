@@ -3,6 +3,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import requests.exceptions
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
@@ -46,7 +47,12 @@ def __get_integration_config(client, integration_name):
 
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
-    res = client.req('POST', '/settings/integration/test', module_instance)
+    try:
+        res = client.req('POST', '/settings/integration/test', module_instance)
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Failed to test integration instance, error trying to communicate with demisto server: {} '.format(
+            conn_err))
+        return False
     if res.status_code != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(res.status_code))
         return False
@@ -110,7 +116,11 @@ def __create_integration_instance(client, integration_name, integration_instance
             # param is required - take default value
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
-    res = client.req('PUT', '/settings/integration', module_instance)
+    try:
+        res = client.req('PUT', '/settings/integration', module_instance)
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err))
+        return None
 
     if res.status_code != 200:
         print_error('create instance failed with status code ' + str(res.status_code))
@@ -139,7 +149,12 @@ def __disable_integrations_instances(client, module_instances):
         module_instance['enable'] = "false"
         module_instance['version'] = -1
 
-        res = client.req('PUT', '/settings/integration', module_instance)
+        try:
+            res = client.req('PUT', '/settings/integration', module_instance)
+        except requests.exceptions.RequestException as conn_err:
+            print_error(
+                'Failed to disable integration instance, error trying to communicate with demisto server: {} '.format(
+                    conn_err))
 
         if res.status_code != 200:
             print_error('disable instance failed with status code ' + str(res.status_code))
@@ -185,7 +200,13 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
 def __get_investigation_playbook_state(client, inv_id):
-    res = client.req('GET', '/inv-playbook/' + inv_id, {})
+    try:
+        res = client.req('GET', '/inv-playbook/' + inv_id, {})
+    except requests.exceptions.RequestException as conn_err:
+        print_error(
+            'Failed to get investigation playbook state, error trying to communicate with demisto server: {} '.format(
+                conn_err))
+        return PB_Status.FAILED
     investigation_playbook = res.json()
 
     if 'state' in investigation_playbook.keys():
@@ -197,11 +218,15 @@ def __get_investigation_playbook_state(client, inv_id):
 
 # return True if delete-incident succeeded, False otherwise
 def __delete_incident(client, incident):
-    res = client.req('POST', '/incident/batchDelete', {
-        'ids': [incident['id']],
-        'filter': {},
-        'all': False
-    })
+    try:
+        res = client.req('POST', '/incident/batchDelete', {
+            'ids': [incident['id']],
+            'filter': {},
+            'all': False
+        })
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Failed to delete incident, error trying to communicate with demisto server: {} '.format(conn_err))
+        return False
 
     if res.status_code != 200:
         print_error('delete incident failed\nStatus code' + str(res.status_code))
@@ -213,7 +238,13 @@ def __delete_incident(client, incident):
 
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
-    res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
+    try:
+        res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
+    except requests.exceptions.RequestException as conn_err:
+        print_error(
+            'Failed to delete integration instance, error trying to communicate with demisto server: {} '.format(
+                conn_err))
+        return False
     if res.status_code != 200:
         print_error('delete integration instance failed\nStatus code' + str(res.status_code))
         print_error(pformat(res.json()))
@@ -230,8 +261,12 @@ def __delete_integrations_instances(client, module_instances):
 
 
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
-    res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
-    if res.status_code == 200:
+    try:
+        res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
+    except requests.exceptions.RequestException as conn_err:
+        print_error('Failed to print investigation error, error trying to communicate with demisto server: {} '.format(
+            conn_err))
+    if res and res.status_code == 200:
         entries = res.json()['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
@@ -282,10 +317,10 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration %s succeed' % (integration_name, ))
+        print('Create integration %s succeed' % (integration_name,))
 
     # create incident with playbook
-    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id, ), playbook_id, integrations)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id,), playbook_id, integrations)
 
     if not incident:
         return False, -1
@@ -346,7 +381,12 @@ def disable_all_integrations(client):
     Arguments:
         client -- demisto py client
     """
-    res = client.req('POST', '/settings/integration/search', {'size': 1000})
+    try:
+        res = client.req('POST', '/settings/integration/search', {'size': 1000})
+    except requests.exceptions.RequestException as conn_err:
+        print_error(
+            'Failed to disable all integrations, error trying to communicate with demisto server: {} '.format(conn_err))
+        return
     if res.status_code != 200:
         print_error('Get all integration instances failed with status code: {}'.format(res.status_code))
         return

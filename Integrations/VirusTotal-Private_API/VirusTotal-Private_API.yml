@@ -68,6 +68,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: vt-private-check-file-behaviour
     arguments:
@@ -243,6 +244,9 @@ script:
     - contextPath: File.VirusTotal.Tags
       description: File tags
       type: string
+    - contextPath: File.Tags
+      description: File tags
+      type: string
     - contextPath: File.VirusTotal.MagicLiteral
       description: File magic literals
       type: string
@@ -256,6 +260,9 @@ script:
       description: Community Comments about the File
       type: string
     - contextPath: File.VirusTotal.AuthentiHash
+      description: AuthentiHash of the File
+      type: string
+    - contextPath: File.Authentihash
       description: AuthentiHash of the File
       type: string
     - contextPath: File.VirusTotal.ImpHash

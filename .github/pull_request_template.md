@@ -40,3 +40,8 @@ Mention the dependencies of the entity you changed as given from the precommit h
 
 ## Additional changes
 Describe additional changes done, for example adding a function to common server.
+
+## Technical writer review
+Mention and link to the files that require a technical writer review.
+- [ ] [YAML file](link)
+- [ ] [CHANGELOG](link)

@@ -1251,3 +1251,24 @@ def test_error_parser():
     }
     graph_error_json_response = MockResponse(graph_error_json_response, 401)
     assert error_parser(graph_error_json_response) == f'{error_code}: {error_message}'
+
+
+def test_integration_health(mocker):
+    from MicrosoftTeams import integration_health
+    mocker.patch.object(demisto, 'results')
+    expected_results = """### Microsoft API Health
+|Bot Framework API Health|Graph API Health|
+|---|---|
+| Operational | Operational |
+### Microsoft Teams Mirrored Channels
+|Channel|Investigation ID|Team|
+|---|---|---|
+| incident-10 | 10 | The-A-Team |
+| incident-2 | 2 | The-A-Team |
+| booya | 14 | The-A-Team |
+"""
+    integration_health()
+
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == expected_results

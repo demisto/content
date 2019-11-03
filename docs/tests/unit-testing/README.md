@@ -1,7 +1,7 @@
 # Unit Testing
 Unit testing should be used to test small units of code in an isolated and deterministic fashion. Unit tests should avoid performing communication with external APIs and should prefer to use mocking. Testing actual interaction with external APIs should be performed via Test Playbooks. Unit testing is currently only supported for Python (no JS).
 # Environment Setup
-In order to work with unit testing the integration or automation script need to be developed in package (folder) format, where the yml file is separated from the python file and resides in its own directory.
+In order to work with unit testing the integration or automation script need to be developed in [package (directory) format](../package_directory_structure/README.MD), where the yml file is separated from the python file and resides in its own directory.
 
 ## Setup Pipenv 
 To run locally the unit tests we want to setup a virtual environment with all required dependencies (both runtime and development). To achieve this we use [Pipenv](https://pipenv.readthedocs.io/en/latest/). Setup:
@@ -17,7 +17,7 @@ You should now have a managed virtual environment to run unit tests locally.
 ## Setup PyCharm 
 We recommend using PyCharm with the Demisto Plugin. This is optional and you can also run/debug unit tests with other ides (such as VS Code), but only PyCharm currently has a dedicated plugin, which can manage the yml file via the UI and also provide remote execution. See: https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm. Setup: 
 
-* **Install the Demisto Plugin**: Content team is currently using a pre-release version of the plugin. Search the slack channel to download the latest.
+* **Install the Demisto Plugin**: Install with-in PyCharm by navigating to `Preferences.. -> Plugins`. Or download and install from [here](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm/versions)
 * **Open Pycharm**: Open PyCharm where the root folder is the folder you wish to develop within. 
 * **Choose Interpreter**: Choose the Pipenv interpreter (with all dependencies we setup in the previous step). See: https://www.jetbrains.com/help/pycharm/configuring-python-interpreter.html
 * **Enable PyTest**: We run our unit tests with `pytest`. See the following on how to enable PyTest: https://www.jetbrains.com/help/pycharm/pytest.html
@@ -32,7 +32,7 @@ if __name__ == "__builtin__" or __name__ == "builtins":
 ``` 
 
 # Write Your Unit Tests
-Unit test should be written in a separate Python file named: `<you_choice>_test.py`. Within the unit test file, each unit test function should be named: `test_<your name>`. More information on writing unit tests and their format is available at the [PyTest Docs](https://docs.pytest.org/en/latest/contents.html). Good place to see example unit tests: https://github.com/demisto/content/tree/master/Scripts/ParseEmailFiles.
+Unit test should be written in a separate Python file named: `<you_choice>_test.py`. Within the unit test file, each unit test function should be named: `test_<your name>`. More information on writing unit tests and their format is available at the [PyTest Docs](https://docs.pytest.org/en/latest/contents.html). Good place to see example unit tests: [Proofpoint TAP v2 integration](https://github.com/demisto/content/blob/master/Integrations/ProofpointTAP_v2/ProofpointTAP_v2_test.py) 
 
 ## Mocking
 We use [pytest-mock](https://github.com/pytest-dev/pytest-mock/) for mocking. `pytest-mock` is enabled by default and installed in the base environment mentioned above. To use a `mocker` object simply pass it as a parameter to your test function. The `mocker` can then be used to mock both the demisto object and also external APIs. For an example of using a `mocker` object see: https://github.com/demisto/content/blob/master/Scripts/ParseEmailFiles/parse_email_files_test.py#L29 .
@@ -66,6 +66,7 @@ Run the script with `-h` to see command line options:
 ./Tests/scripts/pkg_dev_test_tasks.py -h
 usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
+                             [--cpu-num CPU_NUM]
 
 Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
@@ -83,6 +84,9 @@ optional arguments:
   --no-test             Do NOT test (skip pytest) (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
+  --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
+                        automatic detection of the number of CPUs.) (default:
+                        0)
   ```
 
 Sample output:
@@ -91,8 +95,24 @@ Sample output:
 
 **Troubleshooting Tips:**
 * The `pkg_dev_test_tasks.py` by default prints out minimal output. If for some reason it is failing and not clear, run the script with `-v` for verbose output.
+
+* When running mypy against python 2 code and the file contains non-ascii characters it may fail with an error of the sort: 
+  
+  `can't decode file 'ThreatConnect.py': 'ascii' codec can't decode byte 0xe2 in position 47329: ordinal not in range(128)`.
+  
+  To find the character use the following python one liner: 
+  
+  `python -c "index = 47329; f = open('Integrations/ThreatConnect/ThreatConnect.py'); d = f.read(); print(d[index-20:index+20])"`
+  
 * The script creates a container image which is used to run pytest and pylint. The container image will be named: `devtest<origin-image>-[deps hash]`. For example: `devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075`. You can examine the image if needed by simple using docker run. For example: 
 ```
 docker run --rm -it devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075e sh
 ```
+
+* If you have faced the error `ValueError: unknown locale: UTF-8` when running `pkg_dev_test_tasks.py`, add these lines to your ~/.bash_profile: 
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
 

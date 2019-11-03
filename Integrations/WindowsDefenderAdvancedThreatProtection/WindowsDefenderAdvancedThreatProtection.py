@@ -800,35 +800,43 @@ def get_alert_related_user(alert_id):
 
 
 def fetch_incidents():
-
     last_run = demisto.getLastRun()
+
     if last_run and last_run['last_alert_fetched_time']:
         last_alert_fetched_time = datetime.strptime(last_run['last_alert_fetched_time'], '%Y-%m-%dT%H:%M:%S.%f')
     else:
         last_alert_fetched_time = datetime.now() - timedelta(days=300)
 
+    previous_ids = last_run.get('last_ids', [])
     latest_creation_time = last_alert_fetched_time
 
     alerts = list_alerts()['value']
-
     incidents = []
+    last_ids = []
 
     for alert in alerts:
         # Removing 'Z' from timestamp and converting to datetime
         alert_creation_time = datetime.strptime(alert['alertCreationTime'][:-2], '%Y-%m-%dT%H:%M:%S.%f')
         alert_status = alert['status']
         alert_severity = alert['severity']
-        if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and \
-                alert_severity in FETCH_SEVERITY:
+        if alert_creation_time >= last_alert_fetched_time and alert_status in FETCH_STATUS and \
+                alert_severity in FETCH_SEVERITY and alert['id'] not in previous_ids:
             incident = alert_to_incident(alert)
             incidents.append(incident)
+            if alert_creation_time == latest_creation_time:
+                last_ids.append(alert["id"])
             if alert_creation_time > latest_creation_time:
                 latest_creation_time = alert_creation_time
+                last_ids = [alert['id']]
+
+    if not last_ids:
+        last_ids = previous_ids
 
     demisto.setLastRun({
-        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f')
-    })
+        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f'),
+        "last_ids": last_ids
 
+    })
     demisto.incidents(incidents)
 
 

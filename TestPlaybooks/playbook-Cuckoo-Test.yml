@@ -5,13 +5,13 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5b2e726e-18d9-4ad1-8cea-57b3e6c7944f
+    taskid: 72626119-b97c-4141-82ef-370fb9ed3b11
     type: start
     task:
-      description: "-"
-      id: 5b2e726e-18d9-4ad1-8cea-57b3e6c7944f
+      id: 72626119-b97c-4141-82ef-370fb9ed3b11
       version: -1
       name: ""
+      description: '-'
       iscommand: false
       brand: ""
     nexttasks:
@@ -21,20 +21,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 08437a15-4df4-49cd-8488-140a21d5a220
+    taskid: 4a4101e9-b07d-4186-8686-c71d8ccbbb3a
     type: regular
     task:
-      description: getting file using get
-      id: 08437a15-4df4-49cd-8488-140a21d5a220
+      id: 4a4101e9-b07d-4186-8686-c71d8ccbbb3a
       version: -1
       name: Get file
+      description: getting file using get
       scriptName: http
       type: regular
       iscommand: false
@@ -65,21 +67,24 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 508ea88a-b5bd-4de8-8387-44b54f6a020f
+    taskid: 08d587b8-ddf0-4212-85c5-af9491110886
     type: regular
     task:
-      description: delete context
-      id: 508ea88a-b5bd-4de8-8387-44b54f6a020f
+      id: 08d587b8-ddf0-4212-85c5-af9491110886
       version: -1
       name: Delete Context
+      description: delete context
       scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
+      - "11"
       - "1"
     scriptarguments:
       all:
@@ -92,20 +97,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 7ce222de-5f8b-469e-845a-23df060cfa30
+    taskid: 73d4c5e5-b609-49e8-8b60-ba8e395e7b8b
     type: playbook
     task:
-      description: start detonation playbook file
-      id: 7ce222de-5f8b-469e-845a-23df060cfa30
+      id: 73d4c5e5-b609-49e8-8b60-ba8e395e7b8b
       version: -1
       name: Detonate File - Cuckoo
+      description: start detonation playbook file
       playbookName: Detonate File - Cuckoo
       type: playbook
       iscommand: false
@@ -124,20 +131,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: f2daa2f7-6815-459e-806d-d88649a8f61f
+    taskid: 44a55722-69e1-4453-8dce-7ba793b00045
     type: title
     task:
-      description: done file
-      id: f2daa2f7-6815-459e-806d-d88649a8f61f
+      id: 44a55722-69e1-4453-8dce-7ba793b00045
       version: -1
       name: Done
+      description: done file
       type: title
       iscommand: false
       brand: ""
@@ -145,21 +154,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1390
+          "x": 265,
+          "y": 1215
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: a5eef8a0-e185-4934-8a0e-c049c7fefc80
+    taskid: 4ec9088d-1ec0-4831-84b6-7f8c2d267263
     type: playbook
     task:
-      description: url detonation playbook
-      id: a5eef8a0-e185-4934-8a0e-c049c7fefc80
+      id: 4ec9088d-1ec0-4831-84b6-7f8c2d267263
       version: -1
       name: Detonate URL - Cuckoo
+      description: url detonation playbook
       playbookName: Detonate URL - Cuckoo
       type: playbook
       iscommand: false
@@ -178,20 +188,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1040
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 9a0aac37-5da5-45ef-877c-579d4a51726b
+    taskid: 9195d534-6cd8-4d62-8eba-aea963b1770c
     type: title
     task:
-      description: done file detonate
-      id: 9a0aac37-5da5-45ef-877c-579d4a51726b
+      id: 9195d534-6cd8-4d62-8eba-aea963b1770c
       version: -1
       name: FileDetonate Done
+      description: done file detonate
       type: title
       iscommand: false
       brand: ""
@@ -202,20 +214,22 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 720
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: e0f79738-8de0-4b5f-8a27-b3065d43ac79
+    taskid: bcb8b1fd-eaad-4e8e-858a-1e3af6fb620c
     type: regular
     task:
-      description: delete context
-      id: e0f79738-8de0-4b5f-8a27-b3065d43ac79
+      id: bcb8b1fd-eaad-4e8e-858a-1e3af6fb620c
       version: -1
       name: Delete Context
+      description: delete context
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -234,18 +248,62 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 865
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
+    type: regular
+    task:
+      id: 6a88f674-9d86-478a-8b8c-2e95b4bdaf6f
+      version: -1
+      name: Get file
+      description: getting file using get
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/pdf-example-password.pdf
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1230,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }

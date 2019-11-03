@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
 Return a meaningful error when no query args are given for the !xdr-get-incidents command 
 
 

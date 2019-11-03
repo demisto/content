@@ -243,7 +243,8 @@ def get_flow_info(http_flow):
         "TcpDstPort": http_flow["TCP"].dstport,
         "IpSrc": http_flow["IP"].src,
         "IpDst": http_flow["IP"].dst,
-        "MetaSniffTimeStamp": http_flow.sniff_timestamp
+        "MetaSniffTimeStamp": http_flow.sniff_timestamp,
+        "ResultIndex": http_flow.frame_info.number
     }
 
 

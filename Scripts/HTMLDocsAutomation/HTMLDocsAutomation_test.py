@@ -98,7 +98,7 @@ def test_generate_commands_section():
         }
     }
 
-    section, errors = generate_commands_section(yml_data, {})
+    section, errors = generate_commands_section(yml_data, {}, True)
 
     expected_section = '''<h2>Commands</h2>
 <p>
@@ -110,14 +110,15 @@ def test_generate_commands_section():
   <li>non-deprecated-cmd2: non-deprecated-cmd2</li>
 </ol>
 <h3>1. non-deprecated-cmd</h3>
-<!-- <hr> -->
+<hr>
 <p> </p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd</code>
 </p>
+
 <h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
+<p>The following permissions are required for this command.</p>
 <ul>
     <li>permission 1</li>
     <li>permission 2</li>
@@ -136,17 +137,23 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 
 <h3>2. non-deprecated-cmd2</h3>
-<!-- <hr> -->
+<hr>
 <p> </p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd2</code>
 </p>
+
 <h5>Required Permissions</h5>
-<p>The following permissions are required for all commands.</p>
+<p>The following permissions are required for this command.</p>
 <ul>
     <li>permission 1</li>
     <li>permission 2</li>
@@ -165,6 +172,11 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 
+<!-- remove the following comments to manually add an image: -->
+<!--
+<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
+ alt="image" width="749" height="412"></a>
+ -->
 </p>
 '''
 
@@ -233,12 +245,12 @@ def test_human_readable_example_to_html():
   </thead>
   <tbody>
     <tr>
-      <td>hello</td>
-      <td>hello</td>
+      <td> hello </td>
+      <td> hello </td>
     </tr>
     <tr>
-      <td>world</td>
-      <td>world</td>
+      <td> world </td>
+      <td> world </td>
     </tr>
   </tbody>
 </table>
