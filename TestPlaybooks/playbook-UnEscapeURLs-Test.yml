@@ -16,11 +16,12 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
+      - "26"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 3060,
           "y": 50
         }
       }
@@ -172,7 +173,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1985,
+          "x": 2200,
           "y": 720
         }
       }
@@ -640,10 +641,10 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 7155da1f-73a7-47bb-8416-00cd05169a4b
+    taskid: a6293c51-e785-47af-8b00-532fcb7573d5
     type: regular
     task:
-      id: 7155da1f-73a7-47bb-8416-00cd05169a4b
+      id: a6293c51-e785-47af-8b00-532fcb7573d5
       version: -1
       name: UnEscapeURL - backward slash
       description: |-
@@ -673,10 +674,10 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: b10ce71a-3951-44a3-8777-051a38975db4
+    taskid: 0435483f-500f-4880-81a1-007895b0d62c
     type: regular
     task:
-      id: b10ce71a-3951-44a3-8777-051a38975db4
+      id: 0435483f-500f-4880-81a1-007895b0d62c
       version: -1
       name: Check URL with backward slash
       description: Verify given entry contains a string
@@ -704,13 +705,79 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "26":
+    id: "26"
+    taskid: e3418b3e-068a-4e79-8ae3-c74c4d0d6deb
+    type: regular
+    task:
+      id: e3418b3e-068a-4e79-8ae3-c74c4d0d6deb
+      version: -1
+      name: UnEscapeURL - no slash
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      input:
+        simple: http:example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: f2b9014e-91f3-4ff1-8769-4691ca7b9266
+    type: regular
+    task:
+      id: f2b9014e-91f3-4ff1-8769-4691ca7b9266
+      version: -1
+      name: Check URL without slash
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        simple: http://example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 4250,
+        "width": 4680,
         "x": 50,
         "y": 50
       }
