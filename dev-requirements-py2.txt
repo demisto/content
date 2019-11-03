@@ -1,0 +1,8 @@
+flake8==3.7.8
+requests==2.22.0
+PyYAML==5.1.2
+pykwalify==1.7.0
+demisto-py==2.0.5
+pytest==4.6.5
+beautifulsoup4==4.8.1
+pypdf2==1.26.0
