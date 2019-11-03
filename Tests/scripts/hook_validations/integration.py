@@ -14,6 +14,8 @@ class IntegrationValidator(object):
        old_integration (dict): Json representation of the current integration from master.
     """
 
+    reputation_commands = ['file', 'email', 'domain', 'url', 'ip']
+
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
 
@@ -140,11 +142,10 @@ class IntegrationValidator(object):
         Returns:
             bool. Whether 'isArray' is True
         """
-        reputation_commands = ['file', 'email', 'domain', 'url', 'ip']
         commands = self.current_integration.get('script', {}).get('commands', [])
         for command in commands:
             command_name = command.get('name')
-            if command_name in reputation_commands:
+            if command_name in self.reputation_commands:
                 for arg in command.get('arguments', []):
                     arg_name = arg.get('name')
                     if arg_name == command_name:
