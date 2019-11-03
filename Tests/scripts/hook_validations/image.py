@@ -94,6 +94,7 @@ class ImageValidator(object):
     def is_not_default_image(self):
         """Check if the image is the default one"""
         if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
+            # Check if the file is of type image
             with open(self.file_path, "rb") as image:
                 image_data = image.read()
                 encoded_image = base64.b64encode(image_data)
@@ -108,15 +109,18 @@ class ImageValidator(object):
                     return True
 
         else:
+            # If the file isn't of type image than we expect it to be of type yml (unified integration file)
             data_dictionary = get_yaml(self.file_path)
 
             if not data_dictionary:
+                print_error("{} isn't an image file or unified integration file.".format(self.file_path))
                 self._is_valid = False
                 return False
 
             image = data_dictionary.get('image', '')
 
             if not image:
+                print_error("{} is a yml file but has no image field.".format(self.file_path))
                 self._is_valid = False
                 return False
 
@@ -130,5 +134,6 @@ class ImageValidator(object):
                 else:
                     return True
             else:
+                print_error("{}'s image field isn't in base64 encoding.".format(self.file_path))
                 self._is_valid = False
                 return False
