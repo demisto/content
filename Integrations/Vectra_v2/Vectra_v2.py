@@ -135,7 +135,7 @@ class Client:
 
         query_string = f' and detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
-        query_string += f' and detection.last_timestamp:>={last_timestamp}'
+        query_string += f' and detection.last_timestamp:>{last_timestamp}'
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
         params = {
             'query_string': query_string,
