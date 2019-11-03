@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.9.0] - 2019-09-04
   - Added an error messages when a results does not return results. Previously, an error was returned.
   - Added proxy support.
 
