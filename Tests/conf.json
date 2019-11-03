@@ -1910,6 +1910,7 @@
         }
     ],
     "skipped_tests": {
+        "NetWitness Endpoint Test": "Issue 19878",
         "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
