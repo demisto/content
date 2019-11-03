@@ -167,10 +167,10 @@ def search_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     ip = args.get('ip')
     try:
-        threshold = int(args.get('threshold'))
+        threshold: Union[int, None] = int(args.get('threshold'))  # type: ignore
     except TypeError:
         threshold = None
-    raw_response = client.get_ip(ip)
+    raw_response = client.get_ip(ip)  # type: ignore
     results = raw_response.get('result')
     if results:
         result = results[0]
@@ -202,7 +202,7 @@ def search_url_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     url = args.get('url', '')
     try:
-        threshold = int(args.get('threshold'))
+        threshold: Union[int, None] = int(args.get('threshold', 0))
     except TypeError:
         threshold = None
     raw_response = client.get_url(url)
@@ -237,7 +237,7 @@ def search_file_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     file_hash = args.get('file', '')
     try:
-        threshold = int(args.get('threshold'))
+        threshold: Union[int, None] = int(args.get('threshold', 0))
     except TypeError:
         threshold = None
     raw_response = client.search_file(file_hash)
