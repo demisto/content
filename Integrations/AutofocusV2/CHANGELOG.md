@@ -1,6 +1,20 @@
 ## [Unreleased]
 
 
+## [19.10.0] - 2019-10-03
+  - Improved handling of empty responses for the  ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
+
+
+## [19.9.1] - 2019-09-18
+Added several arguments to the ***autofocus-samples-search*** and ***autofocus-sessions-search*** commands.
+  - *file_hash*
+  - *domain*
+  - *ip*
+  - *url*
+  - *wildfire_verdict*
+  - *first_seen*
+  - *last_updated*
+
 ## [19.9.0] - 2019-09-04
   - Updated Palo Alto Networks AutoFocus V2 Indicators context outputs to support version 5.0.
 

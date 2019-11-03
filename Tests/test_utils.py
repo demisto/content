@@ -6,6 +6,7 @@ import json
 import requests
 import argparse
 from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
@@ -43,7 +44,7 @@ def run_command(command, is_silenced=True, exit_on_error=True):
         string. The output of the command you are trying to execute.
     """
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
     else:
         p = Popen(command.split())
 
@@ -132,7 +133,7 @@ def get_last_release_version():
     """
     tags = run_command('git tag').split('\n')
     tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
-    tags.sort(cmp=server_version_compare, reverse=True)
+    tags.sort(key=LooseVersion, reverse=True)
 
     return tags[0]
 
