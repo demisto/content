@@ -12,6 +12,13 @@ urllib3.disable_warnings()
 # CONSTANTS #
 MAX_FETCH_SIZE = 50
 DATE_FORMAT = "%Y-%m-%dT%H%M"  # 2019-09-01T1012
+PARAMS_KEYS = {
+    "threat_score": "t_score",
+    "threat_score_gte": "t_score_gte",
+    "certainty_score": "c_score",
+    "certainty_score_gte": "c_score_gte",
+    "destination_port": "dst_port"
+}
 
 
 # HELPER FUNCTIONS #
@@ -37,9 +44,26 @@ def calc_pages(total_count: int, this_count: int):
     return -(-total_count // this_count)  # minus minus so the floor will become ceiling
 
 
+def max_timestamp(timestamp1: str, timestamp2: str) -> str:
+    """
+    returns the older timestamp
+    """
+    date1 = parse_date_string(timestamp1, date_format=DATE_FORMAT)
+    date2 = parse_date_string(timestamp2, date_format=DATE_FORMAT)
+
+    return timestamp1 if date1 > date2 else timestamp2
+
+
+def update_vectra_params(kwargs: dict) -> dict:
+    """
+    updates keys to match Vectra's syntax
+    """
+    return {PARAMS_KEYS.get(key, key): value for key, value in kwargs.items()}
+
+
 class Client:
     def __init__(self, vectra_url: str, api_token: str, verify: bool, proxy: dict, fetch_size: int,
-                 first_fetch: int, t_score_gte: int, c_score_gte: int, state: str):
+                 first_fetch: str, t_score_gte: int, c_score_gte: int, state: str):
         """
         :param vectra_url: IP or hostname of Vectra brain (ex https://www.example.com) - required
         :param api_token: API token for authentication when using API v2*
@@ -107,13 +131,11 @@ class Client:
 
         :param last_run: Integration's last run
         """
-        # get the lower boundary on IDs to fetch
-        last_id = int(last_run.get('id')) if last_run and 'id' in last_run else 1  # type: ignore
+        last_timestamp: str = last_run.get('last_timestamp', self.first_fetch)  # type: ignore
 
-        query_string = f'detection.id:>={last_id}'
-        query_string += f' and detection.threat:>={self.t_score_gte}'
+        query_string = f' and detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
-        query_string += f' and detection.last_timestamp:>={self.first_fetch}'
+        query_string += f' and detection.last_timestamp:>={last_timestamp}'
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
         params = {
             'query_string': query_string,
@@ -132,10 +154,10 @@ class Client:
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
-                    last_id = max(last_id, int(detection.get('id', 0)))  # update last fetched id
+                    last_timestamp = max_timestamp(last_timestamp, detection.get('last_timestamp'))  # type: ignore
 
                 if incidents:
-                    last_run = {'id': last_id + 1 if last_id > 0 else 1}
+                    last_run = {'last_timestamp': last_timestamp}
 
             except ValueError:
                 raise
@@ -159,16 +181,16 @@ def get_detections_command(client: Client, **kwargs):
     :keyword type_vname: Filter by the detection type (verbose name)
     :keyword category: Filter by the detection category
     :keyword src_ip: Filter by source (ip address)
-    :keyword t_score: Filter by threat score
-    :keyword t_score_gte: Filter by threat score >= the score provided
-    :keyword c_score: Filter by certainty score
-    :keyword c_score_gte: Filter by certainty score >= the score provided
+    :keyword threat_score: Filter by threat score
+    :keyword threat_score_gte: Filter by threat score >= the score provided
+    :keyword certainty_score: Filter by certainty score
+    :keyword certainty_score_gte: Filter by certainty score >= the score provided
     :keyword last_timestamp: Filter by last timestamp
     :keyword host_id: Filter by id of the host object a detection is attributed to
     :keyword tags: Filter by a tag or a comma-separated list of tags
     :keyword destination: Filter by destination in the detection detail set
     :keyword proto: Filter by the protocol in the detection detail set
-    :keyword dst_port: Filter by the destination port in the detection detail set
+    :keyword destination_port: Filter by the destination port in the detection detail set
     :keyword inbound_ip: Filter by the inbound_ip in the relayed comm set
     :keyword inbound_proto: Filter by the inbound_proto in the relayed comm set
     :keyword inbound_port: Filter by the inbound_port in the relayed comm set
@@ -182,7 +204,7 @@ def get_detections_command(client: Client, **kwargs):
     :keyword resp_code: Filter by the resp_code in the dns_set
     :keyword resp: Filter by the resp in the dns_set
     """
-    raw_response = client.http_request(params=kwargs, url_suffix='detections')
+    raw_response = client.http_request(params=update_vectra_params(kwargs), url_suffix='detections')
     count = raw_response.get('count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
@@ -260,16 +282,16 @@ def get_hosts_command(client: Client, **kwargs):
     :keyword name: Filter by name
     :keyword state: Filter by state: active, inactive, suspended, ignored, ignored4all
     :keyword last_source: Filter by last_source (ip address)
-    :keyword t_score: Filter by threat score
-    :keyword t_score_gte: Filter by threat score >= the score provided
-    :keyword c_score: Filter by certainty score
-    :keyword c_score_gte: Filter by certainty score >= the score provided
+    :keyword threat_score: Filter by threat score
+    :keyword threat_score_gte: Filter by threat score >= the score provided
+    :keyword certainty_score: Filter by certainty score
+    :keyword certainty_score_gte: Filter by certainty score >= the score provided
     :keyword last_detection_timestamp: Filter by last_detection_timestamp
     :keyword tags: comma-separated list of tags, e.g., tags=baz | tags=foo,bar"
     :keyword key_assest: Filter by key asset: True, False
     :keyword mac_address: Filter by mac address
     """
-    raw_response = client.http_request(params=kwargs, url_suffix='hosts')
+    raw_response = client.http_request(params=update_vectra_params(kwargs), url_suffix='hosts')
     count = raw_response.get('count')
     if count == 0:
         return "Couldn't find any results", {}, raw_response
