@@ -32,7 +32,7 @@ def get_base_branch(pr_num) -> str:
             base_branch = base.get('ref')
             if base_branch:
                 return base_branch
-    except requests.exceptions.ConnectionError as exc:
+    except requests.exceptions.ConnectionError:
         # If we didn't succeed to fetch the pr maybe it doesn't exist - then we don't want the build to fail
         print_warning(f'Unable to fetch PR num {pr_num}')
         return ''
