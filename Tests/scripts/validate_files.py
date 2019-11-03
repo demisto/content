@@ -493,7 +493,7 @@ def main():
     if options.test_filter:
         try:
             print_warning('Updating idset. Be patient if this is the first time...')
-            subprocess.check_output(['./Tests/scripts/update_id_set.py'])
+            subprocess.check_output(['python2', './Tests/scripts/update_id_set.py'])
             print_warning('Checking that we have tests for all content...')
             try:
                 tests_out = subprocess.check_output(['./Tests/scripts/configure_tests.py', '-s', 'true'],
