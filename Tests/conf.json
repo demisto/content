@@ -823,11 +823,6 @@
             "playbookID": "email_test"
         },
         {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "domain_enrichment_generic_test"
-        },
-        {
             "integrations": "PostgreSQL",
             "playbookID": "PostgreSQL Test"
         },
@@ -1914,7 +1909,6 @@
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
         "Forescout-Test": "issue 17016",
-        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
