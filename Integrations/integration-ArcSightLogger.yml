@@ -551,7 +551,7 @@ script:
                 if (entry.length == keys.length){
                     var newEntry = {};
                     for (var i = 0; i<  entry.length; i++){
-                        if (isDateField[i]){
+                        if (isDateField[i] && !isNaN(entry[i])) {
                             var dateEntry = new Date(0);
                             dateEntry.setUTCSeconds(parseInt(entry[i]) / 1000);
                             entry[i] = dateEntry.toISOString();
