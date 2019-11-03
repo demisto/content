@@ -13,7 +13,7 @@ good_response = {
 }
 
 
-def check_base_branch_test(requests_mock):
+def test_check_base_branch(requests_mock):
     from Tests.scripts.check_base_branch_for_external_pr import check_base_branch
     url = 'https://api.github.com/repos/demisto/content/pulls/528'
     requests_mock.get(url, json=bad_response)
