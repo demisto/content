@@ -6,7 +6,7 @@ Vectra is a detection product that alerts on suspicious network behavior. It can
 Vectra API is available for administrators and developers to integrate Vectra's breach detection data into their applications. Vectra provides access to security event data, platform configuration, and health information via URI paths.
 
 <li>Tested with API version 2.1. </li>
-<li>c_score and t_score to fields changed to certainty and threat accordingly</li>
+<li>c_score and t_score fields changed to certainty and threat accordingly</li>
 </ul><h2>Fetch Incidents</h2>
 <p>You can Fetch only Detections with Greater/Equal Certainty score and Threat score</p>
 <h2>Configure Vectra v2 on Demisto</h2>
@@ -131,22 +131,22 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td>Optional</td>
     </tr>
     <tr>
-      <td>t_score</td>
+      <td>threat_score</td>
       <td>filter by threat score</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>t_score_gte</td>
+      <td>threat_score_gte</td>
       <td>filter by threat score >= the score provided</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>c_score</td>
+      <td>certainty_score</td>
       <td>filter by certainty score</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>c_score_gte</td>
+      <td>certainty_score_gte</td>
       <td>filter by certainty score >= the score provided</td>
       <td>Optional</td>
     </tr>
@@ -176,7 +176,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td>Optional</td>
     </tr>
     <tr>
-      <td>dst_port</td>
+      <td>destination_port</td>
       <td>filter by the destination port in the detection detail set</td>
       <td>Optional</td>
     </tr>
@@ -316,7 +316,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!vectra-get-detections c_score_gte=20</code>
+  <code>!vectra-get-detections certainty_score_gte=20</code>
 </p>
 <h5>Context Example</h5>
 <pre>
@@ -500,22 +500,22 @@ Vectra API is available for administrators and developers to integrate Vectra's 
       <td>Optional</td>
     </tr>
     <tr>
-      <td>t_score</td>
+      <td>threat_score</td>
       <td>filter by threat score</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>t_score_gte</td>
+      <td>threat_score_gte</td>
       <td>filter by threat score >= the score provided</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>c_score</td>
+      <td>certainty_score</td>
       <td>filter by certainty score</td>
       <td>Optional</td>
     </tr>
     <tr>
-      <td>c_score_gte</td>
+      <td>certainty_score_gte</td>
       <td>filter by certainty score >= the score provided</td>
       <td>Optional</td>
     </tr>
@@ -615,7 +615,7 @@ Vectra API is available for administrators and developers to integrate Vectra's 
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
-  <code>!vectra-get-hosts t_score_gte=20 </code>
+  <code>!vectra-get-hosts threat_score_gte=20 </code>
 </p>
 <h5>Context Example</h5>
 <pre>

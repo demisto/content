@@ -103,13 +103,13 @@ script:
       description: filter by the detection category
     - name: src_ip
       description: filter by source (ip address)
-    - name: t_score
+    - name: threat_score
       description: filter by threat score
-    - name: t_score_gte
+    - name: threat_score_gte
       description: filter by threat score >= the score provided
-    - name: c_score
+    - name: certainty_score
       description: filter by certainty score
-    - name: c_score_gte
+    - name: certainty_score_gte
       description: filter by certainty score >= the score provided
     - name: last_timestamp
       description: filter by last timestamp
@@ -121,7 +121,7 @@ script:
       description: filter by destination in the detection detail set
     - name: proto
       description: filter by the protocol in the detection detail set
-    - name: dst_port
+    - name: destination_port
       description: filter by the destination port in the detection detail set
     - name: inbound_ip
       description: filter by the inbound_ip in the relayed comm set
@@ -205,13 +205,13 @@ script:
         - ignored for all
     - name: last_source
       description: filter by last_source (ip address)
-    - name: t_score
+    - name: threat_score
       description: filter by threat score
-    - name: t_score_gte
+    - name: threat_score_gte
       description: filter by threat score >= the score provided
-    - name: c_score
+    - name: certainty_score
       description: filter by certainty score
-    - name: c_score_gte
+    - name: certainty_score_gte
       description: filter by certainty score >= the score provided
     - name: last_detection_timestamp
       description: filter by last_detection_timestamp
