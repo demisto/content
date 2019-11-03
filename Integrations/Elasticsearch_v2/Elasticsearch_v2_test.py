@@ -399,7 +399,7 @@ def test_timestamp_to_date_converter_milliseconds():
 @patch("Elasticsearch_v2.FETCH_INDEX", "customer")
 def test_incident_creation_with_timestamp_e7():
     from Elasticsearch_v2 import results_to_incidents_timestamp
-    last_fetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
-    incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, last_fetch)
+    lastfetch = int(datetime.strptime('2019-08-27T17:59:00Z', '%Y-%m-%dT%H:%M:%SZ').timestamp())
+    incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
