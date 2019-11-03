@@ -90,6 +90,18 @@ jobs:
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
+          name: Check Base Branch for External PR
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python3 ./Tests/scripts/check_base_branch_for_external_pr.py $CIRCLE_BRANCH
+            
+              else
+                echo "Skipping base branch test for internal PRs"
+                exit 0
+            fi
+      - run:
           name: Download Artifacts
           when: always
           command: |
