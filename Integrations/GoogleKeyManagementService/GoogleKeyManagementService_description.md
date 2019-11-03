@@ -23,9 +23,4 @@ Get a Service Account and select a Role:
 7) Click CONTINUE and then CREATE KEY.
 8) Choose JSON and click CREATE and a .json file will download.
 9) Enter this file contents to the Service Account box in the integration.
-10) In the integration Select the Roles in accordance with your Service Account Roles:
-    1) Project-Admin - To allow the use of all commands.
-    2) KMS-Admin - To allow the edit and creation commands.
-    3) Encrypter, Decrypter, Encrypter/Decrypter - will allow the respective encrypt or decrypt commands.
-
 
