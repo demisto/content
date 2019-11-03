@@ -2758,9 +2758,7 @@ script:
         var numericOperator = dataArgs.numericOperator;
         var dateOperator = dataArgs.dateOperator;
 
-        var fieldsToDisplayJSON = JSON.parse(fieldsToDisplay);
-        var fieldsToDisplayKeys = Object.keys(fieldsToDisplayJSON);
-        logDebug("App ID is: {0}, \n Fields To Display keys are: {1}, \n Fields to search on is: {2}, \n Search value is: {3}".format(appId, fieldsToDisplayKeys.toString(), fieldToSearchOn, searchValue));
+        logDebug("App ID is: {0}, \n Search value is: {1}".format(appId, searchValue));
 
         var isDescending = dataArgs.isDescending === 'true';
         var pageNumber = dataArgs.pageNumber || '1';
@@ -2805,7 +2803,7 @@ script:
                 }
             });
         }
-
+        logDebug("Fields to display is: {0}".format(fieldsToDisplay))
         var fieldIdToSearchOn;
         var fieldNameToSearchOn;
         if (fieldToSearchOn && searchValue) { // the user entered search parameters
@@ -2819,7 +2817,8 @@ script:
             var day = 60 * 1000 * 60 * 24;
             searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
         }
-
+        logDebug("Field name to search on is: {0}".format(fieldToSearchOn))
+        logDebug("Fields to search on is: {0}".format(fieldsToDisplay))
         var rawResponse = searchSendSoapRequest(
             command,
             appId,
