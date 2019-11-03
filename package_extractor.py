@@ -62,6 +62,20 @@ def extract_image(yml_path, output_path, yml_type=None):
     return 0
 
 
+def extract_long_description(yml_path, output_path, yml_type=None):
+    yml_type = get_yml_type(yml_path, yml_type)
+    if yml_type == SCRIPT:
+        return  # no long description in script type
+    with open(yml_path, 'rb') as yml_file:
+        yml_data = yaml.safe_load(yml_file)
+        long_description = yml_data.get('detaileddescription')
+    if long_description:
+        print("Extracting long description to: {} ...".format(output_path))
+        with open(output_path, 'w', encoding='utf-8') as desc_file:
+            desc_file.write(long_description)
+    return 0
+
+
 def str2bool(val):
     return val.lower() in {'yes', 'true', 't', '1', 'y'}
 
@@ -83,6 +97,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     code_file = "{}/{}.py".format(output_path, base_name)
     extract_code(yml_path, code_file, demisto_mock, commonserver, yml_type)
     extract_image(yml_path, "{}/{}_image.png".format(output_path, base_name), yml_type)
+    extract_long_description(yml_path, "{}/{}_description.md".format(output_path, base_name), yml_type)
     yaml_out = "{}/{}.yml".format(output_path, base_name)
     print("Creating yml file: {} ...".format(yaml_out))
     ryaml = YAML()
@@ -93,6 +108,8 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
     if yml_type == INTEGRATION:
         script_obj = yaml_obj['script']
         del yaml_obj['image']
+        if 'detaileddescription' in yaml_obj:
+            del yaml_obj['detaileddescription']
     if script_obj['type'] != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_obj['type']))
         return 1
@@ -152,7 +169,7 @@ def migrate(yml_path, output_path, demisto_mock, commonserver=None, yml_type=Non
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Extract code file from a demmisto integration or script yaml file',
+    parser = argparse.ArgumentParser(description='Extract code file from a demisto integration or script yaml file',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument("-i", "--infile", help="The yml file to extract from", required=True)
     parser.add_argument("-o", "--outfile", help="The output file or dir (if doing migrate) to write the code to", required=True)

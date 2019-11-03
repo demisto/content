@@ -1,0 +1,292 @@
+category: Database
+commonfields:
+  id: Elasticsearch v2
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Username for server login
+  name: credentials
+  required: false
+  type: 9
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Index from which to fetch incidents (CSV)
+  name: fetch_index
+  required: false
+  type: 0
+- display: Query by which to fetch incidents (Lucene syntax)
+  name: fetch_query
+  required: false
+  type: 0
+- display: Index time field (for sorting sort and limiting data)
+  name: fetch_time_field
+  required: false
+  type: 0
+- defaultvalue: '%Y-%m-%dT%H:%M:%SZ'
+  display: Time format as kept in Elasticsearch
+  name: fetch_time_format
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: The number of results returned in each fetch
+  name: fetch_size
+  required: false
+  type: 0
+description: "Search & Analyze Data in Real Time. \n Supports version 6 and up."
+display: Elasticsearch v2
+name: Elasticsearch v2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The index in which to perform a search.
+      isArray: false
+      name: index
+      required: true
+      secret: false
+    - default: false
+      description: The string to query. Strings are queried using the Lucene syntax.
+      isArray: false
+      name: query
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of the fields of a document to fetch. Leaving the fields
+        empty fetches the entire document.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
+      isArray: false
+      name: explain
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The number of the page from which to start a search. The default
+        is "0".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The number of documents displayed per page. Can be "1" to "10,000".
+        The default is "100".
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      isArray: false
+      name: sort-field
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
+      isArray: false
+      name: sort-order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Queries an index.
+    execution: false
+    name: es-search
+    outputs:
+    - contextPath: Elasticsearch.Search.Results._index
+      description: The index to which the document belongs.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._id
+      description: The ID of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._type
+      description: The mapping type of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.max_score
+      description: The maximum relevance score of a query.
+      type: Number
+    - contextPath: Elasticsearch.Search.Query
+      description: The query performed in the search.
+      type: String
+    - contextPath: Elasticsearch.Search.total.value
+      description: The number of search results.
+      type: Number
+    - contextPath: Elasticsearch.Search.Results._score
+      description: The relevance score of the search result.
+      type: Number
+    - contextPath: Elasticsearch.Search.Index
+      description: The index in which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.Server
+      description: The server on which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.timed_out
+      description: Whether the search stopped due to a time-out.
+      type: Boolean
+    - contextPath: Elasticsearch.Search.took
+      description: The time in milliseconds taken for the search to complete.
+      type: Number
+    - contextPath: Elasticsearch.Search.Page
+      description: The number of the page from which the search started.
+      type: Number
+    - contextPath: Elasticsearch.Search.Size
+      description: The maximum amount of scores that a search can return.
+      type: Number
+  - arguments:
+    - default: false
+      description: The index in which to perform a search.
+      isArray: false
+      name: index
+      required: true
+      secret: false
+    - default: false
+      description: The string to query. Strings are queried using the Lucene syntax.
+      isArray: false
+      name: query
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: A CSV list of the fields of a document to fetch. Leaving the fields
+        empty fetches the entire document.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Calculates an explanation of a score for a query. Default is "false".
+        For example, "value:1.6943597".
+      isArray: false
+      name: explain
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The number of the page from which to start a search. The default
+        is "0".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: The number of documents displayed per page. Can be "1" to "10,000".
+        The default is "100".
+      isArray: false
+      name: size
+      required: false
+      secret: false
+    - default: false
+      description: The field by which to sort the results table. The supported result
+        types are boolean, numeric, date, and keyword fields. Keyword fields require
+        the doc_values parameter to be set to "true" from the Elasticsearch server.
+      isArray: false
+      name: sort-field
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The order by which to sort the results table. The results tables
+        can only be sorted if a sort-field is defined.
+      isArray: false
+      name: sort-order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches an index.
+    execution: false
+    name: search
+    outputs:
+    - contextPath: Elasticsearch.Search.Results._index
+      description: The index to which the document belongs.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._id
+      description: The ID of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.Results._type
+      description: The mapping type of the document.
+      type: String
+    - contextPath: Elasticsearch.Search.max_score
+      description: The maximum relevance score of a query.
+      type: Number
+    - contextPath: Elasticsearch.Search.Query
+      description: The query performed in the search.
+      type: String
+    - contextPath: Elasticsearch.Search.total.value
+      description: The number of search results.
+      type: Number
+    - contextPath: Elasticsearch.Search.Results._score
+      description: The relevance score of the search result.
+      type: Number
+    - contextPath: Elasticsearch.Search.Index
+      description: The index in which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.Server
+      description: The server on which the search was performed.
+      type: String
+    - contextPath: Elasticsearch.Search.timed_out
+      description: Whether the search stopped due to a time-out.
+      type: Boolean
+    - contextPath: Elasticsearch.Search.took
+      description: The time in milliseconds taken for the search to complete.
+      type: Number
+    - contextPath: Elasticsearch.Search.Page
+      description: The number of the page from which the search started.
+      type: Number
+    - contextPath: Elasticsearch.Search.Size
+      description: The maximum amount of scores that a search can return.
+      type: Number
+  dockerimage: demisto/elasticsearch:1.0.0.1795
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3

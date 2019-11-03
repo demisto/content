@@ -12,9 +12,18 @@ from distutils.util import strtobool
 import sys
 from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
-
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.header import Header
+import mimetypes
+import random
+import string
 from apiclient import discovery
 from oauth2client import service_account
+import itertools as it
 
 
 ''' GLOBAL VARS '''
@@ -24,7 +33,7 @@ GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
 PROXY = demisto.params().get('proxy')
 DISABLE_SSL = demisto.params().get('insecure', False)
-
+FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 
 ''' HELPER FUNCTIONS '''
 
@@ -149,12 +158,51 @@ def parse_mail_parts(parts):
                 body += text
 
         else:
-            attachments.append({
-                'ID': part['body']['attachmentId'],
-                'Name': part['filename']
-            })
+            if part['body'].get('attachmentId') is not None:
+                attachments.append({
+                    'ID': part['body']['attachmentId'],
+                    'Name': part['filename']
+                })
 
     return body, html, attachments
+
+
+def localization_extract(time_from_mail):
+    if time_from_mail is None or len(time_from_mail) < 5:
+        return '-0000', 0
+
+    utc = time_from_mail[-5:]
+    if utc[0] != '-' and utc[0] != '+':
+        return '-0000', 0
+
+    for ch in utc[1:]:
+        if not ch.isdigit():
+            return '-0000', 0
+
+    delta_in_seconds = int(utc[0] + utc[1:3]) * 3600 + int(utc[0] + utc[3:]) * 60
+    return utc, delta_in_seconds
+
+
+def create_base_time(internal_date_timestamp, header_date):
+    """
+    Args:
+        internal_date_timestamp: The timestamp from the Gmail API response.
+        header_date: The date string from the email payload.
+
+    Returns: A date string in the senders local time in the format of "Mon, 26 Aug 2019 14:40:04 +0300"
+
+    """
+    # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
+    # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
+    timestamp_len = len(str(int(time.time())))
+    if len(str(internal_date_timestamp)) > timestamp_len:
+        internal_date_timestamp = int(str(internal_date_timestamp)[:timestamp_len])
+
+    utc, delta_in_seconds = localization_extract(header_date)
+    base_time = datetime.utcfromtimestamp(internal_date_timestamp) + \
+        timedelta(seconds=delta_in_seconds)
+    base_time = str(base_time.strftime('%a, %d %b %Y %H:%M:%S')) + " " + utc
+    return base_time
 
 
 def get_email_context(email_data, mailbox):
@@ -165,13 +213,22 @@ def get_email_context(email_data, mailbox):
     body = demisto.get(email_data, 'payload.body.data')
     body = body.encode('ascii') if body is not None else ''
     parsed_body = base64.urlsafe_b64decode(body)
+    if email_data.get('internalDate') is not None:
+        base_time = create_base_time(email_data.get('internalDate'), str(headers.get('date', '')))
 
-    context = {
+    else:
+        # in case no internalDate field exists will revert to extracting the date from the email payload itself
+        # Note: this should not happen in any command other than other than gmail-move-mail which doesn't return the
+        # email payload nor internalDate
+        demisto.info("No InternalDate timestamp found - getting Date from mail payload - msg ID:" + str(email_data['id']))
+        base_time = str(headers.get('date', ''))
+
+    context_gmail = {
         'Type': 'Gmail',
         'Mailbox': ADMIN_EMAIL if mailbox == 'me' else mailbox,
-        'ID': email_data['id'],
-        'ThreadId': email_data['threadId'],
-        'Labels': ', '.join(email_data['labelIds']),
+        'ID': email_data.get('id'),
+        'ThreadId': email_data.get('threadId'),
+        'Labels': ', '.join(email_data.get('labelIds', [])),
         'Headers': context_headers,
         'Attachments': email_data.get('payload', {}).get('filename', ''),
         # only for format 'raw'
@@ -187,32 +244,57 @@ def get_email_context(email_data, mailbox):
         # only for incident
         'Cc': headers.get('cc', []),
         'Bcc': headers.get('bcc', []),
-        'Date': headers.get('date', ''),
+        'Date': base_time,
         'Html': None,
     }
 
-    if 'text/html' in context['Format']:  # type: ignore
-        context['Html'] = context['Body']
-        context['Body'] = html_to_text(context['Body'])
+    context_email = {
+        'ID': email_data.get('id'),
+        'Headers': context_headers,
+        'Attachments': {'entryID': email_data.get('payload', {}).get('filename', '')},
+        # only for format 'raw'
+        'RawData': email_data.get('raw'),
+        # only for format 'full' and 'metadata'
+        'Format': headers.get('content-type', '').split(';')[0],
+        'Subject': headers.get('subject'),
+        'From': headers.get('from'),
+        'To': headers.get('to'),
+        # only for format 'full'
+        'Body/Text': unicode(parsed_body, 'utf-8'),
 
-    if 'multipart' in context['Format']:  # type: ignore
-        context['Body'], context['Html'], context['Attachments'] = parse_mail_parts(
+        'CC': headers.get('cc', []),
+        'BCC': headers.get('bcc', []),
+        'Date': base_time,
+        'Body/HTML': None,
+    }
+
+    if 'text/html' in context_gmail['Format']:  # type: ignore
+        context_gmail['Html'] = context_gmail['Body']
+        context_gmail['Body'] = html_to_text(context_gmail['Body'])
+        context_email['Body/HTML'] = context_gmail['Html']
+        context_email['Body/Text'] = context_gmail['Body']
+
+    if 'multipart' in context_gmail['Format']:  # type: ignore
+        context_gmail['Body'], context_gmail['Html'], context_gmail['Attachments'] = parse_mail_parts(
             email_data.get('payload', {}).get('parts', []))
-        context['Attachment Names'] = ', '.join(
-            [attachment['Name'] for attachment in context['Attachments']])  # type: ignore
+        context_gmail['Attachment Names'] = ', '.join(
+            [attachment['Name'] for attachment in context_gmail['Attachments']])  # type: ignore
+        context_email['Body/Text'], context_email['Body/HTML'], context_email['Attachments'] = parse_mail_parts(
+            email_data.get('payload', {}).get('parts', []))
+        context_email['Attachment Names'] = ', '.join(
+            [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-    return context, headers
+    return context_gmail, headers, context_email
 
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 
 
-def parse_time(t):
+def move_to_gmt(t):
     # there is only one time refernce is the string
     base_time, _, sign, hours, minutes = TIME_REGEX.findall(t)[0]
-
     if all([sign, hours, minutes]):
-        seconds = int(sign + hours) * 3600 + int(sign + minutes) * 60
+        seconds = -1 * (int(sign + hours) * 3600 + int(sign + minutes) * 60)
         parsed_time = datetime.strptime(
             base_time, '%a, %d %b %Y %H:%M:%S') + timedelta(seconds=seconds)
         return parsed_time.isoformat() + 'Z'
@@ -241,10 +323,12 @@ def create_incident_labels(parsed_msg, headers):
 
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
+    gmail_emails = []
     emails = []
     for email_data in raw_emails:
-        context, _ = get_email_context(email_data, mailbox)
-        emails.append(context)
+        context_gmail, _, context_email = get_email_context(email_data, mailbox)
+        gmail_emails.append(context_gmail)
+        emails.append(context_email)
 
     headers = {
         'minimal': ['Mailbox', 'ID', 'Labels', 'Attachment Names', ],
@@ -256,15 +340,18 @@ def emails_to_entry(title, raw_emails, format_data, mailbox):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': emails,
+        'Contents': raw_emails,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, emails, headers[format_data]),
-        'EntryContext': {'Gmail(val.ID && val.ID == obj.ID)': emails}
+        'HumanReadable': tableToMarkdown(title, gmail_emails, headers[format_data], removeNull=True),
+        'EntryContext': {
+            'Gmail(val.ID && val.ID == obj.ID)': gmail_emails,
+            'Email(val.ID && val.ID == obj.ID)': emails
+        }
     }
 
 
 def mail_to_incident(msg, service, user_key):
-    parsed_msg, headers = get_email_context(msg, user_key)
+    parsed_msg, headers, _ = get_email_context(msg, user_key)
 
     file_names = []
     command_args = {
@@ -289,43 +376,129 @@ def mail_to_incident(msg, service, user_key):
             'path': file_result['FileID'],
             'name': attachment['Name'],
         })
+    # date in the incident itself is set to GMT time, the correction to local time is done in Demisto
+    gmt_time = move_to_gmt(parsed_msg['Date'])
 
-    return {
+    incident = {
         'type': 'Gmail',
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
-        'occurred': parse_time(parsed_msg['Date']),
+        'occurred': gmt_time,
         'attachment': file_names,
         'rawJSON': json.dumps(parsed_msg),
     }
+    return incident
 
 
-def users_to_entry(title, response):
+def organization_format(org_list):
+    if org_list:
+        return ','.join(str(org.get('name')) for org in org_list if org.get('name'))
+    else:
+        return None
+
+
+def users_to_entry(title, response, next_page_token=None):
     context = []
+
     for user_data in response:
+        username = user_data.get('name').get('givenName') if user_data.get('name') \
+            and 'givenName' in user_data.get('name') else None
+
+        display = user_data.get('name').get('fullName') if user_data.get('name') \
+            and 'fullName' in user_data.get('name') else None
+
         context.append({
             'Type': 'Google',
             'ID': user_data.get('id'),
-            'UserName': (user_data.get('name').get('givenName')
-                         if user_data.get('name') and 'givenName' in user_data.get('name') else None),
-            'DisplayName': (user_data.get('name').get('fullName')
-                            if user_data.get('name') and 'fullName' in user_data.get('name') else None),
+            'UserName': username,
+            'Username': username,  # adding to fit the new context standard
+            'DisplayName': display,
             'Email': {'Address': user_data.get('primaryEmail')},
             'Gmail': {'Address': user_data.get('primaryEmail')},
             'Group': user_data.get('kind'),
+            'Groups': user_data.get('kind'),  # adding to fit the new context standard
             'CustomerId': user_data.get('customerId'),
+            'Domain': user_data.get('primaryEmail').split('@')[1],
+            'VisibleInDirectory': user_data.get('includeInGlobalAddressList'),
+
         })
-    headers = ['Type', 'ID', 'UserName',
-               'DisplayName', 'Email', 'Group', 'CustomerId']
+    headers = ['Type', 'ID', 'Username',
+               'DisplayName', 'Groups', 'CustomerId', 'Domain', 'OrganizationUnit', 'Email', 'VisibleInDirectory']
+
+    human_readable = tableToMarkdown(title, context, headers, removeNull=True)
+
+    if next_page_token:
+        human_readable += "\nTo get further results, rerun the command with this page-token:\n" + next_page_token
 
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': context,
+        'Contents': response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': human_readable,
         'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
+
+
+def autoreply_to_entry(title, response, user_id):
+    autoreply_context = []
+    for autoreply_data in response:
+        autoreply_context.append({
+            'EnableAutoReply': autoreply_data.get('enableAutoReply'),
+            'ResponseBody': autoreply_data.get('responseBodyPlainText'),
+            'ResponseSubject': autoreply_data.get('responseSubject'),
+            'RestrictToContact': autoreply_data.get('restrictToContacts'),
+            'RestrictToDomain': autoreply_data.get('restrictToDomain'),
+
+        })
+    headers = ['EnableAutoReply', 'ResponseBody',
+               'ResponseSubject', 'RestrictToContact', 'RestrictToDomain']
+
+    account_context = {
+        "Address": user_id,
+        "AutoReply": autoreply_context
+    }
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': autoreply_context,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, autoreply_context, headers, removeNull=True),
+        'EntryContext': {
+            'Account.Gmail(val.Address == obj.Address)': account_context
+        }
+    }
+
+
+def sent_mail_to_entry(title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
+    gmail_context = []
+    for mail_results_data in response:
+        gmail_context.append({
+            'Type': "Gmail",
+            'ID': mail_results_data.get('id'),
+            'Labels': mail_results_data.get('labelIds', []),
+            'ThreadId': mail_results_data.get('threadId'),
+            'To': ','.join(to),
+            'From': emailfrom,
+            'Cc': ','.join(cc) if len(cc) > 0 else None,
+            'Bcc': ','.join(bcc) if len(bcc) > 0 else None,
+            'Subject': subject,
+            'Body': body,
+            'Mailbox': ','.join(to)
+        })
+
+    headers = ['Type', 'ID', 'To', 'From', 'Cc', 'Bcc', 'Subject', 'Body', 'Labels',
+               'ThreadId']
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, gmail_context, headers, removeNull=True),
+        'EntryContext': {'Gmail.SentMail(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': gmail_context}
     }
 
 
@@ -348,7 +521,7 @@ def roles_to_entry(title, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'Gmail.Role(val.ID && val.ID == obj.ID)': context}
     }
 
@@ -371,7 +544,7 @@ def tokens_to_entry(title, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'Tokens(val.ClientId && val.ClientId == obj.ClientId)': context}
     }
 
@@ -393,7 +566,7 @@ def filters_to_entry(title, mailbox, response):
         'Type': entryTypes['note'],
         'Contents': context,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, context, headers),
+        'HumanReadable': tableToMarkdown(title, context, headers, removeNull=True),
         'EntryContext': {'GmailFilter(val.ID && val.ID == obj.ID)': context}
     }
 
@@ -414,14 +587,15 @@ def list_users_command():
     projection = args.get('projection', 'basic')
     custom_field_mask = args.get(
         'custom_field_mask') if projection == 'custom' else None
+    page_token = args.get('page-token')
 
-    users = list_users(domain, customer, event, query, sort_order, view_type,
-                       show_deleted, max_results, projection, custom_field_mask)
-    return users_to_entry('Users:', users)
+    users, next_page_token = list_users(domain, customer, event, query, sort_order, view_type,
+                                        show_deleted, max_results, projection, custom_field_mask, page_token)
+    return users_to_entry('Users:', users, next_page_token)
 
 
 def list_users(domain, customer=None, event=None, query=None, sort_order=None, view_type='admin_view',
-               show_deleted=False, max_results=100, projection='basic', custom_field_mask=None):
+               show_deleted=False, max_results=100, projection='basic', custom_field_mask=None, page_token=None):
     command_args = {
         'domain': domain,
         'customer': customer,
@@ -432,6 +606,7 @@ def list_users(domain, customer=None, event=None, query=None, sort_order=None, v
         'projection': projection,
         'showDeleted': show_deleted,
         'maxResults': max_results,
+        'pageToken': page_token
     }
     if projection == 'custom':
         command_args['customFieldMask'] = custom_field_mask
@@ -439,7 +614,7 @@ def list_users(domain, customer=None, event=None, query=None, sort_order=None, v
     service = get_service('admin', 'directory_v1')
     result = service.users().list(**command_args).execute()
 
-    return result['users']
+    return result['users'], result.get('nextPageToken')
 
 
 def get_user_command():
@@ -450,7 +625,7 @@ def get_user_command():
     customer_field_mask = args.get('customer-field-mask')
 
     result = get_user(user_key, view_type, projection, customer_field_mask)
-    return users_to_entry('User %s:' % (user_key, ), [result])
+    return users_to_entry('User {}:'.format(user_key), [result])
 
 
 def get_user(user_key, view_type, projection, customer_field_mask=None):
@@ -466,6 +641,139 @@ def get_user(user_key, view_type, projection, customer_field_mask=None):
     result = service.users().get(**command_args).execute()
 
     return result
+
+
+def hide_user_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+    hide_value = args.get('visible-globally')
+    result = hide_user(user_key, hide_value)
+
+    return users_to_entry('User {}:'.format(user_key,), [result])
+
+
+def hide_user(user_key, hide_value):
+    command_args = {
+        'userKey': user_key if user_key != 'me' else ADMIN_EMAIL,
+        'body': {
+            'includeInGlobalAddressList': hide_value,
+        }}
+
+    service = get_service('admin', 'directory_v1',
+                          additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
+    result = service.users().update(**command_args).execute()
+
+    return result
+
+
+def set_user_password_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+    password = args.get('password')
+    result = set_user_password(user_key, password)
+    return result
+
+
+def set_user_password(user_key, password):
+    command_args = {
+        'userKey': user_key if user_key != 'me' else ADMIN_EMAIL,
+        'body': {
+            'password': password,
+        }}
+
+    service = get_service('admin', 'directory_v1',
+                          additional_scopes=['https://www.googleapis.com/auth/admin.directory.user'])
+    service.users().update(**command_args).execute()
+
+    return 'User {} password has been set.'.format(command_args['userKey'])
+
+
+def get_autoreply_command():
+    args = demisto.args()
+    user_id = args.get('user-id', ADMIN_EMAIL)
+
+    autoreply_message = get_autoreply(user_id)
+
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+
+
+def get_autoreply(user_id):
+    command_args = {
+        'userId': user_id
+    }
+
+    service = get_service('gmail', 'v1',
+                          additional_scopes=['https://mail.google.com', 'https://www.googleapis.com/auth/gmail.modify',
+                                             'https://www.googleapis.com/auth/gmail.readonly',
+                                             'https://www.googleapis.com/auth/gmail.settings.basic'],
+                          delegated_user=user_id)
+    result = service.users().settings().getVacation(**command_args).execute()
+
+    return result
+
+
+def set_autoreply_command():
+    args = demisto.args()
+
+    user_id = args.get('user-id')
+    enable_autoreply = args.get('enable-autoReply')
+    response_subject = args.get('response-subject')
+    response_body_plain_text = args.get('response-body')
+
+    autoreply_message = set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text)
+
+    return autoreply_to_entry('User {}:'.format(user_id), [autoreply_message], user_id)
+
+
+def set_autoreply(user_id, enable_autoreply, response_subject, response_body_plain_text):
+    command_args = {
+        'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+        'body': {
+            'enableAutoReply': enable_autoreply,
+            'responseSubject': response_subject,
+            'responseBodyPlainText': response_body_plain_text,
+        }}
+
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.basic'])
+    result = service.users().settings().updateVacation(**command_args).execute()
+    return result
+
+
+def remove_delegate_user_mailbox_command():
+    args = demisto.args()
+    user_id = args.get('user-id')
+    delegate_email = args.get('removed-mail')
+    return delegate_user_mailbox(user_id, delegate_email, False)
+
+
+def delegate_user_mailbox_command():
+    args = demisto.args()
+    user_id = args.get('user-id')
+    delegate_email = args.get('delegate-email')
+    return delegate_user_mailbox(user_id, delegate_email, True)
+
+
+def delegate_user_mailbox(user_id, delegate_email, delegate_token):
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.settings.sharing'])
+    if delegate_token:  # guardrails-disable-line
+        command_args = {
+            'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+            'body': {
+                'delegateEmail': delegate_email,
+            }
+        }
+
+        service.users().settings().delegates().create(**command_args).execute()
+        return 'Email {} has been delegated'.format(delegate_email)
+
+    else:
+        command_args = {
+            'userId': user_id if user_id != 'me' else ADMIN_EMAIL,
+            'delegateEmail': delegate_email
+        }
+
+        service.users().settings().delegates().delete(**command_args).execute()
+        return 'Email {} has been removed from delegation'.format(delegate_email)
 
 
 def create_user_command():
@@ -520,7 +828,7 @@ def delete_user(user_key):
         ['https://www.googleapis.com/auth/admin.directory.user'])
     service.users().delete(**command_args).execute()
 
-    return 'User %s have been deleted.' % (command_args['userKey'], )
+    return 'User {} have been deleted.'.format(command_args['userKey'])
 
 
 def get_user_role_command():
@@ -604,17 +912,27 @@ def get_user_tokens(user_id):
 
 
 def search_all_mailboxes():
-    command_args = {
-        'maxResults': 100,
-        'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-    }
-
+    next_page_token = None
     service = get_service('admin', 'directory_v1')
-    result = service.users().list(**command_args).execute()
+    while True:
+        command_args = {
+            'maxResults': 100,
+            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
+            'pageToken': next_page_token
+        }
 
-    entries = [search_command(user['primaryEmail'])
-               for user in result['users']]
-    return entries
+        result = service.users().list(**command_args).execute()
+        next_page_token = result.get('nextPageToken')
+
+        entries = [search_command(user['primaryEmail']) for user in result['users']]
+
+        # if these are the final result push - return them
+        if next_page_token is None:
+            entries.append("Search completed")
+            return entries
+
+        # return midway results
+        demisto.results(entries)
 
 
 def search_command(mailbox=None):
@@ -647,7 +965,8 @@ def search_command(mailbox=None):
     mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
 
-    return emails_to_entry('Search in %s:\nquery: "%s"' % (mailbox, q, ), mails, 'full', mailbox)
+    res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
+    return res
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
@@ -821,7 +1140,6 @@ def move_mail_to_mailbox(src_mailbox, message_id, dst_mailbox):
 
 def delete_mail_command():
     args = demisto.args()
-
     user_id = args['user-id']
     _id = args['message-id']
     permanent = bool(strtobool(args.get('permanent', 'false')))
@@ -1028,22 +1346,357 @@ def remove_filter(user_id, _id):
     return result
 
 
+'''MAIL SENDER FUNCTIONS'''
+
+
+def randomword(length):
+    """
+    Generate a random string of given length
+    """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
+
+
+def header(s):
+    if not s:
+        return None
+
+    s_no_newlines = ' '.join(s.splitlines())
+    return Header(s_no_newlines, 'utf-8')
+
+
+def template_params(paramsStr):
+    """
+    Translate the template params if they exist from the context
+    """
+    actualParams = {}
+    if paramsStr:
+        try:
+            params = json.loads(paramsStr)
+
+        except ValueError as e:
+            return_error('Unable to parse templateParams: {}'.format(str(e)))
+        # Build a simple key/value
+
+        for p in params:
+            if params[p].get('value'):
+                actualParams[p] = params[p]['value']
+
+            elif params[p].get('key'):
+                actualParams[p] = demisto.dt(demisto.context(), params[p]['key'])
+
+        return actualParams
+
+    else:
+        return None
+
+
+def transient_attachments(transientFile, transientFileContent, transientFileCID):
+    if transientFile is None or len(transientFile) == 0:
+        return []
+
+    if transientFileContent is None:
+        transientFileContent = []
+
+    if transientFileCID is None:
+        transientFileCID = []
+
+    attachments = []
+    for file_name, file_data, file_cid in it.izip_longest(transientFile, transientFileContent, transientFileCID):
+        if file_name is None:
+            break
+
+        content_type, encoding = mimetypes.guess_type(file_name)
+        if content_type is None or encoding is not None:
+            content_type = 'application/octet-stream'
+
+        main_type, sub_type = content_type.split('/', 1)
+
+        attachments.append({
+            'name': file_name,
+            'maintype': main_type,
+            'subtype': sub_type,
+            'data': file_data,
+            'cid': file_cid
+        })
+
+    return attachments
+
+
+def handle_html(htmlBody):
+    """
+    Extract all data-url content from within the html and return as separate attachments.
+    Due to security implications, we support only images here
+    We might not have Beautiful Soup so just do regex search
+    """
+    attachments = []
+    cleanBody = ''
+    lastIndex = 0
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+        maintype, subtype = m.group(2).split('/', 1)
+        att = {
+            'maintype': maintype,
+            'subtype': subtype,
+            'data': base64.b64decode(m.group(3)),
+            'name': 'image%d.%s' % (i, subtype)
+        }
+        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        attachments.append(att)
+        cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+        lastIndex = m.end() - 1
+
+    cleanBody += htmlBody[lastIndex:]
+    return cleanBody, attachments
+
+
+def collect_inline_attachments(attach_cids):
+    """
+    collects all attachments which are inline - only used in html bodied emails
+    """
+    inline_attachment = []
+    if attach_cids is not None and len(attach_cids) > 0:
+        for cid in attach_cids:
+            file = demisto.getFilePath(cid)
+            file_path = file['path']
+
+            content_type, encoding = mimetypes.guess_type(file_path)
+            if content_type is None or encoding is not None:
+                content_type = 'application/octet-stream'
+            main_type, sub_type = content_type.split('/', 1)
+
+            fp = open(file_path, 'rb')
+            data = fp.read()
+            fp.close()
+
+            inline_attachment.append({
+                'ID': cid,
+                'name': file['name'],
+                'maintype': main_type,
+                'subtype': sub_type,
+                'data': data,
+                'cid': cid
+            })
+
+        return inline_attachment
+
+
+def collect_manual_attachments():
+    attachments = []
+    for attachment in demisto.getArg('manualAttachObj') or []:
+        res = demisto.getFilePath(os.path.basename(attachment['RealFileName']))
+
+        path = res['path']
+        content_type, encoding = mimetypes.guess_type(path)
+        if content_type is None or encoding is not None:
+            content_type = 'application/octet-stream'
+        maintype, subtype = content_type.split('/', 1)
+
+        if maintype == 'text':
+            with open(path) as fp:
+                data = fp.read()
+        else:
+            with open(path, 'rb') as fp:
+                data = fp.read()
+        attachments.append({
+            'name': attachment['FileName'],
+            'maintype': maintype,
+            'subtype': subtype,
+            'data': data,
+            'cid': None
+        })
+
+    return attachments
+
+
+def collect_attachments(entry_ids, file_names):
+    """
+    Creates a dictionary containing all the info about all attachments
+    """
+    attachments = []
+    entry_number = 0
+    if entry_ids is not None and len(entry_ids) > 0:
+        for entry_id in entry_ids:
+            file = demisto.getFilePath(entry_id)
+            file_path = file['path']
+            if file_names is not None and len(file_names) > entry_number and file_names[entry_number] is not None:
+                file_name = file_names[entry_number]
+
+            else:
+                file_name = file['name']
+
+            content_type, encoding = mimetypes.guess_type(file_path)
+            if content_type is None or encoding is not None:
+                content_type = 'application/octet-stream'
+
+            main_type, sub_type = content_type.split('/', 1)
+
+            fp = open(file_path, 'rb')
+            data = fp.read()
+            fp.close()
+            attachments.append({
+                'ID': entry_id,
+                'name': file_name,
+                'maintype': main_type,
+                'subtype': sub_type,
+                'data': data,
+                'cid': None
+            })
+            entry_number += 1
+    return attachments
+
+
+def attachment_handler(message, attachments):
+    """
+    Adds the attachments to the email message
+    """
+    for att in attachments:
+        if att['maintype'] == 'text':
+            msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
+            if att['cid'] is not None:
+                msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_txt)
+
+        elif att['maintype'] == 'image':
+            msg_img = MIMEImage(att['data'], att['subtype'])
+            if att['cid'] is not None:
+                msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_img.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_img)
+
+        elif att['maintype'] == 'audio':
+            msg_aud = MIMEAudio(att['data'], att['subtype'])
+            if att['cid'] is not None:
+                msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_aud)
+
+        else:
+            msg_base = MIMEBase(att['maintype'], att['subtype'])
+            msg_base.set_payload(att['data'])
+            if att['cid'] is not None:
+                msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
+                msg_base.add_header('Content-ID', '<' + att['name'] + '>')
+
+            else:
+                msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
+            message.attach(msg_base)
+
+
+def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, replyTo, file_names, attach_cid,
+              transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
+    message = MIMEMultipart()
+    message['to'] = header(','.join(emailto))
+    message['cc'] = header(','.join(cc))
+    message['bcc'] = header(','.join(bcc))
+    message['from'] = header(emailfrom)
+    message['subject'] = header(subject)
+    message['reply-to'] = header(replyTo)
+
+    templateParams = template_params(templateParams)
+    if templateParams is not None:
+        if body is not None:
+            body = body.format(**templateParams)
+
+        if htmlBody is not None:
+            htmlBody = htmlBody.format(**templateParams)
+
+    if additional_headers is not None and len(additional_headers) > 0:
+        for h in additional_headers:
+            header_name_and_value = h.split('=')
+            message[header_name_and_value[0]] = header(header_name_and_value[1])
+
+    msg = MIMEText(body, 'plain', 'utf-8')
+    message.attach(msg)
+    htmlAttachments = []  # type: list
+    inlineAttachments = []  # type: list
+
+    if htmlBody is not None:
+        htmlBody, htmlAttachments = handle_html(htmlBody)
+        msg = MIMEText(htmlBody, 'html', 'utf-8')
+        message.attach(msg)
+        if attach_cid is not None and len(attach_cid) > 0:
+            inlineAttachments = collect_inline_attachments(attach_cid)
+
+    else:
+        # if not html body, cannot attach cids in message
+        transientFileCID = None
+
+    attachments = collect_attachments(entry_ids, file_names)
+    manual_attachments = collect_manual_attachments()
+    transientAttachments = transient_attachments(transientFile, transientFileContent, transientFileCID)
+
+    attachments = attachments + htmlAttachments + transientAttachments + inlineAttachments + manual_attachments
+    attachment_handler(message, attachments)
+
+    encoded_message = base64.urlsafe_b64encode(message.as_string())
+    command_args = {
+        'userId': emailfrom,
+        'body': {
+            'raw': encoded_message,
+        }
+    }
+    service = get_service('gmail', 'v1', additional_scopes=['https://www.googleapis.com/auth/gmail.compose',
+                                                            'https://www.googleapis.com/auth/gmail.send'])
+    result = service.users().messages().send(**command_args).execute()
+    return result
+
+
+def send_mail_command():
+    args = demisto.args()
+    emailto = argToList(args.get('to'))
+    emailfrom = args.get('from')
+    body = args.get('body')
+    subject = args.get('subject')
+    entry_ids = argToList(args.get('attachIDs'))
+    cc = argToList(args.get('cc'))
+    bcc = argToList(args.get('bcc'))
+    htmlBody = args.get('htmlBody')
+    replyTo = args.get('replyTo')
+    file_names = argToList(args.get('attachNames'))
+    attchCID = argToList(args.get('attachCIDs'))
+    transientFile = argToList(args.get('transientFile'))
+    transientFileContent = argToList(args.get('transientFileContent'))
+    transientFileCID = argToList(args.get('transientFileCID'))
+    additional_headers = argToList(args.get('additionalHeader'))
+    template_param = args.get('templateParams')
+
+    if emailfrom is None:
+        emailfrom = ADMIN_EMAIL
+
+    result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
+                       replyTo, file_names, attchCID, transientFile, transientFileContent,
+                       transientFileCID, additional_headers, template_param)
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
+
+
+'''FETCH INCIDENTS'''
+
+
 def fetch_incidents():
     params = demisto.params()
     user_key = params.get('queryUserKey')
     user_key = user_key if user_key else ADMIN_EMAIL
     query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time')
-
-    # handle first time fetch
+    last_fetch = last_run.get('gmt_time')
+    # handle first time fetch - gets current GMT time -1 day
     if last_fetch is None:
-        last_fetch = datetime.now() - timedelta(days=1)
-    else:
-        last_fetch = datetime.strptime(
-            last_fetch, '%Y-%m-%dT%H:%M:%SZ')
-    current_fetch = last_fetch
+        last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
+        last_fetch = str(last_fetch.isoformat()).split('.')[0] + 'Z'
 
+    last_fetch = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%SZ')
+    current_fetch = last_fetch
     service = get_service(
         'gmail',
         'v1',
@@ -1066,7 +1719,6 @@ def fetch_incidents():
         incident = mail_to_incident(msg_result, service, user_key)
         temp_date = datetime.strptime(
             incident['occurred'], '%Y-%m-%dT%H:%M:%SZ')
-
         # update last run
         if temp_date > last_fetch:
             last_fetch = temp_date + timedelta(seconds=1)
@@ -1074,8 +1726,9 @@ def fetch_incidents():
         # avoid duplication due to weak time query
         if temp_date > current_fetch:
             incidents.append(incident)
+
     demisto.info('extract {} incidents'.format(len(incidents)))
-    demisto.setLastRun({'time': last_fetch.isoformat().split('.')[0] + 'Z'})
+    demisto.setLastRun({'gmt_time': last_fetch.isoformat().split('.')[0] + 'Z'})
     return incidents
 
 
@@ -1105,6 +1758,13 @@ def main():
         'gmail-add-delete-filter': add_delete_filter_command,
         'gmail-list-filters': list_filters_command,
         'gmail-remove-filter': remove_filter_command,
+        'gmail-hide-user-in-directory': hide_user_command,
+        'gmail-set-password': set_user_password_command,
+        'gmail-get-autoreply': get_autoreply_command,
+        'gmail-set-autoreply': set_autoreply_command,
+        'gmail-delegate-user-mailbox': delegate_user_mailbox_command,
+        'gmail-remove-delegated-mailbox': remove_delegate_user_mailbox_command,
+        'send-mail': send_mail_command
     }
     command = demisto.command()
     LOG('GMAIL: command is %s' % (command, ))
@@ -1122,14 +1782,17 @@ def main():
         if cmd_func is None:
             raise NotImplementedError(
                 'Command "{}" is not implemented.'.format(command))
+
         else:
             demisto.results(cmd_func())  # type: ignore
+
     except Exception as e:
         import traceback
         if command == 'fetch-incidents':
             LOG(traceback.format_exc())
             LOG.print_log()
             raise
+
         else:
             return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
 

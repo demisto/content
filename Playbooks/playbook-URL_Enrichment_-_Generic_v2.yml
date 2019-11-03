@@ -108,7 +108,8 @@ tasks:
       id: b5ea6e49-a7eb-49d7-8398-3087829d7aee
       version: -1
       name: 'Is Rasterize integration enabled? '
-      description: Checks if there is an active instance of the Rasterize integration enabled.
+      description: Checks if there is an active instance of the Rasterize integration
+        enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -152,13 +153,15 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: 16f823c3-bd44-4fa9-879c-385ac3a21582
+    taskid: 0eb62106-7a26-485e-857f-c59252e9c10b
     type: regular
     task:
-      id: 16f823c3-bd44-4fa9-879c-385ac3a21582
+      id: 0eb62106-7a26-485e-857f-c59252e9c10b
       version: -1
       name: Get URL screenshot
       description: Gets a screenshot of the URL page.
+      tags:
+      - url_screenshots
       script: Rasterize|||rasterize
       type: regular
       iscommand: true
@@ -323,8 +326,8 @@ tasks:
       id: f2ea80eb-2dc7-4939-8962-bbbbf052af6a
       version: -1
       name: Verify URLs?
-      description: Checks if the playbook's VerifyURL input is set to "True", to
-        determine whether to perform SSL verification on the URLs.
+      description: Checks if the playbook's VerifyURL input is set to "True", to determine
+        whether to perform SSL verification on the URLs.
       type: condition
       iscommand: false
       brand: ""

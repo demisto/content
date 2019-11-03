@@ -417,6 +417,15 @@ script:
       name: message-id
       required: false
       secret: false
+    - default: false
+      defaultValue: all
+      description: A CSV list of fields to retrieve.
+      isArray: true
+      name: selected-fields
+      predefined:
+      - ''
+      required: false
+      secret: false
     deprecated: false
     description: Searches for items in the specified mailbox. Specific permissions
       are needed for this operation to search in a target mailbox other than the default.
@@ -720,8 +729,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: 'If the email item contains another email as an attachment (EML or MSG file), whether to retrieve
-        the EML/MSG file attachment. Can be "yes" or "no". Default is "no".'
+      description: If the email item contains another email as an attachment (EML
+        or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes"
+        or "no". Default is "no".
       isArray: false
       name: get-internal-item
       predefined:
@@ -1106,10 +1116,61 @@ script:
     - contextPath: EWS.Items.messageId
       description: The message ID of the item.
       type: String
+  - arguments:
+    - default: false
+      description: The item ID of item to upload as and EML file.
+      isArray: false
+      name: item-id
+      required: true
+      secret: false
+    - default: false
+      description: The mailbox in which this email was found. If empty, the default
+        mailbox is used. Otherwise the user might require impersonation rights to
+        this mailbox.
+      isArray: false
+      name: target-mailbox
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves items by item ID and uploads it's content as eml file.
+    execution: false
+    name: ews-get-items-as-eml
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: EntryID of the file
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
   dockerimage: demisto/py-ews:2.0
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
   script: '-'
   type: python

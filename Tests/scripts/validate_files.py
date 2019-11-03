@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This script is used to validate the files in Content repository. Specifically for each file:
 1) Proper prefix
@@ -19,19 +20,23 @@ import argparse
 import subprocess
 import yaml
 
-from Tests.scripts.constants import *
-from Tests.scripts.hook_validations.id import IDSetValidator
-from Tests.scripts.hook_validations.secrets import get_secrets
-from Tests.scripts.hook_validations.image import ImageValidator
-from Tests.scripts.update_id_set import get_script_package_data
-from Tests.scripts.hook_validations.script import ScriptValidator
-from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
-from Tests.scripts.hook_validations.structure import StructureValidator
-from Tests.scripts.hook_validations.integration import IntegrationValidator
-from Tests.scripts.hook_validations.description import DescriptionValidator
-from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator
-from Tests.test_utils import checked_type, run_command, print_error, collect_ids, print_color, str2bool, LOG_COLORS, \
-    get_yaml, filter_packagify_changes
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
+from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
+from Tests.scripts.hook_validations.secrets import get_secrets  # noqa: E402
+from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
+from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
+from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
+from Tests.scripts.hook_validations.conf_json import ConfJsonValidator  # noqa: E402
+from Tests.scripts.hook_validations.structure import StructureValidator  # noqa: E402
+from Tests.scripts.hook_validations.integration import IntegrationValidator  # noqa: E402
+from Tests.scripts.hook_validations.description import DescriptionValidator  # noqa: E402
+from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator  # noqa: E402
+from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
+    get_yaml, filter_packagify_changes, collect_ids, str2bool  # noqa: E402
 
 
 class FilesValidator(object):
@@ -42,13 +47,15 @@ class FilesValidator(object):
     Attributes:
         _is_valid (bool): saves the status of the whole validation(instead of mingling it between all the functions).
         is_circle (bool): whether we are running on circle or local env.
+        print_ignored_files (bool): should print ignored files when iterating over changed files.
         conf_json_validator (ConfJsonValidator): object for validating the conf.json file.
         id_set_validator (IDSetValidator): object for validating the id_set.json file(Created in Circle only).
     """
 
-    def __init__(self, is_circle=False):
+    def __init__(self, is_circle=False, print_ignored_files=False):
         self._is_valid = True
         self.is_circle = is_circle
+        self.print_ignored_files = print_ignored_files
 
         self.conf_json_validator = ConfJsonValidator()
         self.id_set_validator = IDSetValidator(is_circle)
@@ -71,12 +78,13 @@ class FilesValidator(object):
         return False
 
     @staticmethod
-    def get_modified_files(files_string, tag='master'):
+    def get_modified_files(files_string, tag='master', print_ignored_files=False):
         """Get lists of the modified files in your branch according to the files string.
 
         Args:
             files_string (string): String that was calculated by git using `git diff` command.
-            tag (string): String of git tag used to update modified files
+            tag (string): String of git tag used to update modified files.
+            print_ignored_files (bool): should print ignored files.
 
         Returns:
             (modified_files_list, added_files_list, deleted_files). Tuple of sets.
@@ -115,12 +123,20 @@ class FilesValidator(object):
             elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
                 deleted_files.add(file_path)
             elif file_status.lower().startswith('r') and checked_type(file_path):
-                modified_files_list.add((file_data[1], file_data[2]))
+                # if a code file changed, take the associated yml file.
+                if checked_type(file_data[2], CODE_FILES_REGEX):
+                    modified_files_list.add(file_path)
+                else:
+                    modified_files_list.add((file_data[1], file_data[2]))
             elif checked_type(file_path, [SCHEMA_REGEX]):
                 modified_files_list.add(file_path)
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
-                print_error(file_path + " file status is an unknown known one, "
-                                        "please check. File status was: " + file_status)
+                print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
+                    file_path, file_status))
+
+            elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
+                print_warning('Ignoring file path: {}'.format(file_path))
+
         modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
             modified_files_list,
             added_files_list,
@@ -144,19 +160,23 @@ class FilesValidator(object):
         # Three dots will compare with the last known shared commit as the base
         compare_type = '.' if 'master' in tag else ''
         all_changed_files_string = run_command(
-            "git diff --name-status {tag}..{compare_type}refs/heads/{branch}".format(tag=tag,
+            'git diff --name-status {tag}..{compare_type}refs/heads/{branch}'.format(tag=tag,
                                                                                      branch=branch_name,
                                                                                      compare_type=compare_type))
-        modified_files, added_files, _, old_format_files = self.get_modified_files(all_changed_files_string, tag=tag)
+        modified_files, added_files, _, old_format_files = self.get_modified_files(
+            all_changed_files_string,
+            tag=tag,
+            print_ignored_files=self.print_ignored_files)
 
         if not is_circle:
-            files_string = run_command("git diff --name-status --no-merges HEAD")
+            files_string = run_command('git diff --name-status --no-merges HEAD')
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-                non_committed_old_format_files = self.get_modified_files(files_string)
+                non_committed_old_format_files = self.get_modified_files(files_string,
+                                                                         print_ignored_files=self.print_ignored_files)
 
-            all_changed_files_string = run_command("git diff --name-status {}".format(tag))
+            all_changed_files_string = run_command('git diff --name-status {}'.format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
-                self.get_modified_files(all_changed_files_string)
+                self.get_modified_files(all_changed_files_string, print_ignored_files=self.print_ignored_files)
 
             old_format_files = old_format_files.union(non_committed_old_format_files)
             modified_files = modified_files.union(
@@ -192,7 +212,7 @@ class FilesValidator(object):
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
 
-            print("Validating {}".format(file_path))
+            print('Validating {}'.format(file_path))
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
@@ -249,8 +269,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
                                                                   old_git_branch=old_branch)
                 if not incident_field_validator.is_valid():
@@ -267,7 +286,7 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
-            print("Validating {}".format(file_path))
+            print('Validating {}'.format(file_path))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
             if not structure_validator.is_file_valid():
@@ -313,8 +332,7 @@ class FilesValidator(object):
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INCIDENT_FIELDS_REGEX, file_path, re.IGNORECASE):
+            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path)
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
@@ -341,8 +359,9 @@ class FilesValidator(object):
             if 'toversion' not in yaml_data:  # we only fail on old format if no toversion (meaning it is latest)
                 invalid_files.append(f)
         if invalid_files:
-            print_error("You must update the following files to the new package format. The files are:\n{}".format(
-                '\n'.join(list(invalid_files))))
+            print_error('You should update the following files to the package format, for further details please visit '
+                        'https://github.com/demisto/content/tree/master/docs/package_directory_structure. '
+                        'The files are:\n{}'.format('\n'.join(list(invalid_files))))
             self._is_valid = False
 
     def validate_committed_files(self, branch_name, is_backward_check=True):
@@ -370,19 +389,19 @@ class FilesValidator(object):
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""
         for regex in CHECKED_TYPES_REGEXES:
-            splitted_regex = regex.split(".*")
+            splitted_regex = regex.split('.*')
             directory = splitted_regex[0]
             for root, dirs, files in os.walk(directory):
                 if root not in DIR_LIST:  # Skipping in case we entered a package
                     continue
-                print_color("Validating {} directory:".format(directory), LOG_COLORS.GREEN)
+                print_color('Validating {} directory:'.format(directory), LOG_COLORS.GREEN)
                 for file_name in files:
                     file_path = os.path.join(root, file_name)
                     # skipping hidden files
                     if file_name.startswith('.'):
                         continue
 
-                    print("Validating " + file_name)
+                    print('Validating ' + file_name)
                     structure_validator = StructureValidator(file_path)
                     if not structure_validator.is_valid_scheme():
                         self._is_valid = False
@@ -390,7 +409,7 @@ class FilesValidator(object):
                 if root in PACKAGE_SUPPORTING_DIRECTORIES:
                     for inner_dir in dirs:
                         file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
-                        print("Validating " + file_path)
+                        print('Validating ' + file_path)
                         structure_validator = StructureValidator(file_path)
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
@@ -435,7 +454,7 @@ class FilesValidator(object):
                 config = yaml.safe_load(f)
                 prev_branch_sha = config['jobs']['build']['environment']['GIT_SHA1']
 
-        print_color("Starting validation against {}".format(prev_branch_sha), LOG_COLORS.GREEN)
+        print_color('Starting validation against {}'.format(prev_branch_sha), LOG_COLORS.GREEN)
         modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
         prev_self_valid = self._is_valid
         self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_sha)
@@ -451,7 +470,7 @@ def main():
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
     so the user won't be disturbed by non critical loggings
     """
-    branches = run_command("git branch")
+    branches = run_command('git branch')
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
@@ -466,32 +485,32 @@ def main():
 
     logging.basicConfig(level=logging.CRITICAL)
 
-    print_color("Starting validating files structure", LOG_COLORS.GREEN)
-    files_validator = FilesValidator(is_circle)
+    print_color('Starting validating files structure', LOG_COLORS.GREEN)
+    files_validator = FilesValidator(is_circle, print_ignored_files=True)
     if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check,
                                               prev_ver=options.prev_ver):
         sys.exit(1)
     if options.test_filter:
         try:
-            print_color("Updating idset. Be patient if this is the first time...", LOG_COLORS.YELLOW)
-            subprocess.check_output(["./Tests/scripts/update_id_set.py"])
-            print_color("Checking that we have tests for all content...", LOG_COLORS.YELLOW)
+            print_warning('Updating idset. Be patient if this is the first time...')
+            subprocess.check_output(['./Tests/scripts/update_id_set.py'])
+            print_warning('Checking that we have tests for all content...')
             try:
-                tests_out = subprocess.check_output(["./Tests/scripts/configure_tests.py", "-s", "true"],
+                tests_out = subprocess.check_output(['./Tests/scripts/configure_tests.py', '-s', 'true'],
                                                     stderr=subprocess.STDOUT)
                 print(tests_out)
             except Exception:
-                print_color("Recreating idset to be sure that configure tests failure is accurate."
-                            " Be patient this can take 15-20 seconds ...", LOG_COLORS.YELLOW)
-                subprocess.check_output(["./Tests/scripts/update_id_set.py", "-r"])
-                print_color("Checking that we have tests for all content again...", LOG_COLORS.YELLOW)
-                subprocess.check_call(["./Tests/scripts/configure_tests.py", "-s", "true"])
+                print_warning('Recreating idset to be sure that configure tests failure is accurate.'
+                              ' Be patient this can take 15-20 seconds ...')
+                subprocess.check_output(['./Tests/scripts/update_id_set.py', '-r'])
+                print_warning('Checking that we have tests for all content again...')
+                subprocess.check_call(['./Tests/scripts/configure_tests.py', '-s', 'true'])
         except Exception as ex:
-            print_color("Failed validating tests: {}".format(ex), LOG_COLORS.RED)
+            print_error('Failed validating tests: {}'.format(ex))
             sys.exit(1)
-    print_color("Finished validating files structure", LOG_COLORS.GREEN)
+    print_color('Finished validating files structure', LOG_COLORS.GREEN)
     sys.exit(0)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -146,8 +146,12 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
 
 def urlscan_submit_url():
     submission_dict = {}
-    if demisto.args().get('public') == 'public':
-        submission_dict['public'] = 'on'
+    if demisto.args().get('public'):
+        if demisto.args().get('public') == 'public':
+            submission_dict['public'] = 'on'
+    else:
+        if demisto.params().get('is_public') is True:
+            submission_dict['public'] = 'on'
 
     submission_dict['url'] = demisto.args().get('url')
     sub_json = json.dumps(submission_dict)
@@ -171,6 +175,7 @@ def format_results(uuid):
             scan_stats = response['stats']
             scan_meta = response['meta']
             url_query = scan_tasks['url']
+            scan_verdicts = response.get('verdicts')
         except Exception:
             pass
 
@@ -247,9 +252,9 @@ def format_results(uuid):
         human_readable['Subdomains'] = subdomains
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
-    if 'malicious' in scan_stats:
+    if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
-        if int(scan_stats['malicious']) >= THRESHOLD:
+        if scan_verdicts['overall'].get('malicious'):
             human_readable['Malicious'] = 'Malicious'
             url_cont['Data'] = demisto.args().get('url')
             cont['Data'] = demisto.args().get('url')
@@ -267,13 +272,6 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-    if 'url' in scan_meta['processors']['gsb']['data'] is None:
-        mal_url_list = []
-        matches = scan_meta['processors']['gsb']['data']['matches']
-        for match in matches:
-            mal_url = match['threat']['url']
-            mal_url_list.append(mal_url)
-        human_readable['Related Malicious URLs'] = mal_url_list
     if len(scan_meta['processors']['download']['data']) > 0:
         meta_data = scan_meta['processors']['download']['data'][0]
         sha256 = meta_data['sha256']
@@ -352,7 +350,11 @@ def get_urlscan_submit_results_polling(uuid):
 
 
 def urlscan_submit_command():
-    get_urlscan_submit_results_polling(urlscan_submit_url())
+    urls = argToList(demisto.args().get('url'))
+    for url in urls:
+        demisto.args()['url'] = url
+        uuid = urlscan_submit_url()
+        get_urlscan_submit_results_polling(uuid)
 
 
 def urlscan_search(search_type, query):

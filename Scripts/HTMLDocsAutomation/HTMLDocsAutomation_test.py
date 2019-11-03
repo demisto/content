@@ -245,12 +245,12 @@ def test_human_readable_example_to_html():
   </thead>
   <tbody>
     <tr>
-      <td>hello</td>
-      <td>hello</td>
+      <td> hello </td>
+      <td> hello </td>
     </tr>
     <tr>
-      <td>world</td>
-      <td>world</td>
+      <td> world </td>
+      <td> world </td>
     </tr>
   </tbody>
 </table>
