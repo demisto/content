@@ -281,6 +281,138 @@ inputs:
   value: {}
   required: false
   description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
-outputs: []
+outputs:
+- contextPath: FireEyeHelixSearch.Result.ID
+  description: Event ID.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Type
+  description: Event type.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Result
+  description: Event result.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MatchedAt
+  description: Time the event was matched at.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.Confidence
+  description: Confidence of the event. Can be either low, medium or high.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Status
+  description: Status of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.EventTime
+  description: Time the event took place.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.DetectedRuleID
+  description: ID of the detected rule.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.PID
+  description: Process ID.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Process
+  description: Process details.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.ProcessPath
+  description: Process path.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.FileName
+  description: Name of the file affected by the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.FilePath
+  description: Path of the the file affected by the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DeviceName
+  description: Device name.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Size
+  description: Size of the file that created the event in bytes.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Virus
+  description: Virus that was detected in the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MalwareType
+  description: Malware type of the virus that was detected.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.CreatedTime
+  description: Time the event was created at.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.Class
+  description: Event class.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.MD5
+  description: MD5 hash of the affected file.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SHA1
+  description: SHA1 has of the affected file.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Protocol
+  description: Protocol used in the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceIPv4
+  description: IPv4 address of the event source.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceIPv6
+  description: IPv6 address of the event source.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourcePort
+  description: Port of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceLongitude
+  description: Longitude of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceLatitude
+  description: Latitude of the event source address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationIPv4
+  description: IPv4 address of the event destination.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationIPv6
+  description: IPv6 address of the event destination.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationPort
+  description: Port of the event destination address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.ReportTime
+  description: Time the event was reported at.
+  type: date
+- contextPath: FireEyeHelixSearch.Result.FalsePositive
+  description: Boolean flag - is the event false positive.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Domain
+  description: Domain of the recepient.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.From
+  description: Source email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceDomain
+  description: Domain of the host that created the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.SourceISP
+  description: ISP of the source of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.DestinationISP
+  description: ISP of the destination of the event.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.To
+  description: Destination email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.Attachment
+  description: Email attachment.
+  type: unknown
+- contextPath: FireEyeHelixSearch.MQL
+  description: MQL query that created the result.
+  type: string
+- contextPath: FireEyeHelixSearch.GroupBy
+  description: Group by values.
+  type: unknown
+- contextPath: FireEyeHelixSearch.GroupBy.DocCount
+  description: Number of matches for the group.
+  type: number
+- contextPath: FireEyeHelixSearch.Result.RcpTo
+  description: Recepeient to email address.
+  type: string
+- contextPath: FireEyeHelixSearch.Result.InReplyTo
+  description: Reply email address.
+  type: string
 tests:
   - No test - No instance
