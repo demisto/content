@@ -331,3 +331,4 @@ INTEGRATION_CATEGORIES = ['Analytics & SIEM', 'Utilities', 'Messaging', 'Endpoin
                           'Deception', 'Email Gateway']
 
 EXTERNAL_PR_REGEX = r'^pull/(\d+)$'
+REPUTATION_COMMANDS = {'file', 'email', 'domain', 'url', 'ip'}
