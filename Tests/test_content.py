@@ -530,7 +530,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_number = options.buildNumber
     build_name = options.buildName
 
-    demisto_api_key = generate_demisto_api_key(server, username=username, password=password)
+    demisto_api_key = generate_demisto_api_key()
     c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
