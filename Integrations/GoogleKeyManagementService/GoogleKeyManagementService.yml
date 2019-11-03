@@ -370,8 +370,6 @@ script:
       description: Ciphertext to decrypt to base64 plaintext
       isArray: false
       name: base64_ciphertext
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -1237,8 +1235,6 @@ script:
       description: Base64 plantext to encrypt
       isArray: false
       name: base64_plaintext
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -1333,8 +1329,6 @@ script:
       description: Ciphertext to decrypt to base64 plaintext
       isArray: false
       name: base64_ciphertext
-      predefined:
-      - ''
       required: false
       secret: false
     - default: false
@@ -1625,5 +1619,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - Google-KMS-test
