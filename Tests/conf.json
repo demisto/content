@@ -1940,7 +1940,6 @@
         "ip_enrichment_generic_test": "Issue 19815",
         "email_test": "Issue 19816",
         "JoeSecurityTestDetonation": "Issue 16118",
-        "DomainTools-Test": "Issue 8298",
         "Beta-Athena-Test": "Issue 19834",
         "Remedy-On-Demand-Test": "Issue 19835",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
@@ -1982,6 +1981,7 @@
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
+        "DomainTools": "Issue 8298",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
