@@ -54,6 +54,10 @@ def get_timestamp_first_fetch(last_fetch):
     Returns:
         (num).The formatted timestamp
     """
+    # this theorticly shouldn't happen but just in case
+    if str(last_fetch).isdigit():
+        return int(last_fetch)
+
     if TIME_METHOD == 'Timestamp-Seconds':
         return int(last_fetch.timestamp())
 
@@ -79,7 +83,7 @@ def timestamp_to_date(timestamp_string):
         timestamp_number = float(timestamp_string)
 
     # convert timestamp (a floating point number representing time since epoch) to datetime
-    return datetime.fromtimestamp(timestamp_number)
+    return datetime.utcfromtimestamp(timestamp_number)
 
 
 def elasticsearch_builder():
@@ -433,31 +437,60 @@ def incident_label_maker(source):
     return labels
 
 
-def results_to_incidents(response, current_fetch, last_fetch):
+def results_to_incidents_timestamp(response, last_fetch):
     """Converts the current results into incidents.
 
     Args:
         response(dict): the raw search results from Elasticsearch.
-        current_fetch(datetime): the date of the last fetch before this fetch.
-        last_fetch(datetime): the date of the last fetch before this fetch - this will hold the last date of the
-            incident brought by this fetch.
+        last_fetch(num): the date or timestamp of the last fetch before this fetch
+        - this will hold the last date of the incident brought by this fetch.
+
+    Returns:
+        (list).The incidents.
+        (num).The date of the last incident brought by this fetch.
+    """
+    current_fetch = last_fetch
+    incidents = []
+    for hit in response.get('hits', {}).get('hits'):
+        if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
+            # if timestamp convert to iso format date and save the timestamp
+            hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
+            hit_timestamp = int(hit.get('_source')[str(TIME_FIELD)])
+
+            if hit_timestamp > last_fetch:
+                last_fetch = hit_timestamp
+
+            # avoid duplication due to weak time query
+            if hit_timestamp > current_fetch:
+                inc = {
+                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
+                    'rawJSON': json.dumps(hit),
+                    'labels': incident_label_maker(hit.get('_source')),
+                    'occurred': hit_date.isoformat() + 'Z'
+                }
+                incidents.append(inc)
+
+    return incidents, last_fetch
+
+
+def results_to_incidents_datetime(response, last_fetch):
+    """Converts the current results into incidents.
+
+    Args:
+        response(dict): the raw search results from Elasticsearch.
+        last_fetch(datetime): the date or timestamp of the last fetch before this fetch
+        - this will hold the last date of the incident brought by this fetch.
 
     Returns:
         (list).The incidents.
         (datetime).The date of the last incident brought by this fetch.
     """
+    current_fetch = last_fetch
     incidents = []
     for hit in response.get('hits', {}).get('hits'):
         if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            # if not a timestamp convert to date
-            if 'Timestamp' not in TIME_METHOD:
-                hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
+            hit_date = datetime.strptime(str(hit.get('_source')[str(TIME_FIELD)]), TIME_FORMAT)
 
-            # if timestamp convert to iso format date
-            else:
-                hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
-
-            # update last run
             if hit_date > last_fetch:
                 last_fetch = hit_date
 
@@ -483,30 +516,33 @@ def fetch_incidents():
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, date_format=TIME_FORMAT, utc=False, to_timestamp=False)
         last_fetch = datetime.strptime(str(last_fetch), TIME_FORMAT)
 
-    else:
+        # if timestamp: get the last fetch to the correct format of timestamp
+        if 'Timestamp' in TIME_METHOD:
+            last_fetch = get_timestamp_first_fetch(last_fetch)
+
+    # if method is simple date - convert the date string to datetime
+    elif 'Simple-Date' == TIME_METHOD:
         last_fetch = datetime.strptime(last_fetch, TIME_FORMAT)
-
-    current_fetch = last_fetch
-
-    if 'Timestamp' in TIME_METHOD:
-        last_fetch_for_query = get_timestamp_first_fetch(last_fetch)
-
-    else:
-        last_fetch_for_query = last_fetch
 
     es = elasticsearch_builder()
 
     query = QueryString(query=FETCH_QUERY + " AND " + TIME_FIELD + ":*")
-    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch_for_query}}})
+    search = Search(using=es, index=FETCH_INDEX).filter({'range': {TIME_FIELD: {'gt': last_fetch}}})
     search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
     response = search.execute().to_dict()
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
     if total_results > 0:
-        incidents, last_fetch = results_to_incidents(response, current_fetch, last_fetch)
+        if 'Timestamp' in TIME_METHOD:
+            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
+            demisto.setLastRun({'time': last_fetch})
+
+        else:
+            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch)
+            demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
+
         demisto.info('extract {} incidents'.format(len(incidents)))
-        demisto.setLastRun({'time': datetime.strftime(last_fetch, TIME_FORMAT)})
 
     demisto.incidents(incidents)
 
