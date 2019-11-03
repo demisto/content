@@ -46,17 +46,16 @@ class Client:
             self.kms_client = self._init_kms_client()
 
         except JSONDecodeError:
-            raise Exception("Service Account json is not formatted well please re-enter it.")
+            raise Exception("Service Account json has missing details, re-create it")
 
     def _init_kms_client(self):
-        """Creates the Python API client for Google Cloud KMS using service account credentials.
-        """
-        credentials_file_name = demisto.uniqueFile() + '.json'
-        credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
-
+        """Creates the Python API client for Google Cloud KMS using service account credentials."""
         dictionary_test = json.loads(str(self.service_account))
         if not isinstance(dictionary_test, dict):
-            raise Exception("Service Account json is not formatted well please re-enter it.")
+            raise Exception("Service Account json is not formatted well, re-enter it.")
+
+        credentials_file_name = demisto.uniqueFile() + '.json'
+        credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
 
         with open(credentials_file_path, 'w') as creds_file:
             json_object = json.loads(str(self.service_account))
@@ -487,11 +486,21 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
         The encrypted ciphertext.
     """
     # handle given plaintext - revert it to base 64.
-    if args.get('is_base64') == 'false':
-        plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
+    if args.get('simple_plaintext'):
+        plaintext = base64.b64encode(bytes(str(args.get('simple_plaintext')), 'utf-8'))
+
+    elif args.get('base64_plaintext'):
+        plaintext = base64.b64decode(str(args.get('base64_plaintext')))
+
+    elif args.get('entry_id'):
+        file = demisto.getFilePath(args.get('entry_id'))
+        file_path = file['path']
+        fp = open(file_path, 'rb')
+        plaintext = base64.b64encode(fp.read())
+        fp.close()
 
     else:
-        plaintext = base64.b64decode(str(args.get('plaintext')))
+        raise ValueError("No object to encrypt.")
 
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
 
@@ -511,9 +520,13 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
 
     symmetric_encrypt_context = {
         'CryptoKey': crypto_key_id,
-        'IsBase64': args.get('is_base64') == 'true',
+        'IsBase64': args.get('base64_plaintext') is not None,
         'Ciphertext': ciphertext
     }
+
+    if args.get('entry_id'):
+        file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_encrypted.txt'
+        demisto.results(fileResult(file_name, ciphertext))
 
     return (f"The text has been encrypted.\nCiphertext: {ciphertext}",
             {
@@ -532,7 +545,22 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
     Returns:
         The decrypted text.
     """
-    ciphertext = base64.b64decode(str(args.get('ciphertext')))
+    if args.get('simple_ciphertext'):
+        ciphertext = base64.b64decode(str(args.get('simple_ciphertext')))
+
+    elif args.get('base64_ciphertext'):
+        ciphertext = base64.b64decode(str(args.get('base64_ciphertext')))
+
+    elif args.get('entry_id'):
+        file = demisto.getFilePath(args.get('entry_id'))
+        file_path = file['path']
+        fp = open(file_path, 'rb')
+        ciphertext = base64.b64decode(fp.read())
+        fp.close()
+
+    else:
+        raise ValueError("No object to decrypt.")
+
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
 
     additional_authenticated_data = None
@@ -547,15 +575,19 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
                                          additional_authenticated_data=additional_authenticated_data)
 
     # handle the resulting plain text if it supposed to be in base64 and clean added characters.
-    if args.get('is_base64') == 'true':
-        plaintext = str(base64.b64encode(response.plaintext))[2:-1]
+    if args.get('base64_ciphertext'):
+        plaintext = str(base64.b64encode(response.plaintext))[2:-1].replace('\\n', '\n')
 
-    else:
-        plaintext = str(base64.b64decode(response.plaintext))[2:-1]
+    elif args.get('simple_ciphertext') or args.get('entry_id'):
+        plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
+
+    if args.get('entry_id'):
+        file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'
+        demisto.results(fileResult(file_name, plaintext))
 
     symmetric_decrypt_context = {
         'CryptoKey': crypto_key_id,
-        'IsBase64': args.get('is_base64') == 'true',
+        'IsBase64': args.get('base64_ciphertext') is not None,
         'Plaintext': plaintext
     }
 
@@ -809,11 +841,21 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
         The encrypted ciphertext.
     """
     # handle the plaintext - convert to base64
-    if args.get('is_base64') == 'false':
-        plaintext = base64.b64encode(bytes(str(args.get('plaintext')), 'utf-8'))
+    if args.get('simple_plaintext'):
+        plaintext = base64.b64encode(bytes(str(args.get('simple_plaintext')), 'utf-8'))
+
+    elif args.get('base64_plaintext'):
+        plaintext = base64.b64decode(str(args.get('base64_plaintext')))
+
+    elif args.get('entry_id'):
+        file = demisto.getFilePath(args.get('entry_id'))
+        file_path = file['path']
+        fp = open(file_path, 'rb')
+        plaintext = base64.b64encode(fp.read())
+        fp.close()
 
     else:
-        plaintext = base64.b64decode(str(args.get('plaintext')))
+        raise ValueError("No object to encrypt.")
 
     project_id, location_id, key_ring_id, crypto_key_id = demisto_args_extract(client, args)
     crypto_key_version = args.get('crypto_key_version')
@@ -851,9 +893,13 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
 
     asymmetric_encrypt_context = {
         'CryptoKey': crypto_key_id,
-        'IsBase64': args.get('is_base64') == 'true',
+        'IsBase64': args.get('base64_plaintext') is not None,
         'Ciphertext': ciphertext
     }
+
+    if args.get('entry_id'):
+        file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_encrypted.txt'
+        demisto.results(fileResult(file_name, ciphertext))
 
     return (f"The text has been encrypted.\nCiphertext: {ciphertext}",
             {
@@ -879,20 +925,38 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     crypto_key_version_name = client.kms_client.crypto_key_version_path(project_id, location_id, key_ring_id,
                                                                         crypto_key_id, crypto_key_version)
 
-    ciphertext = base64.b64decode(str(args.get('ciphertext')))
+    if args.get('simple_ciphertext'):
+        ciphertext = base64.b64decode(str(args.get('simple_ciphertext')))
+
+    elif args.get('base64_ciphertext'):
+        ciphertext = base64.b64decode(str(args.get('base64_ciphertext')))
+
+    elif args.get('entry_id'):
+        file = demisto.getFilePath(args.get('entry_id'))
+        file_path = file['path']
+        fp = open(file_path, 'rb')
+        ciphertext = base64.b64decode(fp.read())
+        fp.close()
+
+    else:
+        raise ValueError("No object to decrypt.")
 
     response = client.kms_client.asymmetric_decrypt(crypto_key_version_name, ciphertext)
 
     # handle the created plaintext back to base64 if needed and clear added characters.
-    if args.get('is_base64') == 'true':
-        plaintext = str(base64.b64encode(response.plaintext))[2:-1]
+    if args.get('base64_ciphertext'):
+        plaintext = str(base64.b64encode(response.plaintext))[2:-1].replace('\\n', '\n')
 
-    else:
-        plaintext = str(base64.b64decode(response.plaintext))[2:-1]
+    elif args.get('simple_ciphertext') or args.get('entry_id'):
+        plaintext = str(base64.b64decode(response.plaintext))[2:-1].replace('\\n', '\n')
+
+    if args.get('entry_id'):
+        file_name = demisto.getFilePath(args.get('entry_id'))['name'] + '_decrypted.txt'
+        demisto.results(fileResult(file_name, plaintext))
 
     asymmetric_decrypt_context = {
         'CryptoKey': crypto_key_id,
-        'IsBase64': args.get('is_base64') == 'true',
+        'IsBase64': args.get('base64_ciphertext') is not None,
         'Plaintext': plaintext
     }
 
@@ -1034,23 +1098,25 @@ def test_function(client: Client) -> None:
     """Test's user's input this checks if the given service account has any of the required permissions
     to use the integration
 
+    In client creation we check that the entered service account is a valid json and has all the required
+    fields to create the client.
+
+    In this function we try and get a response from Google KMS just to make sure we can connect to it.
+
+    This test does NOT check if the service account has the required permissions to get a VALID response from KMS.
+
     Args:
         client(Client): User Client.
     """
     # creating a valid resource name
-    key_ring_name = client.kms_client.key_ring_path(client.project, client.location, client.key_ring)
+    if client.key_ring:
+        key_ring = client.key_ring
 
-    # The most general set of permissions needed for this integration - you either encrypt, decrypt or
-    # able to get parameters from the KMS in the project
-    permissions = ['cloudkms.cryptoKeys.list', 'cloudkms.cryptoKeyVersions.useToEncrypt',
-                   'cloudkms.cryptoKeyVersions.useToDecrypt']
+    else:
+        key_ring = "random"
 
-    # test if at least one of the above permissions exist in the service account
-    per_list = list(client.kms_client.test_iam_permissions(resource=key_ring_name, permissions=permissions).permissions)
-
-    if not per_list:
-        raise Exception("Check that the Service Account given has the necessary permissions to use this integration."
-                        "\nCheck that the Location and KeyRing given are correct")
+    key_ring_name = client.kms_client.key_ring_path(client.project, client.location, key_ring)
+    client.kms_client.list_crypto_keys(key_ring_name)
 
 
 def main():

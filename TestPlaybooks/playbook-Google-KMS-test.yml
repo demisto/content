@@ -21,7 +21,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -310
         }
       }
     note: false
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "46"
     scriptarguments:
       all:
         simple: "yes"
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": -140
         }
       }
     note: false
@@ -676,10 +676,10 @@ tasks:
     ignoreworker: false
   "36":
     id: "36"
-    taskid: 4844d56c-07c3-4bbd-8dd9-ec2d431c022d
+    taskid: 1d603c4c-1be5-4ace-8a41-7bc430a34d99
     type: regular
     task:
-      id: 4844d56c-07c3-4bbd-8dd9-ec2d431c022d
+      id: 1d603c4c-1be5-4ace-8a41-7bc430a34d99
       version: -1
       name: google-kms-asymmetric-encrypt
       description: Encrypt using a asymmetric CryptoKey
@@ -691,15 +691,19 @@ tasks:
       '#none#':
       - "38"
     scriptarguments:
+      base64_plaintext: {}
       crypto_key:
         simple: asy256-4
       crypto_key_version:
         simple: "1"
+      entry_id: {}
       is_base64:
         simple: "false"
       key_ring: {}
       location: {}
       plaintext:
+        simple: some text
+      simple_plaintext:
         simple: some text
     separatecontext: false
     view: |-
@@ -714,10 +718,10 @@ tasks:
     ignoreworker: false
   "38":
     id: "38"
-    taskid: f2ef6a1d-5e74-4954-8a75-8e00f8c01934
+    taskid: 997bc264-045e-4fb0-8064-5f4f1a94b473
     type: regular
     task:
-      id: f2ef6a1d-5e74-4954-8a75-8e00f8c01934
+      id: 997bc264-045e-4fb0-8064-5f4f1a94b473
       version: -1
       name: google-kms-asymmetric-decrypt
       description: Decrypt using an asymmetric CryptoKey
@@ -729,16 +733,20 @@ tasks:
       '#none#':
       - "39"
     scriptarguments:
+      base64_ciphertext: {}
       ciphertext:
         simple: ${GoogleKMS.AsymmetricEncrypt.Ciphertext}
       crypto_key:
         simple: asy256-4
       crypto_key_version:
         simple: "1"
+      entry_id: {}
       is_base64:
         simple: "false"
       key_ring: {}
       location: {}
+      simple_ciphertext:
+        simple: ${GoogleKMS.AsymmetricEncrypt.Ciphertext}
     separatecontext: false
     view: |-
       {
@@ -788,29 +796,29 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: f0bef849-8951-4b95-8cfc-752a98b00aa5
+    taskid: b6201cef-5959-4a40-80aa-44cf703f9726
     type: regular
     task:
-      id: f0bef849-8951-4b95-8cfc-752a98b00aa5
+      id: b6201cef-5959-4a40-80aa-44cf703f9726
       version: -1
       name: google-kms-symmetric-encrypt
       description: Encrypts data, so that it can only be recovered by a call to Decrypt.
-      script: Google Key Management Service|||google-kms-symmetric-encrypt
+      script: '|||google-kms-symmetric-encrypt'
       type: regular
       iscommand: true
-      brand: Google Key Management Service
+      brand: ""
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
       additional_authenticated_data: {}
+      base64_plaintext: {}
       crypto_key:
         simple: TestCryptoKey
-      is_base64:
-        simple: "false"
+      entry_id: {}
       key_ring: {}
       location: {}
-      plaintext:
+      simple_plaintext:
         simple: some text
     separatecontext: false
     view: |-
@@ -825,10 +833,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 1d14b8db-8dce-49ab-85f8-c4ea4eb7938b
+    taskid: b8e90038-63f0-4754-8e6c-6cd97155461f
     type: regular
     task:
-      id: 1d14b8db-8dce-49ab-85f8-c4ea4eb7938b
+      id: b8e90038-63f0-4754-8e6c-6cd97155461f
       version: -1
       name: google-kms-symmetric-decrypt
       description: Decrypts data that was protected by Encrypt.
@@ -841,14 +849,18 @@ tasks:
       - "43"
     scriptarguments:
       additional_authenticated_data: {}
+      base64_ciphertext: {}
       ciphertext:
         simple: ${GoogleKMS.SymmetricEncrypt.Ciphertext}
       crypto_key:
         simple: TestCryptoKey
+      entry_id: {}
       is_base64:
         simple: "false"
       key_ring: {}
       location: {}
+      simple_ciphertext:
+        simple: ${GoogleKMS.SymmetricEncrypt.Ciphertext}
     separatecontext: false
     view: |-
       {
@@ -896,15 +908,146 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "44":
+    id: "44"
+    taskid: 8fa9b7bb-d71d-46ee-869a-9ec90184526a
+    type: regular
+    task:
+      id: 8fa9b7bb-d71d-46ee-869a-9ec90184526a
+      version: -1
+      name: google-kms-get-public-key
+      description: Gets the public key from a given CryptoKey
+      script: '|||google-kms-get-public-key'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      crypto_key:
+        simple: asy512
+      crypto_key_version:
+        simple: "1"
+      key_ring: {}
+      location: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: ca95c7f1-b57f-4620-8cd0-b67f33e861b9
+    type: regular
+    task:
+      id: ca95c7f1-b57f-4620-8cd0-b67f33e861b9
+      version: -1
+      name: google-kms-list-all-keys
+      description: List all CryptoKeys across all KeyRings in a given location
+      script: '|||google-kms-list-all-keys'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "no"
+      key_state:
+        simple: ENABLED
+      location:
+        simple: global
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "46":
+    id: "46"
+    taskid: f8ed8df5-7426-4407-870e-6206b5a059d6
+    type: regular
+    task:
+      id: f8ed8df5-7426-4407-870e-6206b5a059d6
+      version: -1
+      name: google-kms-list-key-rings
+      description: List all KeyRings in a given location
+      script: '|||google-kms-list-key-rings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all: {}
+      location:
+        simple: global
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "47":
+    id: "47"
+    taskid: ff0eea44-0623-4d3e-8a9e-cfeec0e12eae
+    type: condition
+    task:
+      id: ff0eea44-0623-4d3e-8a9e-cfeec0e12eae
+      version: -1
+      name: Checking  KeyRing
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+      - "44"
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: GoogleKMS.KeyRing.Name
+            iscontext: true
+          right:
+            value:
+              simple: TestKeyRing
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3155,
+        "height": 3515,
         "width": 1360,
         "x": -30,
-        "y": 50
+        "y": -310
       }
     }
   }

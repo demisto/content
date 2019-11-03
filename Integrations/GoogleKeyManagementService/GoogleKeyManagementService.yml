@@ -45,7 +45,7 @@ configuration:
   type: 15
 - display: Default Key Ring
   name: key_ring
-  required: true
+  required: false
   type: 0
 - display: Use system proxy settings
   name: proxy
@@ -352,10 +352,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: Ciphertext to decrypt.
+      description: Ciphertext to decryp to simple plaintext
       isArray: false
-      name: ciphertext
-      required: true
+      name: simple_ciphertext
+      required: false
       secret: false
     - default: false
       description: |-
@@ -366,16 +366,19 @@ script:
       name: additional_authenticated_data
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Is the original plaintext in base64
+    - default: false
+      description: Ciphertext to decrypt to base64 plaintext
       isArray: false
-      name: is_base64
+      name: base64_ciphertext
       predefined:
-      - 'true'
-      - 'false'
-      required: true
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: The entry ID for the file to decrypt.
+      isArray: false
+      name: entry_id
+      required: false
       secret: false
     deprecated: false
     description: Decrypts data that was protected by Encrypt.
@@ -448,13 +451,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The data to encrypt. Must be no larger than 64KiB.
-
-        The maximum size depends on the key version's protectionLevel. For SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys, the combined length of the plaintext and additionalAuthenticatedData fields must be no larger than 8KiB.
+      description: Siimple plantext to encrypt. Must be no larger than 64KiB.
       isArray: false
-      name: plaintext
-      required: true
+      name: simple_plaintext
+      required: false
       secret: false
     - default: false
       description: |-
@@ -467,16 +467,17 @@ script:
       name: additional_authenticated_data
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Is the plaintext in base64
+    - default: false
+      description: Base64 plaintext to encrypt.
       isArray: false
-      name: is_base64
-      predefined:
-      - 'true'
-      - 'false'
-      required: true
+      name: base64_plaintext
+      required: false
+      secret: false
+    - default: false
+      description: Entry ID for the file to encrypt.
+      isArray: false
+      name: entry_id
+      required: false
       secret: false
     deprecated: false
     description: Encrypts data, so that it can only be recovered by a call to Decrypt.
@@ -1227,24 +1228,24 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        The data to encrypt. Must be no larger than 64KiB.
-
-        The maximum size depends on the key version's protectionLevel. For SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys, the combined length of the plaintext and additionalAuthenticatedData fields must be no larger than 8KiB.
+      description: Simple plaintext to encrypt. Must be no larger than 64KiB.
       isArray: false
-      name: plaintext
-      required: true
+      name: simple_plaintext
+      required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Is the plaintext in base64
+    - default: false
+      description: Base64 plantext to encrypt
       isArray: false
-      name: is_base64
+      name: base64_plaintext
       predefined:
-      - 'true'
-      - 'false'
-      required: true
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Entry ID of the file to encrypt.
+      isArray: false
+      name: entry_id
+      required: false
       secret: false
     deprecated: false
     description: Encrypt using a asymmetric CryptoKey
@@ -1323,21 +1324,24 @@ script:
       required: true
       secret: false
     - default: false
-      description: Ciphertext to decrypt.
+      description: Ciphertext to decrypt to simple plaintext.
       isArray: false
-      name: ciphertext
-      required: true
+      name: simple_ciphertext
+      required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Is the original plaintext in base64
+    - default: false
+      description: Ciphertext to decrypt to base64 plaintext
       isArray: false
-      name: is_base64
+      name: base64_ciphertext
       predefined:
-      - 'true'
-      - 'false'
-      required: true
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: The entry ID of the file to decrypt
+      isArray: false
+      name: entry_id
+      required: false
       secret: false
     deprecated: false
     description: Decrypt using an asymmetric CryptoKey
@@ -1621,6 +1625,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Google-KMS-test
