@@ -1938,7 +1938,7 @@
         "TestSafeBreach": "Issue 15909",
         "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "ip_enrichment_generic_test": "Issue 19815",
-        "email_test": "Issue 19816",
+        "email_test": "Issue 17996",
         "JoeSecurityTestDetonation": "Issue 16118",
         "Beta-Athena-Test": "Issue 19834",
         "Remedy-On-Demand-Test": "Issue 19835",
