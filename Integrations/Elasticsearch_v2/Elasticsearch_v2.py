@@ -533,6 +533,7 @@ def fetch_incidents():
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
+
     if total_results > 0:
         if 'Timestamp' in TIME_METHOD:
             incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
