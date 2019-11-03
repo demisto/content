@@ -1,0 +1,398 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PhishLabs IOC EIR
+  version: -1
+configuration:
+- defaultvalue: https://caseapi.phishlabs.com
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: User
+  name: user
+  required: true
+  type: 0
+- display: Password
+  name: password
+  required: true
+  type: 4
+- display: Fectches incidents
+  name: is_fetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 1 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Get live feeds of IOC data from PhishLabs.
+display: PhishLabs IOC EIR
+name: PhishLabs IOC EIR
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter incidents that are opened or closed.
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - closed
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return Incidents created on or after the given timestamp
+        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+      isArray: false
+      name: created_after
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return Incidents created on or before the given timestamp
+        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+      isArray: false
+      name: created_before
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return Incidents closed on or after the given timestamp
+        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+      isArray: false
+      name: closed_after
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return Incidents closed on or before the given timestamp
+        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+      isArray: false
+      name: closed_before
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Return Incidents sorted by the given column.
+      isArray: false
+      name: sort
+      predefined:
+      - created_at
+      - closed_at
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Return Incidents sorted by the given order. This will be applied
+        to the given sort parameter.
+      isArray: false
+      name: direction
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Limit amounts of incdients (0-50, default 50)
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Offset from last incident
+      isArray: false
+      name: offset
+      required: true
+      secret: false
+    deprecated: false
+    description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 50
+      incidents)
+    execution: false
+    name: phishlabs-ioc-eir-get-incidents
+    outputs:
+    - contextPath: PhishLabsIOC.EIR.CaseType
+      description: Incident reason type
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Classification
+      description: Incident classification
+      type: String
+    - contextPath: PhishLabsIOC.EIR.SubClassification
+      description: Detailed classification
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Severity
+      description: Incident severity
+      type: String
+    - contextPath: PhishLabsIOC.EIR.SubmissionMethod
+      description: Email submission method
+      type: String
+    - contextPath: PhishLabsIOC.EIR.FurtherReviewReason
+      description: Incident further review reason
+      type: String
+    - contextPath: PhishLabsIOC.EIR.ID
+      description: Id of incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Title
+      description: Title of reported incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Description
+      description: Description of reporeted incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Status
+      description: Status of reported incident
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Created
+      description: Date of incident creation
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Modified
+      description: Date of incident last modified
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Closed
+      description: Date of incident closing
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Duration
+      description: Duration until closing incident in seconds
+      type: Number
+    - contextPath: PhishLabsIOC.EIR.EmailReportedBy
+      description: User who reported the incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.EmailBody
+      description: Email body
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Sender
+      description: Email sender
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.URL.URL
+      description: Url found in body
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.URL.Malicious
+      description: Is the url malicious?
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Email.URL.MaliciousDomain
+      description: Is the url domain malicious?
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.FileName
+      description: Name of the attached file
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.MimeType
+      description: Attachemt mime type
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.MD5
+      description: Attachemt md5 hash
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.SHA256
+      description: Attachemt sha256 hash
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.Malicious
+      description: Is the file malicious?
+      type: Boolean
+    - contextPath: Email.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Body/HTML
+      description: The plain-text version of the email.
+      type: String
+    - contextPath: Email.Attachments.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: Unknown
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of Incident
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a single Incident based on the given ID.
+    execution: false
+    name: phishlabs-ioc-eir-get-incident-by-id
+    outputs:
+    - contextPath: PhishLabsIOC.EIR.CaseType
+      description: Incident reason type
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Classification
+      description: Incident classification
+      type: String
+    - contextPath: PhishLabsIOC.EIR.SubClassification
+      description: Detailed classification
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Severity
+      description: Incident severity
+      type: String
+    - contextPath: PhishLabsIOC.EIR.SubmissionMethod
+      description: Email submission method
+      type: String
+    - contextPath: PhishLabsIOC.EIR.FurtherReviewReason
+      description: Incident further review reason
+      type: String
+    - contextPath: PhishLabsIOC.EIR.ID
+      description: Id of incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Title
+      description: Title of reported incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Description
+      description: Description of reporeted incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Status
+      description: Status of reported incident
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Created
+      description: Date of incident creation
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Modified
+      description: Date of incident last modified
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Closed
+      description: Date of incident closing
+      type: Date
+    - contextPath: PhishLabsIOC.EIR.Duration
+      description: Duration until closing incident in seconds
+      type: Number
+    - contextPath: PhishLabsIOC.EIR.EmailReportedBy
+      description: User who reported the incident
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.EmailBody
+      description: Email body
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Sender
+      description: Email sender
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.URL.URL
+      description: Url found in body
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.URL.Malicious
+      description: Is the url malicious?
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Email.URL.MaliciousDomain
+      description: Is the url domain malicious?
+      type: Boolean
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.FileName
+      description: Name of the attached file
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.MimeType
+      description: Attachemt mime type
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.MD5
+      description: Attachemt md5 hash
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.SHA256
+      description: Attachemt sha256 hash
+      type: String
+    - contextPath: PhishLabsIOC.EIR.Email.Attachment.Malicious
+      description: Is the file malicious?
+      type: Boolean
+    - contextPath: Email.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: String
+    - contextPath: Email.Body/HTML
+      description: The plain-text version of the email.
+      type: String
+    - contextPath: Email.Attachments.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: Unknown
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor that reported the file as malicious.
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the file was determined to be malicious.
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: URL.Data
+      description: The URL
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: A description of the malicious URL.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: String
+  dockerimage: demisto/python3:3.7.5.3066
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- PhishlabsIOC_EIR-Test
