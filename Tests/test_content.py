@@ -1,8 +1,6 @@
 import re
 import sys
 import json
-import string
-import random
 import argparse
 import requests
 import subprocess
@@ -11,7 +9,6 @@ from datetime import datetime
 
 import demisto_client.demisto_api
 from slackclient import SlackClient
-from requests import Session
 
 from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
