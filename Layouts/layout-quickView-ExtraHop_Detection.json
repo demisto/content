@@ -1,13 +1,10 @@
 {
 	"kind": "quickView",
 	"layout": {
-		"commitMessage": "",
 		"id": "ExtraHop Detection",
 		"kind": "quickView",
 		"modified": "2019-08-29T16:19:59.288492914-07:00",
 		"name": "",
-		"prevKind": "quickView",
-		"prevTypeId": "ExtraHop Detection",
 		"sections": [
 			{
 				"description": "",
@@ -276,9 +273,6 @@
 				"version": 0
 			}
 		],
-		"shouldCommit": false,
-		"shouldPublish": false,
-		"shouldPush": false,
 		"system": false,
 		"typeId": "ExtraHop Detection",
 		"version": -1
