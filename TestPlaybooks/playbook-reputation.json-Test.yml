@@ -497,7 +497,7 @@ tasks:
       key:
         simple: valid_domains
       value:
-        simple: '"www.demisto.com", "www.google.com"'
+        simple: '"www.demisto.com", "www.google.com", "http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/"'
     separatecontext: false
     view: |-
       {
@@ -576,6 +576,30 @@ tasks:
           right:
             value:
               simple: google.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: example.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: wikipedia.org
+      - - operator: containsString
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: golang.org
     view: |-
       {
         "position": {
