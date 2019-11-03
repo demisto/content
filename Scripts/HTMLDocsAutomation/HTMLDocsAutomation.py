@@ -287,7 +287,11 @@ def human_readable_example_to_html(hr_sample):
     hr_html: list = []
     while hr_sample:
         if hr_sample.startswith('#'):
-            title, hr_sample = hr_sample.split('\n', 1)
+            title = hr_sample
+            if '\n' in hr_sample:
+                title, hr_sample = hr_sample.split('\n', 1)
+            else:
+                hr_sample = ''
             heading_size = len(title) - len(title.lstrip('#'))
             hr_html.append('<h{0}>{1}</h{0}>'.format(heading_size, title[heading_size + 1:]))
             continue

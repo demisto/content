@@ -49,6 +49,47 @@ def test_added_docker_image_on_existing_script():
     assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
 
 
+def test_updated_docker_image_on_sane_doc_reports_fail_name():
+    validator = ScriptValidator('SaneDocReport.yml', check_git=False)
+    validator.old_script = {
+        'dockerimage': '1.0.0'
+    }
+    validator.current_script = {
+        'dockerimage': '1.0.1'
+    }
+
+    assert not validator.is_backward_compatible(), "The script validator passed sane-doc-reports eventough it shouldn't"
+
+
+def test_updated_docker_image_on_sane_doc_reports_fail_subtype():
+    validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml', check_git=False)
+    validator.current_script = {
+        "type": "python",
+        "subtype": "python3"
+    }
+    validator.old_script = {
+        "type": "python",
+        "subtype": "python2"
+    }
+
+    assert validator.is_changed_subtype() is True, \
+        "Did not find changed subtype while it was changed"
+    assert validator.is_backward_compatible() is False, "The script validator passed sane-doc-reports"
+
+
+def test_updated_docker_image_on_sane_doc_reports():
+    validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml',
+                                check_git=False)
+    validator.old_script = {
+        'dockerimage': '1.0.0'
+    }
+    validator.current_script = {
+        'dockerimage': '1.0.1'
+    }
+
+    assert validator.is_backward_compatible(), "The script validator didn't pass sane-doc-reports"
+
+
 def test_deleted_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
     validator.old_script = {
