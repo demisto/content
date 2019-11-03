@@ -45,7 +45,7 @@ configuration:
   options:
   - None
   - SSL
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
   type: 8
@@ -53,6 +53,7 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python3
   commands:
   - name: ad-expire-password
     arguments:
@@ -85,16 +86,20 @@ script:
     - name: title
       description: The user's job title
     - name: custom-attributes
-      description: Use to set basic or custom attributes of the user object, e.g.,
-        custom-attributes="{"notes":"a note about the contact","company":"company
-        name"}"
+      description: Sets basic or custom attributes of the user object. For example,
+        custom-attributes="{\"notes\":\"a note about the contact\",\"company\":\"company
+        name\"}"
     description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
       in order to use this command.
   - name: ad-search
     arguments:
     - name: filter
       required: true
-      description: 'Query Active Directory in Active Directory syntax, e.g., this query will find all user objects, except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"'
+      description: 'Enables you to define search criteria in the Query Active Directory using Active Directory syntax. For example, the following query searches for all user objects,
+       except Andy: "(&(objectCategory=person)(objectClass=user)(!(cn=andy)))". NOTE if you have special characters
+       such as "*","(",or "\" the character must be preceded by two backslashes "\\". For example, to use "*",
+       type "\\*". For more information about search filters, see
+       syntax: https://docs.microsoft.com/en-us/windows/win32/adsi/search-filter-syntax'
     - name: base-dn
       description: Root (e.g. DC=domain,DC=com). By default, the Base DN configured for the instance
         will be used.
@@ -188,9 +193,9 @@ script:
     - name: telephone-number
       description: The contact's telephone number
     - name: custom-attributes
-      description: Use to set basic or custom attributes of the contact object, e.g.,
-        custom-attributes="{"notes":"some note about the contact","company":"some
-        company"}"
+      description: Sets basic or custom attributes of the contact object. For example, 
+        custom-attributes="{\"notes\":\"some note about the contact\",\"company\":\"some
+        company\"}"
     - name: title
       description: The contact's job title
     description: Creates an Active Directory contact.

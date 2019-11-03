@@ -10,7 +10,7 @@ from typing import List, AnyStr
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
 
-MAX_TRIES = 20
+MAX_TRIES = 30
 SLEEP_TIME = 45
 
 
@@ -50,13 +50,15 @@ def is_correct_content_installed(username, password, ips, content_version):
         d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
         d.Login()
         resp = d.req(method, suffix, None)
+        resp_json = None
         try:
-            resp = resp.json()
-            if not isinstance(resp, dict):
-                raise ValueError
-            release = resp.get("release")
-            notes = resp.get("releaseNotes")
-            installed = resp.get("installed")
+            resp_json = resp.json()
+            if not isinstance(resp_json, dict):
+                raise ValueError('Response from server is not a Dict, got [{}].\n'
+                                 'Text: {}'.format(type(resp_json), resp.text))
+            release = resp_json.get("release")
+            notes = resp_json.get("releaseNotes")
+            installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
                 print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
                             "".format(ami_instance_name, release, content_version))
@@ -66,8 +68,12 @@ def is_correct_content_installed(username, password, ips, content_version):
                     instance_name=ami_instance_name, content_version=release),
                     LOG_COLORS.GREEN
                 )
-        except ValueError:
-            print_error("Failed to verify content version on server [{}]".format(ami_instance_name))
+        except ValueError as exception:
+            err_msg = "Failed to verify content version on server [{}]\n" \
+                      "Error: [{}]\n".format(ami_instance_name, str(exception))
+            if resp_json is not None:
+                err_msg += "Server response: {}".format(resp_json)
+            print_error(err_msg)
             return False
     print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True

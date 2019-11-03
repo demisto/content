@@ -89,11 +89,39 @@
 						"modified": "0001-01-01T00:00:00Z",
 						"fieldId": "incident_emailmessageid",
 						"isVisible": true
+					},
+					{
+						"fieldId": "incident_emailauthenticitycheck",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
 					}
 				],
 				"description": "",
 				"query": null,
 				"queryType": ""
+			},
+			{
+				"description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
+				"fields": [
+					{
+						"fieldId": "incident_criticalassets",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Involved Critical Assets",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
 			},
 			{
 				"id": "",

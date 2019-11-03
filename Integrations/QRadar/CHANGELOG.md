@@ -1,4 +1,15 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
+  - Fixed an issue in which ***fetch-incidents*** failed while enriching fetched offenses with source and destination IP addresses.
+  - Fixed an issue in which ***qradar-delete-reference-set-value*** failed to delete reference sets with the "\\" character in their names.
+
+## [19.9.1] - 2019-09-18
+  - The *note_id* argument is now optional in the ***qradar-get-note*** command. If the *note_id* argument is not specified, the command will return all notes for the the offense.
+  - Fixed an issue when closing an offense with the ***qradar-update-offense*** command, in which a user would specify a close reason, but an error was returned specifying that there was no close reason.  
+
+## [19.9.0] - 2019-09-04
   - Fixed an issue in which the ***qradar-get-search-results*** command failed when the root of the result contained a non-ascii character.
   - Fixed an issue in which the ***qradar-offense-by-id*** command failed if an SEC header was missing when trying to get an offense type.
 

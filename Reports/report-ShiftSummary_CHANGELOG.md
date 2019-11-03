@@ -1,2 +1,2 @@
-##[Unreleased]
-Update status column display values.
+## [Unreleased]
+- Change json format to new format.

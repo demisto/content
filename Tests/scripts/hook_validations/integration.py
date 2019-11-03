@@ -3,8 +3,8 @@ import os
 import requests
 import yaml
 
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -66,6 +66,66 @@ class IntegrationValidator(object):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
+        self.is_proxy_configured_correctly()
+        self.is_insecure_configured_correctly()
+        self.is_valid_category()
+
+        return self._is_valid
+
+    def is_valid_beta_integration(self, is_new=False):
+        """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
+        self.is_default_arguments()
+        self.is_valid_beta(is_new)
+        return self._is_valid
+
+    def is_valid_param(self, param_name, param_display):
+        """Check if the given parameter has the right configuration."""
+        err_msgs = []
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            configuration_param_name = configuration_param['name']
+            if configuration_param_name == param_name:
+                if configuration_param['display'] != param_display:
+                    err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
+                                                                                                   param_display))
+                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue', '') != '':
+                    err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
+
+                elif configuration_param.get('required', False):
+                    err_msgs.append('The required field of the {} parameter should be False'.format(param_name))
+
+                elif configuration_param.get('type') != 8:
+                    err_msgs.append('The type field of the {} parameter should be 8'.format(param_name))
+
+        if err_msgs:
+            print_error('Received the following error for {} validation:\n{}'.format(param_name, '\n'.join(err_msgs)))
+            self._is_valid = False
+            return False
+
+        return True
+
+    def is_proxy_configured_correctly(self):
+        """Check that if an integration has a proxy parameter that it is configured properly."""
+        return self.is_valid_param('proxy', 'Use system proxy settings')
+
+    def is_insecure_configured_correctly(self):
+        """Check that if an integration has a insecure parameter that it is configured properly."""
+        insecure_field_name = ''
+        configuration = self.current_integration.get('configuration', [])
+        for configuration_param in configuration:
+            if configuration_param['name'] == 'insecure' or configuration_param['name'] == 'unsecure':
+                insecure_field_name = configuration_param['name']
+
+        if insecure_field_name:
+            return self.is_valid_param(insecure_field_name, 'Trust any certificate (not secure)')
+
+    def is_valid_category(self):
+        """Check that the integration category is in the schema."""
+        category = self.current_integration.get('category', None)
+        if not category or category not in INTEGRATION_CATEGORIES:
+            self._is_valid = False
+            print_error("The category '{}' is not in the integration schemas, the valid options are:\n{}".format(
+                category, '\n'.join(INTEGRATION_CATEGORIES)))
 
         return self._is_valid
 
@@ -116,7 +176,7 @@ class IntegrationValidator(object):
                 DBot_Score = {
                     'DBotScore.Indicator': 'The indicator that was tested.',
                     'DBotScore.Type': 'The indicator type.',
-                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Vendor': 'The vendor used to calculate the score.',
                     'DBotScore.Score': 'The actual score.'
                 }
                 missing_outputs = set()
@@ -180,6 +240,53 @@ class IntegrationValidator(object):
                     self._is_valid = False
 
         return self._is_valid
+
+    def is_valid_beta(self, is_new=False):
+        """Validate that that beta integration has correct beta attributes"""
+
+        if not all([self._is_display_contains_beta(), self._has_beta_param()]):
+            self._is_valid = False
+        if is_new:
+            if not all([self._id_has_no_beta_substring(), self._name_has_no_beta_substring()]):
+                self._is_valid = False
+
+    def _id_has_no_beta_substring(self):
+        """Checks that 'id' field dose not include the substring 'beta'"""
+        common_fields = self.current_integration.get('commonfields', {})
+        integration_id = common_fields.get('id', '')
+        if 'beta' in integration_id.lower():
+            print_error(
+                "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
+                "please change the id in the file {}".format(self.file_path))
+            return False
+        return True
+
+    def _name_has_no_beta_substring(self):
+        """Checks that 'name' field dose not include the substring 'beta'"""
+        name = self.current_integration.get('name', '')
+        if 'beta' in name.lower():
+            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+            "please change the id in the file {}".format(self.file_path)
+            return False
+        return True
+
+    def _has_beta_param(self):
+        """Checks that integration has 'beta' field with value set to true"""
+        beta = self.current_integration.get('beta', False)
+        if not beta:
+            print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
+                        " in the file {}".format(self.file_path))
+        return beta
+
+    def _is_display_contains_beta(self):
+        """Checks that 'display' field includes the substring 'beta'"""
+        display = self.current_integration.get('display', '')
+        if 'beta' not in display.lower():
+            print_error(
+                "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
+                " in the file {}".format(self.file_path))
+            return False
+        return True
 
     def is_there_duplicate_args(self):
         """Check if a command has the same arg more than once
@@ -308,7 +415,11 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
-                context_list.append(output['contextPath'])
+                command_name = command['name']
+                try:
+                    context_list.append(output['contextPath'])
+                except KeyError:
+                    print('Invalid context output for command {}. Output is {}'.format(command_name, output))
 
             command_to_context_list[command['name']] = sorted(context_list)
 
@@ -344,7 +455,7 @@ class IntegrationValidator(object):
             dict. Field name to its required status.
         """
         field_to_required = {}
-        configuration = integration_json.get('configuration')
+        configuration = integration_json.get('configuration', [])
         for field in configuration:
             field_to_required[field.get('name')] = field.get('required', False)
 

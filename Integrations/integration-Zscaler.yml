@@ -198,7 +198,7 @@ script:
         blacklist_urls = url.split(',')
         cmd_url = '/security/advanced/blacklist_urls?action=REMOVE_FROM_LIST'
         # Check if given URLs is blacklisted
-        blacklist_urls = get_blacklist()['blacklist_urls']
+        blacklist_urls = get_blacklist()['blacklistUrls']
         if len(blacklist_urls) == 1:  # Given only one URL to blacklist
             if blacklist_urls[0] not in blacklist_urls:
                 raise Exception('Given URL is not blacklisted')
