@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+ - Fixed ssh_execute() not working with file name including space characters
 
 ## [19.8.0] - 2019-08-06
   - Added the ***pan-os-edl-get-external-file-metadata*** command.
