@@ -3,9 +3,9 @@ version: -1
 name: Convert file hash to corresponding hashes
 fromversion: 4.5.0
 description: |
-  The playbook allows to get all of the relevant file hash even if there is only one hash type available
-  For example if we have only the SHA256 hash the playbook will get the SHA1 and MD5 hashes as long as the
-  original searched hash is known by any our the threat intelligence integrations.
+  The playbook enables you to get all of the corresponding file hashes for a file even if there is only one hash type available.
+  For example, if we have only the SHA256 hash, the playbook will get the SHA1 and MD5 hashes as long as the
+  original searched hash is recognized by any our the threat intelligence integrations.
 starttaskid: "0"
 tasks:
   "0":
@@ -65,8 +65,8 @@ tasks:
     task:
       id: b797fdc7-1704-442a-8605-ee06bfb0bf54
       version: -1
-      name: Does SHA256 exist?
-      description: Does SHA256 exist?
+      name: Does SHA256 hash exist?
+      description: Does SHA256 hash exist?
       type: condition
       iscommand: false
       brand: ""
@@ -102,8 +102,8 @@ tasks:
     task:
       id: f7142eb2-9483-4546-8d07-a828d636d0ad
       version: -1
-      name: Does MD5 exist?
-      description: Does MD5 exist?
+      name: Does MD5 hash exist?
+      description: Does MD5 hash exist?
       type: condition
       iscommand: false
       brand: ""
@@ -139,8 +139,8 @@ tasks:
     task:
       id: eff5d9b7-ea36-4310-8650-5e26fa38209e
       version: -1
-      name: Does SHA1 exist?
-      description: Does SHA1 exist?
+      name: Does SHA1 hash exist?
+      description: Does SHA1 hash exist?
       type: condition
       iscommand: false
       brand: ""
@@ -177,7 +177,7 @@ tasks:
       id: 65ff1c51-6bc1-4171-8bde-eb6ecb862f4e
       version: -1
       name: Get hashes by SHA1
-      description: Accepts the SHA1 to check.
+      description: Uses the SHA1 hash as a reference to check for other corresponding hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -221,7 +221,7 @@ tasks:
       id: 9e3c8b51-dbc6-464a-8af7-f5d43b663bd4
       version: -1
       name: Get hashes by MD5
-      description: Accepts the MD5 to check.
+      description: Uses the MD5 hash as a reference to check for other corresponding hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -265,7 +265,7 @@ tasks:
       id: 29ef7703-de75-4ff3-844c-a852e333bdbe
       version: -1
       name: Get Hashes by SHA256
-      description: Accepts the SHA256 to check.
+      description: Uses the SHA256 hash as a reference to check for other corresponding hashes of the same file.
       script: '|||file'
       type: regular
       iscommand: true
@@ -309,7 +309,7 @@ tasks:
       id: 5ea09cf0-1554-4f77-8ab9-0dd3e6137803
       version: -1
       name: Set MD5
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -347,7 +347,7 @@ tasks:
       id: 7058583d-4f90-4ce6-8f0f-9e40ede488e9
       version: -1
       name: Set SHA1
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -386,7 +386,7 @@ tasks:
       id: 87217c82-ab0c-4328-85fd-4ff6593ad14d
       version: -1
       name: Set SHA256
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -424,7 +424,7 @@ tasks:
       id: 71114ac7-c4e6-43f9-8abc-fb1578a05dc1
       version: -1
       name: Set SHA1
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -463,7 +463,7 @@ tasks:
       id: 5717038c-5ab2-4418-8942-acce24c6d8b3
       version: -1
       name: Set SHA256
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -501,7 +501,7 @@ tasks:
       id: 8fdf592a-71e8-42dc-8484-fe2b66efbce4
       version: -1
       name: Set MD5
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -540,7 +540,7 @@ tasks:
       id: 96100822-f6d5-403b-8025-cd8351aeb86c
       version: -1
       name: Set SHA1
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -579,7 +579,7 @@ tasks:
       id: ad7c5518-e2a9-4a51-8165-d7c30c8ffd51
       version: -1
       name: Set SHA256
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -641,7 +641,7 @@ tasks:
       id: 53e657e8-0532-4ce9-8644-cf28472a7865
       version: -1
       name: Set MD5
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -795,21 +795,21 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: The inputted SHA256 hash to convert.
+  description: The SHA256 hash on which to search.
 - key: SHA1
   value:
     complex:
       root: File
       accessor: SHA1
   required: false
-  description: The inputted SHA1 hash to convert.
+  description: The SHA1 hash on which to search.
 - key: MD5
   value:
     complex:
       root: File
       accessor: MD5
   required: false
-  description: The inputted MD5  hash to convert.
+  description: The MD5 hash on which to search.
 outputs:
 - contextPath: File.SHA256
   description: Output for detected SHA256 hash.
