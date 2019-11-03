@@ -1959,7 +1959,7 @@
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
-        "Recorded Future Test": "ssue 18922",
+        "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CarbonBlackResponseTest": "Issue #19180",
         "CheckPhish-Test": "Issue 19188",
@@ -1986,7 +1986,6 @@
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Palo Alto Networks Cortex": "Issue 19871",
-        "epo": "Issue 19798",
         "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
