@@ -94,9 +94,11 @@ class ImageValidator(object):
     def is_not_default_image(self):
         """Check if the image is the default one"""
         if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
-            with open(self.file_path, 'r') as image:
+            with open(self.file_path, "rb") as image:
                 image_data = image.read()
                 encoded_image = base64.b64encode(image_data)
+                if isinstance(encoded_image, bytes):
+                    encoded_image = encoded_image.decode("utf-8")
                 if encoded_image == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
                     print_error("{} is the default image, please change to the "
                                 "integration image.".format(self.file_path))
@@ -121,7 +123,8 @@ class ImageValidator(object):
             image_split = image.split('base64,')
             if image_split and len(image_split) == 2:
                 if image_split[1] == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
-                    print_error("{} is the default image, please add the integration image.".format(self.file_path))
+                    print_error("{} has the default image, please change to the integration image."
+                                .format(self.file_path))
                     self._is_valid = False
                     return False
                 else:
