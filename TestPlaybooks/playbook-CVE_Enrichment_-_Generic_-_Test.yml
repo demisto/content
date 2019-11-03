@@ -101,7 +101,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "4"
     separatecontext: false
     conditions:
