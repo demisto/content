@@ -1,7 +1,8 @@
 import glob
+import base64
 
 from Tests.test_utils import re, print_error, os, get_yaml
-from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX
+from Tests.scripts.constants import IMAGE_REGEX, INTEGRATION_REGEX, INTEGRATION_YML_REGEX, DEFAULT_IMAGE_BASE64
 
 
 class ImageValidator(object):
@@ -32,9 +33,12 @@ class ImageValidator(object):
         if self._is_valid is False:  # In case we encountered an IndexError in the init - we don't have an image
             return self._is_valid
 
+        is_existing_image = False
         self.oversize_image()
         if '.png' not in self.file_path:
-            self.is_existing_image()
+            is_existing_image = self.is_existing_image()
+        if is_existing_image:
+            self.is_not_default_image()
 
         return self._is_valid
 
@@ -58,7 +62,7 @@ class ImageValidator(object):
                 self._is_valid = False
 
     def is_existing_image(self):
-        """Check if the integration as an image."""
+        """Check if the integration has an image."""
         is_image_in_yml = False
         is_image_in_package = False
 
@@ -86,3 +90,43 @@ class ImageValidator(object):
             return False
 
         return True
+
+    def is_not_default_image(self):
+        """Check if the image is the default one"""
+        if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
+            with open(self.file_path, 'r') as image:
+                image_data = image.read()
+                encoded_image = base64.b64encode(image_data)
+                if encoded_image == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
+                    print_error("{} is the default image, please change to the "
+                                "integration image.".format(self.file_path))
+                    self._is_valid = False
+                    return False
+                else:
+                    return True
+
+        else:
+            data_dictionary = get_yaml(self.file_path)
+
+            if not data_dictionary:
+                self._is_valid = False
+                return False
+
+            image = data_dictionary.get('image', '')
+
+            if not image:
+                self._is_valid = False
+                return False
+
+            image_split = image.split('base64,')
+            if image_split and len(image_split) == 2:
+                if image_split[1] == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
+                    print_error("{} is the default image, please add the integration image.".format(self.file_path))
+                    self._is_valid = False
+                    return False
+                else:
+                    return True
+            else:
+                self._is_valid = False
+                return False
+
