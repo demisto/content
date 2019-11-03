@@ -1,0 +1,175 @@
+category: IT Services
+commonfields:
+  id: MicrosoftGraphGroups
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: tenant_id
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Microsoft Graph Groups provide the foundational membership service for
+  users to share conversations, files, notes, calendars, plans, and many other assets.
+display: Microsoft Graph Groups
+name: MicrosoftGraphGroups
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'Sort groups in an organization by the field values. e.g: displayName'
+      isArray: false
+      name: order_by
+      required: false
+      secret: false
+    deprecated: false
+    description: List groups.
+    execution: false
+    name: msgraph-groups-list-groups
+  - arguments:
+    - default: false
+      description: Group Id.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a group.
+    execution: false
+    name: msgraph-groups-get-group
+  - arguments:
+    - default: false
+      description: Group display name.
+      isArray: false
+      name: display_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Group enable mail bool value.
+      isArray: false
+      name: mail_enabled
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    - default: false
+      description: The mail alias for the group.
+      isArray: false
+      name: mail_nickname
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Group enable security bool value.
+      isArray: false
+      name: security_enabled
+      predefined:
+      - 'false'
+      - 'true'
+      required: true
+      secret: false
+    deprecated: false
+    description: Create group.
+    execution: false
+    name: msgraph-groups-create-group
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a group.
+    execution: false
+    name: msgraph-groups-delete-group
+  - arguments:
+    - default: false
+      description: Group properties to return, 'ID' is always returned.
+      isArray: false
+      name: properties
+      required: false
+      secret: false
+    deprecated: false
+    description: Get newly created, updated, or deleted groups, including group membership
+      changes.
+    execution: false
+    name: msgraph-groups-get-group-delta
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: List group members.
+    execution: false
+    name: msgraph-groups-list-members
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a member to a group.
+    execution: false
+    name: msgraph-groups-add-member
+  - arguments:
+    - default: false
+      description: The group ID.
+      isArray: false
+      name: group_id
+      required: true
+      secret: false
+    - default: false
+      description: The user ID.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove a member from a group.
+    execution: false
+    name: msgraph-groups-remove-member
+  dockerimage: demisto/crypto:1.0.0.303
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- MicrosoftGraphMail-Test
