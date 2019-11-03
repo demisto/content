@@ -19,15 +19,13 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
 if len(AUTH_AND_TOKEN_URL) != 2:
-    TOKEN_RETRIEVAL_URL = 'https://us-central1-oproxy-dev.cloudfunctions.net/'
-    'ms_graph_groups_dev_ProvideAccessTokenFunction'  # disable-secrets-detection
-# TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
 else:
-TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
-BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
-UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
-NO_OUTPUTS: dict = {}
-APP_NAME = 'ms-graph-groups'
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+    BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
+    UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
+    NO_OUTPUTS: dict = {}
+    APP_NAME = 'ms-graph-groups'
 
 
 def camel_case_to_readable(text):
