@@ -1,4 +1,4 @@
-from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, REPUTATION_COMMANDS
 from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, \
     get_dockerimage45
 
@@ -13,8 +13,6 @@ class IntegrationValidator(object):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-
-    reputation_commands = ['file', 'email', 'domain', 'url', 'ip']
 
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
         self._is_valid = True
@@ -145,7 +143,7 @@ class IntegrationValidator(object):
         commands = self.current_integration.get('script', {}).get('commands', [])
         for command in commands:
             command_name = command.get('name')
-            if command_name in self.reputation_commands:
+            if command_name in REPUTATION_COMMANDS:
                 for arg in command.get('arguments', []):
                     arg_name = arg.get('name')
                     if arg_name == command_name:
