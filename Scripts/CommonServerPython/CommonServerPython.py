@@ -1606,7 +1606,7 @@ outputPaths = {
     'url': 'URL(val.Data && val.Data == obj.Data)',
     'domain': 'Domain(val.Name && val.Name == obj.Name)',
     'cve': 'CVE(val.ID && val.ID == obj.ID)',
-    'email': 'Account.Email(val.Address && val.Address == obj.Address)',
+    'email': 'Email(val.Address && val.Address == obj.Address)',
     'dbotscore': 'DBotScore'
 }
 

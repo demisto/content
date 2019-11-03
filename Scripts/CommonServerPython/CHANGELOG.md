@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+- Change Email entry context
 
 ## [19.10.1] - 2019-10-15
  - Added ***is_debug_mode*** wrapper function for checking if **debug-mode** is enabled. 
