@@ -374,31 +374,11 @@ def extract_filtered_tests():
     return filtered_tests, is_filter_configured, run_all
 
 
-def generate_demisto_api_key(server, username, password):
-    host = "https://{}".format(server)
-    session = Session()
-    r = session.get(host, verify=False)
-    print(r.content)
-    xsrf = r.cookies["XSRF-TOKEN"]
-    print(xsrf)
-    h = {"Accept": "application/json",
-         "Content-type": "application/json",
-         "X-XSRF-TOKEN": xsrf}
-    body = json.dumps({"user": username, "password": password})
-    print(username + "......" + password)
-    first_time_login = session.request("POST", host + "/login", headers=h, verify=False, data=body)
-    print(str(first_time_login.content))
-    demisto_api_key = ''.join(
-        random.choice(string.ascii_letters + string.digits) for _ in range(32))
-    apikey_json = {
-        'name': 'test_apikey',
-        'apikey': demisto_api_key
-    }
-    resp = session.request("POST", host + "/apikeys", headers=h, verify=False,
-                           data=json.dumps(apikey_json))
-    print(str(resp))
-    api_key = demisto_api_key
-    return api_key
+def generate_demisto_api_key():
+    with open("./conf_secret.json", "r") as conf_json:
+        data = json.load(conf_json)
+        demisto_api_key = data['temp_apikey']
+    return demisto_api_key
 
 
 def load_conf_files(conf_path, secret_conf_path):

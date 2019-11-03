@@ -48,6 +48,13 @@ def get_xsrf_token(ips):
         r = session.get(host, verify=False)
 
 
+def generate_demisto_api_key():
+    with open("./conf_secret.json", "r") as conf_json:
+        data = json.load(conf_json)
+        demisto_api_key = data['temp_apikey']
+    return demisto_api_key
+
+
 def is_correct_content_installed(ips, content_version, username, password):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
@@ -61,58 +68,33 @@ def is_correct_content_installed(ips, content_version, username, password):
         True: if all tests passed, False if one failure
     """
 
-    print("EXPECTED CONTENT VERSION IS: ")
-    print(repr(content_version))
-
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
         session = Session()
         r = session.get(host, verify=False)
-        print(r.content)
         xsrf = r.cookies["XSRF-TOKEN"]
-        print(xsrf)
         h = {"Accept": "application/json",
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
         body = json.dumps({"user": username, "password": password})
-        print(username+"......"+password)
-        first_time_login = session.request("POST", host+"/login", headers=h, verify=False, data=body)
-        print(str(first_time_login.content))
-        sleep(15)
-        demisto_api_key = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(32))
+        session.request("POST", host+"/login", headers=h, verify=False, data=body)
+        demisto_api_key = generate_demisto_api_key()
         apikey_json = {
             'name': 'test_apikey',
             'apikey': demisto_api_key
         }
         resp = session.request("POST", host + "/apikeys", headers=h, verify=False,
                                data=json.dumps(apikey_json))
-        print(str(resp))
         api_key = demisto_api_key
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-        # # just signing in for the session
-        # body = {"user": username, "password": password}
-        # demisto_client.generic_request_func(self=client, path='/login',
-        #                                     method='POST', accept='application/json',
-        #                                     content_type='application/json', body=body)
-        # client.get_all_reports()
         try:
             resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
                                                             method='POST', accept='application/json', content_type='application/json')
-            print("This is the raw response\n\n\n")
-            print(resp)
             resp_json = ast.literal_eval(resp[0])
-            print("This is the response with literals stripped\n\n\n")
-            # print(resp_json.replace("u'", "'"))
-            # resp_json = json.loads(str(resp_json).replace("u'", "'"))
-            print("This is the response dumped as JSON\n\n\n")
-            # print(resp_json)
-            # print("\n\n\nOBJECT TYPE: "+str(type(resp_json)))
-
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
-            print("Release is: "+str(release))
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
             if not (release and content_version in release and notes and installed):
@@ -137,9 +119,6 @@ def is_correct_content_installed(ips, content_version, username, password):
 
 def main():
     username, password, content_version = get_username_password()
-
-    print(username+"......"+password)
-
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
@@ -153,8 +132,6 @@ def main():
                     path = '/health'
                     method = 'GET'
                     res = requests.request(method=method, url=(host+path), verify=False)
-                    # res = demisto_client.generic_request_func(self=client, path=path, method=method)
-                    # print(res)
                     if res.status_code == 200:
                         print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                         ready_ami_list.append(ami_instance_name)
