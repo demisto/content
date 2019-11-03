@@ -12,4 +12,3 @@ def test_is_not_default_image():
     image.INTEGRATION_REGEX = 'Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml'
     image_validator = image.ImageValidator("Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml")
     assert image_validator.is_not_default_image() is False
-

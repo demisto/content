@@ -132,4 +132,3 @@ class ImageValidator(object):
             else:
                 self._is_valid = False
                 return False
-
