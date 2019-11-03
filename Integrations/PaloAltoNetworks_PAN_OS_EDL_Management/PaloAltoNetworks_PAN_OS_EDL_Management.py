@@ -126,7 +126,7 @@ def scp_execute(file_name: str, file_path: str):
 
 
 def edl_get_external_file(file_path: str):
-    command = f'cat {file_path}'
+    command = f'cat \'{file_path}\''
     result = ssh_execute(command)
     return result
 
@@ -150,7 +150,7 @@ def edl_get_external_file_command():
 
 
 def edl_search_external_file(file_path: str, search_string: str):
-    return ssh_execute(f'grep {search_string} {file_path}')
+    return ssh_execute(f'grep \'{search_string}\' \'{file_path}\'')
 
 
 def edl_search_external_file_command():
@@ -189,7 +189,7 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> b
         return False
     else:
         if verbose:
-            return ssh_execute(f'cat {file_path}')
+            return ssh_execute(f'cat \'{file_path}\'')
         else:
             return True
 
@@ -305,7 +305,7 @@ def edl_update_from_external_file_command():
 
 
 def edl_delete_external_file(file_path: str):
-    ssh_execute('rm -f ' + file_path)
+    ssh_execute(f'rm -f \'{file_path}\'')
     return 'File deleted successfully'
 
 
@@ -497,7 +497,7 @@ def edl_get_external_file_metadata_command():
     if DOCUMENT_ROOT:
         file_path = os.path.join(DOCUMENT_ROOT, file_path)
 
-    result = ssh_execute(f'stat {file_path}')
+    result = ssh_execute(f'stat \'{file_path}\'')
 
     file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
     file_name = file_path.split("/")[-1]
@@ -506,7 +506,7 @@ def edl_get_external_file_metadata_command():
     last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
     last_modified = ' '.join(last_modified_parts)
 
-    number_of_lines = int(ssh_execute(f'wc -l < {file_path}')) + 1
+    number_of_lines = int(ssh_execute(f'wc -l < \'{file_path}\'')) + 1
 
     metadata_outputs = {
         'FileName': file_name,
