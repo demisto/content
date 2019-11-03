@@ -1,13 +1,10 @@
 {
 	"kind": "details",
 	"layout": {
-		"commitMessage": "",
 		"id": "ExtraHop Detection",
 		"kind": "details",
 		"modified": "2019-09-03T10:15:47.096776343-07:00",
 		"name": "",
-		"prevKind": "details",
-		"prevTypeId": "ExtraHop Detection",
 		"sections": [
 			{
 				"description": "",
@@ -302,9 +299,6 @@
 				"version": 0
 			}
 		],
-		"shouldCommit": false,
-		"shouldPublish": false,
-		"shouldPush": false,
 		"system": false,
 		"typeId": "ExtraHop Detection",
 		"version": -1
