@@ -1124,9 +1124,9 @@ def test_module():
     if demisto.params().get('isFetch'):
         last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
     test_args = {
-        "query": FETCH_QUERY_DICT[FETCH_QUERY] + 'LIMIT 1',
-        "startTime": 0,
-        "endTime": 1609459200,
+        'query': f'{FETCH_QUERY_DICT[FETCH_QUERY]} LIMIT 1',
+        'startTime': 0,
+        'endTime': 1609459200,
     }
     query_loggings(test_args)
     demisto.results('ok')
