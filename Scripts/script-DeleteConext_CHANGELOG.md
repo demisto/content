@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added **auto** option to *subplaybook* argument. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the top playbook), depending on how the playbook is called.
+Added the **auto** option to the *subplaybook* argument. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the master playbook).
