@@ -63,45 +63,33 @@ def convert_incident_fields_to_array():
                 f.truncate()
 
 
-def copy_dir_yml(file_names, dir_name, version_num, bundle_pre, bundle_post, bundle_test):
+def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
     for path in scan_files:
-        if os.path.basename(path) in file_names:
-            raise NameError('You have two content flies with the same '
-                            'basename, the file is {}'.format(os.path.basename(path)))
-        else:
-            file_names.add(os.path.basename(path))
-
         with open(path, 'r') as f:
             yml_info = yaml.safe_load(f)
 
         ver = yml_info.get('fromversion', '0')
         if ver == '' or is_ge_version(version_num, ver):
-            print ' - marked as post: %s (%s)' % (ver, path, )
+            print(' - marked as post: %s (%s)' % (ver, path, ))
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
             post_files += 1
         else:
             # add the file to both bundles
-            print ' - marked as pre: %s (%s)' % (ver, path, )
+            print(' - marked as pre: %s (%s)' % (ver, path, ))
             shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
             shutil.copyfile(path, os.path.join(bundle_post, os.path.basename(path)))
 
-    print ' - total post files: %d' % (post_files, )
+    print(' - total post files: %d' % (post_files, ))
 
 
-def copy_dir_json(flie_names, dir_name, version_num, bundle_pre, bundle_post, bundle_test):
+def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     # handle *.json files
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
-        if odpath in file_names:
-            raise NameError('You have two content flies with the same '
-                            'basename, the file is {}'.format(dpath))
-        else:
-            file_names.add(dpath)
-
         shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
         # this part is a workaround because server doesn't support indicatorfield-*.json naming
         shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
@@ -123,55 +111,61 @@ def copy_dir_files(*args):
 
 
 def copy_test_files(bundle_test):
-    print 'copying test files to test bundle'
+    print('copying test files to test bundle')
     scan_files = glob.glob(os.path.join(TEST_DIR, '*'))
     for path in scan_files:
         if os.path.isdir(path):
             NonCircleTests = glob.glob(os.path.join(path, '*'))
             for new_path in NonCircleTests:
-                print "copying path %s" % (new_path,)
+                print("copying path %s" % (new_path,))
                 shutil.copyfile(new_path, os.path.join(bundle_test, os.path.basename(new_path)))
 
         else:
-            print "copying path %s" % (path,)
+            print("copying path %s" % (path,))
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
 def main(circle_artifacts):
-    print 'starting create content artifact ...'
+    print('starting create content artifact ...')
 
     # version that separate post bundle from pre bundle
     # e.i. any yml with "fromversion" of <version_num> or more will be only on post bundle
     version_num = "3.5"
 
-    print 'creating dir for bundles ...'
+    print('creating dir for bundles ...')
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(b)
         add_tools_to_bundle(b)
 
     convert_incident_fields_to_array()
 
+    file_names = set([])
     for d in DIR_TO_PREFIX.keys():
         scanned_packages = glob.glob(os.path.join(d, '*/'))
         for package in scanned_packages:
-            merge_script_package_to_yml(package, d)
+            output_path, _, _, _, _ = merge_script_package_to_yml(package, d)
+            file_name = output_path.split('/')[-1]
+            if file_name in file_names:
+                raise NameError('You have two content flies with the same '
+                                'name, the file name is {}'.format(file_name))
+            else:
+                file_names.add(file_name)
 
-    flie_names = set([])
     for d in CONTENT_DIRS:
-        print 'copying dir %s to bundles ...' % (d,)
-        copy_dir_files(flie_names, d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
+        print('copying dir %s to bundles ...' % (d,))
+        copy_dir_files(d, version_num, BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST)
 
     copy_test_files(BUNDLE_TEST)
 
-    print 'copying content descriptor to bundles'
+    print('copying content descriptor to bundles')
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         shutil.copyfile('content-descriptor.json', os.path.join(b, 'content-descriptor.json'))
 
-    print 'copying common server doc to bundles'
+    print('copying common server doc to bundles')
     for b in [BUNDLE_PRE, BUNDLE_POST, BUNDLE_TEST]:
         shutil.copyfile('./Documentation/doc-CommonServer.json', os.path.join(b, 'doc-CommonServer.json'))
 
-    print 'compressing bundles ...'
+    print('compressing bundles ...')
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
     shutil.make_archive(ZIP_PRE, 'zip', BUNDLE_PRE)
     shutil.make_archive(ZIP_TEST, 'zip', BUNDLE_TEST)
@@ -182,7 +176,7 @@ def main(circle_artifacts):
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
 
-    print 'finished create content artifact at %s' % (circle_artifacts, )
+    print('finished create content artifact at %s' % (circle_artifacts, ))
 
 
 def test_version_compare(version_num):
@@ -196,8 +190,8 @@ def test_version_compare(version_num):
         else:
             lower.append(v)
 
-    print 'lower versions: %s' % (lower, )
-    print 'greater versions: %s' % (greater, )
+    print('lower versions: %s' % (lower, ))
+    print('greater versions: %s' % (greater, ))
 
 
 if __name__ == '__main__':
