@@ -1,31 +1,35 @@
 args:
 - default: false
-  description: The incidents query
+  description: Additional text by which to query incidents.
   isArray: false
   name: query
   required: false
   secret: false
 - default: false
-  description: Filter by incidents types, comma-separated value
+  description: A common-separatetd list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
-  description: Filter by from date
+  description: 'The start date by which to filter incidents. Date format will be the
+      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+      +0200")'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: Filter by to date
+  description: 'The end date by which to filter incidents. Date format will be the
+      same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+      +0200")'
   isArray: false
   name: toDate
   required: false
   secret: false
 - default: false
   defaultValue: '3000'
-  description: Maximum number of incidents to fetch
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
@@ -33,7 +37,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Fetch incident context
+  description: Whether to query and fetch incident context.
   isArray: false
   name: includeContext
   predefined:
@@ -44,7 +48,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: The time field to consider in the incident query
+  description: The incident field (created or modified) to specify for the date range.
   isArray: false
   name: timeField
   predefined:
@@ -53,7 +57,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: Filter incidents with non-empty value in those field, comma-separated  values
+  description: A comma-separated list of non-empty value incident field names, by
+    which to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
@@ -61,7 +66,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: pickle
-  description: The output file format
+  description: The output file format.
   isArray: false
   name: outputFormat
   predefined:
@@ -69,24 +74,24 @@ args:
   - pickle
   required: false
   secret: false
-comment: Get incidents and output in a json file based on an incident query
+comment: Get a list of incident objects and the associated incident outputs that match
+  the specified query and filters. The results are returned in a structured data file.
 commonfields:
-  id: 1db1214a-4f87-4867-98ab-0c2dd3171733
+  id: GetIncidentsByQuery
   version: -1
 enabled: false
 name: GetIncidentsByQuery
 outputs:
 - contextPath: GetIncidentsByQuery.Filename
-  description: The output filename
+  description: The output file name.
   type: String
 - contextPath: GetIncidentsByQuery.FileFormat
-  description: "The output file format\t"
+  description: "The output file format."
   type: String
 script: '-'
 system: false
-tags: []
 timeout: 60µs
 type: python
 dockerimage: demisto/dateutil
 tests:
-  - Create_Phishing_Classifier_V2_ML_Test
+- Create Phishing Classifier V2 ML Test

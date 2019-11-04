@@ -65,7 +65,7 @@ args:
   defaultValue: '*'
   description: 'Comma-separated values of email tags values and mapping. The script
     going to consider only the tags specify in this field. You can map label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example: let''''s say we have
+    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
     4 values in email tag: malicious, credentials harvesting, inner communitcation,
     external legit email, unclassified. While training, we want to ignore "unclassified"
     tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
@@ -79,7 +79,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: pickle_filename
-  description: "The input type\t"
+  description: "The input type"
   isArray: false
   name: inputType
   predefined:
@@ -125,5 +125,5 @@ type: python
 dockerimage: demisto/dl:1.4
 runonce: true
 tests:
-- Create_Phishing_Classifier_V2_ML_Test
+- Create Phishing Classifier V2 ML Test
 fromversion: 4.5.0

@@ -14,20 +14,20 @@ def test_get_phishing_map_labels(mocker):
 
 
 def test_read_file(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     obj = read_file('231342@343', 'json')
     assert len(obj) >= 1
-    with open('input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test', 'r') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
-    with open('input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test', 'r') as f:
         b64_input = base64.b64encode(f.read())
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1
 
 
 def test_read_files_by_name(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     mocker.patch.object(demisto, 'dt', return_value={'EntryID': 'ads@Asd2'})
     data = read_files_by_name("file1,file2", "json")
     assert len(data) == 4
