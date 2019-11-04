@@ -1,2 +1,2 @@
-To allow us access to the Microsoft Graph Mail, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://login.microsoftonline.com/common/adminconsent?client_id=d53b5622-9b55-4399-88a6-187449269f91&redirect_uri=https://demistobot.demisto.com/msg-mail).
-After authorising Demisto app, you will get a tenant ID and a token, which should be inserted in the integration instance settings.
+To allow us access to Microsoft Graph Mail, an admin has to approve our app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-graph-mail).
+After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.

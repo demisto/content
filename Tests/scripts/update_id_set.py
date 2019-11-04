@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import re
 import os
 import glob
@@ -6,10 +8,15 @@ import argparse
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
 import time
+import sys
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command
+    LOG_COLORS, print_color, run_command  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
@@ -170,7 +177,7 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
     if toversion:
@@ -205,8 +212,8 @@ def get_depends_on(data_dict):
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
     change_string = run_command("git diff HEAD {0}".format(file_path))
-    is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
-    is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
+    is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
+    is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
@@ -270,7 +277,11 @@ def get_code_file(package_path, script_type):
 def get_script_package_data(package_path):
     if package_path[-1] != os.sep:
         package_path = os.path.join(package_path, '')
-    yml_path = glob.glob(package_path + '*.yml')[0]
+    yml_files = glob.glob(package_path + '*.yml')
+    if not yml_files:
+        raise Exception("No yml files found in package path: {}. "
+                        "Is this really a package dir? If not remove it.".format(package_path))
+    yml_path = yml_files[0]
     code_type = get_yaml(yml_path).get('type')
     code_path = get_code_file(package_path, TYPE_TO_EXTENSION[code_type])
     with open(code_path, 'r') as code_file:
@@ -291,7 +302,7 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE) or \
+        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                 re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
@@ -357,7 +368,7 @@ def re_create_id_set():
     for arr in pool.map(process_integration, integration_files):
         integration_list.extend(arr)
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*'))):
+    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*.yml'))):
         playbooks_list.extend(arr)
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
     for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):
@@ -384,13 +395,13 @@ def re_create_id_set():
 
 
 def sort(data):
-    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    data.sort(key=lambda r: list(r.keys())[0].lower())  # Sort data by key value
     return data
 
 
 def update_id_set():
     branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name_reg = re.search(r"\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
@@ -509,5 +520,9 @@ if __name__ == '__main__':
         re_create_id_set()
 
     else:
-        print("Updating the id_set.json")
-        update_id_set()
+        if os.path.isfile('./Tests/id_set.json'):
+            print("Updating the id_set.json")
+            update_id_set()
+        else:
+            print("./Tests/id_set.json is missing. Recreating...")
+            re_create_id_set()

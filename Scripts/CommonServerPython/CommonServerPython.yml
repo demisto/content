@@ -4,6 +4,7 @@ commonfields:
 name: CommonServerPython
 script: ''
 type: python
+subtype: python2
 tags:
 - infra
 - server
@@ -12,6 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-releaseNotes: "Camelize support for Python3. Fixed bug in Camelize function."
+alt_dockerimages: # used for unit testing
+  - demisto/python3:3.7.3.286
 tests:
   - TestCommonPython

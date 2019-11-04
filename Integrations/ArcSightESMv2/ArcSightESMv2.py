@@ -13,6 +13,8 @@ requests.packages.urllib3.disable_warnings()
 """ GLOBALS """
 MAX_UNIQUE = int(demisto.params().get('max_unique', 2000))
 FETCH_CHUNK_SIZE = int(demisto.params().get('fetch_chunk_size', 50))
+FETCH_CHUNK_SIZE = min(50, FETCH_CHUNK_SIZE)  # fetch size should no exceed 50
+
 BASE_URL = demisto.params().get('server').rstrip('/') + '/'
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 HEADERS = {
@@ -122,7 +124,6 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
     return d
 
 
-@logger
 def login():
     query_path = 'www/core-service/rest/LoginService/login'
     headers = {
@@ -153,7 +154,6 @@ def login():
         return_error('Failed to login. Please check integration parameters')
 
 
-@logger
 def send_request(query_path, body=None, params=None, json=None, headers=None, method='post', is_login=False):
     if headers is None:
         headers = HEADERS
@@ -190,7 +190,6 @@ def send_request(query_path, body=None, params=None, json=None, headers=None, me
         return_error('Connection Error. Please check integration parameters')
 
 
-@logger
 def test():
     """
     Login (already done in global).
@@ -846,5 +845,5 @@ try:
         get_all_query_viewers_command()
 
 
-except Exception, e:
+except Exception as e:
     return_error(str(e))

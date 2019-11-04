@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d039c7dd-40cc-4bdb-814a-2bb4b4757334
+    taskid: 0dafe8b1-f28a-44b9-8787-b7c63367ab39
     type: start
     task:
-      id: d039c7dd-40cc-4bdb-814a-2bb4b4757334
+      id: 0dafe8b1-f28a-44b9-8787-b7c63367ab39
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: f18a907d-0273-4b45-87f3-a7d6c017d0bd
+    taskid: c2e7b8d9-8a9a-466d-8e55-eb861251a112
     type: regular
     task:
-      id: f18a907d-0273-4b45-87f3-a7d6c017d0bd
+      id: c2e7b8d9-8a9a-466d-8e55-eb861251a112
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -65,10 +65,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 02289f6f-d151-4a58-8114-0b71b06748ee
+    taskid: a1797403-7512-47a0-80b2-c412810e0d11
     type: regular
     task:
-      id: 02289f6f-d151-4a58-8114-0b71b06748ee
+      id: a1797403-7512-47a0-80b2-c412810e0d11
       version: -1
       name: ExtractDomainFromUrlAndEmail - test single input
       description: Extract Domain from a URL or Email
@@ -81,7 +81,7 @@ tasks:
       - "3"
     scriptarguments:
       input:
-        simple: example@hotmail.com # disable-secrets-detection
+        simple: example@hotmail.com  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -95,10 +95,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 9fce557e-90fd-451f-84de-16595b303cf9
+    taskid: 51eb753f-4e67-4b77-8afe-5a02bdeeed07
     type: regular
     task:
-      id: 9fce557e-90fd-451f-84de-16595b303cf9
+      id: 51eb753f-4e67-4b77-8afe-5a02bdeeed07
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -113,7 +113,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: hotmail.com # disable-secrets-detection
+        simple: hotmail.com
     separatecontext: false
     view: |-
       {
@@ -127,15 +127,18 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 1aab68d7-4517-4e7b-8ab1-473ffbbc332b
+    taskid: 5c86aa95-360d-4c8e-8a80-d58b1fcc965a
     type: title
     task:
-      id: 1aab68d7-4517-4e7b-8ab1-473ffbbc332b
+      id: 5c86aa95-360d-4c8e-8a80-d58b1fcc965a
       version: -1
-      name: Done
+      name: Verify Unicode
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -149,10 +152,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: a0b773c8-fb57-46cc-818d-28938280ffac
+    taskid: a6296894-a85e-4192-87d0-d8b9605e7243
     type: regular
     task:
-      id: a0b773c8-fb57-46cc-818d-28938280ffac
+      id: a6296894-a85e-4192-87d0-d8b9605e7243
       version: -1
       name: ExtractDomainFromUrlAndEmail - test multiple input
       description: Extract Domain from a URL or Email
@@ -166,7 +169,7 @@ tasks:
       - "7"
     scriptarguments:
       input:
-        simple: https://typora.io/, example@macmillan.com # disable-secrets-detection
+        simple: https://typora.io/, example@macmillan.com  # disable-secrets-detection
     separatecontext: false
     view: |-
       {
@@ -180,10 +183,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 9881f1ac-e506-4598-8536-6b4711d1e98c
+    taskid: 05b9c288-40c3-44f5-8418-44d419e09cbc
     type: regular
     task:
-      id: 9881f1ac-e506-4598-8536-6b4711d1e98c
+      id: 05b9c288-40c3-44f5-8418-44d419e09cbc
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -205,7 +208,7 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: typora.io # disable-secrets-detection
+        simple: typora.io
     separatecontext: false
     view: |-
       {
@@ -219,10 +222,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: b333491e-82ea-4acb-8ef3-df0c54efb0de
+    taskid: ebb5c282-8427-497d-824e-bdca1679e858
     type: regular
     task:
-      id: b333491e-82ea-4acb-8ef3-df0c54efb0de
+      id: ebb5c282-8427-497d-824e-bdca1679e858
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -244,7 +247,7 @@ tasks:
                 value:
                   simple: "1"
       substring:
-        simple: macmillan.com # disable-secrets-detection
+        simple: macmillan.com
     separatecontext: false
     view: |-
       {
@@ -258,10 +261,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d9da2a27-d9b7-4ed3-8a05-612dd382132c
+    taskid: d268011c-b205-4aff-82db-ed08659f0061
     type: regular
     task:
-      id: d9da2a27-d9b7-4ed3-8a05-612dd382132c
+      id: d268011c-b205-4aff-82db-ed08659f0061
       version: -1
       name: ExtractDomainFromUrlAndEmail - test with URLs that need unescaping
       description: Extract Domain from a URL or Email
@@ -291,10 +294,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 5d0319d6-721f-492c-87d4-3f6ddf5d3611
+    taskid: dc5bba83-fd49-4300-8421-88bddd45a8e3
     type: regular
     task:
-      id: 5d0319d6-721f-492c-87d4-3f6ddf5d3611
+      id: dc5bba83-fd49-4300-8421-88bddd45a8e3
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -330,10 +333,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 9f0bca6b-09c6-4368-86be-e1ac784de764
+    taskid: 3fc40fc8-ef89-455e-8a84-818d532a0e9f
     type: regular
     task:
-      id: 9f0bca6b-09c6-4368-86be-e1ac784de764
+      id: 3fc40fc8-ef89-455e-8a84-818d532a0e9f
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -355,7 +358,7 @@ tasks:
                 value:
                   simple: "1"
       substring:
-        simple: demisto.com # disable-secrets-detection
+        simple: demisto.com
     separatecontext: false
     view: |-
       {
@@ -369,10 +372,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 766792d7-5fa6-4f17-8217-c69f98528089
+    taskid: 6c2cfbc0-24ee-49f8-8efb-79698caa628d
     type: regular
     task:
-      id: 766792d7-5fa6-4f17-8217-c69f98528089
+      id: 6c2cfbc0-24ee-49f8-8efb-79698caa628d
       version: -1
       name: VerifyHumanReadableContains
       description: Verify given entry contains a string
@@ -394,7 +397,7 @@ tasks:
                 value:
                   simple: "2"
       substring:
-        simple: twitter.com # disable-secrets-detection
+        simple: twitter.com
     separatecontext: false
     view: |-
       {
@@ -406,12 +409,72 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 89b14742-cec7-4325-8b43-86c0e35fcf06
+    type: regular
+    task:
+      id: 89b14742-cec7-4325-8b43-86c0e35fcf06
+      version: -1
+      name: Extract from unicode url
+      description: Extract Domain(s) from URL(s) and/or Email(s)
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      input:
+        simple: www.bücher.de
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: af759e58-3832-4cb6-8342-124b0bc79d9f
+    type: regular
+    task:
+      id: af759e58-3832-4cb6-8342-124b0bc79d9f
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: bücher
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 1120,
         "width": 2530,
         "x": 50,
         "y": 50

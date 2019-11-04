@@ -1,0 +1,27 @@
+args:
+- default: false
+  description: Incident ID of the first incident.
+  isArray: false
+  name: incident_id_1
+  required: true
+  secret: false
+- default: false
+  description: Incident ID of the second incident.
+  isArray: false
+  name: incident_id_2
+  required: true
+  secret: false
+comment: Compares the labels of two incidents. Returns the labels that are unique to each incident.
+commonfields:
+  id: CompareIncidentsLabels
+  version: -1
+enabled: true
+name: CompareIncidentsLabels
+script: '-'
+system: false
+tags:
+- incidents
+timeout: '0'
+type: python
+runas: DBotWeakRole
+runonce: false

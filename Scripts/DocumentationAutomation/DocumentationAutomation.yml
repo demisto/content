@@ -74,11 +74,11 @@ commonfields:
   version: -1
 enabled: true
 name: DocumentationAutomation
+script: '-'
 system: false
 timeout: '0'
-script: '-'
-tags: []
 type: python
+tags: []
+runas: DBotWeakRole
 runonce: false
-tests:
-- DocumentationTest
+subtype: python2

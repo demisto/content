@@ -1,0 +1,73 @@
+commonfields:
+  id: PerceptionPoint
+  version: -1
+name: PerceptionPoint
+display: PerceptionPoint
+category: Email Gateway
+description: Loads incidents from Perception Point and releases falsely quarantined
+  emails.
+configuration:
+- display: Token to use Perception Point's API
+  name: pp_token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Number of API loops
+  name: api_loops
+  defaultvalue: "1"
+  type: 0
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch blocked incidents
+  name: fetch_blocked
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch spam incidents
+  name: fetch_spam
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch malicious incidents
+  name: fetch_malicious
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8 
+  required: false
+- display: Use system proxy
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: pp-release-email
+    arguments:
+    - name: scan_id
+      required: true
+      description: The PP scan ID of the email.
+    outputs:
+    - contextPath: PP.Released
+      description: The scan ID of the released email.
+      type: number
+    description: Re-sends an email that was falsely quarantined, using the scan ID.
+  dockerimage: demisto/python3:3.7.2.214
+  isfetch: true
+  runonce: false
+tests:
+  - PerceptionPoint Test

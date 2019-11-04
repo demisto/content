@@ -1,0 +1,637 @@
+id: Test - Windows Defender Advanced Threat Protection
+version: -1
+name: Test - Windows Defender Advanced Threat Protection
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b344474-2291-49d7-8ef4-c24531926d66
+    type: start
+    task:
+      id: 4b344474-2291-49d7-8ef4-c24531926d66
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 346a2a95-f1f7-48ab-821f-a98356dcc89b
+    type: regular
+    task:
+      id: 346a2a95-f1f7-48ab-821f-a98356dcc89b
+      version: -1
+      name: Get ATP list alerts
+      script: '|||microsoft-atp-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      severity:
+        simple: Informational
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 3b2479bc-d882-4e17-8179-63d97a28cf60
+    type: condition
+    task:
+      id: 3b2479bc-d882-4e17-8179-63d97a28cf60
+      version: -1
+      name: Assert an alert was fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 3bd0bb96-0076-4dc3-8a08-03d57d4334e9
+    type: condition
+    task:
+      id: 3bd0bb96-0076-4dc3-8a08-03d57d4334e9
+      version: -1
+      name: Assert right machine was fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Machine.ID
+            iscontext: true
+          right:
+            value:
+              simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 3b5d9165-2653-474d-8fe6-dbaaa859abd1
+    type: title
+    task:
+      id: 3b5d9165-2653-474d-8fe6-dbaaa859abd1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: a386893a-17b3-4bff-80d1-776e79f39832
+    type: condition
+    task:
+      id: a386893a-17b3-4bff-80d1-776e79f39832
+      version: -1
+      name: Assert machine was fetched and isolated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Machine.ID
+            iscontext: true
+          right:
+            value:
+              simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Machine.Isolation.Isolated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 05306c2f-3ae8-47a5-8f54-e8b089e0209b
+    type: regular
+    task:
+      id: 05306c2f-3ae8-47a5-8f54-e8b089e0209b
+      version: -1
+      name: Isolate machine
+      script: '|||microsoft-atp-isolate-machine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comment:
+        simple: test
+      isolation_type: {}
+      machine_id:
+        simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8cfb0afe-e5b7-48e7-8cd8-34557780c6a1
+    type: regular
+    task:
+      id: 8cfb0afe-e5b7-48e7-8cd8-34557780c6a1
+      version: -1
+      name: Unisolate machine
+      script: '|||microsoft-atp-unisolate-machine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      comment:
+        simple: Test
+      machine_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Machine.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 2e6ada37-daa6-4377-8477-4b80c8c205d3
+    type: regular
+    task:
+      id: 2e6ada37-daa6-4377-8477-4b80c8c205d3
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: bc5a51c4-5b58-4021-8b1e-a1ec24571180
+    type: regular
+    task:
+      id: bc5a51c4-5b58-4021-8b1e-a1ec24571180
+      version: -1
+      name: Get machines by health status
+      script: '|||microsoft-atp-get-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      health_status:
+        simple: Active
+      hostname: {}
+      ip: {}
+      risk_score: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 4bc92fce-9891-47eb-8c4b-c164382ee5fb
+    type: condition
+    task:
+      id: 4bc92fce-9891-47eb-8c4b-c164382ee5fb
+      version: -1
+      name: Assert isolation doesn't exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Machine.Isolation
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 1ffa5718-3245-4295-8eaa-227823697ffe
+    type: regular
+    task:
+      id: 1ffa5718-3245-4295-8eaa-227823697ffe
+      version: -1
+      name: Create alert with time as name
+      script: '|||microsoft-atp-create-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      category:
+        simple: None
+      description:
+        simple: Created for test
+      event_time:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EventTime
+      machine_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: MachineId
+      recommended_action:
+        simple: test alert
+      report_id:
+        complex:
+          root: MicrosoftATP
+          accessor: Hunt.Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: ReportId
+      severity:
+        simple: Medium
+      title:
+        simple: test alert
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: f64df7b9-d2f8-46a7-8a18-5df9859e7e33
+    type: condition
+    task:
+      id: f64df7b9-d2f8-46a7-8a18-5df9859e7e33
+      version: -1
+      name: Assert alert created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 43a5dfcb-1e70-4a15-8357-bd36b88a3f32
+    type: regular
+    task:
+      id: 43a5dfcb-1e70-4a15-8357-bd36b88a3f32
+      version: -1
+      name: Advance query
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      query:
+        simple: LogonEvents | take 1 | project MachineId, ReportId, tostring(EventTime)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: a1ee8452-9944-4cd5-80b7-45f855f95f17
+    type: condition
+    task:
+      id: a1ee8452-9944-4cd5-80b7-45f855f95f17
+      version: -1
+      name: Assert query results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Hunt.Result.MachineId
+            iscontext: true
+          right:
+            value:
+              simple: 43df73d1dac43593d1275e20422f44a949f6dfc3
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: f6d4acfc-9490-4039-861d-df2f96c32db5
+    type: regular
+    task:
+      id: f6d4acfc-9490-4039-861d-df2f96c32db5
+      version: -1
+      name: Wait for isolation to complete
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: e55ceab6-9e11-4201-874a-97b70114a2b3
+    type: regular
+    task:
+      id: e55ceab6-9e11-4201-874a-97b70114a2b3
+      version: -1
+      name: Wait before starting isolation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 538d0a1b-b00d-4510-8452-aa134128c257
+    type: regular
+    task:
+      id: 538d0a1b-b00d-4510-8452-aa134128c257
+      version: -1
+      name: Get machine related to file
+      description: Get a collection of machines related to a given file hash.
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: 5f64053acfaa68ee579e2b468d8b0cb8c2f75eac
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

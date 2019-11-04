@@ -54,6 +54,7 @@ def test_instances(secret_conf_path, server, username, password):
     for integration in integrations:
         integrations_counter += 1
         integration_name = integration.get('name', None)
+        integration_instance_name = integration.get('instance_name', '')
         integration_params = integration.get('params', None)
         devops_comments = integration.get('devops_comments', None)
         product_description = integration.get('product_description', None)
@@ -61,7 +62,8 @@ def test_instances(secret_conf_path, server, username, password):
         has_integration = integration.get('has_integration', True)
 
         if has_integration:
-            instance_id = __create_integration_instance(c, integration_name, integration_params, is_byoi)
+            instance_id = __create_integration_instance(c, integration_name, integration_instance_name,
+                                                        integration_params, is_byoi)
             if not instance_id:
                 print_error('Failed to create instance of %s' % (integration_name,))
                 failed_integration.append("{0} {1} - {2}".format(integration_name,
@@ -128,7 +130,7 @@ if __name__ == "__main__":
             instance_ips = [line.strip('\n').split(":") for line in instance_ips]
 
         for ami_instance_name, ami_instance_ip in instance_ips:
-            if ami_instance_name == "Demisto GA":
+            if ami_instance_name == "Server Master":
                 server = SERVER_URL.format(ami_instance_ip)
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl)

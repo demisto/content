@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from requests.auth import HTTPBasicAuth
-from typing import *
 
 
 # Disable insecure warnings
@@ -49,10 +48,6 @@ TAKEDOWN_NOTE_HEADERS = ["Takedown ID", "Note ID", "Note", "Author", "Time", "Gr
 # Titles for human readables
 TAKEDOWN_INFO_TITLE = "Takedowns information found:"
 REPORT_MALICIOUS_SUCCESS_TITLE = "New takedown successfully created"
-
-
-# Remove proxy if not set to true in params
-handle_proxy()
 
 
 ''' HELPER FUNCTIONS '''
@@ -449,7 +444,7 @@ def get_takedown_info_command():
 
 
 @logger
-def report_malicious_site(malicious_site_url, comment, is_test_request=False):
+def report_attack(malicious_site_url, comment, is_test_request=False):
     data_for_request = {
         "attack": malicious_site_url,
         "comment": comment
@@ -462,10 +457,10 @@ def report_malicious_site(malicious_site_url, comment, is_test_request=False):
     return request_result
 
 
-def report_malicious_site_command():
+def report_attack_command():
     args = demisto.args()
     entry_context: dict = {}
-    response_lines_array = report_malicious_site(args["malicious_site_url"], args["comment"])
+    response_lines_array = report_attack(args["attack"], args["comment"])
     result_answer = response_lines_array[0]
     if result_answer == MALICIOUS_REPORT_SUCCESS:
         new_takedown_id = response_lines_array[1]
@@ -492,7 +487,7 @@ def test_module():
     """
     Performs basic get request to get item samples
     """
-    test_result = report_malicious_site("https://www.test.com", "test", True)
+    test_result = report_attack("https://www.test.com", "test", True)
     if test_result[0] != MALICIOUS_REPORT_SUCCESS:
         raise Exception("Test request failed.")
     demisto.results("ok")
@@ -503,10 +498,12 @@ def test_module():
 LOG('Command being called is %s' % (demisto.command()))
 
 try:
+    # Remove proxy if not set to true in params
+    handle_proxy()
     if demisto.command() == 'test-module':
         test_module()
-    elif demisto.command() == 'netcraft-report-malicious-site':
-        report_malicious_site_command()
+    elif demisto.command() == 'netcraft-report-attack':
+        report_attack_command()
     elif demisto.command() == 'netcraft-get-takedown-info':
         get_takedown_info_command()
     elif demisto.command() == 'netcraft-get-takedown-notes':
@@ -519,6 +516,4 @@ try:
 
 # Log exceptions
 except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
     return_error(str(e))

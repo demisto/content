@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 URL = demisto.getParam('server')
 TOKEN = demisto.getParam('token')
 USE_SSL = not demisto.params().get('insecure', False)
+FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
@@ -93,9 +94,18 @@ def http_request(url, method, headers=None, body=None, params=None, files=None):
             sys.exit(0)
 
     if result.status_code < 200 or result.status_code >= 300:
-        if result.status_code in ERROR_DICT:
-            return_error(
-                f'Request Failed with status: {result.status_code} Reason is: {ERROR_DICT[str(result.status_code)]}')
+        if str(result.status_code) in ERROR_DICT:
+            if result.status_code == 418 and FILE_TYPE_SUPPRESS_ERROR:
+                demisto.results({
+                    'Type': 11,
+                    'Contents': f'Request Failed with status: {result.status_code}'
+                                f' Reason is: {ERROR_DICT[str(result.status_code)]}',
+                    'ContentsFormat': formats['text']
+                })
+                sys.exit(0)
+            else:
+                return_error(f'Request Failed with status: {result.status_code}'
+                             f' Reason is: {ERROR_DICT[str(result.status_code)]}')
         else:
             return_error(f'Request Failed with status: {result.status_code} Reason is: {result.reason}')
     if result.text.find("Forbidden. (403)") != -1:
@@ -272,14 +282,7 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    test_url = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
-    }
-    json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
-    if json_res:
+    if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
 
@@ -483,6 +486,10 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
     evidence_md5 = []
     evidence_text = []
 
+    # When only one report is in response, it's returned as a single json object and not a list.
+    if not isinstance(reports, list):
+        reports = [reports]
+
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:
@@ -502,7 +509,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
 
-        if 'evidence' in report:
+        if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
                 if isinstance(report["evidence"]["file"], dict) and 'entry' in report["evidence"]["file"]:
                     if '-md5' in report["evidence"]["file"]["entry"]:
@@ -593,7 +600,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         if verbose:
             for report in reports:
                 if isinstance(report, dict):
-                    md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
+                    md += tableToMarkdown('Report ', report, list(report), removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -620,11 +627,12 @@ def wildfire_get_report(file_hash):
         demisto.results('Report not found')
         sys.exit(0)
 
-    reports = json_res["wildfire"].get('task_info', None).get('report', None)
+    task_info = json_res["wildfire"].get('task_info', None)
+    reports = task_info.get('report', None) if task_info else None
     file_info = json_res["wildfire"].get('file_info', None)
 
     if not reports or not file_info:
-        demisto.results('No results yet')
+        demisto.results('The sample is still being analyzed. Please wait to download the report')
         sys.exit(0)
     return file_hash, reports, file_info
 

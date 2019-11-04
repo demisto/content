@@ -70,7 +70,15 @@ An explanation of these fields is as follows:
 | **display** | The display name for the field. |
 | **name** | The parameter which is used within the integration |
 | **defaultvalue** | If there is a default for the field, it should be located here |
-| **type** | An Integer that represents the type for the field. [See Entry Types Here](https://github.com/demisto/etc/wiki/_new#entry-types) |
+| **type** | An Integer that represents the type for the field. |
+| | Type 0 - Short text field |
+| | Type 4 - Encrypted text field |
+| | Type 8 - Boolean checkbox |
+| | Type 9 - Authentication text - allows switching to credentials |
+| | Type 12 - Long text block |
+| | Type 13 - special use - automatically added - Incident type single select dropdown |
+| | Type 15 - Single select dropdown | 
+| | Type 16 - Multiple select dropdown |
 | **required** | Boolean value to indicate that the parameter is required |
 
 ## Script
@@ -124,19 +132,16 @@ An explanation of these fields is as follows:
 | **description** | A description for the command |
 | **runonce** | Boolean to indicate if the function runs repeatedly|
 
-## Version, Notes and Tests
-The last section of the YAML file provides Demisto with information regarding what version is supported, release notes, and tests. See the example below:
+## Version and Tests
+The last section of the YAML file provides Demisto with information regarding what version is supported and tests. See the example below:
 
 ```yml
 fromversion: 4.1.0
-releaseNotes: "Changed some outputs"
 tests:
   - Sample Integration Test
 ```
 
 From version indicates the server version that is supported with the integration. If the server version is below the fromversion, the integration will not display in the Settings area.
-
-Release Notes tells the user what has changed in the new version of this integration. If the integration is new, simply write something to describe the integration.
 
 Tests instructs the Demisto CircleCI tool which test to run to verify that the integration is working. 
 

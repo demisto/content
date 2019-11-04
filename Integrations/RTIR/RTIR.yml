@@ -1,0 +1,575 @@
+category: Case Management
+commonfields:
+  id: RTIR
+  version: -1
+configuration:
+- display: Server URL (e.g. http://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Trust any certificate (not secure)
+  name: unsecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: new,open
+  display: 'Fetch incidents of the following status:'
+  name: fetch_status
+  required: false
+  type: 0
+- defaultvalue: '0'
+  display: 'Fetch incidents with priority greater or equal to:'
+  name: fetch_priority
+  required: false
+  type: 0
+- defaultvalue: Incident Reports
+  display: Queue name to fetch incidents from
+  name: fetch_queue
+  required: false
+  type: 0
+- display: Referer request header
+  name: referer
+  required: false
+  type: 0
+description: Request Tracker for Incident Response is a ticketing system which provides
+  pre-configured queues and workflows designed for incident response teams.
+display: RTIR
+name: RTIR
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: General
+      description: Queue where to create the ticket
+      isArray: false
+      name: queue
+      required: false
+      secret: false
+    - default: false
+      description: Subject of the ticket
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Requestor email address
+      isArray: false
+      name: requestor
+      required: false
+      secret: false
+    - default: false
+      description: Sends a carbon-copy of this update to a comma-delimited list of
+        email addresses. These people will receive future updates.
+      isArray: false
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: Sends a carbon-copy of this update to a comma-delimited list of
+        administrative email addresses. These people will receive future updates.
+      isArray: false
+      name: admin-cc
+      required: false
+      secret: false
+    - default: false
+      description: Ticker owner
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Ticket status
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Ticket priority, given as number in the range 0-100
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: The ticket content
+      isArray: false
+      name: text
+      required: false
+      secret: false
+    - default: false
+      description: Ticket initial priority, given as number in the range 0-100
+      isArray: false
+      name: initial-priority
+      required: false
+      secret: false
+    - default: false
+      description: Ticket final priority, given as number in the range 0-100
+      isArray: false
+      name: final-priority
+      required: false
+      secret: false
+    - default: false
+      description: Attachment to add to the ticket, given as Entry ID. Comma separated
+        values supported, e.g. entryID1,entryID2
+      isArray: true
+      name: attachment
+      required: false
+      secret: false
+    - default: false
+      description: 'Ticket custom fields, given in format: field1=value1,field2=value2,
+        e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom
+        fields, these should be created on RTIR.'
+      isArray: false
+      name: customfields
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new ticket on RTIR
+    execution: false
+    name: rtir-create-ticket
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.InitialPriority
+      description: Ticket priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Priority
+      description: Ticket priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.FinalPriority
+      description: Ticket final priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: RTIR.Ticket.Subject
+      description: Ticket subject
+      type: string
+    - contextPath: RTIR.Ticket.Creator
+      description: Ticker creator
+      type: string
+  - arguments:
+    - default: false
+      description: 'Ticket ID '
+      isArray: false
+      name: ticket-id
+      required: false
+      secret: false
+    - default: false
+      description: Ticket subject
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: Ticket queue (Comma separated values supported, e.g. General,Incident
+        reports,Incidents)
+      isArray: false
+      name: queue
+      required: true
+      secret: false
+    - default: false
+      description: 'Ticket status '
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Ticket creator
+      isArray: false
+      name: creator
+      required: false
+      secret: false
+    - default: false
+      description: Ticket priority (number in range 0-100)
+      isArray: false
+      name: priority-equal-to
+      required: false
+      secret: false
+    - default: false
+      description: Ticket priority (number in range 0-100)
+      isArray: false
+      name: priority-greater-than
+      required: false
+      secret: false
+    - default: false
+      description: Date after which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
+      isArray: false
+      name: created-after
+      required: false
+      secret: false
+    - default: false
+      description: Date on which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
+      isArray: false
+      name: created-on
+      required: false
+      secret: false
+    - default: false
+      description: Date before which the ticket was created, in format of YYYY-MM-DD,
+        e.g. 2011-02-24
+      isArray: false
+      name: created-before
+      required: false
+      secret: false
+    - default: false
+      description: Ticker owner
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Ticket due date, in format of YYYY-MM-DD, e.g. 2011-02-24
+      isArray: false
+      name: due
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for tickets on RTIR
+    execution: false
+    name: rtir-search-ticket
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: RTIR.Ticket.Creator
+      description: Ticket creator
+      type: string
+    - contextPath: RTIR.Ticket.Subject
+      description: Ticket subject
+      type: string
+    - contextPath: RTIR.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: RTIR.Ticket.Priority
+      description: Ticket priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.InitialPriority
+      description: Ticket initial priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.FinalPriority
+      description: Ticket final priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Queue
+      description: Ticket queue
+      type: string
+    - contextPath: RTIR.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: RTIR.Ticket.IP
+      description: Ticket custom field - IP address
+      type: string
+    - contextPath: RTIR.Ticket.HowReported
+      description: Ticket custom field - How ticket was reported
+      type: string
+    - contextPath: RTIR.Ticket.Customer
+      description: Ticket custom field - Customer
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID to close
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets a ticket as resolved on RTIR
+    execution: false
+    name: rtir-resolve-ticket
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.State
+      description: Ticket state
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    - default: false
+      description: Ticket subject
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: Ticket priority, number in range 0-100
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: Ticket final priority, number in range 0-100
+      isArray: false
+      name: final-priority
+      required: false
+      secret: false
+    - default: false
+      description: Ticket owner
+      isArray: false
+      name: owner
+      required: false
+      secret: false
+    - default: false
+      description: Ticket status
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - default: false
+      description: Ticket due date, in format of YYYY-MM-DD, e.g. 2011-02-24
+      isArray: false
+      name: due
+      required: false
+      secret: false
+    - default: false
+      description: 'Ticket custom fields, given in format: field1=value1,field2=value2,
+        e.g. IP=8.8.8.8,HowReported=Email. Note: the command does not create custom
+        fields, these should be created on RTIR.'
+      isArray: false
+      name: customfields
+      required: false
+      secret: false
+    deprecated: false
+    description: Modify a ticket on RTIR
+    execution: false
+    name: rtir-edit-ticket
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.FinalPriority
+      description: Ticket final priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Priority
+      description: Ticket priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: RTIR.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: RTIR.Ticket.Subject
+      description: Ticket subject
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID to get history of
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of all the history items for a given ticket.
+    execution: false
+    name: rtir-ticket-history
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.History.Content
+      description: Ticket history content
+      type: string
+    - contextPath: RTIR.Ticket.History.Created
+      description: Ticket history creation date
+      type: date
+    - contextPath: RTIR.Ticket.History.Creator
+      description: Ticket history creator
+      type: string
+    - contextPath: RTIR.Ticket.History.Description
+      description: Ticket history description
+      type: string
+    - contextPath: RTIR.Ticket.History.NewValue
+      description: Value updated in history transaction
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID to get
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the data for a single ticket.
+    execution: false
+    name: rtir-get-ticket
+    outputs:
+    - contextPath: RTIR.Ticket.LinkedTo.ID
+      description: Linked ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.State
+      description: Ticket state
+      type: string
+    - contextPath: RTIR.Ticket.Creator
+      description: Ticket creator
+      type: string
+    - contextPath: RTIR.Ticket.Subject
+      description: Ticket subject
+      type: string
+    - contextPath: RTIR.Ticket.Created
+      description: Ticket creation date
+      type: date
+    - contextPath: RTIR.Ticket.Priority
+      description: Ticket priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.InitialPriority
+      description: Ticket initial priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.FinalPriority
+      description: Ticket final priority (0-100)
+      type: number
+    - contextPath: RTIR.Ticket.Queue
+      description: Ticket queue
+      type: string
+    - contextPath: RTIR.Ticket.Owner
+      description: Ticket owner
+      type: string
+    - contextPath: RTIR.Ticket.IP
+      description: Ticket custom field - IP address
+      type: string
+    - contextPath: RTIR.Ticket.HowReported
+      description: Ticket custom field - How ticket was reported
+      type: string
+    - contextPath: RTIR.Ticket.Customer
+      description: Ticket custom field - Customer
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID to get attachments of
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of all attachments details and data content related to
+      the ticket.
+    execution: false
+    name: rtir-ticket-attachments
+    outputs:
+    - contextPath: RTIR.Ticket.ID
+      description: Ticket ID
+      type: number
+    - contextPath: RTIR.Ticket.Attachment.ID
+      description: Attachment ID
+      type: number
+    - contextPath: RTIR.Ticket.Attachment.Name
+      description: Attachment file name
+      type: string
+    - contextPath: RTIR.Ticket.Attachment.Size
+      description: Attachment file size
+      type: string
+    - contextPath: RTIR.Ticket.Attachment.Type
+      description: Attachment file type
+      type: string
+    - contextPath: File.EntryID
+      description: Demisto entry ID of attachment
+      type: string
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.SHA1
+      description: File SHA1
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: File SSDeep
+      type: string
+    - contextPath: File.Info
+      description: File type information
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.Extension
+      description: File extension
+      type: string
+  - arguments:
+    - default: false
+      description: Ticket ID to add comment to
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    - default: false
+      description: Comment text
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - default: false
+      description: Attachment to add to the ticket, given as Entry ID. Comma separated
+        values supported, e.g. entryID1,entryID2
+      isArray: true
+      name: attachment
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a comment to an existing ticket.
+    execution: false
+    name: rtir-add-comment
+  - arguments:
+    - default: false
+      description: Ticket ID to send the reply to the user
+      isArray: false
+      name: ticket-id
+      required: true
+      secret: false
+    - default: false
+      description: reply text
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - default: false
+      description: Email of the user to send the reply
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    deprecated: false
+    description: Send a reply from an existing ticket to the user
+    execution: false
+    name: rtir-add-reply
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- RTIR Test

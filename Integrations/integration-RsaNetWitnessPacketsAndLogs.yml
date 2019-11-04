@@ -10,7 +10,7 @@ description: RSA NetWitness Logs and Packets decoders are responsible for the re
   and reconstruct data for full session analysis. In addition, the decoder can collect
   flow and endpoint data.
 configuration:
-- display: Server URL (e.g. https://192.168.0.1)
+- display: Server URL (e.g. http(s)://192.168.0.1)
   name: url
   defaultvalue: ""
   type: 0
@@ -651,7 +651,7 @@ script:
         );
 
         if (res.StatusCode !== 200 && res.StatusCode !== 201) {
-            throw 'Failed to perform request to: ' + fullUrl + '. StatusCode: ' + res.StatusCode + '. Error: ' + res.Body;
+            throw 'Failed to perform request to: ' + fullUrl + '. StatusCode: ' + res.StatusCode + '. Status: ' + res.Status + '. Error: ' + res.Body;
         }
 
         return res;

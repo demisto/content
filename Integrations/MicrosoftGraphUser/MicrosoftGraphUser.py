@@ -5,23 +5,29 @@ from CommonServerUserPython import *
 '''IMPORTS'''
 import requests
 from datetime import datetime
+import base64
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 BASE_URL = demisto.getParam('host').rstrip('/') + '/v1.0/'
-TENANT = demisto.getParam('tenant')
-TOKEN = demisto.getParam('token')
-HEADERS = {"Authorization": TOKEN, "Accept": "application/json"}
-USE_SSL = not demisto.params().get('unsecure', False)
+TENANT = demisto.getParam('tenant_id')
+AUTH_AND_TOKEN_URL = demisto.getParam('auth_id').split('@')
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = demisto.getParam('enc_key')
+USE_SSL = not demisto.params().get('insecure', False)
 
 ''' CONSTANTS '''
-DEMISTOBOT = "https://demistobot.demisto.com/msg-user-token"
-PRODUCT = "MicrosoftGraphUser"
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
 BLOCK_ACCOUNT_JSON = '{"accountEnabled": false}'
 UNBLOCK_ACCOUNT_JSON = '{"accountEnabled": true}'
 NO_OUTPUTS: dict = {}
+APP_NAME = 'ms-graph-user'
 
 
 def camel_case_to_readable(text):
@@ -64,37 +70,110 @@ def epoch_seconds():
     return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token(refresh_token=False):
+def get_encrypted(content: str, key: str) -> str:
     """
-    Check if we have a valid token and if not get one
+
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+
+    Returns:
+        encrypted timestamp:content
     """
-    ctx = demisto.getIntegrationContext()
-    if {'token', 'stored', 'expires'} <= set(ctx) and not refresh_token:
-        if epoch_seconds() - ctx.get('stored') < ctx.get('expires'):
-            return ctx.get('token')
-    response = requests.get(
-        DEMISTOBOT,
-        headers=HEADERS,
-        params={"tenant": TENANT, "product": PRODUCT},
-        verify=USE_SSL,
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+
+        Args:
+            enc_key (str):
+            string (str):
+
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
+        headers=headers,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT, ENC_KEY)
+        }),
+        verify=USE_SSL
     )
-    data = response.json()
-    if not response.ok:
-        return_error(f'API call to MS Graph failed [{data.get("status")} {data.get("title")}] - {data.get("detail")}')
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
+        )
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
 
     demisto.setIntegrationContext({
-        'token': data.get('token'),
-        'stored': epoch_seconds(),
-        'expires': data.get('expires', 3600) - 30
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
     })
-    return data.get('token')
+    return access_token
 
 
-def http_request(method, url_suffix, params=None, body=None, do_not_refresh_token=False):
+def http_request(method, url_suffix, params=None, body=None):
     """
     Generic request to Microsoft Graph
     """
-    token = get_token()
+    token = get_access_token()
     response = requests.request(
         method,
         BASE_URL + url_suffix,
@@ -110,9 +189,6 @@ def http_request(method, url_suffix, params=None, body=None, do_not_refresh_toke
     try:
         data = response.json() if response.text else {}
         if not response.ok:
-            if demisto.get(data, "error.message") == 'InvalidAuthenticationToken' and not do_not_refresh_token:
-                get_token(refresh_token=True)  # try refreshing the token only once (avoid endless loop)
-                return http_request(method, url_suffix, params, body, do_not_refresh_token=True)
             return_error(f'API call to MS Graph failed [{response.status_code}] - {demisto.get(data, "error.message")}')
         elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
             demisto.debug(str(response.headers))
@@ -125,7 +201,7 @@ def http_request(method, url_suffix, params=None, body=None, do_not_refresh_toke
 
 
 def test_function():
-    token = get_token()
+    token = get_access_token()
     response = requests.get(
         BASE_URL + 'users',
         headers={
@@ -320,4 +396,3 @@ try:
 
 except Exception as ex:
     return_error(str(ex))
-    raise

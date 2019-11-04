@@ -39,6 +39,7 @@ configuration:
   options:
   - Traps Threats
   - Firewall Threats
+  - Cortex XDR Analytics
   required: false
   type: 15
 - defaultvalue: 24 hours
@@ -87,6 +88,55 @@ configuration:
   - data
   - wildfire
   - wildfire-virus
+  required: false
+  type: 16
+- display: Severity of alerts to fetch (XDR Analytics)
+  name: xdr_severity
+  options:
+  - all
+  - High
+  - Medium
+  - Low
+  - Info
+  required: false
+  type: 16
+- display: Category of alerts to fetch (XDR Analytics)
+  name: xdr_category
+  options:
+  - all
+  - Consecutive Connections
+  - DNS Tunneling
+  - Failed Connections
+  - Failed DNS
+  - Grayware
+  - High Connection Rate
+  - Large Upload (FTP)
+  - Large Upload (Generic)
+  - Large Upload (HTTPS)
+  - Large Upload (SMTP)
+  - Malware
+  - New Administrative Behavior
+  - Port Scan
+  - Random Looking DNS
+  - Recurring Rare Domain Access
+  - Recurring Rare IP Access
+  - Remote Command Execution
+  - Reverse Connection
+  - SMB/KRB Traffic from Non-Standard Process
+  - Script Connecting to Rare External Host
+  - SpamBot Traffic
+  - Tunneling Process
+  - Uncommon ARP Cache Listing via arp.exe
+  - Uncommon IP Configuration Listing via ipconfig.exe
+  - Uncommon Local Scheduled Task Creation via schtasks.exe
+  - Uncommon Net Group Execution
+  - Uncommon Net User
+  - Uncommon Remote Scheduled Task Creation via schtasks.exe
+  - Uncommon Routing Table Listing via route.exe
+  - Uncommon net localgroup Execution
+  - scrons.exe Rare Child Process
+  - wmiprsve.exe Rare Child Process
+  - wsmprovhost.exe Rare Child Process
   required: false
   type: 16
 description: This framework manages all PA's cloud managed products
@@ -575,11 +625,1150 @@ script:
     - contextPath: Cortex.Logging.severity
       description: Threat Severity.
       type: Unknown
+  - arguments:
+    - default: false
+      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: A rule name or an array of rule names to search.
+      isArray: false
+      name: rule
+      required: false
+      secret: false
+    - default: false
+      description: A source zone  name or an array of source zone names to search.
+      isArray: false
+      name: from_zone
+      required: false
+      secret: false
+    - default: false
+      description: A destination zone name or an array of zone names to search.
+      isArray: false
+      name: to_zone
+      required: false
+      secret: false
+    - default: false
+      description: A destination port number or an array of destination port numbers to search.
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: An action name or an array of action names to search.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: A free-text query for which to search. This forms the WHERE part of the query,
+        for example, 
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' AND dst='8.8.8.8'"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: The fields that are selected in the query. Selection can be "all"
+        (same as *) or a list of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        The following example runs the query on the previous week, timeRange="weeks" timeValue="1".
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches the Cortex panw.traffic table, which is the traffic
+      logs table for PAN-OS and Panorama.
+    execution: false
+    name: cortex-query-traffic-logs
+    outputs:
+    - contextPath: Cortex.Logging.Traffic.Action
+      description: Identifies the action that the firewall took for the network
+        traffic.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.RiskOfApp
+      description: Indicates the risk of the application, from a network security
+        perspective. The risk range is 1-5, where 5 is the riskiest.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Natsport
+      description: Post-NAT source port.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.SessionID
+      description: Identifies the firewall's internal identifier for a specific network
+        session.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Packets
+      description: Number of total packets (transmit and receive) seen for the session.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.CharacteristicOfApp
+      description: Identifies the behaviorial characteristic of the application associated
+        with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Vsys
+      description: Virtual system associated with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Nat
+      description: Indicates whether the firewall is performing network address translation
+        (NAT) for the logged traffic. If it is, this value is 1.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.ReceiveTime
+      description: Time the log was received at the management plane.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategory is related
+        to the application's category,
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Users
+      description: Srcuser or dstuser or srcip (one of).
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Proto
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.TunneledApp
+      description: Whether the application is tunneled.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Natdport
+      description: Post-NAT destination port.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Dst
+      description: Original destination IP address. The IP address is an IPv4/IPv6
+        address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Natdst
+      description: If destination NAT performed, the post-NAT destination IP address.
+        The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Rule
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Dport
+      description: Network traffic's destination port. If this value is 0, then the
+        app is using its standard port.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Elapsed
+      description: Total time taken for the network session to complete.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.DeviceName
+      description: The hostname of the firewall that logged the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Subtype
+      description: 'Traffic log subtype. Values are: start, end, drop, deny.'
+      type: String
+    - contextPath: Cortex.Logging.Traffic.TimeReceived
+      description: Time the log was received at the management plane.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.SessionEndReason
+      description: The reason a session terminated. If the termination had multiple
+        causes. This field displays only the highest priority reason.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Natsrc
+      description: If source NAT was performed, the post-NAT source IP address. The
+        IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Src
+      description: Original source IP address. The IP address is an IPv4/IPv6 address
+        in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Start
+      description: Time when the session was established.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.TimeGenerated
+      description: Time the log was generated on the data plane.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.CategoryOfApp
+      description: Identifies the high-level family of the application.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Srcloc
+      description: Source country or internal region for private addresses. The internal
+        region is a user-defined name for a specific network in the user's enterprise.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Dstloc
+      description: Destination country or internal region for private addresses. The
+        internal region is a user-defined name for a specific network in the user's
+        enterprise.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Serial
+      description: Serial number of the firewall that generated the log.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Bytes
+      description: Number of total bytes (transmit and receive).
+      type: String
+    - contextPath: Cortex.Logging.Traffic.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks
+        firewall.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.To
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Category
+      description: URL category associated with the session (if applicable).
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Sport
+      description: Source port utilized by the session.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.Tunnel
+      description: Type of tunnel.
+      type: String
+    - contextPath: Cortex.Logging.Traffic.IsPhishing
+      description: Detected enterprise credential submission by an end user.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - arguments:
+    - default: false
+      description: An IP address or an array of IP addresses for which to search, for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Rule name or array of rule names to search.
+      isArray: false
+      name: rule
+      required: false
+      secret: false
+    - default: false
+      description: Source zone or array of zones to search.
+      isArray: false
+      name: from_zone
+      required: false
+      secret: false
+    - default: false
+      description: Destination zone or array of zones to search.
+      isArray: false
+      name: to_zone
+      required: false
+      secret: false
+    - default: false
+      description: Port or array of ports to search.
+      isArray: false
+      name: port
+      required: false
+      secret: false
+    - default: false
+      description: Action or array of actions lo search.
+      isArray: false
+      name: action
+      required: false
+      secret: false
+    - default: false
+      description: Free input query to search. This is the WHERE part of the query.
+        so an example will be 
+        !cortex-query-traffic-logs query="src LIKE '192.168.1.*' 
+        AND dst = '192.168.1.12'"
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: The fields that are selected in the query. Selection can be "all"
+        (same as *) or listing of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: SHA256 hash or array of SHA256 hashes to search.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: URL or array of URLs to search.
+      isArray: false
+      name: url
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00"
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00"
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches the Cortex panw.threat table, which is the threat
+      logs table for PAN-OS/Panorama.
+    execution: false
+    name: cortex-query-threat-logs
+    outputs:
+    - contextPath: Cortex.Logging.Threat.SessionID
+      description: Identifies the firewall's internal identifier for a specific network
+        session.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Action
+      description: Identifies the action that the firewall took for the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Threat.App
+      description: Application associated with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Nat
+      description: Indicates whether the firewall is performing network address translation
+        (NAT) for the logged traffic. If it is, this value is 1.
+      type: String
+    - contextPath: Cortex.Logging.Threat.SubcategoryOfApp
+      description: Identifies the application's subcategory. The subcategoryis related
+        to the application's category, which is identified in category_of_app.
+      type: String
+    - contextPath: Cortex.Logging.Threat.PcapID
+      description: Packet capture (pcap) ID. This is used to correlate threat pcap
+        files with extended pcaps taken as a part of the session flow. All threat
+        logs will contain either a pcap_id of 0 (no associated pcap) , or an ID referencing
+        the extended pcap file.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Natdst
+      description: If destination NAT performed, the post-NAT destination IP address.
+        The IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Flags
+      description: Bit field which provides details on the session, such as whether
+        the session use IPv6, whether the session was denied due to a URL filtering
+        rule, and/or whether the log corresponds to a transaction within an HTTP proxy
+        session.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Dport
+      description: Network traffic's destination port. If this value is 0, then the
+        app is using its standard port.
+      type: String
+    - contextPath: Cortex.Logging.Threat.ThreatID
+      description: Numerical identifier for the threat type. All threats encountered
+        by Palo Alto Networks firewalls are assigned a unique identifier
+      type: String
+    - contextPath: Cortex.Logging.Threat.Natsrc
+      description: If source NAT was performed, the post-NAT source IP address. The
+        IP address is an IPv4/IPv6 address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Threat.CategoryOfApp
+      description: Identifies the managing application, or parent, of the application
+        associated with this network traffic, if any.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Srcloc
+      description: Source country or internal region for private addresses. The internal
+        region is a user-defined name for a specific network in the user's enterprise.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Dstloc
+      description: Destination country or internal region for private addresses. The
+        internal region is a user-defined name for a specific network in the user's
+        enterprise.
+      type: String
+    - contextPath: Cortex.Logging.Threat.To
+      description: Networking zone to which the traffic was sent.
+      type: String
+    - contextPath: Cortex.Logging.Threat.RiskOfApp
+      description: Indicates how risky the application is from a network security
+        perspective. Values range from 1-5, where 5 is the riskiest.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Natsport
+      description: Post-NAT source port.
+      type: String
+    - contextPath: Cortex.Logging.Threat.URLDenied
+      description: Session was denied due to a URL filtering rule.
+      type: String
+    - contextPath: Cortex.Logging.Threat.CharacteristicOfApp
+      description: Identifies the behaviorial characteristic of the application associated
+        with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Threat.HTTPMethod
+      description: Only in URL filtering logs. Describes the HTTP Method used in the
+        web request
+      type: String
+    - contextPath: Cortex.Logging.Threat.From
+      description: The networking zone from which the traffic originated.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Vsys
+      description: Virtual system associated with the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Threat.ReceiveTime
+      description: Time the log was received at the management plane.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Users
+      description: Srcuser or dstuser or srcip (one of).
+      type: String
+    - contextPath: Cortex.Logging.Threat.Proto
+      description: IP protocol associated with the session.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Natdport
+      description: Post-NAT destination port.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Dst
+      description: Original destination IP address. The IP address is an IPv4/ IPv6
+        address in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Rule
+      description: Name of the security policy rule that the network traffic matched.
+      type: String
+    - contextPath: Cortex.Logging.Threat.CategoryOfThreatID
+      description: Threat category of the detected threat.
+      type: String
+    - contextPath: Cortex.Logging.Threat.DeviceName
+      description: The hostname of the firewall that logged the network traffic.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Subtype
+      description: Subtype of the threat log.
+      type: String
+    - contextPath: Cortex.Logging.Threat.TimeReceived
+      description: Time the log was received at the management plane.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Direction
+      description: 'Indicates the direction of the attack, client-to-server or server-to-client:'
+      type: String
+    - contextPath: Cortex.Logging.Threat.Misc
+      description: 'The meaning of this field differs according to the log''s subtype:
+        Subtype is URL, this field contains the requested URI. Subtype is File, this
+        field contains the file name or file type. Subtype is Virus, this field contains
+        the file name. Subtype is WildFire, this field contains the file name.'
+      type: String
+    - contextPath: Cortex.Logging.Threat.Severity
+      description: Severity associated with the event.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Src
+      description: Original source IP address. The IP address is an IPv4/IPv6 address
+        in hex format.
+      type: String
+    - contextPath: Cortex.Logging.Threat.TimeGenerated
+      description: Time the log was generated on the data plane.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Serial
+      description: Serial number of the firewall that generated the log.
+      type: String
+    - contextPath: Cortex.Logging.Threat.VsysID
+      description: A unique identifier for a virtual system on a Palo Alto Networks
+        firewall.
+      type: String
+    - contextPath: Cortex.Logging.Threat.URLDomain
+      description: The name of the internet domain that was visited in this session.
+      type: String
+    - contextPath: Cortex.Logging.Threat.Category
+      description: For the URL subtype, this identifies the URL Category. For the
+        WildFire subtype, this identifies the verdict on the file. It is one of ‘malicious’,
+        ‘phishing’, ‘grayware’, or ‘benign’;
+      type: String
+    - contextPath: Cortex.Logging.Threat.Sport
+      description: Source port utilized by the session.
+      type: String
+    - contextPath: Cortex.Logging.Threat.IsPhishing
+      description: Detected enterprise credential submission by an end user.
+      type: Boolean
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+  - arguments:
+    - default: false
+      description: IP or array of IPs to search for example 1.1.1.1,2.2.2.2.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Host or array of hosts to search.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: User or an array or users to search.
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: Category or array of categories to search.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: Hash or array of hashes to search.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: Free-text input query to search. This is the WHERE part of the query
+        so an example will be src = '1.1.1.1' OR rule = 'test rule'.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: The fields that are selected in the query. Selection can be "all"
+        (same as *) or listing of specific fields in the table.
+        List of fields can be found after viewing all the outputed fields with all.
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00".
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches the Cortex tms.threat table, which is the threat
+      logs table for the Traps endpoint protection and response.
+    execution: false
+    name: cortex-query-traps-logs
+    outputs:
+    - contextPath: Cortex.Logging.Traps.Severity
+      description: Severity level associated with the event.
+      type: String
+    - contextPath: Cortex.Logging.Traps.AgentID
+      description: Unique identifier for the Traps agent.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.OsType
+      description: Operating system of the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.IsVdi
+      description: Indicates whether the endpoint is a virtual desktop infrastructure
+        (VDI).
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.OSVersion
+      description: Full version number of the operating system running on the endpoint.
+        For example, 6.1.7601.19135.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.Is64
+      description: Indicates whether the endpoint is running a 64-bit version of Windows.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentIP
+      description: IP address of the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.DeviceName
+      description: Hostname of the endpoint on which the event was logged.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.DeviceDomain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.Username
+      description: The username on which the event was logged.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentTime
+      description: Universal Time Coordinated (UTC) equivalent of the time at which
+        an agent logged an event. ISO-8601 string representation.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.AgentVersion
+      description: Version of the Traps agent.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EndPointHeader.ProtectionStatus
+      description: The Traps agent status.
+      type: String
+    - contextPath: Cortex.Logging.Traps.RecordType
+      description: Record type associated with the event.
+      type: String
+    - contextPath: Cortex.Logging.Traps.TrapsID
+      description: Tenant external ID.
+      type: String
+    - contextPath: Cortex.Logging.Traps.EventType
+      description: Subtype of the event.
+      type: String
+    - contextPath: Cortex.Logging.Traps.UUID
+      description: Unique identifier for the event in Cortex.
+      type: String
+    - contextPath: Cortex.Logging.Traps.ServerHost
+      description: Hostname of the Traps management service.
+      type: String
+    - contextPath: Cortex.Logging.Traps.GeneratedTime
+      description: Universal Time Coordinated (UTC) equivalent of the time at which
+        an event was logged.
+      type: String
+    - contextPath: Cortex.Logging.Traps.ServerComponentVersion
+      description: Software version of the Traps management service.
+      type: String
+    - contextPath: Cortex.Logging.Traps.RegionID
+      description: Region ID.
+      type: String
+    - contextPath: Cortex.Logging.Traps.CustomerID
+      description: Customer ID.
+      type: String
+    - contextPath: Cortex.Logging.Traps.ServerTime
+      description: Universal Time Coordinated (UTC) equivalent of the time at which
+        the server generated the log. If the log was generated on an endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Traps.OriginalAgentTime
+      description: Original time on the endpoint device.
+      type: String
+    - contextPath: Cortex.Logging.Traps.Facility
+      description: 'The Traps system component that initiated the event For example:,
+        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.'
+      type: Sting
+    - contextPath: Cortex.Logging.Traps.MessageData.PreventionKey
+      description: Unique identifier for security events.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.PID
+      description: Process identifier.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.ParentID
+      description: Parent process identifier.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.ExeFileIdx
+      description: 'Index of target files for specific security events such as: Scanning,
+        Malicious DLL, Malicious Macro events.'
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.UserIdx
+      description: Index of users.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.CommandLine
+      description: Command line executed with the process.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Processes.Terminated
+      description: Termination action taken on the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.RawFullPath
+      description: Full path for the executed file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.FileName
+      description: File name.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Files.FileSize
+      description: File size.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Users.Username
+      description: Username of the active user on the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Users.Domain
+      description: Domain to which the user account belongs.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.PostDetected
+      description: Was post detected.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Terminate
+      description: Termination action taken on the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Verdict
+      description: Traps verdict for the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.Blocked
+      description: Block action taken on the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.TargetProcessIdx
+      description: The prevention target process index in the processes array.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.ModuleCategory
+      description: Security module name.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.PreventionMode
+      description: The prevention mode used.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.TrapsSeverity
+      description: Traps Severity level associated with the event defined for the
+        Traps management service.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.User.Username
+      description: Source username initiating the process.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.PID
+      description: Source process ID (PID).
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.ParentID
+      description: Parent ID for the source process.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.CommandLine
+      description: Source process command line.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InstanceID
+      description: Traps instance ID.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.Terminated
+      description: Source process termination action taken on the file.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.RawFullPath
+      description: Source process raw full path.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.FileName
+      description: Source process file name.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.SHA256
+      description: Source process SHA256 hash.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.FileSize
+      description: Source process file size.
+      type: String
+    - contextPath: Cortex.Logging.Traps.MessageData.SourceProcess.InnerObjectSHA256
+      description: Source process inner object SHA256 hash
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: OS version.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.IPAddress
+      description: The IP address of the host.
+      type: String
+    - contextPath: Host.Domain
+      description: The domain of the host.
+      type: String
+    - contextPath: Host.OSVersion
+      description: The OS version of the host.
+      type: String
+    - contextPath: Host.OS
+      description: Host OS.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: Process.PID
+      description: The PID of the process.
+      type: Number
+    - contextPath: Process.Parent
+      description: Parent process objects.
+      type: String
+    - contextPath: Process.CommandLine
+      description: The full command line (including arguments).
+      type: String
+    - contextPath: Process.SHA256
+      description: The SHA256 hash of the process.
+      type: String
+    - contextPath: Process.Name
+      description: The name of the process.
+      type: String
+    - contextPath: Process.Path
+      description: The file system path to the binary file.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.DigitalSignature.Publisher
+      description: The publisher of the digital signature for the file.
+      type: String
+    - contextPath: File.Company
+      description: The name of the company that released a binary.
+      type: String
+  - arguments:
+    - default: false
+      description: Agent IP or array of agent IP  to search.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: Agent host name or array of agent host names to search.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Username or array of usernames to search.
+      isArray: false
+      name: user
+      required: false
+      secret: false
+    - default: false
+      description: Event category or array of event categories to search.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: Hash or array of hashes to search.
+      isArray: false
+      name: hash
+      required: false
+      secret: false
+    - default: false
+      description: Free-text input query to search. This forms the WHERE part of the query.
+        For example, endPointHeader.agentIp = '1.1.1.1'.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      defaultValue: all
+      description: The fields that are selected in the query. Selection can be "all"
+        (same as *) or a list of specific fields in the table.
+        You can find the list of fields after viewing all the outputed fields with "all".
+      isArray: false
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1970-01-01 00:00:00'
+      description: The query start time. For example, startTime="2018-04-26 00:00:00".
+      isArray: false
+      name: startTime
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '2020-01-01 00:00:00'
+      description: The query end time. For example, endTime="2018-04-26 00:00:00".
+      isArray: false
+      name: endTime
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The time range for the query, used with the rangeValue argument.
+        For example, timeRange="weeks" timeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: timeRange
+      predefined:
+      - minutes
+      - days
+      - weeks
+      required: false
+      secret: false
+    - default: false
+      description: The time value for the query, used with the timeRange argument.
+        For example, timeRange="weeks" rangeValue="1" would run the query on the previous
+        week.
+      isArray: false
+      name: rangeValue
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The number of logs to return. Default is 5.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches the Cortex tms.analytics table, which is the
+      endpoint logs table for Traps Analytics.
+    execution: false
+    name: cortex-query-analytics-logs
+    outputs:
+    - contextPath: Cortex.Logging.Analytics.AgentID
+      description: Unique identifier for the Traps agent.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OsType
+      description: Operating system of the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.IsVdi
+      description: Indicates whether the endpoint is a virtual desktop infrastructure
+        (VDI).
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.OSVersion
+      description: Full version number of the operating system running on the endpoint.
+        For example, 6.1.7601.19135.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.Is64
+      description: Indicates whether the endpoint is running a 64-bit version of Windows.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentIP
+      description: IP address of the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DeviceName
+      description: Hostname of the endpoint on which the event was logged.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DeviceDomain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.Username
+      description: The username on which the event was logged.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.UserDomain
+      description: Username of the active user on the endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentTime
+      description: Universal Time Coordinated (UTC) equivalent of the time at which
+        an agent logged an event. ISO-8601 string representation.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.AgentVersion
+      description: Version of the Traps agent.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.ProtectionStatus
+      description: Status of the Traps protection.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EndPointHeader.DataCollectionStatus
+      description: Status of the agent logging.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.TrapsID
+      description: Tenant external ID.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.EventType
+      description: Subtype of event.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.UUID
+      description: Event unique ID.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.GeneratedTime
+      description: Universal Time Coordinated (UTC) equivalent of the time at which
+        an event was logged. For agent events, this represents the time on the endpoint.
+        For policy, configuration, and system events, this represents the time on
+        the Traps management service. ISO-8601 string representation (for example,
+        2017-01-24T09:08:59Z).
+      type: String
+    - contextPath: Cortex.Logging.Analytics.RegionID
+      description: ID of the Traps management service region.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.OriginalAgentTime
+      description: Original timestamp for endpoint.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.Facility
+      description: The Traps system component that initiated the event, for example
+        TrapsAgent, TrapsServiceCore, TrapsServiceManagement, TrapsServiceBackend.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.type
+      description: Type of file.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.FileName
+      description: File name, without the path or the file type extension.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.FilePath
+      description: Full path, aligned with OS format.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.FileSize
+      description: Size of the file in bytes.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.Reported
+      description: Whether the file was reported.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.Blocked
+      description: Whether the file was blocked.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Trusted
+      description: Trusted signer result.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.Publishers
+      description: File publisher.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.LocalAnalysisResult.TrustedID
+      description: Trusted ID.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.ExecutionCount
+      description: File execution count.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.MessageData.LastSeen
+      description: The date the file was last seen.
+      type: String
+    - contextPath: Cortex.Logging.Analytics.Severity
+      description: The threat severity.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: OS version.
+      type: String
+    - contextPath: Endpoint.OS
+      description: Endpoint OS.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Host.Hostname
+      description: The name of the host.
+      type: String
+    - contextPath: Host.IPAddress
+      description: The IP address of the host.
+      type: String
+    - contextPath: Host.Domain
+      description: The domain of the host.
+      type: String
+    - contextPath: Host.OSVersion
+      description: The OS version of the host.
+      type: String
+    - contextPath: Host.OS
+      description: Host OS.
+      type: String
+    - contextPath: Host.ID
+      description: The unique ID within the tool retrieving the host.
+      type: String
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
+    - contextPath: File.Path
+      description: The path where the file is located.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.DigitalSignature.Publisher
+      description: The publisher of the digital signature for the file.
+      type: String
+    - contextPath: File.Company
+      description: The name of the company that released a binary.
+      type: String
   dockerimage: demisto/python_pancloud:1.0.0.286
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
+  subtype: python3
 tests:
 - Palo Alto Networks Cortex Test
 fromversion: 4.1.0

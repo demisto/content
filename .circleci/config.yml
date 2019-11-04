@@ -1,36 +1,50 @@
 version: 2
-experimental:
-  notify:
-    branches:
-      only:
-        - master
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.295  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.5.1"
+      CONTENT_VERSION: "19.10.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "33441eb94314f3779b8c17b0540f0394be4b6c20" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
       - run:
           name: Prepare Environment
           when: always
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              pyenv versions
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+              if [ ! -e "venv" ]; then
+                echo "installing venv"
+                NO_HOOKS=1 .hooks/bootstrap
+                source ./venv/bin/activate
+                pip install -r .circleci/build-requirements.txt
+                pip3 install -r .circleci/build-requirements.txt
+              else
+                echo "venv exists (from cache). activating"
+                source ./venv/bin/activate
+              fi
+              # store in bash env so we load our venv in each step
+              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
               python --version
               python3 --version
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+      - save_cache:
+          paths:
+            - venv
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -44,16 +58,16 @@ jobs:
           name: Infrastucture testing
           when: always
           command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
-            pytest ./Tests/scripts/test_configure_tests.py -v
+            python -m pytest ./Tests/scripts/hook_validations/tests/ -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
           command: |
               # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
               ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
@@ -64,9 +78,20 @@ jobs:
               [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
               python ./Tests/scripts/configure_tests.py -n $IS_NIGHTLY
       - run:
+          name: Spell Checks
+          command: |
+            python ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
+      - run:
           name: Build Content Descriptor
           when: always
-          command: ./setContentDescriptor.sh $CIRCLE_BUILD_NUM $GIT_SHA1 $CONTENT_VERSION $SERVER_VERSION
+          command: |
+            if [ -n "${GITHUB_TOKEN}" ] ;
+              then
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION --github-token $GITHUB_TOKEN
+
+              else
+                python3 release_notes.py $CONTENT_VERSION $GIT_SHA1 $CIRCLE_BUILD_NUM $SERVER_VERSION
+            fi
       - run:
           name: Common Server Documentation
           when: always
@@ -78,7 +103,6 @@ jobs:
       - store_artifacts:
           path: artifacts
           destination: artifacts
-      - setup_remote_docker
       - run:
           name: Run Unit Testing and Lint
           when: always
@@ -87,17 +111,26 @@ jobs:
           name: Download Artifacts
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 echo "Using AMI - Not downloading artifacts"
 
               else
                 ./Tests/scripts/server_get_artifact.sh $SERVER_CI_TOKEN
+                cp demistoserver.sh ./Tests/scripts/awsinstancetool/ansibleinstall/demistoserver.sh
             fi
       - run:
           name: Download Configuration
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/download_demisto_conf.sh
@@ -109,32 +142,50 @@ jobs:
           name: Create Instance
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
-                [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-                python ./Tests/scripts/create_instances.py -n $IS_NIGHTLY -b $CIRCLE_BRANCH
+                if [ -n "${NIGHTLY}" ] ;
+                  then
+                    export IFRA_ENV_TYPE=Content-Master
+
+                  else
+                    export IFRA_ENV_TYPE=Content-Env
+                fi
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType $IFRA_ENV_TYPE -outfile ./env_results.json
 
               else
-                ./Tests/lastest_server_build_scripts/create_instance.sh instance.json
+                python ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType CustomBuild -outfile ./env_results.json
             fi
       - run:
           name: Setup Instance
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 python ./Tests/scripts/run_content_installation.py
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path)
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION
 
               else
                 ./Tests/lastest_server_build_scripts/run_installer_on_instance.sh
-                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) --non-ami
+                python ./Tests/scripts/wait_until_server_ready.py -c $(cat secret_conf_path) -v $CONTENT_VERSION --non-ami
             fi
       - run:
           name: Run Tests - Latest GA
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto GA"
@@ -147,6 +198,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto one before GA"
@@ -159,6 +214,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Demisto two before GA"
@@ -171,6 +230,10 @@ jobs:
           shell: /bin/bash
           when: always
           command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
@@ -181,7 +244,12 @@ jobs:
       - run:
           name: Slack Notifier
           shell: /bin/bash
-          command: ./Tests/scripts/slack_notifier.sh
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
           name: Validate Docker Images
@@ -190,17 +258,30 @@ jobs:
           when: always
       - run:
           name: Instance Test
-          command: ./Tests/scripts/instance_test.sh
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            ./Tests/scripts/instance_test.sh
           when: always
       - run:
           name: Destroy Instances
-          command: python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+              echo "Skipping instance tests for forked PRs"
+              exit 0
+            fi
+            python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+
+            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+            rm -f $CIRCLE_ARTIFACTS/server*.log
           when: always
       - store_artifacts:
           path: artifacts
           destination: artifacts
           when: always
-
 
 workflows:
   version: 2

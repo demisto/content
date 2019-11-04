@@ -409,4 +409,3 @@ view: |-
   }
 inputs: []
 outputs: []
-ReleaseNotes: Remove Run sample with file task from test

@@ -485,22 +485,6 @@ tasks:
                     right:
                       value:
                         simple: Microsoft Word
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: doc
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: File.Info
-                      iscontext: true
-                    right:
-                      value:
-                        simple: docx
                 - - operator: isNotEqualString
                     left:
                       value:
@@ -636,22 +620,6 @@ tasks:
               right:
                 value:
                   simple: Microsoft Word
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: doc
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: docx
           - - operator: isNotEqualString
               left:
                 value:
@@ -780,6 +748,5 @@ outputs:
 - contextPath: URL.Data
   description: List of URLs that were extracted from the PDF file
   type: unknown
-releaseNotes: "Fixed mistaken identification of excel files as word documents."
 tests:
   - Extract Indicators From File - test

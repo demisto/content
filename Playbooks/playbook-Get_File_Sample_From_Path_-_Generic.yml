@@ -222,6 +222,5 @@ outputs:
 - contextPath: File
   description: The file to sample.
   type: unknown
-releaseNotes: "-"
 tests:
   - No Test

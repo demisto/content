@@ -2,14 +2,51 @@
 
 # validating that each modified file has a valid schema, release notes, proper prefix & suffix
 echo "Validating files..."
+DO_DEACTIVATE=""
+DO_ACTIVATE=""
+if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
+    # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
+    echo "Deactivating current virtual env: $VIRTUAL_ENV"
+    DO_ACTIVATE="${VIRTUAL_ENV}"
+    source deactivate
+fi
+if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
+    echo "Activating Demisto Content virtual env..."
+    source ./venv/bin/activate
+    DO_DEACTIVATE=1
+fi
 if [[ -z "${WINDIR}" ]]
     then
-        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py
+        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py -t true
     else
         python Tests/scripts/validate_files.py
 fi
 
-if [[ $? -ne 0 ]]
+RES=$?
+
+echo ""
+if [[ -n "$CONTENT_PRECOMMIT_RUN_DEV_TASKS" ]]; then
+    echo "Running content dev tasks (flake8, mypy, pylint, pytst) as env variable CONTENT_PRECOMMIT_RUN_DEV_TASKS is set."
+    ./Tests/scripts/run_all_pkg_dev_tasks.sh
+    RES=$(($RES + $?))
+else    
+    echo "Skipping running dev tasks (flake8, mypy, pylint, pytest). If you want to run this as part of the precommit hook"
+    echo 'set CONTENT_PRECOMMIT_RUN_DEV_TASKS=1. You can add the following line to ~/.zshrc:'
+    echo 'echo "export CONTENT_PRECOMMIT_RUN_DEV_TASKS=1" >> ~/.zshrc'
+    echo ""
+    echo 'Or if you want to manually run dev tasks: ./Tests/scripts/pkg_dev_test_tasks.py -d <integration/script dir>'
+    echo 'Example: ./Tests/scripts/pkg_dev_test_tasks.py -d Scripts/ParseEmailFiles'
+fi
+
+if [ -n "$DO_DEACTIVATE" ]; then
+    echo "Deactivating Demisto Content virtual env..."
+    source deactivate
+fi
+if [ -n "$DO_ACTIVATE" ]; then
+    echo "Activating back previous virtual env: $DO_ACTIVATE"
+    source "${DO_ACTIVATE}/bin/activate"
+fi
+if [[ $RES -ne 0 ]]
   then
     echo "Please fix the aforementioned errors and then commit again"
     exit 1
@@ -25,3 +62,5 @@ if [ -z "$1"  ]; then
         exit 1
     fi
 fi
+
+echo ""

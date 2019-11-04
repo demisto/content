@@ -20,8 +20,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -330
+          "x": 50,
+          "y": 50
         }
       }
     note: false
@@ -45,13 +45,13 @@ tasks:
       - "10"
     scriptarguments:
       alarm-id:
-        simple: "180"
+        simple: "4203"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -30
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -82,8 +82,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -190
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -105,15 +105,15 @@ tasks:
       - "11"
     scriptarguments:
       alarm-id:
-        simple: "180"
+        simple: "4203"
       comments:
         simple: test
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 310
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -135,14 +135,14 @@ tasks:
       - "12"
     scriptarguments:
       alarm-id:
-        simple: "180"
+        simple: "4203"
       include-raw-log: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 650
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -167,17 +167,17 @@ tasks:
         simple: "true"
       count: {}
       end-date:
-        simple: 2019-04-29
+        simple: "2019-10-25"
       start-date:
-        simple: 2019-04-26
+        simple: "2019-10-01"
       status:
         simple: New
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1010
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -199,7 +199,7 @@ tasks:
       - "15"
     scriptarguments:
       alarm-id:
-        simple: "180"
+        simple: "4203"
       comments: {}
       status:
         simple: New
@@ -207,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1390
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -230,7 +230,7 @@ tasks:
       - "16"
     scriptarguments:
       alarm-id:
-        simple: "180"
+        simple: "4203"
       comments: {}
       status:
         simple: Closed
@@ -238,8 +238,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1740
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -259,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 2100
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -295,12 +295,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "180"
+              simple: "4203"
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 130
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -334,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 470
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -361,18 +361,18 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: LogRhythm.Alarm.Event.Severity
+              simple: LogRhythm.Alarm.Event.ClassificationName
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: LogRhythm.Alarm.Event.Command
+              simple: LogRhythm.Alarm.Event.ImpactedHostName
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 830
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -402,12 +402,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "300"
+              simple: "4205"
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1200
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -441,8 +441,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1560
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -460,7 +460,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+      - "17"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -476,21 +476,128 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1910
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: b782261b-8cda-41ff-8ed2-1101d75f8e0b
+    type: regular
+    task:
+      id: b782261b-8cda-41ff-8ed2-1101d75f8e0b
+      version: -1
+      name: Execute query
+      description: Executes a query for logs that match query parameters.
+      script: '|||lr-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      end-date:
+        simple: "2019-05-10"
+      keyword:
+        simple: failed
+      page-size:
+        simple: "5"
+      start-date:
+        simple: "2019-05-09"
+      time-frame: {}
+      time_frame:
+        simple: Custom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: d53bb3c4-1b5f-4b4c-871a-410887e385b4
+    type: regular
+    task:
+      id: d53bb3c4-1b5f-4b4c-871a-410887e385b4
+      version: -1
+      name: Get hosts by entity
+      description: Retrieve a list of hosts for a given entity, or an empty list if
+        none is found.
+      script: '|||lr-get-hosts-by-entity-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity-id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: cddc0330-b053-4507-884c-194f56ec97c0
+    type: condition
+    task:
+      id: cddc0330-b053-4507-884c-194f56ec97c0
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.EntityID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2495,
+        "height": 3010,
         "width": 380,
-        "x": 450,
-        "y": -330
+        "x": 50,
+        "y": 50
       }
     }
   }

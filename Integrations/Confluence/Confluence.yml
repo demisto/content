@@ -1,0 +1,229 @@
+commonfields:
+  id: Atlassian Confluence Server
+  version: -1
+name: Atlassian Confluence Server
+display: Atlassian Confluence Server
+category: Utilities
+description: Atlassian Confluence Server API
+configuration:
+- display: Server URL (e.g. http://1.2.3.4:8090)
+  name: url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: confluence-create-space
+    arguments:
+    - name: name
+      required: true
+      description: 'Space name, for example: "Test Space".'
+    - name: description
+      required: true
+      description: A description for the space.
+    - name: key
+      required: true
+      description: Space key, which will be used as input when creating or updating
+        child components from a space.
+    outputs:
+    - contextPath: Confluence.Space.ID
+      description: Space ID.
+      type: String
+    - contextPath: Confluence.Space.Key
+      description: Space key.
+      type: String
+    - contextPath: Confluence.Space.Name
+      description: Space name.
+      type: String
+    description: Creates a new Confluence space.
+  - name: confluence-create-content
+    arguments:
+    - name: title
+      required: true
+      description: Confluence page title.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - page
+      - blogpost
+      description: Confluence content type. Can be "page" or "blogpost".
+      defaultValue: page
+    - name: space
+      required: true
+      description: Space key to add content to a specific space.
+    - name: body
+      description: Confluence page body to add.
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Page content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+    description: Creates Confluence content for a given space.
+  - name: confluence-list-spaces
+    arguments:
+    - name: limit
+      defaultValue: 25
+      description: Maximum number of spaces to return.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - global
+      - personal
+      description: Filter the returned list of spaces by type. Can be "global" or "personal".
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - current
+      - archived
+      description: Filter the returned list of spaces by status. Can be "current" or "archived".
+    outputs:
+    - contextPath: Confluence.Space.ID
+      description: Space ID.
+      type: String
+    - contextPath: Confluence.Space.Key
+      description: Space key.
+      type: String
+    - contextPath: Confluence.Space.Name
+      description: Space name.
+      type: String
+    description: Returns a list of all Confluence spaces.
+  - name: confluence-get-content
+    arguments:
+    - name: key
+      required: true
+      description: Space key.
+    - name: title
+      required: true
+      description: Content title.
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Version
+      description: Content version.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+    description: Returns Confluence content by space key and title.
+  - name: confluence-delete-content
+    arguments:
+    - name: id
+      required: true
+      description: Content ID
+    outputs:
+    - contextPath: Confluence.Content.Result
+      description: Content delete result.
+      type: String
+    - contextPath: Confluence.Content.ID
+      description: Content ID deleted.
+      type: String
+    description: Deletes Confluence content.
+    execution: true
+  - name: confluence-update-content
+    arguments:
+    - name: pageid
+      required: true
+      description: Page ID used to find and update the page.
+    - name: currentversion
+      required: true
+      description: The version number, extracted from a content search. The integration will increment by 1.
+    - name: title
+      required: true
+      description: Title of the page to update.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - page
+      - blogpost
+      description: Content type. Can be "page" or "blogpost".
+      defaultValue: page
+    - name: space
+      required: true
+      description: Space key to update.
+    - name: body
+      description: Content body to replace (overwrite) existing content of a Confluence page.
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Body
+      description: Content body.
+      type: String
+    description: Update (overwrite) the existing content of a Confluence page with new content.
+    execution: true
+  - name: confluence-search-content
+    arguments:
+    - name: cql
+      required: true
+      description: 'A CQL query string to use to locate content, for example: "space = DEV
+        order by created".'
+    - name: cqlcontext
+      description: The context in which to execute a CQL search. The context is the JSON serialized
+        form of SearchContext.
+    - name: expand
+      description: A CSV list of properties to expand on the content.
+      defaultValue: version
+    - name: start
+      description: The start point of the collection to return.
+    - name: limit
+      description: Maximum number of items to return. This can be restricted
+        by fixed system limits. Default is 25.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Confluence.Content.ID
+      description: Content ID.
+      type: String
+    - contextPath: Confluence.Content.Title
+      description: Content title.
+      type: String
+    - contextPath: Confluence.Content.Type
+      description: Content type.
+      type: String
+    - contextPath: Confluence.Content.Version
+      description: Content version.
+      type: String
+    description: 'Fetches a list of content using the Confluence Query Language (CQL).
+      For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
+  runonce: false
+tests:
+  - No test - the test requires personal credentials to the confluence account

@@ -25,6 +25,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 49ff8dcb-6146-4d93-8da4-2130fed54621
@@ -57,12 +59,14 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 9f026452-9cfc-4c1e-8660-2db166b1da28
+    taskid: ea898dd8-691d-4f38-81f0-3c0583dd8fcc
     type: regular
     task:
-      id: 9f026452-9cfc-4c1e-8660-2db166b1da28
+      id: ea898dd8-691d-4f38-81f0-3c0583dd8fcc
       version: -1
       name: Select query
       description: Perform a query.
@@ -75,7 +79,7 @@ tasks:
       - "4"
     scriptarguments:
       from:
-        simple: 2018-10-07T08:00:00Z
+        simple: "2019-10-14T08:00:00Z"
       limit:
         simple: "5"
       query:
@@ -83,7 +87,7 @@ tasks:
       queryId: {}
       skip: {}
       to:
-        simple: 2018-10-07T08:30:00Z
+        simple: "2019-10-14T08:30:00Z"
       writeToContext: {}
     separatecontext: false
     view: |-
@@ -94,6 +98,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: 65441542-2bc1-429a-83a8-de9e868b6da7
@@ -112,14 +118,13 @@ tasks:
       - "6"
     scriptarguments:
       from:
-        simple: 2018-10-07T08:00:00Z
+        simple: "2018-10-07T08:00:00Z"
       limit: {}
       query: {}
       queryId:
         simple: a7561571-c786-4fb7-93d0-e2f2c74c190d
       skip: {}
-      to:
-        simple: 2018-10-07T10:00:00Z
+      to: {}
       writeToContext: {}
     separatecontext: false
     view: |-
@@ -130,6 +135,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 74616a07-709a-4bc5-8178-8d761168b78f
@@ -166,6 +173,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: a65cff6d-d386-4202-8718-ce304ed5b6de
@@ -198,6 +207,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
     taskid: 32222117-e7d0-43b4-812b-a90e79811dce
@@ -231,6 +242,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

@@ -23,14 +23,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = 'https://urlscan.io/api/v1/'
 APIKEY = demisto.params().get('apikey')
 THRESHOLD = int(demisto.params().get('url_threshold', '1'))
-INSECURE = demisto.params().get('insecure', None) if demisto.params().get('insecure', None) else \
-    not demisto.params().get('insecure_new')  # Backward compatibility issue, the old logic of insecure was reversed
-PROXY = demisto.params().get('proxy')
-if not demisto.params().get('proxy', False):
-    del os.environ['HTTP_PROXY']
-    del os.environ['HTTPS_PROXY']
-    del os.environ['http_proxy']
-    del os.environ['https_proxy']
+USE_SSL = not demisto.params().get('insecure', False)
 
 
 '''HELPER FUNCTIONS'''
@@ -50,7 +43,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         BASE_URL + url_suffix,
         data=json,
         headers=headers,
-        verify=INSECURE
+        verify=USE_SSL
     )
     if r.status_code != 200:
         if r.status_code == 429:
@@ -98,7 +91,7 @@ def polling(uuid):
     uri = BASE_URL + 'result/{}'.format(uuid)
 
     ready = poll(
-        lambda: requests.get(uri, verify=INSECURE).status_code == 200,
+        lambda: requests.get(uri, verify=USE_SSL).status_code == 200,
         step=5,
         ignore_exceptions=(requests.exceptions.ConnectionError),
         timeout=int(TIMEOUT)
@@ -108,7 +101,7 @@ def polling(uuid):
 
 def poll_uri():
     uri = demisto.args().get('uri')
-    demisto.results(requests.get(uri, verify=INSECURE).status_code)
+    demisto.results(requests.get(uri, verify=USE_SSL).status_code)
 
 
 def step_constant(step):
@@ -153,8 +146,12 @@ def poll(target, step, args=(), kwargs=None, timeout=None, max_tries=None, check
 
 def urlscan_submit_url():
     submission_dict = {}
-    if demisto.args().get('public') == 'public':
-        submission_dict['public'] = 'on'
+    if demisto.args().get('public'):
+        if demisto.args().get('public') == 'public':
+            submission_dict['public'] = 'on'
+    else:
+        if demisto.params().get('is_public') is True:
+            submission_dict['public'] = 'on'
 
     submission_dict['url'] = demisto.args().get('url')
     sub_json = json.dumps(submission_dict)
@@ -178,6 +175,7 @@ def format_results(uuid):
             scan_stats = response['stats']
             scan_meta = response['meta']
             url_query = scan_tasks['url']
+            scan_verdicts = response.get('verdicts')
         except Exception:
             pass
 
@@ -207,7 +205,7 @@ def format_results(uuid):
     human_readable['Effective URL'] = response['page']['url']
     cont['EffectiveURL'] = response['page']['url']
     if 'uuid' in scan_tasks:
-        ec['URLScan']['UUID']
+        ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
         ip_asn_MD = []
         ip_ec_info = makehash()
@@ -234,7 +232,6 @@ def format_results(uuid):
     # add redirected URLs
     if 'requests' in scan_data:
         redirected_urls = []
-        demisto.log(str(scan_data['requests']))
         for o in scan_data['requests']:
             if 'redirectResponse' in o['request']:
                 if 'url' in o['request']['redirectResponse']:
@@ -255,9 +252,9 @@ def format_results(uuid):
         human_readable['Subdomains'] = subdomains
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
-    if 'malicious' in scan_stats:
+    if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
-        if int(scan_stats['malicious']) >= THRESHOLD:
+        if scan_verdicts['overall'].get('malicious'):
             human_readable['Malicious'] = 'Malicious'
             url_cont['Data'] = demisto.args().get('url')
             cont['Data'] = demisto.args().get('url')
@@ -275,13 +272,6 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
-    if 'url' in scan_meta['processors']['gsb']['data'] is None:
-        mal_url_list = []
-        matches = scan_meta['processors']['gsb']['data']['matches']
-        for match in matches:
-            mal_url = match['threat']['url']
-            mal_url_list.append(mal_url)
-        human_readable['Related Malicious URLs'] = mal_url_list
     if len(scan_meta['processors']['download']['data']) > 0:
         meta_data = scan_meta['processors']['download']['data'][0]
         sha256 = meta_data['sha256']
@@ -312,7 +302,7 @@ def format_results(uuid):
     if 'screenshotURL' in scan_tasks:
         human_readable['Screenshot'] = scan_tasks['screenshotURL']
         screen_path = scan_tasks['screenshotURL']
-        response_img = requests.request("GET", screen_path)
+        response_img = requests.request("GET", screen_path, verify=USE_SSL)
         stored_img = fileResult('screenshot.png', response_img.content)
 
     demisto.results({
@@ -360,7 +350,11 @@ def get_urlscan_submit_results_polling(uuid):
 
 
 def urlscan_submit_command():
-    get_urlscan_submit_results_polling(urlscan_submit_url())
+    urls = argToList(demisto.args().get('url'))
+    for url in urls:
+        demisto.args()['url'] = url
+        uuid = urlscan_submit_url()
+        get_urlscan_submit_results_polling(uuid)
 
 
 def urlscan_search(search_type, query):
@@ -544,6 +538,7 @@ def format_http_transaction_list():
 
 """COMMAND FUNCTIONS"""
 try:
+    handle_proxy()
     if demisto.command() == 'test-module':
         search_type = 'ip'
         query = '8.8.8.8'

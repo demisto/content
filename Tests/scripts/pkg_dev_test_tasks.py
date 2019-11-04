@@ -23,10 +23,15 @@ CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
 CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
 RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
+DOCKER_LOGIN_COMPLETED = False
 
 
-def get_docker_image(script_obj):
-    return script_obj.get('dockerimage') or DEF_DOCKER
+def get_docker_images(script_obj):
+    imgs = [script_obj.get('dockerimage') or DEF_DOCKER]
+    alt_imgs = script_obj.get('alt_dockerimages')
+    if alt_imgs:
+        imgs.extend(alt_imgs)
+    return imgs
 
 
 def print_v(msg):
@@ -34,12 +39,11 @@ def print_v(msg):
         print(msg)
 
 
-def get_python_version(project_dir, docker_image):
+def get_python_version(docker_image):
     """
     Get the python version of a docker image
 
     Arguments:
-        project_dir {string} -- project directory
         docker_image {string} -- Docker image being used by the project
 
     Return:
@@ -61,6 +65,19 @@ def get_python_version(project_dir, docker_image):
     return py_num
 
 
+def get_pipenv_dir(py_version):
+    """
+    Get the direcotry holding pipenv files for the specified python version
+
+    Arguments:
+        py_version {float} -- python version as 2.7 or 3.7
+
+    Returns:
+        string -- full path to the pipenv dir
+    """
+    return "{}{}".format(ENVS_DIRS_BASE, int(py_version))
+
+
 def get_dev_requirements(py_version):
     """
     Get the requirements for the specified py version.
@@ -74,7 +91,7 @@ def get_dev_requirements(py_version):
     Returns:
         string -- requirement required for the project
     """
-    env_dir = "{}{}".format(ENVS_DIRS_BASE, int(py_version))
+    env_dir = get_pipenv_dir(py_version)
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
     requirements = subprocess.check_output(['pipenv', 'lock', '-r', '-d'], cwd=env_dir, universal_newlines=True,
                                            stderr=stderr_out)
@@ -85,6 +102,28 @@ def get_dev_requirements(py_version):
 def get_lint_files(project_dir):
     code_file = get_code_file(project_dir, '.py')
     return os.path.basename(code_file)
+
+
+def docker_login():
+    global DOCKER_LOGIN_COMPLETED
+    if DOCKER_LOGIN_COMPLETED:
+        return True
+    docker_user = os.getenv('DOCKERHUB_USER', None)
+    if not docker_user:
+        print_v('DOCKERHUB_USER not set. Not trying to login to dockerhub')
+        return False
+    docker_pass = os.getenv('DOCKERHUB_PASSWORD', None)
+    # pass is optional for local testing scenario. allowing password to be passed via stdin
+    cmd = ['docker', 'login', '-u', docker_user]
+    if docker_pass:
+        cmd.append('--password-stdin')
+    res = subprocess.run(cmd, input=docker_pass, capture_output=True, text=True)
+    if res.returncode != 0:
+        print("Failed docker login: {}".format(res.stderr))
+        return False
+    print_v("Completed docker login")
+    DOCKER_LOGIN_COMPLETED = True
+    return True
 
 
 def docker_image_create(docker_base_image, requirements):
@@ -102,7 +141,10 @@ def docker_image_create(docker_base_image, requirements):
 
     if ':' not in docker_base_image:
         docker_base_image += ':latest'
-    target_image = 'devtest' + docker_base_image + '-' + hashlib.md5(requirements.encode('utf-8')).hexdigest()
+    with open(CONTAINER_SETUP_SCRIPT, "rb") as f:
+        setup_script_data = f.read()
+    md5 = hashlib.md5(requirements.encode('utf-8') + setup_script_data).hexdigest()
+    target_image = 'devtest' + docker_base_image + '-' + md5
     lock_file = ".lock-" + target_image.replace("/", "-")
     try:
         if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
@@ -130,6 +172,15 @@ def docker_image_create(docker_base_image, requirements):
             print_v("Failed getting lock. Will wait {}".format(str(ex)))
             time.sleep(5)
     try:
+        # try doing a pull
+        try:
+            print("{}: Trying to pull image: {}".format(datetime.now(), target_image))
+            pull_res = subprocess.check_output(['docker', 'pull', target_image],
+                                               stderr=subprocess.STDOUT, universal_newlines=True)
+            print("Pull succeeded with output: {}".format(pull_res))
+            return target_image
+        except subprocess.CalledProcessError as cpe:
+            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode, cpe.output))
         print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
@@ -143,6 +194,10 @@ def docker_image_create(docker_base_image, requirements):
                                         universal_newlines=True))
         print_v(subprocess.check_output(['docker', 'rm', container_id], stderr=subprocess.STDOUT,
                                         universal_newlines=True))
+        if docker_login():
+            print("{}: Pushing image: {} to docker hub".format(datetime.now(), target_image))
+            print_v(subprocess.check_output(['docker', 'push', target_image], stderr=subprocess.STDOUT,
+                                            universal_newlines=True))
     except subprocess.CalledProcessError as err:
         print("Failed executing command with  error: {} Output: \n{}".format(err, err.output))
         raise err
@@ -155,15 +210,18 @@ def docker_image_create(docker_base_image, requirements):
     return target_image
 
 
-def docker_run(project_dir, docker_image, no_test, no_lint, keep_container):
-    workdir = '/devwork'
+def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_root=False, cpu_num=0):
+    workdir = '/devwork'  # this is setup in CONTAINER_SETUP_SCRIPT
     pylint_files = get_lint_files(project_dir)
-    run_params = ['docker', 'create', '-v', workdir, '-w', workdir,
+    run_params = ['docker', 'create', '-w', workdir,
                   '-e', 'PYLINT_FILES={}'.format(pylint_files)]
+    if not use_root:
+        run_params.extend(['-u', '{}:4000'.format(os.getuid())])
     if no_test:
         run_params.extend(['-e', 'PYTEST_SKIP=1'])
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
+    run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
@@ -199,9 +257,9 @@ def setup_dev_files(project_dir):
     shutil.copy(CONTENT_DIR + '/Tests/demistomock/demistomock.py', project_dir)
     open(project_dir + '/CommonServerUserPython.py', 'a').close()  # create empty file
     shutil.rmtree(project_dir + '/__pycache__', ignore_errors=True)
+    shutil.copy(CONTENT_DIR + '/Tests/scripts/dev_envs/pytest/conftest.py', project_dir)
     if "/Scripts/CommonServerPython" not in project_dir:  # Otherwise we already have the CommonServerPython.py file
-        subprocess.check_call(['cp', CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py',
-                               project_dir + '/CommonServerPython.py'], cwd=CONTENT_DIR)
+        shutil.copy(CONTENT_DIR + '/Scripts/CommonServerPython/CommonServerPython.py', project_dir)
 
 
 def main():
@@ -215,8 +273,14 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("--no-mypy", help="Do NOT run mypy static type checking", action='store_true')
     parser.add_argument("--no-flake8", help="Do NOT run flake8 linter", action='store_true')
     parser.add_argument("--no-test", help="Do NOT test (skip pytest)", action='store_true')
+    parser.add_argument("-r", "--root", help="Run pytest container with root user", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
+    parser.add_argument(
+        "--cpu-num",
+        help="Number of CPUs to run pytest on (can set to `auto` for automatic detection of the number of CPUs.)",
+        default=0
+    )
 
     args = parser.parse_args()
 
@@ -239,25 +303,32 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     if script_type != 'python':
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
-    docker = get_docker_image(script_obj)
-    print_v("Using docker image: {}".format(docker))
-    py_num = get_python_version(project_dir, docker)
-    setup_dev_files(project_dir)
-    try:
-        if not args.no_flake8:
-            run_flake8(project_dir, py_num)
-        if not args.no_mypy:
-            run_mypy(project_dir, py_num)
-        if not args.no_test or not args.no_pylint:
-            requirements = get_dev_requirements(py_num)
-            docker_image_created = docker_image_create(docker, requirements)
-            docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container)
-    except subprocess.CalledProcessError as ex:
-        sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
-        return 2
-    finally:
-        sys.stdout.flush()
-        sys.stderr.flush()
+    dockers = get_docker_images(script_obj)
+    for docker in dockers:
+        print_v("Using docker image: {}".format(docker))
+        py_num = get_python_version(docker)
+        setup_dev_files(project_dir)
+        try:
+            if not args.no_flake8:
+                run_flake8(project_dir, py_num)
+            if not args.no_mypy:
+                run_mypy(project_dir, py_num)
+            if not args.no_test or not args.no_pylint:
+                requirements = get_dev_requirements(py_num)
+                docker_image_created = docker_image_create(docker, requirements)
+                docker_run(
+                    project_dir, docker_image_created, args.no_test,
+                    args.no_pylint, args.keep_container, args.root, args.cpu_num
+                )
+        except subprocess.CalledProcessError as ex:
+            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
+            if not LOG_VERBOSE:
+                sys.stderr.write("Need a more detailed log?"
+                                 " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
+            return 2
+        finally:
+            sys.stdout.flush()
+            sys.stderr.flush()
     return 0
 
 

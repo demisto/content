@@ -657,4 +657,3 @@ outputs:
 - contextPath: VMRay.ThreatIndicator.Operation
   description: Operation the indicators caused.
 fromversion: 4.0.0
-releaseNotes: Added vmray-get-iocs and vmray-get-threat-indicators to playbook

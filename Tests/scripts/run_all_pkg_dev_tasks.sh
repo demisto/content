@@ -10,7 +10,7 @@
 if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     if [ -z "$CIRCLE_BRANCH" ]; then
         CIRCLE_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        echo "CIRCLE_BRANCH set to: ${CIRCLE_BRANCH}"
+        echo "Using following branch for comparison: ${CIRCLE_BRANCH}"
     fi
     # default compare against master
     DIFF_COMPARE=origin/master...${CIRCLE_BRANCH}
@@ -25,9 +25,40 @@ if [[ -z "${SKIP_GIT_COMPARE_FILTER}" ]]; then
     fi
 fi
 
-if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ${d}) ]]; then
-    echo "CommonServerPython modified. Going to ignore git changes and run all tests"
-    DIFF_COMPARE=""
+NON_CI_MSG=$(cat <<-END
+But not running in CI. Note that CI Build will run all tests. 
+If you want to run the same logic as is done in CI. Run this script with CI=true env.
+END
+)
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython | grep -v CHANGELOG ) ]]; then
+    if [[ -n "$CI" ]]; then
+        echo "CommonServerPython modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo ""
+        echo "CommonServerPython modified. $NON_CI_MSG"
+    fi
+fi
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/dev_envs ) ]]; then
+    if [[ -n "$CI" ]]; then
+        echo "Files in Tests/scripts/dev_envs modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo ""
+        echo "Files in Tests/scripts/dev_envs modified. $NON_CI_MSG"
+    fi
+fi
+
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Tests/scripts/pkg_dev_test_tasks.py ) ]]; then
+    if [[ -n "$CI" ]]; then
+        echo "Tests/scripts/pkg_dev_test_tasks.py modified. Going to ignore git changes and run all tests"
+        DIFF_COMPARE=""
+    else
+        echo ""
+        echo "Tests/scripts/pkg_dev_test_tasks.py modified. $NON_CI_MSG"
+    fi
 fi
 
 CURRENT_DIR=`pwd`

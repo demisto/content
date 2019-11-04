@@ -1,0 +1,101 @@
+args:
+- default: false
+  defaultValue: name,details
+  description: 'Text fields to compare. Can be label name, incident fields or custom
+    fields. Comma separated value. '
+  isArray: false
+  name: textFields
+  required: true
+  secret: false
+- default: false
+  defaultValue: '0.95'
+  description: TFIDF score threshold (to consider incident as similar).
+  isArray: false
+  name: threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1000'
+  description: Maximum number of incidents to check.
+  isArray: false
+  name: maximumNumberOfIncidents
+  required: false
+  secret: false
+- default: false
+  defaultValue: '72'
+  description: Check incidents in this time frame.
+  isArray: false
+  name: timeFrameHours
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'no'
+  description: Ignore close incidents.
+  isArray: false
+  name: ignoreClosedIncidents
+  predefined:
+  - 'yes'
+  - 'no'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: occurred
+  description: Time field to consider.
+  isArray: false
+  name: timeField
+  predefined:
+  - occurred
+  - created
+  - modified
+  required: false
+  secret: false
+- default: false
+  defaultValue: '10'
+  description: Maximum number of similar candidates.
+  isArray: false
+  name: maxResults
+  required: false
+  secret: false
+- default: false
+  defaultValue: '50'
+  description: Minimum required text length to compare.
+  isArray: false
+  name: minTextLength
+  required: false
+  secret: false
+comment: |
+  Find similar incidents by text comparison - the algorithm based on TF-IDF method.
+  To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
+commonfields:
+  id: FindSimilarIncidentsByText
+  version: -1
+enabled: true
+name: FindSimilarIncidentsByText
+outputs:
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Is similar incident found? (true\false)
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: Unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+script: '-'
+system: false
+tags:
+- ml
+- dedup
+- duplicate
+- incidents
+timeout: '0'
+type: python
+dockerimage: demisto/machine-learning
+runonce: false
+tests:
+  - dedup_-_generic_-_test
