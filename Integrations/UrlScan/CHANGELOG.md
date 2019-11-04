@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed a typo in error message.
+
+## [19.10.3] - 2019-10-31
   - Fixed a breaking change in the API.
   - Added support for batches.
 
