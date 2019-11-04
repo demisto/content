@@ -37,8 +37,6 @@ def get_changed_files(files_string):
     added_script_list = set([])
     modified_script_list = set([])
     modified_files_list = set([])
-    added_packs_list = set([])
-    modified_packs_list = set([])
     for f in all_files:
         file_data = f.split()
         if not file_data:
