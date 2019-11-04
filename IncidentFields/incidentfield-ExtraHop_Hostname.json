@@ -5,7 +5,7 @@
     "name": "ExtraHop Hostname",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Hostname of the ExtraHop appliance that created this incident",
+    "description": "Hostname of the ExtraHop Reveal(x) that created the detection",
     "cliName": "extrahophostname",
     "type": "shortText",
     "closeForm": false,

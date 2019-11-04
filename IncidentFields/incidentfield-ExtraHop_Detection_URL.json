@@ -5,7 +5,7 @@
     "name": "Detection URL",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Link back to ExtraHop Detection",
+    "description": "URL of the ExtraHop Reveal(x) detection",
     "cliName": "detectionurl",
     "type": "url",
     "closeForm": false,

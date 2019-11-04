@@ -5,7 +5,7 @@
     "name": "Detection Update Time",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "",
+    "description": "Timestamp of when the ExtraHop Reveal(x) detection was last updated",
     "cliName": "detectionupdatetime",
     "type": "date",
     "closeForm": false,
