@@ -1892,6 +1892,7 @@
         }
     ],
     "skipped_tests": {
+        "SentinelOne V2 - test": "Issue 19361",
         "NetWitness Endpoint Test": "Issue 19878",
         "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
