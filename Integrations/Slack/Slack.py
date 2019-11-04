@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import slack
 from slack.errors import SlackApiError
+from slack.web.slack_response import SlackResponse
 
 from distutils.util import strtobool
 import asyncio
@@ -57,6 +58,8 @@ VERIFY_CERT: bool
 QUESTION_LIFETIME: int
 BOT_NAME: str
 BOT_ICON_URL: str
+MAX_LIMIT_TIME: int
+PAGINATED_COUNT: int
 
 ''' HELPER FUNCTIONS '''
 
@@ -66,7 +69,7 @@ def get_bot_id() -> str:
     Gets the app bot ID
     :return: The app bot ID
     """
-    response = CLIENT.auth_test()
+    response = send_slack_request_sync(CLIENT, 'auth.test')
 
     return response.get('user_id')
 
@@ -83,13 +86,15 @@ def test_module():
     message = 'Hi there! This is a test message.'
 
     kwargs = {
-        'text': message
+        'text': message,
+        'channel': channel.get('id')
     }
     if BOT_NAME:
         kwargs['username'] = BOT_NAME
     if BOT_ICON_URL:
         kwargs['icon_url'] = BOT_ICON_URL
-    CLIENT.chat_postMessage(channel=channel.get('id'), **kwargs)
+
+    send_slack_request_sync(CLIENT, 'chat.postMessage', **kwargs)
 
     demisto.results('ok')
 
@@ -114,7 +119,10 @@ def get_user_by_name(user_to_search: str) -> dict:
         if users_filter:
             user = users_filter[0]
     if not user:
-        response = CLIENT.users_list(limit=200)
+        kwargs = {
+            'limit': PAGINATED_COUNT
+        }
+        response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', **kwargs)
         while True:
             workspace_users = response['members'] if response and response.get('members', []) else []
             cursor = response.get('response_metadata', {}).get('next_cursor')
@@ -125,7 +133,8 @@ def get_user_by_name(user_to_search: str) -> dict:
                 break
             if not cursor:
                 break
-            response = CLIENT.users_list(limit=200, cursor=cursor)
+            kwargs.update({'cursor': cursor})
+            response = send_slack_request_sync(CLIENT, 'users.list', http_verb='GET', **kwargs)
 
         if users_filter:
             user = users_filter[0]
@@ -187,6 +196,54 @@ def set_to_latest_integration_context(key: str, value, wait: bool = False):
     demisto.setIntegrationContext(integration_context)
 
 
+def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str = 'POST', file: dict = None,
+                            **kwargs) -> SlackResponse:
+    while True:
+        try:
+            if http_verb == 'POST':
+                if file:
+                    response = client.api_call(method, files={"file": file}, data=kwargs)
+                else:
+                    response = client.api_call(method, json=kwargs)
+            else:
+                response = client.api_call(method, http_verb='GET', params=kwargs)
+        except SlackApiError as api_error:
+            response = api_error.response
+            if 'Retry-After' in response.headers:
+                retry_after = response.headers['Retry-After']
+                if retry_after < MAX_LIMIT_TIME:
+                    time.sleep(retry_after)
+                    continue
+                raise
+        break
+
+    return response
+
+
+async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file: dict = None,
+                                   **kwargs) -> SlackResponse:
+    while True:
+        try:
+            if http_verb == 'POST':
+                if file:
+                    response = await client.api_call(method, files={"file": file}, data=kwargs)
+                else:
+                    response = await client.api_call(method, json=kwargs)
+            else:
+                response = await client.api_call(method, http_verb='GET', params=kwargs)
+        except SlackApiError as api_error:
+            response = api_error.response
+            if 'Retry-After' in response.headers:
+                retry_after = response.headers['Retry-After']
+                if retry_after < MAX_LIMIT_TIME:
+                    await asyncio.sleep(retry_after)
+                    continue
+                raise
+        break
+
+    return response
+
+
 ''' MIRRORING '''
 
 
@@ -213,7 +270,12 @@ async def get_slack_name(slack_id: str, client) -> str:
             if conversations:
                 conversation = conversations[0]
         if not conversation:
-            conversation = (await client.conversations_info(channel=slack_id)).get('channel', {})
+            kwargs = {
+                'channel': slack_id
+            }
+
+            conversation = (await send_slack_request_async(client, 'conversations.info', http_verb='GET',
+                                                           **kwargs)).get('channel', {})
         slack_name = conversation.get('name', '')
     elif prefix == 'U':
         user: dict = {}
@@ -222,7 +284,11 @@ async def get_slack_name(slack_id: str, client) -> str:
             if users:
                 user = users[0]
         if not user:
-            user = (await client.users_info(user=slack_id)).get('user', {})
+            kwargs = {
+                'user': slack_id
+            }
+            user = (await send_slack_request_async(client, 'users.info', http_verb='GET',
+                                                           **kwargs)).get('user', {})
 
         slack_name = user.get('name', '')
 
@@ -257,7 +323,11 @@ def invite_users_to_conversation(conversation_id: str, users_to_invite: list):
     """
     for user in users_to_invite:
         try:
-            CHANNEL_CLIENT.conversations_invite(channel=conversation_id, users=user)
+            kwargs = {
+                'channel': conversation_id,
+                'users': user
+            }
+            send_slack_request_sync(CHANNEL_CLIENT, 'conversations.invite', **kwargs)
         except SlackApiError as e:
             message = str(e)
             if message.find('cant_invite_self') == -1:
@@ -272,7 +342,11 @@ def kick_users_from_conversation(conversation_id: str, users_to_kick: list):
     """
     for user in users_to_kick:
         try:
-            CHANNEL_CLIENT.conversations_kick(channel=conversation_id, user=user)
+            kwargs = {
+                'channel': conversation_id,
+                'user': user
+            }
+            send_slack_request_sync(CHANNEL_CLIENT, 'conversations.kick', **kwargs)
         except SlackApiError as e:
             message = str(e)
             if message.find('cant_invite_self') == -1:
@@ -321,10 +395,13 @@ def mirror_investigation():
         channel_name = channel_name or 'incident-{}'.format(investigation_id)
 
         if not channel_filter:
+            kwargs = {
+                'name': channel_name
+            }
             if mirror_to == 'channel':
-                conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
+                conversation = send_slack_request_sync(CHANNEL_CLIENT, 'channels.create', **kwargs).get('channel', {})
             else:
-                conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
+                conversation = send_slack_request_sync(CHANNEL_CLIENT, 'groups.create', **kwargs).get('group', {})
 
             conversation_name = conversation.get('name')
             conversation_id = conversation.get('id')
@@ -386,7 +463,11 @@ def mirror_investigation():
                 set_topic = True
 
     if set_topic:
-        CHANNEL_CLIENT.conversations_setTopic(channel=conversation_id, topic=channel_topic)
+        kwargs = {
+            'channel': conversation_id,
+            'topic': channel_topic
+        }
+        send_slack_request_sync(CHANNEL_CLIENT, 'conversations.setTopic', **kwargs)
     mirror['channel_topic'] = channel_topic
 
     if mirror_type != 'none':
@@ -405,20 +486,24 @@ def mirror_investigation():
     set_to_latest_integration_context('conversations', conversations)
 
     if kick_admin:
-        CHANNEL_CLIENT.conversations_leave(channel=conversation_id)
+        kwargs = {
+            'channel': conversation_id
+        }
+        send_slack_request_sync(CHANNEL_CLIENT, 'conversations.leave', **kwargs)
     if send_first_message:
         server_links = demisto.demistoUrls()
         server_link = server_links.get('server')
         message = ('This channel was created to mirror incident {}. \n View it on: {}#/WarRoom/{}'
                    .format(investigation_id, server_link, investigation_id))
         kwargs = {
-            'text': message
+            'text': message,
+            'channel': conversation_id
         }
         if BOT_NAME:
             kwargs['username'] = BOT_NAME
         if BOT_ICON_URL:
             kwargs['icon_url'] = BOT_ICON_URL
-        CLIENT.chat_postMessage(channel=conversation_id, **kwargs)
+        send_slack_request_sync(CLIENT, 'chat.postMessage', **kwargs)
 
     demisto.results('Investigation mirrored successfully, channel: {}'.format(conversation_name))
 
@@ -507,7 +592,10 @@ def check_for_answers(now: datetime):
             if user_filter:
                 user = user_filter[0]
             else:
-                user = CLIENT.users_info(user=user_id).get('user', {})
+                kwargs = {
+                    'user': user_id
+                }
+                user = send_slack_request_sync(CLIENT, 'users.info', http_verb='GET', **kwargs).get('user', {})
                 users.append(user)
                 set_to_latest_integration_context('users', users)
 
@@ -660,16 +748,21 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
 
     if not data:
         data = 'Sorry, I could not perform the selected operation.'
-    im = await client.im_open(user=user.get('id'))
+    kwargs = {
+        'user': user.get('id')
+    }
+    im = (await send_slack_request_async(client, 'im.open', **kwargs))
     channel = im.get('channel', {}).get('id')
     kwargs = {
-        'text': data
+        'text': data,
+        'channel': channel
     }
     if BOT_NAME:
         kwargs['username'] = BOT_NAME
     if BOT_ICON_URL:
         kwargs['icon_url'] = BOT_ICON_URL
-    await client.chat_postMessage(channel=channel, **kwargs)
+
+    await send_slack_request_async(client, 'chat.postMessage', **kwargs)
 
 
 async def translate_create(demisto_user: dict, message: str) -> str:
@@ -779,13 +872,14 @@ async def listen(**payload):
         if entitlement_reply:
             kwargs = {
                 'text': entitlement_reply,
-                'thread_ts': thread
+                'thread_ts': thread,
+                'channel': channel
             }
             if BOT_NAME:
                 kwargs['username'] = BOT_NAME
             if BOT_ICON_URL:
                 kwargs['icon_url'] = BOT_ICON_URL
-            await client.chat_postMessage(channel=channel, **kwargs)
+            await send_slack_request_async(client, 'chat.postMessage', **kwargs)
         elif channel and channel[0] == 'D':
             # DM
             await handle_dm(user, text, client)
@@ -837,7 +931,10 @@ async def get_user_by_id_async(client, integration_context, user_id):
         if user_filter:
             user = user_filter[0]
     if not user:
-        user = (await client.users_info(user=user_id)).get('user', {})
+        kwargs = {
+            'user': user_id
+        }
+        user = (await send_slack_request_async(client, 'users.info', **kwargs)).get('user', {})
         users.append(user)
         set_to_latest_integration_context('users', users)
 
@@ -908,7 +1005,12 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     :param conversation_name: The conversation name
     :return: The slack conversation
     """
-    response = CLIENT.conversations_list(types='private_channel,public_channel', limit=200)
+    kwargs = {
+        'types': 'private_channel,public_channel',
+        'limit': PAGINATED_COUNT
+    }
+
+    response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', **kwargs)
     conversation: dict = {}
     while True:
         conversations = response['channels'] if response and response.get('channels') else []
@@ -918,7 +1020,8 @@ def get_conversation_by_name(conversation_name: str) -> dict:
             break
         if not cursor:
             break
-        response = CLIENT.conversations_list(types='private_channel,public_channel', limit=200, cursor=cursor)
+        kwargs.update({'cursor': cursor})
+        response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb='GET', **kwargs)
 
     if conversation_filter:
         conversation = conversation_filter[0]
@@ -1154,7 +1257,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         kwargs['icon_url'] = BOT_ICON_URL
 
     for destination in destinations:
-        response = CLIENT.chat_postMessage(channel=destination, **kwargs)
+        kwargs['channel'] = destination
+        response = send_slack_request_sync(CLIENT, 'chat.postMessage', http_verb='GET', **kwargs)
     return response
 
 
@@ -1200,7 +1304,8 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
         if thread_id:
             kwargs['thread_ts'] = thread_id
 
-        response = CLIENT.files_upload(file=file['data'], **kwargs)
+        response = send_slack_request_sync(CLIENT, 'files.upload', file=file['data'], **kwargs)
+
     return response
 
 
@@ -1238,7 +1343,10 @@ def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignor
         if not user:
             demisto.error('Could not find the Slack user {}'.format(to))
         else:
-            im = CLIENT.im_open(user=user.get('id'))
+            kwargs = {
+                'user': user.get('id')
+            }
+            im = send_slack_request_sync(CLIENT, 'im.open', **kwargs)
             destinations.append(im.get('channel', {}).get('id'))
     if channel or group:
         if not destinations:
@@ -1305,7 +1413,11 @@ def set_channel_topic():
     if not channel_id:
         return_error('Channel not found - the Demisto app needs to be a member of the channel in order to look it up.')
 
-    CHANNEL_CLIENT.conversations_setTopic(channel=channel_id, topic=topic)
+    kwargs = {
+        'channel': channel_id,
+        'topic': topic
+    }
+    send_slack_request_sync(CHANNEL_CLIENT, 'conversations_setTopic', **kwargs)
 
     demisto.results('Topic successfully set.')
 
@@ -1338,7 +1450,11 @@ def rename_channel():
     if not channel_id:
         return_error('Channel not found - the Demisto app needs to be a member of the channel in order to look it up.')
 
-    CHANNEL_CLIENT.conversations_rename(channel=channel_id, name=new_name)
+    kwargs = {
+        'channel': channel_id,
+        'name': new_name
+    }
+    send_slack_request_sync(CHANNEL_CLIENT, 'conversations.rename', **kwargs)
 
     demisto.results('Channel renamed successfully.')
 
@@ -1372,7 +1488,10 @@ def close_channel():
     if not channel_id:
         return_error('Channel not found - the Demisto app needs to be a member of the channel in order to look it up.')
 
-    CHANNEL_CLIENT.conversations_archive(channel=channel_id)
+    kwargs = {
+        'channel': channel_id
+    }
+    send_slack_request_sync(CHANNEL_CLIENT, 'conversations.archive', **kwargs)
 
     demisto.results('Channel successfully archived.')
 
@@ -1386,16 +1505,23 @@ def create_channel():
     users = argToList(demisto.args().get('users', []))
     topic = demisto.args().get('topic')
 
+    kwargs = {
+        'name': channel_name
+    }
     if channel_type != 'private':
-        conversation = CHANNEL_CLIENT.channels_create(name=channel_name).get('channel', {})
+        conversation = send_slack_request_sync(CHANNEL_CLIENT, 'channels.create', **kwargs).get('channel', {})
     else:
-        conversation = CHANNEL_CLIENT.groups_create(name=channel_name).get('group', {})
+        conversation = send_slack_request_sync(CHANNEL_CLIENT, 'groups.create', **kwargs).get('group', {})
 
     if users:
         slack_users = search_slack_users(users)
         invite_users_to_conversation(conversation.get('id'), list(map(lambda u: u.get('id'), slack_users)))
     if topic:
-        CHANNEL_CLIENT.conversations_setTopic(channel=conversation.get('id'), topic=topic)
+        kwargs = {
+            'channel': conversation.get('id'),
+            'topic': topic
+        }
+        send_slack_request_sync(CHANNEL_CLIENT, 'conversations.setTopic', **kwargs)
 
     demisto.results('Successfully created the channel {}.'.format(conversation.get('name')))
 
@@ -1491,7 +1617,7 @@ def init_globals():
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
@@ -1506,6 +1632,8 @@ def init_globals():
     VERIFY_CERT = not demisto.params().get('unsecure', False)
     BOT_NAME = demisto.params().get('bot_name')
     BOT_ICON_URL = demisto.params().get('bot_icon')
+    MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))
+    PAGINATED_COUNT = int(demisto.params().get('paginated_count', '200'))
 
 
 def main():
