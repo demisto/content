@@ -127,9 +127,9 @@ args:
   - "yes"
   - "no"
   - "auto"
-  description: Choose yes if the context key is inside a sub-playbook. 
+  description: Specify "yes" if the context key is inside of a sub-playbook. 
     Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or
-    from the global context (if the playbook is the top playbook), depending on how the playbook is called.
+    from the global context (if the playbook is the top playbook).
 - name: keysToKeep
   description: Context keys to keep when deleting all context. Supports comma separated
     values and nested objects, e.g. URL.Data,IP.Address
