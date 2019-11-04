@@ -16,7 +16,7 @@ configuration:
   name: password
   required: true
   type: 4
-- display: Fectches incidents
+- display: Fetches incidents
   name: is_fetch
   required: false
   type: 8
@@ -392,7 +392,7 @@ script:
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - PhishlabsIOC_EIR-Test
