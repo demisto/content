@@ -1892,12 +1892,12 @@
         }
     ],
     "skipped_tests": {
-        "SentinelOne V2 - test": "Issue 19361",
         "NetWitness Endpoint Test": "Issue 19878",
         "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
+        "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "CheckpointFW-test": "Issue 18643",
