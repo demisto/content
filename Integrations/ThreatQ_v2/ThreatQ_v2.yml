@@ -1383,7 +1383,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
+      description: 'The type of the object. Can be: "indicator", "event", "attachment" or "adversary".'
       isArray: false
       name: obj_type
       predefined:
@@ -1507,6 +1507,51 @@ script:
     - contextPath: ThreatQ.Adversary.CreatedAt
       description: The last update date of the adversary.
       type: date
+    - contextPath: ThreatQ.File.CreatedAt
+      description: The date that the file was uploaded.
+      type: Date
+    - contextPath: ThreatQ.File.Size
+      description: The size of the file (in bytes).
+      type: Number
+    - contextPath: ThreatQ.File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: ThreatQ.File.ID
+      description: The file ID in ThreatQ.
+      type: Number
+    - contextPath: ThreatQ.File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Title
+      description: The title of the file.
+      type: String
+    - contextPath: ThreatQ.File.UpdatedAt
+      description: The last update of the file.
+      type: Date
+    - contextPath: ThreatQ.File.MalwareLocked
+      description: Whether malware files are zipped.
+      type: Number
+    - contextPath: ThreatQ.File.ContentType
+      description: The content type of the file.
+      type: String
+    - contextPath: ThreatQ.File.Type
+      description: The file type.
+      type: String
+    - contextPath: ThreatQ.File.Source.ID
+      description: The source of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Source.Name
+      description: The source name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.ID
+      description: The attribute ID of the file.
+      type: Number
+    - contextPath: ThreatQ.File.Attribute.Name
+      description: The attribute name of the file.
+      type: String
+    - contextPath: ThreatQ.File.Attribute.Value
+      description: The attribute value of the file.
+      type: String
   - arguments:
     - default: false
       description: The ID of the first object.

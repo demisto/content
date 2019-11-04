@@ -1,13 +1,14 @@
 import demistomock as demisto
 from CommonServerPython import *
-from typing import *
+from typing import List, Dict, Optional
 from ldap3 import Server, Connection, NTLM, SUBTREE, ALL_ATTRIBUTES, Tls, Entry
 from ldap3.extend import microsoft
 import ssl
 from datetime import datetime
 import traceback
 import os
-
+from ldap3.utils.log import (set_library_log_detail_level, get_library_log_detail_level,
+                             set_library_log_hide_sensitive_data, EXTENDED)
 
 # global connection
 conn: Optional[Connection] = None
@@ -803,7 +804,7 @@ def add_member_to_group(default_base_dn):
 
     success = microsoft.addMembersToGroups.ad_add_members_to_groups(conn, [member_dn], [grp_dn])
     if not success:
-        raise Exception("Failed to add {} to group {]}".format(
+        raise Exception("Failed to add {} to group {}}".format(
             args.get('username') or args.get('computer-name'),
             args.get('group_name')
         ))
@@ -914,59 +915,61 @@ def main():
     if PORT:
         # port was configured, cast to int
         PORT = int(PORT)
-
+    last_log_detail_level = None
     try:
-        server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
-    except Exception as e:
-        return_error(str(e))
-        return
-    global conn
-    if NTLM_AUTH:
-        # intialize connection to LDAP server with NTLM authentication
-        # user example: domain\user
-        domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
-        conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
-    else:
-        # here username should be the user dn
-        conn = Connection(server, user=USERNAME, password=PASSWORD)
+        try:
+            set_library_log_hide_sensitive_data(True)
+            if is_debug_mode():
+                demisto.info('debug-mode: setting library log detail to EXTENDED')
+                last_log_detail_level = get_library_log_detail_level()
+                set_library_log_detail_level(EXTENDED)
+            server = initialize_server(SERVER_IP, PORT, SECURE_CONNECTION, UNSECURE)
+        except Exception as e:
+            return_error(str(e))
+            return
+        global conn
+        if NTLM_AUTH:
+            # intialize connection to LDAP server with NTLM authentication
+            # user example: domain\user
+            domain_user = SERVER_IP + '\\' + USERNAME if '\\' not in USERNAME else USERNAME
+            conn = Connection(server, user=domain_user, password=PASSWORD, authentication=NTLM)
+        else:
+            # here username should be the user dn
+            conn = Connection(server, user=USERNAME, password=PASSWORD)
 
-    # bind operation is the “authenticate” operation.
-    try:
-        # open socket and bind to server
-        if not conn.bind():
-            message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
-                json.dumps(conn.result))
-            demisto.info(message)
+        # bind operation is the “authenticate” operation.
+        try:
+            # open socket and bind to server
+            if not conn.bind():
+                message = "Failed to bind to server. Please validate the credentials configured correctly.\n{}".format(
+                    json.dumps(conn.result))
+                return_error(message)
+                return
+        except Exception as e:
+            exc_msg = str(e)
+            demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
+                         + "\nTrace:\n{}".format(traceback.format_exc())))
+            message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
+            if 'ssl wrapping error' in exc_msg:
+                message = "Failed to access LDAP server. SSL error."
+                if not UNSECURE:
+                    message += ' Try using: "Trust any certificate" option.'
             return_error(message)
             return
-    except Exception as e:
-        exc_msg = str(e)
-        demisto.info("Failed bind to: {}:{}. {}: {}".format(SERVER_IP, PORT, type(e), exc_msg
-                     + "\nTrace:\n{}".format(traceback.format_exc())))
-        message = "Failed to access LDAP server. Please validate the server host and port are configured correctly"
-        if 'ssl wrapping error' in exc_msg:
-            message = "Failed to access LDAP server. SSL error."
-            if not UNSECURE:
-                message += ' Try using: "Trust any certificate" option.'
-        demisto.info(message)
-        return_error(message)
-        return
 
-    demisto.info('Established connection with AD LDAP server')
+        demisto.info('Established connection with AD LDAP server')
 
-    if not base_dn_verified(DEFAULT_BASE_DN):
-        message = "Failed to verify the base DN configured for the instance.\n" \
-            "Last connection result: {}\n" \
-            "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
-        demisto.info(message)
-        return_error(message)
-        return
+        if not base_dn_verified(DEFAULT_BASE_DN):
+            message = "Failed to verify the base DN configured for the instance.\n" \
+                "Last connection result: {}\n" \
+                "Last error from LDAP server: {}".format(json.dumps(conn.result), json.dumps(conn.last_error))
+            return_error(message)
+            return
 
-    demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
+        demisto.info('Verfied base DN "{}"'.format(DEFAULT_BASE_DN))
 
-    ''' COMMAND EXECUTION '''
+        ''' COMMAND EXECUTION '''
 
-    try:
         if demisto.command() == 'test-module':
             if conn.user == '':
                 # Empty response means you have no authentication status on the server, so you are an anonymous user.
@@ -1025,14 +1028,18 @@ def main():
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
 
     except Exception as e:
-        message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
-            str(e), json.dumps(conn.result), conn.last_error)
-        demisto.info(message)
+        message = str(e)
+        if conn:
+            message += "\nLast connection result: {}\nLast error from LDAP server: {}".format(
+                json.dumps(conn.result), conn.last_error)
         return_error(message)
         return
     finally:
         # disconnect and close the connection
-        conn.unbind()
+        if conn:
+            conn.unbind()
+        if last_log_detail_level:
+            set_library_log_detail_level(last_log_detail_level)
 
 
 # python2 uses __builtin__ python3 uses builtins
