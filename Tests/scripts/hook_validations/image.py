@@ -91,49 +91,49 @@ class ImageValidator(object):
 
         return True
 
-    def is_not_default_image(self):
-        """Check if the image is the default one"""
-        if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
-            # Check if the file is of type image
-            with open(self.file_path, "rb") as image:
-                image_data = image.read()
-                encoded_image = base64.b64encode(image_data)
-                if isinstance(encoded_image, bytes):
-                    encoded_image = encoded_image.decode("utf-8")
-                if encoded_image == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
-                    print_error("{} is the default image, please change to the "
-                                "integration image.".format(self.file_path))
-                    self._is_valid = False
-                    return False
-                else:
-                    return True
+    def load_image_from_yml(self):
+        data_dictionary = get_yaml(self.file_path)
+
+        if not data_dictionary:
+            print_error("{} isn't an image file or unified integration file.".format(self.file_path))
+            self._is_valid = False
+
+        image = data_dictionary.get('image', '')
+
+        if not image:
+            print_error("{} is a yml file but has no image field.".format(self.file_path))
+            self._is_valid = False
+
+        image_data = image.split('base64,')
+        if image_data and len(image_data) == 2:
+            return image_data[1]
 
         else:
-            # If the file isn't of type image than we expect it to be of type yml (unified integration file)
-            data_dictionary = get_yaml(self.file_path)
+            print_error("{}'s image field isn't in base64 encoding.".format(self.file_path))
+            self._is_valid = False
 
-            if not data_dictionary:
-                print_error("{} isn't an image file or unified integration file.".format(self.file_path))
-                self._is_valid = False
-                return False
+    def load_image(self):
+        if re.match(IMAGE_REGEX, self.file_path, re.IGNORECASE):
+            with open(self.file_path, "rb") as image:
+                image_data = image.read()
+                image = base64.b64encode(image_data)
+                if isinstance(image, bytes):
+                    image = image.decode("utf-8")
 
-            image = data_dictionary.get('image', '')
+        else:
+            image = self.load_image_from_yml()
 
-            if not image:
-                print_error("{} is a yml file but has no image field.".format(self.file_path))
-                self._is_valid = False
-                return False
+        return image
 
-            image_split = image.split('base64,')
-            if image_split and len(image_split) == 2:
-                if image_split[1] == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
-                    print_error("{} has the default image, please change to the integration image."
-                                .format(self.file_path))
-                    self._is_valid = False
-                    return False
-                else:
-                    return True
-            else:
-                print_error("{}'s image field isn't in base64 encoding.".format(self.file_path))
-                self._is_valid = False
-                return False
+    def is_not_default_image(self):
+        """Check if the image is the default one"""
+        image = self.load_image()
+
+        if image == DEFAULT_IMAGE_BASE64:  # disable-secrets-detection
+            print_error("{} is the default image, please change to the "
+                        "integration image.".format(self.file_path))
+            self._is_valid = False
+            return False
+
+        else:
+            return True
