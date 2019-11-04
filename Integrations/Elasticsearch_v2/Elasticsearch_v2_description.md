@@ -8,7 +8,7 @@ For further information about type mapping, see: https://www.elastic.co/guide/en
 
 The types of time-fields supported are:
     
-   - **Simple-Date** - A simple date string. If this option is chosen please insert the format in which the field is saved. For more info about time formatting ,see: http://strftime.org/
+   - **Simple-Date** - A simple date string. Requires inserting the format in which the field is saved. For more info about time formatting ,see: http://strftime.org/
    - **Timestamp-Second** - A number referring to seconds since epoch (midnight, 1 January 1970). For example: '1572164838'.
    - **Timestamp-Milliseconds** - A number referring to milliseconds since epoch (midnight, 1 January 1970). For example: '1572164838123'.
 
