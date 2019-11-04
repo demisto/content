@@ -104,7 +104,463 @@ This integration was integrated and tested with version xx of Proofpoint TAP v2
 
 <p>&nbsp;</p>
 <h5>Context Output</h5>
-There are no context output for this command.
+<table style="width:750px" border="2" cellpadding="6">
+  <thead>
+    <tr>
+      <th>
+        <strong>Path</strong>
+      </th>
+      <th>
+        <strong>Type</strong>
+      </th>
+      <th>
+        <strong>Description</strong>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.GUID</td>
+      <td>String</td>
+      <td>The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.QID</td>
+      <td>String</td>
+      <td>The queue ID of the message within PPS. It can be used to identify the message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.ccAddresses</td>
+      <td>String</td>
+      <td>A list of email addresses contained within the CC: header, excluding friendly names.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.clusterId</td>
+      <td>String</td>
+      <td>The name of the PPS cluster which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.fromAddress</td>
+      <td>String</td>
+      <td>The email address contained in the From: header, excluding friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.headerCC</td>
+      <td>String</td>
+      <td>headerCC</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.headerFrom</td>
+      <td>String</td>
+      <td>The full content of the From: header, including any friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.headerReplyTo</td>
+      <td>String</td>
+      <td>If present, the full content of the Reply-To: header, including any friendly names.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.impostorScore</td>
+      <td>Number</td>
+      <td>The impostor score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.malwareScore</td>
+      <td>Number</td>
+      <td>The malware score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.messageId</td>
+      <td>String</td>
+      <td>Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threat</td>
+      <td>String</td>
+      <td>The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threatId</td>
+      <td>String</td>
+      <td>The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threatStatus</td>
+      <td>String</td>
+      <td>The current state of the threat (active, expired, falsepositive, cleared).</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threatTime</td>
+      <td>Date</td>
+      <td>Proofpoint assigned the threatStatus at this time (ISO8601 format).</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threatType</td>
+      <td>String</td>
+      <td>Whether the threat was an attachment, URL, or message type.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.threatsInfoMap.threatUrl</td>
+      <td>String</td>
+      <td>A link to the entry about the threat on the TAP Dashboard.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.messageTime</td>
+      <td>Date</td>
+      <td>When the message was delivered to the user or quarantined by PPS.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.messageTime</td>
+      <td>String</td>
+      <td>The list of PPS modules which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.modulesRun</td>
+      <td>String</td>
+      <td>The list of PPS modules which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.phishScore</td>
+      <td>Number</td>
+      <td>The phish score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.policyRoutes</td>
+      <td>String</td>
+      <td>The policy routes that the message matched during processing by PPS.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.quarantineFolder</td>
+      <td>String</td>
+      <td>The name of the folder which contains the quarantined message. This appears only for messagesBlocked.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.quarantineRule</td>
+      <td>String</td>
+      <td>The name of the rule which quarantined the message. This appears only for messagesBlocked events.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.recipient</td>
+      <td>String</td>
+      <td>A list containing the email addresses of the recipients.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.replyToAddress</td>
+      <td>String</td>
+      <td>The email address contained in the Reply-To: header, excluding friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.sender</td>
+      <td>String</td>
+      <td>The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.senderIP</td>
+      <td>String</td>
+      <td>The IP address of the sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.spamScore</td>
+      <td>Number</td>
+      <td>The spam score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesDelivered.subject</td>
+      <td>String</td>
+      <td>The subject line of the message, if available.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.GUID</td>
+      <td>String</td>
+      <td>The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.QID</td>
+      <td>String</td>
+      <td>The queue ID of the message within PPS. It can be used to identify the message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.ccAddresses</td>
+      <td>String</td>
+      <td>A list of email addresses contained within the CC: header, excluding friendly names.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.clusterId</td>
+      <td>String</td>
+      <td>The name of the PPS cluster which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.fromAddress</td>
+      <td>String</td>
+      <td>The email address contained in the From: header, excluding friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.headerCC</td>
+      <td>String</td>
+      <td>headerCC</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.headerFrom</td>
+      <td>String</td>
+      <td>The full content of the From: header, including any friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.headerReplyTo</td>
+      <td>String</td>
+      <td>If present, the full content of the Reply-To: header, including any friendly names.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.impostorScore</td>
+      <td>Number</td>
+      <td>The impostor score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.malwareScore</td>
+      <td>Number</td>
+      <td>The malware score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.messageId</td>
+      <td>String</td>
+      <td>Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threat</td>
+      <td>String</td>
+      <td>The artifact which was condemned by Proofpoint. The malicious URL, hash of the attachment threat, or email address of the impostor sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threatId</td>
+      <td>String</td>
+      <td>The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threatStatus</td>
+      <td>String</td>
+      <td>The current state of the threat (active, expired, falsepositive, cleared).</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threatTime</td>
+      <td>Date</td>
+      <td>Proofpoint assigned the threatStatus at this time (ISO8601 format).</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threatType</td>
+      <td>String</td>
+      <td>Whether the threat was an attachment, URL, or message type.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.threatsInfoMap.threatUrl</td>
+      <td>String</td>
+      <td>A link to the entry about the threat on the TAP Dashboard.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.messageTime</td>
+      <td>Date</td>
+      <td>When the message was Blocked to the user or quarantined by PPS.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.messageTime</td>
+      <td>String</td>
+      <td>The list of PPS modules which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.modulesRun</td>
+      <td>String</td>
+      <td>The list of PPS modules which processed the message.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.phishScore</td>
+      <td>Number</td>
+      <td>The phish score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.policyRoutes</td>
+      <td>String</td>
+      <td>The policy routes that the message matched during processing by PPS.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.quarantineFolder</td>
+      <td>String</td>
+      <td>The name of the folder which contains the quarantined message. This appears only for messagesBlocked.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.quarantineRule</td>
+      <td>String</td>
+      <td>The name of the rule which quarantined the message. This appears only for messagesBlocked events.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.recipient</td>
+      <td>String</td>
+      <td>A list containing the email addresses of the recipients.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.replyToAddress</td>
+      <td>String</td>
+      <td>The email address contained in the Reply-To: header, excluding friendly name.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.sender</td>
+      <td>String</td>
+      <td>The email address of the SMTP (envelope) sender. The user-part is hashed. The domain-part is cleartext.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.senderIP</td>
+      <td>String</td>
+      <td>The IP address of the sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.spamScore</td>
+      <td>Number</td>
+      <td>The spam score of the message. Higher scores indicate higher certainty.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.MessagesBlocked.subject</td>
+      <td>String</td>
+      <td>The subject line of the message, if available.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.GUID</td>
+      <td>String</td>
+      <td>The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.campaignId</td>
+      <td>String</td>
+      <td>An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.classification</td>
+      <td>String</td>
+      <td>The threat category of the malicious URL.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.clickIP</td>
+      <td>String</td>
+      <td>The external IP address of the user who clicked on the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.clickTime</td>
+      <td>Date</td>
+      <td>The time the user clicked on the URL</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.messageID</td>
+      <td>String</td>
+      <td>Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.recipient</td>
+      <td>String</td>
+      <td>The email address of the recipient.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.sender</td>
+      <td>String</td>
+      <td>The email address of the sender. The user-part is hashed. The domain-part is cleartext.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.senderIP</td>
+      <td>String</td>
+      <td>The IP address of the sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.threatID</td>
+      <td>String</td>
+      <td>The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints. </td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.threatTime</td>
+      <td>Date</td>
+      <td>Proofpoint identified the URL as a threat at this time.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.threatURL</td>
+      <td>String</td>
+      <td>A link to the entry on the TAP Dashboard for the particular threat.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.url</td>
+      <td>String</td>
+      <td>The malicious URL which was clicked.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksPermitted.userAgent</td>
+      <td>String</td>
+      <td>The User-Agent header from the clicker's HTTP request.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.GUID</td>
+      <td>String</td>
+      <td>The ID of the message within PPS. It can be used to identify the message in PPS and is guaranteed to be unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.campaignId</td>
+      <td>String</td>
+      <td>An identifier for the campaign of which the threat is a member, if available at the time of the query. Threats can be linked to campaigns even after these events are retrieved.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.classification</td>
+      <td>String</td>
+      <td>The threat category of the malicious URL.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.clickIP</td>
+      <td>String</td>
+      <td>The external IP address of the user who clicked on the link. If the user is behind a firewall performing network address translation, the IP address of the firewall will be shown.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.clickTime</td>
+      <td>Date</td>
+      <td>The time the user clicked on the URL</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.messageID</td>
+      <td>String</td>
+      <td>Message-ID extracted from the headers of the email message. It can be used to look up the associated message in PPS and is not unique.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.recipient</td>
+      <td>String</td>
+      <td>The email address of the recipient.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.sender</td>
+      <td>String</td>
+      <td>The email address of the sender. The user-part is hashed. The domain-part is cleartext.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.senderIP</td>
+      <td>String</td>
+      <td>The IP address of the sender.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.threatID</td>
+      <td>String</td>
+      <td>The unique identifier associated with this threat. It can be used to query the forensics and campaign endpoints. </td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.threatTime</td>
+      <td>Date</td>
+      <td>Proofpoint identified the URL as a threat at this time.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.threatURL</td>
+      <td>String</td>
+      <td>A link to the entry on the TAP Dashboard for the particular threat.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.url</td>
+      <td>String</td>
+      <td>The malicious URL which was clicked.</td>
+    </tr>
+    <tr>
+      <td>Proofpoint.ClicksBlocked.userAgent</td>
+      <td>String</td>
+      <td>The User-Agent header from the clicker's HTTP request.</td>
+    </tr>
+  </tbody>
+</table>
 <p>&nbsp;</p>
 <h5>Command Example</h5>
 <p>
