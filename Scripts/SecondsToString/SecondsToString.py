@@ -21,11 +21,11 @@ def display_time(seconds):
     return ' '.join(result)
 
 
-def main():
-    unformatted_time = int(demisto.args()['value'])
+def main(value):
+    unformatted_time = int(value)
     formatted_time = display_time(unformatted_time)
-    demisto.results(formatted_time)
+    return formatted_time
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
-    main()
+    demisto.results(main(**demisto.args()))
