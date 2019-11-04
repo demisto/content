@@ -1,0 +1,91 @@
+commonfields:
+  id: 545c0ed6-e31f-490f-8ca7-4b34680df5ae
+  version: 151
+name: TransformerTemplateProcessor
+script: |
+  import re
+
+
+  BODY = demisto.args()['value']
+  res_body = BODY  # a copy of BODY to be modified and returned
+
+  pattern = r'\{\{(.*)\}\}' # for pulling out {{}} templates
+  subpattern = r'(\S+)(?:\s*\|\s*(.*))?' # for pulling out vars and transformers from the extracted template
+
+  context = demisto.context()
+  incident = demisto.incidents()[0]
+
+  def context_lookup(key):
+      if key.startswith('incident.'):
+          key = key[9:] # remove 'incident.' prefix from key
+          res = demisto.get(incident, key)
+          if not res:
+              # check custom fields
+              res = demisto.get(incident['CustomFields'], key)
+          return res
+
+      try:
+          return demisto.get(context, key)
+      except:
+          return None
+
+
+  for m in re.finditer(pattern, BODY):
+      # extract matches to run transformers on
+
+      match = m.group(1)
+
+      return_value = ''
+
+      sub_m = re.search(subpattern, match)
+
+      if sub_m:
+          context_key = sub_m.group(1)
+          transformer = sub_m.group(2)
+
+      if context_key and not transformer:
+          # didn't find a transformer
+          context_value = context_lookup(context_key)
+          transformed_value = context_value
+
+          if not context_value:
+              transformed_value = 'None'
+
+      elif context_key and transformer:
+          # found a key and a transformer
+          context_value = context_lookup(context_key)
+
+          if context_value:
+              # now run the transformer
+              transformed_value = demisto.executeCommand(transformer, { 'value': str(context_value) } )[0]['Contents']
+
+          else:
+              transformed_value = 'None'
+
+      elif context_key:
+          # no transformer was found
+          transformed_value = context_lookup(context_key)
+
+      res_body = res_body.replace(m.group(0), transformed_value, 1)  # insert result into template
+
+  demisto.results(res_body) # return completed template
+type: python
+tags: []
+comment: "Allows multiple transformers to be used from within a single input string.\n\nInput
+  is a string template which accepts pipe format `{{someIncidentVar | someTransformer}}`.
+  \ Multiple statements are accepted in the template.  Use standard `${someVar}` notation
+  for variables which do not require transforming.  \n\nNote that only a single pipe
+  per `{{ someVar | someTransformer }}` is currently supported, and the pipe must
+  be able to be run with default arguments.\n\nFor example, assuming that there is
+  a transformer called 'SecondsToString', the input value might be: `The duration
+  of my timer was {{incident.mycustomtimer.totalDuration | SecondsToString}}`.  "
+enabled: true
+args:
+- name: value
+  required: true
+  description: The input template to be parsed
+scripttarget: 0
+subtype: python2
+runonce: false
+dockerimage: demisto/python3:3.7.4.1502
+runas: DBotWeakRole

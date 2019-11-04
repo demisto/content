@@ -1,0 +1,28 @@
+commonfields:
+  id: TransformerTemplateProcessor
+  version: -1
+name: TransformerTemplateProcessor
+script: ''
+type: python
+tags: []
+comment: "Allows multiple transformers to be used from within a single input string.\n\
+  \nInput is a string template which accepts pipe format `{{someIncidentVar | someTransformer}}`.\
+  \  Multiple statements are accepted in the template.  Use standard `${someVar}`\
+  \ notation for variables which do not require transforming.  \n\nNote that only\
+  \ a single pipe per `{{ someVar | someTransformer }}` is currently supported, and\
+  \ the pipe must be able to be run with default arguments.\n\nFor example, assuming\
+  \ that there is a transformer called 'SecondsToString', the input value might be:\
+  \ `The duration of my timer was {{incident.mycustomtimer.totalDuration | SecondsToString}}`.\
+  \  "
+enabled: true
+args:
+- name: value
+  required: true
+  description: The input template to be parsed
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.5.3066
+runas: DBotWeakRole
+tests:
+  - No test - unit test
