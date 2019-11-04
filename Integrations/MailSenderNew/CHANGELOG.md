@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
   - The integration ignores the FQDN configuration parameter if it is empty or contains only white spaces.
   - Added the *raw_message* argument to the ***send-mail*** command.
 

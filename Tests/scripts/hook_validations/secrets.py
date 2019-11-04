@@ -291,7 +291,7 @@ def get_white_list():
         ioc_white_list = []
         files_while_list = []
         secrets_white_list_file = json.load(secrets_white_list_file)
-        for name, white_list in secrets_white_list_file.iteritems():
+        for name, white_list in secrets_white_list_file.items():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]

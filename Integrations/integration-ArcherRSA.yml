@@ -2353,6 +2353,21 @@ script:
         return result;
     }
 
+    function verifyFieldsToValue(appFieldMapping, fieldsToValueJSON, appID) {
+        // For each application ID, the records of that application ID have different fields.
+        // This function verifies the fields specified in the fieldsToValue argument are known by Archer to be compatible with the given app ID.
+        var userSpecifiedFields = Object.keys(fieldsToValueJSON);
+        var actualFieldsOfGivenApp = Object.keys(appFieldMapping);
+        logInfo("\n\n\n" + "type of actualFieldsOfGivenApp: " + JSON.stringify(actualFieldsOfGivenApp) + "\n\n\n");
+        userSpecifiedFields.forEach(function(fieldSpecifiedByUser) {
+            if (!(actualFieldsOfGivenApp.indexOf(fieldSpecifiedByUser) > -1)) {
+                var wrongFieldErrorMessage = "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}. \n".format(fieldSpecifiedByUser, appID);
+                var possibleFieldsForGivenAppIDMessage = "The allowed fields for application ID {0} are {1}".format(appID, JSON.stringify(actualFieldsOfGivenApp));
+                throw (wrongFieldErrorMessage + possibleFieldsForGivenAppIDMessage);
+            }
+        })
+    }
+
     // integration commands functions
 
     function createRecord(command, dataArgs) {
@@ -2370,9 +2385,12 @@ script:
         if (Object.keys(cache).length > 0 && Object.keys(cache).indexOf(appId) > -1) {
             levels = cache[appId]["levels"];
             createRecordMapping = cache[appId]["mapping"];
+            verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
+
         } else {
             levels = getLevelsByApplicationId(appId);
             createRecordMapping = createMappingNameToFieldId(levels);
+            verifyFieldsToValue(createRecordMapping, fieldsToValue, appId);
             var dic = {};
             var innerDic = {};
             innerDic["levels"] = levels;
