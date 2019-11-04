@@ -1,5 +1,5 @@
 ##[Unreleased]  
-Added support for timestamp in Elasticsearch v2.
+Added support for timestamps.
     
 ## [19.9.1] - 2019-09-18
 New Elasticsearch v2 integration.  
