@@ -1119,10 +1119,12 @@ def convert_log_to_incident(log):
 
 
 def test_module():
+    global FETCH_QUERY
+
     if demisto.params().get('isFetch'):
         last_fetched_event_timestamp, _ = parse_date_range(FIRST_FETCH_TIMESTAMP)
     test_args = {
-        "query": "SELECT * FROM panw.threat LIMIT 1",
+        "query": FETCH_QUERY_DICT[FETCH_QUERY] + 'LIMIT 1',
         "startTime": 0,
         "endTime": 1609459200,
     }
