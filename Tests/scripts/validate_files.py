@@ -213,6 +213,7 @@ class FilesValidator(object):
             if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
+            # If integration
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
@@ -231,6 +232,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
+            # If beta integration
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -240,6 +242,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
 
+            # If script
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
@@ -247,6 +250,7 @@ class FilesValidator(object):
                 if not script_validator.is_valid_script():
                     self._is_valid = False
 
+            # If script YML
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
@@ -256,11 +260,13 @@ class FilesValidator(object):
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
+            # If image
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False
 
+            # If incident field
             elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
                                                                   old_git_branch=old_branch)

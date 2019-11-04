@@ -300,7 +300,7 @@ class StructureValidator(object):
         """
         loaded_file_data = self.load_data_from_file()
         file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
-        if (not file_id and loaded_file_data['name'] == 'reputations'):
+        if not file_id and loaded_file_data['name'] == 'reputations':
             return True
         if not file_id or '/' in file_id:
             self._is_valid = False
