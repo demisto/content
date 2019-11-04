@@ -23,7 +23,9 @@ args:
   secret: false
 - default: false
   defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: The text fields
+  description: Comma-separaed value of incident fields names with the text to process.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
   isArray: false
   name: textFields
   required: false
@@ -119,5 +121,5 @@ type: python
 dockerimage: demisto/dl:1.4
 runonce: true
 tests:
-  - Create Phishing Classifier V2 ML Test
+- Create Phishing Classifier V2 ML Test
 fromversion: 4.5.0

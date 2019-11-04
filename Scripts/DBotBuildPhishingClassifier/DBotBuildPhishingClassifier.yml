@@ -65,7 +65,9 @@ args:
   secret: false
 - default: false
   defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: The text fields, comma-separated value, with |
+  description: Comma-separaed value of incident fields names with the text to process.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
   isArray: false
   name: emailContentFields
   required: false
