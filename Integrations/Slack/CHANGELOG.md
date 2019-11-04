@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added rate limit handling
 
 ## [19.10.1] - 2019-10-15
 Added support for changing the display name and icon for the Demisto bot in Slack.
