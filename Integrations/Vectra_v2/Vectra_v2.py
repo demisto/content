@@ -133,7 +133,7 @@ class Client:
         """
         last_timestamp: str = last_run.get('last_timestamp', self.first_fetch)  # type: ignore
 
-        query_string = f' and detection.threat:>={self.t_score_gte}'
+        query_string = f'detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
         query_string += f' and detection.last_timestamp:>{last_timestamp}'
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
