@@ -26,7 +26,7 @@ ENC_KEY = demisto.params().get('auth_key')
 
 USE_SSL = not demisto.params().get('insecure', False)
 TOKEN_RETRIEVAL_URL = 'https://demistobot.demisto.com/panw-token'
-FETCH_QUERY = None
+FETCH_QUERY = 'Traps Threats'
 
 FIRST_FETCH_TIMESTAMP = demisto.params().get('first_fetch_timestamp', '').strip()
 if not FIRST_FETCH_TIMESTAMP:
