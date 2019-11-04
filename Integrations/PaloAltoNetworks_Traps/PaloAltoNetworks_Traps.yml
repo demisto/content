@@ -1,0 +1,387 @@
+category: Endpoint
+commonfields:
+  id: Traps
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Application ID
+  name: application_id
+  required: true
+  type: 0
+- display: Private Key
+  name: private_key
+  required: true
+  type: 14
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: |-
+  Endpoint protection and response stops threats on endpoints and coordinates enforcement with network and cloud security to prevent successful cyberattacks.
+  The integration enables the following abilities:
+    - Initiate scans.
+    - Retrieve files from events.
+    - Isolate endpoints.
+    - Quarantine files.
+    - Add and remove hashes from blacklist.
+    - Getting endpoints info.
+display: Palo Alto Networks Traps
+name: Traps
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Endpoint ID.
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns details for the specified endpoint.
+    execution: false
+    name: traps-get-endpoint-by-id
+    outputs:
+    - contextPath: Traps.Endpoint.ID
+      description: The ID of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.Name
+      description: The name of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.Domain
+      description: The domain of the endpoint.
+      type: date
+    - contextPath: Traps.Endpoint.Platform
+      description: The OS of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.Status
+      description: The status of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.IP
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.ComputerSid
+      description: The computer SID.
+      type: String
+    - contextPath: Traps.Endpoint.IsCompromised
+      description: Whether the endpoint is compromised.
+      type: String
+    - contextPath: Traps.Endpoint.OsVersion
+      description: The version of the OS on the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.OsProductType
+      description: The OS type of the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.OsProductName
+      description: The name of the OS on the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.Is64
+      description: The bitness of the OS on the endpoint.
+      type: String
+    - contextPath: Traps.Endpoint.LastSeen
+      description: The date/time of the last active ping.
+      type: String
+    - contextPath: Traps.Endpoint.LastUser
+      description: The last active user on the machine.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the endpoint.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the file to retrieve (including path).
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the event.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Executes a file retrieve operation / SAM on the specified agent.
+    execution: false
+    name: traps-endpoint-files-retrieve
+    outputs:
+    - contextPath: Traps.FileRetrieve.EndpointID
+      description: The ID of the endpoint.
+      type: String
+    - contextPath: Traps.FileRetrieve.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.FileRetrieve.Type
+      description: The type of operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the endpoint.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Performs a scan operation on the specified endpoint.
+    execution: false
+    name: traps-endpoint-scan
+    outputs:
+    - contextPath: Traps.Scan.EndpointID
+      description: The ID of the endpoint.
+      type: String
+    - contextPath: Traps.Scan.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.Scan.Type
+      description: The type of operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the event to modify.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new status for the event.
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - investigating
+      - closed
+      required: false
+      secret: false
+    - default: false
+      description: A comment for the event.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Modifies the status and adds a comment to an existing event.
+    execution: false
+    name: traps-event-update
+  - arguments:
+    - default: false
+      description: A comma-separated list of IDs for events to modify.
+      isArray: true
+      name: event_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new status for the event.
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - investigating
+      - closed
+      required: true
+      secret: false
+    deprecated: false
+    description: Modifies the status of multiple events.
+    execution: false
+    name: traps-event-bulk-update-status
+  - arguments:
+    - default: false
+      description: The SHA256 hash to add to the blacklist.
+      isArray: false
+      name: hash_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds the specified file hash to the blacklist.
+    execution: false
+    name: traps-hash-blacklist
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: The status of the file hash ("blacklisted" or "none").
+      type: String
+    - contextPath: Traps.File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The SHA256 hash to remove from the blacklist.
+      isArray: false
+      name: hash_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes the specified file hash from the blacklist.
+    execution: false
+    name: traps-hash-blacklist-remove
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: The status of the file hash ("blacklisted" or "none").
+      type: String
+    - contextPath: Traps.File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of SHA256 file hashes for which to return the
+        blacklist status.
+      isArray: true
+      name: hash_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the blacklist status of the specified file hashes.
+    execution: false
+    name: traps-hashes-blacklist-status
+    outputs:
+    - contextPath: Traps.File.BlacklistStatus
+      description: The blacklist status of the file hash. Can be "blacklisted" or
+        "none".
+      type: String
+    - contextPath: Traps.File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the event for which to create a quarantine entry..
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a quarantine entry for the specified event.
+    execution: false
+    name: traps-event-quarantine
+    outputs:
+    - contextPath: Traps.Quarantine.EventID
+      description: The ID of the event.
+      type: String
+    - contextPath: Traps.Quarantine.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.Quarantine.Type
+      description: The type of operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the endpoint to isolate.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Isolates the specified endpoint.
+    execution: false
+    name: traps-endpoint-isolate
+    outputs:
+    - contextPath: Traps.Isolate.EndpointID
+      description: The ID of the endpoint.
+      type: String
+    - contextPath: Traps.Isolate.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.Isolate.Type
+      description: The type of operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the operation for which to get the result of the quarantine
+        operation.
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the result of the specified quarantine operation.
+    execution: false
+    name: traps-event-quarantine-result
+    outputs:
+    - contextPath: Traps.QuarantineResult.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Traps.QuarantineResult.FilePath
+      description: The file path on the endpoint.
+      type: String
+    - contextPath: Traps.QuarantineResult.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.QuarantineResult.Status
+      description: The status of the quarantine operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the operation.
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the status of the specified endpoint isolate operation.
+    execution: false
+    name: traps-endpoint-isolate-status
+    outputs:
+    - contextPath: Traps.IsolateResult.OperationID
+      description: Operation ID. Use this to retrieve status / results.
+      type: String
+    - contextPath: Traps.IsolateResult.Status
+      description: The status of the isolation operation.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the operation.
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the result of the endpoint file retrieve operation.
+    execution: false
+    name: traps-endpoint-files-retrieve-result
+  - arguments:
+    - default: false
+      description: The ID of the operation.
+      isArray: false
+      name: operation_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the results of an endpoint scan operation.
+    execution: false
+    name: traps-endpoint-scan-result
+    outputs:
+    - contextPath: Traps.ScanResult.FileScanned
+      description: The number of scanned files.
+      type: Number
+    - contextPath: Traps.ScanResult.FilesFailed
+      description: The number of files that were not scanned.
+      type: Number
+    - contextPath: Traps.ScanResult.MalwareFound
+      description: The number of detected malware.
+      type: Number
+    - contextPath: Traps.ScanResult.OperationID
+      description: The ID of the operation.
+      type: String
+    - contextPath: Traps.ScanResult.Status
+      description: The status of the scan.
+      type: String
+  dockerimage: demisto/pyjwt3:1.0.0.1284
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- Traps test

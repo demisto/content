@@ -20,7 +20,7 @@ jsPrivateFuncs = ["dqQueryBuilder", "toArray", "indent", "formatTableValuesRecur
 pyPrivateFuncs = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeColumns", "strip_tag", "elem_to_internal",
                   "internal_to_elem", "json2elem", "elem2json", "json2xml", "OrderedDict", "datetime", "timedelta",
                   "createContextSingle", "IntegrationLogger", "tblToMd", "DemistoException", "BaseClient",
-                  "BaseHTTPClient"]
+                  "BaseHTTPClient", "DemistoHandler", "DebugLogger"]
 
 pyIrregularFuncs = {"LOG": {"argList": ["message"]}}
 
@@ -133,7 +133,7 @@ def createPyDocumentation(path, origin, language):
     isErrorPy = False
 
     with open(path, 'r') as file:
-        pyScript = clean_python_code(file.read())
+        pyScript = clean_python_code(file.read(), remove_print_future=False)
 
     code = compile(pyScript, '<string>', 'exec')
     ns = {'demisto': demistomock}
