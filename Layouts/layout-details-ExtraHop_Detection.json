@@ -3,7 +3,7 @@
 	"layout": {
 		"id": "ExtraHop Detection",
 		"kind": "details",
-		"modified": "2019-09-03T10:15:47.096776343-07:00",
+		"modified": "2019-11-04T11:27:56.296067875-08:00",
 		"name": "",
 		"sections": [
 			{
@@ -213,6 +213,27 @@
 				"queryType": "",
 				"readOnly": true,
 				"type": "workplan",
+				"version": 0
+			},
+			{
+				"description": "",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Incident Files",
+				"query": {
+					"categories": [
+						"attachments"
+					],
+					"lastId": "",
+					"pageSize": 100,
+					"tags": [],
+					"users": []
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline",
 				"version": 0
 			},
 			{
