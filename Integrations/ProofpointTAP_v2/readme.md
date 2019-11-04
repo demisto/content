@@ -3,12 +3,6 @@ Use the Proofpoint Targeted Attack Protection (TAP) integration to protect again
 
 This integration was integrated and tested with version xx of Proofpoint TAP v2
 </p>
-<h2>Proofpoint TAP v2 Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
-<h2>Use Cases</h2>
-<ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
 </ul><h2>Detailed Description</h2>
 <ul>
 <li>## Configure an API account</li>
@@ -59,13 +53,6 @@ This integration was integrated and tested with version xx of Proofpoint TAP v2
 <p>
   <code>proofpoint-get-events</code>
 </p>
-
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -322,13 +309,6 @@ There are no context output for this command.
 <p>
   <code>proofpoint-get-forensics</code>
 </p>
-
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
