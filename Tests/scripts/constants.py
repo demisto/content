@@ -14,6 +14,7 @@ CLASSIFIERS_DIR = 'Classifiers'
 MISC_DIR = 'Misc'
 CONNECTIONS_DIR = 'Connections'
 BETA_INTEGRATIONS_DIR = 'Beta_Integrations'
+PACKS_DIR = 'Packs'
 DEFAULT_IMAGE_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAACYVBMVEVHcEwAT4UAT4UAT4YAf/8A//8AT4UAf78AT4U' \
                        'AT4UAT4UAUYcAT4YAT4YAT48AXIsAT4UAT4UAUIUAUIUAT4UAT4UAVaoAW5EAUIYAWYwAT4UAT4UAT4UAUIgAT4YAUo' \
                        'UAUIYAUIUAT4YAVY0AUIUAT4UAUIUAUocAUYUAT4UAT4UAT4UAUIYAT4UAUIUAT4cAUYUAUIUAUIYAUocAT4UAUIUAT' \
@@ -64,6 +65,14 @@ INTEGRATION_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
+
+PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/([^.]+).py'.format(PACKS_DIR)
+# TODO
+PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/([^.]+).yml'.format(PACKS_DIR)
+PACKS_INTEGRATION_README_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/CHANGELOG.md'.format(PACKS_DIR)
+PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^.]+).yml'.format(PACKS_DIR)
+PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^.]+).py'.format(PACKS_DIR)
+PACKS_PLAYBOOK_YML = r'{}/([^/]+)/Playbooks/([^.]+).yml'.format(PACKS_DIR)
 
 BETA_SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)

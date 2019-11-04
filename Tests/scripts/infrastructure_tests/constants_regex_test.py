@@ -166,3 +166,6 @@ def test_beta_integration_yml_files():
         unacceptable_integration_yml,
         (BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX),
     )
+
+class TestPacksRegex:
+    from Tests.scripts.constants import PACK
