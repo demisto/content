@@ -1,0 +1,49 @@
+commonfields:
+  id: 6c1a7d89-a768-4f20-8f63-44f929841f1d
+  version: 28
+name: SecondsToString
+script: |-
+  # Taken from https://stackoverflow.com/questions/4048651/python-function-to-convert-seconds-into-minutes-hours-and-days
+
+  unformatted_time = int(demisto.args()['value'])
+
+  intervals = (
+      ('d', 86400),    # 60 * 60 * 24
+      ('h', 3600),    # 60 * 60
+      ('m', 60),
+      ('s', 1)
+  )
+
+  def display_time(seconds, granularity=2):
+      result = []
+
+      for name, count in intervals:
+          value = seconds // count
+          if value:
+              seconds -= value * count
+              if value == 1:
+                  name = name.rstrip('s')
+              result.append("{}{}".format(value, name))
+      return ' '.join(result[:granularity])
+
+  formatted_time = display_time(unformatted_time)
+
+  demisto.results(formatted_time)
+type: python
+tags:
+- transformer
+- date
+comment: Accepts a number of seconds as input (useful for timer / SLA fields - e.g.
+  "incident.mytimer.totalDuration").  Returns a string as days ('d'), hours ('h',)
+  minutes ('m'), and seconds ('s').
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: A timer value
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.5.3066
+runas: DBotWeakRole

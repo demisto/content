@@ -1,0 +1,25 @@
+commonfields:
+  id: SecondsToString
+  version: -1
+name: SecondsToString
+script: ''
+type: python
+tags:
+- transformer
+- date
+comment: Accepts a number of seconds as input (useful for timer / SLA fields - e.g.
+  "incident.mytimer.totalDuration").  Returns a string as days ('d'), hours ('h',)
+  minutes ('m'), and seconds ('s').
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: A timer value
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.5.3066
+runas: DBotWeakRole
+tests:
+  - No test - unit test
