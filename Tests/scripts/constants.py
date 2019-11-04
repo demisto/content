@@ -1,7 +1,6 @@
 import re
 
 # dirs
-PACKS_DIR = 'Packs'
 INTEGRATIONS_DIR = 'Integrations'
 SCRIPTS_DIR = 'Scripts'
 PLAYBOOKS_DIR = 'Playbooks'
