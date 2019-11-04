@@ -4,7 +4,7 @@ import pytest
 from Tests.scripts.constants import PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATION_YML_REGEX, \
     PACKS_CHANGELOG_REGEX, PACKS_SCRIPT_YML_REGEX, PACKS_SCRIPT_PY_REGEX, PACKS_PLAYBOOK_YML_REGEX, \
     PACKS_TEST_PLAYBOOKS_REGEX, PACKS_CLASSIFIERS_REGEX, PACKS_DASHBOARDS_REGEX, PACKS_INCIDENTTYPES_REGEX, \
-    PACKS_PACKAGEMETA_REGEX, PACKS_WIDGETS_README
+    PACKS_PACKAGEMETA_REGEX, PACKS_WIDGETS_README, PACKS_INCIDENTFIELDS_REGEX
 
 
 def verify(acceptable, unacceptable, matched_regex):
@@ -187,10 +187,11 @@ test_packs_regex_params = [
     (['Packs/Sade/Widgets/yarden.json'], ['Packs/Sade/Widgets/yarden-json.txt'], [PACKS_WIDGETS_README]),
     (['Packs/Sade/package-meta.json'], ['Packs/Sade/Dashboards/yarden-json.txt'], [PACKS_PACKAGEMETA_REGEX]),
     (['Packs/XDR/CHANGELOG.md'], ['Packs/Integrations/XDR/CHANGELOG.md'], [PACKS_CHANGELOG_REGEX]),
+    (['Packs/Sade/IncidentFields/yarden.json'], ['Packs/Sade/IncidentFields/yarden-json.txt'],
+     [PACKS_INCIDENTFIELDS_REGEX]),
 ]
 
 
-class TestPacksRegex(object):
-    @pytest.mark.parametrize('acceptable,non_acceptable,regex', test_packs_regex_params)
-    def test_packs_regex(self, acceptable, non_acceptable, regex):
-        verify(acceptable, non_acceptable, regex)
+@pytest.mark.parametrize('acceptable,non_acceptable,regex', test_packs_regex_params)
+def test_packs_regex(acceptable, non_acceptable, regex):
+    verify(acceptable, non_acceptable, regex)

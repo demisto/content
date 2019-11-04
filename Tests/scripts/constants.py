@@ -74,6 +74,7 @@ PACKS_TEST_PLAYBOOKS_REGEX = r'{}/([^/]+)/TestPlaybooks/([^.]+).yml'.format(PACK
 PACKS_CLASSIFIERS_REGEX = r'{}/([^/]+)/Classifiers/([^.]+)\.json'.format(PACKS_DIR)
 PACKS_DASHBOARDS_REGEX = r'{}/([^/]+)/Dashboards/([^.]+)\.json'.format(PACKS_DIR)
 PACKS_INCIDENTTYPES_REGEX = r'{}/([^/]+)/IncidentTypes/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_INCIDENTFIELDS_REGEX = r'{}/([^/]+)/IncidentFields/([^.]+)\.json'.format(PACKS_DIR)
 PACKS_WIDGETS_README = r'{}/([^/]+)/Widgets/([^.]+)\.json'.format(PACKS_DIR)
 PACKS_CHANGELOG_REGEX = r'{}/([^/]+)/CHANGELOG\.md'.format(PACKS_DIR)
 PACKS_README_REGEX = r'{}/([^/]+)/README\.md'.format(PACKS_DIR)
