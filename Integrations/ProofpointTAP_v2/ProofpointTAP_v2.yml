@@ -20,13 +20,11 @@ configuration:
   - v2
   required: false
   type: 15
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -159,6 +157,319 @@ script:
       within the specified time period. Details as per clicks/blocked.
     execution: false
     name: proofpoint-get-events
+    outputs:
+    - contextPath: Proofpoint.MessagesDelivered.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.QID
+      description: The queue ID of the message within PPS. It can be used to identify
+        the message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding
+        friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.clusterId
+      description: The name of the PPS cluster which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.fromAddress
+      description: 'The email address contained in the From: header, excluding friendly
+        name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerCC
+      description: headerCC
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerFrom
+      description: 'The full content of the From: header, including any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.malwareScore
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.messageId
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threat
+      description: The artifact which was condemned by Proofpoint. The malicious URL,
+        hash of the attachment threat, or email address of the impostor sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatId
+      description: The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatStatus
+      description: The current state of the threat (active, expired, falsepositive,
+        cleared).
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatTime
+      description: Proofpoint assigned the threatStatus at this time (ISO8601 format).
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatType
+      description: Whether the threat was an attachment, URL, or message type.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatUrl
+      description: A link to the entry about the threat on the TAP Dashboard.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: When the message was delivered to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesDelivered.messageTime
+      description: The list of PPS modules which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.modulesRun
+      description: The list of PPS modules which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.policyRoutes
+      description: The policy routes that the message matched during processing by
+        PPS.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineFolder
+      description: The name of the folder which contains the quarantined message.
+        This appears only for messagesBlocked.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.quarantineRule
+      description: The name of the rule which quarantined the message. This appears
+        only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.recipient
+      description: A list containing the email addresses of the recipients.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding
+        friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.sender
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesDelivered.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesDelivered.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.QID
+      description: The queue ID of the message within PPS. It can be used to identify
+        the message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.ccAddresses
+      description: 'A list of email addresses contained within the CC: header, excluding
+        friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.clusterId
+      description: The name of the PPS cluster which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.fromAddress
+      description: 'The email address contained in the From: header, excluding friendly
+        name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerCC
+      description: headerCC
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerFrom
+      description: 'The full content of the From: header, including any friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.headerReplyTo
+      description: 'If present, the full content of the Reply-To: header, including
+        any friendly names.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.impostorScore
+      description: The impostor score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.malwareScore
+      description: The malware score of the message. Higher scores indicate higher
+        certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.messageId
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threat
+      description: The artifact which was condemned by Proofpoint. The malicious URL,
+        hash of the attachment threat, or email address of the impostor sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatId
+      description: The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatStatus
+      description: The current state of the threat (active, expired, falsepositive,
+        cleared).
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatTime
+      description: Proofpoint assigned the threatStatus at this time (ISO8601 format).
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatType
+      description: Whether the threat was an attachment, URL, or message type.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatUrl
+      description: A link to the entry about the threat on the TAP Dashboard.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: When the message was Blocked to the user or quarantined by PPS.
+      type: Date
+    - contextPath: Proofpoint.MessagesBlocked.messageTime
+      description: The list of PPS modules which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.modulesRun
+      description: The list of PPS modules which processed the message.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.phishScore
+      description: The phish score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.policyRoutes
+      description: The policy routes that the message matched during processing by
+        PPS.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineFolder
+      description: The name of the folder which contains the quarantined message.
+        This appears only for messagesBlocked.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.quarantineRule
+      description: The name of the rule which quarantined the message. This appears
+        only for messagesBlocked events.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.recipient
+      description: A list containing the email addresses of the recipients.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.replyToAddress
+      description: 'The email address contained in the Reply-To: header, excluding
+        friendly name.'
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.sender
+      description: The email address of the SMTP (envelope) sender. The user-part
+        is hashed. The domain-part is cleartext.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.MessagesBlocked.spamScore
+      description: The spam score of the message. Higher scores indicate higher certainty.
+      type: Number
+    - contextPath: Proofpoint.MessagesBlocked.subject
+      description: The subject line of the message, if available.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.campaignId
+      description: An identifier for the campaign of which the threat is a member,
+        if available at the time of the query. Threats can be linked to campaigns
+        even after these events are retrieved.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.classification
+      description: The threat category of the malicious URL.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickIP
+      description: The external IP address of the user who clicked on the link. If
+        the user is behind a firewall performing network address translation, the
+        IP address of the firewall will be shown.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.clickTime
+      description: The time the user clicked on the URL
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.messageID
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatID
+      description: 'The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints. '
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.threatTime
+      description: Proofpoint identified the URL as a threat at this time.
+      type: Date
+    - contextPath: Proofpoint.ClicksPermitted.threatURL
+      description: A link to the entry on the TAP Dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.url
+      description: The malicious URL which was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksPermitted.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.GUID
+      description: The ID of the message within PPS. It can be used to identify the
+        message in PPS and is guaranteed to be unique.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.campaignId
+      description: An identifier for the campaign of which the threat is a member,
+        if available at the time of the query. Threats can be linked to campaigns
+        even after these events are retrieved.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.classification
+      description: The threat category of the malicious URL.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickIP
+      description: The external IP address of the user who clicked on the link. If
+        the user is behind a firewall performing network address translation, the
+        IP address of the firewall will be shown.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.clickTime
+      description: The time the user clicked on the URL
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.messageID
+      description: Message-ID extracted from the headers of the email message. It
+        can be used to look up the associated message in PPS and is not unique.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.recipient
+      description: The email address of the recipient.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.sender
+      description: The email address of the sender. The user-part is hashed. The domain-part
+        is cleartext.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.senderIP
+      description: The IP address of the sender.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatID
+      description: 'The unique identifier associated with this threat. It can be used
+        to query the forensics and campaign endpoints. '
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.threatTime
+      description: Proofpoint identified the URL as a threat at this time.
+      type: Date
+    - contextPath: Proofpoint.ClicksBlocked.threatURL
+      description: A link to the entry on the TAP Dashboard for the particular threat.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.url
+      description: The malicious URL which was clicked.
+      type: String
+    - contextPath: Proofpoint.ClicksBlocked.userAgent
+      description: The User-Agent header from the clicker's HTTP request.
+      type: String
   - arguments:
     - default: false
       description: ID of threat (must fill threadId or campaignId)
