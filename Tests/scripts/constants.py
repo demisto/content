@@ -71,7 +71,13 @@ PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^.]+).yml'.format(PACKS_
 PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^_test^.]+).py'.format(PACKS_DIR)  # Ignores _test
 PACKS_PLAYBOOK_YML_REGEX = r'{}/([^/]+)/Playbooks/([^.]+).yml'.format(PACKS_DIR)
 PACKS_TEST_PLAYBOOKS_REGEX = r'{}/([^/]+)/TestPlaybooks/([^.]+).yml'.format(PACKS_DIR)
-PACKS_README_REGEX = r'{}/([^/]+)/CHANGELOG.md'.format(PACKS_DIR)
+PACKS_CLASSIFIERS_REGEX = r'{}/([^/]+)/Classifiers/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_DASHBOARDS_REGEX = r'{}/([^/]+)/Dashboards/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_INCIDENTTYPES_REGEX = r'{}/([^/]+)/IncidentTypes/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_WIDGETS_README = r'{}/([^/]+)/Widgets/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_CHANGELOG_REGEX = r'{}/([^/]+)/CHANGELOG\.md'.format(PACKS_DIR)
+PACKS_README_REGEX = r'{}/([^/]+)/README\.md'.format(PACKS_DIR)
+PACKS_PACKAGEMETA_REGEX = r'{}/([^/]+)/package-meta\.json'.format(PACKS_DIR)
 
 BETA_SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
