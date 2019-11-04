@@ -5,7 +5,7 @@
     "name": "Detection Ticketed",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "Has the incident been linked to the corresponding detection in ExtraHop",
+    "description": "Whether the incident is tracked to the corresponding detection in ExtraHop Reveal(x)",
     "cliName": "detectionticketed",
     "type": "boolean",
     "closeForm": false,
