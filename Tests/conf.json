@@ -32,6 +32,7 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
+            "timeout" : 2400,
             "fromversion": "5.0.0"
         },
         {
