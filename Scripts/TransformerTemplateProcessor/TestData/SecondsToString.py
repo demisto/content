@@ -24,7 +24,7 @@ def display_time(seconds):
 def main(value):
     unformatted_time = int(value)
     formatted_time = display_time(unformatted_time)
-    return formatted_time 
+    return formatted_time
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":
