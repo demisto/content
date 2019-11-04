@@ -211,7 +211,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
         except SlackApiError as api_error:
             response = api_error.response
             if 'Retry-After' in response.headers:
-                retry_after = response.headers['Retry-After']
+                retry_after = int(response.headers['Retry-After'])
                 if retry_after < MAX_LIMIT_TIME:
                     time.sleep(retry_after)
                     continue
