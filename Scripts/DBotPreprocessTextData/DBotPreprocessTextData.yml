@@ -1,13 +1,14 @@
 args:
 - default: false
-  description: Input file entry id or file content as string
+  description: The input file entry ID or the file content (as a string).
   isArray: false
   name: input
   required: true
   secret: false
 - default: false
   defaultValue: '15'
-  description: Remove samples shorter then this number of words
+  description: Sample text with whose total words are less than or equal this nuimber
+    will be ignored.
   isArray: false
   name: removeShortTextThreshold
   required: false
@@ -30,7 +31,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: json
-  description: The input file type
+  description: The input type.
   isArray: false
   name: inputType
   predefined:
@@ -108,7 +109,7 @@ outputs:
   type: String
 - contextPath: DBotPreProcessTextData.FileFormat
   description: The output file format
-  type: Unknown
+  type: String
 script: '-'
 system: false
 tags:
@@ -117,6 +118,6 @@ timeout: 12µs
 type: python
 dockerimage: demisto/dl:1.4
 runonce: true
-fromversion: "4.5.0"
 tests:
-- Create_Phishing_Classifier_V2_ML_Test
+  - Create Phishing Classifier V2 ML Test
+fromversion: 4.5.0

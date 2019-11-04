@@ -1,5 +1,5 @@
 # pylint: disable=no-member
-
+from CommonServerPython import *
 import uuid
 import pickle
 from HTMLParser import HTMLParser
@@ -7,8 +7,6 @@ from io import BytesIO, StringIO
 
 import demisto_ml
 import pandas as pd
-
-from CommonServerPython import *
 
 DBOT_TEXT_FIELD = 'dbot_text'
 DBOT_PROCESSED_TEXT_FIELD = 'dbot_processed_text'
@@ -125,7 +123,7 @@ def concat_text_fields(data, target_field, text_fields):
     return data
 
 
-def filter_only_fields(data, fields):
+def whitelist_dict_fields(data, fields):
     fields = map(lambda x: x.strip(), fields)
     fields += map(lambda x: x.lower(), fields)
     new_data = []
@@ -197,7 +195,7 @@ def main():
 
     if whitelist_fields and len(whitelist_fields) > 0:
         whitelist_fields.append(DBOT_PROCESSED_TEXT_FIELD)
-        data = filter_only_fields(data, whitelist_fields)
+        data = whitelist_dict_fields(data, whitelist_fields)
 
     description += "Done processing: %d samples" % len(data) + "\n"
     # output
