@@ -726,7 +726,7 @@ tasks:
     scriptarguments:
       add_to_context: {}
       brand_name:
-        simple: SebtinelOne V2
+        simple: SentinelOne V2
       error_msg_in_incident: {}
       expect_data: {}
       instance_name: {}
