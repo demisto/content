@@ -1,5 +1,9 @@
 ## [Unreleased]
+Improved implementation of the ***ews-move-item-between-mailboxes*** command.
 
+## [19.10.2] - 2019-10-29
+- Improved implementation of the ***ews-search-mailbox*** command.
+- Added the ***ews-get-items-as-eml*** command.
 
 ## [19.9.1] - 2019-09-18
 Improved handling of uploaded EMLfiles.

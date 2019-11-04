@@ -176,7 +176,7 @@ class IntegrationValidator(object):
                 DBot_Score = {
                     'DBotScore.Indicator': 'The indicator that was tested.',
                     'DBotScore.Type': 'The indicator type.',
-                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Vendor': 'The vendor used to calculate the score.',
                     'DBotScore.Score': 'The actual score.'
                 }
                 missing_outputs = set()

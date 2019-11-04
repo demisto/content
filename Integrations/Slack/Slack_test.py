@@ -1345,6 +1345,51 @@ async def test_handle_dm_empty_message(mocker):
 
 
 @pytest.mark.asyncio
+async def test_handle_dm_create_with_error(mocker):
+    import Slack
+
+    # Set
+
+    @asyncio.coroutine
+    def fake_translate(demisto_user, message):
+        return "sup"
+
+    @asyncio.coroutine
+    def fake_message(channel, text):
+        return "sup"
+
+    @asyncio.coroutine
+    def fake_im(user):
+        return {
+            'channel': {
+                'id': 'ey'
+            }
+        }
+
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'findUser', return_value={'id': 'demisto_id'})
+    mocker.patch.object(slack.WebClient, 'im_open', side_effect=fake_im)
+    mocker.patch.object(slack.WebClient, 'chat_postMessage', side_effect=fake_message)
+    mocker.patch.object(Slack, 'translate_create', side_effect=InterruptedError('omg'))
+
+    user = json.loads(USERS)[0]
+
+    # Arrange
+    await Slack.handle_dm(user, 'open 123 incident', slack.WebClient)
+
+    # Assert
+    assert Slack.translate_create.call_count == 1
+
+    demisto_user = Slack.translate_create.call_args[0][0]
+    incident_string = Slack.translate_create.call_args[0][1]
+    chat_args = slack.WebClient.chat_postMessage.call_args[1]
+
+    assert demisto_user == {'id': 'demisto_id'}
+    assert incident_string == 'open 123 incident'
+    assert chat_args == {'channel': 'ey', 'text': 'Failed creating incidents: omg'}
+
+
+@pytest.mark.asyncio
 async def test_translate_create(mocker):
     # Set
     import Slack
