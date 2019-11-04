@@ -222,7 +222,7 @@ def get_entries_for_search_results(contents, look_id=None, result_format='json',
 
         if contents:
             entries.append(  # type: ignore
-                'This command has dynamic output keys.\n'
+                'This command has dynamic output keys.\n'  # type: ignore
                 'To access them in the context, copy the key\'s path from the column header in the results table.'
             )
 
