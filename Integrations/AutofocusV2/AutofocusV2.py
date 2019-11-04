@@ -806,7 +806,7 @@ def search_samples_command():
     first_seen = argToList(args.get('first_seen'))
     last_updated = argToList(args.get('last_updated'))
     query = args.get('query')
-    scope = args.get('scope')
+    scope = args.get('scope').capitalize()
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
