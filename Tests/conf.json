@@ -1959,6 +1959,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
