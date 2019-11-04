@@ -13,15 +13,17 @@ args:
   required: false
   secret: false
 - default: false
-  description: Filter by from date
+  description: 'The start date by which to filter incidents. Date format will be the
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
   isArray: false
   name: fromDate
-  predefined:
-  - ''
   required: false
   secret: false
 - default: false
-  description: Filter by to date
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+    +0200")'
   isArray: false
   name: toDate
   required: false
@@ -90,7 +92,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The model name
+  description: The model name.
   isArray: false
   name: modelName
   required: false
@@ -107,7 +109,7 @@ args:
     The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
     external legit email:non-malicious'
   isArray: false
-  name: PhishingLabels
+  name: phishingLabels
   required: false
   secret: false
 comment: Create a phishing classifier
@@ -122,6 +124,7 @@ tags:
 - ml
 timeout: 12µs
 type: python
-fromversion: 4.5.0
 tests:
-  - Create_Phishing_Classifier_V2_ML_Test
+- Create Phishing Classifier V2 ML Test
+subtype: python2
+fromversion: 4.5.0

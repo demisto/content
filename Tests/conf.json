@@ -21,7 +21,7 @@
             "playbookID": "AttackIQ - Test"
         },
         {
-            "playbookID": "Create_Phishing_Classifier_V2_ML_Test",
+            "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
         },

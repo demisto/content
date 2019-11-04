@@ -1,4 +1,4 @@
-id: DBot_Create_Phishing_Classifier_V2
+id: DBot Create Phishing Classifier V2
 version: -1
 name: DBot Create Phishing Classifier V2
 description: Create a phishing classifier using machine learning technique, based
@@ -336,8 +336,7 @@ inputs:
 - key: hashSeed
   value: {}
   required: false
-  description: Preform hash function to the words (to anonymize the data). Choose
-    between yes/no
+  description: Preform hash function to the words (to anonymize the data). Choose prime integer (5381 for example).
 - key: historicalDataFileListName
   value: {}
   required: false
@@ -348,7 +347,8 @@ inputs:
   required: false
   description: Override model, if model with the same name already exist (true\false)
 - key: incidentTypes
-  value: {}
+  value:
+    simple: "Phishing"
   required: false
   description: Filter incidents with incident types. Comma separated value
 - key: dedupThreshold
@@ -381,4 +381,4 @@ outputs:
   type: string
 fromversion: "4.5.0"
 tests:
-  - Create_Phishing_Classifier_V2_ML_Test
+  - Create Phishing Classifier V2 ML Test

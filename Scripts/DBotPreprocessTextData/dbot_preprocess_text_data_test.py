@@ -2,7 +2,7 @@ import pickle
 
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
-    concat_text_fields, filter_only_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
+    concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
 
 
 def test_clean_html(mocker):
@@ -31,16 +31,16 @@ def test_hash_word():
 
 
 def test_read_file(mocker):
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     obj = read_file('231342@343', 'json')
     assert len(obj) >= 1
-    with open('input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test', 'r') as f:
         obj = read_file(f.read(), 'json_string')
         assert len(obj) >= 1
         obj = read_file(pickle.dumps(obj), 'pickle_string')
         assert len(obj) >= 1
 
-    with open('input_json_file_test', 'r') as f:
+    with open('./TestData/input_json_file_test', 'r') as f:
         b64_input = base64.b64encode(f.read())
         obj = read_file(b64_input, 'json_b64_string')
         assert len(obj) >= 1
@@ -95,7 +95,7 @@ def test_remove_fields_from_dict():
             'subject': 'TestSubject',
         }
     ]
-    data = filter_only_fields(data, ['subject', 'body'])
+    data = whitelist_dict_fields(data, ['subject', 'body'])
     found = False
     for d in data:
         if 'body2' in d:
@@ -156,7 +156,7 @@ def test_pre_process():
 def test_main(mocker):
     args = {
         'textFields': 'subject|subject2,body|body2',
-        'input': 'input_json_file_test',
+        'input': './TestData/input_json_file_test',
         'inputType': 'json',
         'removeShortTextThreshold': 5,
         'dedupThreshold': -1,
@@ -164,7 +164,7 @@ def test_main(mocker):
         'cleanHTML': 'true',
         'outputFormat': 'json'
     }
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'input_json_file_test'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/input_json_file_test'})
     mocker.patch.object(demisto, 'args', return_value=args)
     entry = main()
     os.remove('1_' + entry['FileID'])
