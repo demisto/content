@@ -1,5 +1,9 @@
 import os
 from Tests.test_utils import checked_type
+import pytest
+from Tests.scripts.constants import PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATION_YML_REGEX, \
+    PACKS_README_REGEX, PACKS_SCRIPT_YML_REGEX, PACKS_SCRIPT_PY_REGEX, PACKS_PLAYBOOK_YML_REGEX, \
+    PACKS_TEST_PLAYBOOKS_REGEX
 
 
 def verify(acceptable, unacceptable, matched_regex):
@@ -166,3 +170,20 @@ def test_beta_integration_yml_files():
         unacceptable_integration_yml,
         (BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX),
     )
+
+
+test_packs_regex_params = [
+    (['Packs/XDR/Integrations/XDR/XDR.py'], ['Packs/Integrations/XDR/XDR_test.py'], [PACKS_INTEGRATION_PY_REGEX]),
+    (['Packs/XDR/Integrations/XDR/XDR.yml'], ['Packs/Integrations/XDR/XDR_test.py'], [PACKS_INTEGRATION_YML_REGEX]),
+    (['Packs/XDR/Scripts/Random/Random.yml'], ['Packs/Scripts/Random/Random.py'], [PACKS_SCRIPT_YML_REGEX]),
+    (['Packs/XDR/Scripts/Random/Random.py'], ['Packs/Scripts/Random/Random_test.py'], [PACKS_SCRIPT_PY_REGEX]),
+    (['Packs/XDR/Playbooks/XDR.yml'], ['Packs/Playbooks/XDR/XDR_test.py'], [PACKS_PLAYBOOK_YML_REGEX]),
+    (['Packs/XDR/CHANGELOG.md'], ['Packs/Integrations/XDR/CHANGELOG.md'], [PACKS_README_REGEX]),
+    (['Packs/XDR/TestPlaybooks/playbook.yml'], ['Packs/TestPlaybooks/nonpb.xml'], [PACKS_TEST_PLAYBOOKS_REGEX])
+]
+
+
+class TestPacksRegex(object):
+    @pytest.mark.parametrize('acceptable,non_acceptable,regex', test_packs_regex_params)
+    def test_packs_integration(self, acceptable, non_acceptable, regex):
+        verify(acceptable, non_acceptable, regex)

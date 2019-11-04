@@ -14,6 +14,7 @@ CLASSIFIERS_DIR = 'Classifiers'
 MISC_DIR = 'Misc'
 CONNECTIONS_DIR = 'Connections'
 BETA_INTEGRATIONS_DIR = 'Beta_Integrations'
+PACKS_DIR = 'Packs'
 DEFAULT_IMAGE_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAACYVBMVEVHcEwAT4UAT4UAT4YAf/8A//8AT4UAf78AT4U' \
                        'AT4UAT4UAUYcAT4YAT4YAT48AXIsAT4UAT4UAUIUAUIUAT4UAT4UAVaoAW5EAUIYAWYwAT4UAT4UAT4UAUIgAT4YAUo' \
                        'UAUIYAUIUAT4YAVY0AUIUAT4UAUIUAUocAUYUAT4UAT4UAT4UAUIYAT4UAUIUAT4cAUYUAUIUAUIYAUocAT4UAUIUAT' \
@@ -42,7 +43,6 @@ DEFAULT_IMAGE_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAACYVBMVEVH
                        'bSJnvExjZzphuJGigzf8jzBz6gxG3u5HAs4JRrhGYGmthkK9xFaYpu41hWbkwVzbyTsdHb59AMtsyGVTahnRZ9hPJ13' \
                        'cjfQ4V89djSKcm71Ho/A9KDXs8/9v7cAAAAABJRU5ErkJggg=='
 
-
 # file types regexes
 PIPFILE_REGEX = r'.*/Pipfile(\.lock)?'
 TEST_DATA_REGEX = r'.*test_data.*'
@@ -65,6 +65,14 @@ INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
 
+PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/([^_test^.]+).py'.format(PACKS_DIR)  # Ignores _test
+PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/([^.]+).yml'.format(PACKS_DIR)
+PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^.]+).yml'.format(PACKS_DIR)
+PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^_test^.]+).py'.format(PACKS_DIR)  # Ignores _test
+PACKS_PLAYBOOK_YML_REGEX = r'{}/([^/]+)/Playbooks/([^.]+).yml'.format(PACKS_DIR)
+PACKS_TEST_PLAYBOOKS_REGEX = r'{}/([^/]+)/TestPlaybooks/([^.]+).yml'.format(PACKS_DIR)
+PACKS_README_REGEX = r'{}/([^/]+)/CHANGELOG.md'.format(PACKS_DIR)
+
 BETA_SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(BETA_INTEGRATIONS_DIR)
 BETA_INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(BETA_INTEGRATIONS_DIR)
@@ -73,7 +81,6 @@ BETA_PLAYBOOK_REGEX = r'{}.*playbook-.*\.yml$'.format(BETA_INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
-
 
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r'{}.*dashboard-.*\.json$'.format(DASHBOARDS_DIR)
@@ -85,7 +92,6 @@ MISC_REGEX = r'{}.*reputations.*\.json$'.format(MISC_DIR)
 REPUTATION_REGEX = r'{}.*reputation-.*\.json$'.format(MISC_DIR)
 REPORT_REGEX = r'{}.*report-.*\.json$'.format(REPORTS_DIR)
 MISC_REPUTATIONS_REGEX = r'{}.reputations.json$'.format(MISC_DIR)
-
 
 CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX,
                          INTEGRATION_YML_REGEX, BETA_INTEGRATION_YML_REGEX, INTEGRATION_REGEX, BETA_INTEGRATION_REGEX,
@@ -100,7 +106,6 @@ CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX,
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR, BETA_INTEGRATIONS_DIR]
 
 IGNORED_TYPES_REGEXES = [DESCRIPTION_REGEX, IMAGE_REGEX, PIPFILE_REGEX]
-
 
 PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([^\\/]+)/\1.yml'
 
