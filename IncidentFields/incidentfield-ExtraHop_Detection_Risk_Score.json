@@ -5,7 +5,7 @@
     "name": "Risk Score",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "",
+    "description": "Risk score associated with the ExtraHop detection",
     "cliName": "riskscore",
     "type": "number",
     "closeForm": false,

@@ -5,7 +5,7 @@
     "name": "Participants",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "List of participant objects associated with the detection",
+    "description": "List of participant objects associated with the ExtraHop Reveal(x) detection",
     "cliName": "participants",
     "type": "grid",
     "closeForm": false,

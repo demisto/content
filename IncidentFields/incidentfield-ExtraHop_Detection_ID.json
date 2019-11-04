@@ -5,7 +5,7 @@
     "name": "Detection ID",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "ID of the ExtraHop Detection",
+    "description": "ID of the ExtraHop Reveal(x) detection",
     "cliName": "detectionid",
     "type": "number",
     "closeForm": false,

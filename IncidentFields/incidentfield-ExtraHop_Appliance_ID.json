@@ -5,7 +5,7 @@
     "name": "ExtraHop Appliance ID",
     "ownerOnly": false,
     "placeholder": "",
-    "description": "",
+    "description": "Appliance ID of the ExtraHop Reveal(x) that created the detection",
     "cliName": "extrahopapplianceid",
     "type": "number",
     "closeForm": false,
