@@ -224,10 +224,9 @@ def send_vuln_details_request(plugin_id, date_range=None):
     return res.json()
 
 
-def send_asset_vuln_request(asset_id, date_range):
-    full_url = "{}workbenches/assets/{}/vulnerabilities/".format(BASE_URL, asset_id)
-    res = requests.get(full_url, headers=AUTH_HEADERS, verify=USE_SSL, params=date_range_to_param(date_range))
-    res.raise_for_status()
+def get_vulnerabilities_by_asset(params):
+    full_url = "{}{}".format(BASE_URL, "workbenches/vulnerabilities")
+    res = requests.request("GET", full_url, headers=AUTH_HEADERS, params=params, verify=USE_SSL)
     return res.json()
 
 
@@ -354,20 +353,41 @@ def get_vulnerability_details_command():
                                 VULNERABILITY_DETAILS_HEADERS)
 
 
+def args_to_request_params(hostname, ip, date_range):
+    params = {"filter.0.filter": "host.target", "filter.0.quality": "eq"}
+    if date_range:
+        try:
+            params["date_range"] = int(date_range)
+        except ValueError:
+            return_error("Invalid date range: {}".format(date_range))
+    if hostname:
+        params["filter.0.value"] = hostname
+        return params, hostname
+    elif ip:
+        params["filter.0.value"] = ip
+        return params, ip
+    return_error("Please provide one of the following arguments: hostname, ip")
+
+
 def get_vulnerabilities_by_asset_command():
     hostname, ip, date_range = demisto.getArg('hostname'), demisto.getArg('ip'), demisto.getArg('dateRange')
-    asset_id, indicator = get_asset_id(hostname, ip)
-    info = send_asset_vuln_request(asset_id, date_range)
+    params, indicator = args_to_request_params(hostname, ip, date_range)
+
+    info = get_vulnerabilities_by_asset(params)
+
     if 'error' in info:
         return_error(info['error'])
+
     vulns = convert_severity_values(replace_keys(info['vulnerabilities'], ASSET_VULNS_NAMES_MAP))
-    entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities', vulns,
-                                 ASSET_VULNS_HEADERS)
-    entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
-        'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
-        'Hostname': indicator
-    }
-    return entry
+    if vulns:
+        entry = get_entry_for_object('Vulnerabilities for asset {}'.format(indicator), 'TenableIO.Vulnerabilities',
+                                     vulns, ASSET_VULNS_HEADERS)
+        entry['EntryContext']['TenableIO.Assets(val.Hostname === obj.Hostname)'] = {
+            'Vulnerabilities': map(lambda x: x['plugin_id'], info['vulnerabilities']),
+            'Hostname': indicator
+        }
+        return entry
+    return 'No Vulnerabilities for asset {}'.format(indicator)
 
 
 def get_scan_status_command():
