@@ -1,7 +1,6 @@
 import json
 import yaml
 import os
-import re
 import sys
 
 from Tests.scripts.constants import *

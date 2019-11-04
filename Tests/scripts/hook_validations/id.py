@@ -56,7 +56,8 @@ class IDSetValidator(object):
 
             return id_set
 
-    def is_valid_in_id_set(self, file_path, obj_data, obj_set):
+    @staticmethod
+    def is_valid_in_id_set(file_path, obj_data, obj_set):
         """Check if the file is represented correctly in the id_set
 
         Args:

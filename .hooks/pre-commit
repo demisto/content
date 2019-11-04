@@ -10,7 +10,7 @@ if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_
     DO_ACTIVATE="${VIRTUAL_ENV}"
     source deactivate
 fi
-if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
+if [[ -e "./venv/bin/activate" && -z "${VIRTUAL_ENV}" ]]; then
     echo "Activating Demisto Content virtual env..."
     source ./venv/bin/activate
     DO_DEACTIVATE=1
@@ -38,15 +38,15 @@ else
     echo 'Example: ./Tests/scripts/pkg_dev_test_tasks.py -d Scripts/ParseEmailFiles'
 fi
 
-if [ -n "$DO_DEACTIVATE" ]; then
+if [[ -n "$DO_DEACTIVATE" ]]; then
     echo "Deactivating Demisto Content virtual env..."
     source deactivate
 fi
-if [ -n "$DO_ACTIVATE" ]; then
+if [[ -n "$DO_ACTIVATE" ]]; then
     echo "Activating back previous virtual env: $DO_ACTIVATE"
     source "${DO_ACTIVATE}/bin/activate"
 fi
-if [[ $RES -ne 0 ]]
+if [[ ${RES} -ne 0 ]]
   then
     echo "Please fix the aforementioned errors and then commit again"
     exit 1
@@ -54,10 +54,10 @@ fi
 
 
 # prevent push to master
-if [ -z "$1"  ]; then
+if [[ -z "$1"  ]]; then
     protected_branch='master'
     current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
-    if [ $protected_branch = $current_branch ]; then
+    if [[ ${protected_branch} = ${current_branch} ]]; then
         echo "pushing to master is not allowed"
         exit 1
     fi

@@ -12,7 +12,6 @@ for that task.
 """
 from __future__ import print_function
 import os
-import re
 import sys
 import glob
 import logging
@@ -154,7 +153,7 @@ class FilesValidator(object):
             tag (string): String of git tag used to update modified files
 
         Returns:
-            (modified_files, added_files). Tuple of sets.
+            (modified_files, added_files, old_format_files). Tuple of sets.
         """
         # Two dots is the default in git diff, it will compare with the last known commit as the base
         # Three dots will compare with the last known shared commit as the base
@@ -187,13 +186,6 @@ class FilesValidator(object):
 
             modified_files = modified_files - set(non_committed_deleted_files)
             added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
-
-            # new_added_files = set([])
-            # for added_file in added_files:
-            #     if added_file in non_committed_added_files:
-            #         new_added_files.add(added_file)
-
-            # added_files = new_added_files
 
         return modified_files, added_files, old_format_files
 
@@ -369,6 +361,7 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch you are working on.
+            is_backward_check (bool): Should check backwards
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
         schema_changed = False
@@ -419,6 +412,7 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch we are working on.
+            is_backward_check (bool): Should check BC
             prev_ver (string): The name or SHA1 of the previous content version, which will be validated against.
 
         Returns:
