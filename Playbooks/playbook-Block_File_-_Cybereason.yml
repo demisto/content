@@ -2,7 +2,7 @@ id: Block File - Cybereason
 version: -1
 name: Block File - Cybereason
 fromversion: 4.0.0
-description: This playbook accepts an MD5 hash and blocks the file using Cybereason
+description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
   integration.
 starttaskid: "0"
 tasks:
@@ -39,7 +39,7 @@ tasks:
       id: 9cf85355-9028-4a01-8304-3a371020c9b3
       version: -1
       name: Is Cybereason integration enabled?
-      description: Checks if Carbon Black Enterprise Response integration is enabled.
+      description: Checks if Cybereason is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -98,8 +98,7 @@ tasks:
       version: -1
       name: Is there an MD5 to block?
       description: Checks if there is a value for the MD5 input field. This task does
-        not verify that the value is actually an MD5 hash, just that the value for
-        the MD5 field exists.
+        not verify that the value is actually an MD5 hash, just that a value exists in the MD5 field.
       type: condition
       iscommand: false
       brand: ""
