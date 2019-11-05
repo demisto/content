@@ -90,6 +90,8 @@ outputs:
   type: String
 script: '-'
 system: false
+tags:
+- ml
 timeout: 60µs
 type: python
 dockerimage: demisto/dateutil
