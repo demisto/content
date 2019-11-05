@@ -67,7 +67,7 @@ def is_correct_content_installed(ips, content_version, username, password):
              "Content-type": "application/json",
              "X-XSRF-TOKEN": xsrf}
         body = json.dumps({"user": username, "password": password})
-        session.request("POST", host+"/login", headers=h, verify=False, data=body)
+        session.request("POST", host + "/login", headers=h, verify=False, data=body)
         demisto_api_key = generate_demisto_api_key()
         apikey_json = {
             'name': 'test_apikey',
@@ -122,7 +122,7 @@ def main():
                     host = "https://{}".format(ami_instance_ip)
                     path = '/health'
                     method = 'GET'
-                    res = requests.request(method=method, url=(host+path), verify=False)
+                    res = requests.request(method=method, url=(host + path), verify=False)
                     if res.status_code == 200:
                         print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                         ready_ami_list.append(ami_instance_name)
