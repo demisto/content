@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Updated docker image to version 1.0.0.3321 (Server 5.0 only).
 
 ## [19.10.2] - 2019-10-29
 -
