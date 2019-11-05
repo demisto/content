@@ -1896,7 +1896,6 @@
     ],
     "skipped_tests": {
         "NetWitness Endpoint Test": "Issue 19878",
-        "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
@@ -2014,7 +2013,6 @@
         "SlackV2": "Issue 19558",
 
       "_comment": "~~~ OTHER ~~~",
-        "LogRhythm": "Issue 19849",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
