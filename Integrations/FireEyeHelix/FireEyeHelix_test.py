@@ -5,7 +5,7 @@ from FireEyeHelix import Client, build_search_groupby_result, list_alerts_comman
     get_alert_notes_command, create_alert_note_command, get_events_by_alert_command, get_endpoints_by_alert_command, \
     get_cases_by_alert_command, add_list_item_command, get_list_items_command, update_list_item_command, \
     list_rules_command, edit_rule_command, search_command, archive_search_command, archive_search_status_command, \
-    archive_search_results_command, build_transformed_dict
+    archive_search_results_command, create_context_result
 from test_data.response_constants import ALERT_RESP, ALERTS_RESP, SEARCH_AGGREGATIONS_SINGLE_RESP, \
     SEARCH_AGGREGATIONS_MULTI_RESP, NOTES_GET_RESP, NOTES_CREATE_RESP, EVENTS_BY_ALERT_RESP, ENDPOINTS_BY_ALERT_RESP, \
     CASES_BY_ALERT_RESP, LIST_ITEMS_RESP, LIST_SINGLE_ITEM_RESP, RULE_RESP, SEARCH_MULTI_RESP, SEARCH_ARCHIVE_RESP, \
@@ -18,22 +18,22 @@ from test_data.result_constants import EXPECTED_AGGREGATIONS_MULTI_RSLT, EXPECTE
     EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT
 
 
-def test_build_transformed_dict_basic():
-    assert build_transformed_dict(DICT_1to5, TRANS_DICT_134) == {'one': 1, 'three': 3, 'four': 4}
+def test_create_context_result_basic():
+    assert create_context_result(DICT_1to5, TRANS_DICT_134) == {'one': 1, 'three': 3, 'four': 4}
     assert 'one' not in DICT_1to5
 
 
-def test_build_transformed_dict_nested_keys():
-    assert build_transformed_dict(DICT_NESTED_123, TRANS_DICT_NESTED_12) == {'one': 1, 'two': 2}
+def test_create_context_result_nested_keys():
+    assert create_context_result(DICT_NESTED_123, TRANS_DICT_NESTED_12) == {'one': 1, 'two': 2}
 
 
-def test_build_transformed_dict_nested_vals():
-    assert build_transformed_dict(DICT_1to5, TRANS_DICT_NESTED_VAL_12) == {'one': {'1': 1}, 'two': 2}
+def test_create_context_result_nested_vals():
+    assert create_context_result(DICT_1to5, TRANS_DICT_NESTED_VAL_12) == {'one': {'1': 1}, 'two': 2}
 
 
-def test_build_transformed_dict_list():
-    assert build_transformed_dict(DICT_LST_AAB2B, TRANS_DICT_LST_A2B) == {'AaB': [{'two': 2}, {'two': 3}], 'four': 4}
-    assert build_transformed_dict(DICT_LST_NESTED, TRANS_DICT_LST_NESTED) == {
+def test_create_context_result_list():
+    assert create_context_result(DICT_LST_AAB2B, TRANS_DICT_LST_A2B) == {'AaB': [{'two': 2}, {'two': 3}], 'four': 4}
+    assert create_context_result(DICT_LST_NESTED, TRANS_DICT_LST_NESTED) == {
         'Master': {'ID': 1, 'Assets': [{'ID': 1, 'Name': 'a'}, {'ID': 2, 'Name': 'b'}]}}
 
 

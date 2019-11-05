@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, List, Optional, Union, Any
+from typing import Dict, Tuple, List, Optional, Any, Union
 import urllib3
 
 # Disable insecure warnings
@@ -12,23 +12,22 @@ urllib3.disable_warnings()
 """GLOBALS/PARAMS
 Attributes:
     INTEGRATION_NAME:
-        Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+        Name of the integration as shown in the integration UI.
 
     INTEGRATION_COMMAND_NAME:
-        Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
+        Command names prefix used for all commands.
 
     INTEGRATION_CONTEXT_NAME:
-        Context output names should be written in camel case, for example: MSGraphUser.
+        Context output name used in most outputs.
 
     ALERTS_TRANS
-        Transformation map for alerts to be used with build_transformed_dict
+        Transformation map for alerts to be used with create_context_result
 
     ARCHIVE_SEARCH_TRANS
-        Transformation map for archive search to be used with build_transformed_dict
+        Transformation map for archive search to be used with create_context_result
 
     CASES_TRANS
-        Transformation map for cases to be used with build_transformed_dict
+        Transformation map for cases to be used with create_context_result
 
     ENDPOINTS_TRANS
         Transformation map for endpoints to be used with build_transformation_dict
@@ -37,16 +36,16 @@ Attributes:
         Transformation map for events to be used with build_transformation_dict
 
     LISTS_TRANS
-        Transformation map for lists to be used with build_transformed_dict
+        Transformation map for lists to be used with create_context_result
 
     LIST_ITEM_TRANS
-        Transformation map for list items to be used with build_transformed_dict
+        Transformation map for list items to be used with create_context_result
 
     NOTES_TRANS
-        Transformation map for notes to be used with build_transformed_dict
+        Transformation map for notes to be used with create_context_result
 
     RULES_TRANS
-        Transformation map for rules to be used with build_transformed_dict
+        Transformation map for rules to be used with create_context_result
 """
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
@@ -258,8 +257,7 @@ class Client(BaseClient):
                 'Encountered an issue accessing the API. Please make sure you entered the right Helix ID and API Token.',
                 error=e)
 
-    def list_alerts(self, limit: Union[int, str] = None, offset: Union[int, str] = None,
-                    created_at__gte: str = None) -> Dict:
+    def list_alerts(self, limit: int = None, offset: int = None, created_at__gte: str = None) -> Dict:
         """Returns all alerts by sending a GET request.
 
         Args:
@@ -331,7 +329,7 @@ class Client(BaseClient):
         params = assign_params(query=query)
         return self._http_request('GET', suffix, params=params)
 
-    def get_archive_search(self, search_id: Union[int, str] = None) -> Dict:
+    def get_archive_search(self, search_id: int = None) -> Dict:
         """Gets archive search
 
         Args:
@@ -343,7 +341,7 @@ class Client(BaseClient):
         suffix = f'/api/v1/search/archive/{search_id}'
         return self._http_request('GET', suffix)
 
-    def get_archive_search_results(self, search_id: Union[int, str] = None):
+    def get_archive_search_results(self, search_id: int = None):
         """Searches for alerts based on query
 
         Args:
@@ -468,10 +466,10 @@ class Client(BaseClient):
         suffix = f'/api/v1/events/{event_id}'
         return self._http_request('GET', suffix)
 
-    def get_lists(self, limit: Union[int, str] = None, offset: Union[int, str] = None, created_at: str = None,
-                  description: str = None, is_active: Union[str, bool] = None, is_internal: Union[str, bool] = None,
-                  is_protected: Union[str, bool] = None, name: str = None, short_name: str = None, type: str = None,
-                  updated_at: str = None, usage: str = None, order_by: str = None, **kwargs) -> Dict:
+    def get_lists(self, limit: int = None, offset: int = None, created_at: str = None, description: str = None,
+                  is_active: bool = None, is_internal: bool = None, is_protected: bool = None, name: str = None,
+                  short_name: str = None, type: str = None, updated_at: str = None, usage: str = None,
+                  order_by: str = None, **kwargs) -> Dict:
         """Fetches lists by a GET request
 
         Args:
@@ -498,9 +496,9 @@ class Client(BaseClient):
             offset=offset,
             created_at=created_at,
             description=description,
-            is_active=is_active and is_active != 'false',
-            is_internal=is_internal and is_internal != 'false',
-            is_protected=is_protected and is_protected != 'false',
+            is_active=is_active,
+            is_internal=is_internal,
+            is_protected=is_protected,
             name=name,
             short_name=short_name,
             type=type,
@@ -522,9 +520,9 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('GET', suffix)
 
-    def create_list(self, name: str, usage: str = None, short_name: str = None, is_internal: Union[str, bool] = None,
-                    is_active: Union[str, bool] = None, is_protected: Union[str, bool] = None,
-                    is_hidden: Union[str, bool] = None, type: str = None, description: str = None, **kwargs) -> Dict:
+    def create_list(self, name: Optional[str], usage: str = None, short_name: str = None, is_internal: bool = None,
+                    is_active: bool = None, is_protected: bool = None, is_hidden: bool = None, type: str = None,
+                    description: str = None, **kwargs) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -545,20 +543,19 @@ class Client(BaseClient):
         body = assign_params(
             name=name,
             short_name=short_name,
-            is_internal=is_internal != 'false' if is_internal else is_internal,
-            is_active=is_active != 'false' if is_active else is_active,
-            is_protected=is_protected != 'false' if is_protected else is_protected,
-            is_hidden=is_hidden != 'false' if is_hidden else is_hidden,
+            is_internal=is_internal,
+            is_active=is_active,
+            is_protected=is_protected,
+            is_hidden=is_hidden,
             type=type,
             description=description
         )
         body['usage'] = argToList(usage)
         return self._http_request('POST', suffix, json_data=body)
 
-    def update_list(self, list_id: Union[str, int], name: str = None, usage: str = None, short_name: str = None,
-                    is_internal: Union[str, bool] = None, is_active: Union[str, bool] = None,
-                    is_protected: Union[str, bool] = None, is_hidden: Union[str, bool] = None, type: str = None,
-                    description: str = None, **kwargs) -> Dict:
+    def update_list(self, list_id: int, name: str = None, usage: str = None, short_name: str = None,
+                    is_internal: bool = None, is_active: bool = None, is_protected: bool = None, is_hidden: bool = None,
+                    type: str = None, description: str = None, **kwargs) -> Dict:
         """Creates a list using a POST request
 
         Args:
@@ -602,8 +599,7 @@ class Client(BaseClient):
         suffix = f'/api/v3/lists/{list_id}'
         return self._http_request('DELETE', suffix, resp_type='content')
 
-    def list_sensors(self, limit: Union[int, str] = None, offset: Union[int, str] = None, hostname: str = None,
-                     status: str = None) -> Dict:
+    def list_sensors(self, limit: int = None, offset: int = None, hostname: str = None, status: str = None) -> Dict:
         """Fetches sensors using GET request
 
         Args:
@@ -624,8 +620,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def list_rules(self, limit: Union[int, str] = None, offset: Union[int, str] = None, sort: str = None,
-                   **kwargs) -> Dict:
+    def list_rules(self, limit: int = None, offset: int = None, sort: str = None, **kwargs) -> Dict:
         """Fetches rules using GET request
 
         Args:
@@ -644,7 +639,7 @@ class Client(BaseClient):
         )
         return self._http_request('GET', suffix, params=params)
 
-    def edit_rule(self, rule_id: Optional[Any], enabled: Union[str, bool] = None) -> Dict:
+    def edit_rule(self, rule_id: str, enabled: bool = None) -> Dict:
         """Edit a single rule using PATCH request
 
         Args:
@@ -655,11 +650,10 @@ class Client(BaseClient):
             Response from API
         """
         suffix = f'/api/v1/rules/{rule_id}'
-        body = assign_params(enabled=enabled != 'false' if enabled else None)
+        body = assign_params(enabled=enabled)
         return self._http_request('PATCH', suffix, json_data=body)
 
-    def add_list_item(self, list_id: Union[str, int], type: str, value: str, risk: str = None,
-                      notes: str = None) -> Dict:
+    def add_list_item(self, list_id: Optional[int], type: str, value: str, risk: str = None, notes: str = None) -> Dict:
         """Adds a single item list to a list
 
         Args:
@@ -681,8 +675,8 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix, json_data=body)
 
-    def update_list_item(self, list_id: Union[str, int], item_id: Union[str, int], type: str = None, value: str = None,
-                         risk: str = None, notes: str = None) -> Dict:
+    def update_list_item(self, list_id: int, item_id: int, type: str = None, value: str = None, risk: str = None,
+                         notes: str = None) -> Dict:
         """Updates a single item list
 
         Args:
@@ -727,8 +721,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def build_transformed_dict(src: Union[Dict, List], trans_dict: Dict) -> Union[Dict, List]:
-    """Builds a dictionary according to a conversion map
+def create_context_result(src: Union[Dict, List], trans_dict: Dict) -> Union[Dict, List]:
+    """Builds a dictionary according to a transformation map
 
     Args:
         src (dict): original dictionary to build from
@@ -737,13 +731,13 @@ def build_transformed_dict(src: Union[Dict, List], trans_dict: Dict) -> Union[Di
     Returns: src copy with changed keys
     """
     if isinstance(src, list):
-        return [build_transformed_dict(x, trans_dict) for x in src]
+        return [create_context_result(x, trans_dict) for x in src]
     res: Dict[str, Any] = {}
     for key, val in trans_dict.items():
         if isinstance(val, dict):
             # handle nested list
             sub_res = res
-            item_val = [build_transformed_dict(item, val) for item in (demisto.get(src, key) or [])]
+            item_val = [create_context_result(item, val) for item in (demisto.get(src, key) or [])]
             key = underscoreToCamelCase(key)
             for sub_key in key.split('.')[:-1]:
                 if sub_key not in sub_res:
@@ -888,7 +882,7 @@ def build_search_result(raw_response: dict, search_id: Union[str, int] = None):
         if hits:
             context['Result'] = []
             for hit in hits:
-                context['Result'].append(build_transformed_dict(hit.get('_source'), EVENTS_TRANS))  # type: ignore
+                context['Result'].append(create_context_result(hit.get('_source'), EVENTS_TRANS))  # type: ignore
         # Human readable value is ok for both no result found and result found cases
         hr = tableToMarkdown(f'{INTEGRATION_NAME} - Search result for {context["MQL"]}', context.get('Result'),
                              ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
@@ -923,7 +917,7 @@ def build_single_list_result(raw_response):
     """
     list_id = raw_response.get('id')
     title = f'{INTEGRATION_NAME} - List {list_id}:'
-    context_entry = build_transformed_dict(raw_response, LISTS_TRANS)
+    context_entry = create_context_result(raw_response, LISTS_TRANS)
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry
     }
@@ -936,11 +930,16 @@ def build_single_list_result(raw_response):
 ''' COMMANDS '''
 
 
-def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module(client: Client, test_fetch: bool = False, fetch_time: Optional[str] = None, last_run: Dict = None,
+                *_) -> \
+        Tuple[str, Dict, Dict]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
         client: Client object with request
+        test_fetch: If set to true will test fetch_incidents
+        fetch_time: If fetch is set, will pass to fetch_incidents to test
+        last_run: Last fetch object.
         args: Usually demisto.args()
 
     Returns:
@@ -950,10 +949,12 @@ def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
         DemistoException: If test failed.
     """
     client.test_module()
+    if test_fetch:
+        fetch_incidents(client, fetch_time, last_run)  # type: ignore
     return 'ok', {}, {}
 
 
-def fetch_incidents(client: Client, fetch_time: str, last_run: Dict) -> Tuple[List, Dict]:
+def fetch_incidents(client: Client, fetch_time: Optional[str], last_run: Dict) -> Tuple[List, Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -1002,13 +1003,13 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    limit = args.get('limit')
-    offset = args.get('offset')
+    limit = int(args.get('limit') or 0)
+    offset = int(args.get('offset') or 0)
     raw_response = client.list_alerts(limit=limit, offset=offset)
     alerts = raw_response.get('results')
     if alerts:
         title = f'{INTEGRATION_NAME} - List alerts:'
-        context_entry = build_transformed_dict(alerts, ALERTS_TRANS)
+        context_entry = create_context_result(alerts, ALERTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry,
@@ -1034,7 +1035,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     raw_response = client.get_alert_by_id(_id=_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Alert {_id}:'
-        context_entry = build_transformed_dict(raw_response, ALERTS_TRANS)
+        context_entry = create_context_result(raw_response, ALERTS_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -1059,7 +1060,7 @@ def get_alert_notes_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     raw_notes = raw_response.get('results')
     if raw_notes:
         title = f'{INTEGRATION_NAME} - Notes for Alert {alert_id}:'
-        context_entry = build_transformed_dict(raw_notes, NOTES_TRANS)
+        context_entry = create_context_result(raw_notes, NOTES_TRANS)
         if isinstance(context_entry, dict):
             context_entry['AlertID'] = alert_id
         else:
@@ -1094,7 +1095,7 @@ def create_alert_note_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     raw_response = client.create_alert_note(alert_id=alert_id, note=note)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Created Note for Alert {alert_id}:'
-        context_entry = build_transformed_dict(raw_response, NOTES_TRANS)
+        context_entry = create_context_result(raw_response, NOTES_TRANS)
         if isinstance(context_entry, dict):
             context_entry['AlertID'] = alert_id
         context = {
@@ -1140,7 +1141,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
     events = raw_response.get('results')
     if events:
         title = f'{INTEGRATION_NAME} - Events for alert {alert_id}:'
-        context_entry = build_transformed_dict(events, EVENTS_TRANS)
+        context_entry = create_context_result(events, EVENTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Event(val.ID && val.ID === obj.ID)': context_entry,
@@ -1172,7 +1173,7 @@ def get_endpoints_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dic
     endpoints = demisto.get(raw_response, 'results.endpoints')
     if endpoints:
         title = f'{INTEGRATION_NAME} - Endpoints for alert {alert_id}:'
-        context_entry = build_transformed_dict(endpoints, ENDPOINTS_TRANS)
+        context_entry = create_context_result(endpoints, ENDPOINTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Endpoint(val.ID && val.ID === obj.ID)': context_entry,
@@ -1204,7 +1205,7 @@ def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, D
     cases = raw_response.get('results')
     if cases:
         title = f'{INTEGRATION_NAME} - Cases for alert {alert_id}:'
-        context_entry = build_transformed_dict(cases, CASES_TRANS)
+        context_entry = create_context_result(cases, CASES_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Case(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -1228,11 +1229,28 @@ def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.get_lists(**args)
+    is_active = args.get('is_active')
+    is_internal = args.get('is_internal')
+    is_protected = args.get('is_protected')
+    raw_response = client.get_lists(
+        limit=args.get('limit'),
+        offset=args.get('offset'),
+        created_at=args.get('created_at'),
+        description=args.get('description'),
+        is_active=is_active and is_active != 'false',
+        is_internal=is_internal and is_internal != 'false',
+        is_protected=is_protected and is_protected != 'false',
+        name=args.get('name'),
+        short_name=args.get('short_name'),
+        type=args.get('type'),
+        updated_at=args.get('updated_at'),
+        usage=args.get('usage'),
+        order_by=args.get('order_by')
+    )
     lists = raw_response.get('results')
     if lists:
         title = f'{INTEGRATION_NAME} - Lists:'
-        context_entry = build_transformed_dict(lists, LISTS_TRANS)
+        context_entry = create_context_result(lists, LISTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.List(val.ID && val.ID === obj.ID)': context_entry,
@@ -1275,7 +1293,20 @@ def create_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.create_list(**args)
+    is_internal = args.get('is_internal')
+    is_active = args.get('is_active')
+    is_protected = args.get('is_protected')
+    is_hidden = args.get('is_hidden')
+    raw_response = client.create_list(
+        name=args.get('name'),
+        short_name=args.get('short_name'),
+        is_internal=is_internal != 'false' if is_internal else is_internal,
+        is_active=is_active != 'false' if is_active else is_active,
+        is_protected=is_protected != 'false' if is_protected else is_protected,
+        is_hidden=is_hidden != 'false' if is_hidden else is_hidden,
+        type=args.get('type'),
+        description=args.get('description')
+    )
     if raw_response:
         return build_single_list_result(raw_response)
     else:
@@ -1292,7 +1323,21 @@ def update_list_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.update_list(**args)
+    is_internal = args.get('is_internal')
+    is_active = args.get('is_active')
+    is_protected = args.get('is_protected')
+    is_hidden = args.get('is_hidden')
+    raw_response = client.update_list(
+        list_id=int(args.get('list_id')),  # type: ignore
+        name=args.get('name'),
+        short_name=args.get('short_name'),
+        is_internal=is_internal != 'false' if is_internal else is_internal,
+        is_active=is_active != 'false' if is_active else is_active,
+        is_protected=is_protected != 'false' if is_protected else is_protected,
+        is_hidden=is_hidden != 'false' if is_hidden else is_hidden,
+        type=args.get('type'),
+        description=args.get('description')
+    )
     if raw_response:
         return build_single_list_result(raw_response)
     else:
@@ -1325,11 +1370,17 @@ def add_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     list_id = args.get('list_id')
-    raw_response = client.add_list_item(**args)
+    raw_response = client.add_list_item(
+        list_id=list_id,
+        type=str(args.get('type')),
+        value=str(args.get('value')),
+        risk=args.get('risk'),
+        notes=args.get('notes')
+    )
     if raw_response:
         item_id = raw_response.get('id')
         title = f'{INTEGRATION_NAME} - List item {item_id} was added successfully to {list_id}'
-        context_entry = build_transformed_dict(raw_response, LIST_ITEM_TRANS)
+        context_entry = create_context_result(raw_response, LIST_ITEM_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item': context_entry
         }
@@ -1350,12 +1401,19 @@ def update_list_item_command(client: Client, args: Dict) -> Tuple[str, Dict, Dic
     Returns:
         Outputs
     """
-    list_id = args.get('list_id')
-    raw_response = client.update_list_item(**args)
+    list_id = int(args.get('list_id'))  # type: ignore
+    item_id = int(args.get('item_id'))  # type: ignore
+    raw_response = client.update_list_item(
+        list_id=list_id,
+        item_id=item_id,
+        type=args.get('type'),
+        value=args.get('value'),
+        risk=args.get('risk'),
+        notes=args.get('notes')
+    )
     if raw_response:
-        item_id = raw_response.get('id')
         title = f'{INTEGRATION_NAME} - List item {item_id} from list {list_id} was updated successfully'
-        context_entry = build_transformed_dict(raw_response, LIST_ITEM_TRANS)
+        context_entry = create_context_result(raw_response, LIST_ITEM_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry
         }
@@ -1397,7 +1455,7 @@ def get_list_items_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     results = raw_response.get('results')
     if results:
         title = f'{INTEGRATION_NAME} - List items for list {list_id}'
-        context_entry = build_transformed_dict(results, LIST_ITEM_TRANS)
+        context_entry = create_context_result(results, LIST_ITEM_TRANS)
         count = demisto.get(raw_response, 'meta.count')
         context = {
             f'{INTEGRATION_CONTEXT_NAME}List(val.ID && val.ID === {list_id}).Item(val.ID === obj.ID)': context_entry,
@@ -1420,12 +1478,17 @@ def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.list_sensors(**args)
+    raw_response = client.list_sensors(
+        limit=int(args.get('limit') or 0),
+        offset=int(args.get('offset') or 0),
+        hostname=args.get('hostname'),
+        status=args.get('status')
+    )
     sensors = raw_response.get('results')
     if sensors:
         title = f'{INTEGRATION_NAME} - List sensors:'
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Sensor(val.id && val.ID === obj.id)': sensors  # TODO: Edit this
+            f'{INTEGRATION_CONTEXT_NAME}.Sensor(val.id && val.ID === obj.id)': sensors
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, sensors)
@@ -1445,11 +1508,15 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    raw_response = client.list_rules(**args)
+    raw_response = client.list_rules(
+        limit=int(args.get('limit') or 0),
+        offset=int(args.get('offset') or 0),
+        sort=args.get('sort')
+    )
     rules = raw_response.get('rules')
     if rules:
         title = f'{INTEGRATION_NAME} - List rules:'
-        context_entry = build_transformed_dict(rules, RULES_TRANS)
+        context_entry = create_context_result(rules, RULES_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -1472,12 +1539,13 @@ def edit_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    rule_id = args.get('rule_id')
-    raw_response = client.edit_rule(**args)
+    rule_id = str(args.get('rule_id'))
+    enabled = args.get('enabled')
+    raw_response = client.edit_rule(rule_id, enabled != 'false' if enabled else None)
     rules = raw_response.get('rules')
     if rules:
         title = f'{INTEGRATION_NAME} - Successfully updated rule {rule_id}:'
-        context_entry = build_transformed_dict(rules, RULES_TRANS)
+        context_entry = create_context_result(rules, RULES_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
         }
@@ -1520,7 +1588,7 @@ def archive_search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]
     data = raw_response.get('data')
     if data:
         title = f'{INTEGRATION_NAME} - Successfully created archive search'
-        context_entry = build_transformed_dict(data, ARCHIVE_SEARCH_TRANS)
+        context_entry = create_context_result(data, ARCHIVE_SEARCH_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}Search(val.ID === obj.ID)': context_entry
         }
@@ -1544,11 +1612,12 @@ def archive_search_status_command(client: Client, args: Dict) -> Tuple[str, Dict
     raw_res_lst = []
     context_entry = []
     for s_id in search_ids:
-        raw_res = client.get_archive_search(s_id)
+        i_s_id = int(s_id)
+        raw_res = client.get_archive_search(i_s_id)
         if raw_res:
             data = raw_res.get('data')
             if isinstance(data, list):
-                context_entry.append(build_transformed_dict(data[0], ARCHIVE_SEARCH_TRANS))
+                context_entry.append(create_context_result(data[0], ARCHIVE_SEARCH_TRANS))
             raw_res_lst.append(raw_res)
     if raw_res_lst:
         title = f'{INTEGRATION_NAME} - Search status'
@@ -1571,7 +1640,7 @@ def archive_search_results_command(client: Client, args: Dict) -> Tuple[str, Dic
     Returns:
         Outputs
     """
-    search_id = args.get('search_id')
+    search_id = int(args.get('search_id'))  # type: ignore
     raw_response = client.get_archive_search_results(search_id)
     return build_search_result(raw_response.get('results'), search_id)
 
@@ -1597,8 +1666,6 @@ def main():  # pragma: no cover
 
     # Switch case
     commands = {
-        'test-module': test_module,
-        'fetch-incidents': fetch_incidents,
         f'{INTEGRATION_COMMAND_NAME}-list-alerts': list_alerts_command,
         f'{INTEGRATION_COMMAND_NAME}-get-alert-by-id': get_alert_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-alert-get-notes': get_alert_notes_command,
@@ -1616,7 +1683,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-add-list-item': add_list_item_command,
         f'{INTEGRATION_COMMAND_NAME}-update-list-item': update_list_item_command,
         f'{INTEGRATION_COMMAND_NAME}-remove-list-item': remove_list_item_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,  # todo: not tested properly
+        f'{INTEGRATION_COMMAND_NAME}-list-sensors': list_sensors_command,
         f'{INTEGRATION_COMMAND_NAME}-list-rules': list_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-edit-rule': edit_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-search': search_command,
@@ -1625,9 +1692,15 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-archive-search-get-results': archive_search_results_command,
     }
     try:
-        if command == 'fetch-incidents':
+        if command == 'test-module':
             fetch_time = params.get('fetch_time')
-            incidents, last_run = commands[command](client, fetch_time, last_run=demisto.getLastRun())  # type: ignore
+            is_fetch = params.get('isFetch')
+            last_run = demisto.getLastRun()
+            readable_output, outputs, raw_response = test_module(client, bool(is_fetch), fetch_time, last_run)
+            return_outputs(readable_output, outputs, raw_response)
+        elif command == 'fetch-incidents':
+            fetch_time = params.get('fetch_time')
+            incidents, last_run = fetch_incidents(client, fetch_time, last_run=demisto.getLastRun())  # type: ignore
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
         elif command in commands:
