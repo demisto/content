@@ -116,8 +116,7 @@ def __create_integration_instance(client, integration_name, integration_instance
     for param_conf in module_configuration:
         if param_conf['display'] in integration_params or param_conf['name'] in integration_params:
             # param defined in conf
-            key = param_conf['display'] if param_conf['display'] in integration_params else \
-            param_conf['name']
+            key = param_conf['display'] if param_conf['display'] in integration_params else param_conf['name']
             if key == 'credentials':
                 credentials = integration_params[key]
                 param_value = {
@@ -167,8 +166,7 @@ def __disable_integrations_instances(client, module_instances):
     for configured_instance in module_instances:
         # tested with POSTMAN, this is the minimum required fields for the request.
         module_instance = {
-            key: configured_instance[key] for key in
-        ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
+            key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
         }
         module_instance['enable'] = "false"
         module_instance['version'] = -1
@@ -203,7 +201,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
     try:
         inc_id = response.id
-    except:  # flake8: noqa
+    except:  # noqa: E722
         inc_id = 'incCreateErr'
     # inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
@@ -243,8 +241,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 def __get_investigation_playbook_state(client, inv_id):
     try:
         investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
-                                                                         path='/inv-playbook/' +
-                                                                              inv_id)
+                                                                         path='/inv-playbook/' + inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
@@ -256,7 +253,7 @@ def __get_investigation_playbook_state(client, inv_id):
     try:
         state = investigation_playbook['state']
         return state
-    except:  # flake8: noqa
+    except:  # noqa: E722
         return PB_Status.NOT_SUPPORTED_VERSION
 
 
@@ -424,8 +421,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
 
     __disable_integrations_instances(client, module_instances)
 
-    test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == \
-                PB_Status.NOT_SUPPORTED_VERSION
+    test_pass = playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION
     if test_pass:
         # delete incident
         __delete_incident(client, incident)
