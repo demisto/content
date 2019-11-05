@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed bug - XDRSyncScript initiated xdr-update-incident with empty arguments
 
 ## [19.10.2] - 2019-10-29
 The **XDRSyncScript** now works as expected.
