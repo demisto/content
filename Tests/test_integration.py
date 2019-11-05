@@ -3,6 +3,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import urllib3
 import ast
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
@@ -10,6 +11,9 @@ import demisto_client
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60

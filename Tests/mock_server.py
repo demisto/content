@@ -3,12 +3,16 @@ import signal
 import string
 import time
 import unicodedata
+import urllib3
 import demisto_client.demisto_api
 from subprocess import call, Popen, PIPE, check_call, check_output
 
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
 PROXY_PROCESS_INIT_TIMEOUT = 20
 PROXY_PROCESS_INIT_INTERVAL = 1
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 
 def clean_filename(playbook_id, whitelist=VALID_FILENAME_CHARS, replace=' ()'):
