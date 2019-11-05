@@ -58,6 +58,8 @@ mapping:
   toversion:
     type: text
   dockerimage:
+    type: 
+  dockerimage45:
     type: str
   alt_dockerimages:
     type: seq

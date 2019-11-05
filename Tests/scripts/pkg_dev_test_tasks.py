@@ -31,6 +31,9 @@ def get_docker_images(script_obj):
     alt_imgs = script_obj.get('alt_dockerimages')
     if alt_imgs:
         imgs.extend(alt_imgs)
+    if 'dockerimage45' in script_obj:
+        img45 = script_obj.get('dockerimage45') or DEF_DOCKER
+        imgs.append(img45)
     return imgs
 
 
