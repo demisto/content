@@ -501,8 +501,8 @@ def restart_demisto_service(ami, c):
         if exit_code == 0:
             print("{}: Checking login to the server...".format(datetime.now()))
             try:
-                res = c.get_all_widgets()
-                if res[1] == 200:
+                res = demisto_client.generic_request_func(self=c, path='/health', method='GET')
+                if int(res[1]) == 200:
                     return
                 else:
                     print("Failed verifying login (will retry). status: {}. text: {}".format(res.status_code, res.text))
