@@ -6,10 +6,10 @@ script: ''
 type: python
 tags: []
 comment: "Allows multiple transformers to be used from within a single input string.\n\
-  \nInput is a string template which accepts pipe format `{{someIncidentVar | someTransformer}}`.\
+  \nInput is a string template that accepts pipe format `{{someIncidentVar | someTransformer}}`.\
   \  Multiple statements are accepted in the template.  Use standard `${someVar}`\
-  \ notation for variables which do not require transforming.  \n\nNote that only\
-  \ a single pipe per `{{ someVar | someTransformer }}` is currently supported, and\
+  \ notation for variables that do not require transforming.  \n\nNote that only\
+  \ a single pipe per `{{ someVar | someTransformer }}` is supported, and\
   \ the pipe must be able to be run with default arguments.\n\nFor example, assuming\
   \ that there is a transformer called 'SecondsToString', the input value might be:\
   \ `The duration of my timer was {{incident.mycustomtimer.totalDuration | SecondsToString}}`.\
@@ -18,7 +18,7 @@ enabled: true
 args:
 - name: value
   required: true
-  description: The input template to be parsed
+  description: The input template to parse.
 scripttarget: 0
 subtype: python3
 runonce: false
