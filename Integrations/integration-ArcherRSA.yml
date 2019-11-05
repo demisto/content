@@ -2358,7 +2358,6 @@ script:
         // This function verifies the fields specified in the fieldsToValue argument are known by Archer to be compatible with the given app ID.
         var userSpecifiedFields = Object.keys(fieldsToValueJSON);
         var actualFieldsOfGivenApp = Object.keys(appFieldMapping);
-        logInfo("\n\n\n" + "type of actualFieldsOfGivenApp: " + JSON.stringify(actualFieldsOfGivenApp) + "\n\n\n");
         userSpecifiedFields.forEach(function(fieldSpecifiedByUser) {
             if (!(actualFieldsOfGivenApp.indexOf(fieldSpecifiedByUser) > -1)) {
                 var wrongFieldErrorMessage = "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}. \n".format(fieldSpecifiedByUser, appID);
@@ -2920,6 +2919,7 @@ script:
         }
         var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
         offset = tz ? parseInt(tz) : 0;
+        offset = tz ? 60 * 1000 * parseInt(tz) : 60 * 1000 * new Date().getTimezoneOffset();
 
         var cmd = commands.searchRecords;
         var incidentRes = [];
@@ -2927,7 +2927,9 @@ script:
 
         var day = 60 * 1000 * 60 * 24;
         var lastTime = lastRun.lastTime;
+        var shouldAddOffset = false;
         if (!lastTime) {
+            shouldAddOffset = true;
             lastTime = new Date().getTime() - (day * 1);
         }
         dataArgs.applicationId = dataArgs.applicationId || params.fetchApplicationId ;
@@ -2944,10 +2946,15 @@ script:
         var incidents = createIncidentsArr(results, dataArgs.applicationId);
 
         if (incidents.length > 0){
+            shouldAddOffset = true;
             lastTime = incidents[incidents.length-1].occurred;
-        }
 
-        setLastRun({ lastTime: lastTime + offset});
+            if (params.useEuropeanTime) {
+                lastTime = lastTime.getTime()
+            }
+        }
+        var newLastTime = shouldAddOffset ? lastTime + offset : lastTime;
+        setLastRun({ lastTime: newLastTime});
         return (JSON.stringify(incidents));
     }
 
