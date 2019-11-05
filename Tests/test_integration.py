@@ -30,7 +30,7 @@ def __get_integration_config(client, integration_name):
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
     res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
-                                              method='POST', body=body)
+                                                  method='POST', body=body)
 
     res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
@@ -58,7 +58,9 @@ def __get_integration_config(client, integration_name):
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
     try:
-        res = demisto_client.generic_request_func(self=client, method='POST', path='/settings/integration/test', body=module_instance)
+        res = demisto_client.generic_request_func(self=client, method='POST',
+                                                  path='/settings/integration/test',
+                                                  body=module_instance)
     except ApiException as conn_err:
         print_error(
             'Failed to test integration instance, error trying to communicate with demisto '
@@ -134,7 +136,9 @@ def __create_integration_instance(client, integration_name, integration_instance
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
     try:
-        res = demisto_client.generic_request_func(self=client, method='PUT', path='/settings/integration', body=module_instance)
+        res = demisto_client.generic_request_func(self=client, method='PUT',
+                                                  path='/settings/integration',
+                                                  body=module_instance)
     except ApiException as conn_err:
         print_error(
             'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name,
@@ -163,13 +167,16 @@ def __disable_integrations_instances(client, module_instances):
     for configured_instance in module_instances:
         # tested with POSTMAN, this is the minimum required fields for the request.
         module_instance = {
-            key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
+            key: configured_instance[key] for key in
+        ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
         }
         module_instance['enable'] = "false"
         module_instance['version'] = -1
 
         try:
-            res = demisto_client.generic_request_func(self=client, method='PUT', path='/settings/integration', body=module_instance)
+            res = demisto_client.generic_request_func(self=client, method='PUT',
+                                                      path='/settings/integration',
+                                                      body=module_instance)
         except ApiException as conn_err:
             print_error(
                 'Failed to disable integration instance, error trying to communicate with demisto '
@@ -189,7 +196,6 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
     create_incident_request.playbook_id = playbook_id
     create_incident_request.name = name
 
-    response_json = {}
     try:
         response = client.create_incident(create_incident_request=create_incident_request)
     except RuntimeError as err:
@@ -197,7 +203,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
     try:
         inc_id = response.id
-    except:
+    except:  # flake8: noqa
         inc_id = 'incCreateErr'
     # inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
@@ -213,7 +219,7 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # get incident
     search_filter = demisto_client.demisto_api.SearchIncidentsData()
     inc_filter = demisto_client.demisto_api.IncidentFilter()
-    inc_filter.query = 'id:'+str(inc_id)
+    inc_filter.query = 'id:' + str(inc_id)
     # inc_filter.query
     search_filter.filter = inc_filter
 
@@ -236,7 +242,9 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
 def __get_investigation_playbook_state(client, inv_id):
     try:
-        investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET', path='/inv-playbook/' + inv_id)
+        investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
+                                                                         path='/inv-playbook/' +
+                                                                              inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
@@ -248,7 +256,7 @@ def __get_investigation_playbook_state(client, inv_id):
     try:
         state = investigation_playbook['state']
         return state
-    except:
+    except:  # flake8: noqa
         return PB_Status.NOT_SUPPORTED_VERSION
 
 
@@ -260,7 +268,8 @@ def __delete_incident(client, incident):
             'filter': {},
             'all': False
         }
-        res = demisto_client.generic_request_func(self=client, method='POST', path='/incident/batchDelete', body=body)
+        res = demisto_client.generic_request_func(self=client, method='POST',
+                                                  path='/incident/batchDelete', body=body)
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to delete incident, error trying to communicate with demisto server: {} '
@@ -279,7 +288,9 @@ def __delete_incident(client, incident):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     try:
-        res = demisto_client.generic_request_func(self=client, method='DELETE', path='/settings/integration/'+ urllib.quote(instance_id))
+        res = demisto_client.generic_request_func(self=client, method='DELETE',
+                                                  path='/settings/integration/' + urllib.quote(
+                                                      instance_id))
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to delete integration instance, error trying to communicate with demisto '
@@ -304,7 +315,8 @@ def __delete_integrations_instances(client, module_instances):
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     try:
         res = demisto_client.generic_request_func(self=client, method='POST',
-                                          path='/investigation/' + urllib.quote(investigation_id))
+                                                  path='/investigation/' + urllib.quote(
+                                                      investigation_id))
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to print investigation error, error trying to communicate with demisto '
@@ -433,7 +445,8 @@ def disable_all_integrations(client):
     """
     try:
         body = {'size': 1000}
-        int_resp = demisto_client.generic_request_func(self=client, method='POST', path='/settings/integration/search',
+        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+                                                       path='/settings/integration/search',
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
     except requests.exceptions.RequestException as conn_err:
