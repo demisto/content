@@ -289,7 +289,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        last_run: Optional[str] = None) -> Tuple[List, str]:
+        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Optional[str]]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -339,7 +339,7 @@ def fetch_incidents_command(
                                             sort='created_at',
                                             direction='asc')
     # Gather incidents by demisto format
-    new_last_run = 0
+    new_last_run: Optional[str] = None
     incidents_report = []
     if incidents_raw:
         for incident_raw in incidents_raw:
@@ -367,7 +367,7 @@ def get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict,
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: Optional[Dict] = client.get_incidents(**kwargs)
+    raw_response: Dict = client.get_incidents(**kwargs)  # type: ignore
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
@@ -403,7 +403,7 @@ def get_incident_by_id_command(client: Client, incident_id: str) -> Tuple[object
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: Optional[Dict] = client.get_incident_by_id(incident_id)
+    raw_response: Dict = client.get_incident_by_id(incident_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
