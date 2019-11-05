@@ -3,7 +3,7 @@ version: -1
 name: Block File - Cylance Protect v2
 fromversion: 4.0.0
 description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine
-  list using Cylance Protect v2 integration.
+  list using the Cylance Protect v2 integration.
 starttaskid: "0"
 tasks:
   "0":
@@ -39,7 +39,7 @@ tasks:
       id: df41aaaa-8055-4c59-8e9e-a167a7ef7819
       version: -1
       name: Is Cylance Protect v2 enabled?
-      description: Checks if Carbon Black Enterprise Response integration is enabled.
+      description: Checks if Cylance Protect is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -97,9 +97,8 @@ tasks:
       id: 9b14005e-903d-4724-80ec-84e7c42a9e7b
       version: -1
       name: Is there a SHA256 to block?
-      description: Checks if there is a value for the MD5 input field. This task does
-        not verify that the value is actually an MD5 hash, just that the value for
-        the MD5 field exists.
+      description: Checks if there is a value for the SHA256 input field. This task does
+        not verify that the value is actually a SHA256 hash, just that the value for the field exists.
       type: condition
       iscommand: false
       brand: ""
