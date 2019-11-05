@@ -1,5 +1,8 @@
 ## [Unreleased]
+-
 
+## [19.10.0] - 2019-10-03
+Improved handling for smime signed file attachments in MSG emails.
 
 ## [19.9.1] - 2019-09-18
 Removed the hyperlink from links.

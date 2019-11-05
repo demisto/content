@@ -5,6 +5,7 @@ import os
 import json
 import requests
 import traceback
+import urllib
 from requests.exceptions import HTTPError
 from copy import deepcopy
 
@@ -397,7 +398,7 @@ def create_note(offense_id, note_text, fields):
 
 # Returns the result of a reference request
 def get_reference_by_name(ref_name, _range='', _filter='', _fields=''):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'filter': _filter} if _filter else {}
     headers = dict(AUTH_HEADERS)
     if _fields:
@@ -418,12 +419,12 @@ def create_reference_set(ref_name, element_type, timeout_type, time_to_live):
 
 
 def delete_reference_set(ref_name):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     return send_request('DELETE', url)
 
 
 def update_reference_set_value(ref_name, value, source=None):
-    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, ref_name)
+    url = '{0}/api/reference_data/sets/{1}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''))
     params = {'name': ref_name, 'value': value}
     if source:
         params['source'] = source
@@ -431,7 +432,8 @@ def update_reference_set_value(ref_name, value, source=None):
 
 
 def delete_reference_set_value(ref_name, value):
-    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, ref_name, value)
+    url = '{0}/api/reference_data/sets/{1}/{2}'.format(SERVER, urllib.quote(convert_to_str(ref_name), safe=''),
+                                                       urllib.quote(convert_to_str(value), safe=''))
     params = {'name': ref_name, 'value': value}
     return send_request('DELETE', url, params=params)
 
@@ -588,9 +590,9 @@ def enrich_offense_res_with_source_and_destination_address(response):
                 enrich_single_offense_res_with_source_and_destination_address(offense, src_adrs, dst_adrs)
         else:
             enrich_single_offense_res_with_source_and_destination_address(response, src_adrs, dst_adrs)
-    except ValueError:
-        pass
-    return response
+    # The function is meant to be safe, so it shouldn't raise any error
+    finally:
+        return response
 
 
 # Helper method: Extracts all source and destination addresses ids from an offense result

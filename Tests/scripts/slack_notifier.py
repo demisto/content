@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import argparse
@@ -6,6 +7,8 @@ import requests
 from slackclient import SlackClient
 
 from Tests.test_utils import str2bool, run_command, LOG_COLORS, print_color
+
+DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/07/Demisto-Icon-Dark.png'
 
 
 def http_request(url, params_dict=None):
@@ -30,21 +33,29 @@ def options_handler():
     parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
     parser.add_argument('-s', '--slack', help='The token for slack', required=True)
     parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address', required=True)
     options = parser.parse_args()
 
     return options
 
 
-def get_attachments(build_url):
+def get_attachments(build_url, env_results_file_name):
     content_team_fields, content_fields, failed_tests = get_fields()
     color = 'good' if not failed_tests else 'danger'
     title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
+
+    with open(env_results_file_name, 'r') as env_results_file_content:
+        env_results = json.load(env_results_file_content)
+        instance_dns = env_results[0]['InstanceDNS']
 
     content_team_attachment = [{
         'fallback': title,
         'color': color,
         'title': title,
         'title_link': build_url,
+        "author_name": "Demisto AWS Machine",
+        "author_link": "https://{0}".format(instance_dns),
+        "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
     }]
 
@@ -52,6 +63,9 @@ def get_attachments(build_url):
         'fallback': title,
         'color': color,
         'title': title,
+        "author_name": "Demisto AWS Machine",
+        "author_link": "https://{0}".format(instance_dns),
+        "author_icon": DEMISTO_GREY_ICON,
         'title_link': build_url,
         'fields': content_fields
     }]
@@ -106,7 +120,7 @@ def get_fields():
     return content_team_fields, content_fields, failed_tests
 
 
-def slack_notifier(build_url, slack_token):
+def slack_notifier(build_url, slack_token, env_results_file_name):
     branches = run_command("git branch")
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
@@ -114,7 +128,7 @@ def slack_notifier(build_url, slack_token):
     if branch_name == 'master':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
-        content_team_attachments, content_attachments = get_attachments(build_url)
+        content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
 
         print("Sending Slack messages to #content and #content-team")
         sc = SlackClient(slack_token)
@@ -130,7 +144,7 @@ def slack_notifier(build_url, slack_token):
 if __name__ == "__main__":
     options = options_handler()
     if options.nightly:
-        slack_notifier(options.url, options.slack)
+        slack_notifier(options.url, options.slack, options.env_results_file_name)
     else:
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 

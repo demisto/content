@@ -124,7 +124,8 @@ TEST_RESULT_TRANS = {
 
 def http_request(method, url_suffix, params=None, data=None):
     url = f'{SERVER}/{url_suffix}'
-    LOG(f'attackiq is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)}')
+    LOG(f'AttackIQ is attempting {method} request sent to {url} with params:\n{json.dumps(params, indent=4)} \n '
+        f'data:\n"{json.dumps(data)}')
     try:
         res = requests.request(
             method,
@@ -134,6 +135,8 @@ def http_request(method, url_suffix, params=None, data=None):
             data=data,
             headers=HEADERS
         )
+        if res.status_code == 204:
+            return ''
         # Handle error responses gracefully
         if res.status_code not in {200, 201}:
             error_reason = get_http_error_reason(res)
@@ -514,13 +517,146 @@ def run_all_tests_in_assessment_command():
     """
     args = demisto.args()
     ass_id = args.get('assessment_id')
+    on_demand_only = args.get('on_demand_only')
     try:
-        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests')
+        params = {'on_demand_only': on_demand_only == 'True'}
+        raw_res = http_request('POST', f'/v1/assessments/{ass_id}/run_all_tests', params=params)
         hr = raw_res['message'] if 'message' in raw_res else \
             f'Request to run all tests for assessment {ass_id} was sent successfully.'
         demisto.results(hr)
     except HTTPError as e:
         return_error(create_invalid_id_err_msg(str(e), ['403']))
+
+
+@logger
+def list_templates_command():
+    """
+    Returns:
+        A list of all assesment templates.
+    """
+
+    res = http_request('GET', '/v1/project_template_types')
+    templates = []
+    for template_group in res.get("results", []):
+        for template in template_group.get('project_templates', []):
+            template_dict = {
+                "ID": template.get("id"),
+                'Name': template.get("template_name"),
+                'Description': template.get("template_description"),
+                'ProjectName': template.get('project_name'),
+                'ProjectDescription': template.get('project_description'),
+                'Hidden': template.get('hidden')
+            }
+            templates.append(template_dict)
+    ec = {
+        "AttackIQ.Template(val.ID && val.ID === obj.ID)": templates
+    }
+    hr = tableToMarkdown("Templates:", templates, ["ID", "Name", 'Description', 'ProjectName', 'ProjectDescription'])
+    return_outputs(hr, ec, res)
+
+
+@logger
+def list_assets_command():
+    """
+
+    Returns:
+        A list of all configured assets.
+    """
+    res = http_request('GET', '/v1/assets')
+    assets = []
+    for asset in res.get('results', []):
+        asset_dict = {
+            'ID': asset.get('id', ''),
+            'Description': asset.get('description', ''),
+            'IPv4': asset.get('ipv4_address', ''),
+            'IPv6': asset.get('ipv6_address', ''),
+            'MacAddress': asset.get('mac_address', ''),
+            'ProcessorArch': asset.get('processor_arch', ''),
+            'ProductName': asset.get('product_name', ''),
+            'Hostname': asset.get('hostname', ''),
+            'Domain': asset.get('domain_name', ''),
+            'User': asset.get('user', ''),
+            'Status': asset.get('status', '')
+        }
+        groups = []
+        for group in asset.get('asset_groups', []):
+            temp_group = {
+                "ID": group.get('id'),
+                "Name": group.get('name')
+            }
+            groups.append(temp_group)
+        asset_dict['Groups'] = groups
+        assets.append(asset_dict)
+    ec = {
+        "AttackIQ.Asset(val.ID && val.ID === obj.ID)": assets
+    }
+    hr = tableToMarkdown("Assets:", assets, ['ID', 'Hostname', 'IPv4', 'MacAddress', 'Domain',
+                                             'Description', 'User', 'Status'])
+
+    return_outputs(hr, ec, res)
+
+
+@logger
+def create_assessment_command():
+    """
+    name - The name of the assesment to create.
+
+    Returns:
+
+    """
+    body = {
+        "project_name": demisto.args().get('name'),
+        "template": demisto.args().get('template_id')
+    }
+
+    try:
+        res = http_request('POST', '/v1/assessments/project_from_template', data=json.dumps(body))
+    except Exception as e:
+        raise ValueError(f"Could not create an assessment. Specifically: {str(e)}")
+
+    assessment_id = res.get('project_id')
+    raw_assessments = get_assessments(assessment_id=assessment_id)
+    assessments_res = build_transformed_dict(raw_assessments, ASSESSMENTS_TRANS)
+    hr = tableToMarkdown(f'Created Assessment: {assessment_id} successfully.', assessments_res,
+                         headers=['Id', 'Name', 'Description', 'User', 'Created', 'Modified'])
+    return_outputs(hr, {'AttackIQ.Assessment(val.Id === obj.Id)': assessments_res}, raw_assessments)
+
+
+@logger
+def add_assets_to_assessment():
+    assessment_id = demisto.args().get('assessment_id')
+    assets = demisto.args().get('assets')
+    asset_groups = demisto.args().get('asset_groups')
+
+    data = {}
+    if assets:
+        data['assets'] = assets
+    if asset_groups:
+        data['asset_groups'] = asset_groups
+
+    if data == {}:
+        raise ValueError(f"No asset or asset groups were specified.")
+    try:
+        res = http_request('POST', f'/v1/assessments/{assessment_id}/update_defaults', data=json.dumps(data))
+        demisto.results(res.get('message', ''))
+    except Exception as e:
+        if '403' in str(e):
+            raise ValueError("Could not find either the assessment or one of the assets/asset groups.")
+        else:
+            raise
+
+
+@logger
+def delete_assessment_command():
+    assessment_id = demisto.args().get('assessment_id')
+    try:
+        http_request('DELETE', f'/v1/assessments/{assessment_id}')
+        demisto.results(f"Deleted assessment {assessment_id} successfully.")
+    except Exception as e:
+        if '403' in str(e):
+            raise ValueError(f"Could not find the assessment {assessment_id}")
+        else:
+            raise
 
 
 def main():
@@ -546,6 +682,16 @@ def main():
             list_tests_by_assessment_command()
         elif command == 'attackiq-run-all-tests-in-assessment':
             run_all_tests_in_assessment_command()
+        elif command == 'attackiq-list-assessment-templates':
+            list_templates_command()
+        elif command == 'attackiq-list-assets':
+            list_assets_command()
+        elif command == 'attackiq-create-assessment':
+            create_assessment_command()
+        elif command == 'attackiq-add-assets-to-assessment':
+            add_assets_to_assessment()
+        elif command == 'attackiq-delete-assessment':
+            delete_assessment_command()
         else:
             return_error(f'Command {command} is not supported.')
     except HTTPError as e:
