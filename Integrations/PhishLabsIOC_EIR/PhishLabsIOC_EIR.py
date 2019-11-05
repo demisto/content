@@ -6,7 +6,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 from typing import Dict, Tuple, Union, Optional, List, Any, AnyStr
 import urllib3
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -34,36 +33,54 @@ class Client(BaseClient):
         Returns:
             Response json
         """
-        return self.phishlabs_ioc_eir_get_incident_by_id(incident_id='INC0660932')
+        return self.get_incident_by_id(incident_id='INC0660932')
 
-    def phishlabs_ioc_eir_get_incidents(self, limit=25, offset=0, **kwargs: dict) -> Dict:
-        """Query the specified kwargs with default parameters if not defined
-
+    def get_incidents(self, status: Optional[str] = None, created_after: Optional[str] = None,
+                      created_before: Optional[str] = None, closed_before: Optional[str] = None,
+                      closed_after: Optional[str] = None, sort: Optional[str] = None, direction: Optional[str] = None,
+                      limit: Union[str, int] = 25, offset: Union[str, int] = 0) -> Dict:
+        """
+        Query the specified kwargs with default parameters if not defined
         Args:
-            offset: pagination parameter offset from the beginning of the page
-            limit: pagination parameter limit of incidents on a page 0..50
-            kwargs: parameters for filtering incidents
+            status: open,closed
+            created_after: Timestamp is in RFC3339 format
+            created_before: Timestamp is in RFC3339 format
+            closed_before: Timestamp is in RFC3339 format
+            closed_after: Timestamp is in RFC3339 format
+            sort: created_at,closed_at
+            direction: asc,desc
+            limit: Limit amounts of incidents (0-50, default 50)
+            offset: Offset from last incident
 
         Returns:
-            Response JSON as dictionary
+            Raw response json as dictionary
         """
         suffix = "/incidents/EIR"
+        params = {
+            'status': status,
+            'created_after': created_after,
+            'created_before': created_before,
+            'closed_before': closed_before,
+            'closed_after': closed_after,
+            'sort': sort,
+            'direction': direction,
+            'limit': limit,
+            'offset': offset
+        }
         return self._http_request('GET',
                                   url_suffix=suffix,
-                                  params={**kwargs,
-                                          'offset': offset,
-                                          'limit': limit})
+                                  params=assign_params(**params))
 
-    def phishlabs_ioc_eir_get_incident_by_id(self, **kwargs) -> Dict:
+    def get_incident_by_id(self, incident_id: str) -> Dict:
         """Query incident by ID
 
         Args:
-            kwargs: incident_id
+            incident_id: ID of incident
 
         Returns:
             Response JSON as dictionary
         """
-        suffix = f"/incidents/EIR/{kwargs.get('incident_id')}"
+        suffix = f"/incidents/EIR/{incident_id}"
         return self._http_request('GET',
                                   url_suffix=suffix)
 
@@ -271,6 +288,7 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
+        limit: str,
         last_run: Optional[str] = None) -> Tuple[List, str]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -278,48 +296,68 @@ def fetch_incidents_command(
     Args:
         client: Client object with request
         fetch_time: From when to fetch if first time, e.g. `3 days`
+        limit: limit of incidents in a fetch
         last_run: Last fetch object occurs.
 
     Returns:
         incidents, new last_run
     """
-    occurred_format = '%Y-%m-%dT%H:%M:%SZ'
-    # Get incidents from API
-    if not last_run:  # if first time running
-        datetime_new_last_run, _ = parse_date_range(fetch_time, date_format=occurred_format)
-    else:
-        datetime_new_last_run = parse_date_string(last_run)
-    new_last_run = datetime_new_last_run.strftime(occurred_format)
-    kwargs = {
-        'created_after': new_last_run,
-    }
+    # Init
     raws: List = []
-    incidents: List = []
-    offset = 0
-    raw_response = client.phishlabs_ioc_eir_get_incidents(**kwargs)
-    while raw_response.get('metadata', {}).get('count'):
+    incidents_raw: List = []
+    # Set last run time
+    occurred_format = '%Y-%m-%dT%H:%M:%SZ'
+    if not last_run:
+        datetime_new_last_run, _ = parse_date_range(date_range=fetch_time,
+                                                    date_format=occurred_format)
+    else:
+        datetime_new_last_run = last_run
+    # Query incidents by limit and creation time
+    total = 0
+    offset = 50
+    limit_incidents = int(limit)
+    limit_page = 50
+    if limit_incidents <= 50:
+        limit_page = limit_incidents
+    raw_response = client.get_incidents(created_after=datetime_new_last_run,
+                                        offset=offset,
+                                        limit=limit_page,
+                                        sort='created_at',
+                                        direction='asc')
+    while raw_response.get('metadata', {}).get('count') and total < limit_incidents:
         raws.append(raw_response)
-        incidents += raw_response.get('incidents', [])
-        offset += 50
-        raw_response = client.phishlabs_ioc_eir_get_incidents(offset=offset, **kwargs)
-    if incidents:
-        for incident in incidents:
+        incidents_raw += raw_response.get('incidents', [])
+        total += int(raw_response.get('metadata', {}).get('count'))
+        if total >= limit_incidents:
+            break
+        if limit_incidents - total < 50:
+            limit_page = limit_incidents - total
+        offset += limit_page
+        raw_response = client.get_incidents(offset=offset,
+                                            created_after=datetime_new_last_run,
+                                            limit=limit_page,
+                                            sort='created_at',
+                                            direction='asc')
+    # Gather incidents by demisto format
+    new_last_run = 0
+    incidents_report = []
+    if incidents_raw:
+        for incident_raw in incidents_raw:
             # Creates incident entry
-            occurred = incident.get('created')
-            datetime_occurred = parse_date_string(occurred)
-            incidents.append({
-                'name': f"{INTEGRATION_NAME}: {incident.get('id')}",
+            occurred = incident_raw.get('created')
+            incidents_report.append({
+                'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
                 'occurred': occurred,
-                'rawJSON': json.dumps(incident)
+                'rawJSON': json.dumps(incident_raw)
             })
-            if datetime_occurred > datetime_new_last_run:
-                new_last_run = datetime_occurred.strftime(occurred_format)
+
+        new_last_run = incidents_report[-1].get('occurred')
     # Return results
-    return incidents, new_last_run
+    return incidents_report, new_last_run
 
 
 @logger
-def phishlabs_ioc_eir_get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
+def get_incidents_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Union[List, Dict]]:
     """Lists all incidents and return outputs in Demisto's context entry
 
     Args:
@@ -329,7 +367,7 @@ def phishlabs_ioc_eir_get_incidents_command(client: Client, **kwargs: Dict) -> T
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: Optional[Dict] = client.phishlabs_ioc_eir_get_incidents(**kwargs)
+    raw_response: Optional[Dict] = client.get_incidents(**kwargs)
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
@@ -355,17 +393,17 @@ def phishlabs_ioc_eir_get_incidents_command(client: Client, **kwargs: Dict) -> T
 
 
 @logger
-def phishlabs_ioc_eir_get_incident_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, Dict, Dict]:
+def get_incident_by_id_command(client: Client, incident_id: str) -> Tuple[object, Dict, Dict]:
     """Lists all events and return outputs in Demisto's context entry
 
     Args:
         client: Client object with request
-        kwargs: Usually demisto.args()
+        incident_id: ID of Incident
 
     Returns:
         human readable (markdown format), raw response and entry context
     """
-    raw_response: Optional[Dict] = client.phishlabs_ioc_eir_get_incident_by_id(**kwargs)
+    raw_response: Optional[Dict] = client.get_incident_by_id(incident_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - incidents'
         phishlabs_ec, emails_ec, files_ec, urls_ec, dbots_ec = raw_response_to_context(raw_response.get('incidents'))
@@ -402,21 +440,22 @@ def main():
         base_url=base_url,
         verify=verify_ssl,
         proxy=proxy,
-        auth=(params.get('user'),
-              params.get('password'))
+        auth=(params.get('credentials', {}).get('identifier'),
+              params.get('credentials', {}).get('password'))
     )
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incidents': phishlabs_ioc_eir_get_incidents_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-incident-by-id': phishlabs_ioc_eir_get_incident_by_id_command
+        f'{INTEGRATION_COMMAND_NAME}-get-incidents': get_incidents_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-incident-by-id': get_incident_by_id_command
     }
     try:
-        if command == 'fetch-incidents' and params.get('is_fetch'):
+        if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
-                                                              fetch_time=params.get('fetch_time'),
-                                                              last_run=demisto.getLastRun())
+                                                              fetch_time=params.get('fetchTime'),
+                                                              last_run=demisto.getLastRun(),
+                                                              limit=params.get('fetchLimit'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:

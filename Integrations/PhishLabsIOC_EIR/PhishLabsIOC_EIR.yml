@@ -9,17 +9,23 @@ configuration:
   required: true
   type: 0
 - display: User
-  name: user
+  name: credentials
   required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 4
-- display: Fetches incidents
-  name: is_fetch
+  type: 9
+- display: Fetch incidents
+  name: isFetch
   required: false
   type: 8
+- defaultvalue: 1 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetchTime
+  required: false
+  type: 0
+- defaultvalue: '25'
+  display: Fetch limit
+  name: fetchLimit
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -28,11 +34,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 1 hours
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  required: false
-  type: 0
 description: Get live feeds of IOC data from PhishLabs.
 display: PhishLabs IOC EIR
 name: PhishLabs IOC EIR
@@ -104,7 +105,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: Limit amounts of incdients (0-50, default 50)
+      description: Limit amounts of incidents  (0-50, default 25)
       isArray: false
       name: limit
       required: true
@@ -387,7 +388,7 @@ script:
       description: The actual score.
       type: String
   dockerimage: demisto/python3:3.7.5.3066
-  isfetch: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false

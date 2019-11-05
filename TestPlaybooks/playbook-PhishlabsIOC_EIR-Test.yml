@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7d35bf19-7c52-4fc2-8071-4e78cae142ad
+    taskid: 307bc320-87f0-4a07-8989-a40b3ca44aaf
     type: start
     task:
-      id: 7d35bf19-7c52-4fc2-8071-4e78cae142ad
+      id: 307bc320-87f0-4a07-8989-a40b3ca44aaf
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 1c45367e-7855-448a-8219-a240382927bd
+    taskid: fccbaeb4-f8b7-4e5f-8c31-75d3a77f73d1
     type: regular
     task:
-      id: 1c45367e-7855-448a-8219-a240382927bd
+      id: fccbaeb4-f8b7-4e5f-8c31-75d3a77f73d1
       version: -1
       name: Delete entry context
       description: Delete field from context
@@ -63,10 +63,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 6cbdd95d-6a3a-4e69-80e3-1576b15defe0
+    taskid: 59f37176-09a0-4c7a-83b9-31cac4ed3024
     type: regular
     task:
-      id: 6cbdd95d-6a3a-4e69-80e3-1576b15defe0
+      id: 59f37176-09a0-4c7a-83b9-31cac4ed3024
       version: -1
       name: Get incident by ID command
       description: Returns a single Incident based on the given ID.
@@ -93,10 +93,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a052d7c7-c8c1-41ee-81f1-bee9038df0ce
+    taskid: c18c12e3-a92e-4c82-81dc-3d58d227504a
     type: condition
     task:
-      id: a052d7c7-c8c1-41ee-81f1-bee9038df0ce
+      id: c18c12e3-a92e-4c82-81dc-3d58d227504a
       version: -1
       name: 'Check get incident by id '
       type: condition
@@ -138,10 +138,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 6556094d-07f8-46d3-80da-50b4b104b16f
+    taskid: 2461030a-0767-4af6-87af-213094bc1b99
     type: regular
     task:
-      id: 6556094d-07f8-46d3-80da-50b4b104b16f
+      id: 2461030a-0767-4af6-87af-213094bc1b99
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -168,10 +168,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 66ba19ee-cbfc-4ca1-8f05-f64001a6edb8
+    taskid: 5d7452dc-3ddc-4fc0-8faa-622dce882e97
     type: regular
     task:
-      id: 66ba19ee-cbfc-4ca1-8f05-f64001a6edb8
+      id: 5d7452dc-3ddc-4fc0-8faa-622dce882e97
       version: -1
       name: Get incidents command
       description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit
@@ -189,7 +189,8 @@ tasks:
       created_after: {}
       created_before: {}
       direction: {}
-      limit: {}
+      limit:
+        simple: "3"
       offset: {}
       sort: {}
       status: {}
@@ -206,10 +207,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 40e66672-da96-4fd7-8bb9-b88735a3cad6
+    taskid: ecedc27e-847c-44ac-835d-04a2e40875e5
     type: regular
     task:
-      id: 40e66672-da96-4fd7-8bb9-b88735a3cad6
+      id: ecedc27e-847c-44ac-835d-04a2e40875e5
       version: -1
       name: PrintContext
       description: Pretty-print the contents of the playbook context
@@ -217,6 +218,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
     scriptarguments:
       outputformat:
         simple: ${PhishLabsIOC.EIR}
@@ -224,7 +228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 1245
         }
       }
@@ -233,10 +237,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c9e8471d-ca67-4974-82e5-8a3e50872557
+    taskid: 74f7cf9e-2338-4fcc-8927-5a808bb5a143
     type: regular
     task:
-      id: c9e8471d-ca67-4974-82e5-8a3e50872557
+      id: 74f7cf9e-2338-4fcc-8927-5a808bb5a143
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -263,10 +267,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 860c5ed0-df56-4ea3-8c31-c419c311ed3f
+    taskid: ec1c7a0c-1876-42d3-8f5c-c39ab054e635
     type: condition
     task:
-      id: 860c5ed0-df56-4ea3-8c31-c419c311ed3f
+      id: ec1c7a0c-1876-42d3-8f5c-c39ab054e635
       version: -1
       name: Check get incidents command
       type: condition
@@ -308,10 +312,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: b9d2ff1a-7fb8-43d7-8bb9-444d643821c8
+    taskid: 88d03f2c-e681-453f-8e4b-ecc8a38cc1e2
     type: regular
     task:
-      id: b9d2ff1a-7fb8-43d7-8bb9-444d643821c8
+      id: 88d03f2c-e681-453f-8e4b-ecc8a38cc1e2
       version: -1
       name: PrintErrorEntry
       description: Prints an error entry with a given message
@@ -319,6 +323,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
     scriptarguments:
       message:
         simple: ${PhishLabsIOC.EIR}
@@ -326,8 +333,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 02a0e461-fd59-4d28-82bd-cb7d89a35643
+    type: regular
+    task:
+      id: 02a0e461-fd59-4d28-82bd-cb7d89a35643
+      version: -1
+      name: Fetch incidents command
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      add_to_context:
+        simple: "true"
+      brand_name:
+        simple: PhishLabs IOC EIR
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -338,7 +377,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1290,
+        "height": 1465,
         "width": 810,
         "x": 50,
         "y": 50
