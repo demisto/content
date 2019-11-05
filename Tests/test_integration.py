@@ -245,10 +245,10 @@ def __get_investigation_playbook_state(client, inv_id):
                 conn_err))
         return PB_Status.FAILED
 
-    if 'state' in investigation_playbook.keys():
-        return investigation_playbook['state']
-
-    else:
+    try:
+        state = investigation_playbook['state']
+        return state
+    except:
         return PB_Status.NOT_SUPPORTED_VERSION
 
 
@@ -434,7 +434,7 @@ def disable_all_integrations(client):
     try:
         body = {'size': 1000}
         int_resp = demisto_client.generic_request_func(self=client, method='POST', path='/settings/integration/search',
-                                          body=body)
+                                                       body=body)
         int_instances = ast.literal_eval(int_resp[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
@@ -442,9 +442,9 @@ def disable_all_integrations(client):
             '{} '.format(
                 conn_err))
         return
-    if int_resp[1] != 200:
+    if int(int_resp[1]) != 200:
         print_error(
-            'Get all integration instances failed with status code: {}'.format(int_instances[1]))
+            'Get all integration instances failed with status code: {}'.format(int_resp[1]))
         return
     if 'instances' not in int_instances:
         print("No integrations instances found to disable all")
