@@ -25,10 +25,10 @@ def __get_integration_config(client, integration_name):
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
-    res = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
+    res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                               method='POST', body=body)
 
-    res = res.json()
+    res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
     SLEEP_INTERVAL = 5
     total_sleep = 0
@@ -139,7 +139,7 @@ def __create_integration_instance(client, integration_name, integration_instance
 
     if res[1] != 200:
         print_error('create instance failed with status code ' + str(res[1]))
-        print_error(pformat(res.json()))
+        print_error(pformat(res[0]))
         return None
 
     integration_config = ast.literal_eval(res[0])
@@ -187,11 +187,15 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 
     response_json = {}
     try:
-        response_json = demisto_client.create_incident(create_incident_request=create_incident_request)
+        response = client.create_incident(create_incident_request=create_incident_request)
     except RuntimeError as err:
         print_error(str(err))
 
-    inc_id = response_json.get('id', 'incCreateErr')
+    try:
+        inc_id = response.id
+    except:
+        inc_id = 'incCreateErr'
+    # inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
         integration_names = [integration['name'] for integration in integrations if
                              'name' in integration]
@@ -203,15 +207,18 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
         return False, -1
 
     # get incident
+    search_filter = demisto_client.demisto_api.SearchIncidentsData()
     inc_filter = demisto_client.demisto_api.IncidentFilter()
-    inc_filter.id = [inc_id]
+    inc_filter.query = 'id:'+str(inc_id)
+    # inc_filter.query
+    search_filter.filter = inc_filter
 
-    incidents = demisto_client.search_incidents(filter=inc_filter)
+    incidents = client.search_incidents(filter=search_filter)
 
     # poll the incidents queue for a max time of 25 seconds
     timeout = time.time() + 25
     while incidents['total'] != 1:
-        incidents = client.search_incidents(filter=inc_filter)
+        incidents = client.search_incidents(filter=search_filter)
         if time.time() > timeout:
             print_error('Got timeout for searching incident with id {}, '
                         'got {} incidents in the search'.format(inc_id, incidents['total']))
