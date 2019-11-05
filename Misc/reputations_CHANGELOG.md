@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 The regex now recognizes URL query syntax.
 
 ## [19.8.2] - 2019-08-22
