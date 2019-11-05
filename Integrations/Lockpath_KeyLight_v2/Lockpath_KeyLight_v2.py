@@ -22,7 +22,7 @@ FILTER_DICT = {'Contains': '1',
 '''CLIENT'''
 
 
-class Client(SessionBaseClient):
+class Client(BaseClient):
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                           auth=None, json_data=None, params=None, data=None, files=None,
                           timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -264,8 +264,6 @@ def main():
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
-        if logged_in:
-            client.logout()
         if demisto.command() == 'test-module':
             #TODO change to return_error
             print(f'Could not connect to instance. Error: {str(e)}')
