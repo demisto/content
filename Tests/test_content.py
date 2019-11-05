@@ -499,7 +499,7 @@ def restart_demisto_service(ami, c):
         if exit_code != 0:
             exit_code = ami.call(['/usr/sbin/service', 'demisto', 'status', '--lines', '0'])
         if exit_code == 0:
-            print("{}: Checking login to the server...".format(datetime.now()))
+            print("{}: Checking login to the server... ".format(datetime.now()))
             try:
                 res = demisto_client.generic_request_func(self=c, path='/health', method='GET')
                 if int(res[1]) == 200:
