@@ -89,10 +89,6 @@ def test_module():
         'text': message,
         'channel': channel.get('id')
     }
-    if BOT_NAME:
-        body['username'] = BOT_NAME
-    if BOT_ICON_URL:
-        body['icon_url'] = BOT_ICON_URL
 
     send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
@@ -172,6 +168,10 @@ def search_slack_users(users) -> list:
 
 
 def find_mirror_by_investigation() -> dict:
+    """
+    Finds a mirrored channel by the mirrored investigation
+    :return: The mirror object
+    """
     mirror: dict = {}
     investigation = demisto.investigation()
     if investigation:
@@ -187,6 +187,12 @@ def find_mirror_by_investigation() -> dict:
 
 
 def set_to_latest_integration_context(key: str, value, wait: bool = False):
+    """
+    Sets a key value pair to the integration context right after getting it to have the latest context.
+    :param key: The context key to set.
+    :param value: The value to set.
+    :param wait: Whether to wait before the operation.
+    """
     if wait:
         time.sleep(5)
 
@@ -197,13 +203,35 @@ def set_to_latest_integration_context(key: str, value, wait: bool = False):
     demisto.setIntegrationContext(integration_context)
 
 
-def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str = 'POST', file: dict = None,
+def set_name_and_icon(body, method):
+    """
+    If provided, sets a name and an icon for the bot if a message is sent.
+    :param body: The message body.
+    :param method: The current API method.
+    """
+    if method == 'chat.postMessage':
+        if BOT_NAME:
+            body['username'] = BOT_NAME
+        if BOT_ICON_URL:
+            body['icon_url'] = BOT_ICON_URL
+
+
+def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: dict = None,
                             body: dict = None) -> SlackResponse:
+    """
+    Sends a request to slack API while handling rate limit errors.
+    :param client: The slack client.
+    :param method: The method to use.
+    :param http_verb: The HTTP method to use.
+    :param file_: A file to send.
+    :param body: The request body.
+    """
+    set_name_and_icon(body, method)
     while True:
         try:
             if http_verb == 'POST':
-                if file:
-                    response = client.api_call(method, files={"file": file}, data=body)
+                if file_:
+                    response = client.api_call(method, files={"file": file_}, data=body)
                 else:
                     response = client.api_call(method, json=body)
             else:
@@ -221,13 +249,22 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     return response
 
 
-async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file: dict = None,
+async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: dict = None,
                                    body: dict = None) -> SlackResponse:
+    """
+    Sends an async request to slack API while handling rate limit errors.
+    :param client: The slack client.
+    :param method: The method to use.
+    :param http_verb: The HTTP method to use.
+    :param file_: A file to send.
+    :param body: The request body.
+    """
+    set_name_and_icon(body, method)
     while True:
         try:
             if http_verb == 'POST':
-                if file:
-                    response = await client.api_call(method, files={"file": file}, data=body)
+                if file_:
+                    response = await client.api_call(method, files={"file": file_}, data=body)
                 else:
                     response = await client.api_call(method, json=body)
             else:
@@ -500,10 +537,7 @@ def mirror_investigation():
             'text': message,
             'channel': conversation_id
         }
-        if BOT_NAME:
-            body['username'] = BOT_NAME
-        if BOT_ICON_URL:
-            body['icon_url'] = BOT_ICON_URL
+
         send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
 
     demisto.results('Investigation mirrored successfully, channel: {}'.format(conversation_name))
@@ -568,14 +602,14 @@ def check_for_answers(now: datetime):
         }
         res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, verify=VERIFY_CERT)
         if res.status_code != 200:
-            demisto.error('Slack - failed to poll for answers: {}, status code: {}'  # type: ignore
+            demisto.error('Slack - failed to poll for answers: {}, status code: {}'  # type: ignore[str-bytes-safe]
                           .format(res.content, res.status_code))
             continue
         answer: dict = {}
         try:
             answer = res.json()
         except Exception:
-            demisto.info('Slack - Could not parse response for entitlement {}: {}'  # type: ignore
+            demisto.info('Slack - Could not parse response for entitlement {}: {}'  # type: ignore[str-bytes-safe]
                          .format(question.get('entitlement'), res.content))
             pass
         if not answer:
@@ -752,16 +786,12 @@ async def handle_dm(user: dict, text: str, client: slack.WebClient):
     body = {
         'user': user.get('id')
     }
-    im = (await send_slack_request_async(client, 'im.open', body=body))
+    im = await send_slack_request_async(client, 'im.open', body=body)
     channel = im.get('channel', {}).get('id')
     body = {
         'text': data,
         'channel': channel
     }
-    if BOT_NAME:
-        body['username'] = BOT_NAME
-    if BOT_ICON_URL:
-        body['icon_url'] = BOT_ICON_URL
 
     await send_slack_request_async(client, 'chat.postMessage', body=body)
 
@@ -876,10 +906,7 @@ async def listen(**payload):
                 'thread_ts': thread,
                 'channel': channel
             }
-            if BOT_NAME:
-                body['username'] = BOT_NAME
-            if BOT_ICON_URL:
-                body['icon_url'] = BOT_ICON_URL
+
             await send_slack_request_async(client, 'chat.postMessage', body=body)
         elif channel and channel[0] == 'D':
             # DM
@@ -1253,10 +1280,6 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
         body['blocks'] = block_list
     if thread_id:
         body['thread_ts'] = thread_id
-    if BOT_NAME:
-        body['username'] = BOT_NAME
-    if BOT_ICON_URL:
-        body['icon_url'] = BOT_ICON_URL
 
     for destination in destinations:
         body['channel'] = destination
@@ -1306,7 +1329,7 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
         if thread_id:
             body['thread_ts'] = thread_id
 
-        response = send_slack_request_sync(CLIENT, 'files.upload', file=file['data'], body=body)
+        response = send_slack_request_sync(CLIENT, 'files.upload', file_=file['data'], body=body)
 
     return response
 
