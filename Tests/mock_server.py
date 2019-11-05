@@ -3,6 +3,7 @@ import signal
 import string
 import time
 import unicodedata
+import demisto_client.demisto_api
 from subprocess import call, Popen, PIPE, check_call, check_output
 
 VALID_FILENAME_CHARS = '-_.() %s%s' % (string.ascii_letters, string.digits)
@@ -167,9 +168,9 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, demisto_client, public_ip,
+    def __init__(self, client, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.demisto_client = demisto_client
+        self.client = client
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
@@ -196,7 +197,7 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return self.demisto_client.generic_request_func(self=self.demisto_client, path='/system/config',
+        return demisto_client.generic_request_func(self=self.client, path='/system/config',
                                               method='POST', body=data)
 
     def get_mock_file_size(self, filepath):
