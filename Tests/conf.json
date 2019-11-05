@@ -1964,6 +1964,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
@@ -2018,7 +2019,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "MailListener - POP3": "Issue 18580",
-        "Forescout": "Can only be run from within PANW network. Look im keeper for - Demisto in the LAB",
+        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
