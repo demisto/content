@@ -66,7 +66,7 @@ def __test_integration_instance(client, module_instance):
             res[1]))
         return False
 
-    result_object = res.json()
+    result_object = ast.literal_eval(res[0])
     success = result_object['success']
     if not success:
         print_error('Test integration failed.\n Failure message: ' + result_object['message'])
