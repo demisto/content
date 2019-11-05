@@ -7,15 +7,15 @@ type: python
 tags:
 - transformer
 - date
-comment: Accepts a number of seconds as input (useful for timer / SLA fields - e.g.
-  "incident.mytimer.totalDuration").  Returns a string as days ('d'), hours ('h',)
+comment: Converts seconds (integer) into a string. The script accepts a number of seconds as input (useful for timer / SLA fields - e.g.
+  "incident.mytimer.totalDuration") and returns a string as days ('d'), hours ('h',)
   minutes ('m'), and seconds ('s').
 enabled: true
 args:
 - name: value
   required: true
   default: true
-  description: A timer value
+  description: The number of seconds to convert to a string.
 scripttarget: 0
 subtype: python3
 runonce: false
