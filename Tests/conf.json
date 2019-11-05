@@ -2010,7 +2010,7 @@
         "VirusTotal - Private API": "reached api alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
-    "nigthly_integrations": [
+    "nightly_integrations": [
         "Lastline",
         "TruSTAR"
     ],
