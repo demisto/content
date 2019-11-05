@@ -3431,3 +3431,89 @@ def test_get_user_by_name_paging_normal_error(mocker):
     assert len(first_args['params']) == 1
     assert first_args['params']['limit'] == 200
     assert slack.WebClient.api_call.call_count == 2
+
+
+def test_message_setting_name_and_icon(mocker):
+    from Slack import send_slack_request_sync, init_globals
+
+    mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
+
+    init_globals()
+
+    # Set
+    mocker.patch.object(slack.WebClient, 'api_call')
+
+    # Arrange
+    send_slack_request_sync(slack.WebClient, 'chat.postMessage', body={'channel': 'c', 'text': 't'})
+    send_args = slack.WebClient.api_call.call_args[1]
+
+    # Assert
+    assert 'username' in send_args['json']
+    assert 'icon_url' in send_args['json']
+
+
+def test_message_not_setting_name_and_icon(mocker):
+    from Slack import send_slack_request_sync, init_globals
+
+    mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
+
+    init_globals()
+
+    # Set
+    mocker.patch.object(slack.WebClient, 'api_call')
+
+    # Arrange
+    send_slack_request_sync(slack.WebClient, 'conversations.setTopic', body={'channel': 'c', 'topic': 't'})
+    send_args = slack.WebClient.api_call.call_args[1]
+
+    # Assert
+    assert 'username' not in send_args['json']
+    assert 'icon_url' not in send_args['json']
+
+
+@pytest.mark.asyncio
+async def test_message_setting_name_and_icon_async(mocker):
+    from Slack import send_slack_request_async, init_globals
+
+    # Set
+    @asyncio.coroutine
+    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+        return
+
+    mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
+
+    init_globals()
+
+    mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
+
+    # Arrange
+    await send_slack_request_async(slack.WebClient, 'chat.postMessage', body={'channel': 'c', 'text': 't'})
+    send_args = slack.WebClient.api_call.call_args[1]
+
+    # Assert
+    assert 'username' in send_args['json']
+    assert 'icon_url' in send_args['json']
+
+
+@pytest.mark.asyncio
+async def test_message_not_setting_name_and_icon_async(mocker):
+    from Slack import send_slack_request_async, init_globals
+
+    # Set
+    @asyncio.coroutine
+    def api_call(method: str, http_verb: str = 'POST', file: dict = None, params=None, json=None, data=None):
+        return
+
+    mocker.patch.object(demisto, 'params', return_value={'bot_name': 'kassandra', 'bot_icon': 'coolimage'})
+
+    init_globals()
+
+    mocker.patch.object(slack.WebClient, 'api_call', side_effect=api_call)
+
+    # Arrange
+    await send_slack_request_async(slack.WebClient, 'conversations.setTopic', body={'channel': 'c', 'topic': 't'})
+    send_args = slack.WebClient.api_call.call_args[1]
+
+    # Assert
+    assert 'username' not in send_args['json']
+    assert 'icon_url' not in send_args['json']
