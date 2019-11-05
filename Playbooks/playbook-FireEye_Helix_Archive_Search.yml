@@ -198,7 +198,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: FireEyeHelixSearch.PercentComplete(val < ${inputs.Threshold})
+        simple: FireEyeHelixSearch(val.PercentComplete < ${inputs.Threshold}).ID
     separatecontext: true
     loop:
       iscommand: false
