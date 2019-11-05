@@ -1,8 +1,6 @@
 """Wait for server to be ready for tests"""
 import sys
 import json
-import string
-import random
 import ast
 import argparse
 from time import sleep
@@ -11,14 +9,13 @@ import requests
 from requests import Session
 
 import demisto_client.demisto_api
-from demisto_client.demisto_api.rest import ApiException
 from typing import List, AnyStr
 import urllib3.util
 
+from Tests.test_utils import print_error, print_color, LOG_COLORS
+
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-from Tests.test_utils import print_error, print_color, LOG_COLORS
 
 MAX_TRIES = 20
 SLEEP_TIME = 45
@@ -39,13 +36,6 @@ def get_username_password():
         return conf['username'], conf['username'], options.contentVersion
 
     return conf['username'], conf['userPassword'], options.contentVersion
-
-
-def get_xsrf_token(ips):
-    for ami_instance_name, ami_instance_ip in ips:
-        host = "https://{}".format(ami_instance_ip)
-        session = Session()
-        r = session.get(host, verify=False)
 
 
 def generate_demisto_api_key():
@@ -83,13 +73,14 @@ def is_correct_content_installed(ips, content_version, username, password):
             'name': 'test_apikey',
             'apikey': demisto_api_key
         }
-        resp = session.request("POST", host + "/apikeys", headers=h, verify=False,
-                               data=json.dumps(apikey_json))
+        session.request("POST", host + "/apikeys", headers=h, verify=False,
+                        data=json.dumps(apikey_json))
         api_key = demisto_api_key
         client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
         try:
             resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
-                                                            method='POST', accept='application/json', content_type='application/json')
+                                                       method='POST', accept='application/json',
+                                                       content_type='application/json')
             resp_json = ast.literal_eval(resp[0])
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'

@@ -520,8 +520,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     print("Executing tests with the server {} - and the server ip {}".format(server, server_ip))
 
     options = options_handler()
-    username = options.user
-    password = options.password
     conf_path = options.conf
     secret_conf_path = options.secret
     is_nightly = options.nightly
