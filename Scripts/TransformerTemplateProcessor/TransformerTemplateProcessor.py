@@ -1,4 +1,5 @@
 import demistomock as demisto
+from CommonServerPython import *
 import re
 
 
@@ -21,7 +22,7 @@ def context_lookup(key):
         return None
 
 
-def main(value):
+def main(value, key=None):
     BODY = value
     res_body = BODY  # a copy of BODY to be modified and returned
 
@@ -64,7 +65,18 @@ def main(value):
 
         res_body = res_body.replace(m.group(0), transformed_value, 1)  # insert result into template
 
-    demisto.results(res_body)  # return completed template
+    # return completed template
+    if not key:
+        demisto.results(res_body)
+    else:
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': res_body,
+            'EntryContext': {
+                key: res_body
+            }
+        })
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

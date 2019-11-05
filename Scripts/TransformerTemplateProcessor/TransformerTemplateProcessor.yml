@@ -16,9 +16,11 @@ comment: "Allows multiple transformers to be used from within a single input str
   \  "
 enabled: true
 args:
+- name: key
+  description: The context key to save the results to.
 - name: value
   required: true
-  description: The input template to be parsed
+  description: The input template string to be parsed
 scripttarget: 0
 subtype: python3
 runonce: false

@@ -51,7 +51,16 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
 
     from TransformerTemplateProcessor import main
+
     main(value='The duration of my timer was {{incident.overalltime.totalDuration | SecondsToString}}')
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0][0]
     assert results == 'The duration of my timer was 1d 1h 2m 2s'
+
+    main(key='mystring', value='The duration of my timer was {{incident.overalltime.totalDuration | SecondsToString}}')
+    assert demisto.results.call_count == 2
+    results = demisto.results.call_args[0][0]
+    assert type(results) is dict
+    assert 'EntryContext' in results
+    assert 'mystring' in results['EntryContext']
+    assert results['EntryContext']['mystring'] == 'The duration of my timer was 1d 1h 2m 2s'
