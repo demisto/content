@@ -33,6 +33,10 @@
       <li><strong>Use system proxy settings</strong></li>
       <li><strong>Trust any certificate (not secure)</strong></li>
       <li><strong>Long running instance. Required for investigation mirroring and direct messages.</strong></li>
+      <li><strong>Bot display name in Slack (Demisto Integration by default)</strong></li>
+      <li><strong>Bot icon in Slack - URL Image (Demisto icon by default)</strong></li>
+      <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
+      <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
     </ul>
   </li>
 </ol>
@@ -744,6 +748,7 @@ mirror incident-id
 <span>The integration supports sending "blocks" to Slack. Blocks are a series of components that can be combined to create visually rich and compellingly interactive messages. In the integration, they can be sent as an array of JSON. More infortmation about that <a href="https://api.slack.com/reference/block-kit/blocks">here.</a> You can experiment with and build your own blocks <a href="https://api.slack.com/tools/block-kit-builder">here.</a>
 The integration also allows some level of interactivity. When a user interacts with an element in a Slack message, Slack sends a request with the relevant information. 
 This request is processed and stored by a dedicated endpoint outside of Demisto in the address: <code>https://oproxy.demisto.ninja</code>. What the integration currently allows is polling this endpoint for user interactions that contain entitlement strings(these are used to perform actions in Demisto by outside users, see the <code>SlackAsk</code> script for an example). What that means is that in order to enable interactivity using the integration, connection to this endpoint has to be enabled.</span>
+<h4>Important! The interactions work only with the Demisto Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
 <h2>Known Limitations</h2>
 <ul>
   <li>Channels are created by the Slack user who authorized the application. Thus, this user will be in every channel that the integration creates. You cannot kick this user, but they can leave.</li>
