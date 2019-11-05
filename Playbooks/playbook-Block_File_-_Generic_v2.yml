@@ -2,7 +2,7 @@ id: Block File - Generic v2
 version: -1
 fromversion: 4.5.0
 name: Block File - Generic v2
-description: "A generic playbook for blocking files from running on endpoints. \nThis
+description: "This playbook is used to block files from running on endpoints. \nThis
   playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n-
   Carbon Black Enterprise Response\n- Cylance Protect v2\n"
 starttaskid: "0"
@@ -101,7 +101,7 @@ tasks:
       id: 0b7eb74d-0e93-4850-8e16-2c0d4828e5b7
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using Cybereason
+      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
         integration.
       playbookName: Block File - Cybereason
       type: playbook
@@ -138,7 +138,7 @@ tasks:
       version: -1
       name: Block File - Cylance Protect v2
       description: This playbook accepts a SHA256 hash and adds the hash to the Global
-        Quarantine list using Cylance Protect v2 integration.
+        Quarantine list using the Cylance Protect v2 integration.
       playbookName: Block File - Cylance Protect v2
       type: playbook
       iscommand: false
