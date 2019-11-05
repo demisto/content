@@ -50,7 +50,8 @@ def is_correct_content_installed(ips, content_version, username, password):
     """ Checks if specific content version is installed on server list
 
     Args:
-        api_key: For server connection
+        username: Username of the service account
+        password: Password of the service account
         ips: list with lists of [instance_name, instance_ip]
         content_version: content version that should be installed
 
