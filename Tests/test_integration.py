@@ -236,7 +236,8 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
 def __get_investigation_playbook_state(client, inv_id):
     try:
-        investigation_playbook = demisto_client.generic_request_func(self=client, method='GET', path='/inv-playbook/' + inv_id)
+        investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET', path='/inv-playbook/' + inv_id)
+        investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to get investigation playbook state, error trying to communicate with demisto '
@@ -267,7 +268,7 @@ def __delete_incident(client, incident):
                 conn_err))
         return False
 
-    if res[1] != 200:
+    if int(res[1]) != 200:
         print_error('delete incident failed\nStatus code' + str(res[1]))
         print_error(pformat(res))
         return False
@@ -285,7 +286,7 @@ def __delete_integration_instance(client, instance_id):
             'server: {} '.format(
                 conn_err))
         return False
-    if res[1] != 200:
+    if int(res[1]) != 200:
         print_error('delete integration instance failed\nStatus code' + str(res[1]))
         print_error(pformat(res))
         return False
@@ -309,7 +310,7 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
             'Failed to print investigation error, error trying to communicate with demisto '
             'server: {} '.format(
                 conn_err))
-    if res and res[1] == 200:
+    if res and int(res[1]) == 200:
         resp_json = ast.literal_eval(res[0])
         entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
