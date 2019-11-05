@@ -278,7 +278,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
                 if retry_after < MAX_LIMIT_TIME:
                     await asyncio.sleep(retry_after)
                     continue
-                raise
+            raise
         break
 
     return response
