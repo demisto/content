@@ -1,0 +1,292 @@
+category: Case Management
+commonfields:
+  id: Lockpath KeyLight v2
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: false
+  type: 0
+- display: Port
+  name: port
+  required: false
+  type: 0
+- name: credentials
+  required: false
+  type: 9
+- display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Use LockPath KeyLight to manage tickets
+display: Lockpath KeyLight v2
+name: Lockpath KeyLight v2
+script:
+  commands:
+  - deprecated: false
+    description: Returns a complete list of all Keylight components available to the
+      user based on account permissions.
+    execution: false
+    name: kl-get-component-list
+    outputs:
+    - contextPath: Keylight.Component.ID
+      description: The ID of the component.
+      type: String
+    - contextPath: Keylight.Component.Name
+      description: The name of the component.
+      type: String
+    - contextPath: Keylight.Component.ShortName
+      description: The short name of the component.
+      type: String
+    - contextPath: Keylight.Component.SystemName
+      description: The system name of the component.
+      type: String
+  - arguments:
+    - default: false
+      description: The id of the component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific component by id.
+    execution: false
+    name: kl-get-component
+    outputs:
+    - contextPath: Keylight.Component.ID
+      description: The ID of the component.
+      type: String
+    - contextPath: Keylight.Component.Name
+      description: The name of the component.
+      type: String
+    - contextPath: Keylight.Component.ShortName
+      description: The short name of the component.
+      type: String
+    - contextPath: Keylight.Component.SystemName
+      description: The system name of the component.
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the component
+      isArray: false
+      name: alias
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific component by alias.
+    execution: false
+    name: kl-get-component-by-alias
+    outputs:
+    - contextPath: Keylight.Component.ID
+      description: The ID of the component.
+      type: String
+    - contextPath: Keylight.Component.Name
+      description: The name of the component.
+      type: String
+    - contextPath: Keylight.Component.ShortName
+      description: The short name of the component.
+      type: String
+    - contextPath: Keylight.Component.SystemName
+      description: The system name of the component.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The id of the component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the list of fields in a component.
+    execution: false
+    name: kl-get-field-list
+    outputs:
+    - contextPath: Keylight.Field.ID
+      description: The ID of the field.
+      type: String
+    - contextPath: Keylight.Field.Name
+      description: The field's name.
+      type: String
+    - contextPath: Keylight.Field.SystemName
+      description: The system name of the field.
+      type: String
+    - contextPath: Keylight.Field.ShortName
+      description: The short name of the field.
+      type: String
+    - contextPath: Keylight.Field.ReadOnly
+      description: Is the field read only.
+      type: Boolean
+    - contextPath: Keylight.Field.Required
+      description: Is the field required.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the field.
+      isArray: false
+      name: field_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get a specific field by its ID.
+    execution: false
+    name: kl-get-field
+    outputs:
+    - contextPath: Keylight.Field.ID
+      description: The ID of the field.
+      type: String
+    - contextPath: Keylight.Field.Name
+      description: The field's name.
+      type: String
+    - contextPath: Keylight.Field.SystemName
+      description: The system name of the field.
+      type: String
+    - contextPath: Keylight.Field.ShortName
+      description: The short name of the field.
+      type: String
+    - contextPath: Keylight.Field.ReadOnly
+      description: Is the field read only.
+      type: Boolean
+    - contextPath: Keylight.Field.Required
+      description: Is the field required.
+      type: String
+  - arguments:
+    - default: false
+      description: The component ID.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: Field IDs to display.
+      isArray: true
+      name: field_ids
+      required: false
+      secret: false
+    - default: false
+      description: The record ID.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the set of fields for a given record within a component.
+    execution: false
+    name: kl-get-record
+    outputs:
+    - contextPath: Keylight.Record.ID
+      description: The record ID.
+      type: String
+    - contextPath: Keylight.Record.Fields
+      description: The fields in the record.
+      type: String
+    - contextPath: Keylight.Record.ComponentID
+      description: The ID of the component the record is in.
+      type: Unknown
+    - contextPath: Keylight.Record.DisplayName
+      description: The display name of the record.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the desired component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The index of the page of result to return. Must be >= 0
+      isArray: false
+      name: page_index
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The index of the page of result to return. Must be between 0 and
+        100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of filter to apply.
+      isArray: false
+      name: filter_type
+      predefined:
+      - Contains
+      - Excludes
+      - Starts With
+      - Ends With
+      - =
+      - <>
+      - '>'
+      - <
+      - '>='
+      - <=
+      - Between
+      - Not Between
+      - Is Null
+      - Is Not Null
+      required: false
+      secret: false
+    - default: false
+      description: The field ID to apply the filter on.
+      isArray: false
+      name: filter_field_id
+      required: false
+      secret: false
+    - default: false
+      description: The value to filter by.
+      isArray: false
+      name: filter_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Return the title/default field for a set of records within a chosen
+      component
+    execution: false
+    name: kl-get-records
+  - arguments:
+    - default: false
+      description: The component ID.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The record ID.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    - default: false
+      description: Field IDs to display.
+      isArray: true
+      name: field_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves record information based on the provided component ID and
+      record ID, with lookup field report details
+    execution: false
+    name: kl-get-detail-record
+  - deprecated: false
+    execution: false
+    name: kl-get-detail-records
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
