@@ -3,7 +3,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml
+from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -54,14 +54,26 @@ class ScriptValidator(object):
         if not self.old_script:
             return True
 
-        is_bc_broke = any([
-            self.is_context_path_changed(),
+        backwards_checks = [
             self.is_docker_image_changed(),
+            self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
             self.is_there_duplicates_args(),
             self.is_changed_subtype()
-        ])
+        ]
+
+        # Add sane-doc-report exception
+        # Sane-doc-report uses docker and every fix/change
+        # requires a docker tag change, thus it won't be
+        # backwards compatible.
+        # All other tests should be False (i.e. no problems)
+        sane_doc_checks = all([not c for c in backwards_checks[1:]])
+        if sane_doc_checks and \
+                self.file_path == 'Scripts/SaneDocReport/SaneDocReport.yml':
+            return True
+
+        is_bc_broke = any(backwards_checks)
 
         return not is_bc_broke
 
@@ -164,9 +176,11 @@ class ScriptValidator(object):
 
     def is_docker_image_changed(self):
         """Check if the docker image as been changed."""
-        if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
-            print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                        " this is not allowed.".format(self.file_path))
-            return True
+        # Unnecessary to check docker image only on 5.0 and up
+        if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
+            if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
+                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
+                            " this is not allowed.".format(self.file_path))
+                return True
 
         return False

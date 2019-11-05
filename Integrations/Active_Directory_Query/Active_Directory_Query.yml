@@ -45,7 +45,7 @@ configuration:
   options:
   - None
   - SSL
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: ""
   type: 8
