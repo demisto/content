@@ -3,6 +3,7 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import ast
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
@@ -141,7 +142,7 @@ def __create_integration_instance(client, integration_name, integration_instance
         print_error(pformat(res.json()))
         return None
 
-    integration_config = res.json()
+    integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
 
     # test integration
@@ -173,7 +174,7 @@ def __disable_integrations_instances(client, module_instances):
 
         if res[1] != 200:
             print_error('disable instance failed with status code ' + str(res[1]))
-            print_error(pformat(res.json()))
+            print_error(pformat(res))
 
 
 # create incident with given name & playbook, and then fetch & return the incident
@@ -298,7 +299,8 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
             'server: {} '.format(
                 conn_err))
     if res and res[1] == 200:
-        entries = res['entries']
+        resp_json = ast.literal_eval(res[0])
+        entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
@@ -419,15 +421,16 @@ def disable_all_integrations(client):
     """
     try:
         body = {'size': 1000}
-        int_instances = demisto_client.generic_request_func(self=client, method='POST', path='/settings/integration/search',
+        int_resp = demisto_client.generic_request_func(self=client, method='POST', path='/settings/integration/search',
                                           body=body)
+        int_instances = ast.literal_eval(int_resp[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to disable all integrations, error trying to communicate with demisto server: '
             '{} '.format(
                 conn_err))
         return
-    if int_instances[1] != 200:
+    if int_resp[1] != 200:
         print_error(
             'Get all integration instances failed with status code: {}'.format(int_instances[1]))
         return
