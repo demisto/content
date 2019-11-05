@@ -810,7 +810,7 @@ script:
   - name: event-pcap-download
     deprecated: true
     arguments:
-    - name: The ID of the event.
+    - name: eventId
       required: true
       default: true
       description: The event ID.
@@ -829,7 +829,7 @@ script:
   - name: event-pcap-info
     deprecated: true
     arguments:
-    - name: The ID of the event.
+    - name: eventId
       required: true
       default: true
       description: The ID of the event.
@@ -846,7 +846,7 @@ script:
     - contextPath: Protectwise.Event.PCAPSize
       description: Estimated PCAP size in bytes.
     description: Get ProtectWise Event Pcap info. Deprecated - use the protectwise-observation-pcap-download command.
-  - name: observation-pcap-download. 
+  - name: observation-pcap-download
     deprecated: true
     arguments:
     - name: id
