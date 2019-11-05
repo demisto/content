@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added *BaseClientSession*, which is a child of the **BaseClient** class that uses session to maintain an open session with the server.
+Added *SessionBaseClient*, which is a child of the **BaseClient** class that uses session to maintain an open session with the server.
 
 ## [19.10.1] - 2019-10-15
  - Added ***is_debug_mode*** wrapper function for checking if **debug-mode** is enabled. 
