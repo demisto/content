@@ -4,6 +4,7 @@ import json
 import argparse
 import requests
 import subprocess
+import urllib3
 from time import sleep
 from datetime import datetime
 
@@ -14,6 +15,9 @@ from Tests.test_integration import test_integration, disable_all_integrations
 from Tests.mock_server import MITMProxy, AMIConnection
 from Tests.test_utils import print_color, print_error, print_warning, LOG_COLORS, str2bool, server_version_compare
 from Tests.scripts.constants import RUN_ALL_TESTS_FORMAT, FILTER_CONF, PB_Status
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 SERVER_URL = "https://{}"
 INTEGRATIONS_CONF = "./Tests/integrations_file.txt"
