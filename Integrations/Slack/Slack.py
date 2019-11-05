@@ -225,6 +225,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     :param http_verb: The HTTP method to use.
     :param file_: A file to send.
     :param body: The request body.
+    :return: The slack API response.
     """
     set_name_and_icon(body, method)
     while True:
@@ -258,6 +259,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
     :param http_verb: The HTTP method to use.
     :param file_: A file to send.
     :param body: The request body.
+    :return: The slack API response.
     """
     set_name_and_icon(body, method)
     while True:
