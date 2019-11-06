@@ -1,7 +1,7 @@
 id: Indicator Pivoting - DomainTools Iris
 version: -1
 name: Indicator Pivoting - DomainTools Iris
-description: Pivots are used to gather data that shares a common attribute with a
+description: Pivots are used to gather data that share a common attribute with a
   domain. For instance, pivoting on an IP Address will give you back all domains related
   to that IP address.
 starttaskid: "0"
@@ -67,7 +67,7 @@ tasks:
       id: 4101f161-91b9-4d5d-8be7-8412255ce7f8
       version: -1
       name: Pivot on E-mail address?
-      description: Pivot on E-mail address conditional
+      description: Determines whether to pivot on an Email address.
       type: condition
       iscommand: false
       brand: ""
@@ -120,7 +120,7 @@ tasks:
       id: d183d95c-7d02-45b1-832d-bf95ad0fdbd1
       version: -1
       name: E-mail Pivot
-      description: Pivot on E-mail
+      description: Pivots on an Email.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -158,7 +158,7 @@ tasks:
       id: 33062c78-7259-4717-8cf4-3b56d33bd085
       version: -1
       name: IP Pivot
-      description: Pivot on IP
+      description: Pivots on an IP address.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -196,7 +196,7 @@ tasks:
       id: c3a1c6b6-c0b2-405f-8649-9b43f3a4a19e
       version: -1
       name: NameServer IP Pivot
-      description: Pivot on NameServer IP
+      description: Pivots on a NameServer IP address.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -234,7 +234,7 @@ tasks:
       id: 5b1e99a2-4c8e-444b-88c0-2e22f21edb3d
       version: -1
       name: SSL Hash Pivot
-      description: Pivot on SSL Hash
+      description: Pivots on a SSL Hash.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -272,7 +272,7 @@ tasks:
       id: 7d6ff0de-a24b-41c9-8d64-dd0743f1cdf1
       version: -1
       name: NameServer HostName Pivot
-      description: Pivot on NameServer HostName
+      description: Pivots on a NameServer HostName.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -310,7 +310,7 @@ tasks:
       id: 1c2d4e3d-2a80-42ae-8dbc-c532148f5196
       version: -1
       name: MailServer HostName
-      description: Pivot on MailServer HostName
+      description: Pivots on a MailServer HostName.
       script: DomainTools Iris|||domaintoolsiris-pivot
       type: regular
       iscommand: true
@@ -347,8 +347,8 @@ tasks:
     task:
       id: 116e7c75-54e2-4947-8332-171ea2fcc051
       version: -1
-      name: Pivot on IP address?
-      description: Pivot on IP Address conditional
+      name: Pivot on an IP address?
+      description: Determines whether to pivot on an IP Address.
       type: condition
       iscommand: false
       brand: ""
@@ -400,8 +400,8 @@ tasks:
     task:
       id: 3f0eb85b-f974-4845-805a-297bc7166dec
       version: -1
-      name: Pivot on NameServer IP?
-      description: Pivot on NameServer IP conditional
+      name: Pivot on a NameServer IP?
+      description: Determines whether to pivot on a NameServer IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -455,8 +455,8 @@ tasks:
     task:
       id: 92e7c263-9249-44d6-852c-c02eb4f4de75
       version: -1
-      name: Pivot on SSL Hash?
-      description: Pivot on SSL Hash conditional
+      name: Pivot on a SSL Hash?
+      description: Determines whether to pivot on a SSL Hash.
       type: condition
       iscommand: false
       brand: ""
@@ -511,7 +511,7 @@ tasks:
       id: 2e14b0b4-1fa7-4ac5-87a9-5f561da83afa
       version: -1
       name: Pivot on NameServer HostName?
-      description: Pivot on NameServer HostName conditional
+      description: Determines whether to pivot on a NameServer HostName.
       type: condition
       iscommand: false
       brand: ""
@@ -565,8 +565,8 @@ tasks:
     task:
       id: 08927281-b7fa-4735-8fef-fd4cafddf63e
       version: -1
-      name: Pivot on MailServer HostName?
-      description: Pivot on MailServer HostName conditional
+      name: Pivot on a MailServer HostName?
+      description: Determines whether to pivot on a MailServer HostName.
       type: condition
       iscommand: false
       brand: ""
@@ -634,7 +634,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: IP address to try and pivot on.
+  description: The IP address to pivot.
 - key: EmailAddress
   value:
     complex:
@@ -643,310 +643,310 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Email address to try and pivot on.
+  description: The Email address for which to pivot.
 - key: NameServerIPAddress
   value: {}
   required: false
-  description: Name Server IP address to try and pivot on.
+  description: The Name Server IP address for which to pivot.
 - key: SSLHash
   value: {}
   required: false
-  description: SSL Hash to try and pivot on.
+  description: The SSL Hash for which to pivot.
 - key: NameServerHostName
   value: {}
   required: false
-  description: Name Server Host Name to try and pivot on.
+  description: The Name Server Host Name for which to pivot.
 - key: MailServerHostName
   value: {}
   required: false
-  description: Mail Server Host Name to try and pivot on.
+  description: The Mail Server Host Name for which to pivot.
 - key: IPAddressCount
   value: {}
   required: false
-  description: Number of matches for that IP address.
+  description: The number of matches for the IP address.
 - key: EmailAddressCount
   value: {}
   required: false
-  description: Number of matches for that Email address.
+  description: The number of matches for the Email address.
 - key: NameServerIPAddressCount
   value: {}
   required: false
-  description: Number of matches for that Name Server IP address.
+  description: The number of matches for the Name Server IP address.
 - key: SSLHashCount
   value: {}
   required: false
-  description: Number of matches for that SSL Hash.
+  description: The number of matches for the SSL Hash.
 - key: NameServerHostNameCount
   value: {}
   required: false
-  description: Number of matches for that Name Server Host Name.
+  description: The number of matches for the Name Server Host Name.
 - key: MailServerHostNameCount
   value: {}
   required: false
-  description: Number of matches for that Mail Server Host Name.
+  description: The number of matches for the Mail Server Host Name.
 - key: PivotThreshold
   value:
     simple: "500"
   required: false
-  description: 'The threshold for matches less than that to pivot on. '
+  description: 'The threshold for matches less than to pivot on. '
 outputs:
 - contextPath: DomainTools.PivotedDomains.Name
-  description: DomainTools Domain Name
+  description: The DomainTools Domain Name.
   type: String
 - contextPath: DomainTools.PivotedDomains.LastEnriched
-  description: Last Time DomainTools Enriched Domain Data
+  description: The last time DomainTools enriched domain data.
   type: Date
 - contextPath: DomainTools.PivotedDomains.Analytics.OverallRiskScore
-  description: DomainTools Overall Risk Score
+  description: The DomainTools Overall Risk Score.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.ProximityRiskScore
-  description: DomainTools Proximity Risk Score
+  description: The DomainTools Proximity Risk Score.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.RiskScore
-  description: DomainTools Threat Profile Risk Score
+  description: The DomainTools Threat Profile Risk Score.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Threats
-  description: DomainTools Threat Profile Threats
+  description: The DomainTools Threat Profile Threats.
   type: String
 - contextPath: DomainTools.PivotedDomains.Analytics.ThreatProfileRiskScore.Evidence
-  description: DomainTools Threat Profile Evidence
+  description: The DomainTools Threat Profile Evidence.
   type: String
 - contextPath: DomainTools.PivotedDomains.Analytics.WebsiteResponseCode
-  description: Website Response Code
+  description: The Website Response Code.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.AlexaRank
-  description: Alexa Rank
+  description: The Alexa Rank.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.Tags
-  description: DomainTools Tags
+  description: The DomainTools Tags.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantName
-  description: Registrant Name
+  description: The name of the registrant.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantOrg
-  description: Registrant Org
+  description: The organization of the registrant.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.value
-  description: Registrant Contact Country value
+  description: The country value of the registrant contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Country.count
-  description: Registrant Contact Country count
+  description: The Country count of the registrant contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.value
-  description: Registrant Contact Email value
+  description: The Email value of the registrant contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Email.count
-  description: Registrant Contact Email count
+  description: The Email count of the registrant contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.value
-  description: Registrant Contact Name value
+  description: The name value of the registrant contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Name.count
-  description: Registrant Contact Name count
+  description: The name count of the registrant contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.value
-  description: Registrant Contact Phone value
+  description: The phone value of the registrant contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.RegistrantContact.Phone.count
-  description: Registrant Contact Phone count
+  description: The phone count of the registrant contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.SOAEmail
-  description: SOA Record Email
+  description: The SOA record Email.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.SSLCertificateEmail
-  description: SSL Certificate Email
+  description: The SSL certificate Email.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.value
-  description: Admin Contact Country value
+  description: The country value of the administrator contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Country.count
-  description: Admin Contact Country count
+  description: The country count of the administrator contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.value
-  description: Admin Contact Email value
+  description: The Email value of the administrator contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Email.count
-  description: Admin Contact Email count
+  description: The Email count of the administrator contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.value
-  description: Admin Contact Name value
+  description: The name value of the administrator contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Name.count
-  description: Admin Contact Name count
+  description: The name count of the administrator contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.value
-  description: Admin Contact Phone value
+  description: The phone value of the administrator contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdminContact.Phone.count
-  description: Admin Contact Phone count
+  description: The phone count of the administrator contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.value
-  description: Technical Contact Country value
+  description: The country value of the technical contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Country.count
-  description: Technical Contact Country count
+  description: The country count of the technical contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.value
-  description: Technical Contact Email value
+  description: The Email value of the technical contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Email.count
-  description: Technical Contact Email count
+  description: The Email count of the technical contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.value
-  description: Technical Contact Name value
+  description: The name value of the technical contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Name.count
-  description: Technical Contact Name count
+  description: The name count of the technical contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.value
-  description: Technical Contact Phone value
+  description: The phone value of the technical contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.TechnicalContact.Phone.count
-  description: Technical Contact Phone count
+  description: The phone count of the technical contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.value
-  description: Billing Contact Country value
+  description: The country value of the billing contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Country.count
-  description: Billing Contact Country count
+  description: The country count of the billing contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.value
-  description: Billing Contact Email value
+  description: The Email value of the billing contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Email.count
-  description: Billing Contact Email count
+  description: The Email count of the billing contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.value
-  description: Billing Contact Name value
+  description: The name value of the billing contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Name.count
-  description: Billing Contact Name count
+  description: The name count of the billing contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.value
-  description: Billing Contact Phone value
+  description: The phone value of the billing contact.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.BillingContact.Phone.count
-  description: Billing Contact Phone count
+  description: The phone count of the billing contact.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Identity.EmailDomains
-  description: Email Domains
+  description: The Email domains.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.value
-  description: Additional Whois Emails value
+  description: The value of the Additional Whois Emails.
   type: String
 - contextPath: DomainTools.PivotedDomains.Identity.AdditionalWhoisEmails.count
-  description: Additional Whois Emails count
+  description: The count of the Additional Whois Emails.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Registration.DomainRegistrant
-  description: Domain Registrant
+  description: The registrant of the domain.
   type: String
 - contextPath: DomainTools.PivotedDomains.Registration.RegistrarStatus
-  description: Registrar Status
+  description: The status of the registrar.
   type: String
 - contextPath: DomainTools.PivotedDomains.Registration.DomainStatus
-  description: Domain Active Status
+  description: The active status of the domain.
   type: Boolean
 - contextPath: DomainTools.PivotedDomains.Registration.CreateDate
-  description: Create Date
+  description: The date the domain was created.
   type: Date
 - contextPath: DomainTools.PivotedDomains.Registration.ExpirationDate
-  description: Expiration Date
+  description: The expiry date of the domain.
   type: Date
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.value
-  description: IP Addresses Info address value
+  description: The address value of the IP Addresses.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.address.count
-  description: IP Addresses Info address count
+  description: The address count of the IP Addresses.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.value
-  description: IP Addresses Info asn value
+  description: The ASN value of the IP Addresses.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.asn.count
-  description: IP Addresses Info asn count
+  description: The ASN count of the IP Addresses.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.value
-  description: IP Addresses Info country_code value
+  description: The country code value of the IP Addresses.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.country_code.count
-  description: IP Addresses Info country_code count
+  description: The country code count of the IP Addresses.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.value
-  description: IP Addresses Info isp value
+  description: The ISP value of the IP Addresses.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.IPAddresses.isp.count
-  description: IP Addresses Info isp count
+  description: The ISP count of the IP Addresses.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.IPCountryCode
-  description: IP Country Code
+  description: The country code of the IP address.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.value
-  description: Mail Servers Info domain value
+  description: The domain value of the Mail Servers.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.domain.count
-  description: Mail Servers Info domain count
+  description: The domain count of the Mail Servers.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.value
-  description: Mail Servers Info host value
+  description: The host value of the Mail Servers.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.host.count
-  description: Mail Servers Info host count
+  description: The host count of the Mail Servers.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.value
-  description: Mail Servers Info ip value
+  description: The IP value of the Mail Servers.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.MailServers.ip.count
-  description: Mail Servers Info ip count
+  description: The IP count of the Mail Servers.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.SPFRecord
-  description: SPF Record Info
+  description: The SPF record.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.value
-  description: DomainTools Domains NameServers domain value
+  description: The domain value of the DomainTools Domains NameServers.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.domain.count
-  description: DomainTools Domains NameServers domain count
+  description: The domain count of the DomainTools Domains NameServers.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.value
-  description: DomainTools Domains NameServers host value
+  description: The host value of the DomainTools Domains NameServers. 
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.host.count
-  description: DomainTools Domains NameServers host count
+  description: The host count of the DomainTools Domains NameServers. 
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.value
-  description: DomainTools Domains NameServers ip value
+  description: The IP value of the DomainTools Domains NameServers.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.NameServers.ip.count
-  description: DomainTools Domains NameServers ip count
+  description: The IP count of the DomainTools Domains NameServers.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.value
-  description: SSL Certificate Info hash value
+  description: The Hash value of the SSL certificate.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.hash.count
-  description: SSL Certificate Info hash count
+  description: The Hash count of the SSL certificate.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.value
-  description: SSL Certificate Info organization value
+  description: The organization value of the SSL certificate. 
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.organization.count
-  description: SSL Certificate Info organization count
+  description: The organization count of the SSL certificate.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.value
-  description: SSL Certificate Info subject value
+  description: The subject value of the SSL certificate.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.SSLCertificate.subject.count
-  description: SSL Certificate Info subject count
+  description: The subject count of the SSL certificate.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.value
-  description: Domains it Redirects To value
+  description: The Redirects To value of the domain.
   type: String
 - contextPath: DomainTools.PivotedDomains.Hosting.RedirectsTo.count
-  description: Domains it Redirects To count
+  description: The Redirects To count of the domain.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAdsenseTrackingCode
-  description: Google Adsense Tracking Code
+  description: The tracking code of Google Adsense.
   type: Number
 - contextPath: DomainTools.PivotedDomains.Analytics.GoogleAnalyticTrackingCode
-  description: Google Analytics Tracking Code
+  description: The tracking code of Google Analytics.
   type: Number
 tests:
 - DomainTools Iris - Test
