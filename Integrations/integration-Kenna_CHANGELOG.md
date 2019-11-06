@@ -1,2 +1,2 @@
 ## [Unreleased]
-Improved inputs and outputs of ***kenna-search-fixes*** command.
+Improved inputs and outputs of the ***kenna-search-fixes*** command.
