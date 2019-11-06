@@ -617,6 +617,9 @@
             "playbookID": "test_delete_context"
         },
         {
+            "playbookID": "DeleteContext-auto-test"
+        },
+        {
             "playbookID": "GmailTest",
             "integrations": "Gmail"
         },
@@ -821,11 +824,6 @@
         {
             "integrations": "OpenPhish",
             "playbookID": "email_test"
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "domain_enrichment_generic_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -1580,16 +1578,6 @@
             "timeout": 300
         },
         {
-            "playbookID": "Endpoint Enrichment - Generic v2 - Test",
-            "integrations": [
-                "FalconHost",
-                "Cylance Protect",
-                "carbonblack",
-                "epo",
-                "activedir"
-            ]
-        },
-        {
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
             "integrations": [
                 "FalconHost",
@@ -1784,9 +1772,6 @@
             "playbookID": "TestImageOCR"
         },
         {
-            "playbookID": "EWS test"
-        },
-        {
             "integrations": "fireeye",
             "playbookID": "Detonate File - FireEye AX - Test"
         },
@@ -1910,7 +1895,7 @@
         }
     ],
     "skipped_tests": {
-        "LogRhythm REST test": "Issue 19870",
+        "NetWitness Endpoint Test": "Issue 19878",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
@@ -1920,14 +1905,9 @@
         "CheckpointFW-test": "Issue 18643",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
         "McAfee-TIE Test": "Issue #18350",
-        "Autoextract - Test": "Issue #18343",
-        "rsa_packets_and_logs_test": "Issue #18332",
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
-        "Forescout-Test": "issue 17016",
-        "domain_enrichment_generic_test": "Test is old and uses VirusTotal which has quota problems. The v2 playbook has a better test",
-        "EWS test": "Old test",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
@@ -1935,14 +1915,8 @@
         "TruSTAR Test": "Issue 19756",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "Endpoint Enrichment - Generic v2 - Test": "Replaced by Endpoint Enrichment - Generic v2.1 - Test. Uses the deprecated script ADGetComputer which is bugged and won't be fixed and deprecated carbon black integration",
         "ip_enrichment_generic_test": "Issue 19815",
         "email_test": "Issue 19816",
-        "JoeSecurityTestDetonation": "Issue 16118",
-        "Zoom_test": "Issue 19832",
-        "DomainTools-Test": "Issue 8298",
-        "Beta-Athena-Test": "Issue 19834",
-        "Remedy-On-Demand-Test": "Issue 19835",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -1959,14 +1933,15 @@
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
-        "Recorded Future Test": "ssue 18922",
+        "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "CarbonBlackResponseTest": "Issue #19180",
-        "Pwned test": "API Deprecated, use Pwned test v2 instead",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
-        "AlphaSOC-Wisdom-Test": "Issue #19235"
+        "AlphaSOC-Wisdom-Test": "Issue #19235",
+        "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
+        "Test Playbook TrendMicroDDA": "Manual test"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1983,11 +1958,14 @@
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
+        "DomainTools": "Issue 8298",
+        "Remedy On-Demand": "Issue 19835",
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "carbonblack-v2": "Issue 19929",
+        "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
-        "epo": "Issue 19798",
         "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
@@ -1995,15 +1973,15 @@
         "SumoLogic": "Issue 18441",
         "Lastline": "Issue 19855",
         "vmray": "Issue 18752",
-        "Anomali ThreatStream v2": "Issue 18561",
-        "Anomali ThreatStream": "Issue 18561",
+        "Anomali ThreatStream v2": "Issue 19182",
+        "Anomali ThreatStream": "Issue 19182",
         "SCADAfence CNM": "Issue 18376",
         "Cortex XDR - IR": "Issue #18377",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
         "Tufin": "Issue 16441",
         "Dell Secureworks": "Instance locally installed on @liorblob PC",
-        "MimecastV2": "Several issues with instance",
+        "MimecastV2": "Issue 14593",
         "Netskope": "instance is down",
         "Farsight DNSDB": "Issue 15512",
         "Service Manager": "Expired license",
@@ -2031,23 +2009,20 @@
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
-        "Tenable.io": "Unstable instance (issue 16115)",
-        "SlackV2": "(Issue 19558)",
+        "Tenable.io": "Issue 16115",
+        "SlackV2": "Issue 19558",
 
       "_comment": "~~~ OTHER ~~~",
-        "LogRhythm": "Issue 19849",
         "EclecticIQ Platform": "Issue 8821",
-        "Pwned": "Old API is deprecated",
-        "iDefense": "DevOps investigation",
-        "RSA NetWitness Endpoint": "Instance is down, waiting for devops to rebuild",
         "BitDam": "Issue #17247",
-        "Zoom": "Added here because test existed but was not configured - need to review the test",
+        "Zoom": "Issue 19832",
         "MailListener - POP3": "Issue 18580",
+        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
-        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
+        "AWS - Athena - Beta": "Issue 19834",
         "VirusTotal - Private API": "reached api alloted quota.",
+        "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
     "nigthly_integrations": [
@@ -2069,7 +2044,6 @@
         "PagerDuty v2": "Integration requires SSL",
         "TCPIPUtils": "Integration requires SSL",
         "Luminate": "Integration has no proxy checkbox",
-        "Pwned": "Integration has no proxy checkbox",
         "Shodan": "Integration has no proxy checkbox",
         "Google BigQuery": "Integration has no proxy checkbox",
         "ReversingLabs A1000": "Checking",
