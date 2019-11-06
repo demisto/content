@@ -1,0 +1,80 @@
+args:
+- default: false
+  description: A commma-separated list of IP addresses for which to create the query.
+  isArray: true
+  name: ip
+  required: false
+  secret: false
+- default: false
+  description: A commma-separated list of file hashes for which to create the query.
+  isArray: true
+  name: hash
+  required: false
+  secret: false
+- default: false
+  description: A commma-separated list of domains for which to create the query.
+  isArray: true
+  name: domain
+  required: false
+  secret: false
+comment: The script accepts indicators as input and creates an indicator query in the relevant Palo Alto Networks products.
+commonfields:
+  id: PanwIndicatorCreateQueries
+  version: -1
+enabled: false
+name: PanwIndicatorCreateQueries
+outputs:
+- contextPath: Query.IP.CortexTrapsIP
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Traps table "tms.threat", which is the agent IP.
+  type: String
+- contextPath: Query.IP.CortexAnalyticsIP
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Analytics table "tms.analytics", which is the agent IP.
+  type: String
+- contextPath: Query.IP.CortexTrafficIP
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Traffic table "panw.traffic", and includes both source
+    and destination.
+  type: String
+- contextPath: Query.IP.CortexThreatIP
+  description: The query for the specified IP address indicators. This query is relevant for the Cortex Threat table "panw.threat", and includes both source
+    and destination.
+  type: String
+- contextPath: Query.IP.AutofocusSessionsIP
+  description: The query (in JSON format) for the specified IP address indicators. This query is relevant for AutoFocus, includes both source and destination.
+  type: String
+- contextPath: Query.IP.PanoramaIP
+  description: The query (in Panorama syntax) for the specified IP address indicators. This query is relevant for Panorama, and is valid for all log types.
+  type: String
+- contextPath: Query.Hash.CortexTrapsHash
+  description: The query for the specified file hash indicators. This query is relevant for the Cortex Traps table "tms.threat", which contains only SHA256 hashes.
+  type: String
+- contextPath: Query.Hash.CortexAnalyticsHash
+  description: The query for the specified file hash indicators. This query is relevant for the Cortex Analytics table "tms.analytics", which contains only SHA256 hashes.
+  type: String
+- contextPath: Query.Hash.CortexThreatHash
+  description: The query for the specified file hash indicators. This query is relevant for the Cortex Threat table "panw.threat", which contains only SHA256 hashes.
+  type: String
+- contextPath: Query.Hash.AutofocusSessionsHash
+  description: 'The query (in JSON format) for the specified file hash indicators. This query is relevant for AutoFocus, and supports the following file hashes: MD5, SHA1, and SHA256.'
+  type: String
+- contextPath: Query.Hash.PanoramaHash
+  description: The query (in Panorama syntax) for the specified file hash indicators. This query is relevant for the WildFire log in Panorama, and only supports SHA256 hashes.
+  type: String
+- contextPath: Query.Domain.CortexThreatDomain
+  description: The query for the domain indicators. This query is relevant for the Cortex Threat table "panw.threat".
+  type: String
+- contextPath: Query.Domain.AutofocusSessionsDomain
+  description: The query (in JSON format) for the domain indicators. This query is relevant for AutoFocus.
+  type: String
+- contextPath: Query.Domain.PanoramaDomain
+  description: The query (in Panorama syntax) for the domain indicators. This query is relevant for Panorama.
+  type: String
+script: '-'
+system: false
+tags:
+- Panw
+timeout: '0'
+type: python
+tests:
+- No test
+subtype: python3
+dockerimage: demisto/python3:3.7.4.1900

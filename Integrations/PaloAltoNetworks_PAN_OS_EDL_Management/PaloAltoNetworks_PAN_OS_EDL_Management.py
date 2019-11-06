@@ -86,6 +86,14 @@ def ssh_execute(command: str):
                     'Permission denied, check your username and certificate.\n' + 'Got error: ' + result.stderr)
             else:
                 return_error(result.stderr)
+        elif command.find('grep') != -1 and result.returncode == 1:
+            #  a search command that did not find any value
+            demisto.results({
+                'Type': 11,
+                'Contents': 'Search string was not found in the external file path given.',
+                'ContentsFormat': formats['text']
+            })
+            sys.exit(0)
         else:
             return_error('Command failed with exit status: ' + str(result.returncode))
 
@@ -95,11 +103,11 @@ def ssh_execute(command: str):
 def scp_execute(file_name: str, file_path: str):
     if SCP_EXTRA_PARAMS:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name] + SCP_EXTRA_PARAMS + [
-            file_name, USERNAME + '@' + HOSTNAME + ':' + file_path]
+            file_name, USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     else:
         param_list = ['scp', '-o', 'StrictHostKeyChecking=no', '-i', CERTIFICATE_FILE.name, file_name,
-                      USERNAME + '@' + HOSTNAME + ':' + file_path]
+                      USERNAME + '@' + HOSTNAME + ':' + f'\'{file_path}\'']
         result = subprocess.run(param_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     if result.returncode != 0:
@@ -118,7 +126,7 @@ def scp_execute(file_name: str, file_path: str):
 
 
 def edl_get_external_file(file_path: str):
-    command = f'cat {file_path}'
+    command = f'cat \'{file_path}\''
     result = ssh_execute(command)
     return result
 
@@ -142,7 +150,7 @@ def edl_get_external_file_command():
 
 
 def edl_search_external_file(file_path: str, search_string: str):
-    return ssh_execute(f'grep {search_string} {file_path}')
+    return ssh_execute(f'grep \'{search_string}\' \'{file_path}\'')
 
 
 def edl_search_external_file_command():
@@ -155,20 +163,14 @@ def edl_search_external_file_command():
     search_string = demisto.args().get('search_string')
 
     result = edl_search_external_file(file_path, search_string)
-    if len(result) > 0:
-        md = tableToMarkdown('Search Results', result, headers=['Result'])
 
-        demisto.results({
-            'ContentsFormat': formats['markdown'],
-            'Type': entryTypes['note'],
-            'Contents': md
-        })
-    else:
-        demisto.results({
-            'Type': 11,
-            'Contents': 'Search string was not found in the external file path given.',
-            'ContentsFormat': formats['text']
-        })
+    md = tableToMarkdown('Search Results', result, headers=['Result'])
+
+    demisto.results({
+        'ContentsFormat': formats['markdown'],
+        'Type': entryTypes['note'],
+        'Contents': md
+    })
 
 
 def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> bool:
@@ -187,7 +189,7 @@ def edl_update_external_file(file_path: str, list_name: str, verbose: bool) -> b
         return False
     else:
         if verbose:
-            return ssh_execute(f'cat {file_path}')
+            return ssh_execute(f'cat \'{file_path}\'')
         else:
             return True
 
@@ -259,19 +261,22 @@ def edl_update_from_external_file(list_name: str, file_path: str, type_: str):
     list_data = dict_of_lists.get(list_name, None)
     file_data = edl_get_external_file(file_path)
 
-    set_internal = set(list_data)
-    set_external = set(file_data.split('\n'))
-    set_external.discard('')
-
-    if type_ == 'merge':
-        unified = set_internal.union(set_external)
-        list_data_new = list(unified)
-    else:  # type_ == 'override'
-        list_data_new = list(set_external)
-
-    dict_of_lists.update({list_name: list_data_new})
-
-    return list_data_new
+    if list_data:
+        set_internal = set(list_data)
+        set_external = set(file_data.split('\n'))
+        set_external.discard('')
+        if type_ == 'merge':
+            unified = set_internal.union(set_external)
+            list_data_new = list(unified)
+        else:  # type_ == 'override'
+            list_data_new = list(set_external)
+        dict_of_lists.update({list_name: list_data_new})
+        demisto.setIntegrationContext(dict_of_lists)
+        return list_data_new
+    else:
+        dict_of_lists.update({list_name: file_data})
+        demisto.setIntegrationContext(dict_of_lists)
+        return file_data
 
 
 def edl_update_from_external_file_command():
@@ -300,7 +305,7 @@ def edl_update_from_external_file_command():
 
 
 def edl_delete_external_file(file_path: str):
-    ssh_execute('rm -f ' + file_path)
+    ssh_execute(f'rm -f \'{file_path}\'')
     return 'File deleted successfully'
 
 
@@ -398,7 +403,13 @@ def edl_dump_internal_list_command():
 
     dict_of_lists = demisto.getIntegrationContext()
     list_data = dict_of_lists.get(list_name, None)
-
+    if not list_data:
+        demisto.results({
+            'Type': 11,
+            'Contents': 'List was not found in instance context or has no data.',
+            'ContentsFormat': formats['text']
+        })
+        sys.exit(0)
     if destination == 'file':  # dump list as file
         internal_file_path = demisto.uniqueFile()
 
@@ -406,8 +417,8 @@ def edl_dump_internal_list_command():
             with open(internal_file_path, 'w') as f:
                 f.write("\n".join(list_data))
             file_type = entryTypes['entryInfoFile']
-            with open(internal_file_path, 'r') as f:
-                file_entry = fileResult(internal_file_path, f.read(), file_type)
+            with open(internal_file_path, 'rb') as file:
+                file_entry = fileResult(internal_file_path, file.read(), file_type)
             demisto.results(file_entry)
         finally:
             shutil.rmtree(internal_file_path, ignore_errors=True)
@@ -443,6 +454,7 @@ def edl_compare_command():
             'Contents': 'List was not found in instance context.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     file_data = edl_get_external_file(file_path)
     if not file_data:
@@ -451,6 +463,7 @@ def edl_compare_command():
             'Contents': 'file was not found in external web-server.',
             'ContentsFormat': formats['text']
         })
+        sys.exit(0)
 
     set_internal = set(list_data)
     set_external = set(file_data.split('\n'))
@@ -476,6 +489,40 @@ def edl_compare_command():
         'Type': 11 if unique_external or unique_internal else entryTypes['note'],
         'Contents': md,
         'ContentsFormat': formats['markdown'],
+    })
+
+
+def edl_get_external_file_metadata_command():
+    file_path = demisto.args().get('file_path')
+    if DOCUMENT_ROOT:
+        file_path = os.path.join(DOCUMENT_ROOT, file_path)
+
+    result = ssh_execute(f'stat \'{file_path}\'')
+
+    file_size = int(result.split("Size: ", 1)[1].split(" ", 1)[0])
+    file_name = file_path.split("/")[-1]
+    if len(file_name) < 0:
+        file_name = file_path
+    last_modified_parts = result.split("Change: ", 1)[1].split(" ", 2)[0:2]
+    last_modified = ' '.join(last_modified_parts)
+
+    number_of_lines = int(ssh_execute(f'wc -l < \'{file_path}\'')) + 1
+
+    metadata_outputs = {
+        'FileName': file_name,
+        'Size': file_size,
+        'LastModified': last_modified,
+        'NumberOfLines': number_of_lines
+    }
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': result,
+        'ContentsFormat': formats['text'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('File metadata:', metadata_outputs,
+                                         ['FileName', 'Size', 'NumberOfLines', 'LastModified'], removeNull=True),
+        'EntryContext': {"PANOSEDL(val.FileName == obj.FileName)": metadata_outputs}
     })
 
 
@@ -518,6 +565,9 @@ def main():
 
         elif demisto.command() == 'pan-os-edl-compare':
             edl_compare_command()
+
+        elif demisto.command() == 'pan-os-edl-get-external-file-metadata':
+            edl_get_external_file_metadata_command()
 
         else:
             return_error('Unrecognized command: ' + demisto.command())

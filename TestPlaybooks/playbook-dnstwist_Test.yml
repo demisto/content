@@ -1,14 +1,14 @@
 id: dnstwistTest
-version: 5
+version: -1
 name: dnstwistTest
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 42669137-9fa3-407b-8d46-46416de2e717
+    taskid: 07553836-2233-4936-89e2-9a1649988769
     type: start
     task:
-      id: 42669137-9fa3-407b-8d46-46416de2e717
+      id: 07553836-2233-4936-89e2-9a1649988769
       version: -1
       name: ""
       iscommand: false
@@ -16,21 +16,23 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 8273c137-4785-48d8-8cea-8aa7e2e22565
+    taskid: 4e310b85-528c-452f-82ec-59b71cb4e557
     type: regular
     task:
-      id: 8273c137-4785-48d8-8cea-8aa7e2e22565
+      id: 4e310b85-528c-452f-82ec-59b71cb4e557
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -47,63 +49,95 @@ tasks:
       key: {}
       keysToKeep: {}
       subplaybook: {}
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: a4384009-d7fe-4215-8dcd-38078cb45dec
+    taskid: d4a6088b-5193-43d9-8504-eef93df0ced5
     type: regular
     task:
-      id: a4384009-d7fe-4215-8dcd-38078cb45dec
+      id: d4a6088b-5193-43d9-8504-eef93df0ced5
       version: -1
       name: 'dnstwist Domain command '
-      script: dnstwist|||dnstwist-domain-variations
+      description: 'Check domain variations '
+      script: '|||dnstwist-domain-variations'
       type: regular
       iscommand: true
-      brand: dnstwist
+      brand: ""
     nexttasks:
       '#none#':
-      - "4"
-      - "5"
+      - "3"
     scriptarguments:
       domain:
         simple: demisto.com
       limit: {}
-    reputationcalc: 0
+      whois: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
-  "4":
-    id: "4"
-    taskid: 7630fffe-de95-4f2d-8729-0404204ce899
-    type: regular
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 98e6bd7e-0f6e-4971-8ccc-0d6de83b53b7
+    type: condition
     task:
-      id: 7630fffe-de95-4f2d-8729-0404204ce899
+      id: 98e6bd7e-0f6e-4971-8ccc-0d6de83b53b7
       version: -1
-      name: VerifyContext  IP
-      scriptName: VerifyContext
-      type: regular
+      name: Check context
+      type: condition
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: dnstwist.Domain.Domains.IP
-    reputationcalc: 0
+    nexttasks:
+      "yes":
+      - "4"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.IP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-MX
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-NS
+            iscontext: true
     view: |-
       {
         "position": {
@@ -111,39 +145,38 @@ tasks:
           "y": 545
         }
       }
-  "5":
-    id: "5"
-    taskid: 8026b65a-19e4-4853-8a7a-d7390784ec3b
-    type: regular
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 61c86ee0-d777-42e0-8b3e-7dc9c6d1a1b8
+    type: title
     task:
-      id: 8026b65a-19e4-4853-8a7a-d7390784ec3b
+      id: 61c86ee0-d777-42e0-8b3e-7dc9c6d1a1b8
       version: -1
-      name: VerifyContext  name
-      scriptName: VerifyContext
-      type: regular
+      name: Done
+      type: title
       iscommand: false
       brand: ""
-    scriptarguments:
-      expectedValue: {}
-      fields: {}
-      path:
-        simple: dnstwist.Domain.Domains.Name
-    reputationcalc: 0
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 590,
-        "width": 810,
+        "height": 735,
+        "width": 380,
         "x": 50,
         "y": 50
       }

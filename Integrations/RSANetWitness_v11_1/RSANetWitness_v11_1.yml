@@ -1,0 +1,628 @@
+category: Analytics & SIEM
+commonfields:
+  id: RSA NetWitness v11.1
+  version: -1
+configuration:
+- display: Server URL (e.g. https://192.168.0.1:30022)
+  name: server
+  required: true
+  type: 0
+- display: credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: '1.0'
+  display: API version
+  name: version
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: 'false'
+  display: on 'Fetch incidents' import all alerts related to the incident
+  name: importAlerts
+  required: false
+  type: 8
+- defaultvalue: 1 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- defaultvalue: 100
+  display: 'Fetch limit: the maximum number of incidents to fetch'
+  name: fetch_limit
+  required: false
+  type: 0
+description: RSA NetWitness Platform provides systems Logs, Network, and endpoint
+  visibility for real-time collection, detection, and automated response with the
+  Demisto Enterprise platform. Providing full session analysis, customers can extract
+  critical data and effectively operate security operations automated playbook.
+display: RSA NetWitness v11.1
+name: RSA NetWitness v11.1
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The incident id
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    deprecated: false
+    description: Get details of a specific incident, including all alerts related
+      with the incident.
+    execution: false
+    name: netwitness-get-incident
+    outputs:
+    - contextPath: NetWitness.Incidents.id
+      description: The unique identifier of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.title
+      description: Title of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.summary
+      description: Summary of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.priority
+      description: The incident priority.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.riskScore
+      description: Incident risk score calculated based on associated alert’s risk
+        score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Unknown
+    - contextPath: NetWitness.Incidents.status
+      description: The current status.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertCount
+      description: Number of alerts associated with the Incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.averageAlertRiskScore
+      description: Average risk score of the alerts associated with the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sealed
+      description: Indicates if additional alerts can be associated with an incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.totalRemediationTaskCount
+      description: The number of total remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.openRemediationTaskCount
+      description: The number of open remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.created
+      description: The timestamp of when the incident is created.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdated
+      description: The timestamp of when the incident was last updated.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdatedBy
+      description: The NetWitness user identifier of the user who last updated the
+        incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.assignee
+      description: The NetWitness user identifier of the user currently working on
+        the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sources
+      description: Unique set of sources for all of the Alerts in the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.ruleId
+      description: The unique identifier of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.firstAlertTime
+      description: The timestamp of the earliest occurring Alert in this incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.id
+      description: The unique category identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.parent
+      description: Parent name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.name
+      description: Friendly name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.id
+      description: The unique journal entry identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.author
+      description: The author of this entry.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.notes
+      description: Notes and observations about the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.created
+      description: The timestamp of the journal entry created date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.lastUpdated
+      description: The timestamp of the journal entry last updated date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.milestone
+      description: Incident milestone classifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.createdBy
+      description: The NetWitness user id or name of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.deletedAlertCount
+      description: The number of alerts that are deleted from theincident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.eventCount
+      description: Number of events associated with incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.SourceIp
+      description: Unique source IP addresses.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.DestinationIp
+      description: Unique destination IP addresses.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.id
+      description: The unique alert identifier.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.incidentId
+      description: The incident id associated with the alert.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.title
+      description: The title or name of the rule that created the alert.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.detail
+      description: The details of the alert. This can be the module name or meta that
+        the module included.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.created
+      description: The timestamp of the alert created date.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.source
+      description: The source of this alert. For example, "Event Stream Analysis",
+        "Malware Analysis", etc.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.riskScore
+      description: The risk score of this alert, usually in the range 0 - 100.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.type
+      description: Type of alert, "Network", "Log", etc.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.ipAddress
+      description: The IP address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.port
+      description: The port.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.macAddress
+      description: The ethernet MAC address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.dnsHostname
+      description: The DNS resolved hostname.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.username
+      description: The unique username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.emailAddress
+      description: An email address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.adUsername
+      description: An Active Directory (AD) username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.adDomain
+      description: An Active Directory (AD) domain
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.ipAddress
+      description: The IP address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.port
+      description: The port.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.macAddress
+      description: The ethernet MAC address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsHostname
+      description: The DNS resolved hostname.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.username
+      description: The unique username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.emailAddress
+      description: An email address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.adUsername
+      description: An Active Directory (AD) username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.adDomain
+      description: An Active Directory (AD) domain
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z).
+        Use to retrieve incidents created on and after this timestamp.
+      isArray: false
+      name: since
+      required: false
+      secret: false
+    - default: false
+      description: A timestamp in ISO 8601 format (e.g. 2018-01-01T14:00:00.000Z).
+        Use to retrieve incidents created on and before this timestamp.
+      isArray: false
+      name: until
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '200'
+      description: The maximum number of incidents to retrieve. default  is 200.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Use this to retrieve incidents from the last number of days specified.
+      isArray: false
+      name: lastDays
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Get a list of incidents in a specific time frame. One of the followings
+      must be specified:  since, until, lastDays'
+    execution: false
+    name: netwitness-get-incidents
+    outputs:
+    - contextPath: NetWitness.Incidents.id
+      description: The unique identifier of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.title
+      description: Title of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.summary
+      description: Summary of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.priority
+      description: The incident priority.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.riskScore
+      description: Incident risk score calculated based on associated alert’s risk
+        score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Unknown
+    - contextPath: NetWitness.Incidents.status
+      description: The current status.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertCount
+      description: Number of alerts associated with the Incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.averageAlertRiskScore
+      description: Average risk score of the alerts associated with the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sealed
+      description: Indicates if additional alerts can be associated with an incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.totalRemediationTaskCount
+      description: The number of total remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.openRemediationTaskCount
+      description: The number of open remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.created
+      description: The timestamp of when the incident is created.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdated
+      description: The timestamp of when the incident was last updated.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdatedBy
+      description: The NetWitness user identifier of the user who last updated the
+        incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.assignee
+      description: The NetWitness user identifier of the user currently working on
+        the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sources
+      description: Unique set of sources for all of the Alerts in the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.ruleId
+      description: The unique identifier of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.firstAlertTime
+      description: The timestamp of the earliest occurring Alert in this incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.id
+      description: The unique category identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.parent
+      description: Parent name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.name
+      description: Friendly name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.id
+      description: The unique journal entry identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.author
+      description: The author of this entry.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.notes
+      description: Notes and observations about the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.created
+      description: The timestamp of the journal entry created date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.lastUpdated
+      description: The timestamp of the journal entry last updated date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.milestone
+      description: Incident milestone classifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.createdBy
+      description: The NetWitness user id or name of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.deletedAlertCount
+      description: The number of alerts that are deleted from theincident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.eventCount
+      description: Number of events associated with incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.SourceIp
+      description: Unique source IP addresses.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.DestinationIp
+      description: Unique destination IP addresses.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The incident's id
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The current status
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Assigned
+      - InProgress
+      - RemediationRequested
+      - RemediationComplete
+      - Closed
+      - ClosedFalsePositive
+      required: false
+      secret: false
+    - default: false
+      description: The NetWitness user identifier of the user currently working on
+        the incident.
+      isArray: false
+      name: assignee
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a specific incident.  Currently, an incident’s status and
+      assignee may be modified
+    execution: false
+    name: netwitness-update-incident
+    outputs:
+    - contextPath: NetWitness.Incidents.id
+      description: The unique identifier of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.title
+      description: Title of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.summary
+      description: Summary of the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.priority
+      description: The incident priority.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.riskScore
+      description: Incident risk score calculated based on associated alert’s risk
+        score. Risk score ranges from 0 (no risk) to 100 (highest risk).
+      type: Unknown
+    - contextPath: NetWitness.Incidents.status
+      description: The current status.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertCount
+      description: Number of alerts associated with the Incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.averageAlertRiskScore
+      description: Average risk score of the alerts associated with the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sealed
+      description: Indicates if additional alerts can be associated with an incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.totalRemediationTaskCount
+      description: The number of total remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.openRemediationTaskCount
+      description: The number of open remediation tasks for the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.created
+      description: The timestamp of when the incident is created.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdated
+      description: The timestamp of when the incident was last updated.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.lastUpdatedBy
+      description: The NetWitness user identifier of the user who last updated the
+        incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.assignee
+      description: The NetWitness user identifier of the user currently working on
+        the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.sources
+      description: Unique set of sources for all of the Alerts in the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.ruleId
+      description: The unique identifier of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.firstAlertTime
+      description: The timestamp of the earliest occurring Alert in this incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.id
+      description: The unique category identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.parent
+      description: Parent name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.categories.name
+      description: Friendly name of the category.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.id
+      description: The unique journal entry identifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.author
+      description: The author of this entry.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.notes
+      description: Notes and observations about the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.created
+      description: The timestamp of the journal entry created date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.lastUpdated
+      description: The timestamp of the journal entry last updated date.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.journalEntries.milestone
+      description: Incident milestone classifier.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.createdBy
+      description: The NetWitness user id or name of the rule that created the incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.deletedAlertCount
+      description: The number of alerts that are deleted from theincident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.eventCount
+      description: Number of events associated with incident.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.SourceIp
+      description: Unique source IP addresses.
+      type: Unknown
+    - contextPath: NetWitness.Incidents.alertMeta.DestinationIp
+      description: Unique destination IP addresses.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The incident id
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a specific incident, by its id.
+    execution: false
+    name: netwitness-delete-incident
+  - arguments:
+    - default: false
+      description: The incident id
+      isArray: false
+      name: incidentId
+      required: true
+      secret: false
+    deprecated: false
+    description: Get all the alerts related to a specific incident.
+    execution: false
+    name: netwitness-get-alerts
+    outputs:
+    - contextPath: NetWitness.Alerts.id
+      description: The unique alert identifier.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.incidentId
+      description: The incident id associated with the alert.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.title
+      description: The title or name of the rule that created the alert.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.detail
+      description: The details of the alert. This can be the module name or meta that
+        the module included.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.created
+      description: The timestamp of the alert created date.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.source
+      description: The source of this alert. For example, "Event Stream Analysis",
+        "Malware Analysis", etc.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.riskScore
+      description: The risk score of this alert, usually in the range 0 - 100.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.type
+      description: Type of alert, "Network", "Log", etc.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.ipAddress
+      description: The IP address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.port
+      description: The port.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.macAddress
+      description: The ethernet MAC address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.dnsHostname
+      description: The DNS resolved hostname.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.username
+      description: The unique username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.emailAddress
+      description: An email address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.adUsername
+      description: An Active Directory (AD) username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.source.user.adDomain
+      description: An Active Directory (AD) domain
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.ipAddress
+      description: The IP address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.port
+      description: The port.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.macAddress
+      description: The ethernet MAC address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsHostname
+      description: The DNS resolved hostname.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.device.dnsDomain
+      description: The top-level domain from the DNS resolved hostname
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.username
+      description: The unique username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.emailAddress
+      description: An email address.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.adUsername
+      description: An Active Directory (AD) username.
+      type: Unknown
+    - contextPath: NetWitness.Alerts.events.destination.user.adDomain
+      description: An Active Directory (AD) domain
+      type: Unknown
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- RSA NetWitness Test

@@ -1,0 +1,495 @@
+category: Endpoint
+commonfields:
+  id: Symantec Endpoint Protection V2
+  version: -1
+configuration:
+- display: Server (e.g., https://1.2.3.4:8446)
+  name: server
+  required: true
+  type: 0
+- display: Authentication
+  name: authentication
+  required: true
+  type: 9
+- display: SEPM domain for the user
+  name: domain
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Trust any certificate (unsecure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use proxy system settings
+  name: proxy
+  required: false
+  type: 8
+- display: Local time zone (e.g., +02:30,-06:00)
+  name: timeZone
+  required: false
+  type: 0
+description: Query the Symantec Endpoint Protection Manager using the official REST
+  API.
+display: Symantec Endpoint Protection V2
+name: Symantec Endpoint Protection V2
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: A CSV list of the displayed columns.
+      isArray: false
+      name: columns
+      required: false
+      secret: false
+    - default: false
+      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
+      isArray: false
+      name: computerName
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The operating system by which to filter.
+      isArray: false
+      name: os
+      predefined:
+      - CentOs
+      - Debian
+      - Fedora
+      - MacOSX
+      - Oracle
+      - OSX
+      - RedHat
+      - SUSE
+      - Ubuntu
+      - Win10
+      - Win2K
+      - Win7
+      - Win8
+      - WinEmb7
+      - WinEmb8
+      - WinEmb81
+      - WinFundamental
+      - WinNT
+      - Win2K3
+      - Win2K8
+      - Win2K8R2
+      - WinVista
+      - WinXP
+      - WinXPEmb
+      - WinXPProf64
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to include on each page. The default is 20.
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
+    - default: false
+      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*' at the end of the query.
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about endpoints.
+    execution: false
+    name: sep-endpoints-info
+    outputs:
+    - contextPath: SEPM.Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.IPAddresses
+      description: The IP addresses of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.OS
+      description: The OS information of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.Description
+      description: The description of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.MACAddresses
+      description: The MAC address of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.BIOSVersion
+      description: The BIOS version of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.DHCPServer
+      description: The DHCP server address of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.HardwareKey
+      description: The hardware key of the client to be moved.
+      type: String
+    - contextPath: SEPM.Endpoint.LastScanTime
+      description: The last scan time of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.RunningVersion
+      description: The running version of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.TargetVersion
+      description: The target version of the endpoint.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: IP.Host
+      description: The IP host of the endpoint.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname of the endpoint.
+      type: Unknown
+    - contextPath: Endpoint.MACAddress
+      description: The MAC address of the endpoint.
+      type: Unknown
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: Unknown
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: Unknown
+    - contextPath: Endpoint.DHCPServer
+      description: The DHCP server of the endpoint.
+      type: Unknown
+    - contextPath: Endpoint.OS
+      description: The OS of the endpoint.
+      type: String
+    - contextPath: Endpoint.OSVersion
+      description: The OS version of the endpoint.
+      type: String
+    - contextPath: Endpoint.BIOSVersion
+      description: The BIOS version of the endpoint.
+      type: String
+    - contextPath: Endpoint.Memory
+      description: The memory of the endpoint.
+      type: String
+    - contextPath: Endpoint.Processors
+      description: The processors that the endpoint uses.
+      type: String
+    - contextPath: IP.Hostname
+      description: The hostname that is mapped to this IP address.
+      type: String
+    - contextPath: SEPM.Endpoint.Group
+      description: The group of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.PatternIdx
+      description: The PatternIdx of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.OnlineStatus
+      description: The online status of the endpoint.
+      type: String
+    - contextPath: SEPM.Endpoint.UpdateTime
+      description: The update time of the endpoint.
+      type: String
+  - arguments:
+    - default: false
+      description: The column by which the results are sorted.
+      isArray: false
+      name: columns
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about groups.
+    execution: false
+    name: sep-groups-info
+    outputs:
+    - contextPath: SEPM.Groups
+      description: The list of groups.
+      type: Unknown
+    - contextPath: SEPM.Groups.created
+      description: The time of creation time (in Epoch).
+      type: number
+    - contextPath: SEPM.Groups.fullPathName
+      description: The name of the group.
+      type: string
+    - contextPath: SEPM.Groups.id
+      description: The ID of the group.
+      type: string
+    - contextPath: SEPM.Groups.numberOfPhysicalComputers
+      description: The number of physical computers in the group.
+      type: number
+    - contextPath: SEPM.Groups.numberOfRegisteredUsers
+      description: The number of registered users in the group.
+      type: number
+    - contextPath: SEPM.Groups.policyDate
+      description: The date of the policy (in Epoch).
+      type: number
+    - contextPath: SEPM.Groups.policySerialNumber
+      description: The serial number of the policy.
+      type: number
+  - deprecated: false
+    description: Returns information about the system, such as version or AV definition.
+    execution: false
+    name: sep-system-info
+    outputs:
+    - contextPath: SEPM.ServerAVDefVersion
+      description: The version of the AV definition.
+      type: string
+  - arguments:
+    - default: false
+      description: The ID of the command.
+      isArray: false
+      name: commandId
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the status of a command.
+    execution: false
+    name: sep-command-status
+    outputs:
+    - contextPath: SEPM.LastCommand.CommandDetails
+      description: The details of the command.
+      type: string
+    - contextPath: SEPM.LastCommand.CommandId
+      description: The ID of the command.
+      type: string
+  - deprecated: false
+    description: Retrieves the content of the client.
+    execution: false
+    name: sep-client-content
+    outputs:
+    - contextPath: SEPM.ClientContentVersions
+      description: Displays the versions for each client.
+      type: string
+    - contextPath: SEPM.LastUpdated
+      description: The last update of a date.
+      type: string
+  - deprecated: false
+    description: Retrieves a list of existing policies.
+    execution: false
+    name: sep-list-policies
+    outputs:
+    - contextPath: SEPM.PoliciesList.PolicyName
+      description: The name of the policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.Type
+      description: The type of the policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.ID
+      description: The ID of the policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.Description
+      description: The description of the policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.Enabled
+      description: Whether the list of polices is enabled. Enabled if "True".
+      type: boolean
+    - contextPath: SEPM.PoliciesList.AssignedLocations.GroupID
+      description: The ID of the group of the locations assigned to this policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedLocations.Locations
+      description: The list of location IDs assigned to this policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.GroupID
+      description: The ID of the cloud group of the locations assigned to this policy.
+      type: string
+    - contextPath: SEPM.PoliciesList.AssignedCloudGroups.Locations
+      description: The list of location IDs belonging to a cloud group assigned to this policy.
+      type: string
+  - arguments:
+    - default: false
+      description: The ID of the group to which the endpoint belongs.
+      isArray: false
+      name: groupID
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the location of the endpoint.
+      isArray: false
+      name: locationID
+      required: true
+      secret: false
+    - default: false
+      description: The type of policy to be assigned.
+      isArray: false
+      name: policyType
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the policy to be assigned.
+      isArray: false
+      name: policyID
+      required: true
+      secret: false
+    deprecated: false
+    description: Assigns an existing policy to a specified location.
+    execution: false
+    name: sep-assign-policy
+  - arguments:
+    - default: false
+      description: The group ID for which to list locations.
+      isArray: false
+      name: groupID
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a list of location IDs for a specified group.
+    execution: false
+    name: sep-list-locations
+    outputs:
+    - contextPath: SEPM.Locations.ID
+      description: The ID of the location.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The IP or hostname of the endpoint.
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Adds or removes an endpoint from quarantine.
+      isArray: false
+      name: actionType
+      predefined:
+      - Add
+      - Remove
+      required: true
+      secret: false
+    deprecated: false
+    description: Quarantines an endpoint according to its policy.
+    execution: false
+    name: sep-endpoint-quarantine
+    outputs:
+    - contextPath: SEPM.Quarantine.CommandID
+      description: The ID of the command that was run.
+      type: string
+    - contextPath: SEPM.Quarantine.Action
+      description: The type of the action type. Can be "Add" or "Remove".
+      type: string
+    - contextPath: SEPM.Quarantine.Endpoint
+      description: The IP or hostname of the identifier of the endpoint.
+      type: string
+  - arguments:
+    - default: false
+      description: The IP address or hostname of the endpoint.
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The scan type of the endpoint. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
+      isArray: false
+      name: scanType
+      predefined:
+      - ScanNow_Quick
+      - ScanNow_Full
+      - ScanNow_Custom
+      required: true
+      secret: false
+    deprecated: false
+    description: Scans an endpoint.
+    execution: false
+    name: sep-scan-endpoint
+    outputs:
+    - contextPath: SEPM.Scan.CommandID
+      description: The ID of the command that was run.
+      type: string
+    - contextPath: SEPM.Scan.Type
+      description: The type of the scan. Can be "ScanNow_Quick", "ScanNow_Full", or "ScanNow_Custom".
+      type: string
+    - contextPath: SEPM.Scan.Endpoint
+      description: The IP or hostname of the identifier of the endpoint.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The IP address or hostname of the endpoint.
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the content of a specified client.
+    execution: false
+    name: sep-update-endpoint-content
+    outputs:
+    - contextPath: SEPM.Update.Endpoint
+      description: The endpoint that is being updated.
+      type: String
+    - contextPath: SEPM.Update.CommandID
+      description: The ID of the command for which to check the status.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the group to which to move the client.
+      isArray: false
+      name: groupID
+      required: true
+      secret: false
+    - default: false
+      description: The hardware key of the client to be moved.
+      isArray: false
+      name: hardwareKey
+      required: true
+      secret: false
+    deprecated: false
+    description: Moves a client to a group.
+    execution: false
+    name: sep-move-client-to-group
+  - arguments:
+    - default: false
+      description: Sets which columns will be displayed.
+      isArray: false
+      name: columns
+      required: false
+      secret: false
+    - default: false
+      description: Filters by the host name of the computer. A wild card search can be done using '*' at the end of the query.
+      isArray: false
+      name: computerName
+      required: false
+      secret: false
+    - default: false
+      description: Indicates when a computer's status was last updated. The default is "0", which returns all results.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    - default: false
+      description: The operating system by which to filter.
+      isArray: false
+      name: os
+      required: false
+      secret: false
+    - default: false
+      description: The number of results to include on each page. The default is 20.
+      isArray: false
+      name: pageSize
+      required: false
+      secret: false
+    - default: false
+      description: The name of the group to which the endpoint belongs. A wild card search can be done using '*'at the end of the query.
+      isArray: false
+      name: groupName
+      required: false
+      secret: false
+    - default: false
+      description: desiredVersion
+      isArray: false
+      name: desiredVersion
+      required: false
+      secret: false
+    deprecated: false
+    description: Get endpoints for a running version that is different than the target version or the desired version (if specified).
+    execution: false
+    name: sep-identify-old-clients
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2
+tests:
+- SymantecEndpointProtection_Test

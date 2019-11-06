@@ -150,15 +150,23 @@ def http_request(method, url_suffix, json=None, params=None):
         headers={
             'Authorization': 'Bearer ' + token,
             'Content-Type': 'application/json'
-        }
+        },
+        verify=USE_SSL
     )
     if r.status_code not in {200, 201}:
-        error = r.json().get('error')
-        msg = error['message'] if 'message' in error else r.reason
-        return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
+        try:
+            error = r.json().get('error')
+            msg = error['message'] if 'message' in error else r.reason
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
+        except ValueError:
+            msg = r.text if r.text else r.reason
+            return_error('Error in API call to ATP [%d] - %s' % (r.status_code, msg))
     if not r.text:
         return {}
-    return r.json()
+    try:
+        return r.json()
+    except ValueError:
+        return {}
 
 
 def alert_to_incident(alert):
@@ -186,8 +194,8 @@ def isolate_machine_command():
             'ID': machine_id,
             'Isolation': {
                 'Isolated': True,
-                'Requestor': response['requestor'],
-                'RequestorComment': response['requestorComment']
+                'Requestor': response.get('requestor'),
+                'RequestorComment': response.get('requestorComment')
             }
         }
     }
@@ -225,8 +233,8 @@ def unisolate_machine_command():
             'ID': machine_id,
             'Isolation': {
                 'Isolated': False,
-                'Requestor': response['requestor'],
-                'RequestorComment': response['requestorComment']
+                'Requestor': response.get('requestor'),
+                'RequestorComment': response.get('requestorComment')
             }
         }
     }
@@ -254,7 +262,7 @@ def unisolate_machine(machine_id, comment):
 
 def get_machines_command():
 
-    machines = get_machines()['value']
+    machines = get_machines().get('value', [])
 
     hostname = demisto.args().get('hostname')
     ip = demisto.args().get('ip')
@@ -265,34 +273,34 @@ def get_machines_command():
     endpoint_context = []
 
     for machine in machines:
-        computer_dns_name = machine['computerDnsName']
-        last_external_ip = machine['lastExternalIpAddress']
-        machine_risk_score = machine['riskScore']
-        machine_health_status = machine['healthStatus']
+        computer_dns_name = machine.get('computerDnsName')
+        last_external_ip = machine.get('lastExternalIpAddress')
+        machine_risk_score = machine.get('riskScore')
+        machine_health_status = machine.get('healthStatus')
         if (hostname and hostname != computer_dns_name) or (ip and ip != last_external_ip) or \
                 (risk_score and risk_score != machine_risk_score) or \
                 (health_status and health_status != machine_health_status):
             continue
         current_machine_output = {
             'ComputerDNSName': computer_dns_name,
-            'ID': machine['id'],
-            'AgentVersion': machine['agentVersion'],
-            'FirstSeen': machine['firstSeen'],
-            'LastSeen': machine['lastSeen'],
+            'ID': machine.get('id'),
+            'AgentVersion': machine.get('agentVersion'),
+            'FirstSeen': machine.get('firstSeen'),
+            'LastSeen': machine.get('lastSeen'),
             'HealthStatus': machine_health_status,
-            'IsAADJoined': machine['isAadJoined'],
+            'IsAADJoined': machine.get('isAadJoined'),
             'LastExternalIPAddress': last_external_ip,
-            'LastIPAddress': machine['lastIpAddress'],
-            'Tags': machine['machineTags'],
-            'OSBuild': machine['osBuild'],
-            'OSPlatform': machine['osPlatform'],
-            'RBACGroupID': machine['rbacGroupId'],
+            'LastIPAddress': machine.get('lastIpAddress'),
+            'Tags': machine.get('machineTags'),
+            'OSBuild': machine.get('osBuild'),
+            'OSPlatform': machine.get('osPlatform'),
+            'RBACGroupID': machine.get('rbacGroupId'),
             'RiskScore': machine_risk_score
         }
         current_endpoint_output = {
-            'Hostname': machine['computerDnsName'],
-            'IPAddress': machine['lastExternalIpAddress'],
-            'OS': machine['osPlatform']
+            'Hostname': machine.get('computerDnsName'),
+            'IPAddress': machine.get('lastExternalIpAddress'),
+            'OS': machine.get('osPlatform')
         }
         rbac_group_name = machine.get('rbacGroupName')
         if rbac_group_name:
@@ -336,32 +344,32 @@ def get_machines():
 def get_file_related_machines_command():
 
     file = demisto.args()['file']
-    machines = get_file_related_machines(file)['value']
+    machines = get_file_related_machines(file).get('value', [])
     if machines:
         output = []
         endpoint_context = []
         for machine in machines:
             current_machine_output = {
-                'ComputerDNSName': machine['computerDnsName'],
-                'ID': machine['id'],
-                'AgentVersion': machine['agentVersion'],
-                'FirstSeen': machine['firstSeen'],
-                'LastSeen': machine['lastSeen'],
-                'HealthStatus': machine['healthStatus'],
-                'IsAADJoined': machine['isAadJoined'],
-                'LastExternalIPAddress': machine['lastExternalIpAddress'],
-                'LastIPAddress': machine['lastIpAddress'],
-                'Tags': machine['machineTags'],
-                'OSBuild': machine['osBuild'],
-                'OSPlatform': machine['osPlatform'],
-                'RBACGroupID': machine['rbacGroupId'],
-                'RiskScore': machine['riskScore'],
+                'ComputerDNSName': machine.get('computerDnsName'),
+                'ID': machine.get('id'),
+                'AgentVersion': machine.get('agentVersion'),
+                'FirstSeen': machine.get('firstSeen'),
+                'LastSeen': machine.get('lastSeen'),
+                'HealthStatus': machine.get('healthStatus'),
+                'IsAADJoined': machine.get('isAadJoined'),
+                'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
+                'LastIPAddress': machine.get('lastIpAddress'),
+                'Tags': machine.get('machineTags'),
+                'OSBuild': machine.get('osBuild'),
+                'OSPlatform': machine.get('osPlatform'),
+                'RBACGroupID': machine.get('rbacGroupId'),
+                'RiskScore': machine.get('riskScore'),
                 'RelatedFile': file
             }
             current_endpoint_output = {
-                'Hostname': machine['computerDnsName'],
-                'IPAddress': machine['lastExternalIpAddress'],
-                'OS': machine['osPlatform']
+                'Hostname': machine.get('computerDnsName'),
+                'IPAddress': machine.get('lastExternalIpAddress'),
+                'OS': machine.get('osPlatform')
             }
             rbac_group_name = machine.get('rbacGroupName')
             if rbac_group_name:
@@ -410,25 +418,25 @@ def get_machine_details_command():
         output = []
         endpoint_context = []
         current_machine_output = {
-            'ComputerDNSName': machine['computerDnsName'],
-            'ID': machine['id'],
-            'AgentVersion': machine['agentVersion'],
-            'FirstSeen': machine['firstSeen'],
-            'LastSeen': machine['lastSeen'],
-            'HealthStatus': machine['healthStatus'],
-            'IsAADJoined': machine['isAadJoined'],
-            'LastExternalIPAddress': machine['lastExternalIpAddress'],
-            'LastIPAddress': machine['lastIpAddress'],
-            'Tags': machine['machineTags'],
-            'OSBuild': machine['osBuild'],
-            'OSPlatform': machine['osPlatform'],
-            'RBACGroupID': machine['rbacGroupId'],
-            'RiskScore': machine['riskScore']
+            'ComputerDNSName': machine.get('computerDnsName'),
+            'ID': machine.get('id'),
+            'AgentVersion': machine.get('agentVersion'),
+            'FirstSeen': machine.get('firstSeen'),
+            'LastSeen': machine.get('lastSeen'),
+            'HealthStatus': machine.get('healthStatus'),
+            'IsAADJoined': machine.get('isAadJoined'),
+            'LastExternalIPAddress': machine.get('lastExternalIpAddress'),
+            'LastIPAddress': machine.get('lastIpAddress'),
+            'Tags': machine.get('machineTags'),
+            'OSBuild': machine.get('osBuild'),
+            'OSPlatform': machine.get('osPlatform'),
+            'RBACGroupID': machine.get('rbacGroupId'),
+            'RiskScore': machine.get('riskScore')
         }
         current_endpoint_output = {
-            'Hostname': machine['computerDnsName'],
-            'IPAddress': machine['lastExternalIpAddress'],
-            'OS': machine['osPlatform']
+            'Hostname': machine.get('computerDnsName'),
+            'IPAddress': machine.get('lastExternalIpAddress'),
+            'OS': machine.get('osPlatform')
         }
         rbac_group_name = machine.get('rbacGroupName')
         if rbac_group_name:
@@ -548,15 +556,15 @@ def run_antivirus_scan(machine_id, comment, scan_type):
 
 def list_alerts_command():
 
-    alerts = list_alerts()['value']
+    alerts = list_alerts().get('value', [])
 
     severity = demisto.args().get('severity')
     status = demisto.args().get('status')
 
     output = []
     for alert in alerts:
-        alert_severity = alert['severity']
-        alert_status = alert['status']
+        alert_severity = alert.get('severity')
+        alert_status = alert.get('status')
         if (severity and severity != alert_severity) or (status and status != alert_status):
             continue
         current_alert_output = {}
@@ -665,6 +673,10 @@ def get_advanced_hunting_command():
     query = demisto.args().get('query')
     response = get_advanced_hunting(query)
     results = response.get('Results')
+    if isinstance(results, list) and len(results) == 1:
+        report_id = results[0].get('ReportId')
+        if report_id:
+            results[0]['ReportId'] = str(report_id)
     ec = {
         'MicrosoftATP.Hunt.Result': results
     }
@@ -788,39 +800,43 @@ def get_alert_related_user(alert_id):
 
 
 def fetch_incidents():
-
     last_run = demisto.getLastRun()
+
     if last_run and last_run['last_alert_fetched_time']:
         last_alert_fetched_time = datetime.strptime(last_run['last_alert_fetched_time'], '%Y-%m-%dT%H:%M:%S.%f')
     else:
         last_alert_fetched_time = datetime.now() - timedelta(days=300)
 
+    previous_ids = last_run.get('last_ids', [])
     latest_creation_time = last_alert_fetched_time
 
     alerts = list_alerts()['value']
-
     incidents = []
+    last_ids = []
 
     for alert in alerts:
         # Removing 'Z' from timestamp and converting to datetime
         alert_creation_time = datetime.strptime(alert['alertCreationTime'][:-2], '%Y-%m-%dT%H:%M:%S.%f')
         alert_status = alert['status']
         alert_severity = alert['severity']
-        if alert_creation_time > last_alert_fetched_time and alert_status in FETCH_STATUS and \
-                alert_severity in FETCH_SEVERITY:
-            # alert_id = alert['id']
-            # alert['RelatedFiles'] = get_alert_related_files(alert_id)
-            # alert['RelatedDomains'] = get_alert_related_domains(alert_id)
-            # alert['RelatedIPs'] = get_alert_related_ips(alert_id)
+        if alert_creation_time >= last_alert_fetched_time and alert_status in FETCH_STATUS and \
+                alert_severity in FETCH_SEVERITY and alert['id'] not in previous_ids:
             incident = alert_to_incident(alert)
             incidents.append(incident)
+            if alert_creation_time == latest_creation_time:
+                last_ids.append(alert["id"])
             if alert_creation_time > latest_creation_time:
                 latest_creation_time = alert_creation_time
+                last_ids = [alert['id']]
+
+    if not last_ids:
+        last_ids = previous_ids
 
     demisto.setLastRun({
-        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f')
-    })
+        'last_alert_fetched_time': datetime.strftime(latest_creation_time, '%Y-%m-%dT%H:%M:%S.%f'),
+        "last_ids": last_ids
 
+    })
     demisto.incidents(incidents)
 
 

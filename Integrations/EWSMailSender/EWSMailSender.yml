@@ -11,25 +11,25 @@ configuration:
   defaultvalue: https://outlook.office365.com/EWS/Exchange.asmx/
   type: 0
   required: true
-- display: 'Authentication: Email address (for office365) or DOMAIN\USERNAME (e.g.
+- display: 'Authentication: Email address (for Office 365) or DOMAIN\USERNAME (e.g.
     DEMISTO.INT\admin)'
   name: credentials
   defaultvalue: ""
   type: 9
   required: true
-- display: Server Version (2007,2010,2010_SP2,2013,2016)
+- display: Server Version (2007, 2010, 2010_SP2, 2013, or 2016)
   name: defaultServerVersion
   defaultvalue: "2013"
   type: 0
   required: true
-- display: Authentication Type (NTLM or Basic or Digest). Use Basic for Office365.
+- display: Authentication Type (NTLM, Basic, or Digest). For Office 365 use Basic.
   name: authType
   defaultvalue: Basic
   type: 0
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -42,7 +42,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Mailbox (to send the message from)
+- display: Sender Mailbox
   name: mailbox
   defaultvalue: ""
   type: 0
@@ -50,33 +50,38 @@ configuration:
 script:
   script: ''
   type: python
+  subtype: python2
   commands:
   - name: send-mail
     arguments:
     - name: to
       required: true
-      description: Email addresses for the 'to' field. Comma separated value supported.
+      description: A CSV list of email addresses for the 'to' field.
     - name: cc
-      description: Email addresses for the 'cc' field. Comma separated value supported.
+      description: A CSV list of email addresses for the 'cc' field.
     - name: bcc
-      description: Email addresses for the 'bcc' field. Comma separated value supported.
+      description: A CSV list of email addresses for the 'bcc' field.
     - name: subject
       required: true
       description: Subject for the email to be sent.
     - name: replyTo
-      description: The address to reply to.
+      description: The email address specified in the 'reply to' field.
     - name: body
-      description: The contents (body) of the email to be sent.
+      description: The contents (body) of the email to send.
     - name: htmlBody
-      description: Send an html formatted email - overrides "body" argument, cannot
-        use both.
+      description: Send an HTML formatted email. This argument overrides the "body" argument.
     - name: attachIDs
-      description: 'A comma-separated list of IDs of war room entries that contain
-        files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8.'
+      description: 'A CSV list of War Room entry IDs that contain
+        files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8.'
+      isArray: true
     - name: attachNames
-      description: A comma-separated list of names to the attachments to be send.
+      description: A CSV list of names of attachments to send.
         Should be the same number of elements as attachIDs.
-    description: Send email via EWS
+      isArray: true
+    - name: attachCIDs
+      description: 'A CSV list of CIDs to embed attachments within the email itself.'
+      isArray: true
+    description: Sends an email using EWS.
   dockerimage: demisto/py-ews
 tests:
   - "EWS Mail Sender Test"

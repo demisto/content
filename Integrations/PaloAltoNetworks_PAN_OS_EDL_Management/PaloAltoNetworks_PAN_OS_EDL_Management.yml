@@ -41,7 +41,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Displays the contents of the specified remote file located in the War Room.
+    description: Displays the contents of the specified remote file located in the
+      War Room.
     execution: false
     name: pan-os-edl-get-external-file
   - arguments:
@@ -63,7 +64,8 @@ script:
     name: pan-os-edl-search-external-file
   - arguments:
     - default: false
-      description: List from the instance context with which to override the remote file.
+      description: List from the instance context with which to override the remote
+        file.
       isArray: false
       name: list_name
       required: true
@@ -103,8 +105,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Updates the instance context with the specified list name and list items, and
-      then overrides the path of the remote file with the internal list.
+    description: Updates the instance context with the specified list name and list
+      items, and then overrides the path of the remote file with the internal list.
     execution: true
     name: pan-os-edl-update
   - arguments:
@@ -123,8 +125,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: merge
-      description: Update type. "Merge" adds non-duplicate values, "Override"
-        deletes existing data in the internal list. Default is "merge".
+      description: Update type. "Merge" adds non-duplicate values, "Override" deletes
+        existing data in the internal list. Default is "merge".
       isArray: false
       name: type
       predefined:
@@ -187,17 +189,18 @@ script:
       name: list_name
       required: true
       secret: false
-    outputs:
-      - contextPath: PANOSEDL.ListItems
-        description: Items of the internal list.
-        type: string
-      - contextPath: PANOSEDL.ListName
-        description: Name of the internal list.
-        type: string
     deprecated: false
-    description: Dumps (copies) instance context to either the incident context or a file.
+    description: Dumps (copies) instance context to either the incident context or
+      a file.
     execution: false
     name: pan-os-edl-dump-internal-list
+    outputs:
+    - contextPath: PANOSEDL.ListItems
+      description: Items of the internal list.
+      type: string
+    - contextPath: PANOSEDL.ListName
+      description: Name of the internal list.
+      type: string
   - deprecated: false
     description: Displays instance context list names.
     execution: false
@@ -236,6 +239,30 @@ script:
     description: Compares internal list and external file contents.
     execution: false
     name: pan-os-edl-compare
+  - arguments:
+    - default: false
+      description: Unique path to the file on a remote server.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets metadata for an external file.
+    execution: false
+    name: pan-os-edl-get-external-file-metadata
+    outputs:
+    - contextPath: PANOSEDL.FileName
+      description: Name of the external file.
+      type: String
+    - contextPath: PANOSEDL.Size
+      description: File size.
+      type: Number
+    - contextPath: PANOSEDL.NumberOfLines
+      description: Number of lines.
+      type: Number
+    - contextPath: PANOSEDL.LastModified
+      description: Date that the file was last modified.
+      type: String
   dockerimage: demisto/openssh:1.0.0.305
   isfetch: false
   runonce: false

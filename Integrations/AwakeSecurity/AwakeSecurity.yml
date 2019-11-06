@@ -1,0 +1,641 @@
+commonfields:
+  id: Awake Security
+  version: -1
+name: Awake Security
+display: Awake Security
+category: Network Security
+description: Network Traffic Analysis
+detaileddescription: ""
+configuration:
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Awake Security server address
+  name: server
+  defaultvalue: https://example.awake.cloud
+  type: 0
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: true
+- display: 'Comma-separated list of threat behaviors to generate incidents for, e.g.,
+    "Exfiltration: SSL upload from non-browser to notable domain, Lateral Movement:
+    Unix-based PSEXEC, C2: Possible ICMP tunnel"'
+  name: threat_behaviors
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Period between incident fetch interval (in minutes)
+  name: fetch_interval
+  defaultvalue: "1"
+  type: 0
+  required: true
+- display: Minimum threshold to determine an indicator suspicious in Demisto
+  name: suspicious_threshold
+  defaultvalue: "33"
+  type: 0
+  required: true
+- display: Minimum threshold to determine an indicator malicious in Demisto
+  name: malicious_threshold
+  defaultvalue: "66"
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: awake-query-devices
+    arguments:
+    - name: queryExpression
+      description: A query expression in Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: Tag to filter by (regular expression)
+    outputs:
+    - contextPath: AwakeSecurity.Devices.deviceId
+      description: Awake Security unique identifier for the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceName
+      description: Device name
+      type: string
+    - contextPath: AwakeSecurity.Devices.firstSeen
+      description: Date that the specified device was first seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.lastSeen
+      description: Date that the specified device was last seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.os
+      description: Operating system associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceType
+      description: Device type
+      type: string
+    - contextPath: AwakeSecurity.Devices.ips
+      description: List of IP addresses associated with the specified device
+      type: unknown
+    - contextPath: AwakeSecurity.Devices.monitoringPointIds
+      description: List of monitoring point IDs the specified device was seen on
+      type: string
+    - contextPath: AwakeSecurity.Devices.application
+      description: List of applications the specified device was seen using
+      type: string
+    - contextPath: AwakeSecurity.Devices.notabilityPercentile
+      description: How the notability of this device compares to other devices
+      type: number
+    - contextPath: AwakeSecurity.Devices.numberSimilarDevices
+      description: Number of devices that are similar to this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.numberSessions
+      description: Number of TCP sessions for this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.ackTime
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
+      type: number
+    - contextPath: AwakeSecurity.Devices.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    description: Query devices in Awake Security
+  - name: awake-query-activities
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: ' Tag to filter by (regular expression)'
+    outputs:
+    - contextPath: AwakeSecurity.Activities.activityId
+      description: UUID that uniquely identifies the activity
+      type: string
+    - contextPath: AwakeSecurity.Activities.sessionId
+      description: UUID that uniquely identifies the corresponding session
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourceIP
+      description: IP address of the source
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourceHost
+      description: Hostname of the source
+      type: string
+    - contextPath: AwakeSecurity.Activities.sourcePort
+      description: Port of the source
+      type: number
+    - contextPath: AwakeSecurity.Activities.destinationIP
+      description: IP address of the destination
+      type: string
+    - contextPath: AwakeSecurity.Activities.destinationHost
+      description: Hostname of the destination
+      type: string
+    - contextPath: AwakeSecurity.Activities.destinationPort
+      description: Port of the destination
+      type: number
+    - contextPath: AwakeSecurity.Activities.directionKnown
+      description: Do we know for sure which endpoint was the client?
+      type: bool
+    - contextPath: AwakeSecurity.Activities.activityDeviceName
+      description: Device name for the endpoint within your network
+      type: string
+    - contextPath: AwakeSecurity.Activities.activityStart
+      description: Date when the activity began
+      type: string
+    - contextPath: AwakeSecurity.Activities.activityEnd
+      description: Date when the activity ended
+      type: string
+    - contextPath: AwakeSecurity.Activities.protocols
+      description: Protocols that the activity used
+      type: string
+    description: Query activities in Awake Security
+  - name: awake-query-domains
+    arguments:
+    - name: queryExpression
+      description: A query expression in the Awake Query Language
+    - name: startTime
+      required: true
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      required: true
+      description: Query end time ("2000-01-01T00:00:00Z")
+    - name: ipAddress
+      description: IP address to filter by (exact match)
+    - name: deviceName
+      description: Device name to filter by (regular expression)
+    - name: domainName
+      description: Domain name to filter by (regular expression)
+    - name: protocol
+      description: Protocol to filter by (all uppercase, i.e. "TLS")
+    - name: tag
+      description: ' Tag to filter by (regular expression)'
+    outputs:
+    - contextPath: AwakeSecurity.Domains.name
+      description: Domain name
+      type: string
+    - contextPath: AwakeSecurity.Domains.created
+      description: Date the specified domain was created
+      type: string
+    - contextPath: AwakeSecurity.Domains.lastUpdated
+      description: Date the specified domain was last updated
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrantOrg
+      description: Organization of the registrant
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrantCountry
+      description: Country of the registrant
+      type: string
+    - contextPath: AwakeSecurity.Domains.registrarName
+      description: Name of the registrar
+      type: string
+    - contextPath: AwakeSecurity.Domains.whoisServer
+      description: Address of the WHOIS server
+      type: string
+    - contextPath: AwakeSecurity.Domains.whoisFound
+      description: Was this domain found via WHOIS
+      type: bool
+    - contextPath: AwakeSecurity.Domains.deviceCount
+      description: Number of devices currently interacting with the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.totalDevices
+      description: Total number of devices that have interacted with the specified
+        domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.intelCount
+      description: Number of matches of imported intel against the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.lastSeen
+      description: Date of the most recent interaction with the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.nameservers
+      description: List of authoritative nameservers for the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.notability
+      description: Notability score of the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.whiteListed
+      description: Is the specified domain in white list
+      type: bool
+    description: Query domains in Awake Security
+  - name: awake-pcap-download
+    arguments:
+    - name: protocol
+      description: Protocol to filter by (all uppercase, e.g., "TLS")
+    - name: hostA
+      description: First host's address
+    - name: portA
+      description: First host's port
+    - name: hostB
+      description: Second host's address
+    - name: portB
+      description: Second host's port
+    - name: startTime
+      description: Query start time ("2000-01-01T00:00:00Z")
+    - name: endTime
+      description: Query end time ("2000-01-01T00:00:00Z")
+    outputs:
+    - contextPath: File.Size
+      description: File size
+      type: number
+    - contextPath: File.MD5
+      description: MD5 of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA-1 of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA-256 of the file
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file
+      type: string
+    - contextPath: File.EntryID
+      description: War room Entry ID of the file
+      type: string
+    - contextPath: File.Info
+      description: File common metadata
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    - contextPath: File.Extension
+      description: 'File Extension e.g: "pcap"'
+      type: string
+    description: Download a PCAP
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Domains.approxBytesTransferred
+      description: Approximate bytes the indicator transferred
+      type: number
+    - contextPath: AwakeSecurity.Domains.DomainWithSameRegistrant
+      description: Domains with the same registrant
+      type: unknown
+    - contextPath: AwakeSecurity.Domains.domainsWithSameRegistrant.registrationDate
+      description: Date that the domain with the same registrant as the specified
+        domain was registered
+      type: string
+    - contextPath: AwakeSecurity.Domains.IntelSources
+      description: Indicators of compromise from Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Domains.ipAddresses
+      description: IP addressesassociated with the domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.isAlexaTopOneMillion
+      description: Does the domain appear in Alexa 1 million list
+      type: string
+    - contextPath: AwakeSecurity.Domains.isDGA
+      description: Is domain generation algorithm
+      type: boolean
+    - contextPath: AwakeSecurity.Domains.lastSeen
+      description: Last time the domain was seen
+      type: string
+    - contextPath: AwakeSecurity.Domains.notabillity
+      description: Notability score of the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.numAssociatedActivities
+      description: Number of network activities associated with the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.numAssociatedADevices
+      description: Number of devices associated with the domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.protocols
+      description: List of protocols used in the domain activities
+      type: string
+    - contextPath: AwakeSecurity.Domains.relatedSubdomains
+      description: Related subdomains of the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.subdomains
+      description: Subdomains of the specified domain
+      type: string
+    - contextPath: AwakeSecurity.Domains.topDevices
+      description: LIst of devices that accessed the specified domain (maximum is
+        10)
+      type: string
+    - contextPath: AwakeSecurity.Domains.totalNumDevices
+      description: Total number of devices that accessed the specified domain
+      type: number
+    - contextPath: AwakeSecurity.Domains.whiteListed
+      description: Is the specified domain in white list
+      type: boolean
+    - contextPath: DBotScore.Indicator
+      description: The specified domain
+      type: string
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified domain in Demisto
+      type: number
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified domain
+      type: string
+    description: Lookup and enrich a domain
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.IPs.activityCount
+      description: Number of activities associated with the specified IP address
+      type: number
+    - contextPath: AwakeSecurity.IPs.deviceCount
+      description: Number of devices associated with the specified IP address
+      type: number
+    - contextPath: AwakeSecurity.IPs.devices
+      description: Device object associated with the specified IP address
+      type: unknown
+    - contextPath: AwakeSecurity.IPs.domains
+      description: Domain object associated with the specified IP address
+      type: unknown
+    - contextPath: AwakeSecurity.IPs.ipFirstSeen
+      description: Date that the IP address was first seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.IPs.ipLastSeen
+      description: Date that the IP address was last seen in Awake Security
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The specified IP address
+      type: string
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified IP address in Demisto
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified IP address
+      type: string
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    description: Lookup and enrich an IP address
+  - name: email
+    arguments:
+    - name: email
+      description: The email address
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Emails.deviceId
+      description: Device ID associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.deviceName
+      description: Device name associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.firstSeen
+      description: Date that the email address was first seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.lastSeen
+      description: Date that the email address was last seen in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.duration
+      description: Time (in seconds) between the email address first seen date and
+        last seen date in Awake Security
+      type: string
+    - contextPath: AwakeSecurity.Emails.os
+      description: Operating system of the device associated with the specified email
+        address
+      type: string
+    - contextPath: AwakeSecurity.Emails.deviceType
+      description: Device type associated with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.ips
+      description: IP addresses that the device associated with the specified email
+        address accessed
+      type: string
+    - contextPath: AwakeSecurity.Emails.monitoringPointIds
+      description: Monitoring point IDs on which the device associated with the specified
+        email address were seen
+      type: string
+    - contextPath: AwakeSecurity.Emails.application
+      description: Email applications associated with this email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.notabilityPercentile
+      description: Notability (risk score) of the specified email address
+      type: number
+    - contextPath: AwakeSecurity.Emails.numberSimilarDevices
+      description: Number of similar devices associated with the device of the specified
+        email addresses
+      type: number
+    - contextPath: AwakeSecurity.Emails.numberSessions
+      description: Number of TCP sessions the device associated with this email address
+        initiated
+      type: number
+    - contextPath: AwakeSecurity.Emails.ackTime
+      description: Date of the last TCP session acknowledgment of the device associated
+        with the specified email address
+      type: string
+    - contextPath: AwakeSecurity.Emails.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    - contextPath: DBotScore.Score
+      description: Severity score of the specified email address in Demisto
+      type: number
+    - contextPath: DBotScore.Type
+      description: Indicator type in Demisto
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to assess the specified email address
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The specified email address
+      type: string
+    description: Lookup and enrich an email address
+  - name: device
+    arguments:
+    - name: device
+      required: true
+      description: The device ID
+    - name: lookback_minutes
+      description: How many minutes of history to query from the current time. Default
+        is 480
+      defaultValue: "480"
+    outputs:
+    - contextPath: AwakeSecurity.Devices.deviceScore
+      description: Risk score of the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.value
+      description: Number of suspicious domains accessed by the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.percentile
+      description: Percentile of the specified device for notable domains accessed
+      type: number
+    - contextPath: AwakeSecurity.Devices.notableDomainCount.weight
+      description: Importance given to the suspicious domains when calculating the
+        specified device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.value
+      description: Number of suspicious IOCs associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.percentile
+      description: Percentile of the specified device for notable IOCs
+      type: number
+    - contextPath: AwakeSecurity.Devices.iocCount.weight
+      description: Importance given to the IOCs when calculating the specified device
+        risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.value
+      description: Total number of current threat behaviors associated with the specified
+        device
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.percentile
+      description: How this device compares to other devices for number of threat
+        behaviors
+      type: number
+    - contextPath: AwakeSecurity.Devices.watchlistCount.weight
+      description: Importance given to the threat behaviors when calculating the specified
+        device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.value
+      description: Number of characteristic artifacts associated with the specified
+        device
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.percentile
+      description: How this device compares to other devices for characteristic artifacts
+      type: number
+    - contextPath: AwakeSecurity.Devices.activityCount.weight
+      description: Importance given to the characteristic artifacts when calculating
+        the specified device risk score
+      type: number
+    - contextPath: AwakeSecurity.Devices.deviceName
+      description: Device name
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceType
+      description: Device type
+      type: string
+    - contextPath: AwakeSecurity.Devices.os
+      description: Operating system associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.recentIp
+      description: Most recent IP address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.activeIp
+      description: Most common IP address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonEmail
+      description: Most common email address associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonUsername
+      description: Most common username associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.commonMpid
+      description: Most common monitoring point ID the specified device was seen on
+      type: string
+    - contextPath: AwakeSecurity.Devices.nSimilarDevices
+      description: Number of devices that are similar to the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.tags
+      description: Tags applied to the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ipCount
+      description: Number of IP addresses associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.emailCount
+      description: Number of email addresses associated with this device
+      type: number
+    - contextPath: AwakeSecurity.Devices.usernameCount
+      description: Number of usernames associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.applicationCount
+      description: Number of applications associated with the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.mpids
+      description: List of monitoring point IDs associated with th specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.protocols.count
+      description: Number of time this protocol was used by the specified device
+      type: number
+    - contextPath: AwakeSecurity.Devices.firstSeen
+      description: Date that the specified device was first seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.lastSeen
+      description: Date that the specified device was last seen
+      type: string
+    - contextPath: AwakeSecurity.Devices.osVersion
+      description: Operating system version of the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.deviceGuid
+      description: Awake Security unique identifier for the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ips
+      description: List of IP addresses associated with the specified device
+      type: unknown
+    - contextPath: AwakeSecurity.Devices.usernames
+      description: List of usernames that were inferred as accounts on the specified
+        device
+      type: string
+    - contextPath: AwakeSecurity.Devices.emails
+      description: List of email addresses associated with the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.ackTs
+      description: Date of the last TCP session acknowledgment of the specified device
+      type: string
+    - contextPath: AwakeSecurity.Devices.whiteListed
+      description: Is the device associated with the specified email address in the
+        white list
+      type: bool
+    - contextPath: AwakeSecurity.Devices.protocols.name
+      description: Type of protocol used by the specified device
+      type: string
+    description: Lookup and enrich a device
+  isfetch: true
+  runonce: false
+tests:
+- awake_security_test_pb

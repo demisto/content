@@ -118,7 +118,8 @@ script:
             checks--;
             wait(sleep);
             res1 = doReq(prefix + '/results/' + cookie, {});
-            if (res1.obj.af_message === 'complete' || res1.obj.af_in_progress === false || res1.obj.hits.length >= parseInt(args.size)) {
+            if (res1.obj.af_message === 'complete' || res1.obj.af_in_progress === false ||
+                    (res1.obj.hits && res1.obj.hits.length >= parseInt(args.size))) {
                 var md = '## PAN Autofocus ' + prefix + ' result\n';
                 md += 'Total: ' + res1.obj.total + '\nTook: ' + res1.obj.took + '\n';
                 var hits = [];

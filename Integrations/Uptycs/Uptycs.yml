@@ -1,0 +1,1794 @@
+category: Analytics & SIEM
+commonfields:
+  id: Uptycs
+  version: -1
+configuration:
+- display: API key
+  name: key
+  required: true
+  type: 4
+- display: API secret
+  name: secret
+  required: true
+  type: 4
+- display: API domain
+  name: domain
+  required: true
+  type: 0
+- display: API customer_id
+  name: customer_id
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: ''
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: ''
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 1 day
+  display: First fetch since (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+description: Fetches data from the Uptycs database.
+display: Uptycs
+name: Uptycs
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Returns assets that are a member of this asset group.
+      isArray: false
+      name: asset_group_id
+      required: false
+      secret: false
+    - default: false
+      description: Returns assets with this hostname. Do not use the "host_name_is" argument
+        and "host_name_like" in the same command.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Returns assets with this string in the hostname.  Use this argument
+        to find a selection of assets with similar hostnames.  Do not use the "host_name_is" argument
+        and "host_name_like" in the same command.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of entries to return. Use -1 to return all entries, which might cause performance issues or a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Returns assets with this type of operating system. Can be "Ubuntu/Debian", "CentOS/RedHat/Fedora/Amazon Linux", "Mac OS X/Apple OS X/macOS", or "Windows".
+      isArray: false
+      name: os
+      predefined:
+      - Ubuntu/Debian
+      - CentOS/RedHat/Fedora/Amazon Linux
+      - CoreOS Container Linux
+      - Mac OS X/Apple OS X/macOS
+      - Windows
+      required: false
+      secret: false
+    - default: false
+      description: Returns the asset with this unique asset ID.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns assets enrolled with Uptycs. Do not use the "host_name_is" argument
+        and "host_name_like" in the same command.
+    execution: false
+    name: uptycs-get-assets
+    outputs:
+    - contextPath: Uptycs.Assets.id
+      description: 'Uptycs asset ID. '
+      type: string
+    - contextPath: Uptycs.Assets.created_at
+      description: Date/time that the asset was enrolled with Uptycs.
+      type: date
+    - contextPath: Uptycs.Assets.host_name
+      description: Hostname in the Uptycs database.
+      type: string
+    - contextPath: Uptycs.Assets.os
+      description: OS installed on the asset (Windows, Linux, Mac OS X).
+      type: string
+    - contextPath: Uptycs.Assets.os_version
+      description: OS version
+      type: string
+    - contextPath: Uptycs.Assets.last_activity_at
+      description: Date/time of the last activity on the asset.
+      type: date
+    - contextPath: Uptycs.Assets.deleted_at
+      description: Date/time that the asset was unenrolled from Uptycs.
+      type: date
+    - contextPath: Uptycs.Assets.osquery_version
+      description: Current version of osquery installed on the asset.
+      type: string
+  - arguments:
+    - default: false
+      description: 'The SQL query against your Uptycs database.  Queries should be written
+        for a SQLite database. For example, "SELECT * FROM processes" returns the
+        entire table named "processes". '
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of query to run. Can be "global" or "realtime". "Global" returns results for entire history
+        stored in the Uptycs database.  "Realtime" returns results for queries run on endpoints at the time that the query is executed.
+      isArray: false
+      name: query_type
+      predefined:
+      - global
+      - realtime
+      required: true
+      secret: false
+    - default: false
+      description: ' Use this argument to run a realtime query on a particular asset. This argument will not work for global queries.'
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: ' Use this argument to run a realtime query and return assets with this hostname. This argument will not work for global queries.'
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: ' Use this argument to run a realtime query and return assets with this string in the hostname. This argument will not work for global queries.'
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs the specified SQL query against your Uptycs database.  A list of
+      tables can be found at osquery.io/schema, or by using the query "select * from
+      information_schema.tables".
+    execution: false
+    name: uptycs-run-query
+    outputs:
+    - contextPath: Uptycs.QueryResults
+      description: Results of the executed query.
+      type: unknown
+  - arguments:
+    - default: false
+      description: Unique Uptycs alert ID, which will retrieve a specific alert. Do not pass other arguments with this argument.
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this asset ID.  Do not use the "asset_id", "host_name_is" argument
+        and "host_name_like" argument in the same command.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Return alerts by alert code.
+      isArray: false
+      name: code
+      predefined:
+      - BAD_DOMAIN
+      - CRITICAL_FILE
+      - INBOUND_NETWORK_CONNECTIONS
+      - KERNULE_MODULE_MOD
+      - MANUAL_PACKAGE_INSTALL
+      - OPEN_SOCKET_BAD_IP
+      - OSX_ATTACK
+      - OSX_CRASHES
+      - OUTBOUND_CONNECTION_TO_THREAT_IOC
+      - PRIVILEGED_ACCOUNT_ACTIVITY
+      - PRIVILEGED_REMOTE_LOGIN
+      - PRIVILEGE_ESCALATION
+      - PROCESSES_WITHOUT_ONDISK_FILE
+      - PROCESSES_STARTED_TMP
+      - REMOTE_LOGIN
+      - SERVICE_RUNNING_AS_ROOT
+      - SERVICE_RUNNING_A_SHELL
+      - SOFTWARE_CHANGE
+      - SUSPICIOUS_FILE_PERMISSIONS_CHANGE
+      - SUSPICIOUS_FILE_TRANSFERS
+      - SUSPICIOUS_TOOLS_IN_USE
+      - SYSTEM_FILE_CHANGES
+      - USER_ADDED_TO_ASSET
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this hostname. Do not use the "asset_id", "host_name_is" argument
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this string in the hostname. Use this
+        to find a selection of assets with similar hostnames. Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of entries to return.  Use -1 to return all entries, which might cause performance issues or a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to start the search for open connections. Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to end the search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 10 days
+      description: 'The date/time range of how far back to search, for example: 2 hours,
+        4 minutes, 6 month, 1 day, and so on. Default is 10 days.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    - default: false
+      description: The value for the alert type. Values vary according to the alert type.  For example, the value for a Bad IP alert would
+        have the IP address as the value.  A program crash alert would have the name
+        be the program that crashed.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    - default: false
+      description: The key for the alert type. Values vary according to the alert type. This tells you what type of alert
+        identifier is stored in the 'value' column.
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns alerts from the Uptycs database. Do not use the "asset_id", "host_name_is" argument
+        and "host_name_like" argument in the same command.
+    execution: false
+    name: uptycs-get-alerts
+    outputs:
+    - contextPath: Uptycs.Alerts.description
+      description: Description of the alert.
+      type: string
+    - contextPath: Uptycs.Alerts.upt_asset_id
+      description: Uptycs asset ID.
+      type: string
+    - contextPath: Uptycs.Alerts.code
+      description: Alert code in the Uptycs database.
+      type: string
+    - contextPath: Uptycs.Alerts.severity
+      description: The severity of the alert.
+      type: string
+    - contextPath: Uptycs.Alerts.alert_time
+      description: Time that the alert was created.
+      type: date
+    - contextPath: Uptycs.Alerts.value
+      description: Specific problem which caused an alert, for example  an IP address,
+        a program that crashed, a file with a know malware file hash, and so on.
+      type: string
+    - contextPath: Uptycs.Alerts.host_name
+      description: Hostname for the asset tha fired the alert.
+      type: string
+    - contextPath: Uptycs.Alerts.id
+      description: Unique Uptycs ID for an alert.
+      type: string
+    - contextPath: Uptycs.Alerts.threat_indicator_id
+      description: Unique Uptycs ID that identifies the threat indicator that triggered this alert.
+      type: string
+    - contextPath: Uptycs.Alerts.threat_source_name
+      description: Name of the source of the threat indicator that triggered this alert.
+      type: string
+    - contextPath: Uptycs.Alerts.pid
+      description: PID of the process that was responsible for firing the alert.
+      type: number
+    - contextPath: Uptycs.Alerts.key
+      description: Type of indicator that is stored in the 'value' column.
+      type: string
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of entries to return.  Default is 10. Use -1 to return all entries, which might cause performance issues or a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of alert rules.
+    execution: false
+    name: uptycs-get-alert-rules
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of entries to return. Default is 10. Use -1 to return all entries, which might cause performance issues or a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of event rules.
+    execution: false
+    name: uptycs-get-event-rules
+  - arguments:
+    - default: false
+      description: Return assets with this asset ID.  Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Event code to specify which types of events to return.
+      isArray: false
+      name: code
+      predefined:
+      - BAD_DOMAIN
+      - CRITICAL_FILE
+      - EXCESSIVE_LOGINS
+      - INBOUND_NETWORK_CONNECTIONS
+      - KERNULE_MODULE_MOD
+      - LOCATION
+      - MANUAL_FILE_EDITS
+      - MANUAL_PACKAGE_INSTALL
+      - OPEN_SOCKET_BAD_IP
+      - OSX_ATTACK
+      - OSX_CRASHES
+      - OUTBOUND_NETWORK_CONNECTIONS
+      - PRIVILEGED_ACCOUNT_ACTIVITY
+      - PRIVILEGED_REMOTE_LOGIN
+      - PRIVILEGE_ESCALATION
+      - PROCESSES_WITHOUT_ONDISK_FILE
+      - PROCESSES_STARTED_TMP
+      - REMOTE_LOGIN
+      - SERVICE_RUNNING_AS_ROOT
+      - SERVICE_RUNNING_A_SHELL
+      - SOFTWARE_CHANGE
+      - SUSPICIOUS_FILE_PERMISSIONS_CHANGE
+      - SUSPICIOUS_FILE_TRANSFERS
+      - SUSPICIOUS_TOOLS_IN_USE
+      - SYSTEM_FILE_CHANGES
+      - USER_ADDED_TO_ASSET
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this hostname. Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this string in the hostname. Use this
+        to find a selection of assets with similar hostnames.  Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of entries to return. Default is 10. Use -1 to return all entries, which might cause performance issues or a time out.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to start the search for open connections. Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to end the search for open connections. Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      defaultValue: 1 days
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    - default: false
+      description: The type of alert indicator that is stored in the 'value' column. Varies according to event type. 
+      isArray: false
+      name: key
+      required: false
+      secret: false
+    - default: false
+      description: The value for the alert type. Values vary according to the alert type.  For example, the value for a Bad IP alert would
+        have the IP address as the value.  A program crash alert would have the name be the program that crashed.Varies for different events.
+      isArray: false
+      name: value
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns events from the Uptycs database.
+    execution: false
+    name: uptycs-get-events
+    outputs:
+    - contextPath: Uptycs.Events.description
+      description: Description of the event.
+      type: string
+    - contextPath: Uptycs.Events.upt_asset_id
+      description: Uptycs asset ID.
+      type: string
+    - contextPath: Uptycs.Events.code
+      description: Event code in the Uptycs database.
+      type: string
+    - contextPath: Uptycs.Events.created_at
+      description: Date/time that the event was created.
+      type: date
+    - contextPath: Uptycs.Events.id
+      description: Uptycs event ID for the event.
+      type: string
+    - contextPath: Uptycs.Events.host_name
+      description: Hostname for the assets on which this event occurred.
+      type: string
+    - contextPath: Uptycs.Events.grouping
+      description: Group to which this event belongs.
+      type: string
+    - contextPath: Uptycs.Events.value
+      description: The value will be different for different types of events.  It
+        is that which triggered the event.  For example, a Bad IP connection will
+        have the IP address here, and a program crash will have the name of the program
+        that crashed here.
+      type: string
+    - contextPath: Uptycs.Events.severity
+      description: The severity of the event.
+      type: string
+    - contextPath: Uptycs.Events.key
+      description: Type of indicator that is stored in the 'value' column.
+      type: string
+  - arguments:
+    - default: false
+      description: Return assets with this asset ID. Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this hostname. Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Return assets with this string in the hostname. Use this
+        to find a selection of assets with similar hostnames. Do not use the "asset_id" argument, "host_name_is" argument,
+        or "host_name_like" argument in the same command.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      description: IP address to which the process opened a socket.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of entries to return.  Default is 10. Use -1 to return all entries, which might cause performance issues or a time out.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to start the search for open connections. Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: The date/time from which to end the search for open connections. Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      description: Exact time at which the socket was opened.
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: 'Specifies how far back to search. Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    deprecated: false
+    description: Finds processes that opened a socket.
+    execution: false
+    name: uptycs-get-process-open-sockets
+    outputs:
+    - contextPath: Uptycs.Sockets.pid
+      description: PID of the process that opened a connection to a specified IP address.
+      type: number
+    - contextPath: Uptycs.Sockets.upt_hostname
+      description: Hostname of the asset that ran the specified process.
+      type: string
+    - contextPath: Uptycs.Sockets.upt_time
+      description: Date/time when the connection was opened.
+      type: date
+    - contextPath: Uptycs.Sockets.path
+      description: File path to the process being run.
+      type: string
+    - contextPath: Uptycs.Sockets.local_address
+      description: Local IP address for the specified connection.
+      type: string
+    - contextPath: Uptycs.Sockets.remote_address
+      description: Remote IP address for the specified connection.
+      type: string
+    - contextPath: Uptycs.Sockets.local_port
+      description: Local port for the specified connection.
+      type: number
+    - contextPath: Uptycs.Sockets.remote_port
+      description: Remote port for the specified connection.
+      type: number
+    - contextPath: Uptycs.Sockets.upt_asset_id
+      description: Asset ID for the asset that ran the specified process.
+      type: string
+    - contextPath: Uptycs.Sockets.socket
+      description: Socket used to open the connection.
+      type: number
+    - contextPath: Uptycs.Sockets.family
+      description: Network protocol.
+      type: number
+    - contextPath: Uptycs.Sockets.state
+      description: State of the connection.
+      type: string
+    - contextPath: Uptycs.Sockets.protocol
+      description: Transport protocol.
+      type: number
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Hostname for asset which spawned the specified process.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: pid for the process.
+      isArray: false
+      name: pid
+      required: true
+      secret: false
+    - default: false
+      description: Time that the specified process was spawned.
+      isArray: false
+      name: time
+      required: true
+      secret: false
+    deprecated: false
+    description: get information for a particular process
+    execution: false
+    name: uptycs-get-process-information
+    outputs:
+    - contextPath: Uptycs.Proc.pid
+      description: pid for the process
+      type: number
+    - contextPath: Uptycs.Proc.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Proc.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Proc.parent
+      description: pid for the parent process
+      type: number
+    - contextPath: Uptycs.Proc.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Proc.upt_remove_time
+      description: time that the process was removed
+      type: date
+    - contextPath: Uptycs.Proc.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Proc.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Proc.cmdline
+      description: complete argv of the process
+      type: string
+    - contextPath: Uptycs.Proc.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Proc.cwd
+      description: process current working directory
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset_id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: hostname for the asset which executed these processes.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The pid for which all child processes will be found
+      isArray: false
+      name: parent
+      required: true
+      secret: false
+    - default: false
+      description: time at which the parent process was spawned
+      isArray: false
+      name: parent_start_time
+      required: true
+      secret: false
+    - default: false
+      description: time at which the parent process was killed, if it exists.
+      isArray: false
+      name: parent_end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: get all the child processes for a given parent process
+    execution: false
+    name: uptycs-get-process-child-processes
+    outputs:
+    - contextPath: Uptycs.Children.pid
+      description: pid of a child process
+      type: number
+    - contextPath: Uptycs.Children.upt_asset_id
+      description: asset id for asset which this process was run on
+      type: string
+    - contextPath: Uptycs.Children.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Children.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Children.upt_remove_time
+      description: time that the process was removed
+      type: date
+    - contextPath: Uptycs.Children.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Children.parent
+      description: parent pid
+      type: number
+    - contextPath: Uptycs.Children.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Children.cmdline
+      description: complete argv for the process
+      type: string
+    - contextPath: Uptycs.Children.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Children.cwd
+      description: process current working directory
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      description: Exact time at which the process was spawned.
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    deprecated: false
+    description: find processes which are running or have run on a registered Uptycs
+      asset
+    execution: false
+    name: uptycs-get-processes
+    outputs:
+    - contextPath: Uptycs.Process.pid
+      description: pid for a particular process
+      type: number
+    - contextPath: Uptycs.Process.parent
+      description: pid for the parent of a particular process
+      type: number
+    - contextPath: Uptycs.Process.upt_asset_id
+      description: uptycs asset id for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.Process.upt_hostname
+      description: host name for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.Process.upt_time
+      description: time at which the process was spawned
+      type: date
+    - contextPath: Uptycs.Process.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Process.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Process.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.Process.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Process.cwd
+      description: process current working directory
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      description: Exact time at which the process was spawned.
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    deprecated: false
+    description: find processes which have opened files
+    execution: false
+    name: uptycs-get-process-open-files
+    outputs:
+    - contextPath: Uptycs.Files.pid
+      description: pid for the process which opened a file
+      type: number
+    - contextPath: Uptycs.Files.fd
+      description: process specific file descriptor number
+      type: number
+    - contextPath: Uptycs.Files.upt_asset_id
+      description: Uptycs asset id for the the asset on which the file was opened
+      type: string
+    - contextPath: Uptycs.Files.upt_hostname
+      description: Host name for the asset on which the file was opened
+      type: string
+    - contextPath: Uptycs.Files.upt_time
+      description: time at which the file was opened
+      type: date
+    - contextPath: Uptycs.Files.path
+      description: filesystem path of the file descriptor
+      type: string
+  - arguments:
+    - default: false
+      description: Uptycs alert id used to identify a particular alert
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the alert can be new, assigned, resolved, or closed
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - assigned
+      - closed
+      - resolved
+      required: true
+      secret: false
+    deprecated: false
+    description: Set the status of an alert to new, assigned, resolved, or closed
+    execution: false
+    name: uptycs-set-alert-status
+  - arguments:
+    - default: false
+      description: Uptycs asset id for the asset that the tag should be set on
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      description: Tag key that will be set on the asset
+      isArray: false
+      name: tag_key
+      required: true
+      secret: false
+    - default: false
+      defaultValue: ''''''
+      description: Tag value that will be set on the asset
+      isArray: false
+      name: tag_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Sets a tag on a particular asset
+    execution: false
+    name: uptycs-set-asset-tag
+  - arguments:
+    - default: false
+      description: Unique Uptycs id for the user
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    deprecated: false
+    description: get info for an Uptycs user
+    execution: false
+    name: uptycs-get-user-information
+    outputs:
+    - contextPath: Uptycs.UserInfo.id
+      description: unique Uptycs id for the user
+      type: string
+    - contextPath: Uptycs.UserInfo.name
+      description: Uptycs user's name
+      type: string
+    - contextPath: Uptycs.UserInfo.email
+      description: Uptycs user's email address
+      type: string
+  - arguments:
+    - default: false
+      description: the specific indicator you wish to search for.  This can be an
+        IP address, a Bad Domain, etc. as well ass any indicators you have added.
+      isArray: false
+      name: indicator
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: get Uptycs threat indicators
+    execution: false
+    name: uptycs-get-threat-indicators
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: get Uptycs threat sources
+    execution: false
+    name: uptycs-get-threat-sources
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: get Uptycs threat vendors
+    execution: false
+    name: uptycs-get-threat-vendors
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Time that the specified process was spawned.
+      isArray: false
+      name: child_add_time
+      required: true
+      secret: false
+    - default: false
+      description: Hostname for asset which spawned the specified process.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: pid for the parent process.
+      isArray: false
+      name: parent
+      required: true
+      secret: false
+    deprecated: false
+    description: get the parent process information for a particular child process
+    execution: false
+    name: uptycs-get-parent-information
+    outputs:
+    - contextPath: Uptycs.Parent.pid
+      description: pid of the process (this is the same number as the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.Parent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Parent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.Parent.parent
+      description: pid for the parent process (this is the parent of the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.Parent.upt_add_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.Parent.upt_remove_time
+      description: time that the process was removed
+      type: date
+    - contextPath: Uptycs.Parent.name
+      description: name of the process
+      type: string
+    - contextPath: Uptycs.Parent.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.Parent.cmdline
+      description: complete argv for the process
+      type: string
+    - contextPath: Uptycs.Parent.pgroup
+      description: process group
+      type: number
+    - contextPath: Uptycs.Parent.cwd
+      description: process current working directory
+      type: string
+  - arguments:
+    - default: false
+      defaultValue: Custom threat source pushed from Demisto
+      description: A short description for the threat source
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: entry_id for the file with threat information.  This file should
+        be uploaded to demisto in the Playground War Room using the paperclip icon
+        next to the CLI.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: The name of the file being uploaded
+      isArray: false
+      name: filename
+      required: true
+      secret: false
+    - default: false
+      description: The name for the threat source
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: post a new threat source to your threat sources in Uptycs
+    execution: false
+    name: uptycs-post-threat-source
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: get a list of Uptycs users
+    execution: false
+    name: uptycs-get-users
+    outputs:
+    - contextPath: Uptycs.Users.id
+      description: unique Uptycs id for the user
+      type: string
+    - contextPath: Uptycs.Users.name
+      description: Uptycs user's name
+      type: string
+    - contextPath: Uptycs.Users.email
+      description: Uptycs user's email address
+      type: string
+    - contextPath: Uptycs.Users.createdAt
+      description: datetime this user was added
+      type: date
+    - contextPath: Uptycs.Users.updatedAt
+      description: last time this user was updated
+      type: date
+    - contextPath: Uptycs.Users.admin
+      description: true if this user has admin privileges, false otherwise
+      type: boolean
+    - contextPath: Uptycs.Users.active
+      description: true if this user is currently active, false otherwise
+      type: boolean
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: get Uptycs asset groups
+    execution: false
+    name: uptycs-get-asset-groups
+    outputs:
+    - contextPath: Uptycs.AssetGroups.id
+      description: unique Uptycs id for a particular object group
+      type: string
+    - contextPath: Uptycs.AssetGroups.custom
+      description: true if this is a custom asset group, false otherwise
+      type: boolean
+    - contextPath: Uptycs.AssetGroups.createdAt
+      description: datetime the group was created
+      type: date
+    - contextPath: Uptycs.AssetGroups.updatedAt
+      description: datetime the group was last updated
+      type: date
+  - arguments:
+    - default: false
+      description: return a list of users with access to this asset group
+      isArray: false
+      name: asset_group_id
+      required: true
+      secret: false
+    deprecated: false
+    description: get a list of users in a particular asset group
+    execution: false
+    name: uptycs-get-user-asset-groups
+  - arguments:
+    - default: false
+      description: unique Uptycs id which identifies a specific threat indicator
+      isArray: false
+      name: indicator_id
+      required: true
+      secret: false
+    deprecated: false
+    description: retrieve information about a specific threat indicator using a unique
+      threat indicator id
+    execution: false
+    name: uptycs-get-threat-indicator
+    outputs:
+    - contextPath: Uptycs.ThreatIndicator.threat_source_id
+      description: unique Uptycs id which identifies the source of this specific threat
+        indicator
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.threat_vendor_id
+      description: unique Uptycs id which identifies the vendor of this specific threat
+        source
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.indicatorType
+      description: type of threat indicator (IPv4, domain,...)
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.indicator
+      description: threat indicator
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.createdAt
+      description: datetime the threat indicator was created
+      type: date
+    - contextPath: Uptycs.ThreatIndicator.threadId
+      description: unique id for the group of threat indicators this thread indicator
+        belongs to
+      type: string
+    - contextPath: Uptycs.ThreatIndicator.id
+      description: unique id for this particular threat indicator
+      type: string
+  - arguments:
+    - default: false
+      description: unique Uptycs id for the threat source you wish to retrive
+      isArray: false
+      name: threat_source_id
+      required: true
+      secret: false
+    deprecated: false
+    description: retrieve information about a specific threat source
+    execution: false
+    name: uptycs-get-threat-source
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Beginning of window to search for open connections.  Format is
+        "YYYY-MM-DD HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would
+        be written as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: End of window to search for open connections.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      description: Exact time at which the process was spawned.
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    deprecated: false
+    description: find process events which are running or have run on a registered
+      Uptycs asset
+    execution: false
+    name: uptycs-get-process-events
+    outputs:
+    - contextPath: Uptycs.ProcessEvents.pid
+      description: pid for a particular process
+      type: number
+    - contextPath: Uptycs.ProcessEvents.parent
+      description: pid for the parent of a particular process
+      type: number
+    - contextPath: Uptycs.ProcessEvents.upt_asset_id
+      description: uptycs asset id for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.upt_hostname
+      description: host name for the asset which is running (or ran) the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.upt_time
+      description: time at which the process was spawned
+      type: date
+    - contextPath: Uptycs.ProcessEvents.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.ProcessEvents.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.ProcessEvents.cwd
+      description: process current working directory
+      type: string
+    - contextPath: Uptycs.ProcessEvents.ancestor_list
+      description: list of ancestor processes (parent, grandparent, etc.)
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Hostname for asset which spawned the specified process.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: pid for the process.
+      isArray: false
+      name: pid
+      required: true
+      secret: false
+    - default: false
+      description: Time that the specified process was spawned.
+      isArray: false
+      name: time
+      required: true
+      secret: false
+    deprecated: false
+    description: get information for a particular process event
+    execution: false
+    name: uptycs-get-process-event-information
+    outputs:
+    - contextPath: Uptycs.ProcEvent.pid
+      description: pid for the process
+      type: number
+    - contextPath: Uptycs.ProcEvent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ProcEvent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ProcEvent.parent
+      description: pid for the parent process
+      type: number
+    - contextPath: Uptycs.ProcEvent.upt_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.ProcEvent.path
+      description: path to the process binary
+      type: string
+    - contextPath: Uptycs.ProcEvent.cmdline
+      description: comeplete argv for the process
+      type: string
+    - contextPath: Uptycs.ProcEvent.cwd
+      description: process current working directory
+      type: string
+    - contextPath: Uptycs.ProcEvent.ancestor_list
+      description: list of ancestor processes (parent, grandparent, etc.)
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id",
+        "host_name_is" or "host_name_like" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this hostname.  Do not use arguments "host_name_is"
+        and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: Only return assets with this string in the hostname.  Use this
+        to find a selection of assets with similar hostnames.  Do not use arguments
+        "host_name_is" and "host_name_like" at the same time.
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      description: IP address which process opened a socket to.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Limit the number of entries returned.  Use -1 to return all entries
+        (may run slow or cause a time out).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Beginning of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".
+      isArray: false
+      name: start_window
+      required: false
+      secret: false
+    - default: false
+      description: ' End of window to search for open sockets.  Format is "YYYY-MM-DD
+        HH:MM:SS.000", for example, March 15, 2019 at 1:52:36 am would be written
+        as "2019-03-15 01:52:36.000".'
+      isArray: false
+      name: end_window
+      required: false
+      secret: false
+    - default: false
+      description: Exact time at which the socket was opened.
+      isArray: false
+      name: time
+      required: false
+      secret: false
+    - default: false
+      description: 'Specifies how far back you want to look.  Format examples: 2 hours,
+        4 minutes, 6 month, 1 day, etc.'
+      isArray: false
+      name: time_ago
+      required: false
+      secret: false
+    deprecated: false
+    description: find processes which opened a socket
+    execution: false
+    name: uptycs-get-socket-events
+    outputs:
+    - contextPath: Uptycs.SocketEvents.pid
+      description: pid of process which opened a connection to a specified IP
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_hostname
+      description: hostname of the asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.upt_time
+      description: time at which the connection was opened
+      type: date
+    - contextPath: Uptycs.SocketEvents.path
+      description: file path to the process being run
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_address
+      description: local IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.remote_address
+      description: remote IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_port
+      description: local port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.remote_port
+      description: remote port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_asset_id
+      description: asset id for asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.socket
+      description: socket used to open the connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.family
+      description: network protocol
+      type: number
+    - contextPath: Uptycs.SocketEvents.action
+      description: type of socket event (accept, connect, or bind)
+      type: string
+    - contextPath: Uptycs.SocketEvents.protocol
+      description: transfer protocol
+      type: number
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Time that the specified process was spawned.
+      isArray: false
+      name: child_add_time
+      required: true
+      secret: false
+    - default: false
+      description: Hostname for asset which spawned the specified process.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: pid for the parent process.
+      isArray: false
+      name: parent
+      required: true
+      secret: false
+    - default: false
+      description: List of ancestor processes for specified child process
+      isArray: false
+      name: child_ancestor_list
+      required: false
+      secret: false
+    deprecated: false
+    description: find information for parent process events which are running or have
+      run on a registered Uptycs assert
+    execution: false
+    name: uptycs-get-parent-event-information
+    outputs:
+    - contextPath: Uptycs.ParentEvent.pid
+      description: pid of the process (this is the same number as the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.ParentEvent.upt_hostname
+      description: hostname for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ParentEvent.upt_asset_id
+      description: asset id for asset which spawned the specified process
+      type: string
+    - contextPath: Uptycs.ParentEvent.parent
+      description: pid for the parent process (this is the parent of the input argument
+        'parent')
+      type: number
+    - contextPath: Uptycs.ParentEvent.upt_time
+      description: time that the process was spawned
+      type: date
+    - contextPath: Uptycs.ParentEvent.path
+      description: path to the parent process binary
+      type: string
+    - contextPath: Uptycs.ParentEvent.cmdline
+      description: complete argv for the parent process
+      type: string
+    - contextPath: Uptycs.ParentEvent.cwd
+      description: parent process current working cirectory
+      type: string
+  - arguments:
+    - default: false
+      description: Only return assets with this asset id.  Do not use arguments "asset_id"
+        and "host_name_is" at the same time.
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: Hostname for asset which spawned the specified process.
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: IP address which process opened a socket to.
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    - default: false
+      description: Time that the specified connection was opened.
+      isArray: false
+      name: time
+      required: true
+      secret: false
+    deprecated: false
+    description: get information for a particular socket event
+    execution: false
+    name: uptycs-get-socket-event-information
+    outputs:
+    - contextPath: Uptycs.SocketEvents.pid
+      description: pid of process which opened a connection to a specified IP
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_hostname
+      description: hostname of the asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.upt_time
+      description: time at which the connection was opened
+      type: date
+    - contextPath: Uptycs.SocketEvents.path
+      description: file path to the process being run
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_address
+      description: local IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.remote_address
+      description: remote IP for specified connection
+      type: string
+    - contextPath: Uptycs.SocketEvents.local_port
+      description: local port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.remote_port
+      description: remote port for specified connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.upt_asset_id
+      description: asset id for asset which ran the specified process
+      type: string
+    - contextPath: Uptycs.SocketEvents.action
+      description: type of socket event (accept, connect, or bind)
+      type: string
+    - contextPath: Uptycs.SocketEvents.family
+      description: network protocol
+      type: number
+    - contextPath: Uptycs.SocketEvents.socket
+      description: socket used to open the connection
+      type: number
+    - contextPath: Uptycs.SocketEvents.protocol
+      description: transfer protocol
+      type: number
+  - arguments:
+    - default: false
+      description: Uptycs asset id for the asset you are looking for.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a list of tags for a particular asset
+    execution: false
+    name: uptycs-get-asset-tags
+  - arguments:
+    - default: false
+      description: Only return the query with this unique id
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: Only return the query with this name
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a saved query or list of all saved queries
+    execution: false
+    name: uptycs-get-saved-queries
+    outputs:
+    - contextPath: Uptycs.SavedQueries.id
+      description: unique uptycs query id
+      type: string
+    - contextPath: Uptycs.SavedQueries.name
+      description: name of query
+      type: string
+  - arguments:
+    - default: false
+      description: The name of the query you want to run
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The unique id for the query you want to run
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    - default: false
+      description: '*realtime queries only*  This argument should be used when one
+        wants to run a realtime query on a particular asset.'
+      isArray: false
+      name: asset_id
+      required: false
+      secret: false
+    - default: false
+      description: '*realtime queries only*  Only return assets with this hostname'
+      isArray: false
+      name: host_name_is
+      required: false
+      secret: false
+    - default: false
+      description: '*realtime queries only* . Only return assets with this string
+        in the hostname.'
+      isArray: false
+      name: host_name_like
+      required: false
+      secret: false
+    - default: false
+      description: If your saved query has variable arguments, write them here in
+        a json format where the key is the name of the variable argument and value
+        is the value you want to use for this particular query.
+      isArray: false
+      name: variable_arguments
+      required: false
+      secret: false
+    deprecated: false
+    description: Run a saved query
+    execution: false
+    name: uptycs-run-saved-query
+    outputs:
+    - contextPath: Uptycs.RunQuery
+      description: Results of executed query
+      type: Unknown
+  - arguments:
+    - default: false
+      defaultValue: '""'
+      description: A short description for the query
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of query (global or realtime).
+      isArray: false
+      name: execution_type
+      predefined:
+      - global
+      - realtime
+      required: true
+      secret: false
+    - default: false
+      description: The name for the query.  This should be unique to this query.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The query which will be saved
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: default
+      description: Type of issue the query addresses.
+      isArray: false
+      name: type
+      predefined:
+      - default
+      - compliance
+      - hardware
+      - incident
+      - system
+      - vulnerability
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '""'
+      description: Add the query to a group of queries.
+      isArray: false
+      name: grouping
+      required: false
+      secret: false
+    deprecated: false
+    description: Save a query to the Uptycs DB
+    execution: false
+    name: uptycs-post-saved-query
+    outputs:
+    - contextPath: Uptycs.PostedQuery.name
+      description: name of query
+      type: string
+  dockerimage: demisto/uptycs:1.0.0.1126
+  isfetch: true
+  runonce: true
+  script: '-'
+  type: python
+  subtype: python3

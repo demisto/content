@@ -1,135 +1,155 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: urlscan.io
   version: -1
-name: urlscan.io
-display: urlscan.io
-category: Data Enrichment & Threat Intelligence
-description: Urlscan.io reputation
-defaultEnabled: false
 configuration:
-- display: API Key (needed only for submitting URLs for scanning)
+- display: API Key (only required for scanning URLs)
   name: apikey
-  defaultvalue: ""
+  required: false
   type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
-- display: Trust any certificate (unsecure)
-  name: insecure_new
-  defaultvalue: "false"
   type: 8
-  required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
-  type: 8
   required: false
-- display: URL Threshold. Minimum number of positive results from urlscan.io to consider
+  type: 8
+- defaultvalue: '1'
+  display: URL Threshold. Minimum number of positive results from urlscan.io to consider
     the URL malicious.
   name: url_threshold
-  defaultvalue: "1"
-  type: 0
   required: false
+  type: 0
+- defaultvalue: 'true'
+  display: Enable public submissions by default.
+  name: is_public
+  required: false
+  type: 8
+description: Urlscan.io reputation
+display: urlscan.io
+name: urlscan.io
 script:
-  script: ''
-  type: python
   commands:
-  - name: urlscan-search
-    arguments:
-    - name: searchParameter
+  - arguments:
+    - default: true
+      description: A parameter for which to search (as a string), for example an IP
+        address, file name, SHA256 hash, URL, domain, and so on.
+      isArray: false
+      name: searchParameter
       required: true
-      default: true
-      description: Enter a parameter to search as a string (IP, File name, sha256,
-        url, domain)
-    - name: limit
-      description: Limits the returned results
-      defaultValue: "20"
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of results to return. Default is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Search for an indicator that is related to former urlscan.io scans.
+    execution: false
+    name: urlscan-search
     outputs:
     - contextPath: URLScan.URL
-      description: URL found
+      description: The URL.
       type: string
     - contextPath: URLScan.Domain
-      description: Domain of the url scanned
+      description: The domain of the scanned URL.
       type: string
     - contextPath: URLScan.ASN
-      description: ASN of the URL scanned
+      description: The ASN of the scanned URL.
       type: string
     - contextPath: URLScan.IP
-      description: IP of the url scanned
+      description: The IP address of the scanned URL.
       type: string
     - contextPath: URLScan.ScanID
-      description: Scan ID for the URL scanned
+      description: The scan ID of the scanned URL.
       type: string
     - contextPath: URLScan.ScanDate
-      description: Latest scan date for the URL
+      description: The date that the URL was last scanned.
       type: string
     - contextPath: URLScan.Hash
-      description: SHA256 of file scanned
+      description: The SHA256 hash of the scanned file.
       type: string
     - contextPath: URLScan.FileName
-      description: Filename of the file scanned
+      description: The file name of the scanned file.
       type: string
     - contextPath: URLScan.FileSize
-      description: File size of the file scanned
+      description: The size of the scanned file.
       type: number
     - contextPath: URLScan.FileType
       description: File type of the file scanned
       type: string
-    description: Search for an indicator that is related to former urlscan.io scans.
-  - name: urlscan-submit
-    deprecated: true
-    arguments:
-    - name: url
+  - arguments:
+    - default: false
+      description: The URL to scan.
+      isArray: true
+      name: url
       required: true
-      default: true
-      description: Url to scan
-    - name: timeout
-      description: How many seconds to wait for the scan id result
-      defaultValue: "60"
-    - name: public
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
-      description: Will the submission be public or private
-      defaultValue: public
-    - name: limit
-      description: Limits the returned list of Certificates, IP's and ASN's
-      defaultValue: "20"
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: The amount of time (in seconds) to wait for the scan ID result
+        before timeout. Default is 60.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: The submission type. Can be "public" or "private".
+      isArray: false
+      name: public
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of Limits the returned list of Certificates,
+        IP's and ASN's
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: true
+    description: Deprecated. Use the url command instead.
+    execution: false
+    name: urlscan-submit
     outputs:
     - contextPath: URL.Data
-      description: URL submitted
+      description: The URL submitted for scanning.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URLScan.RelatedIPs
-      description: Related IPs found for the URL scanned
+      description: IP addresses related to the the scanned URL.
       type: string
     - contextPath: URLScan.RelatedASNs
-      description: Related ASNs found for the URL scanned
+      description: ASNs related to the scanned URL.
       type: string
     - contextPath: URLScan.Countries
-      description: Associated countries for the URL scanned
+      description: Countries associated with the scanned URL.
       type: string
     - contextPath: URLScan.RelatedHash
-      description: Related hashes found for the URL scanned
+      description: File hashes related to the scanned URL.
       type: string
     - contextPath: URLScan.Subdomains
-      description: Associated subdomains for the url scanned
+      description: Subdomains related to the scanned URL.
       type: string
     - contextPath: URLScan.ASN
-      description: ASN of the URL scanned
+      description: ASN of the scanned URL.
       type: string
     - contextPath: URLScan.Data
-      description: URL of the file found
+      description: URL of the file.
       type: string
     - contextPath: URLScan.Malicious.Vendor
-      description: Vendor reporting the malicious indicator for the file
+      description: The vendor reporting the malicious indicator for the file
       type: string
     - contextPath: URLScan.Malicious.Description
-      description: Description of the malicious indicator
+      description: A description of the malicious indicator.
       type: string
     - contextPath: URLScan.File.Hash
       description: SHA256 of file found
@@ -164,143 +184,208 @@ script:
     - contextPath: URLScan.EffectiveURL
       description: Effective URL of the original URL
       type: string
-    description: 'Deprecated: replaced with url command'
-  - name: url
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - default: true
       description: Url to scan
-    - name: timeout
-      description: How many seconds to wait for the scan id result
-      defaultValue: "60"
-    - name: public
-      auto: PREDEFINED
-      predefined:
-      - public
-      - private
-      description: Will the submission be public or private
-      defaultValue: public
-    - name: limit
-      description: Limits the results in the war room
-      defaultValue: "20"
-    - name: wait
-      description: Wait time between tries if we reach the API rate limit in seconds
-      defaultValue: "5"
-    - name: retries
-      description: Number of retries for API rate limit
-      defaultValue: "0"
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '60'
+      description: The amount of time (in seconds) to wait for the scan ID result
+        before timeout. Default is 60.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: The submission type. Can be "public" or "private".
+      isArray: false
+      name: public
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '5'
+      description: The amount of time (in seconds) to wait between tries if the API
+        rate limit is exceeded.
+      isArray: false
+      name: wait
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Number of retries for the API rate limit. Default is 0.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
+    deprecated: false
+    description: Submits a URL to scan.
+    execution: false
+    name: url
     outputs:
     - contextPath: URL.Data
-      description: URL submitted
+      description: The URL submitted for scanning.
       type: string
     - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
+      description: For malicious URLs, the vendor that made the decision.
       type: string
     - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
+      description: For malicious URLs, the reason that the vendor made the decision.
       type: string
     - contextPath: URLScan.RelatedIPs
-      description: Related IPs found for the URL scanned
+      description: The IP addresses related to the scanned URL.
       type: string
     - contextPath: URLScan.RelatedASNs
-      description: Related ASNs found for the URL scanned
+      description: The ASNs related to the scanned URL.
       type: string
     - contextPath: URLScan.Countries
-      description: Associated countries for the URL scanned
+      description: The countries associated with the scanned URL.
       type: string
     - contextPath: URLScan.RelatedHash
-      description: Related hashes found for the URL scanned
+      description: File hashes related to the scanned URL.
       type: string
     - contextPath: URLScan.Subdomains
-      description: Associated subdomains for the url scanned
+      description: Subdomains associated with the scanned URL.
       type: string
     - contextPath: URLScan.ASN
-      description: ASN of the URL scanned
+      description: The ASN of the scanned URL.
       type: string
     - contextPath: URLScan.Data
-      description: URL of the file found
+      description: The URL of the file.
       type: string
     - contextPath: URLScan.Malicious.Vendor
-      description: Vendor reporting the malicious indicator for the file
+      description: The vendor that reported the malicious indicator for the file.
       type: string
     - contextPath: URLScan.Malicious.Description
-      description: Description of the malicious indicator
+      description: A description of the malicious indicator.
       type: string
     - contextPath: URLScan.File.Hash
-      description: SHA256 of file found
+      description: The SHA256 hash of file.
       type: string
     - contextPath: URLScan.File.FileName
-      description: File name of file found
+      description: The name of the file.
       type: string
     - contextPath: URLScan.File.FileType
-      description: File type of the file found
+      description: The file type.
       type: string
     - contextPath: URLScan.File.Hostname
-      description: URL where the file was found
+      description: The URL of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The name of the file.
+      type: string
+    - contextPath: File.Type
+      description: The file type.
+      type: string
+    - contextPath: File.Hostname
+      description: The URL of the file.
       type: string
     - contextPath: URLScan.Certificates
-      description: Certificates found for the URL scanned
+      description: The certificates found for the scanned URL.
       type: string
     - contextPath: DBotScore.Score
-      description: Score retrieved for Dbot
+      description: The actual score.
       type: string
     - contextPath: DBotScore.Type
-      description: Type of indicator tested for
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: Vendor who provided DBot Score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Indicator
-      description: Indicator URLScan tested for
+      description: The indicator that was tested.
       type: string
     - contextPath: URLScan.RedirectedURLs
-      description: Redirected URLs from the URL scanned
+      description: Redirected URLs from the scanned URL.
       type: string
     - contextPath: URLScan.EffectiveURL
-      description: Effective URL of the original URL
+      description: Effective URL of the original URL.
       type: string
-    description: Submit a url to scan
-  - name: urlscan-get-http-transaction-list
+  - arguments:
+    - default: false
+      description: The UUID of the URL for which to search the transaction list.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '20'
+      description: The maximum number of results to return to the War Room. Maximum
+        is 100. Default is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The URL for which to search the transaction list.
+      isArray: false
+      name: url
+      required: true
+      secret: false
     deprecated: true
-    arguments:
-    - name: uuid
-      required: true
-      description: The uuid of the URL to search the transaction list for.
-    - name: limit
-      description: Limits the results in the war room(Maximum limit allowed is 100)
-      defaultValue: "20"
-    - name: url
-      required: true
-      description: The URL to search the transaction list for.
+    description: Returns the HTTP transaction list for the specified URL. Do not use
+      this command in conjunction with the urlscan-get-http-transactions script.
+    execution: false
+    name: urlscan-get-http-transaction-list
     outputs:
     - contextPath: URLScan.URL
-      description: The URL address that was examined.
+      description: The URL address that was scanned.
       type: string
     - contextPath: URLScan.httpTransaction
-      description: A link to the http transaction made during the search on the given
+      description: A link to the HTTP transaction made during the search for the specified
         URL.
       type: string
-    description: Get http transaction list for a given url. (This command should be used only apart from
-      urlscan-get-http-transactions script)
-  - name: urlscan-submit-url-command
-    deprecated: true
-    arguments:
-    - name: url
-      required: true
+  - arguments:
+    - default: false
       description: The URL sought after.
-    description: Submit a URL to get its uuid.
-  - name: urlscan-poll-uri
-    deprecated: true
-    arguments:
-    - name: uri
+      isArray: false
+      name: url
       required: true
-      description: The uri of the sought after result.
-    description: Poll the UrlScan service regarding the results for a given uri.
-  - name: urlscan-get-result-page
+      secret: false
     deprecated: true
-    arguments:
-    - name: uuid
+    description: Submits a URL to retrieve its UUID.
+    execution: false
+    name: urlscan-submit-url-command
+  - arguments:
+    - default: false
+      description: The URI for which to get the results.
+      isArray: false
+      name: uri
       required: true
-      description: The uuid of the URL you want to search
-    description: Get the results page for the given UUID
+      secret: false
+    deprecated: true
+    description: Polls the urlscan service regarding the results of the specified
+      URI.
+    execution: false
+    name: urlscan-poll-uri
+  - arguments:
+    - default: false
+      description: The UUID of the URL for which to search.
+      isArray: false
+      name: uuid
+      required: true
+      secret: false
+    deprecated: true
+    description: Returns the results page for the specified UUID.
+    execution: false
+    name: urlscan-get-result-page
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
+  script: '-'
+  subtype: python2
+  type: python
+defaultEnabled: false

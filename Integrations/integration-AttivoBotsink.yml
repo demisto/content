@@ -939,6 +939,5 @@ script:
     description: List all deceptive users
   isfetch: true
   runonce: false
-releaseNotes: "- Fixed a duplication issue in the `fetch-incidents` command.\n- Improved error handling."
 tests:
   - AttivoBotsinkTest

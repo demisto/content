@@ -11,6 +11,7 @@ pytest-mock = "*"
 
 [packages]
 olefile = "*"
+chardet = "*"
 
 [requires]
 python_version = "2.7"
