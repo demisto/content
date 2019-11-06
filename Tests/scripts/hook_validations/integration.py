@@ -5,12 +5,12 @@ import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-
+from structure import StructureValidator
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
-class IntegrationValidator(object):
+class IntegrationValidator(StructureValidator):
     """IntegrationValidator is designed to validate the correctness of the file structure we enter to content repo. And
     also try to catch possible Backward compatibility breaks due to the preformed changes.
 
@@ -22,6 +22,7 @@ class IntegrationValidator(object):
     """
 
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
+        super(IntegrationValidator, self).__init__(file_path)
         self._is_valid = True
 
         self.file_path = file_path

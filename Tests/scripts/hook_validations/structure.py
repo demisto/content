@@ -25,13 +25,20 @@ class StructureValidator(object):
     VERSION_SCHEMAS = [
         INTEGRATION_REGEX,
         PLAYBOOK_REGEX,
+        PACKS_PLAYBOOK_YML_REGEX,
         SCRIPT_REGEX,
         INTEGRATION_YML_REGEX,
+        PACKS_INTEGRATION_YML_REGEX,
         WIDGETS_REGEX,
+        PACKS_WIDGETS_REGEX,
         DASHBOARD_REGEX,
+        PACKS_DASHBOARDS_REGEX,
         CLASSIFIER_REGEX,
+        PACKS_CLASSIFIERS_REGEX,
         SCRIPT_YML_REGEX,
+        PACKS_SCRIPT_YML_REGEX,
         INCIDENT_FIELD_REGEX,
+        PACKS_INCIDENTFIELDS_REGEX,
         MISC_REGEX,
         REPUTATION_REGEX
     ]
@@ -51,20 +58,31 @@ class StructureValidator(object):
         BETA_INTEGRATION_REGEX,
         BETA_SCRIPT_REGEX,
         BETA_PLAYBOOK_REGEX,
+        PACKS_INTEGRATION_PY_REGEX,
+        PACKS_SCRIPT_PY_REGEX,
     ]
     REGEXES_TO_SCHEMA_DICT = {
         INTEGRATION_REGEX: "integration",
         INTEGRATION_YML_REGEX: "integration",
+        PACKS_INTEGRATION_PY_REGEX: "integration",
         PLAYBOOK_REGEX: "playbook",
+        PACKS_PLAYBOOK_YML_REGEX: "playbook",
         TEST_PLAYBOOK_REGEX: "test-playbook",
+        PACKS_TEST_PLAYBOOKS_REGEX: "test-playbook",
         SCRIPT_REGEX: "script",
         SCRIPT_YML_REGEX: "script",
+        PACKS_SCRIPT_YML_REGEX: "script",
         WIDGETS_REGEX: "widget",
+        PACKS_WIDGETS_REGEX: "widget",
         DASHBOARD_REGEX: "dashboard",
+        PACKS_DASHBOARDS_REGEX: "dashboard",
         CONNECTIONS_REGEX: "canvas-context-connections",
         CLASSIFIER_REGEX: "classifier",
+        PACKS_CLASSIFIERS_REGEX: "classifier",
         LAYOUT_REGEX: "layout",
+        PACKS_LAYOUTS_REGEX: "layout",
         INCIDENT_FIELD_REGEX: "incidentfield",
+        PACKS_INCIDENTFIELDS_REGEX: "incidentfield",
     }
 
     SCHEMAS_PATH = "Tests/schemas/"
@@ -126,7 +144,7 @@ class StructureValidator(object):
                     self._is_valid = False
             else:
                 print_error(self.file_path + " doesn't match any of the known supported file prefix/suffix,"
-                            " please make sure that its naming is correct.")
+                                             " please make sure that its naming is correct.")
                 self._is_valid = False
 
         return self._is_valid
@@ -223,7 +241,7 @@ class StructureValidator(object):
     def _is_beta_integration(self):
         """Checks if file is under Beta_integration dir"""
         return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
-            re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
+               re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE)
 
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.
