@@ -2949,6 +2949,7 @@ script:
             tz = 0;
         }
 
+        // The offset is given in milliseconds, thus multiplying by 1000.
         offset = tz ? 60 * 1000 * parseInt(tz) : 60 * 1000 * new Date().getTimezoneOffset();
 
         var cmd = commands.searchRecords;
