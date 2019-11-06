@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Any
 import urllib3
 import requests
 from datetime import datetime
@@ -249,7 +249,7 @@ class Client(BaseClient):
         group = self.http_request('GET', f'groups/{id_}')
         return group
 
-    def create_group(self, properties: Dict[str, str] = None) -> Dict:
+    def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
         group = self.http_request('POST', 'groups', body=json.dumps(properties))
         return group
 
