@@ -26,6 +26,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "AlienVault OTX v2",
+            "playbookID": "Alienvault_OTX_v2 - Test"
+        },
+        {
             "integrations": "AWS - SQS",
             "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
@@ -616,6 +620,9 @@
         },
         {
             "playbookID": "test_delete_context"
+        },
+        {
+            "playbookID": "DeleteContext-auto-test"
         },
         {
             "playbookID": "GmailTest",
@@ -1890,11 +1897,14 @@
         {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
+        },
+        {
+            "integrations": "Kenna",
+            "playbookID": "Kenna Test"
         }
     ],
     "skipped_tests": {
         "NetWitness Endpoint Test": "Issue 19878",
-        "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
@@ -1907,17 +1917,15 @@
         "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "calculate_severity_-_critical_assets_-_test": "Issue 17924",
-        "Forescout-Test": "issue 17016",
         "Lastline - testplaybook": "Checking the integration via Generic detonation playbooks, don't want to load the daily quota",
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
         "Qualys-Test": "Issue 16486",
-        "TruSTAR Test": "Issue 19756",
+        "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "ip_enrichment_generic_test": "Issue 19815",
         "email_test": "Issue 19816",
-        "JoeSecurityTestDetonation": "Issue 17996",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -1940,7 +1948,9 @@
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
-        "AlphaSOC-Wisdom-Test": "Issue #19235"
+        "AlphaSOC-Wisdom-Test": "Issue #19235",
+        "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
+        "Test Playbook TrendMicroDDA": "Manual test"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
@@ -1962,6 +1972,8 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "carbonblack-v2": "Issue 19929",
+        "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
         "intsights": "Issue 19694",
@@ -2009,15 +2021,14 @@
         "Tenable.io": "Issue 16115",
 
       "_comment": "~~~ OTHER ~~~",
-        "LogRhythm": "Issue 19849",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "MailListener - POP3": "Issue 18580",
+        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
-        "AWS - Athena - Beta": "Issue ",
-        "Joe Security": "Monthly quota exceeded, remove from skipped on or after April 1st",
+        "AWS - Athena - Beta": "Issue 19834",
         "VirusTotal - Private API": "reached api alloted quota.",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
