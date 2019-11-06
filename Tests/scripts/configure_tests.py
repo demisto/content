@@ -147,7 +147,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
     caught_missing_test = False
     catched_intergrations = set([])
 
-    test_ids = get_test_ids()
+    test_ids, skipped_tests = get_test_ids()
 
     with open("./Tests/id_set.json", 'r') as conf_file:
         id_set = json.load(conf_file)
@@ -184,7 +184,7 @@ def collect_tests(script_ids, playbook_ids, integration_ids, catched_scripts, ca
                             tests_set.add(test_playbook_id)
                             catched_intergrations.add(integration_id)
 
-        if detected_usage and test_playbook_id not in test_ids:
+        if detected_usage and test_playbook_id not in test_ids and test_playbook_id not in skipped_tests:
             caught_missing_test = True
             print_error("The playbook {} does not appear in the conf.json file, which means no test with it will run."
                         "please update the conf.json file accordingly".format(test_playbook_name))
@@ -205,6 +205,14 @@ def update_missing_sets(catched_intergrations, catched_playbooks, catched_script
 
 
 def get_test_ids(check_nightly_status=False):
+    """Get the test ids from conf.json
+
+    Keyword Arguments:
+        check_nightly_status {bool} -- if we are running nightly test (default: {False})
+
+    Returns:
+        tuple: (test_ids, skipped_tests)
+    """
     test_ids = []
     with open("./Tests/conf.json", 'r') as conf_file:
         conf = json.load(conf_file)
@@ -215,7 +223,7 @@ def get_test_ids(check_nightly_status=False):
             playbook_id = t['playbookID']
             test_ids.append(playbook_id)
 
-    return test_ids
+    return test_ids, list(conf['skipped_tests'].keys())
 
 
 def get_integration_commands(integration_ids, integration_set):
@@ -544,7 +552,7 @@ def get_test_list(files_string, branch_name):
 
     if sample_tests:  # Choosing 3 random tests for infrastructure testing
         print_warning('Collecting sample tests due to: {}'.format(','.join(sample_tests)))
-        test_ids = get_test_ids(check_nightly_status=True)
+        test_ids = get_test_ids(check_nightly_status=True)[0]
         rand = random.Random(files_string + branch_name)
         while len(tests) < 3:
             tests.add(rand.choice(test_ids))
