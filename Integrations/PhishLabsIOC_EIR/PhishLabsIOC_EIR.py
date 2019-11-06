@@ -119,10 +119,7 @@ def indicator_ec(indicator: Dict, type_ec: AnyStr) -> Dict:
         ec = {
             'To': indicator.get('emailReportedBy'),
             'From': indicator.get('sender'),
-            'Body/HTML': indicator.get('emailBody'),
-            'Attachments': {
-                'EntryID': None  # TODO TBD
-            }
+            'Body/HTML': indicator.get('emailBody')
         }
 
     return ec
@@ -160,7 +157,6 @@ def indicator_dbot_ec(indicator: Dict, type_ec: AnyStr) -> Tuple[Dict, Dict]:
     elif type_ec == 'file-ec':
         ec = {
             'Name': indicator.get('fileName'),
-            'EntryID': '',  # TODO define it
             'SHA256': indicator.get('sha256'),
             'MD5': indicator.get('md5'),
             'Malicious': {

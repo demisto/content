@@ -274,11 +274,6 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
       <td>The plain-text version of the email.</td>
     </tr>
     <tr>
-      <td>Email.Attachments.EntryID</td>
-      <td>String</td>
-      <td>The ID for locating the file in the War Room.</td>
-    </tr>
-    <tr>
       <td>File.Name</td>
       <td>String</td>
       <td>The full file name (including file extension).</td>
@@ -302,11 +297,6 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
       <td>File.Malicious.Description</td>
       <td>String</td>
       <td>A description explaining why the file was determined to be malicious.</td>
-    </tr>
-    <tr>
-      <td>File.EntryID</td>
-      <td>String</td>
-      <td>The ID for locating the file in the War Room.</td>
     </tr>
     <tr>
       <td>URL.Data</td>
@@ -364,25 +354,16 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
     ],
     "Email": [
         {
-            "Attachments": {
-                "EntryID": null
-            },
             "Body/HTML": "Example body",
             "From": "LinkedIn Sales Navigator  not@domain.com",
             "To": "Michael Mammele not@domain.com"
         },
         {
-            "Attachments": {
-                "EntryID": null
-            },
             "Body/HTML": "Example body",
             "From": "Tony Prince not@domain.com",
             "To": "Tony Prince not@domain.com"
         },
         {
-            "Attachments": {
-                "EntryID": null
-            },
             "Body/HTML": "Example body",
             "From": "FileDoc2 not@domain.com",
             "To": "John LaCour not@domain.com"
@@ -665,11 +646,6 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
       <td>The plain-text version of the email.</td>
     </tr>
     <tr>
-      <td>Email.Attachments.EntryID</td>
-      <td>String</td>
-      <td>The ID for locating the file in the War Room.</td>
-    </tr>
-    <tr>
       <td>File.Name</td>
       <td>String</td>
       <td>The full file name (including file extension).</td>
@@ -693,11 +669,6 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
       <td>File.Malicious.Description</td>
       <td>String</td>
       <td>A description explaining why the file was determined to be malicious.</td>
-    </tr>
-    <tr>
-      <td>File.EntryID</td>
-      <td>String</td>
-      <td>The ID for locating the file in the War Room.</td>
     </tr>
     <tr>
       <td>URL.Data</td>
@@ -753,9 +724,6 @@ Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)</td>
     ],
     "Email": [
         {
-            "Attachments": {
-                "EntryID": null
-            },
             "Body/HTML": "Example body",
             "From": "LinkedIn Sales Navigator  not@domain.com",
             "To": "Michael Mammele not@domain.com"

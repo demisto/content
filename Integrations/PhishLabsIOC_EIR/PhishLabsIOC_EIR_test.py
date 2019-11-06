@@ -51,9 +51,6 @@ INDICATORS_EC = [
             'To': "Michael Mammele <support@threatx.com>",
             'From': "LinkedIn Sales Navigator  <support@threatx.com>",
             'Body/HTML': "Test body",
-            'Attachments': {
-                'EntryID': None
-            }
         }
     )
 ]
@@ -100,7 +97,6 @@ INDICATORS_DBOT_EC = [
             },
             {
                 'Name': "EECO_RFQ__453100Q.pdf",
-                'EntryID': '',
                 'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
@@ -269,15 +265,11 @@ RAW_RESPONSE_TO_CONTEXT = [
                 'To': "PhishLabs Phishing Team <not@domain.com>",
                 'From': "<not@domain.com>",
                 'Body/HTML': "Test",
-                'Attachments': {
-                    'EntryID': None
-                }
             }
         ],
         [
             {
                 'Name': "EECO_RFQ__453100Q.pdf",
-                'EntryID': '',
                 'SHA256': "6b4eeb63b26d3415a529fd95e41e83af19642f2c967b3089a0de8da55c79dd47",
                 'MD5': "6680e7e593c8286ac51e332d8f72aeec",
                 'Malicious': {
