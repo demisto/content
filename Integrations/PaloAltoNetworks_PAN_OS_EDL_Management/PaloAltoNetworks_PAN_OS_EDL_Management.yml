@@ -268,5 +268,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - PAN OS EDL Management - Test
