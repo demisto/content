@@ -1,11 +1,11 @@
 ## [Unreleased]
-  - New version to support the new API (tested on 2.1) 
-  - Added support for API token authentication 
-  - Added Proxy support
-  - Better error handling, and Context outputs
-  - Improved fetching incidents method, and added Threshold parameters (Threat score, Certainty score, State)
+  - New version to support the new API version (tested on 2.1).
+  - Added support for API token authentication. 
+  - Added Proxy support.
+  - Improved error handling and Context outputs.
+  - Improved fetch incidents methodology and added Threshold parameters (Threat score, Certainty score, State).
   - Added the following commands:
-    - `vectra-search` command, which allows users to perform advanced search for Hosts and Detections
-    - `vectra-get-proxies` command, which retrieves the current list of proxy IP addresses
-    - `vectra-get-users` command, which list all Users
-    - `vectra-get-threatfeed` command, which list all ThreatFeeds
+    - ***vectra-search***: allows users to perform advanced search for Hosts and Detections
+    - ***vectra-get-proxies***: retrieves the current list of proxy IP addresses
+    - ***vectra-get-users***: lists all users
+    - ***vectra-get-threatfeed***: lists all ThreatFeeds
