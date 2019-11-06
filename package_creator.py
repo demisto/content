@@ -93,13 +93,13 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
             output_path45: yml_text45
         }
 
-    for k, v in output_map.items():
-        if IS_CI and os.path.isfile(k):
+    for file_path, file_text in output_map.items():
+        if IS_CI and os.path.isfile(file_path):
             raise ValueError('Output file already exists: {}.'
                              ' Make sure to remove this file from source control'
                              ' or rename this package (for example if it is a v2).'.format(output_path))
-        with io.open(k, mode='w', encoding='utf-8') as f:
-            f.write(v)
+        with io.open(file_path, mode='w', encoding='utf-8') as f:
+            f.write(file_text)
     return list(output_map.keys()), yml_path, script_path, image_path, desc_path
 
 
