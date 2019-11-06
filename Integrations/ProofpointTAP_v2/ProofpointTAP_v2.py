@@ -159,14 +159,15 @@ def get_events_command(client, args):
 
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50,
                     integration_context=None):
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
     incidents: list = []
+    # check if there're incidents saved in context
     if integration_context:
         remained_incidents = integration_context.get('incidents')
-        # return incidents if exists in context
+        # return incidents if exists in context.
         if remained_incidents:
             return last_run, remained_incidents[:limit], remained_incidents[limit:]
+    # Get the last fetch time, if exists
+    last_fetch = last_run.get('last_fetch')
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
@@ -193,9 +194,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
             threat_info_map = raw_event.get("threatsInfoMap", [])
             for threat in threat_info_map:
-                if threat["threatTime"] > last_fetch:
-                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                        "threatTime"]
+                last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
+                    "threatTime"]
             incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
@@ -211,10 +211,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
             threat_info_map = raw_event.get("threatsInfoMap", [])
             for threat in threat_info_map:
-                if threat["threatTime"] > last_fetch:
-                    last_fetch = threat["threatTime"]
-                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                        "threatTime"]
+                last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
+                    "threatTime"]
 
             incident['occurred'] = last_event_fetch
             incidents.append(incident)
@@ -246,7 +244,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     # Cut the milliseconds from last fetch if exists
     last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
     last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    last_fetch = (last_fetch_datetime + timedelta(seconds=1)).strftime(DATE_FORMAT)
+    last_fetch = last_fetch_datetime.strftime(DATE_FORMAT)
     next_run = {'last_fetch': last_fetch}
     return next_run, incidents[:limit], incidents[limit:]
 
@@ -302,8 +300,10 @@ def main():
                 limit=fetch_limit,
                 integration_context=integration_context
             )
+            # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+            # preserve context dict
             integration_context['incidents'] = remained_incidents
             demisto.setIntegrationContext(integration_context)
 
