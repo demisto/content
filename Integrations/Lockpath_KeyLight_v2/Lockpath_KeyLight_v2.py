@@ -2,6 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+from datetime import datetime, timedelta
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 FILTER_DICT = {'Contains': '1',
@@ -123,7 +125,7 @@ class Client(BaseClient):
         return_outputs(hr, ec, res)
 
     def return_filtered_records(self, component_id: str, page_size: str, page_index: str, suffix: str,
-                                filter_type: str = None, filter_field_id: str = None, filter_value: str = None) -> None:
+                                filter_type: str = None, filter_field_id: str = None, filter_value: str = None) -> dict:
         data = {'componentId': component_id,
                 'pageIndex': page_index,
                 'pageSize': page_size}
@@ -133,13 +135,7 @@ class Client(BaseClient):
         for result in res:
             result['ID'] = result.pop('Id')
             result['ComponentID'] = component_id
-        ec = {'Keylight.Record(val.ID == obj.ID)': res}
-        title = f'Records for component {component_id}'
-        if filter_type:
-            title += f' with filter: "{filter_type} {filter_value}"' \
-                f'on field {filter_field_id}'
-        hr = tableToMarkdown(title, res)
-        return_outputs(hr, ec, res)
+        return res
 
     def component_id_from_name(self, name: str) -> str:
         component_list = self._http_request('GET', '/ComponentService/GetComponentList')
@@ -147,7 +143,7 @@ class Client(BaseClient):
         for comp in component_list:
             if comp.get('Name') == name:
                 component = comp
-        return component.get('Id')
+        return str(component.get('Id'))
 
     def field_id_from_name(self, name: str, component_id: str) -> str:
         params = {'componentId': component_id}
@@ -238,8 +234,15 @@ def get_records_command(client: Client, args: dict) -> None:
     filter_type = args.get('filter_type')
     filter_value = args.get('filter_value', '')
     filter_field_id = args.get('filter_field_id', '')
-    client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetRecords',
+    res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetRecords',
                                    filter_type, filter_field_id, filter_value)
+    ec = {'Keylight.Record(val.ID == obj.ID)': res}
+    title = f'Records for component {component_id}'
+    if filter_type:
+        title += f' with filter: "{filter_type} {filter_value}"' \
+            f'on field {filter_field_id}'
+    hr = tableToMarkdown(title, res)
+    return_outputs(hr, ec, res)
 
 
 def get_detail_record_command(client: Client, args: dict) -> None:
@@ -254,8 +257,15 @@ def get_detail_records_command(client: Client, args: dict) -> None:
     filter_type = args.get('filter_type')
     filter_value = args.get('filter_value', '')
     filter_field_id = args.get('filter_field_id', '')
-    client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetDetailRecords',
+    res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetDetailRecords',
                                    filter_type, filter_field_id, filter_value)
+    ec = {'Keylight.Record(val.ID == obj.ID)': res}
+    title = f'Records for component {component_id}'
+    if filter_type:
+        title += f' with filter: "{filter_type} {filter_value}"' \
+            f'on field {filter_field_id}'
+    hr = tableToMarkdown(title, res)
+    return_outputs(hr, ec, res)
 
 
 def get_record_count_command(client: Client, args: dict) -> None:
@@ -304,16 +314,52 @@ def get_record_attachment_command(client: Client, args: dict) -> None:
 def fetch_incidents(client: Client, args: dict) -> None:
     name = demisto.params().get('component_name', '')
     filter_field = demisto.params().get('filter_field', '')
-    if not alias or not filter_field:
+    page_size = str(min(int(demisto.params().get('fetch_limit', '100')), 100))
+    if not name or not filter_field:
         raise ValueError("No component alias or field to filter by specified.")
-
+    last_fetch_time = demisto.getLastRun().get('last_fetch_time')
+    if not last_fetch_time:
+        now = datetime.now()
+        last_fetch = now - timedelta(days=20)
+        last_fetch_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
     # Find component ID
-    component_id = client.component_id_from_name(name)
+    component_id = demisto.getLastRun().get('component', {}).get(filter_field)
+    if not component_id:
+     component_id = client.component_id_from_name(name)
     if not component_id:
         raise ValueError("Could not find component name.")
+    field_id = demisto.getLastRun().get('field', {}).get(name)
     field_id = client.field_id_from_name(filter_field, component_id)
     if not field_id:
         raise ValueError("Could not find field name.")
+    res = client.return_filtered_records(component_id, page_size, '0', '/ComponentService/GetDetailRecords',
+                                         '>=', field_id, last_fetch_time)
+    incidents = []
+    max_fetch_time = last_fetch_time
+    for record in res:
+        occurred_at = ''
+        for field in record.get('FieldValues', []):
+            if field.get('Key') == field_id:
+                occurred_at = field.get('Value')
+                break
+        incident = {'name': f'Keylight record {record.get("DisplayName")}',
+                    'occurred': occurred_at,
+                    'rawJSON': record
+                    }
+        if parse_date_string(occurred_at) > parse_date_string(max_fetch_time):
+            max_fetch_time = occurred_at
+        incidents.append(incident)
+    print({'last_fetch_time': max_fetch_time,
+                        'component': {name: component_id,},
+                        'field': {filter_field: field_id}
+                        })
+    demisto.setLastRun({'last_fetch_time': max_fetch_time,
+                        'component': {name: component_id,},
+                        'field': {filter_field: field_id}
+                        })
+    demisto.incidents(incidents)
+
+
 
 
 
@@ -338,13 +384,13 @@ def main():
         'kl-get-field': get_field_command,
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
-        'kl-get-records': get_records_command,
+        'kl-get-filered-records': get_records_command,
         'kl-delete-record': 'ComponentService/DeleteRecord',
         'kl-create-record': 'ComponentService/CreateRecord',
         'kl-update-record': 'ComponentService/UpdateRecord',
-        'kl-get-detail-record': get_detail_record_command,
+        'kl-get-detailed-record': get_detail_record_command,
         'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
-        'kl-get-detail-records': get_detail_records_command,
+        'kl-get-detailed-filtered-records': get_detail_records_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
         'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
