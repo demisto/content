@@ -96,7 +96,7 @@ cp .hooks/* .git/hooks
 | [CircleCI](https://github.com/demisto/content/blob/master/docs/tests/circleci) | How we test using CircleCI |
 | [Mocks](https://github.com/demisto/content/blob/master/docs/tests/mocks) | Explanation of how to test using mocked data |
 | [GenericPolling Playbook](https://github.com/demisto/content/blob/master/docs/tests/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
-GenericPolling playbook |
-|[Debugging](https://github.com/demisto/content/blob/Internal-public/docs/Debugging/README.MD)| Explanation of how best to debug Demisto integrations and scripts|
-|[Long Running Containers](https://github.com/demisto/content/blob/Internal-public/docs/Long%20Running%20Containers/README.MD)|Explanation of using long running containers to run specific processes in an integration forever
-|[Test Playbook](https://github.com/demisto/content/blob/Internal-public/docs/Test%20Playbook/README.MD)| Explanation of how to test your integration using a playbook
+|[Debugging](https://github.com/demisto/content/blob/master/docs/Debugging)| Explanation of how best to debug Demisto integrations and scripts|
+|[Long Running Containers](https://github.com/demisto/content/blob/Internal-public/docs/long_running_containers)|Explanation of using long running containers to run specific processes in an integration forever
+|[Test Playbook](https://github.com/demisto/content/blob/master/docs/test_playbook)| Explanation of how to test your integration using a playbook
+|[Playbook Conventions](https://github.com/demisto/content/blob/master/docs/playbook_conventions)|Conventions and standards for our playbooks
