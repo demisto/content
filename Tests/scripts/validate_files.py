@@ -89,52 +89,53 @@ class FilesValidator(object):
             (modified_files_list, added_files_list, deleted_files). Tuple of sets.
         """
         all_files = files_string.split('\n')
-        deleted_files = set([])
-        added_files_list = set([])
-        modified_files_list = set([])
-        old_format_files = set([])
+        deleted_files = set()
+        added_files_list = set()
+        modified_files_list = set()
+        old_format_files = set()
         for f in all_files:
             file_data = f.split()
-            if not file_data:
-                continue
+            if file_data:
+                file_status = file_data[0]
+                file_path = file_data[1]
 
-            file_status = file_data[0]
-            file_path = file_data[1]
+                if file_status.lower().startswith('r'):
+                    file_status = 'r'
+                    file_path = file_data[2]
 
-            if file_status.lower().startswith('r'):
-                file_status = 'r'
-                file_path = file_data[2]
+                if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
+                        and not file_path.endswith('_test.py'):
+                    # naming convention - code file and yml file in packages must have same name.
+                    file_path = os.path.splitext(file_path)[0] + '.yml'
+                elif file_path.endswith('.js') or file_path.endswith('.py'):
+                    continue
 
-            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
-                    and not file_path.endswith('_test.py'):
-                # naming convention - code file and yml file in packages must have same name.
-                file_path = os.path.splitext(file_path)[0] + '.yml'
-            elif file_path.endswith('.js') or file_path.endswith('.py'):
-                continue
-
-            if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
-                    FilesValidator.is_py_script_or_integration(file_path):
-                old_format_files.add(file_path)
-            elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
-                modified_files_list.add(file_path)
-            elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
-                added_files_list.add(file_path)
-            elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
-                deleted_files.add(file_path)
-            elif file_status.lower().startswith('r') and checked_type(file_path):
-                # if a code file changed, take the associated yml file.
-                if checked_type(file_data[2], CODE_FILES_REGEX):
+                if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
+                        FilesValidator.is_py_script_or_integration(file_path):
+                    old_format_files.add(file_path)
+                elif file_status.lower() in KNOWN_FILE_STATUSES:
+                    if checked_type(file_path):
+                        if file_status.lower().startswith('r'):  # Renamed
+                            # if a code file changed, take the associated yml file.
+                            if checked_type(file_data[2], CODE_FILES_REGEX):
+                                modified_files_list.add(file_path)
+                            else:
+                                modified_files_list.add((file_data[1], file_data[2]))
+                        elif not file_path.startswith('.'):
+                            if file_status.lower() == 'm':
+                                modified_files_list.add(file_path)
+                            elif file_status.lower() == 'a':
+                                added_files_list.add(file_path)
+                            elif file_status.lower() == 'd':
+                                deleted_files.add(file_path)
+                elif checked_type(file_path, [SCHEMA_REGEX]):
                     modified_files_list.add(file_path)
-                else:
-                    modified_files_list.add((file_data[1], file_data[2]))
-            elif checked_type(file_path, [SCHEMA_REGEX]):
-                modified_files_list.add(file_path)
-            elif file_status.lower() not in KNOWN_FILE_STATUSES:
-                print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
-                    file_path, file_status))
+                elif file_status.lower() not in KNOWN_FILE_STATUSES:
+                    print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
+                        file_path, file_status))
 
-            elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
-                print_warning('Ignoring file path: {}'.format(file_path))
+                elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
+                    print_warning('Ignoring file path: {}'.format(file_path))
 
         modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
             modified_files_list,
@@ -170,8 +171,8 @@ class FilesValidator(object):
         if not is_circle:
             files_string = run_command('git diff --name-status --no-merges HEAD')
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-                non_committed_old_format_files = self.get_modified_files(files_string,
-                                                                         print_ignored_files=self.print_ignored_files)
+            non_committed_old_format_files = self.get_modified_files(files_string,
+                                                                     print_ignored_files=self.print_ignored_files)
 
             all_changed_files_string = run_command('git diff --name-status {}'.format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
