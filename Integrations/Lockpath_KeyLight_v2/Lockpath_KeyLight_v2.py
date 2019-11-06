@@ -119,7 +119,26 @@ class Client(BaseClient):
                   'DisplayName': res.get('DisplayName', '')
                   }
         ec = {'Keylight.Record(val.ID && val.ID==obj.ID))': record}
-        hr = tableToMarkdown(f'Details for record {record.get("ID")}:', record)
+        hr = tableToMarkdown(f'Details for record {record.get("DisplayName")}:', record)
+        return_outputs(hr, ec, res)
+
+    def return_filtered_records(self, component_id: str, page_size: str, page_index: str, suffix: str,
+                                filter_type: str = None, filter_field_id: str = None, filter_value: str = None) -> None:
+        data = {'componentId': component_id,
+                'pageIndex': page_index,
+                'pageSize': page_size}
+        if filter_type:
+            data['filters'] = [create_filter(filter_type, filter_value , filter_field_id)]
+        res = self._http_request('POST', suffix, json_data=data)
+        for result in res:
+            result['ID'] = result.pop('Id')
+            result['ComponentID'] = component_id
+        ec = {'Keylight.Record(val.ID == obj.ID)': res}
+        title = f'Records for component {component_id}'
+        if filter_type:
+            title += f' with filter: "{filter_type} {filter_value}"' \
+                f'on field {filter_field_id}'
+        hr = tableToMarkdown(title, res)
         return_outputs(hr, ec, res)
 
 
@@ -197,30 +216,74 @@ def get_record_command(client: Client, args: dict) -> None:
 
 
 def get_records_command(client: Client, args: dict) -> None:
-    page_size = min(int(args.get('page_size', '10')), 100)
+    page_size = str(min(int(args.get('page_size', '10')), 100))
     component_id = args.get('component_id', '')
-    data = {'componentId': component_id,
-            'pageIndex': args.get('page_index', '0'),
-            'pageSize': str(page_size)}
-    if args.get('filter_type'):
-        data['filters'] = [create_filter(args.get('filter_type', ''), args.get('filter_value', ''),
-                                        args.get('filter_field_id', ''))]
-    res = client._http_request('POST', '/ComponentService/GetRecords', json_data=data)
-    for result in res:
-        result['ID'] = result.pop('Id')
-        result['ComponentID'] = component_id
-    ec = {'Keylight.Record(val.ID == obj.ID)': res}
-    title = f'Records for component {component_id}'
-    if args.get('filter_type'):
-        title += f' with filter: "{args.get("filter_type")} {args.get("filter_value", "")} "' \
-            f'on field {args.get("filter_field_id", "")}'
-    hr = tableToMarkdown(title, res)
+    page_index = args.get('page_index', "0")
+    filter_type = args.get('filter_type')
+    filter_value = args.get('filter_value', '')
+    filter_field_id = args.get('filter_field_id', '')
+    client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetRecords',
+                                   filter_type, filter_field_id, filter_value)
+
+
+def get_detail_record_command(client: Client, args: dict) -> None:
+    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''),
+                          '/ComponentService/GetDetailRecord')
+
+
+def get_detail_records_command(client: Client, args: dict) -> None:
+    page_size = str(min(int(args.get('page_size', '10')), 100))
+    component_id = args.get('component_id', '')
+    page_index = args.get('page_index', "0")
+    filter_type = args.get('filter_type')
+    filter_value = args.get('filter_value', '')
+    filter_field_id = args.get('filter_field_id', '')
+    client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetDetailRecords',
+                                   filter_type, filter_field_id, filter_value)
+
+
+def get_record_count_command(client: Client, args: dict) -> None:
+    component_id = args.get('component_id', '')
+    filter_type = args.get('filter_type', '')
+    filter_value = args.get('filter_value', '')
+    filter_field_id = args.get('filter_field_id', '')
+    data = {'componentId': component_id}
+    data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
+    res = client._http_request('POST', '/ComponentService/GetRecordCount', json_data=data)
+    title = f'## There are __**{res}**__ records with filter:' \
+        f' "{filter_type} {filter_value}" on field {filter_field_id} in component {component_id}'
+    return_outputs(title)
+
+
+def get_record_attachments_command(client: Client, args: dict) -> None:
+    field_id = args.get('record_id', '')
+    record_id = args.get('record_id', '')
+    params = {'componentID': args.get('component_id', ''),
+              'recordId': record_id,
+              'fieldId': field_id
+              }
+    res = client._http_request('GET', '/ComponentService/GetRecordAttachments', params=params)
+    for doc in res:
+        doc['FieldID'] = doc.pop("FieldId")
+        doc['DocumentID'] = doc.pop('DocumentId')
+    hr = tableToMarkdown(f'Field {field_id} in record {record_id} has the following attachments:', res)
+    ec = {'Keylight.Attachment(val.FieldID == obj.FieldID && val.DocumentID == obj.DocumentID)': res}
     return_outputs(hr, ec, res)
 
 
-def get_detail_record_command(client: Client, args: dict):
-    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''),
-                          '/ComponentService/GetDetailRecord')
+
+def get_record_attachment_command(client: Client, args: dict) -> None:
+    field_id = args.get('record_id', '')
+    record_id = args.get('record_id', '')
+    doc_id = args.get('document_id', '')
+    params = {'componentID': args.get('component_id', ''),
+              'recordId': record_id,
+              'fieldId': field_id,
+              'documentId': doc_id
+              }
+    res = client._http_request('GET', '/ComponentService/GetRecordAttachment', params=params)
+    hr = f'## File {res.get("FileName", "")}:\n{res.get("FileData")}'
+    return_outputs(hr)
 
 
 def main():
@@ -232,13 +295,14 @@ def main():
     password = demisto.params().get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
 
+    #TODO make sure the outputs are correct.
     commands = {
         'kl-get-component-list': get_component_list_command,
         'kl-get-component': get_component_command,
         'kl-get-component-by-alias': get_component_by_alias_command,
         'kl-get-field-list': get_field_list_command,
         'kl-get-field': get_field_command,
-        'kl-get-record-count': 'ComponentService/GetRecordCount',
+        'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
         'kl-get-records': get_records_command,
         'kl-delete-record': 'ComponentService/DeleteRecord',
@@ -246,9 +310,9 @@ def main():
         'kl-update-record': 'ComponentService/UpdateRecord',
         'kl-get-detail-record': get_detail_record_command,
         'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
-        'kl-get-detail-records': 'ComponentService/GetDetailRecords',
-        'kl-get-record-attachment': 'ComponentService/GetRecordAttachment',
-        'kl-get-record-attachments': 'ComponentService/GetRecordAttachments',
+        'kl-get-detail-records': get_detail_records_command,
+        'kl-get-record-attachment': get_record_attachment_command,
+        'kl-get-record-attachments': get_record_attachments_command,
         'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments'
     }
 
@@ -261,6 +325,7 @@ def main():
 
         logged_in = client.login(username, password)
         if logged_in:
+            #TODO: add detailed exceptions: No records returned, no such component and so on.
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
