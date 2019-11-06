@@ -57,8 +57,8 @@ def test_fetch_switch_to_new_fetch(mocker, requests_mock):
     # only returned the new incident
     assert len(demisto.incidents.call_args[0][0]) == 1
     # now keeps only last_fetch_time and not ids
-    assert demisto.setLastRun.call_args[0][0].get('ids') == None
-    assert demisto.setLastRun.call_args[0][0].get('last_fetch_time') != None
+    assert demisto.setLastRun.call_args[0][0].get('ids') is None
+    assert demisto.setLastRun.call_args[0][0].get('last_fetch_time') is not None
 
     mocker.patch.object(demisto, 'getLastRun', return_value={'ids': [6122]})
     fetch_incidents()
