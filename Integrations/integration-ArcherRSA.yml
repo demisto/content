@@ -2079,6 +2079,7 @@ script:
 
         if (records && records.Contents && records.Contents.length > 0) {
             for (var i = 0; i < records.Contents.length; i++) {
+                details = "";
                 var res = records.Contents[i];
                 var labels = [];
                 var fields = Object.keys(res.Fields);
