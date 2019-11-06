@@ -61,7 +61,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a specific component by id.
+    description: Retrieves a component specified by its ID.
     execution: false
     name: kl-get-component
     outputs:
@@ -85,7 +85,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a specific component by alias.
+    description: Retrieves a component specified by its Alias.
     execution: false
     name: kl-get-component-by-alias
     outputs:
@@ -109,7 +109,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get the list of fields in a component.
+    description: Retrieves detail field listing for a component specified by its ID.
     execution: false
     name: kl-get-field-list
     outputs:
@@ -139,7 +139,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a specific field by its ID.
+    description: Retrieves details for a field specified by its ID.
     execution: false
     name: kl-get-field
     outputs:
@@ -181,7 +181,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the set of fields for a given record within a component.
+    description: Returns the complete set of fields for a given record within a component.
     execution: false
     name: kl-get-record
     outputs:
@@ -254,8 +254,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return the title/default field for a set of records within a chosen
-      component
+    description: |-
+      Returns the title/default field for a set of records within a chosen component.
+      Filters may be applied to return only the records meeting selected criteria.
     execution: false
     name: kl-get-records
   - arguments:
@@ -278,13 +279,180 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves record information based on the provided component ID and
-      record ID, with lookup field report details
+    description: |-
+      Retrieves record information based on the provided component ID and record
+      ID, with lookup field report details. Lookup field records will detail information for
+      fields on their report definition, if on is defined.
     execution: false
     name: kl-get-detail-record
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The ID of the desired component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The index of the page of result to return. Must be >= 0
+      isArray: false
+      name: page_index
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The index of the page of result to return. Must be between 0 and
+        100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of filter to apply.
+      isArray: false
+      name: filter_type
+      predefined:
+      - Contains
+      - Excludes
+      - Starts With
+      - Ends With
+      - =
+      - <>
+      - '>'
+      - <
+      - '>='
+      - <=
+      - Between
+      - Not Between
+      - Is Null
+      - Is Not Null
+      required: false
+      secret: false
+    - default: false
+      description: The field ID to apply the filter on.
+      isArray: false
+      name: filter_field_id
+      required: false
+      secret: false
+    - default: false
+      description: The value to filter by.
+      isArray: false
+      name: filter_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Provides the ability to run a search with filters and paging while
+      returning a high level of detail for each record.
     execution: false
     name: kl-get-detail-records
+  - arguments:
+    - default: false
+      description: The ID of the desired component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of filter to apply.
+      isArray: false
+      name: filter_type
+      predefined:
+      - Contains
+      - Excludes
+      - Starts With
+      - Ends With
+      - =
+      - <>
+      - '>'
+      - <
+      - '>='
+      - <=
+      - Between
+      - Not Between
+      - Is Null
+      - Is Not Null
+      required: true
+      secret: false
+    - default: false
+      description: The field ID to apply the filter on.
+      isArray: false
+      name: filter_field_id
+      required: true
+      secret: false
+    - default: false
+      description: The value to filter by.
+      isArray: false
+      name: filter_value
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the number of records for a specific component and filter.
+    execution: false
+    name: kl-get-record-count
+  - arguments:
+    - default: false
+      description: The ID of the desired component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The record ID.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    - default: false
+      description: The field ID that holds the attachments. Has to be of type "Documents".
+      isArray: false
+      name: field_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: kl-get-record-attachments
+    outputs:
+    - contextPath: Keylight.Attachment.FileName
+      description: The name of the attachment.
+      type: String
+    - contextPath: Keylight.Attachment.FieldID
+      description: The field ID that the attachment is in.
+      type: String
+    - contextPath: Keylight.Attachment.DocumentID
+      description: The ID of the document.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the desired component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The record ID.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    - default: false
+      description: The field ID that holds the attachments. Has to be of type "Documents".
+      isArray: false
+      name: field_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the document.
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a single attachment associated with the provided component ID,
+      record ID, documents field ID, and document ID.
+    execution: false
+    name: kl-get-record-attachment
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
