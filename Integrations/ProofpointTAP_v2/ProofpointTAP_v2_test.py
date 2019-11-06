@@ -234,7 +234,7 @@ def test_first_fetch_incidents(mocked_parse_date_range, requests_mock):
         proxies=None
     )
 
-    next_run, incidents = fetch_incidents(
+    next_run, incidents, _ = fetch_incidents(
         client=client,
         last_run={},
         first_fetch_time="3 month",
@@ -263,7 +263,7 @@ def test_next_fetch(requests_mock):
         proxies=None
     )
 
-    next_run, incidents = fetch_incidents(
+    next_run, incidents, _ = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_date},
         first_fetch_time="3 month",
@@ -290,7 +290,7 @@ def test_fetch_limit(requests_mock):
         proxies=None
     )
 
-    next_run, incidents = fetch_incidents(
+    next_run, incidents, _ = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_date},
         first_fetch_time="3 month",

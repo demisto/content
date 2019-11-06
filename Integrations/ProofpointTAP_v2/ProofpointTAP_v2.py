@@ -157,25 +157,29 @@ def get_events_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50):
+def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50,
+                    integration_context=None):
     # Get the last fetch time, if exists
     last_fetch = last_run.get('last_fetch')
-
+    incidents: list = []
+    if integration_context:
+        remained_incidents = integration_context.get('incidents')
+        # return incidents if exists in context
+        if remained_incidents:
+            return last_run, remained_incidents[:limit], remained_incidents[limit:]
     # Handle first time fetch, fetch incidents retroactively
     if not last_fetch:
         last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    incidents: list = []
     fetch_times = get_fetch_times(last_fetch)
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
         if index < fetch_time_count - 1:
-            raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
-                                           event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
+            last_fetch = fetch_times[index + 1]
         else:
-            raw_events = client.get_events(interval=fetch_time + "/" + get_now().strftime(DATE_FORMAT),
-                                           event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
+            last_fetch = get_now().strftime(DATE_FORMAT)
+        raw_events = client.get_events(interval=fetch_time + "/" + last_fetch,
+                                       event_type_filter=event_type_filter,
+                                       threat_status=threat_status, threat_type=threat_type)
 
         message_delivered = raw_events.get("messagesDelivered", [])
         for raw_event in message_delivered:
@@ -239,18 +243,12 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             }
             incidents.append(incident)
 
-    # limit incidents to the limit given
-    incidents.sort(key=lambda a: a.get('occurred'))
-    if len(incidents) > limit:
-        incidents = incidents[:limit]
-
     # Cut the milliseconds from last fetch if exists
-    last_fetch = incidents[-1].get('occurred')
     last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
     last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
     last_fetch = (last_fetch_datetime + timedelta(seconds=1)).strftime(DATE_FORMAT)
     next_run = {'last_fetch': last_fetch}
-    return next_run, incidents
+    return next_run, incidents[:limit], incidents[limit:]
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -293,17 +291,21 @@ def main():
             return_outputs(results, None)
 
         elif demisto.command() == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
+            integration_context = demisto.getIntegrationContext()
+            next_run, incidents, remained_incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=fetch_time,
                 event_type_filter=event_type_filter,
                 threat_status=threat_status,
                 threat_type=threat_type,
-                limit=fetch_limit
+                limit=fetch_limit,
+                integration_context=integration_context
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+            integration_context['incidents'] = remained_incidents
+            demisto.setIntegrationContext(integration_context)
 
         elif demisto.command() == 'proofpoint-get-events':
             return_outputs(*get_events_command(client, demisto.args()))
