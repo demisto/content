@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Change the url argument in the ***panorama-log-query*** from equal to contains.
   - Improved the descriptions of the ***panorama-move-rule*** command.
 
 ## [19.10.2] - 2019-10-29

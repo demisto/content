@@ -3615,7 +3615,7 @@ def build_logs_query(address_src=None, address_dst=None,
     if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += build_array_query(query, url, 'url', 'eq')
+        query += build_array_query(query, url, 'url', 'contains')
     if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
