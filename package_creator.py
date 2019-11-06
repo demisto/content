@@ -83,7 +83,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         else:
             yml_text = 'fromversion: 5.0.0\n' + yml_text
         if 'toversion' in yml_data:
-            yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text, flags=re.MULTILINE)
+            yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text45, flags=re.MULTILINE)
         else:
             yml_text45 = 'toversion: 4.5.9\n' + yml_text45
         yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'), yml_text45, flags=re.MULTILINE)
