@@ -63,7 +63,3 @@ def test_fetch_switch_to_new_fetch(mocker, requests_mock):
     mocker.patch.object(demisto, 'getLastRun', return_value={'ids': [6122]})
     fetch_incidents()
     assert len(demisto.incidents.call_args[0][0]) == 2
-
-
-
-
