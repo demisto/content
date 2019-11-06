@@ -250,12 +250,7 @@ class Client(BaseClient):
             Response content
         """
         suffix = '/api/v3/alerts'
-        try:
-            self._http_request('GET', suffix, params={'limit': 1})
-        except DemistoException as e:
-            return_error(
-                'Encountered an issue accessing the API. Please make sure you entered the right Helix ID and API Token.',
-                error=e)
+        self._http_request('GET', suffix, params={'limit': 1})
 
     def list_alerts(self, limit: int = None, offset: int = None, created_at__gte: str = None) -> Dict:
         """Returns all alerts by sending a GET request.
@@ -1708,8 +1703,15 @@ def main():  # pragma: no cover
             return_outputs(readable_output, outputs, raw_response)
     # Log exceptions
     except Exception as e:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
-        return_error(err_msg, error=e)
+        err_msg = str(e)
+        if '[401]' in err_msg:
+            return_error('Encountered an issue accessing the API. Please make sure you entered the right Helix ID and '
+                         'API Token.')
+        elif 'requests.exceptions' in err_msg:
+            return_error('Encountered an error reaching the endpoint, please verify that the server URL parameter'
+                         ' is correct and that you have access to the server from your host.')
+        else:
+            return_error(f'Error in {INTEGRATION_NAME} Integration [{e}]', error=e)
 
 
 if __name__ == 'builtins':  # pragma: no cover
