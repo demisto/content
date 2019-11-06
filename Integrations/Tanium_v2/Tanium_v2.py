@@ -30,7 +30,7 @@ class Client(BaseClient):
         if res.status_code == 403:
             self.update_session()
             res = self._http_request(method, url_suffix, headers={'session': self.session}, json_data=data,
-                                     ok_codes=[200, 400, 403, 404])
+                                     ok_codes=[200, 400, 404])
             return res
 
         if res.status_code == 404 or res.status_code == 400:
@@ -117,7 +117,15 @@ class Client(BaseClient):
 
     def parse_question_results(self, result):
         results_sets = result.get('data').get('result_sets')[0]
-        if results_sets.get('estimated_total') != results_sets.get('mr_tested'):
+        estimated_total = results_sets.get('estimated_total')
+        mr_tested = results_sets.get('mr_tested')
+
+        if not estimated_total and not mr_tested:
+            return None
+
+        percantage = mr_tested/estimated_total * 100
+
+        if percantage < 95:
             return None
         if results_sets.get('row_count') == 0:
             return []
@@ -287,8 +295,6 @@ class Client(BaseClient):
         item = {
             'ActionGroupId': action.get('action_group').get('id'),
             'ActionGroupName': action.get('action_group').get('name'),
-            'ApproverId': action.get('approver').get('id'),
-            'ApproverName': action.get('approver').get('name'),
             'CreationTime': action.get('creation_time'),
             'ExpirationTime': action.get('expiration_time'),
             'ExpireSeconds': action.get('expire_seconds'),
@@ -310,6 +316,12 @@ class Client(BaseClient):
             item['UserDomain'] = user.get('domain')
             item['UserId'] = user.get('id')
             item['UserName'] = user.get('name')
+
+        approver = action.get('approver')
+        if approver:
+            item['ApproverId'] = approver.get('id')
+            item['ApproverName'] = approver.get('name')
+
         return item
 
     def get_saved_action_item(self, action):
@@ -455,6 +467,7 @@ def get_packages(client, data_args):
     raw_response = client.do_request('GET', 'packages')
     packages = []
 
+    # ignoring the last item because its not a package object
     for package in raw_response.get('data', [])[:-1][:count]:
         package = client.get_package_item(package)
 
@@ -498,6 +511,7 @@ def get_sensors(client, data_args):
     res = client.do_request('GET', 'sensors/')
 
     sensors = []
+    # ignoring the last item because its not a sensor object
     for sensor in res.get('data', [])[:-1][:count]:
         sensor = client.get_sensor_item(sensor)
         del sensor['Parameters']
@@ -609,6 +623,7 @@ def get_saved_questions(client, data_args):
     raw_response = client.do_request('GET', 'saved_questions')
 
     questions = []
+    # ignoring the last item because its not a saved question object
     for question in raw_response.get('data', [])[:-1][:count]:
         question = client.get_saved_question_item(question)
         questions.append(question)
@@ -622,16 +637,22 @@ def get_saved_questions(client, data_args):
 def create_action(client, data_args):
     package_id = data_args.get('package-id')
     package_name = data_args.get('package-name')
-    group_id = data_args.get('target-group-id')
-    group_question = data_args.get('target-group-question')
+    target_group_id = data_args.get('target-group-id')
+    target_group_name = data_args.get('target-group-name')
+    action_group_id = data_args.get('action-group-id')
+    action_group_name = data_args.get('action-group-name')
+    #group_question = data_args.get('target-group-question')
     parameters = data_args.get('parameters')
     parameters_condition = []  # type: ignore
 
     if not package_id and not package_name:
         raise ValueError('package id and package name are missing, Please specify one of them.')
 
-    if not group_id and not group_question:
-        raise ValueError('target group id and target group question are missing, Please specify one of them.')
+    if not target_group_id and not target_group_name:
+        raise ValueError('target group id and target group name are missing, Please specify one of them.')
+
+    if not action_group_id and not action_group_name:
+        raise ValueError('action group id and action group name are missing, Please specify one of them.')
 
     if package_name:
         get_package_res = client.do_request('GET', 'packages/by-name/' + package_name)
@@ -650,18 +671,30 @@ def create_action(client, data_args):
         for param in parameters_condition:
             body['package_spec']['parameters'].append(param)
 
-    group = {}  # type: ignore
-    if group_question:
-        group_res = client.parse_question(group_question, None)
-        group = group_res.get('group')
 
-        if not group:
-            raise ValueError('Failed to parse target group question')
+    #if group_question:
+    #    group_res = client.parse_question(group_question, None)
+    #    group = group_res.get('group')
+    #
+    #    if not group:
+    #        raise ValueError('Failed to parse target group question')
 
-    if group_id:
-        group = {'id': group_id}
+    target_group = {}  # type: ignore
+    if target_group_id:
+        target_group = {'id': target_group_id}
+    if target_group_name:
+        target_group = {'name': target_group_name}
 
-    body['target_group'] = group
+    body['target_group'] = target_group
+
+    action_group = {}  # type: ignore
+    if action_group_id:
+        action_group = {'id': action_group_id}
+    if action_group_name:
+        action_group = {'name': action_group_name}
+
+    body['target_group'] = target_group
+    body['action_group'] = action_group
 
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
@@ -689,6 +722,7 @@ def get_actions(client, data_args):
     raw_response = client.do_request('GET', 'actions')
 
     actions = []
+    # ignoring the last item because its not action object
     for action in raw_response.get('data', [])[:-1][:count]:
         action = client.get_action_item(action)
         actions.append(action)
@@ -739,6 +773,7 @@ def get_saved_actions(client, data_args):
     raw_response = client.do_request('GET', 'saved_actions')
 
     actions = []
+    # ignoring the last item because its not a saved action object
     for action in raw_response.get('data', [])[:-1][:count]:
         action = client.get_saved_action_item(action)
         actions.append(action)
@@ -871,8 +906,7 @@ def main():
     password = params.get('credentials').get('password')
     domain = params.get('domain')
     # Remove trailing slash to prevent wrong URL path to service
-    server = params['url'].strip('/') \
-        if (params['url'] and params['url'].endswith('/')) else params['url']
+    server = params['url'].strip('/')
     # Service base URL
     base_url = server + '/api/v2/'
     # Should we use SSL
@@ -921,8 +955,6 @@ def main():
     except Exception as e:
         err_msg = f'Error in Tanium v2 Integration [{e}]'
         return_error(err_msg, error=e)
-    finally:
-        LOG.print_log()
 
 
 if __name__ == 'builtins':

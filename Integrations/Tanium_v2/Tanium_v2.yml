@@ -1013,14 +1013,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: The target group question to gets the machines for deploy the package.
+      description: The target group name to deploy the package.
       isArray: false
-      name: target-group-question
+      name: target-group-name
+      required: false
+      secret: false
+    - default: false
+      description: The action group ID to deploy the package.
+      isArray: false
+      name: action-group-id
+      required: false
+      secret: false
+    - default: false
+      description: The action group name to deploy the package.
+      isArray: false
+      name: action-group-name
       required: false
       secret: false
     deprecated: false
-    description: Create action object based on package name or package ID. Group ID
-      or group question is required, when both of them are exists- it takes the ID.
+    description: Create action object based on package name or package ID. Tagret
+      group and action group are required and can passed by name or ID, when both
+      of them are exists- it takes the ID.
     execution: false
     name: tn-create-action
     outputs:
@@ -1404,6 +1417,5 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: python3
 tests:
 - Tanium v2 - Test
