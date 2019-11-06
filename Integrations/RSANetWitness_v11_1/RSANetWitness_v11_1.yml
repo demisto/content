@@ -45,7 +45,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 100
-  display: Maxmimum amount of incidents to ingest in one fetch cycle.
+  display: 'Fetch limit: the maximum number of incidents to fetch'
   name: fetch_limit
   required: false
   type: 0
