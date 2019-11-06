@@ -141,6 +141,23 @@ class Client(BaseClient):
         hr = tableToMarkdown(title, res)
         return_outputs(hr, ec, res)
 
+    def component_id_from_name(self, name: str) -> str:
+        component_list = self._http_request('GET', '/ComponentService/GetComponentList')
+        component = {}
+        for comp in component_list:
+            if comp.get('Name') == name:
+                component = comp
+        return component.get('Id')
+
+    def field_id_from_name(self, name: str, component_id: str) -> str:
+        params = {'componentId': component_id}
+        field_list = self._http_request('GET', '/ComponentService/GetFieldList', params=params)
+        field_id = ''
+        for field in field_list:
+            if field.get('Name') == name:
+                field_id = field.get('Id')
+        return field_id
+
 
 '''HELPER FUNCTIONS'''
 def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> dict:
@@ -153,6 +170,7 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
         'Value': filter_value
     }
     return filter
+
 
 '''COMMAND FUNCTIONS'''
 
@@ -169,7 +187,6 @@ def get_component_list_command(client: Client, args: dict) -> None:
     client.return_components('/ComponentService/GetComponentList')
 
 
-
 def get_component_command(client: Client, args: dict) -> None:
     '''
     Args:
@@ -181,7 +198,6 @@ def get_component_command(client: Client, args: dict) -> None:
     '''
     params = {'id': args.get('component_id')}
     client.return_components('/ComponentService/GetComponent', params)
-
 
 
 def get_component_by_alias_command(client: Client, args: dict) -> None:
@@ -271,7 +287,6 @@ def get_record_attachments_command(client: Client, args: dict) -> None:
     return_outputs(hr, ec, res)
 
 
-
 def get_record_attachment_command(client: Client, args: dict) -> None:
     field_id = args.get('record_id', '')
     record_id = args.get('record_id', '')
@@ -284,6 +299,25 @@ def get_record_attachment_command(client: Client, args: dict) -> None:
     res = client._http_request('GET', '/ComponentService/GetRecordAttachment', params=params)
     hr = f'## File {res.get("FileName", "")}:\n{res.get("FileData")}'
     return_outputs(hr)
+
+
+def fetch_incidents(client: Client, args: dict) -> None:
+    name = demisto.params().get('component_name', '')
+    filter_field = demisto.params().get('filter_field', '')
+    if not alias or not filter_field:
+        raise ValueError("No component alias or field to filter by specified.")
+
+    # Find component ID
+    component_id = client.component_id_from_name(name)
+    if not component_id:
+        raise ValueError("Could not find component name.")
+    field_id = client.field_id_from_name(filter_field, component_id)
+    if not field_id:
+        raise ValueError("Could not find field name.")
+
+
+
+
 
 
 def main():
@@ -313,7 +347,8 @@ def main():
         'kl-get-detail-records': get_detail_records_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
-        'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments'
+        'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
+        'fetch-incidents': fetch_incidents
     }
 
     LOG(f'Command being called is {demisto.command()}')
