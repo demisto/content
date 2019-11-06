@@ -127,7 +127,7 @@ def scp_execute(file_name: str, file_path: str):
 
 
 def edl_get_external_file(file_path: str):
-    command = f'cat {file_path}'
+    command = f'cat \'{file_path}\''
     result = ssh_execute(command)
     return result
 
