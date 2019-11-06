@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+  - Improved the descriptions of the ***panorama-move-rule*** command.
 
 ## [19.10.2] - 2019-10-29
 Added the ***panorama-security-policy-match*** command.
