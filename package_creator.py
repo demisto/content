@@ -76,6 +76,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     output_map = {output_path: yml_text}
     if 'dockerimage45' in script_obj:
         # we need to split into two files 45 and 50. Current one will be from version 5.0
+        yml_text = re.sub(r'^\s*dockerimage45:.*\n?', '', yml_text, flags=re.MULTILINE)  # remove the dockerimage45 line
         yml_text45 = yml_text
         if 'fromversion' in yml_data:
             yml_text = re.sub(r'^fromversion:.*$', 'fromversion: 5.0.0', yml_text, flags=re.MULTILINE)
