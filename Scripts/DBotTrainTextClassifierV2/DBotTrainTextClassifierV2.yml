@@ -49,7 +49,8 @@ args:
   required: false
   secret: false
 - default: false
-  description: The field name with the label
+  description: The field name with the label. Support comma-separated list - the first
+    non-empty value will be taken.
   isArray: false
   name: tagField
   required: true
@@ -79,7 +80,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: pickle_filename
-  description: "The input type"
+  description: The input type
   isArray: false
   name: inputType
   predefined:
