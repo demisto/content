@@ -1896,6 +1896,10 @@
         {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
+        },
+        {
+            "integrations": "Kenna",
+            "playbookID": "Kenna Test"
         }
     ],
     "skipped_tests": {
