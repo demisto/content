@@ -432,7 +432,7 @@ class FilesValidator(object):
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
             if not prev_ver:
                 # validate against master if no version was provided
-                prev_ver = 'master'
+                prev_ver = 'origin/master'
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
         else:
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
