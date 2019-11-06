@@ -1,7 +1,7 @@
 # Unit Testing
 Unit testing should be used to test small units of code in an isolated and deterministic fashion. Unit tests should avoid performing communication with external APIs and should prefer to use mocking. Testing actual interaction with external APIs should be performed via Test Playbooks. Unit testing is currently only supported for Python (no JS).
 # Environment Setup
-In order to work with unit testing the integration or automation script need to be developed in package (folder) format, where the yml file is separated from the python file and resides in its own directory.
+In order to work with unit testing the integration or automation script need to be developed in [package (directory) format](../package_directory_structure/README.MD), where the yml file is separated from the python file and resides in its own directory.
 
 ## Setup Pipenv 
 To run locally the unit tests we want to setup a virtual environment with all required dependencies (both runtime and development). To achieve this we use [Pipenv](https://pipenv.readthedocs.io/en/latest/). Setup:
@@ -17,7 +17,7 @@ You should now have a managed virtual environment to run unit tests locally.
 ## Setup PyCharm 
 We recommend using PyCharm with the Demisto Plugin. This is optional and you can also run/debug unit tests with other ides (such as VS Code), but only PyCharm currently has a dedicated plugin, which can manage the yml file via the UI and also provide remote execution. See: https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm. Setup: 
 
-* **Install the Demisto Plugin**: Content team is currently using a pre-release version of the plugin. Search the slack channel to download the latest.
+* **Install the Demisto Plugin**: Install with-in PyCharm by navigating to `Preferences.. -> Plugins`. Or download and install from [here](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm/versions)
 * **Open Pycharm**: Open PyCharm where the root folder is the folder you wish to develop within. 
 * **Choose Interpreter**: Choose the Pipenv interpreter (with all dependencies we setup in the previous step). See: https://www.jetbrains.com/help/pycharm/configuring-python-interpreter.html
 * **Enable PyTest**: We run our unit tests with `pytest`. See the following on how to enable PyTest: https://www.jetbrains.com/help/pycharm/pytest.html
@@ -66,6 +66,7 @@ Run the script with `-h` to see command line options:
 ./Tests/scripts/pkg_dev_test_tasks.py -h
 usage: pkg_dev_test_tasks.py [-h] -d DIR [--no-pylint] [--no-mypy]
                              [--no-flake8] [--no-test] [-k] [-v]
+                             [--cpu-num CPU_NUM]
 
 Run lintings (flake8, mypy, pylint) and pytest. pylint and pytest will run
 within the docker image of an integration/script. Meant to be used with
@@ -83,6 +84,9 @@ optional arguments:
   --no-test             Do NOT test (skip pytest) (default: False)
   -k, --keep-container  Keep the test container (default: False)
   -v, --verbose         Verbose output (default: False)
+  --cpu-num CPU_NUM     Number of CPUs to run pytest on (can set to `auto` for
+                        automatic detection of the number of CPUs.) (default:
+                        0)
   ```
 
 Sample output:
@@ -104,4 +108,11 @@ Sample output:
 ```
 docker run --rm -it devtestdemisto/python:1.3-alpine-1b9f5bee16a24c3f5463e324c1bb075e sh
 ```
+
+* If you have faced the error `ValueError: unknown locale: UTF-8` when running `pkg_dev_test_tasks.py`, add these lines to your ~/.bash_profile: 
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
+
 

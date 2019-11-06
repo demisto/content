@@ -39,7 +39,6 @@ def sign_email(client: Client, args: Dict):
     send a S/MIME-signed message via SMTP.
     """
     message_body = args.get('message_body', '')
-
     buf = makebuf(message_body.encode())
 
     client.smime.load_key(client.private_key_file, client.public_key_file)
@@ -48,15 +47,14 @@ def sign_email(client: Client, args: Dict):
     buf = makebuf(message_body.encode())
 
     out = BIO.MemoryBuffer()
-    client.smime.write(out, p7, buf)
 
+    client.smime.write(out, p7, buf, SMIME.PKCS7_TEXT)
     signed = out.read().decode('utf-8')
     signed_message = signed.split('\n\n')
     headers = signed_message[0].replace(': ', '=').replace('\n', ',')
-    body = signed_message[2:]
     context = {
         'SMIME.Signed': {
-            'Message': body,
+            'Message': signed,
             'Headers': headers
         }
     }
@@ -73,18 +71,14 @@ def encrypt_email_body(client: Client, args: Dict):
 
     """
     message_body = args.get('message', '').encode('utf-8')
-
     buf = makebuf(message_body)
 
     x509 = X509.load_cert(client.public_key_file)
     sk = X509.X509_Stack()
     sk.push(x509)
     client.smime.set_x509_stack(sk)
-
     client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
-
     p7 = client.smime.encrypt(buf)
-
     out = BIO.MemoryBuffer()
 
     client.smime.write(out, p7)
@@ -156,6 +150,55 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     return human_readable, entry_context
 
 
+def sign_and_encrypt(client: Client, args: Dict):
+
+    message = args.get('message', '').encode('utf-8')
+    msg_bio = BIO.MemoryBuffer(message)
+    sign = client.private_key_file
+    encrypt = client.public_key_file
+
+    if sign:
+        client.smime.load_key(client.private_key_file, client.public_key_file)
+        if encrypt:
+            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT)
+        else:
+            p7 = client.smime.sign(msg_bio, flags=SMIME.PKCS7_TEXT | SMIME.PKCS7_DETACHED)
+        msg_bio = BIO.MemoryBuffer(message)  # Recreate coz sign() has consumed it.
+
+    if encrypt:
+        x509 = X509.load_cert(client.public_key_file)
+        sk = X509.X509_Stack()
+        sk.push(x509)
+        client.smime.set_x509_stack(sk)
+
+        client.smime.set_cipher(SMIME.Cipher('des_ede3_cbc'))
+        tmp_bio = BIO.MemoryBuffer()
+        if sign:
+            client.smime.write(tmp_bio, p7)
+        else:
+            tmp_bio.write(message)
+        p7 = client.smime.encrypt(tmp_bio)
+
+    out = BIO.MemoryBuffer()
+    if encrypt:
+        client.smime.write(out, p7)
+    else:
+        if sign:
+            client.smime.write(out, p7, msg_bio, SMIME.PKCS7_TEXT)
+        else:
+            out.write('\r\n')
+            out.write(message)
+
+    msg = out.read().decode('utf-8')
+    entry_context = {
+        'SMIME.SignedAndEncrypted': {
+            'Message': msg
+        }
+    }
+
+    return msg, entry_context
+
+
 def test_module(client, *_):
     message_body = 'testing'
     try:
@@ -185,7 +228,8 @@ def main():
         'smime-sign-email': sign_email,
         'smime-encrypt-email-body': encrypt_email_body,
         'smime-verify-sign': verify,
-        'smime-decrypt-email-body': decrypt_email_body
+        'smime-decrypt-email-body': decrypt_email_body,
+        'smime-sign-and-encrypt': sign_and_encrypt
     }
     try:
         command = demisto.command()
