@@ -58,7 +58,7 @@ configuration:
   name: bot_name
   required: false
   type: 0
-- display: Bot icon in Slack - URL Image (Demisto icon by default)
+- display: Bot icon in Slack - Image URL (Demisto icon by default)
   name: bot_icon
   required: false
   type: 0

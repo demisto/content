@@ -9,6 +9,7 @@ from distutils.util import strtobool
 import asyncio
 import concurrent
 import requests
+import ssl
 from typing import Tuple
 
 # disable unsecure warnings
@@ -55,6 +56,7 @@ NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
+SSL_CONTEXT: ssl.SSLContext
 QUESTION_LIFETIME: int
 BOT_NAME: str
 BOT_ICON_URL: str
@@ -711,8 +713,11 @@ async def slack_loop():
                 token=BOT_TOKEN,
                 run_async=True,
                 loop=loop,
-                auto_reconnect=False
+                auto_reconnect=False,
+                proxy=PROXY,
+                ssl=SSL_CONTEXT
             )
+
             client_future = rtm_client.start()
             while True:
                 await asyncio.sleep(10)
@@ -1644,19 +1649,27 @@ def init_globals():
     """
     global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
-    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT
+    global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
+
+    VERIFY_CERT = not demisto.params().get('unsecure', False)
+    if not VERIFY_CERT:
+        SSL_CONTEXT = ssl.create_default_context()
+        SSL_CONTEXT.check_hostname = False
+        SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+    else:
+        SSL_CONTEXT = None  # type: ignore[assignment]
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
-    PROXY = handle_proxy().get('https')
+    proxies = handle_proxy()
+    PROXY = proxies.get('http')
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY)
-    CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY)
+    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
+    CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
     INCIDENT_TYPE = demisto.params().get('incidentType')
-    VERIFY_CERT = not demisto.params().get('unsecure', False)
     BOT_NAME = demisto.params().get('bot_name')
     BOT_ICON_URL = demisto.params().get('bot_icon')
     MAX_LIMIT_TIME = int(demisto.params().get('max_limit_time', '60'))

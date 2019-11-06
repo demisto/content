@@ -34,7 +34,7 @@
       <li><strong>Trust any certificate (not secure)</strong></li>
       <li><strong>Long running instance. Required for investigation mirroring and direct messages.</strong></li>
       <li><strong>Bot display name in Slack (Demisto Integration by default)</strong></li>
-      <li><strong>Bot icon in Slack - URL Image (Demisto icon by default)</strong></li>
+      <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
       <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
       <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
     </ul>
@@ -751,6 +751,7 @@ This request is processed and stored by a dedicated endpoint outside of Demisto 
 <h4>Important! The interactions work only with the Demisto Integration bot - the only application that's allowed to send requests to the dedicated endpoint(for security reasons). They will not work with another application.</h4>
 <h2>Known Limitations</h2>
 <ul>
+  <li>Due to limitations of the `aiohttp` library, only http proxies are supported.</li>
   <li>Channels are created by the Slack user who authorized the application. Thus, this user will be in every channel that the integration creates. You cannot kick this user, but they can leave.</li>
   <li>The integration can only manage channels that the application is a member of. Otherwise those channels will not be found.</li>
   <li>Currently, the integration does not support working without verifying SSL certificates. The parameter applies only to the endpoint for interactive responses.</li>
