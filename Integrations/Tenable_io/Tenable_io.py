@@ -347,10 +347,10 @@ def get_vulnerability_details_command():
 def args_to_request_params(hostname, ip, date_range):
     params = {"filter.0.filter": "host.target", "filter.0.quality": "eq"}
     if date_range:
-        try:
-            params["date_range"] = int(date_range)
-        except ValueError:
+        if not date_range.isdigit():
             return_error("Invalid date range: {}".format(date_range))
+        else:
+            params["date_range"] = date_range
     if hostname:
         params["filter.0.value"] = hostname
         return params, hostname
