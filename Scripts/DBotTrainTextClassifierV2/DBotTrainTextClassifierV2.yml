@@ -101,6 +101,18 @@ args:
   name: keywordMinScore
   required: false
   secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: macro avg
+  description: The mertic to use for evaluating the model
+  isArray: false
+  name: metric
+  predefined:
+  - micro avg
+  - macro avg
+  - weighted avgm
+  required: false
+  secret: false
 comment: Train a machine learning text classifier
 commonfields:
   id: d7105a84-8fd8-45a4-b2d7-2b0c01062871
