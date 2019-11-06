@@ -123,7 +123,7 @@ class Client(BaseClient):
         if not estimated_total and not mr_tested:
             return None
 
-        percantage = mr_tested/estimated_total * 100
+        percantage = mr_tested / estimated_total * 100
 
         if percantage < 95:
             return None
@@ -556,7 +556,7 @@ def get_question_result(client, data_args):
     if rows is None:
         context = {'QuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\
-               {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}, res
+            {f'Tanium.QuestionResult(val.QuestionID == {id_})': context}, res
 
     context = {'QuestionID': id_, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
@@ -609,7 +609,7 @@ def get_saved_question_result(client, data_args):
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\
-               {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
+                {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
 
     context = {'SavedQuestionID': id_, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
@@ -641,7 +641,6 @@ def create_action(client, data_args):
     target_group_name = data_args.get('target-group-name')
     action_group_id = data_args.get('action-group-id')
     action_group_name = data_args.get('action-group-name')
-    #group_question = data_args.get('target-group-question')
     parameters = data_args.get('parameters')
     parameters_condition = []  # type: ignore
 
@@ -670,14 +669,6 @@ def create_action(client, data_args):
         body['package_spec']['parameters'] = []
         for param in parameters_condition:
             body['package_spec']['parameters'].append(param)
-
-
-    #if group_question:
-    #    group_res = client.parse_question(group_question, None)
-    #    group = group_res.get('group')
-    #
-    #    if not group:
-    #        raise ValueError('Failed to parse target group question')
 
     target_group = {}  # type: ignore
     if target_group_id:
