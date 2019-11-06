@@ -1,7 +1,5 @@
 type: map
 mapping:
-  releaseNotes:
-    type: str
   fromVersion:
     type: str
   toVersion:

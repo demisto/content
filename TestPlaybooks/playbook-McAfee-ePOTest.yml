@@ -1,16 +1,15 @@
 id: Test Playbook McAfee ePO
 version: -1
-rolename: []
 name: Test Playbook McAfee ePO
 description: Test the McAfee ePO integration by running basic commands
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 78d21918-9454-446d-84a8-9755331a2f7c
+    taskid: 9b4d78b6-2211-431b-8c02-d12507a054f2
     type: start
     task:
-      id: 78d21918-9454-446d-84a8-9755331a2f7c
+      id: 9b4d78b6-2211-431b-8c02-d12507a054f2
       version: -1
       name: ""
       iscommand: false
@@ -22,17 +21,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 50
         }
       }
     note: false
   "1":
     id: "1"
-    taskid: e149398b-dcf4-41a5-8508-cf062f6f24fb
+    taskid: e3ac3ce0-358d-4745-85d3-9b56b38976eb
     type: regular
     task:
-      id: e149398b-dcf4-41a5-8508-cf062f6f24fb
+      id: e3ac3ce0-358d-4745-85d3-9b56b38976eb
       version: -1
       name: epo-help
       description: print help on ePO commands
@@ -51,17 +50,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 370
         }
       }
     note: false
   "2":
     id: "2"
-    taskid: 5958c0ce-a401-46d5-8844-ebaa1c6ddd3a
+    taskid: 72cae45a-aeed-4ec8-83ca-318e7d92a696
     type: regular
     task:
-      id: 5958c0ce-a401-46d5-8844-ebaa1c6ddd3a
+      id: 72cae45a-aeed-4ec8-83ca-318e7d92a696
       version: -1
       name: epo-get-current-dat
       description: Check the existing DAT file version in ePO
@@ -76,17 +75,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 545
         }
       }
     note: false
   "3":
     id: "3"
-    taskid: 6ca4e99a-dbe8-4aab-8698-8c28eb8fd434
+    taskid: 583fad8a-293e-41ae-8d0a-4bfda3a62b41
     type: regular
     task:
-      id: 6ca4e99a-dbe8-4aab-8698-8c28eb8fd434
+      id: 583fad8a-293e-41ae-8d0a-4bfda3a62b41
       version: -1
       name: epo-get-latest-dat
       description: Check the latest DAT file in McAfee repository
@@ -101,17 +100,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 720
         }
       }
     note: false
   "4":
     id: "4"
-    taskid: 62f28148-b212-4689-82e8-798e63ef0f9a
+    taskid: a38b99a4-2d26-4431-8e6a-4480336f3aa8
     type: regular
     task:
-      id: 62f28148-b212-4689-82e8-798e63ef0f9a
+      id: a38b99a4-2d26-4431-8e6a-4480336f3aa8
       version: -1
       name: epo-get-system-tree-group
       description: Get System Tree groups
@@ -128,17 +127,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 895
         }
       }
     note: false
   "5":
     id: "5"
-    taskid: 47cf76c4-d43f-4a29-85d1-0a0c0fb89826
+    taskid: e92550e2-a705-42ed-8ed0-e077bd4a67ee
     type: title
     task:
-      id: 47cf76c4-d43f-4a29-85d1-0a0c0fb89826
+      id: e92550e2-a705-42ed-8ed0-e077bd4a67ee
       version: -1
       name: Done
       type: title
@@ -149,16 +148,16 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
   "6":
     id: "6"
-    taskid: 2e3c9285-093e-4f08-8b00-b2612f22d215
+    taskid: 306f7838-d33d-4bff-818b-f1688f962a7b
     type: regular
     task:
-      id: 2e3c9285-093e-4f08-8b00-b2612f22d215
+      id: 306f7838-d33d-4bff-818b-f1688f962a7b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -180,17 +179,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 195
         }
       }
     note: false
   "7":
     id: "7"
-    taskid: a17ab5a6-f703-4b2c-8608-4a6442627d5c
+    taskid: 9c43bc4f-9846-45e2-88fe-397a2eea5dcb
     type: regular
     task:
-      id: a17ab5a6-f703-4b2c-8608-4a6442627d5c
+      id: 9c43bc4f-9846-45e2-88fe-397a2eea5dcb
       version: -1
       name: epo-update-client-dat
       description: Run client task to update the DAT file
@@ -220,10 +219,10 @@ tasks:
     note: false
   "8":
     id: "8"
-    taskid: 5ab2dadb-cac6-48b1-80b6-91d00685c2cd
+    taskid: b1e69a35-1f83-4fb5-8400-80be45c8485e
     type: regular
     task:
-      id: 5ab2dadb-cac6-48b1-80b6-91d00685c2cd
+      id: b1e69a35-1f83-4fb5-8400-80be45c8485e
       version: -1
       name: epo-update-repository
       description: Trigger a Server Task in specific ePO servers to pull latest signatures
@@ -246,10 +245,10 @@ tasks:
     note: false
   "12":
     id: "12"
-    taskid: 9dc3a9f8-9c59-4395-8d85-859c6a97c139
+    taskid: f709ce63-0537-4e4d-86ca-22e17517ee70
     type: regular
     task:
-      id: 9dc3a9f8-9c59-4395-8d85-859c6a97c139
+      id: f709ce63-0537-4e4d-86ca-22e17517ee70
       version: -1
       name: epo-find-systems
       description: Find systems in the System Tree - by group ID or by search
@@ -268,17 +267,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1245
         }
       }
     note: false
   "16":
     id: "16"
-    taskid: 8abf38ff-6352-42ec-8be7-31947c12f928
+    taskid: d77709cc-fa0b-40f9-8ec9-518f69fc515e
     type: condition
     task:
-      id: 8abf38ff-6352-42ec-8be7-31947c12f928
+      id: d77709cc-fa0b-40f9-8ec9-518f69fc515e
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -287,8 +286,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "26"
       "yes":
       - "12"
     separatecontext: false
@@ -308,17 +305,17 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 50,
           "y": 1070
         }
       }
     note: false
   "17":
     id: "17"
-    taskid: cf17e9dd-b48e-4e0e-86af-406c69e03c10
+    taskid: e221f702-c41d-45f9-85e1-2fa3ff6d912a
     type: condition
     task:
-      id: cf17e9dd-b48e-4e0e-86af-406c69e03c10
+      id: e221f702-c41d-45f9-85e1-2fa3ff6d912a
       version: -1
       name: AreValuesEqual
       description: Check whether the values provided in arguments are equal. If either
@@ -327,36 +324,31 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "26"
       "yes":
       - "8"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isExists
           left:
             value:
               simple: McAfee.ePO.Endpoint.IPAddress
             iscontext: true
-          right:
-            value:
-              simple: 192.168.1.103
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 50,
           "y": 1420
         }
       }
     note: false
   "18":
     id: "18"
-    taskid: 885e0a5c-d5e5-4241-83f8-59c9046bd763
+    taskid: 3eaac858-bd1a-4ef6-883b-cb1f260216ac
     type: regular
     task:
-      id: 885e0a5c-d5e5-4241-83f8-59c9046bd763
+      id: 3eaac858-bd1a-4ef6-883b-cb1f260216ac
       version: -1
       name: epo-advanced-command
       description: 'Execute ePO command. Run ''epo-help'' command to see a list available
@@ -386,10 +378,10 @@ tasks:
     note: false
   "19":
     id: "19"
-    taskid: 3f27adb0-c984-4ffb-8ff6-e2e9a7a6812d
+    taskid: cf287e6e-25a2-48f2-820e-1533167c48f2
     type: regular
     task:
-      id: 3f27adb0-c984-4ffb-8ff6-e2e9a7a6812d
+      id: cf287e6e-25a2-48f2-820e-1533167c48f2
       version: -1
       name: epo-apply-tag
       description: Applies a tag
@@ -416,10 +408,10 @@ tasks:
     note: false
   "20":
     id: "20"
-    taskid: 52eaa664-27d3-46a5-8f5c-fc78be4fdc8c
+    taskid: 188b0c44-082b-43bf-8175-d89df9bb7056
     type: regular
     task:
-      id: 52eaa664-27d3-46a5-8f5c-fc78be4fdc8c
+      id: 188b0c44-082b-43bf-8175-d89df9bb7056
       version: -1
       name: epo-clear-tag
       description: Clears a tag
@@ -446,10 +438,10 @@ tasks:
     note: false
   "22":
     id: "22"
-    taskid: 8172393c-3a84-4778-84cf-e0f021f8881b
+    taskid: f9a32e9e-7ffb-484f-8fe1-7a1394198a8a
     type: regular
     task:
-      id: 8172393c-3a84-4778-84cf-e0f021f8881b
+      id: f9a32e9e-7ffb-484f-8fe1-7a1394198a8a
       version: -1
       name: epo-get-tables
       description: Get an ePO table
@@ -473,10 +465,10 @@ tasks:
     note: false
   "23":
     id: "23"
-    taskid: 92b96e33-8bf1-48d0-8646-df38e00434a2
+    taskid: 234e817e-a9b3-4354-8b8a-d3ad343a3ef2
     type: regular
     task:
-      id: 92b96e33-8bf1-48d0-8646-df38e00434a2
+      id: 234e817e-a9b3-4354-8b8a-d3ad343a3ef2
       version: -1
       name: epo-query-table
       description: Retrieves a table from the ePO Database
@@ -486,7 +478,7 @@ tasks:
       brand: epo
     nexttasks:
       '#none#':
-      - "5"
+      - "26"
     scriptarguments:
       group: {}
       order: {}
@@ -507,10 +499,10 @@ tasks:
     note: false
   "24":
     id: "24"
-    taskid: ce5d46b4-72a9-4fd5-840f-44de2ef57b45
+    taskid: 8ac731ed-25aa-47a2-8046-734486454d01
     type: regular
     task:
-      id: ce5d46b4-72a9-4fd5-840f-44de2ef57b45
+      id: 8ac731ed-25aa-47a2-8046-734486454d01
       version: -1
       name: epo-get-version
       description: Gets the ePO version. This requires global admin permissions.
@@ -532,10 +524,10 @@ tasks:
     note: false
   "25":
     id: "25"
-    taskid: 5b753cf6-2f06-4c9e-848e-4fb190adec89
+    taskid: c17a55d4-38f0-4f5d-84a6-c7ab542c2a7b
     type: regular
     task:
-      id: 5b753cf6-2f06-4c9e-848e-4fb190adec89
+      id: c17a55d4-38f0-4f5d-84a6-c7ab542c2a7b
       version: -1
       name: epo-find-system
       description: Finds systems in the System Tree
@@ -561,28 +553,31 @@ tasks:
     note: false
   "26":
     id: "26"
-    taskid: 82424cff-f6f6-4db9-8bbe-3eb0a107ecd6
+    taskid: f59a8be7-0771-43c9-8e9e-31d0152ac241
     type: regular
     task:
-      id: 82424cff-f6f6-4db9-8bbe-3eb0a107ecd6
+      id: f59a8be7-0771-43c9-8e9e-31d0152ac241
       version: -1
-      name: Error
-      scriptName: RaiseError
+      name: epo-move-system
+      description: Move a system to a different group
+      script: '|||epo-move-system'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
     scriptarguments:
-      actual: {}
-      details: {}
-      error:
-        simple: Can't find value
-      expected: {}
+      names:
+        simple: tie
+      parentGroupId:
+        simple: "3"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1595
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -591,8 +586,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3185,
-        "width": 810,
+        "height": 3360,
+        "width": 380,
         "x": 50,
         "y": 50
       }

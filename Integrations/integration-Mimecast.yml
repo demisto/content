@@ -2,7 +2,8 @@ commonfields:
   id: Mimecast
   version: -1
 name: Mimecast
-display: Mimecast Deprecated
+display: Mimecast (Deprecated)
+deprecated: true
 category: Email Gateway
 system: true
 fromversion: 1.6.2
@@ -181,6 +182,7 @@ script:
   type: javascript
   commands:
   - name: mimecast-query
+    deprecated: true
     arguments:
     - name: queryXml
       default: true

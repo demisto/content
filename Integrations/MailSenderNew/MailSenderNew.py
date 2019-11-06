@@ -16,6 +16,7 @@ from email import encoders
 import re
 import random
 import string
+import smtplib
 
 SERVER = None
 UTF_8 = 'utf-8'
@@ -34,7 +35,10 @@ def return_error_mail_sender(data):
     Return error as result and exit
     """
     if SERVER:
-        SERVER.quit()
+        try:
+            SERVER.quit()  # quite may throw if the connection was closed already
+        except Exception:
+            pass
     return_error(data)
 
 
@@ -223,6 +227,7 @@ def create_msg():
     to = argToList(demisto.getArg('to'))
     cc = argToList(demisto.getArg('cc'))
     bcc = argToList(demisto.getArg('bcc'))
+    additional_header = argToList(demisto.getArg('additionalHeader'))
     subject = demisto.getArg('subject') or ''
     body = demisto.getArg('body') or ''
     htmlBody = demisto.getArg('htmlBody') or ''
@@ -286,6 +291,10 @@ def create_msg():
         msg['To'] = header(','.join(to))
     if cc:
         msg['CC'] = header(','.join(cc))
+    if additional_header:
+        for h in additional_header:
+            header_name_and_value = h.split('=', 1)
+            msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
 
@@ -296,8 +305,13 @@ def main():
     global SERVER
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
+    FQDN = (FQDN and FQDN.strip()) or None
+    stderr_org = smtplib.stderr  # type: ignore
     try:
-        SERVER = SMTP(demisto.getParam('host'), int(demisto.getParam('port')), local_hostname=FQDN)
+        if demisto.command() == 'test-module':
+            smtplib.stderr = LOG  # type: ignore
+            smtplib.SMTP.debuglevel = 1
+        SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         SERVER.ehlo()
         # TODO - support for non-valid certs
         if demisto.getParam('tls'):
@@ -305,10 +319,11 @@ def main():
         if demisto.getParam('credentials') and demisto.getParam('credentials').get('identifier') and demisto.getParam('credentials').get('password'):  # noqa: E501
             SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
     except Exception as e:
-        if SERVER:
-            SERVER.quit()
-        return_error(e)
-
+        # also reset at the bottom finally
+        smtplib.stderr = stderr_org  # type: ignore
+        smtplib.SMTP.debuglevel = 0
+        return_error_mail_sender(e)
+        return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
     try:
         if demisto.command() == 'test-module':
@@ -316,11 +331,19 @@ def main():
             msg['Subject'] = 'Test mail from Demisto'
             msg['From'] = FROM
             msg['To'] = FROM
-            SERVER.sendmail(FROM, [FROM], msg.as_string())  # type: ignore
-            SERVER.quit()  # type: ignore
+            SERVER.sendmail(FROM, [FROM], msg.as_string())
+            SERVER.quit()
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
-            (str_msg, to, cc, bcc) = create_msg()
+            raw_message = demisto.getArg('raw_message')
+            if raw_message:
+                to = argToList(demisto.getArg('to'))
+                cc = argToList(demisto.getArg('cc'))
+                bcc = argToList(demisto.getArg('bcc'))
+                str_msg = raw_message
+            else:
+                (str_msg, to, cc, bcc) = create_msg()
+
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
             SERVER.quit()  # type: ignore
             demisto.results('Mail sent successfully')
@@ -330,8 +353,12 @@ def main():
         error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.iteritems())
         return_error_mail_sender("Encountered error: {}".format(error_msg))
     except Exception as e:
-        return_error_mail_sender(str(e))
+        return_error_mail_sender(e)
+    finally:
+        smtplib.stderr = stderr_org  # type: ignore
+        smtplib.SMTP.debuglevel = 0
 
 
-if __name__ in ('__builtin__', '__main__'):
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()

@@ -2,8 +2,7 @@ id: dedup_-_generic
 version: -1
 name: Dedup - Generic
 fromversion: "4.0.0"
-description: Generic playbook to find duplicate incidents with one of the methods
-  we have.
+description: This playbook identifies duplicate incidents using one of the supported methods.
 starttaskid: "0"
 tasks:
   "0":
@@ -29,6 +28,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 48f0cedf-fad2-47db-81fd-348b062f41fe
@@ -36,12 +37,12 @@ tasks:
     task:
       id: 48f0cedf-fad2-47db-81fd-348b062f41fe
       version: -1
-      name: Choose find duplicates method
+      name: Select method to identify duplicates
       description: |-
-        We have a few methods to find duplicates incidents in Demisto.
-        - ml: machine learning model, trained mostly on phishing incidents.
-        -rules: help to find duplicate incidents when the logic in defined well - like same label or custom fields.
-        -text: statistics algorithm comparing text. usually useful for  phishing.
+        Select one of the following methods to identify duplicate incidents in Demisto.
+        - ml: Machine learning model, which is trained mostly on phishing incidents.
+        -rules: Rules help identify duplicate incidents when the logic is well defined, for example, same label or custom fields.
+        -text: Statistics algorithm that compares text, which is generally useful for phishing incidents.
       type: condition
       iscommand: false
       brand: ""
@@ -92,15 +93,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: ebe7bb7e-6956-4392-83fd-265b59ba73cb
+    taskid: e533da63-e23f-43b2-8b12-e709e62401c0
     type: regular
     task:
-      id: ebe7bb7e-6956-4392-83fd-265b59ba73cb
+      id: e533da63-e23f-43b2-8b12-e709e62401c0
       version: -1
       description: ""
-      name: Find duplicates by text
+      name: Identify duplicates by text
       scriptName: FindSimilarIncidentsByText
       type: regular
       iscommand: false
@@ -111,11 +114,16 @@ tasks:
     scriptarguments:
       ignoreClosedIncidents:
         simple: ${inputs.IgnoreCloseIncidents}
+      maxResults: {}
       maximumNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
-      textFields: {}
+      minTextLength: {}
+      textFields:
+        simple: name,details
       threshold:
         simple: ${inputs.DuplicateThreshold}
+      timeField:
+        simple: ${inputs.TimeField}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
     separatecontext: false
@@ -127,6 +135,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 54a58f44-4f47-452c-8a4a-c7f64d5c499a
@@ -134,8 +144,8 @@ tasks:
     task:
       id: 54a58f44-4f47-452c-8a4a-c7f64d5c499a
       version: -1
-      name: Is duplicate found
-      description: Check if any duplicate incident has been found.
+      name: Check if duplicates were found
+      description: Checks if any duplicate incidents were found.
       type: condition
       iscommand: false
       brand: ""
@@ -166,15 +176,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 15ca6629-8830-44ec-84d4-4f3bcef19011
+    taskid: bcc06547-4ca6-4ef4-8f3d-71c170f48218
     type: regular
     task:
-      id: 15ca6629-8830-44ec-84d4-4f3bcef19011
+      id: bcc06547-4ca6-4ef4-8f3d-71c170f48218
       version: -1
       description: ""
-      name: Find similar incidents by rules
+      name: Identify similar incidents using rules
       scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
@@ -183,23 +195,25 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      filterQuery: {}
       hoursBack:
         simple: ${inputs.TimeFrameHours}
       ignoreClosedIncidents:
         simple: ${inputs.IgnoreCloseIncidents}
+      incidentFieldsAppliedCondition: {}
       maxNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
       maxResults: {}
       similarContextKeys: {}
       similarCustomFields: {}
-      similarIncidentKeys:
+      similarIncidentFields:
         simple: type
+      similarIncidentKeys: {}
       similarLabelsKeys:
         simple: Email/subject:*,Email/from
+      skipMissingValues: {}
       timeField:
-        simple: occurred
-    results:
-    - isSimilarIncidentFound
+        simple: ${inputs.TimeField}
     separatecontext: false
     view: |-
       {
@@ -209,15 +223,17 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: ee12b870-3892-4dd8-8635-0c5f13b30ea3
+    taskid: 8148ea43-d8fd-44ea-8390-1d9661014141
     type: regular
     task:
-      id: ee12b870-3892-4dd8-8635-0c5f13b30ea3
+      id: 8148ea43-d8fd-44ea-8390-1d9661014141
       version: -1
       description: ""
-      name: Find duplicates by ml
+      name: Identify duplicates using ML
       scriptName: GetDuplicatesMlv2
       type: regular
       iscommand: false
@@ -237,12 +253,13 @@ tasks:
       maxCandidates: {}
       maxNumberOfIncidents:
         simple: ${inputs.MaxNumberOfCandidates}
+      maxResults: {}
       threshold:
         simple: ${inputs.DuplicateThreshold}
+      timeField:
+        simple: ${inputs.TimeField}
       timeFrameHours:
         simple: ${inputs.TimeFrameHours}
-    results:
-    - isSimilarIncidentFound
     separatecontext: false
     view: |-
       {
@@ -252,6 +269,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 857267ed-a8bf-4d65-8a80-967656990b57
@@ -260,8 +279,7 @@ tasks:
       id: 857267ed-a8bf-4d65-8a80-967656990b57
       version: -1
       name: Close investigation as duplicate
-      description: Close the investigation as duplicate to one of the incidents that
-        has been found.
+      description: Closes the investigation as a duplicate to one of the incidents identified.
       scriptName: CloseInvestigationAsDuplicate
       type: regular
       iscommand: false
@@ -281,6 +299,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: c1f06a79-d539-4853-8140-f1f879a8f137
@@ -302,6 +322,8 @@ tasks:
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -319,39 +341,44 @@ inputs:
   value:
     simple: ml
   required: true
-  description: 'Choose one of duplicate method: rule, ml, text'
+  description: 'Select a method for identifying duplicate incidents. Can be "ml", "rules", or "text".'
 - key: DuplicateThreshold
   value:
     simple: "0.75"
   required: true
-  description: Threshold to consider incident as duplicate. Use in text similarity
-    method and ML method
+  description: The similarity threshold to consider an incident as a duplicate (0-1), where "1" is a duplicate and "0" is not a duplicate. Use this argument in the ML or text methods. A si
 - key: TimeFrameHours
   value:
     simple: "72"
   required: true
-  description: Check duplicate candidates in this time frame (hours)
+  description: The time frame (in hours) in which to check for duplicate incident candidates.
 - key: IgnoreCloseIncidents
   value:
     simple: "yes"
   required: true
-  description: Choose if to ignore closed incidents (yes\no)
+  description: Whether to ignore closed incidents. Can be "yes" or "no".
 - key: MaxNumberOfCandidates
   value:
     simple: "1000"
   required: false
-  description: Maximum number of candidates to check for duplication
+  description: The maximum number of candidates to check for duplication.
 - key: CloseAsDuplicate
   value:
     simple: "true"
   required: false
-  description: If duplicate found - close the incident as duplicate (true\false)
+  description: Whether to close incidents identified as duplicates. Can be "true" or "false".
+- key: TimeField
+  value:
+    simple: created
+  required: false
+  description: 'The Time field by which to query past incidents to check for duplicate incident candidates.
+    Values: created, occurred, modified'
 outputs:
 - contextPath: isSimilarIncidentFound
-  description: Is similar incident found? (true\false)
+  description: Whether a similar incident was found? Can be "true" or "false".
   type: boolean
 - contextPath: similarIncident
-  description: Similar incident.
+  description: The similar incident.
   type: unknown
 tests:
-  - No Test
+  - dedup_-_generic_-_test

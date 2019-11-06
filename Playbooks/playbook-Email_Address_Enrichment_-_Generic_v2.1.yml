@@ -379,6 +379,12 @@ tasks:
       domain:
         complex:
           root: inputs.Domain
+          filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.Domain
+                  iscontext: true
           transformers:
           - operator: uniq
       email:
@@ -487,6 +493,12 @@ tasks:
       value:
         complex:
           root: inputs.Domain
+          filters:
+            - - operator: isNotEmpty
+                left:
+                  value:
+                    simple: inputs.Domain
+                  iscontext: true
           transformers:
           - operator: uniq
     separatecontext: false
@@ -569,6 +581,12 @@ inputs:
   value:
     complex:
       root: inputs.Domain
+      filters:
+        - - operator: isNotEmpty
+            left:
+              value:
+                simple: inputs.Domain
+              iscontext: true
       transformers:
       - operator: uniq
   required: false

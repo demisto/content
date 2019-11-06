@@ -1,0 +1,334 @@
+commonfields:
+  id: Stealthwatch Cloud
+  version: -1
+name: Stealthwatch Cloud
+display: Stealthwatch Cloud
+category: Network Security
+description: Protect your cloud assets and private network
+configuration:
+- display: Stealthwatch's server URL
+  name: serverURL
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Stealthwatch Cloud API key. Should be in the form of "ApiKey <username>:<api_key>"
+  name: APIKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (unsecure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: sw-show-alert
+    arguments:
+    - name: alertID
+      required: true
+      description: The id of the required alert
+    - name: addComments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add comments information, can be long
+      defaultValue: "false"
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+      type: string
+    - contextPath: Stealthwatch.Alert.source_info.hostnames
+      description: Hostname of the alert's source
+      type: string
+    description: Get info about a specific alert by its ID
+  - name: sw-update-alert
+    arguments:
+    - name: alertID
+      required: true
+      description: The id of the alert for update
+    - name: resolved
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+    - name: merit
+      auto: PREDEFINED
+      predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+      - "8"
+      - "9"
+      description: Set the resolved field to true and set the merit field to close
+        an alert. merit can be 8 ("helpful") or 9 ("not helpful").
+    - name: tags
+      description: Tags (string)
+    - name: new_comment
+      description: Set the new_comment field to add a comment to the alert.
+    - name: publish_time
+      description: Publish time (string). Example, publish_time=2018-08-01T07:54:39Z
+    - name: snooze_settings
+      description: Snooze settings (string)
+    - name: resolved_user
+      description: 'Username (string) '
+    - name: assigned_to
+      description: Assigned to (integer)
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+      type: string
+    - contextPath: Stealthwatch.Alert.source_info.hostname
+      description: Hostname of the alert's source
+      type: string
+    description: Update an alert
+  - name: sw-list-alerts
+    arguments:
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - open
+      - closed
+      - all
+      description: 'status filters alerts by status: open, closed, or all. Default
+        is open. all allows you to see an individual alert regardless of whether it''s
+        open or closed.'
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: assignee
+      description: assignee filters shows only alerts assigned to a particular user.
+    - name: tags
+      description: tags shows alerts that are assigned a particular incident tag.
+    - name: limit
+      description: Amount of alerts to list. Default is 5
+      defaultValue: "5"
+    - name: addComments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Add comments information, can be long
+      defaultValue: "false"
+    outputs:
+    - contextPath: Stealthwatch.Alert.id
+      description: Alert's id
+      type: number
+    - contextPath: Stealthwatch.Alert.assigned_to
+      description: Alert's assignee
+      type: string
+    - contextPath: Stealthwatch.Alert.obj_created
+      description: Alert's creation date
+      type: date
+    - contextPath: Stealthwatch.Alert.last_modified
+      description: Alert's last modification
+      type: date
+    - contextPath: Stealthwatch.Alert.resolved
+      description: 'Alert''s state '
+      type: boolean
+    - contextPath: Stealthwatch.Alert.source_info.ips
+      description: IP of the alert's source
+      type: string
+    - contextPath: Stealthwatch.Alert.source_info.hostname
+      description: Hostname of the alert's source
+      type: string
+    description: Get the list of Stealthwatch alerts
+  - name: sw-block-domain-or-ip
+    arguments:
+    - name: domain
+      description: Domain to add to the blacklist
+    - name: ip
+      description: IP to add to the blacklist
+    outputs:
+    - contextPath: Stealthwatch.Domain.identifier
+      description: Domain name
+      type: string
+    - contextPath: Stealthwatch.Domain.title
+      description: Domain title
+      type: string
+    - contextPath: Stealthwatch.Domain.id
+      description: Domain id
+      type: number
+    - contextPath: Stealthwatch.IP.identifier
+      description: IP address
+      type: string
+    - contextPath: Stealthwatch.IP.title
+      description: IP title
+      type: string
+    - contextPath: Stealthwatch.IP.id
+      description: IP id
+      type: string
+    description: Add a domain or IP to the blacklist
+  - name: sw-unblock-domain
+    arguments:
+    - name: id
+      required: true
+      description: ID of the domain to remove from the blacklist. You can find the
+        id using 'sw-list-blocked-domains'
+    description: Remove a domain from the blacklist
+  - name: sw-list-blocked-domains
+    arguments:
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: domain
+      description: Search for specific domain
+    - name: limit
+      description: Amount of domains to list. Default is 5
+      defaultValue: "5"
+    outputs:
+    - contextPath: Stealthwatch.Domain.identifier
+      description: Domain name
+      type: string
+    - contextPath: Stealthwatch.Domain.title
+      description: Domain title
+      type: string
+    - contextPath: Stealthwatch.Domain.id
+      description: Domain id
+      type: number
+    description: ' Returns list of the blocked domains'
+  - name: sw-list-observations
+    arguments:
+    - name: search
+      description: search finds a particular string amongst the alerts. For example,
+        a particular IP address, hostname, or alert type.
+    - name: alert
+      description: Use the alert query parameter with an alert id to only show observations
+        referenced by the alert.
+    - name: id
+      description: Get a specific observation by its id
+    - name: limit
+      description: Amount of observations to list. Default is 5
+      defaultValue: "5"
+    outputs:
+    - contextPath: Stealthwatch.Observation.id
+      description: Observation ID
+      type: number
+    - contextPath: Stealthwatch.Observation.port_count
+      description: Observation port count
+      type: number
+    - contextPath: Stealthwatch.Observation.creation_time
+      description: Observation creation time
+      type: string
+    - contextPath: Stealthwatch.Observation.end_time
+      description: Observation end time
+      type: string
+    - contextPath: Stealthwatch.Observation.scanned_ip
+      description: Observation scanned ip
+      type: string
+    - contextPath: Stealthwatch.Observation.scanner_ip
+      description: Observation scanner ip
+      type: string
+    - contextPath: Stealthwatch.Observation.source
+      description: Observation source
+      type: unknown
+    description: Get observations by alert ID, observation ID, or free search
+  - name: sw-list-sessions
+    arguments:
+    - name: startTime
+      required: true
+      description: Session's start time (UTC). For example, startTime="2018-09-30T12:00:00Z"
+    - name: endTime
+      description: Session's end time (UTC). For example, endTime="2018-07-31T15:00:00Z"
+    - name: limit
+      description: Amount of observations to list. Default is 400
+      defaultValue: "400"
+    - name: ip
+      description: Source IP address to filter by
+    - name: connectedIP
+      description: Connected IP to filter by
+    - name: connectedDeviceId
+      description: Connected device ID
+    - name: sessionType
+      auto: PREDEFINED
+      predefined:
+      - all
+      - external
+      - internal
+      description: Select type of session - external/internal to receive data only
+        about this kind of session
+      defaultValue: all
+    outputs:
+    - contextPath: Stealthwatch.Session.id
+      description: Session ID
+      type: number
+    - contextPath: Stealthwatch.Session.port
+      description: Session port
+      type: number
+    - contextPath: Stealthwatch.Session.start_timestamp_utc
+      description: Session start time
+      type: string
+    - contextPath: Stealthwatch.Session.ip
+      description: Session IP
+      type: string
+    - contextPath: Stealthwatch.Session.connected_ip
+      description: Session connected IP
+      type: string
+    - contextPath: Stealthwatch.Session.device_id
+      description: Source device ID
+      type: number
+    - contextPath: Stealthwatch.Session.connected_device_id
+      description: Connected device ID
+      type: number
+    - contextPath: Stealthwatch.Session.connected_device_is_external
+      description: Is the connected device external
+      type: boolean
+    description: 'Get sessions by the session''s occurrence time ( Time format: YYYY-MM-DDTHH:MM:SSZ)'
+  isfetch: true
+  runonce: false
+tests:
+- No test

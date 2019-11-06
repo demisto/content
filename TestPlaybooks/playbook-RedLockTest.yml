@@ -112,7 +112,7 @@ tasks:
     task:
       id: f7f00d46-71fb-4943-87bc-5471d0f10e6a
       version: -1
-      name: get alert P-251 status
+      name: get alert P-576 status
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -122,7 +122,7 @@ tasks:
       - "13"
     scriptarguments:
       alert-id:
-        simple: P-251
+        simple: P-576
       detailed: {}
     separatecontext: false
     view: |-
@@ -157,7 +157,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Redlock.Alert(val.ID === 'P-251').Status}
+              simple: ${Redlock.Alert(val.ID === 'P-576').Status}
           right:
             value:
               simple: open
@@ -187,7 +187,7 @@ tasks:
       - "24"
     scriptarguments:
       alert-id:
-        simple: P-251
+        simple: P-576
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -236,7 +236,7 @@ tasks:
       - "23"
     scriptarguments:
       alert-id:
-        simple: P-251
+        simple: P-576
       alert-rule-name: {}
       alert-status: {}
       cloud-account: {}
@@ -272,7 +272,7 @@ tasks:
     task:
       id: e0ec9c7e-7d27-45b1-8c1a-d83dd774ec01
       version: -1
-      name: get alert P-251 status
+      name: get alert P-576 status
       script: '|||redlock-get-alert-details'
       type: regular
       iscommand: true
@@ -282,7 +282,7 @@ tasks:
       - "18"
     scriptarguments:
       alert-id:
-        simple: P-251
+        simple: P-576
       detailed: {}
     separatecontext: false
     view: |-
@@ -301,7 +301,7 @@ tasks:
     task:
       id: 66d57546-2be4-44c2-85da-bb8d8e65479e
       version: -1
-      name: verify that P-251 is dismissed
+      name: verify that P-576 is dismissed
       type: condition
       iscommand: false
       brand: ""
@@ -315,7 +315,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ${Redlock.Alert(val.ID === 'P-251').Status}
+              simple: ${Redlock.Alert(val.ID === 'P-576').Status}
           right:
             value:
               simple: dismissed

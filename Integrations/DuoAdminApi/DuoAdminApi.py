@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 # imports
 import calendar
 import duo_client
@@ -11,6 +12,7 @@ HOST = demisto.getParam('hostname')
 INTEGRATION_KEY = demisto.getParam('integration_key')
 SECRET_KEY = demisto.getParam('secret_key')
 USE_SSL = not demisto.params().get('insecure', False)
+USE_PROXY = demisto.params().get('proxy', False)
 
 # The duo client returns a signature error upon bad secret
 # Convert it to a more informative message using this
@@ -35,23 +37,91 @@ OPTIONS_TO_TIME = {
 }
 
 
-# Utility Methods
+def override_make_request(self, method, uri, body, headers):
+    """
 
+    This function is an override function to the original
+    duo_client.client.Client._make_request function in API version 4.1.0
+
+    The reason for it is that the API creates a bad uri address for the GET requests.
+
+    """
+
+    conn = self._connect()
+
+    # Ignored original code #
+    # --------------------- #
+    # if self.proxy_type == 'CONNECT':
+    #     # Ensure the request uses the correct protocol and Host.
+    #     if self.ca_certs == 'HTTP':
+    #         api_proto = 'http'
+    #     else:
+    #         api_proto = 'https'
+    #     uri = ''.join((api_proto, '://', self.host, uri))
+    # ------------------- #
+    # End of ignored code #
+
+    conn.request(method, uri, body, headers)
+    response = conn.getresponse()
+    data = response.read()
+    self._disconnect(conn)
+    return (response, data)
+
+
+# Utility Methods
 
 def create_api_call():
     if USE_SSL:
-        return duo_client.Admin(
+        client = duo_client.Admin(
+            ikey=INTEGRATION_KEY,
+            skey=SECRET_KEY,
+            host=HOST,
+        )
+    else:
+        client = duo_client.Admin(
             ikey=INTEGRATION_KEY,
             skey=SECRET_KEY,
             host=HOST,
             ca_certs='DISABLE'
         )
 
-    return duo_client.Admin(
-        ikey=INTEGRATION_KEY,
-        skey=SECRET_KEY,
-        host=HOST
-    )
+    client._make_request = lambda method, uri, body, headers: override_make_request(client, method, uri, body, headers)
+
+    return client
+
+
+def set_proxy():
+    try:
+        proxy_settings = os.environ.get('HTTP_PROXY') or os.environ.get('http_proxy', '')
+        if proxy_settings:
+            host, port = get_host_port_from_proxy_settings(proxy_settings)
+
+            if USE_PROXY:
+                admin_api.set_proxy(host=host, port=port)
+
+    # if no proxy settings have been set
+    except ValueError:
+        admin_api.set_proxy(host=None, port=None, proxy_type=None)
+
+
+def get_host_port_from_proxy_settings(proxy_settings):
+    proxy_settings_str = str(proxy_settings)
+
+    port = proxy_settings_str.split(':')[-1]
+
+    host_regex_filter = re.search(ipv4Regex, proxy_settings_str)
+
+    if host_regex_filter:
+        host = host_regex_filter.group()
+    else:
+        proxy_settings_str_args = proxy_settings_str.split(':')
+
+        if 'http' in proxy_settings_str:
+            host = ':'.join(proxy_settings_str_args[1:-1])[2:]
+        else:
+            host = ':'.join(proxy_settings_str_args[0:-1])
+
+    return host, port
 
 
 def time_to_timestamp_milliseconds(time):
@@ -144,12 +214,13 @@ def get_all_users():
 
 
 def get_authentication_logs_by_user(username, mintime):
+    limit = demisto.args().get('limit', '50')
     res = admin_api.get_authentication_log(
         2,
-        username=username,
+        users=get_user_id(username),
         mintime=time_to_timestamp_milliseconds(OPTIONS_TO_TIME[mintime]),
         maxtime=time_to_timestamp_milliseconds(datetime.now()),
-        limit='50'
+        limit=limit
     )
 
     raw_logs = res['authlogs']
@@ -253,8 +324,8 @@ def delete_u2f_token(token_id):
 
 # Execution
 try:
-    handle_proxy()
     admin_api = create_api_call()
+    set_proxy()
 
     if demisto.command() == 'test-module':
         test_instance()

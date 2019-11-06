@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-set -e
+set +e
 
-# download configuration file from github repo
+#download awsinstancetool
 echo "Getting conf from branch $CIRCLE_BRANCH (fallback to master)"
 
 SECRET_CONF_PATH="./conf_secret.json"
@@ -13,26 +13,15 @@ echo ${DEMISTO_LIC_PATH} > demisto_lic_path
 DEMISTO_SEVERCONF_PATH="./demisto.conf"
 echo ${DEMISTO_SEVERCONF_PATH} > demisto_conf_path
 
-curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json?ref=$CIRCLE_BRANCH" -o "$SECRET_CONF_PATH"
-
-NOT_FOUND_MESSAGE=$(cat $SECRET_CONF_PATH | jq '.message')
-
-if [ "$NOT_FOUND_MESSAGE" != 'null' ]
-  then
-    echo "Branch $CIRCLE_BRANCH does not exists in content-test-conf repo - downloading from master"
-    echo "Got message from github=$NOT_FOUND_MESSAGE"
-
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/conf.json" -o "$SECRET_CONF_PATH"
-
-    echo "Downloading license file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic" -o "$DEMISTO_LIC_PATH"
-
-    echo "Creating server conf file..."
-    # curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-    #   --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf" -o "$DEMISTO_SEVERCONF_PATH"
+# download configuration files from github repo
+wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/$CIRCLE_BRANCH.zip" --no-check-certificate -q
+if [ "$?" != "0" ]; then
+    echo "No such branch in content-test-conf: $CIRCLE_BRANCH , falling back to master"
+    wget --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN" -O ./test_configuration.zip "https://github.com/demisto/content-test-conf/archive/master.zip" --no-check-certificate -q
+    unzip ./test_configuration.zip
+    cp -r ./content-test-conf-master/awsinstancetool ./Tests/scripts/awsinstancetool
+    cp -r ./content-test-conf-master/demisto.lic $DEMISTO_LIC_PATH
+    cp -r ./content-test-conf-master/conf.json $SECRET_CONF_PATH
     cat >> "$DEMISTO_SEVERCONF_PATH" <<-EOF
 {
   "Server": {
@@ -46,41 +35,33 @@ if [ "$NOT_FOUND_MESSAGE" != 'null' ]
   "builtin.commands.hidden.getcontext": true
 }
 EOF
-
-    echo "Downloading instance conf file..."
     if [ -n "${NIGHTLY}" ]
       then
-        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json" -o "instance.json"
+        cp -r ./content-test-conf-master/nightly_instance.json instance.json
 
       else
-        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json" -o "instance.json"
-
+        cp -r ./content-test-conf-master/instance.json instance.json
     fi
-
+    rm -rf ./content-test-conf-master
+    rm -rf ./test_configuration.zip
   else
-    echo "Downloading license file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/demisto.lic?ref=$CIRCLE_BRANCH" -o "$DEMISTO_LIC_PATH"
-
-    echo "Downloading server conf file..."
-    curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-      --location "https://api.github.com/repos/demisto/content-test-conf/contents/server.conf?ref=$CIRCLE_BRANCH" -o "$DEMISTO_SEVERCONF_PATH"
-
-    echo "Downloading instance conf file..."
+    unzip ./test_configuration.zip
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/awsinstancetool ./Tests/scripts/awsinstancetool
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/demisto.lic $DEMISTO_LIC_PATH
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/conf.json $SECRET_CONF_PATH
+    cp -r ./content-test-conf-$CIRCLE_BRANCH/server.conf $DEMISTO_SEVERCONF_PATH
     if [ -n "${NIGHTLY}" ]
       then
-        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-          --location "https://api.github.com/repos/demisto/content-test-conf/contents/nightly_instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
+        cp -r ./content-test-conf-$CIRCLE_BRANCH/nightly_instance.json instance.json
 
       else
-        curl  --header "Accept: application/vnd.github.v3.raw" --header "Authorization: token $GITHUB_TOKEN"  \
-          --location "https://api.github.com/repos/demisto/content-test-conf/contents/instance.json?ref=$CIRCLE_BRANCH" -o "instance.json"
-
+        cp -r ./content-test-conf-$CIRCLE_BRANCH/instance.json instance.json
     fi
-
+    rm -rf ./content-test-conf-$CIRCLE_BRANCH
+    rm -rf ./test_configuration.zip
 fi
+
+set -e
 echo "using instance:"
 cat instance.json
 echo "Successfully downloaded configuration files"

@@ -11,9 +11,9 @@
   "system": true,
   "reportType": "investigation",
   "decoder": {
-    "incident.status.0": { "type": "string", "value": "Not Assigned" },
-    "incident.status.1": { "type": "string", "value": "Assigned" },
-    "incident.status.2": { "type": "string", "value": "Done" },
+    "incident.status.0": { "type": "string", "value": "Pending" },
+    "incident.status.1": { "type": "string", "value": "Active" },
+    "incident.status.2": { "type": "string", "value": "Closed" },
     "incident.status.3": { "type": "string", "value": "Closed" },
     "incident.status.4": { "type": "string", "value": "On Hold" },
     "incident.severity.0": { "type": "string", "value": "Unknown" },
