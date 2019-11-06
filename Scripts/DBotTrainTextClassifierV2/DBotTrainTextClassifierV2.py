@@ -14,7 +14,7 @@ GENERAL_SCORES = {
                  'false negatives and false positives',
     'macro avg': 'The metrics is applied for each label, and find their unweighted mean.',
     'weighted avg': 'The metrics is applied for each label, and find their average weighted by support '
-                    '(the number of true instances for each label). This alters ‘macro’ to account for label imbalance;'
+                    '(the number of true instances for each label). This alters macro to account for label imbalance;'
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
@@ -165,7 +165,8 @@ def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples
                                                                       report_cut['belowThresholdRatio'] * 100)
         human_readable += get_hr_for_scores("Model Evaluation probability >= %.2f" % cut,
                                             confusion_matrix_cut,
-                                            report_cut)
+                                            report_cut,
+                                            metric)
     return human_readable, confusion_matrix, report
 
 
