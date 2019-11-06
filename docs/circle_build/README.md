@@ -1,7 +1,7 @@
 # Overview
 Lets start with the basics, CircleCI is the service we use in order to run our tests and to check the integrity of our code.
 
-As you are probably aware, while pushing any code to our repositories it will initiate a build within CircleCI, this build will execute several things, or in the Circle language steps.
+As you are probably aware, while pushing any code to our repositories it will initiate a build within CircleCI, this build will execute several things, or in Circle jargon, steps.
 Lets go over our steps to understand what each of them is doing.
 In addition, we'll explain common errors and how to troubleshoot them.
 
@@ -61,7 +61,7 @@ This is the first step in the static validation process of the content code.
 
 By running [Tests/scripts/update_id_set.py](https://github.com/demisto/content/blob/master/Tests/scripts/update_id_set.py), we are able to detect conflict of entities (for example, IDs that are being used more than once).
 
-Also, the script calculate dependencies between integration commands, scripts, playbooks and test-playbooks.
+Also, the script calculates dependencies between integration commands, scripts, playbooks, and test-playbooks.
 This is used in the test [selection step](#Configure-Test-Filter).
 
 <!-- TODO: add troubleshooting errors -->
@@ -111,12 +111,12 @@ At the moment, this step does not break the build.
 <!-- TODO: add troubleshooting errors -->
 
 ### Common Server Documentation
-This Step generates documentation files used to populate the *Script Helper* menu.
+This step generates documentation files used to populate the *Script Helper* menu inside the Demisto IDE.
 
 #### Troubleshoot
 <!-- TODO: add troubleshooting errors -->
-Errors in this section indicates on a problem with the docstrings of CommonServer / CommonServerPython functions.
-Make sure all docstrings compatible with the [Sphinx format](https://sphinx-doc.org).
+Errors in this section indicate a problem with the docstrings of CommonServer / CommonServerPython functions.
+Make sure all docstrings are compatible with the [Sphinx format](https://sphinx-doc.org).
 
 ### Create Content Artifacts
 This step creates artifact files that are uploaded to the server and contain all of the content for Demisto. 
@@ -136,7 +136,7 @@ This will upload all files stored under the artifact folder as a circle build ar
 
 ### Run Unit Testing and Lint
 Run all relevant unit tests of integrations and scripts.
-In master branch or due to changes to *CommonServerPython* all unit-tests will be triggered.
+In the case that the Circle build is against the master branch or due to changes to *CommonServerPython* all unit-tests will be executed.
 
 ### Download Artifacts
 **Not relevant for contributors**
@@ -161,7 +161,7 @@ Creates AWS instances for the build.
 ### Setup Instance
 **Not relevant for contributors**
 
-Sets up Demisto on the AWS instances, as well as copies the content from the branch you are working on to the instance itself.
+Sets up Demisto on the AWS instances, as well as copies the content from the branch you are working on to the instances.
 <!-- TODO: add troubleshooting errors -->
 
 #### Troubleshoot
@@ -174,7 +174,7 @@ In most cases, the syntax error will highlighted:
 ### Run Tests - Latest GA
 **Not relevant for contributors**
 
-This step iterates over each of the test playbooks. This involves creating an incident, attaching the test playbook to the incident, running the playbook, and finally awaiting the results.
+This step iterates over each of the relevant test playbooks (aka the tests determined by the [Configure Test Filter](#configure-test-filter) step). This involves creating an incident, attaching the test playbook to the incident, running the playbook, and finally awaiting the results.
 <!-- TODO: add troubleshooting errors -->
 
 
@@ -219,7 +219,7 @@ This step downloads the Demisto server log and destroys the AWS instance in a ca
 If the tests have failed, the instance is preserved for debug purposes. Instances are not persistent and **will be destroyed**.
 
 ### Uploading artifacts final
-Once more, will upload artifact folder (which now also contains serverlogs) as circle build artifacts.
+Once more, will upload the artifact folder (which now also contains the server logs) as circle build artifacts.
 
 # More Build Options 
 Some more capabilities we have enabled for CircleCI is to send parameters with the initiation of the build. The following are currently enabled for use:
