@@ -1717,7 +1717,7 @@
             "playbookID": "Exabeam - Test"
         },
         {
-            "integrations": "DomainTools_Iris",
+            "integrations": "DomainTools Iris",
             "playbookID": "DomainTools Iris - Test",
             "fromversion": "4.1.0"
         },
