@@ -316,9 +316,7 @@ def fetch_incidents_command(
     total = 0
     offset = 50
     limit_incidents = int(limit)
-    limit_page = 50
-    if limit_incidents <= 50:
-        limit_page = limit_incidents
+    limit_page = min(50, limit_incidents)
     raw_response = client.get_incidents(created_after=datetime_new_last_run,
                                         offset=offset,
                                         limit=limit_page,
@@ -328,11 +326,11 @@ def fetch_incidents_command(
         raws.append(raw_response)
         incidents_raw += raw_response.get('incidents', [])
         total += int(raw_response.get('metadata', {}).get('count'))
+        offset += int(raw_response.get('metadata', {}).get('count'))
         if total >= limit_incidents:
             break
         if limit_incidents - total < 50:
             limit_page = limit_incidents - total
-        offset += limit_page
         raw_response = client.get_incidents(offset=offset,
                                             created_after=datetime_new_last_run,
                                             limit=limit_page,

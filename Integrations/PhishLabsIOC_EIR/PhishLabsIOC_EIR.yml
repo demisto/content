@@ -104,7 +104,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '50'
+      defaultValue: '25'
       description: Limit amounts of incidents  (0-50, default 25)
       isArray: false
       name: limit
