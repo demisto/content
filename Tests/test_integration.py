@@ -58,21 +58,21 @@ def __get_integration_config(client, integration_name):
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
     try:
-        res = demisto_client.generic_request_func(self=client, method='POST',
-                                                  path='/settings/integration/test',
-                                                  body=module_instance)
+        response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+                                                                              path='/settings/integration/test',
+                                                                              body=module_instance)
     except ApiException as conn_err:
         print_error(
             'Failed to test integration instance, error trying to communicate with demisto '
             'server: {} '.format(
                 conn_err))
         return False
-    if res[1] != 200:
+    if int(response_code) != 200:
         print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
-            res[1]))
+            response_code))
         return False
 
-    result_object = ast.literal_eval(res[0])
+    result_object = ast.literal_eval(response_data)
     success = result_object['success']
     if not success:
         print_error('Test integration failed.\n Failure message: ' + result_object['message'])
@@ -372,10 +372,10 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration %s succeed' % (integration_name,))
+        print('Create integration %s succeed'.format(integration_name,))
 
     # create incident with playbook
-    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id,),
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
                                                        playbook_id, integrations)
 
     if not incident:
