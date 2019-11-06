@@ -5,14 +5,15 @@ commonfields:
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  required: false
+  required: true
   type: 0
-- display: Port
+- defaultvalue: '4443'
+  display: Port
   name: port
-  required: false
+  required: true
   type: 0
 - name: credentials
-  required: false
+  required: true
   type: 9
 - display: Trust any certificate (unsecure)
   name: insecure
@@ -30,6 +31,18 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Name of component to fetch from
+  name: component_name
+  required: false
+  type: 0
+- display: Name of field to fetch by
+  name: filter_field
+  required: false
+  type: 0
+- display: Fetch Limit
+  name: fetch_limit
+  required: false
+  type: 0
 description: Use LockPath KeyLight to manage tickets
 display: Lockpath KeyLight v2
 name: Lockpath KeyLight v2
@@ -258,7 +271,7 @@ script:
       Returns the title/default field for a set of records within a chosen component.
       Filters may be applied to return only the records meeting selected criteria.
     execution: false
-    name: kl-get-records
+    name: kl-get-filtered-records
   - arguments:
     - default: false
       description: The component ID.
@@ -284,7 +297,7 @@ script:
       ID, with lookup field report details. Lookup field records will detail information for
       fields on their report definition, if on is defined.
     execution: false
-    name: kl-get-detail-record
+    name: kl-get-detailed-record
   - arguments:
     - default: false
       description: The ID of the desired component.
@@ -345,7 +358,7 @@ script:
     description: Provides the ability to run a search with filters and paging while
       returning a high level of detail for each record.
     execution: false
-    name: kl-get-detail-records
+    name: kl-get-detailed-filtered-records
   - arguments:
     - default: false
       description: The ID of the desired component.
