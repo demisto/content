@@ -1,0 +1,2 @@
+ To allow us access to Slack, the Demisto app has to be added to the relevant workspace. Do so by clicking on the following [link](https://oproxy.demisto.ninja/slack).
+ After adding the Demisto app, you will get an Access Token and Bot Token, which should be inserted in the integration instance configuration's corresponding fields.

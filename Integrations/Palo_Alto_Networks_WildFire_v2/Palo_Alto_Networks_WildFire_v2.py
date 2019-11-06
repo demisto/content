@@ -282,14 +282,7 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    test_url = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
-    }
-    json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
-    if json_res:
+    if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
 
@@ -493,6 +486,10 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
     evidence_md5 = []
     evidence_text = []
 
+    # When only one report is in response, it's returned as a single json object and not a list.
+    if not isinstance(reports, list):
+        reports = [reports]
+
     for report in reports:
         if 'network' in report and report["network"]:
             if 'UDP' in report["network"]:
@@ -603,7 +600,7 @@ def create_report(file_hash, reports, file_info, format_='xml', verbose=False):
         if verbose:
             for report in reports:
                 if isinstance(report, dict):
-                    md += tableToMarkdown('Report ', report, report.keys(), removeNull=True)
+                    md += tableToMarkdown('Report ', report, list(report), removeNull=True)
 
         demisto.results({
             'Type': entryTypes['note'],
@@ -630,11 +627,12 @@ def wildfire_get_report(file_hash):
         demisto.results('Report not found')
         sys.exit(0)
 
-    reports = json_res["wildfire"].get('task_info', None).get('report', None)
+    task_info = json_res["wildfire"].get('task_info', None)
+    reports = task_info.get('report', None) if task_info else None
     file_info = json_res["wildfire"].get('file_info', None)
 
     if not reports or not file_info:
-        demisto.results('No results yet')
+        demisto.results('The sample is still being analyzed. Please wait to download the report')
         sys.exit(0)
     return file_hash, reports, file_info
 

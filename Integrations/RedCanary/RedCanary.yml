@@ -1,0 +1,396 @@
+commonfields:
+  id: RedCanary
+  version: -1
+name: RedCanary
+display: Red Canary
+category: Endpoint
+description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
+  Falcon.  The collected data is standardized into a common schema which allows teams
+  to detect, analyze and respond to security incidents.
+configuration:
+- display: Domain (for example, https://demisto.my.redcanary.co)
+  name: domain
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: redcanary-acknowledge-detection
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID. Can be obtained from the context.
+    description: Mark a detection as acknowledged to inform that it's being handled.
+  - name: redcanary-update-remediation-state
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID. Can be obtained from the context.
+    - name: remediation-state
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - remediated
+      - not_remediated_false_positive
+      - not_remediated_sanctioned_activity
+      - not_remediated_unwarranted
+      description: The way in which the detection was remediated.
+    - name: comment
+      description: Describe the reason why the detection was remediated in this manner.
+        This is ignored for 'remediated' state
+      defaultValue: remediated by Demisto.
+    description: Update the remediation state of a detection.
+  - name: redcanary-list-detections
+    arguments:
+    - name: page
+      description: What page of results to fetch. Defaults to first page.
+    - name: per-page
+      description: How many results to return per page.
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    description: Get a list of confirmed detections.
+  - name: redcanary-list-endpoints
+    arguments:
+    - name: page
+      description: Page number in the query response. Default is 1.
+      defaultValue: "1"
+    - name: per-page
+      description: Number of returned results per page. Default is 50
+      defaultValue: "50"
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    description: Get a list of endpoints.
+  - name: redcanary-execute-playbook
+    arguments:
+    - name: playbook-id
+      description: Playbook ID for execution.
+    - name: detection-id
+      required: true
+      description: Detection to execute the playbook on. Can be retrieve from the
+        context
+    - name: playbook-name
+      description: Playbook name for execution. if playbook ID is specify, this is
+        ignored.
+    description: Execute a predefined playbook on a detection.
+  - name: redcanary-get-endpoint
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Endpoint ID
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    description: Get an endpoint by unique identifier.
+  - name: redcanary-get-endpoint-detections
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Endpoint ID
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    description: Get a list of detections associated with the endpoint.
+  - name: redcanary-get-detection
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Detection ID
+    outputs:
+    - contextPath: RedCanary.Detection.ID
+      description: Detection ID.
+      type: number
+    - contextPath: RedCanary.Detection.Headline
+      description: Human readable text about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Severity
+      description: The severity of the detection. High, medium, or low
+      type: string
+    - contextPath: RedCanary.Detection.Summary
+      description: A summary of information about the detection.
+      type: string
+    - contextPath: RedCanary.Detection.Classification
+      description: Detection Classification
+      type: string
+    - contextPath: RedCanary.Detection.Subclassification
+      description: Detection Subclassification
+      type: string
+    - contextPath: RedCanary.Detection.Time
+      description: The time the detection was confirmed as a threat by Red Canary
+      type: date
+    - contextPath: RedCanary.Detection.Acknowledged
+      description: Whether or not the detection is acknowledged.
+      type: boolean
+    - contextPath: RedCanary.Detection.RemediationStatus
+      description: The state the detection is currently in.
+      type: string
+    - contextPath: Endpoint.Hostname
+      description: Fully-qualified endpoint hostname
+      type: string
+    - contextPath: Endpoint.ID
+      description: Endpoint ID
+      type: string
+    - contextPath: Endpoint.IPAddress
+      description: IP Address of the endpoint
+    - contextPath: Endpoint.MACAddress
+      description: MAC Address of the endpoint
+    - contextPath: Endpoint.OS
+      description: The operating system platform used by the endpoint
+      type: string
+    - contextPath: Endpoint.OSVersion
+      description: The complete operating system version identifier used by the endpoint
+      type: string
+    - contextPath: Endpoint.Memory
+      description: Physical memory of the endpoint in bytes
+      type: number
+    - contextPath: Endpoint.IsIsolated
+      description: Whether or not the endpoint is currently network isolated
+      type: boolean
+    - contextPath: Endpoint.IsDecommissioned
+      description: Whether or not the endpoint is decommissioned
+      type: boolean
+    - contextPath: Account.Username
+      description: Endpoint user name
+      type: string
+    - contextPath: Account.Hostname
+      description: Endpoint host name
+      type: string
+    - contextPath: Domain.Name
+      description: Domain name
+      type: string
+    - contextPath: File.Name
+      description: File name
+      type: string
+    - contextPath: File.MD5
+      description: File MD5
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256
+      type: string
+    - contextPath: File.Path
+      description: File path in the endpoint
+      type: string
+    - contextPath: File.Extension
+      description: File extension
+      type: string
+    - contextPath: IP.Address
+      description: IP Address
+      type: string
+    - contextPath: IP.Port
+      description: Port
+      type: string
+    - contextPath: Process.Name
+      description: Process name
+      type: string
+    - contextPath: Process.Path
+      description: process binary path
+      type: string
+    - contextPath: Process.MD5
+      description: Binary MD5
+      type: string
+    - contextPath: Process.SHA256
+      description: Binary SHA256
+      type: string
+    - contextPath: Process.StartTime
+      description: Process execution time
+      type: date
+    - contextPath: Process.CommandLine
+      description: Process command line
+      type: string
+    description: Get a detection by unique identifier.
+  isfetch: true
+  runonce: false
+tests:
+  - RedCanaryTest

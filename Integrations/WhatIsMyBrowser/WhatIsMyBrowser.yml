@@ -1,0 +1,67 @@
+commonfields:
+  id: WhatsMyBrowser
+  version: -1
+name: WhatsMyBrowser
+display: WhatIsMyBrowser
+category: Data Enrichment & Threat Intelligence
+description: Parse user agents and determine if they are malicious as well as enrich
+  information about the agent
+configuration:
+- display: URL for WhatIsMyBrowser
+  name: url
+  defaultvalue: https://api.whatismybrowser.com/api/v2/user_agent_parse # disable-secrets-detection
+  type: 0
+  required: true
+- display: API Key
+  name: api_key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: ua-parse
+    arguments:
+    - name: UserAgent
+      required: true
+      description: User Agent String
+    outputs:
+    - contextPath: UA.Parse.Software
+      description: Software extracted from UA string
+      type: string
+    - contextPath: UA.Parse.SoftwareName
+      description: Software Name extracted from UA string
+      type: string
+    - contextPath: UA.Parse.OperatingSystem
+      description: Operating System extracted from UA string
+      type: string
+    - contextPath: UA.Parse.Abusive
+      description: Whether or not the UA has been identified as abusive
+      type: boolean
+    - contextPath: UA.Parse.OperatingSystemName
+      description: Operating System Name extracted from UA string
+      type: string
+    - contextPath: UA.Parse.UserAgent
+      description: User agent string
+      type: string
+    - contextPath: UA.Parse.HardwareType
+      description: Hardware Type as extracted from UA string
+      type: string
+    - contextPath: UA.Parse.HardwareSubType
+      description: Hardware Sub Type as extracted from UA string
+      type: string
+    description: Parses a User Agent string
+  runonce: false
+tests:
+- WhatsMyBrowser-Test

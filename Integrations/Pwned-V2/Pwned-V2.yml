@@ -1,0 +1,207 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Have I Been Pwned? V2
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: '30'
+  display: Maximum time per request (in seconds)
+  name: max_retry_time
+  required: false
+  type: 0
+- defaultvalue: SUSPICIOUS
+  display: 'Email Severity: The DBot reputation for compromised emails (SUSPICIOUS
+    or MALICIOUS)'
+  name: default_dbot_score_email
+  required: false
+  type: 0
+- defaultvalue: SUSPICIOUS
+  display: 'Domain Severity: The DBot reputation for compromised domains (SUSPICIOUS
+    or MALICIOUS)'
+  name: default_dbot_score_domain
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Uses the Have I Been Pwned? service to check whether email addresses
+  or domains were compromised in previous breaches.
+display: Have I Been Pwned? V2
+name: Have I Been Pwned? V2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: The email address to check.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if an email address was compromised.
+    execution: false
+    name: pwned-email
+    outputs:
+    - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
+      description: For compromised email addresses, the vendor that made the decision.
+      type: String
+    - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious email addresses, the vendor that made the decision.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: The domain to check.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if a domain was compromised.
+    execution: false
+    name: pwned-domain
+    outputs:
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
+      description: For compromised domains, the reporters for the vendor to make the
+        compromised decision.
+      type: String
+    - contextPath: Domain.Name
+      description: Domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: The email address to check.
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if an email address was compromised.
+    execution: false
+    name: email
+    outputs:
+    - contextPath: Account.Email.Pwned-V2.Compromised.Vendor
+      description: For compromised email addresses, the vendor that made the decision.
+      type: String
+    - contextPath: Account.Email.Pwned-V2.Compromised.Reporters
+      description: For compromised email addresses, the reporters for the vendor to
+        make the compromised decision.
+      type: String
+    - contextPath: Account.Email.Address
+      description: The email address.
+      type: String
+    - contextPath: Email.Malicious.Vendor
+      description: For malicious email addresses, the vendor that made the decision.
+      type: String
+    - contextPath: Email.Malicious.Description
+      description: For malicious email addresses, the reason that the vendor made
+        the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  - arguments:
+    - default: true
+      description: The domain to check.
+      isArray: false
+      name: domain
+      required: true
+      secret: false
+    deprecated: false
+    description: Checks if a domain was compromised.
+    execution: false
+    name: domain
+    outputs:
+    - contextPath: Domain.Pwned-V2.Compromised.Vendor
+      description: For compromised domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Pwned-V2.Compromised.Reporters
+      description: For compromised domains, the reporters for the vendor to make the
+        compromised decision.
+      type: String
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision.
+      type: String
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python2

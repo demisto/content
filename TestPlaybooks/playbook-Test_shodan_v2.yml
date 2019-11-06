@@ -1,0 +1,913 @@
+id: "Test-Shodan_v2"
+version: -1
+name: "Test-Shodan_v2"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db741c2e-ae26-4d03-84f8-a81a9d66aeba
+    type: start
+    task:
+      id: db741c2e-ae26-4d03-84f8-a81a9d66aeba
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
+    type: regular
+    task:
+      id: 8c9a5be8-e968-47bf-8aff-71ba53e93b2f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
+    type: regular
+    task:
+      id: 3f86ee67-ced1-4e22-8b6c-6a7cd2f7093c
+      version: -1
+      name: shodan-create-network-alert
+      script: Shodan_v2|||shodan-create-network-alert
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      alertName:
+        simple: test_alert
+      expires: {}
+      ip:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 1a42daa5-782a-468a-83aa-e79e772cb4ab
+    type: regular
+    task:
+      id: 1a42daa5-782a-468a-83aa-e79e772cb4ab
+      version: -1
+      name: shodan-network-get-alerts
+      script: Shodan_v2|||shodan-network-get-alerts
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a594c4b7-c673-4968-85b7-fd7eda13c4f2
+    type: regular
+    task:
+      id: a594c4b7-c673-4968-85b7-fd7eda13c4f2
+      version: -1
+      name: shodan-network-delete-alert
+      script: Shodan_v2|||shodan-network-delete-alert
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      alertID:
+        simple: ${Shodan.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
+    type: title
+    task:
+      id: a4a29a82-8640-42e5-8bf5-b83c24d2eda7
+      version: -1
+      name: success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 30b3c649-612f-4e90-8392-762c30f7cb98
+    type: regular
+    task:
+      id: 30b3c649-612f-4e90-8392-762c30f7cb98
+      version: -1
+      name: shodan-network-alert-set-trigger
+      script: Shodan_v2|||shodan-network-alert-set-trigger
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Trigger:
+        simple: any
+      alertID:
+        simple: ${Shodan.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 5603a464-1372-4318-8e62-696e0bc6df75
+    type: regular
+    task:
+      id: 5603a464-1372-4318-8e62-696e0bc6df75
+      version: -1
+      name: shodan-network-alert-whitelist-service
+      script: Shodan_v2|||shodan-network-alert-whitelist-service
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      alertID:
+        simple: ${Shodan.Alert.ID}
+      alertId:
+        simple: ${Shodan.Alert.ID}
+      service:
+        simple: 1.1.1.1:80
+      trigger:
+        simple: any
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
+    type: regular
+    task:
+      id: 2d0690f4-62c4-4e36-8dae-fc09666b89bf
+      version: -1
+      name: 'shodan-network-alert-remove-service-from-whitelist '
+      script: Shodan_v2|||shodan-network-alert-remove-service-from-whitelist
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      alertID:
+        simple: ${Shodan.Alert.ID}
+      alertId:
+        simple: ${Shodan.Alert.ID}
+      service:
+        simple: 1.1.1.1:80
+      trigger:
+        simple: any
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 1a9e2836-fff4-4847-8224-1a1bff9367d7
+    type: regular
+    task:
+      id: 1a9e2836-fff4-4847-8224-1a1bff9367d7
+      version: -1
+      name: shodan-network-alert-remove-trigger
+      script: Shodan_v2|||shodan-network-alert-remove-trigger
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      Trigger:
+        simple: any
+      alertID:
+        simple: ${Shodan.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
+    type: regular
+    task:
+      id: 9575c7fd-41e9-45c6-8017-41ce5ea7e695
+      version: -1
+      name: shodan-network-get-alert-by-id
+      script: Shodan_v2|||shodan-network-get-alert-by-id
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      alertID:
+        simple: ${Shodan.Alert.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 73a2c00d-1332-4663-8caf-cdc940f6bd26
+    type: regular
+    task:
+      id: 73a2c00d-1332-4663-8caf-cdc940f6bd26
+      version: -1
+      name: ip
+      description: Returns all services that have been found on the given host IP.
+      script: Shodan_v2|||ip
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
+    type: condition
+    task:
+      id: 69a44bf8-8e03-47b7-8246-c51268bb5e9c
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Shodan.IP.ISP
+            iscontext: true
+          right:
+            value:
+              simple: Google
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
+    type: regular
+    task:
+      id: 6af9b3cd-68d1-47db-8ecb-74b087f79fc8
+      version: -1
+      name: search
+      description: Search Shodan using the same query syntax as the website and use
+        facets to get summary information for different properties.
+      script: Shodan_v2|||search
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      facets: {}
+      page: {}
+      query:
+        simple: country:HK product:Apache
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 3670a93d-7b58-4201-82dc-7bdf902e174c
+    type: regular
+    task:
+      id: 3670a93d-7b58-4201-82dc-7bdf902e174c
+      version: -1
+      name: shodan-search-count
+      script: Shodan_v2|||shodan-search-count
+      type: regular
+      iscommand: true
+      brand: Shodan_v2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      query:
+        simple: country:HK product:Apache
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 64b90c78-53e3-401d-85a6-208ddef55219
+    type: condition
+    task:
+      id: 64b90c78-53e3-401d-85a6-208ddef55219
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: Shodan.Search.ResultCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 70b9c599-c534-4f06-8662-e3637d92863b
+    type: regular
+    task:
+      id: 70b9c599-c534-4f06-8662-e3637d92863b
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: f5732241-ff5b-4b58-8f0d-8c66c44c6cd7
+    type: regular
+    task:
+      id: f5732241-ff5b-4b58-8f0d-8c66c44c6cd7
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: fa38c3c4-770f-4c19-8ed1-636ba7a5cc85
+    type: regular
+    task:
+      id: fa38c3c4-770f-4c19-8ed1-636ba7a5cc85
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 625b584c-42cc-4c61-8446-7dffdd80a691
+    type: regular
+    task:
+      id: 625b584c-42cc-4c61-8446-7dffdd80a691
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: c9aee2e3-bcb6-4e0b-81c8-ab4575bd3239
+    type: regular
+    task:
+      id: c9aee2e3-bcb6-4e0b-81c8-ab4575bd3239
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 022aa42c-c465-4ffc-8cd4-00926e4b29f8
+    type: regular
+    task:
+      id: 022aa42c-c465-4ffc-8cd4-00926e4b29f8
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "37":
+    id: "37"
+    taskid: efe55027-434a-4fc8-8ec9-db0c18ea495a
+    type: regular
+    task:
+      id: efe55027-434a-4fc8-8ec9-db0c18ea495a
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "38":
+    id: "38"
+    taskid: a9c84284-e006-4065-8628-092a59203cbe
+    type: regular
+    task:
+      id: a9c84284-e006-4065-8628-092a59203cbe
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "39":
+    id: "39"
+    taskid: 00391863-3fdb-48e9-849d-57e3e6496aab
+    type: regular
+    task:
+      id: 00391863-3fdb-48e9-849d-57e3e6496aab
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "41":
+    id: "41"
+    taskid: a9621715-c86d-4e3e-80ea-e6f22766d86c
+    type: regular
+    task:
+      id: a9621715-c86d-4e3e-80ea-e6f22766d86c
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      seconds:
+        simple: "1.2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "42":
+    id: "42"
+    taskid: 45cbca1d-9416-48f1-896f-d258b229d9bb
+    type: condition
+    task:
+      id: 45cbca1d-9416-48f1-896f-d258b229d9bb
+      version: -1
+      name: Alerts exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Shodan.Alert.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "43":
+    id: "43"
+    taskid: 34949ba1-82ce-46d7-8ba3-be137409b330
+    type: regular
+    task:
+      id: 34949ba1-82ce-46d7-8ba3-be137409b330
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "45":
+    id: "45"
+    taskid: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
+    type: condition
+    task:
+      id: e11834e6-1dcb-4002-8f2f-8d1cae9953ab
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Shodan.Banner.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -73,7 +73,63 @@ API_PARAM_DICT = {
         'Malware Family': 'malware_family'
 
     },
+    'search_arguments': {
+        'file_hash': {
+            'api_name': 'alias.hash',
+            'operator': 'contains'
+        },
+        'domain': {
+            'api_name': 'alias.domain',
+            'operator': 'contains'
+        },
+        'ip': {
+            'api_name': 'alias.ip_address',
+            'operator': 'contains'
+        },
+        'url': {
+            'api_name': 'alias.url',
+            'operator': 'contains'
+        },
+        'wildfire_verdict': {
+            'api_name': 'sample.malware',
+            'operator': 'is',
+            'translate': {
+                'Malware': 1,
+                'Grayware': 2,
+                'Benign': 3,
+                'Phishing': 4,
+            }
+        },
+        'first_seen': {
+            'api_name': 'sample.create_date',
+            'operator': 'is in the range'
+        },
+        'last_updated': {
+            'api_name': 'sample.update_date',
+            'operator': 'is in the range'
+        },
+        'time_range': {
+            'api_name': 'session.tstamp',
+            'operator': 'is in the range'
+        },
+        'time_after': {
+            'api_name': 'session.tstamp',
+            'operator': 'is after'
+        },
+        'time_before': {
+            'api_name': 'session.tstamp',
+            'operator': 'is before'
+        }
+    },
 
+    'file_indicators': {
+        'Size': 'Size',
+        'SHA1': 'SHA1',
+        'SHA256': 'SHA256',
+        'FileType': 'Type',
+        'Tags': 'Tags',
+        'FileName': 'Name'
+    },
     'search_results': {
         'sha1': 'SHA1',
         'sha256': 'SHA256',
@@ -182,7 +238,18 @@ def parse_response(resp, err_operation):
     # Errors returned from AutoFocus
     except requests.exceptions.HTTPError:
         err_msg = f'{err_operation}: {res_json.get("message")}'
-        return return_error(err_msg)
+        if res_json.get("message").find('Requested sample not found') != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        elif res_json.get("message").find("AF Cookie Not Found") != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        elif err_operation == 'Tag details operation failed' and \
+                res_json.get("message").find("Tag") != -1 and res_json.get("message").find("not found") != -1:
+            demisto.results(err_msg)
+            sys.exit(0)
+        else:
+            return return_error(err_msg)
     # Unexpected errors (where no json object was received)
     except Exception as err:
         err_msg = f'{err_operation}: {err}'
@@ -217,9 +284,9 @@ def do_search(search_object, query, scope, size=None, sort=None, order=None, err
         'size': size
     }
     if scope:
-        data.update({'scope': API_PARAM_DICT['scope'][scope]})
+        data.update({'scope': API_PARAM_DICT['scope'][scope]})  # type: ignore
     if validate_sort_and_order(sort, order):
-        data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})
+        data.update({'sort': {API_PARAM_DICT['sort'][sort]: {'order': API_PARAM_DICT['order'][order]}}})  # type: ignore
 
     # Remove nulls
     data = createContext(data, removeNull=True)
@@ -258,14 +325,17 @@ def get_fields_from_hit_object(result_object, response_dict_name):
 
 
 def parse_hits_response(hits, response_dict_name):
-    parsed_objects = []
-    for hit in hits:
-        flattened_obj = {}  # type: ignore
-        flattened_obj.update(hit.get('_source'))
-        flattened_obj['_id'] = hit.get('_id')
-        parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
-        parsed_objects.append(parsed_obj)
-    return parsed_objects
+    parsed_objects = []  # type: ignore
+    if not hits:
+        return parsed_objects
+    else:
+        for hit in hits:
+            flattened_obj = {}  # type: ignore
+            flattened_obj.update(hit.get('_source'))
+            flattened_obj['_id'] = hit.get('_id')
+            parsed_obj = get_fields_from_hit_object(flattened_obj, response_dict_name)
+            parsed_objects.append(parsed_obj)
+        return parsed_objects
 
 
 def get_search_results(search_object, af_cookie):
@@ -316,13 +386,16 @@ def validate_if_line_needed(category, info_line):
 def get_data_from_line(line, category_name):
     category_indexes = SAMPLE_ANALYSIS_LINE_KEYS.get(category_name).get('indexes')  # type: ignore
     values = line.split(',')
-    sub_categories = {}
-    for sub_category in category_indexes:  # type: ignore
-        sub_category_index = category_indexes.get(sub_category)  # type: ignore
-        sub_categories.update({
-            sub_category: values[sub_category_index]
-        })
-    return sub_categories
+    sub_categories = {}  # type: ignore
+    if not category_indexes:
+        return sub_categories
+    else:
+        for sub_category in category_indexes:  # type: ignore
+            sub_category_index = category_indexes.get(sub_category)  # type: ignore
+            sub_categories.update({
+                sub_category: values[sub_category_index]
+            })
+        return sub_categories
 
 
 def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
@@ -341,7 +414,8 @@ def parse_coverage_sub_categories(coverage_data):
     for sub_category_name, sub_category_data in coverage_data.items():
         if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
-            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get('display_name')  # type: ignore
+            new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
+                'display_name')  # type: ignore
             new_coverage[new_sub_category_name] = new_sub_category_data
     return {'coverage': new_coverage}
 
@@ -398,10 +472,16 @@ def parse_tag_details_response(resp):
         'tag_class',
         'count',
         'lasthit',
+        'description'
     ]
     new_tag_info = {}
     for field in fields_to_extract_from_tag_details:
         new_tag_info[field] = tag_details.get(field)
+
+    tag_group_details = resp.get('tag_groups')
+    if tag_group_details:
+        new_tag_info['tag_group'] = tag_group_details
+
     return new_tag_info
 
 
@@ -419,7 +499,7 @@ def validate_tag_scopes(private, public, commodity, unit42):
 
 def autofocus_top_tags_search(scope, tag_class_display, private, public, commodity, unit42):
     validate_tag_scopes(private, public, commodity, unit42)
-    tag_class = API_PARAM_DICT['tag_class'][tag_class_display]
+    tag_class = API_PARAM_DICT['tag_class'][tag_class_display]  # type: ignore
     query = {
         "operator": "all",
         "children": [
@@ -456,14 +536,18 @@ def autofocus_top_tags_search(scope, tag_class_display, private, public, commodi
 
 
 def parse_top_tags_response(response):
-    top_tags_list = []
-    for tag in response.get('top_tags'):
-        fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
-        new_tag = {}
-        for field in fields_to_extract_from_top_tags:
-            new_tag[field] = tag[field]
-        top_tags_list.append(new_tag)
-    return top_tags_list
+    top_tags_list = []  # type: ignore
+    top_tags = response.get('top_tags')
+    if not top_tags:
+        return top_tags_list
+    else:
+        for tag in top_tags:
+            fields_to_extract_from_top_tags = ['tag_name', 'public_tag_name', 'count', 'lasthit']
+            new_tag = {}
+            for field in fields_to_extract_from_top_tags:
+                new_tag[field] = tag[field]
+            top_tags_list.append(new_tag)
+        return top_tags_list
 
 
 def get_top_tags_results(af_cookie):
@@ -507,6 +591,189 @@ def print_hr_by_category(category_name, category_data):
             })
 
 
+def get_files_data_from_results(results):
+    """
+    Gets a list of results and for each result returns a file object includes all relevant file indicators exists
+    in that result
+    :param results: a list of dictionaries
+    :return: a list of file objects
+    """
+    files = []
+    if results:
+        for result in results:
+            raw_file = get_fields_from_hit_object(result, 'file_indicators')
+            file_data = filter_object_entries_by_dict_values(raw_file, 'file_indicators')
+            files.append(file_data)
+    return files
+
+
+def filter_object_entries_by_dict_values(result_object, response_dict_name):
+    """
+    Gets a dictionary (result_object) and filters it's keys by the values of another
+    dictionary (response_dict_name)
+    input: response_dict_name = 'file_indicators' - see API_PARAM_DICT above
+           result_object = {
+                              "app": "web-browsing",
+                              "vsys": 1,
+                              "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                              "UploadSource": "Firewall",
+                              "src_port": 80,
+                              "device_serial": "007051000050926",
+                              "Seen": "2019-07-24T09:37:04",
+                              "Name": "wildfire-test-pe-file.exe",
+                              "user_id": "unknown",
+                              "src_country": "United States",
+                              "src_countrycode": "US",
+                              "dst_port": 65168,
+                              "device_countrycode": "US",
+                              "Industry": "High Tech",
+                              "Region": "us",
+                              "device_country": "United States",
+                              "ID": "179972200903"
+                            }
+    output: {
+                "SHA256": "18c9acd34a3aea09121f027857e0004a3ea33a372b213a8361e8a978330f0dc8",
+                "Name": "wildfire-test-pe-file.exe"
+            }
+    :param result_object: a dictionary representing an object
+    :param response_dict_name: a dictionary which it's values are the relevant fields (filters)
+    :return: the result_object filtered by the relevant fields
+    """
+    af_params_dict = API_PARAM_DICT.get(response_dict_name)
+    result_object_filtered = {}
+    if af_params_dict and isinstance(result_object, dict) and isinstance(af_params_dict, dict):
+        for key in result_object.keys():
+            if key in af_params_dict.values():  # type: ignore
+                result_object_filtered[key] = result_object.get(key)
+    return result_object_filtered
+
+
+def search_samples(query=None, scope=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None,
+                   url=None, wildfire_verdict=None, first_seen=None, last_updated=None):
+    validate_no_query_and_indicators(query, [file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated])
+    if not query:
+        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+        query = build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated)
+    return run_search('samples', query=query, scope=scope, size=size, sort=sort, order=order)
+
+
+def build_sample_search_query(file_hash, domain, ip, url, wildfire_verdict, first_seen, last_updated):
+    indicator_args_for_query = {
+        'file_hash': file_hash,
+        'domain': domain,
+        'ip': ip,
+        'url': url
+    }
+    indicator_list = build_indicator_children_query(indicator_args_for_query)
+    indicator_query = build_logic_query('OR', indicator_list)
+    filtering_args_for_search = {}  # type: ignore
+    if wildfire_verdict:
+        filtering_args_for_search['wildfire_verdict'] = \
+            demisto.get(API_PARAM_DICT, f'search_arguments.wildfire_verdict.translate.{wildfire_verdict}')
+    if first_seen:
+        filtering_args_for_search['first_seen'] = first_seen
+    if last_updated:
+        filtering_args_for_search['last_updated'] = last_updated
+    filters_list = build_children_query(filtering_args_for_search)
+    filters_list.append(indicator_query)
+    logic_query = build_logic_query('AND', filters_list)
+    return json.dumps(logic_query)
+
+
+def search_sessions(query=None, size=None, sort=None, order=None, file_hash=None, domain=None, ip=None, url=None,
+                    from_time=None, to_time=None):
+    validate_no_query_and_indicators(query, [file_hash, domain, ip, url, from_time, to_time])
+    if not query:
+        validate_no_multiple_indicators_for_search([file_hash, domain, ip, url])
+        query = build_session_search_query(file_hash, domain, ip, url, from_time, to_time)
+    return run_search('sessions', query=query, size=size, sort=sort, order=order)
+
+
+def build_session_search_query(file_hash, domain, ip, url, from_time, to_time):
+    indicator_args_for_query = {
+        'file_hash': file_hash,
+        'domain': domain,
+        'ip': ip,
+        'url': url
+    }
+    indicator_list = build_indicator_children_query(indicator_args_for_query)
+    indicator_query = build_logic_query('OR', indicator_list)
+    time_filters_for_search = {}  # type: ignore
+    if from_time and to_time:
+        time_filters_for_search = {'time_range': [from_time, to_time]}
+    elif from_time:
+        time_filters_for_search = {'time_after': [from_time]}
+    elif to_time:
+        time_filters_for_search = {'time_before': [to_time]}
+
+    filters_list = build_children_query(time_filters_for_search)
+    filters_list.append(indicator_query)
+    logic_query = build_logic_query('AND', filters_list)
+    return json.dumps(logic_query)
+
+
+def build_logic_query(logic_operator, condition_list):
+    operator = None
+    if logic_operator == 'AND':
+        operator = 'all'
+    elif logic_operator == 'OR':
+        operator = 'any'
+    return {
+        'operator': operator,
+        'children': condition_list
+    }
+
+
+def build_children_query(args_for_query):
+    children_list = []  # type: ignore
+    for key, val in args_for_query.items():
+        field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
+        operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
+        children_list += children_list_generator(field_api_name, operator, [val])
+    return children_list
+
+
+def build_indicator_children_query(args_for_query):
+    for key, val in args_for_query.items():
+        if val:
+            field_api_name = API_PARAM_DICT['search_arguments'][key]['api_name']  # type: ignore
+            operator = API_PARAM_DICT['search_arguments'][key]['operator']  # type: ignore
+            children_list = children_list_generator(field_api_name, operator, val)
+    return children_list
+
+
+def children_list_generator(field_name, operator, val_list):
+    query_list = []
+    for value in val_list:
+        query_list.append({
+            'field': field_name,
+            'operator': operator,
+            'value': value
+        })
+    return query_list
+
+
+def validate_no_query_and_indicators(query, arg_list):
+    if query:
+        for arg in arg_list:
+            if arg:
+                return_error(f'The search command can either run a search using a custom query '
+                             f'or use the builtin arguments, but not both')
+
+
+def validate_no_multiple_indicators_for_search(arg_list):
+    used_arg = None
+    for arg in arg_list:
+        if arg and used_arg:
+            return_error(f'The search command can receive one indicator type at a time, two were given: {used_arg}, '
+                         f'{arg}. For multiple indicator types use the custom query')
+        elif arg:
+            used_arg = arg
+    if not used_arg:
+        return_error('In order to perform a samples/sessions search, a query or an indicator must be given.')
+    return
+
+
 ''' COMMANDS'''
 
 
@@ -531,12 +798,21 @@ def test_module():
 
 def search_samples_command():
     args = demisto.args()
+    file_hash = argToList(args.get('file_hash'))
+    domain = argToList(args.get('domain'))
+    ip = argToList(args.get('ip'))
+    url = argToList(args.get('url'))
+    wildfire_verdict = args.get('wildfire_verdict')
+    first_seen = argToList(args.get('first_seen'))
+    last_updated = argToList(args.get('last_updated'))
     query = args.get('query')
-    scope = args.get('scope')
+    scope = args.get('scope').capitalize()
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
-    info = run_search('samples', query=query, scope=scope, size=max_results, sort=sort, order=order)
+    info = search_samples(query=query, scope=scope, size=max_results, sort=sort, order=order, file_hash=file_hash,
+                          domain=domain, ip=ip, url=url, wildfire_verdict=wildfire_verdict, first_seen=first_seen,
+                          last_updated=last_updated)
     md = tableToMarkdown(f'Search Samples Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
@@ -549,11 +825,18 @@ def search_samples_command():
 
 def search_sessions_command():
     args = demisto.args()
+    file_hash = argToList(args.get('file_hash'))
+    domain = argToList(args.get('domain'))
+    ip = argToList(args.get('ip'))
+    url = argToList(args.get('url'))
+    from_time = args.get('from_time')
+    to_time = args.get('to_time')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
-    info = run_search('sessions', query=query, size=max_results, sort=sort, order=order)
+    info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
+                           ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown(f'Search Sessions Info:', info)
     demisto.results({
         'Type': entryTypes['note'],
@@ -568,12 +851,22 @@ def samples_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('samples', af_cookie)
-    md = tableToMarkdown(f'Search Samples Results is {status}', results)
+    files = get_files_data_from_results(results)
+    if len(results) < 1:
+        md = results = 'No entries found that match the query'
+        status = 'complete'
+    else:
+        md = tableToMarkdown(f'Search Samples Results is {status}', results)
+    context = {
+        'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
+        'AutoFocus.SamplesSearch(val.AFCookie ==== obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SamplesResults(val.ID == obj.ID)': results},
+        'EntryContext': context,
         'HumanReadable': md
     })
 
@@ -582,12 +875,22 @@ def sessions_search_results_command():
     args = demisto.args()
     af_cookie = args.get('af_cookie')
     results, status = get_search_results('sessions', af_cookie)
-    md = tableToMarkdown(f'Search Sessions Results is {status}:', results)
+    files = get_files_data_from_results(results)
+    if len(results) < 1:
+        md = results = 'No entries found that match the query'
+        status = 'complete'
+    else:
+        md = tableToMarkdown(f'Search Sessions Results is {status}', results)
+    context = {
+        'AutoFocus.SessionsResults(val.ID === obj.ID)': results,
+        'AutoFocus.SessionsSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.SessionsResults(val.ID == obj.ID)': results},
+        'EntryContext': context,
         'HumanReadable': md
     })
 
@@ -596,12 +899,17 @@ def get_session_details_command():
     args = demisto.args()
     session_id = args.get('session_id')
     result = get_session_details(session_id)
+    files = get_files_data_from_results(result)
     md = tableToMarkdown(f'Session {session_id}:', result)
+    context = {
+        'AutoFocus.Sessions(val.ID === obj.ID)': result,
+        outputPaths['file']: files
+    }
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': result,
-        'EntryContext': {'AutoFocus.Sessions(val.ID == obj.ID)': result},
+        'EntryContext': context,
         'HumanReadable': md
     })
 
@@ -668,7 +976,9 @@ def top_tags_results_command():
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': results,
-        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context},
+        'EntryContext': {'AutoFocus.TopTagsResults(val.PublicTagName == obj.PublicTagName)': context,
+                         'AutoFocus.TopTagsSearch(val.AFCookie == obj.AFCookie)': {'Status': status,
+                                                                                   'AFCookie': af_cookie}},
         'HumanReadable': md
     })
 

@@ -1,0 +1,190 @@
+category: Messaging
+commonfields:
+  id: Microsoft Teams
+  version: -1
+configuration:
+- display: Bot ID
+  name: bot_id
+  required: true
+  type: 0
+- display: Bot Password
+  name: bot_password
+  required: true
+  type: 4
+- display: Default team
+  name: team
+  required: true
+  type: 0
+- defaultvalue: General
+  display: Notifications channel
+  name: incident_notifications_channel
+  required: true
+  type: 0
+- display: Certificate (Required for HTTPS)
+  name: certificate
+  required: false
+  type: 12
+- display: Private Key (Required for HTTPS)
+  name: key
+  required: false
+  type: 14
+- defaultvalue: Low
+  display: Minimum incident severity to send notifications to Teams by
+  name: min_incident_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: false
+  type: 15
+- display: Allow external users to create incidents via direct message
+  name: allow_external_incidents_creation
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Long running instance
+  name: longRunning
+  required: false
+  type: 8
+- display: Listen port, e.g. 7000 (Required for investigation
+    mirroring and direct messages)
+  name: longRunningPort
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Send messages and notifications to your team members.
+display: Microsoft Teams
+name: Microsoft Teams
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The channel to which to send messages.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    - default: false
+      description: The message to send to the channel or team member.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: The team member to which to send the message.
+      isArray: false
+      name: team_member
+      required: false
+      secret: false
+    - default: false
+      description: The team in which the specified channel exists. The team must already
+        exist, and this value will override the default channel configured in the
+        integration parameters.
+      isArray: false
+      name: team
+      required: false
+      secret: false
+    - default: false
+      description: The Microsoft Teams adaptive card to send.
+      isArray: false
+      name: adaptive_card
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a message to the specified teams.
+    execution: false
+    name: send-notification
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat",
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
+      isArray: false
+      name: mirror_type
+      predefined:
+      - all
+      - chat
+      - none
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to auto-close the channel when the incident is closed in
+        Demisto. If "true", the channel will be auto-closed. Default is "true".
+      isArray: false
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: both
+      description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
+        "Both".
+      isArray: false
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+      required: false
+      secret: false
+    - default: false
+      description: The team in which to mirror the Demisto investigation. If not specified,
+        the default team configured in the integration parameters will be used.
+      isArray: false
+      name: team
+      required: false
+      secret: false
+    - default: false
+      description: The name of the channel. The default is "incident-<incidentID>".
+      isArray: false
+      name: channel_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Mirrors the Demisto investigation to the specified Microsoft Teams
+      channel.
+    execution: false
+    name: mirror-investigation
+  - arguments:
+    - default: false
+      description: The name of the channel to close.
+      isArray: false
+      name: channel
+      required: false
+      secret: false
+    deprecated: false
+    description: Deletes the specified Microsoft Teams channel.
+    execution: false
+    name: close-channel
+  - deprecated: false
+    description: Returns real-time and historical data on the integration status.
+    execution: false
+    name: microsoft-teams-integration-health
+  dockerimage: demisto/teams:1.0.0.1701
+  isfetch: false
+  longRunning: true
+  longRunningPort: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No test
+fromversion: 5.0.0

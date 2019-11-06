@@ -22,9 +22,8 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
   type: 8
   required: false
 script:
@@ -347,7 +346,7 @@ script:
                 ],
             'scan': [
                     {to: 'ID', from: 'ID'},
-                    {to: 'Reference', from: 'REF'},
+                    {to: 'Reference', from: 'REFERENCE'},
                     {to: 'Title', from: 'TITLE'},
                     {to: 'Type', from: 'TYPE'},
                     {to: 'LaunchDatetime', from: 'LAUNCH_DATETIME'},
@@ -1266,7 +1265,8 @@ script:
       description: 'The scan reference for a vulnerability scan. This will have the
         format: scan/nnnnnnnnnn.nnnnn'
     outputs:
-    - description: Report.ID
+    - contextPath: Qualys.Report.ID
+      description: Report ID
     description: allows users to take actions on vulnerability scans in their account,
       like cancel, pause, resume, delete and fetch completed scan results
     execution: true

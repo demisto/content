@@ -59,7 +59,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1060,
           "y": 440
         }
       }
@@ -111,7 +111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": 360,
           "y": 750
         }
       }
@@ -160,10 +160,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: b95011d0-fd23-4e65-8ea9-560c5aead197
+    taskid: ea90c16b-6985-4f28-816f-78608df3fe51
     type: title
     task:
-      id: b95011d0-fd23-4e65-8ea9-560c5aead197
+      id: ea90c16b-6985-4f28-816f-78608df3fe51
       version: -1
       name: Done
       description: ""
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1310
+          "y": 1630
         }
       }
     note: false
@@ -209,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 996
+          "x": 360,
+          "y": 1086
         }
       }
     note: false
@@ -260,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": 830,
           "y": 750
         }
       }
@@ -298,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 996
+          "x": 830,
+          "y": 1086
         }
       }
     note: false
@@ -322,7 +322,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "25"
+      - "27"
     scriptarguments:
       value:
         complex:
@@ -349,7 +349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
+          "x": 1740,
           "y": 750
         }
       }
@@ -375,7 +375,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": 360,
           "y": 605
         }
       }
@@ -401,7 +401,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": 830,
           "y": 605
         }
       }
@@ -427,7 +427,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 1280,
           "y": 605
         }
       }
@@ -453,7 +453,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
+          "x": 1740,
           "y": 605
         }
       }
@@ -462,10 +462,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: 6a8160b7-fe32-4ab0-8396-e9bcafc98194
+    taskid: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
     type: condition
     task:
-      id: 6a8160b7-fe32-4ab0-8396-e9bcafc98194
+      id: f7f190b9-5a39-4d8a-83a5-77d5a023f0d4
       version: -1
       name: Is Active Directory Query v2 enabled?
       description: Checks if there is an active instance of the Active Directory Query v2 integration enabled.
@@ -507,8 +507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1226,
-          "y": 655
+          "x": -616,
+          "y": 750
         }
       }
     note: false
@@ -547,8 +547,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1226,
-          "y": 901
+          "x": -616,
+          "y": 1056
         }
       }
     note: false
@@ -573,23 +573,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1226,
-          "y": 505
+          "x": -616,
+          "y": 440
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "25":
-    id: "25"
-    taskid: 71baffa3-cd35-4cb0-8f50-0bd4c45fbc70
+  "26":
+    id: "26"
+    taskid: c3597e3d-8bd1-460c-862f-f40421717b16
     type: playbook
     task:
-      id: 71baffa3-cd35-4cb0-8f50-0bd4c45fbc70
+      id: c3597e3d-8bd1-460c-862f-f40421717b16
       version: -1
-      name: CrowdStrike Endpoint Enrichment
-      description: Enrich an endpoint using CrowdStrike.
-      playbookName: CrowdStrike Endpoint Enrichment
+      name: Endpoint Enrichment - Cylance Protect v2
+      description: Enriches endpoints using the Cylance Protect v2 integration.
+      playbookName: Endpoint Enrichment - Cylance Protect v2
       type: playbook
       iscommand: false
       brand: ""
@@ -602,7 +602,7 @@ tasks:
           root: inputs.Hostname
           transformers:
           - operator: uniq
-    separatecontext: false
+    separatecontext: true
     loop:
       iscommand: false
       exitCondition: ""
@@ -610,35 +610,126 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 996
+          "x": 1280,
+          "y": 1086
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
-    taskid: abd18f95-6be8-4ba0-8f93-69c372ad88e5
-    type: playbook
+  "27":
+    id: "27"
+    taskid: f74a190a-1427-4557-8cf1-ff7865da3042
+    type: regular
     task:
-      id: abd18f95-6be8-4ba0-8f93-69c372ad88e5
+      id: f74a190a-1427-4557-8cf1-ff7865da3042
       version: -1
-      name: Endpoint Enrichment - Cylance Protect v2
-      description: ""
-      playbookName: Endpoint Enrichment - Cylance Protect v2
-      type: playbook
+      name: Get Crowdstrike device ID
+      description: Gets the Crowdstrike Falcon Host device ID that corresponds to
+        the endpoint that is being enriched. The device ID is necessary to get information
+        about the endpoint.
+      script: '|||cs-device-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      filter:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: hostname:"
+              suffix:
+                value:
+                  simple: '"'
+      limit: {}
+      offset: {}
+      query: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1086
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 9c60a60d-b2f3-4707-8b0f-690891e080d0
+    type: condition
+    task:
+      id: 9c60a60d-b2f3-4707-8b0f-690891e080d0
+      version: -1
+      name: Was a device ID found?
+      description: Checks whether a Crowdstrike device ID was found for the hostname
+        that is being enriched.
+      type: condition
       iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 477738d4-3629-410f-86bb-84181caeacd2
+    type: regular
+    task:
+      id: 477738d4-3629-410f-86bb-84181caeacd2
+      version: -1
+      name: Get host information from Crowdstrike Falcon Host
+      description: Gets details for one or more devices, according to device ID.
+      script: '|||cs-device-details'
+      type: regular
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
       - "4"
-    separatecontext: true
+    scriptarguments:
+      ids:
+        complex:
+          root: FalconHostDevices
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 996
+          "x": 2080,
+          "y": 1460
         }
       }
     note: false
@@ -647,18 +738,25 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_25_yes": 0.54,
-      "10_4_#default#": 0.11,
-      "22_4_#default#": 0.2,
-      "2_4_#default#": 0.11,
-      "3_4_#default#": 0.53,
-      "8_4_#default#": 0.19
+      "10_27_yes": 0.69,
+      "10_4_#default#": 0.1,
+      "22_23_yes": 0.54,
+      "22_4_#default#": 0.15,
+      "28_29_yes": 0.5,
+      "28_4_#default#": 0.1,
+      "2_4_#default#": 0.21,
+      "2_5_yes": 0.64,
+      "3_1_yes": 0.3,
+      "3_24_yes": 0.41,
+      "3_4_#default#": 0.12,
+      "8_4_#default#": 0.16,
+      "8_9_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 1325,
-        "width": 2336,
-        "x": -1226,
+        "height": 1645,
+        "width": 3076,
+        "x": -616,
         "y": 50
       }
     }

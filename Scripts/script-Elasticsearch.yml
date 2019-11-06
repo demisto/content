@@ -23,8 +23,11 @@ script: |+
 type: python
 tags:
 - Elasticsearch
-comment: Run a search query using Elasticsearch
-system: true
+comment: |-
+  Deprecated. Use the Elasticsearch v2 integration instead.
+
+  Run a search query using Elasticsearch
+enabled: true
 args:
 - name: explain
   description: Computes a score explanation for a query and a specific document, default
@@ -45,7 +48,10 @@ args:
 - name: sort
   description: Sort field[:order] order = true for ascending, default true
 scripttarget: 0
+deprecated: true
 dependson:
   must:
   - elasticsearch|||search
 timeout: 0s
+tests:
+  - No test - deprecated

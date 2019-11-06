@@ -1,40 +1,41 @@
 id: whois_test
 version: -1
-name: whois_test
 fromversion: 4.1.0
+name: whois_test
 description: This is a test playbook for Whois. It will retrieve details for google.com
   and confirm the domain name is the same.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 8bf469b0-c615-4d27-8731-8e4e47097f0c
+    taskid: d9a177e9-a194-44e1-8631-dbda8dd9ae63
     type: start
     task:
-      id: 8bf469b0-c615-4d27-8731-8e4e47097f0c
+      id: d9a177e9-a194-44e1-8631-dbda8dd9ae63
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "8"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": -80
+          "x": 50,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 00f7bf76-951a-4954-8691-03c2e4974785
+    taskid: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
     type: regular
     task:
-      id: 00f7bf76-951a-4954-8691-03c2e4974785
+      id: 082d8bac-54c6-45f6-8d3e-ca3f4c541ce6
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -52,18 +53,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 545
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: a6467015-ee1b-4583-82f5-5d9e2924843b
+    taskid: 033356a6-1fb8-497b-88db-69a06d050f24
     type: condition
     task:
-      id: a6467015-ee1b-4583-82f5-5d9e2924843b
+      id: 033356a6-1fb8-497b-88db-69a06d050f24
       version: -1
       name: Check results
       type: condition
@@ -86,21 +88,46 @@ tasks:
           right:
             value:
               simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.QueryStatus
+            iscontext: true
+          right:
+            value:
+              simple: Success
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.Registrant.country
+            iscontext: true
+          right:
+            value:
+              simple: US
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 50,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 28422780-0ffe-4ee0-845f-b3536796f83f
+    taskid: 9ee88de7-a14e-4ab7-8577-484def16beb1
     type: regular
     task:
-      id: 28422780-0ffe-4ee0-845f-b3536796f83f
+      id: 9ee88de7-a14e-4ab7-8577-484def16beb1
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -122,18 +149,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 50,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
+    taskid: 2caabdba-774c-4c09-8627-f88d5e1e04ee
     type: regular
     task:
-      id: 0824a18d-67c6-42c0-88fc-bae78cc3ce1e
+      id: 2caabdba-774c-4c09-8627-f88d5e1e04ee
       version: -1
       name: Sleep
       description: Sleep for X seconds
@@ -151,18 +179,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 610
+          "x": 380,
+          "y": 900
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 8941fa91-6e83-4908-84cd-3d8324278273
+    taskid: 1e92db4d-6564-46c3-8932-c06de3c831b9
     type: regular
     task:
-      id: 8941fa91-6e83-4908-84cd-3d8324278273
+      id: 1e92db4d-6564-46c3-8932-c06de3c831b9
       version: -1
       name: Print
       description: Prints text to war room (Markdown supprted)
@@ -177,18 +206,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1090
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+    taskid: 98cdc8e8-de95-483e-87ac-451b8997b178
     type: regular
     task:
-      id: ac9621d4-007d-4df7-80c0-6c42c80f4d4a
+      id: 98cdc8e8-de95-483e-87ac-451b8997b178
       version: -1
       name: whois
       description: Provides data enrichment for Domains, URLs, and IP addresses.
@@ -206,18 +236,19 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 770
+          "x": 380,
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 4d70cb1f-d583-4dbe-843b-0156491c62db
+    taskid: 16b1e6f0-7785-4cdf-8017-f02f957079bd
     type: condition
     task:
-      id: 4d70cb1f-d583-4dbe-843b-0156491c62db
+      id: 16b1e6f0-7785-4cdf-8017-f02f957079bd
       version: -1
       name: Check results
       type: condition
@@ -237,25 +268,64 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GOOGLE.COM
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Whois.TechAdmin.country
+            iscontext: true
+          right:
+            value:
+              simple: US
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 920
+          "x": 380,
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2ce6e538-8935-465e-8f74-e20600533e2a
+    type: regular
+    task:
+      id: 2ce6e538-8935-465e-8f74-e20600533e2a
+      version: -1
+      name: Sleep
+      description: Sleep for 5 seconds, due to whois rate limit
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 660,
-        "x": 200,
-        "y": -80
+        "height": 1465,
+        "width": 710,
+        "x": 50,
+        "y": 50
       }
     }
   }
