@@ -10,12 +10,12 @@ FILTER_DICT = {'Contains': '1',
                'Excludes': '2',
                'Starts With': '3',
                'Ends With': '4',
-               '=': '5',
-               '<>': '6',
-               '>': '7',
-               '<': '8',
-               '>=': '9',
-               '<=': '10',
+               'Equals': '5',
+               'Not Equals': '6',
+               'Greater Than': '7',
+               'Less Than': '8',
+               'Greater Equals Than': '9',
+               'Less Equals Than': '10',
                'Between': '11',
                'Not Between': '12',
                'Is Null': '15',
@@ -26,13 +26,13 @@ FILTER_DICT = {'Contains': '1',
 
 class Client(BaseClient):
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
-                          auth=None, json_data=None, params=None, data=None, files=None,
-                          timeout=10, resp_type='json', ok_codes=None, **kwargs):
+                      auth=None, json_data=None, params=None, data=None, files=None,
+                      timeout=10, resp_type='json', ok_codes=None, **kwargs):
         '''
         Overides _http_request in order to log the http method.
         '''
         if json_data and json_data.get('password'):
-            json_print_data='***Credentials***'
+            json_print_data = '***Credentials***'
         else:
             json_print_data = json_data
 
@@ -47,20 +47,20 @@ class Client(BaseClient):
         # The instance isn't always stable so trying to send http request twice.
         # Not ideal, I know..
         try:
-            #TODO: Remove print
+            # TODO: Remove print
             print("first try")
             res = super()._http_request(method, url_suffix, full_url, headers,
-                                  auth, json_data, params, data, files,
-                                  timeout, resp_type, ok_codes, **kwargs)
+                                        auth, json_data, params, data, files,
+                                        timeout, resp_type, ok_codes, **kwargs)
             return res
-        #TODO Remove second try
+        # TODO Remove second try
         except Exception as e:
-            #TODO: Remove print
+            # TODO: Remove print
             print(str(e))
             print('second try')
             return super()._http_request(method, url_suffix, full_url, headers,
-                                  auth, json_data, params, data, files,
-                                  timeout, resp_type, ok_codes, **kwargs)
+                                         auth, json_data, params, data, files,
+                                         timeout, resp_type, ok_codes, **kwargs)
 
     def login(self, username: str, password: str) -> bool:
         '''
@@ -72,7 +72,7 @@ class Client(BaseClient):
             'username': username,
             'password': password
         }
-        res = self._http_request('POST', '/SecurityService/Login',resp_type='response', json_data=body)
+        res = self._http_request('POST', '/SecurityService/Login', resp_type='response', json_data=body)
         successful = True if res.content == b'true' else False
 
         return successful
@@ -130,7 +130,7 @@ class Client(BaseClient):
                 'pageIndex': page_index,
                 'pageSize': page_size}
         if filter_type:
-            data['filters'] = [create_filter(filter_type, filter_value , filter_field_id)]
+            data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]  # type: ignore
         res = self._http_request('POST', suffix, json_data=data)
         for result in res:
             result['ID'] = result.pop('Id')
@@ -139,7 +139,7 @@ class Client(BaseClient):
 
     def component_id_from_name(self, name: str) -> str:
         component_list = self._http_request('GET', '/ComponentService/GetComponentList')
-        component = {}
+        component = {}  # type: dict
         for comp in component_list:
             if comp.get('Name') == name:
                 component = comp
@@ -156,6 +156,8 @@ class Client(BaseClient):
 
 
 '''HELPER FUNCTIONS'''
+
+
 def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> dict:
     # adding filter if exists
     if not FILTER_DICT.get(filter_type):
@@ -223,7 +225,7 @@ def get_field_command(client: Client, args: dict) -> None:
 
 
 def get_record_command(client: Client, args: dict) -> None:
-    client.return_records(args.get('component_id'), args.get('record_id'), args.get('field_ids', ''),
+    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''),
                           '/ComponentService/GetRecord')
 
 
@@ -235,12 +237,11 @@ def get_records_command(client: Client, args: dict) -> None:
     filter_value = args.get('filter_value', '')
     filter_field_id = args.get('filter_field_id', '')
     res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetRecords',
-                                   filter_type, filter_field_id, filter_value)
+                                         filter_type, filter_field_id, filter_value)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
-        title += f' with filter: "{filter_type} {filter_value}"' \
-            f'on field {filter_field_id}'
+        title += f' with filter: "{filter_type} {filter_value}" on field {filter_field_id}'
     hr = tableToMarkdown(title, res)
     return_outputs(hr, ec, res)
 
@@ -258,7 +259,7 @@ def get_detail_records_command(client: Client, args: dict) -> None:
     filter_value = args.get('filter_value', '')
     filter_field_id = args.get('filter_field_id', '')
     res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetDetailRecords',
-                                   filter_type, filter_field_id, filter_value)
+                                         filter_type, filter_field_id, filter_value)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
@@ -325,7 +326,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
     # Find component ID
     component_id = demisto.getLastRun().get('component', {}).get(filter_field)
     if not component_id:
-     component_id = client.component_id_from_name(name)
+        component_id = client.component_id_from_name(name)
     if not component_id:
         raise ValueError("Could not find component name.")
     field_id = demisto.getLastRun().get('field', {}).get(name)
@@ -350,20 +351,12 @@ def fetch_incidents(client: Client, args: dict) -> None:
             max_fetch_time = occurred_at
         incidents.append(incident)
     print({'last_fetch_time': max_fetch_time,
-                        'component': {name: component_id,},
-                        'field': {filter_field: field_id}
-                        })
+           'component': {name: component_id},
+           'field': {filter_field: field_id}})
     demisto.setLastRun({'last_fetch_time': max_fetch_time,
-                        'component': {name: component_id,},
-                        'field': {filter_field: field_id}
-                        })
+                        'component': {name: component_id},
+                        'field': {filter_field: field_id}})
     demisto.incidents(incidents)
-
-
-
-
-
-
 
 
 def main():
@@ -375,7 +368,7 @@ def main():
     password = demisto.params().get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
 
-    #TODO make sure the outputs are correct.
+    # TODO make sure the outputs are correct.
     commands = {
         'kl-get-component-list': get_component_list_command,
         'kl-get-component': get_component_command,
@@ -385,15 +378,15 @@ def main():
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
         'kl-get-filered-records': get_records_command,
-        'kl-delete-record': 'ComponentService/DeleteRecord',
-        'kl-create-record': 'ComponentService/CreateRecord',
-        'kl-update-record': 'ComponentService/UpdateRecord',
+        # 'kl-delete-record': 'ComponentService/DeleteRecord',
+        # 'kl-create-record': 'ComponentService/CreateRecord',
+        # 'kl-update-record': 'ComponentService/UpdateRecord',
         'kl-get-detailed-record': get_detail_record_command,
-        'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
+        # 'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
         'kl-get-detailed-filtered-records': get_detail_records_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
-        'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
+        # 'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
         'fetch-incidents': fetch_incidents
     }
 
@@ -406,18 +399,19 @@ def main():
 
         logged_in = client.login(username, password)
         if logged_in:
-            #TODO: add detailed exceptions: No records returned, no such component and so on.
+            # TODO: add detailed exceptions: No records returned, no such component and so on.
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
         if demisto.command() == 'test-module':
-            #TODO change to return_error
+            # TODO change to return_error
             print(f'Could not connect to instance. Error: {str(e)}')
-            #return_error(f'Could not connect to instance. Error: {str(e)}')
+            # return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
-            #TODO change to return_error
+            # TODO change to return_error
             print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-            #return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            # return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
