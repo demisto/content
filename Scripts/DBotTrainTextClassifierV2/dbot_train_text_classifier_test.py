@@ -1,6 +1,6 @@
 from CommonServerPython import *
 from DBotTrainTextClassifierV2 import get_phishing_map_labels, read_file, read_files_by_name, \
-    get_data_with_mapped_label, ALL_LABELS
+    get_data_with_mapped_label, set_tag_field, DBOT_TAG_FIELD, ALL_LABELS
 
 
 def test_get_phishing_map_labels(mocker):
@@ -45,3 +45,12 @@ def test_get_data_with_mapped_label(mocker):
     assert exist_labels_counter['malware'] == 1
     assert exist_labels_counter['spam'] == 1
     assert missing_labels_counter['not'] == 2
+
+
+def test_set_tag_field():
+    data = [{"tag": "Phishing"}, {"tag1": "malware"}, {"tag": "spam"}, {"tag2": "not"}, {"tag2": "not"}]
+    new_data = set_tag_field(data, ["tag", "tag1"])
+    assert len(new_data) == 3
+    assert new_data[0][DBOT_TAG_FIELD] == 'Phishing'
+    assert new_data[1][DBOT_TAG_FIELD] == 'malware'
+    assert new_data[2][DBOT_TAG_FIELD] == 'spam'

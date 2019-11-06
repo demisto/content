@@ -1,14 +1,16 @@
 # pylint: disable=no-member
-from CommonServerPython import *
 from collections import defaultdict
 from io import BytesIO, StringIO
-import pandas as pd
 
 import demisto_ml
+import pandas as pd
 from tabulate import tabulate
+
+from CommonServerPython import *
 
 ALL_LABELS = "*"
 GENERAL_SCORES = ['macro avg', 'micro avg', 'weighted avg']
+DBOT_TAG_FIELD = "dbot_internal_tag_field"
 
 
 def get_hr_for_scores(header, confusion_matrix, report):
@@ -174,6 +176,21 @@ def find_keywords(data, tag_field, text_field, min_score):
     })
 
 
+def set_tag_field(data, tag_fields):
+    empty_label_indices = []
+    for i, d in enumerate(data):
+        found_field = False
+        for field in tag_fields:
+            if d.get(field):
+                d[DBOT_TAG_FIELD] = d[field]
+                found_field = True
+                break
+        if not found_field:
+            empty_label_indices.append(i)
+    data = [d for i, d in enumerate(data) if i not in empty_label_indices]
+    return data
+
+
 def main():
     input = demisto.args()['input']
     input_type = demisto.args()['inputType']
@@ -183,7 +200,7 @@ def main():
     target_accuracy = float(demisto.args()['targetAccuracy'])
     max_samples_below_threshold = float(demisto.args()['maxBelowThreshold'])
     text_field = demisto.args()['textField']
-    tag_field = demisto.args()['tagField']
+    tag_fields = demisto.args()['tagField'].split(",")
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
 
@@ -192,7 +209,10 @@ def main():
     else:
         data = read_file(input, input_type)
 
-    data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping, tag_field)
+    data = set_tag_field(data, tag_fields)
+
+    data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
+                                                                                    DBOT_TAG_FIELD)
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
@@ -221,14 +241,14 @@ def main():
         }
         demisto.results(entry)
 
-    train_tag_data = map(lambda x: x[tag_field], data)
+    train_tag_data = map(lambda x: x[DBOT_TAG_FIELD], data)
     train_text_data = map(lambda x: x[text_field], data)
     if len(train_text_data) != len(train_tag_data):
         return_error("Error: data and tag data are different length")
 
     # print important words for each category
     try:
-        find_keywords(data, tag_field, text_field, keyword_min_score)
+        find_keywords(data, DBOT_TAG_FIELD, text_field, keyword_min_score)
     except Exception:
         pass
 
