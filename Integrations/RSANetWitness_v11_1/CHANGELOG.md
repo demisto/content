@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Added the *Fetch Limit* parameter.
-  - Fixed issue where another unsupported timestamp format caused the integration to crash.
+  - Fixed an issue where an unsupported timestamp format caused the integration to fail.
 
 ## [19.8.2] - 2019-08-22
   - Added the *fetch time* parameter
