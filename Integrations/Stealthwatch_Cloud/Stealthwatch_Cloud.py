@@ -11,8 +11,7 @@ import collections
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
-SERVER = demisto.params().get('serverURL')[:-1] if demisto.params().get('serverURL').endswith('/') else \
-    demisto.params().get('serverURL')
+SERVER = demisto.params().get('serverURL', '').strip('/')
 SERVER_URL = SERVER + '/api/v3'
 API_KEY = demisto.params()['APIKey']
 
@@ -40,7 +39,7 @@ def http_request(method, url_suffix, params_dict, headers, data=None):
 
     url = SERVER_URL + url_suffix
 
-    LOG('running %s request with url=%s\tparams=%s' % (method, url, json.dumps(req_params)))
+    LOG('running {} request with url={}\tparams={}'.format(method, url, json.dumps(req_params)))
 
     try:
         res = requests.request(method,
@@ -495,6 +494,8 @@ def fetch_incidents():
     }
     final_alerts = []
     last_fetch_string = demisto.getLastRun().get('last_fetch_time', None)
+    ids = demisto.getLastRun().get('ids', None)
+    first_time = (not last_fetch_string and ids is not None)
 
     if last_fetch_string is None or not last_fetch_string:
         now = datetime.now()
@@ -502,7 +503,7 @@ def fetch_incidents():
     else:
         last_fetch = parse_date_string(last_fetch_string)
 
-    # Coudn't find a way to sort descending so looking for last offset of 100 alerts
+    # Couldn't find a way to sort descending so looking for last offset of 100 alerts
     alerts_response = list_alerts(list_params)
     num_alerts = alerts_response.get('meta', {'total_count': 100}).get('total_count')
     offset = 0 if num_alerts < 100 else num_alerts - 100
@@ -516,7 +517,11 @@ def fetch_incidents():
         created = alert.get('created')
         if parse_date_string(created) > last_fetch:
             incident_from_alert = create_incident_data_from_alert(alert)
-            final_alerts.append(incident_from_alert)
+            if first_time:
+                if alert.get('id') not in ids:
+                    final_alerts.append(incident_from_alert)
+            else:
+                final_alerts.append(incident_from_alert)
             if parse_date_string(created) > parse_date_string(max_fetch_time):
                 max_fetch_time = created
 
