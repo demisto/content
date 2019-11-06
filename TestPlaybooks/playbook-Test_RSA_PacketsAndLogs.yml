@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd2287e1-6e8c-4161-82de-e71999d5b8fb
+    taskid: 40230c74-a7b6-4e60-8b57-dfad892d8be5
     type: start
     task:
-      id: cd2287e1-6e8c-4161-82de-e71999d5b8fb
+      id: 40230c74-a7b6-4e60-8b57-dfad892d8be5
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +25,15 @@ tasks:
           "y": -413
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
+    taskid: 93528150-c849-413c-8c0d-49b2a23c0a0f
     type: regular
     task:
-      id: 7b57b8c7-31c7-4cbb-8f35-2b10241afd18
+      id: 93528150-c849-413c-8c0d-49b2a23c0a0f
       version: -1
       name: netwitness-msearch
       description: Search for pattern matches in many sessions or packets
@@ -61,12 +64,15 @@ tasks:
           "y": -61
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: 561e87db-d1a1-4857-81d7-13d5b463fdfb
+    taskid: a69eea97-6eb0-4e5f-87ff-d1a0507141b1
     type: regular
     task:
-      id: 561e87db-d1a1-4857-81d7-13d5b463fdfb
+      id: a69eea97-6eb0-4e5f-87ff-d1a0507141b1
       version: -1
       name: netwitness-query
       description: Performs a query against the meta database
@@ -98,12 +104,15 @@ tasks:
           "y": -61
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 42145249-59e9-48f0-84f2-95240b1e372b
+    taskid: 81d312a0-7537-44d8-8309-f421ac8c928f
     type: regular
     task:
-      id: 42145249-59e9-48f0-84f2-95240b1e372b
+      id: 81d312a0-7537-44d8-8309-f421ac8c928f
       version: -1
       name: nw-sdk-values
       description: Performs a value count query and returns the matching values for
@@ -142,12 +151,15 @@ tasks:
           "y": -61
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 2637abfb-14c4-4c3c-8f91-51db23201ca2
+    taskid: 77f6f975-8686-4f7c-881d-6f6f6dfad73f
     type: regular
     task:
-      id: 2637abfb-14c4-4c3c-8f91-51db23201ca2
+      id: 77f6f975-8686-4f7c-881d-6f6f6dfad73f
       version: -1
       name: Verify Context
       description: |-
@@ -174,12 +186,15 @@ tasks:
           "y": 136
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
-    taskid: a0acdda4-0083-4d9a-8df6-e68208a17063
+    taskid: 011aa72d-1a55-4cf2-8d3e-cb3c7f6c153e
     type: regular
     task:
-      id: a0acdda4-0083-4d9a-8df6-e68208a17063
+      id: 011aa72d-1a55-4cf2-8d3e-cb3c7f6c153e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -205,12 +220,15 @@ tasks:
           "y": -238
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+    taskid: 356aeb05-1931-4966-8dae-7cf137ec3568
     type: regular
     task:
-      id: a0dddaef-c5b8-4235-80be-6a04fb25fb11
+      id: 356aeb05-1931-4966-8dae-7cf137ec3568
       version: -1
       name: Verify Context
       description: |-
@@ -237,12 +255,15 @@ tasks:
           "y": 136
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+    taskid: 7d803d48-aa97-4c04-8afa-0a3117ec1c37
     type: regular
     task:
-      id: dabf07d8-5115-4895-8bd2-9f4ac1b9a966
+      id: 7d803d48-aa97-4c04-8afa-0a3117ec1c37
       version: -1
       name: Verify Context
       description: |-
@@ -269,12 +290,15 @@ tasks:
           "y": 136
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: d029b7dc-0432-4828-87d7-fe89ebcadac7
+    taskid: bbab234e-0465-41ca-853d-508c9dd01426
     type: regular
     task:
-      id: d029b7dc-0432-4828-87d7-fe89ebcadac7
+      id: bbab234e-0465-41ca-853d-508c9dd01426
       version: -1
       name: nw-sdk-content
       description: Returns the packet content for a session
@@ -299,7 +323,7 @@ tasks:
       renderFlags: {}
       renderType: {}
       session:
-        simple: "1"
+        simple: "1231420"
       subdirFileTypes: {}
       where: {}
     separatecontext: false
@@ -310,12 +334,15 @@ tasks:
           "y": -61
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
-    taskid: ec45e125-7497-449d-87e7-6d2c3000a4b0
+    taskid: 6b333608-121e-4475-87ef-54af5bd3bf39
     type: regular
     task:
-      id: ec45e125-7497-449d-87e7-6d2c3000a4b0
+      id: 6b333608-121e-4475-87ef-54af5bd3bf39
       version: -1
       name: Verify Context
       description: |-
@@ -342,6 +369,9 @@ tasks:
           "y": 136
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},

@@ -7,7 +7,9 @@ import re
 def main():
     try:
         dest = demisto.args()['address']
-        ping_out = subprocess.check_output(['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, text=True)
+        ping_out = subprocess.check_output(
+            ['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, universal_newlines=True
+        )
         s = re.search(r"PING.*?\((.+?)\)", ping_out)
         res = {}
         if s:
@@ -15,7 +17,7 @@ def main():
         s = re.search(r"rtt min/avg/max/mdev = (.+)/(.+)/(.+)/(.+)\s+ms", ping_out)
         if not s:
             raise ValueError("Couldn't parse ping statistics:\n" + ping_out)
-        res['ret_code'] = 0
+        res['ret_code'] = '0'
         res['destination'] = dest
         res['min_rtt'] = s.group(1)
         res['avg_rtt'] = s.group(2)
