@@ -103,7 +103,7 @@ def get_encrypted(content: str, key: str) -> str:
     return encrypted
 
 
-class Client:
+class Client(BaseClient):
     def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
                  enc_key: str, use_ssl: bool, proxies: dict):
         self.base_url = base_url
