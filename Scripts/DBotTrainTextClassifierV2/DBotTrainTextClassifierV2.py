@@ -9,16 +9,23 @@ from tabulate import tabulate
 from CommonServerPython import *
 
 ALL_LABELS = "*"
-GENERAL_SCORES = ['macro avg', 'micro avg', 'weighted avg']
+GENERAL_SCORES = {
+    'micro avg': 'The metrics is applied globally by counting the total true positives, false negatives and false positives',
+    'macro avg': 'The metrics is applied for each label, and find their unweighted mean.',
+    'weighted avg': 'The metrics is applied for each label, and find their average weighted by support (the number of true instances for each label). This alters ‘macro’ to account for label imbalance;'
+}
+
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
 
 
-def get_hr_for_scores(header, confusion_matrix, report):
-    scores_rows = ["#### Overall score: %.2f" % report['macro avg']['precision']]
+def get_hr_for_scores(header, confusion_matrix, report, metric):
+    scores_rows = ["{0} - {1}".format(metric.capitalize(), GENERAL_SCORES[metric])]
+    scores_rows.append("#### Overall precision: %.2f | recall: %.2f" %
+                       (report[metric]['precision'], report[metric]['recall']))
     for k, v in report.items():
         if isinstance(v, dict):
             if k not in GENERAL_SCORES:
-                scores_rows.append("- %s: %.2f" % (k, v['precision']))
+                scores_rows.append("- %s: %.2f (Precision) | %.2f (Recall)" % (k, v['precision'], v['recall']))
     scores_desc = "\n".join(scores_rows)
 
     confusion_matrix_desc = tabulate(confusion_matrix,
@@ -129,25 +136,25 @@ def store_model_in_demisto(model_name, model_override, train_text_data, train_ta
         return_error(get_error(res))
 
 
-def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples_below_threshold):
+def evaluate_model(train_text_data, train_tag_data, target_accuracy, max_samples_below_threshold, metric):
     confusion_matrix, report, cut, confusion_matrix_cut, report_cut \
         = demisto_ml.evaluate_text_model(train_text_data,
                                          train_tag_data,
                                          target_precision_recall=target_accuracy)
     model_evaluation_success = False
-    if report['macro avg']['precision'] >= target_accuracy and report['macro avg']['recall'] >= target_accuracy:
+    if report[metric]['precision'] >= target_accuracy and report[metric]['recall'] >= target_accuracy:
         model_evaluation_success = True
     else:
         if report_cut and report_cut['belowThresholdRatio'] <= max_samples_below_threshold:
-            if report_cut['macro avg']['precision'] >= target_accuracy \
-                    and report_cut['macro avg']['recall'] >= target_accuracy:
+            if report_cut[metric]['precision'] >= target_accuracy \
+                    and report_cut[metric]['recall'] >= target_accuracy:
                 model_evaluation_success = True
 
     if not model_evaluation_success:
-        low_score = min(report['macro avg']['precision'], report['macro avg']['recall'])
+        low_score = min(report[metric]['precision'], report[metric]['recall'])
         return_error("Model target accuracy %.2f is below %.2f" % (low_score, target_accuracy))
 
-    human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report)
+    human_readable = get_hr_for_scores("Model Evaluation", confusion_matrix, report, metric)
     if cut > 0.5 and confusion_matrix_cut is not None:
         human_readable += "\n"
         human_readable += "### Found optimal probability  %.2f threshold for target accuracy %.2f " % (cut,
@@ -203,16 +210,24 @@ def main():
     tag_fields = demisto.args()['tagField'].split(",")
     labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
     keyword_min_score = float(demisto.args()['keywordMinScore'])
+    metric = demisto.args()['metric']
 
     if input_type.endswith("filename"):
         data = read_files_by_name(input, input_type.split("_")[0].strip())
     else:
         data = read_file(input, input_type)
 
+    demisto.results(len(data))
+    if len(data) == 0:
+        return_error("There is not data to read")
+
     data = set_tag_field(data, tag_fields)
 
     data, exist_labels_counter, missing_labels_counter = get_data_with_mapped_label(data, labels_mapping,
                                                                                     DBOT_TAG_FIELD)
+    if len(data) == 0:
+        return_error("There is not data to read")
+
     if len(missing_labels_counter) > 0:
         human_readable = tableToMarkdown("Skip labels - did not match any of specified labels", missing_labels_counter)
         entry = {
@@ -256,7 +271,8 @@ def main():
     human_readable, confusion_matrix, report = evaluate_model(train_text_data,
                                                               train_tag_data,
                                                               target_accuracy,
-                                                              max_samples_below_threshold)
+                                                              max_samples_below_threshold,
+                                                              metric)
 
     # store model
     if store_model:
