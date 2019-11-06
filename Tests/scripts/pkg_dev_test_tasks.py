@@ -210,7 +210,7 @@ def docker_image_create(docker_base_image, requirements):
     return target_image
 
 
-def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_root=False):
+def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_root=False, cpu_num=0):
     workdir = '/devwork'  # this is setup in CONTAINER_SETUP_SCRIPT
     pylint_files = get_lint_files(project_dir)
     run_params = ['docker', 'create', '-w', workdir,
@@ -221,12 +221,16 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
         run_params.extend(['-e', 'PYTEST_SKIP=1'])
     if no_lint:
         run_params.extend(['-e', 'PYLINT_SKIP=1'])
+    run_params.extend(['-e', 'CPU_NUM={}'.format(cpu_num)])
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
-        subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
-        subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
-        subprocess.check_call(['docker', 'start', '-a', container_id])
+        print(subprocess.check_output(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
+        print(subprocess.check_output(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
+        print(subprocess.check_output(['docker', 'start', '-a', container_id],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
     finally:
         if not keep_container:
             subprocess.check_output(['docker', 'rm', container_id])
@@ -275,6 +279,11 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
     parser.add_argument("-r", "--root", help="Run pytest container with root user", action='store_true')
     parser.add_argument("-k", "--keep-container", help="Keep the test container", action='store_true')
     parser.add_argument("-v", "--verbose", help="Verbose output", action='store_true')
+    parser.add_argument(
+        "--cpu-num",
+        help="Number of CPUs to run pytest on (can set to `auto` for automatic detection of the number of CPUs.)",
+        default=0
+    )
 
     args = parser.parse_args()
 
@@ -299,27 +308,36 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         return 1
     dockers = get_docker_images(script_obj)
     for docker in dockers:
-        print_v("Using docker image: {}".format(docker))
-        py_num = get_python_version(docker)
-        setup_dev_files(project_dir)
-        try:
-            if not args.no_flake8:
-                run_flake8(project_dir, py_num)
-            if not args.no_mypy:
-                run_mypy(project_dir, py_num)
-            if not args.no_test or not args.no_pylint:
-                requirements = get_dev_requirements(py_num)
-                docker_image_created = docker_image_create(docker, requirements)
-                docker_run(project_dir, docker_image_created, args.no_test, args.no_pylint, args.keep_container, args.root)
-        except subprocess.CalledProcessError as ex:
-            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
-            if not LOG_VERBOSE:
-                sys.stderr.write("Need a more detailed log?"
-                                 " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
-            return 2
-        finally:
-            sys.stdout.flush()
-            sys.stderr.flush()
+        for try_num in (1, 2):
+            print_v("Using docker image: {}".format(docker))
+            py_num = get_python_version(docker)
+            setup_dev_files(project_dir)
+            try:
+                if not args.no_flake8:
+                    run_flake8(project_dir, py_num)
+                if not args.no_mypy:
+                    run_mypy(project_dir, py_num)
+                if not args.no_test or not args.no_pylint:
+                    requirements = get_dev_requirements(py_num)
+                    docker_image_created = docker_image_create(docker, requirements)
+                    docker_run(
+                        project_dir, docker_image_created, args.no_test,
+                        args.no_pylint, args.keep_container, args.root, args.cpu_num
+                    )
+                break  # all is good no need to retry
+            except subprocess.CalledProcessError as ex:
+                sys.stderr.write("[FAILED {}] Error: {} Output: {}\n".format(project_dir, str(ex), ex.output))
+                if not LOG_VERBOSE:
+                    sys.stderr.write("Need a more detailed log?"
+                                     " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
+                # circle ci docker setup sometimes fails on
+                if try_num > 1 or not ex.output or 'read: connection reset by peer' not in ex.output:
+                    return 2
+                else:
+                    sys.stderr.write("Retrying as failure seems to be docker communication related...\n")
+            finally:
+                sys.stdout.flush()
+                sys.stderr.flush()
     return 0
 
 

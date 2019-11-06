@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import re
 import os
@@ -8,10 +8,15 @@ import argparse
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
 import time
+import sys
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command
+    LOG_COLORS, print_color, run_command  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
@@ -390,7 +395,7 @@ def re_create_id_set():
 
 
 def sort(data):
-    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    data.sort(key=lambda r: list(r.keys())[0].lower())  # Sort data by key value
     return data
 
 

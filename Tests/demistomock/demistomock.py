@@ -1,5 +1,6 @@
 import json
 import logging
+import uuid
 
 integrationContext = {}
 is_debug = False  # type: bool
@@ -415,7 +416,7 @@ def context():
 
 
 def uniqueFile():
-    return "4fa3f70d-2d5d-4482-ab73-43dc24063a18"
+    return str(uuid.uuid4())
 
 
 def getLastRun():
