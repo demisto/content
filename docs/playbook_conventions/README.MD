@@ -1,25 +1,25 @@
 # Playbook Conventions & Standards
 ## Introduction
 To keep playbook consistency, usability and readability, we've created some conventions and standards for our playbooks. We will also cover some common mistakes.
-Please make sure your playbooks meet these standards and **always go through through the documentation check (Alex).**
+Please make sure your playbooks meet these standards.
 
 ## Wording
 ### playbooks
- - Names are **T**itle **C**ase
- - Before specifying whether the playbook is generic or of a certain integration, add a dash (-)
+ - Names are **T**itle **C**ase.
+ - Before specifying whether the playbook is generic or of a certain integration, add a dash (-).
  - Before adding "Test", add a (dash), but add it only at the very end of the name
  
  ![image](https://user-images.githubusercontent.com/43602124/62224827-f8742f00-b3bf-11e9-857e-5f216297aee1.png)
 ![image](https://user-images.githubusercontent.com/43602124/62224883-0f1a8600-b3c0-11e9-910e-03a86c7456d7.png)
 
--   When there is a v2 playbook and you want to create a test for it, make sure the " - Test" it at the end, since you're testing a v2, and not creating a v2 of a test for the older playbook
+-   When there is a second version (v2) playbook and you want to create a test for it, make sure the " - Test" is at the end, since you're testing a second version, and not creating a second version of a test for the older playbook
 
 
 ![image](https://user-images.githubusercontent.com/43602124/62225909-fa3ef200-b3c1-11e9-9e66-d96ce7fefbde.png)
 
--   In descriptions of playbooks - specify the supported integrations or file types
--   File formats are always in capital letters
--   Integration names capitalized according to **T**itle **C**ase
+-   In the descriptions of playbooks specify the supported integrations or file types.
+-   File formats are always in capital letters.
+-   Integration names capitalized according to **T**itle **C**ase.
 
 
 ![image](https://user-images.githubusercontent.com/43602124/62228872-2e68e180-b3c7-11e9-9de3-ea21c0e3c866.png)
@@ -27,14 +27,14 @@ Please make sure your playbooks meet these standards and **always go through thr
 
 
 ### Tasks
--   In task names - first letter is capitalized. The rest of the name is still according to grammar rules, so capitalize first letter of every part of an integration name for example
+-   In task names - first letter is capitalized. The rest of the name is according to grammar rules, so capitalize the first letter of every part of an integration's name for example.
 -   Verbs: use "Save" rather than "Saves" or "Saving", in the task names
 
 
 ![image](https://user-images.githubusercontent.com/43602124/62226474-f3fd4580-b3c2-11e9-94be-4ef28a6e5591.png)
 ![image](https://user-images.githubusercontent.com/43602124/62226484-f6f83600-b3c2-11e9-8e99-0cdc8117ee7e.png)
 
--   Conditions end with a question mark. Also - "Is there a file" rather than "are there files" or "do we have a file" or "does a file exist"
+-   Conditions end with a question mark. Also - "Is there a file" is better than "are there files" or "do we have a file" or "does a file exist".
 
 
 ![image](https://user-images.githubusercontent.com/43602124/62226641-2a3ac500-b3c3-11e9-97b6-546aab935487.png)
@@ -43,7 +43,7 @@ Please make sure your playbooks meet these standards and **always go through thr
 ![image](https://user-images.githubusercontent.com/43602124/62226668-36268700-b3c3-11e9-9d71-b4479696422f.png)
 
 
--   Descriptions of tasks, unlike names of tasks - "extracts", "takes". For conditions: "Checks / Determines if / whether"). Always periods at the end.
+-   Descriptions of tasks, unlike names of tasks use "extracts", "takes" and so on. For conditions: "Checks / Determines if / whether"). Always periods at the end.
 -   We prefer to use “Determines” for “flags” - playbook inputs that affect the playbook flow / decision making. For simple conditions, usually use “Checks”.
 Notice how the W in "Word" is capitalized because it's a name of a program
 
@@ -64,7 +64,7 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 ![image](https://user-images.githubusercontent.com/43602124/62229081-9d463a80-b3c7-11e9-8602-ece4e593fa57.png)
 
 
--   When outputting to context in integrations or scripts, use generic descriptions. For example - Extract Indicators From File - Generic v2, has 2 different tasks outputting to File.Text, but in the playbook outputs we have a description for only one.
+-   When outputting to context in integrations or scripts, use generic descriptions. For example, "Extract Indicators From File - Generic v2" has 2 different tasks outputting to "File.Text", but in the playbook outputs we have a description for only one.
 
 
 ![image](https://user-images.githubusercontent.com/50324325/67759127-9622dd00-fa47-11e9-90d5-a88c616bd8fe.png)
@@ -81,7 +81,7 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 ![image](https://user-images.githubusercontent.com/50324325/67759434-121d2500-fa48-11e9-871b-dac447da1b8e.png)
 
 
--   The playbooks are used by everyone, try to avoid “programming” terms when possible.
+-   The playbooks are used by everyone, try to avoid “programming terms" when possible.
 
 -   When working with indicators or data that should be unique, make sure to use “Uniq” (or “Unique” in 5.0) transformers to prevent as many duplications as possible. Do it in playbook inputs as well.
 
@@ -98,16 +98,16 @@ Notice how the W in "Word" is capitalized because it's a name of a program
 
 ![image](https://user-images.githubusercontent.com/50324325/67759760-bb641b00-fa48-11e9-82a0-e028e50efa02.png)
 
-One place where this won’t work, is when using `Set`, where you choose a key to set a value to, and you cannot really “get” that key, since it doesn’t exist.
+One place where this won’t work, is when using `Set`, which sets a value to an output, where you cannot really “get” that key, since it doesn’t exist.
 
 -   Use “ignore case” when checking user inputs (such as True / False in playbook inputs)
-![image](https://user-images.githubusercontent.com/43602124/62229948-7983f400-b3c9-11e9-9a9f-92be482d3992.png)
+![image](https://user-images.githubusercontent.com/50324325/68272945-d4368700-006d-11ea-89a1-fea10c525186.png)
 
 * Remember to confirm task changes in **ALL RELEVANT SUB-WINDOWS**. Do not cancel, do not switch task, or the changes won't be saved, and you won't always get a warning about it!
 
 -   If you’re working on a playbook that has a sub-playbook, and you changed the inputs / outputs of that sub-playbook, the changes won’t be reflected in the parent playbook. You must refresh the page to see the changes. not just saving the playbook and re-opening it, using the browser refresh (F5) to refresh.
 
-## Visuals
+## Visualising
 
 -   Group similar tasks
 -   Align tasks / headers of the same level
