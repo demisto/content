@@ -1,4 +1,3 @@
-urllib3
 google
 Google-Search-API
 pyping
