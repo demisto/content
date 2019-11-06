@@ -24,10 +24,12 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Malware"
+        "Malware",
+        "Traps"
     ],
     "systemAssociatedTypes": [
-        "Malware"
+        "Malware",
+        "Traps"
     ],
     "associatedToAll": false,
     "unmapped": false,
