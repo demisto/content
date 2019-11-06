@@ -76,19 +76,6 @@ class TestGetIndicators:
 
 
 class TestSTIX2ToDemisto:
-    def test_stix2_to_demisto_single(self, mocker):
-        from StixParser import stix2_to_demisto
-        stix_input, _ = _get_stix("./TestData/stix2_single.json")
-        try:
-            d_results = _get_results_from_demisto(stix_input, stix2_to_demisto, mocker)
-            d_results = json.loads(d_results)
-            assert isinstance(d_results, list)
-        except ValueError:
-            pytest.fail(
-                "Couldn't parse output as JSON", pytrace=True
-            )
-        assert len(d_results) == 1
-
     def test_stix2_to_demisto(self, mocker):
         from StixParser import stix2_to_demisto
         stix_input, expected_output = _get_stix()
