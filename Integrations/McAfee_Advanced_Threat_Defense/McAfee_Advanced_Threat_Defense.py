@@ -12,6 +12,9 @@ import requests
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+# Remove proxy if not set to true in params
+handle_proxy()
+
 ''' PREREQUISITES '''
 
 
@@ -733,9 +736,6 @@ def main():
     API_HEADERS = get_headers()
 
     try:
-        # Remove proxy if not set to true in params
-        handle_proxy()
-
         if demisto.command() == 'test-module':
             test_get_session()
             demisto.results('ok')
