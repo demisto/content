@@ -118,7 +118,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 50
+    description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 25
       incidents)
     execution: false
     name: phishlabs-ioc-eir-get-incidents
