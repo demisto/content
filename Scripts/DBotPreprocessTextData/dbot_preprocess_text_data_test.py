@@ -1,5 +1,7 @@
 import pickle
 
+import pandas as pd
+
 from CommonServerPython import *
 from DBotPreprocessTextData import clean_html, remove_line_breaks, hash_word, read_file, \
     concat_text_fields, whitelist_dict_fields, remove_short_text, remove_duplicate_by_indices, pre_process, main
@@ -39,6 +41,14 @@ def test_read_file(mocker):
         assert len(obj) >= 1
         obj = read_file(pickle.dumps(obj), 'pickle_string')
         assert len(obj) >= 1
+
+    with open('./TestData/input_json_file_test', 'r') as f:
+        obj = read_file(f.read(), 'json_string')
+        df = pd.DataFrame.from_dict(obj)
+        df.to_csv("./TestData/test.csv", index=False)
+        mocker.patch.object(demisto, 'getFilePath', return_value={'path': './TestData/test.csv'})
+        obj2 = read_file('231342@343', 'csv')
+        assert len(obj2) == len(obj)
 
     with open('./TestData/input_json_file_test', 'r') as f:
         b64_input = base64.b64encode(f.read())
