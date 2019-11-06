@@ -24,7 +24,7 @@ configuration:
   name: offensesPerCall
   required: false
   type: 0
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8

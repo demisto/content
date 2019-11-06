@@ -7,12 +7,11 @@ git clone https://github.com/wurstmeister/kafka-docker .
 ```
 <!-- disable-secrets-detection-start -->
 * Edit file `docker-compose-single-broker.yml`
-* Change KAFKA_ADVERTISED_HOST_NAME to your machine's IP. use `ifconfig | grep 'inet '` to see available ips.
+* Change KAFKA_ADVERTISED_HOST_NAME to your machine's IP. use `ifconfig | grep 'inet '` to see available ips. Recommneded to use an IP which doesn't change. Otherwise you will need to bring up again the cluster everytime the ip changes. You can use the IP of global protect interface: gpd0. On my machine it has a value of: `10.196.100.168`.
 * Start a Kafka cluster:
 ```
 docker-compose -f docker-compose-single-broker.yml up
 ```
-host.docker.internal:2181
 
 Setup via shell:
 Run the following to start a shell:
@@ -40,3 +39,9 @@ Another good cmdline client: https://github.com/fgeller/kt
 * Install via: go get -u github.com/fgeller/kt
   
 <!-- disable-secrets-detection-end -->
+
+## Stop the cluster
+Press control+c in the terminal running `docker-compose`. 
+You can later on brin up the cluster with your configured topic by running: `docker-compose -f docker-compose-single-broker.yml up`
+
+To full delete the cluster from the disk run: `docker-compose -f docker-compose-single-broker.yml down`. 

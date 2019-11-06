@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.1] - 2019-10-15
 Fixed results numbering for the following commands.
   - ***threatq-get-all-adversaries***
   - ***threatq-get-all-indicators***

@@ -1,4 +1,10 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
+Tweaked multiple layout widgets including their size and location.
+
+## [19.10.1] - 2019-10-15
 - Reorganized some elements of the layout.
 - Added a field that displays the result for email authenticity check.
 - Added a field that displays email headers.
