@@ -1,7 +1,7 @@
 ## [Unreleased]
-- Fixes table and list functions
-- Fixes trends having long floating point values.
-- Fixes line charts with more than 40 columns are not readable.
+  - Fixed table and list functions.
+  - Fixed an issue where trends have long floating point values.
+  - Fixed an issue where line charts with more than 40 columns were not readable.
 
 ## [19.10.1] - 2019-10-15
 - When generatung a DOCX reports fails, users receive an error message.
