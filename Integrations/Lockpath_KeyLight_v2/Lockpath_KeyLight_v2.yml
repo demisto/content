@@ -242,12 +242,12 @@ script:
       - Excludes
       - Starts With
       - Ends With
-      - =
-      - <>
-      - '>'
-      - <
-      - '>='
-      - <=
+      - Equals
+      - Not Equals
+      - Greater Than
+      - Less Than
+      - Greater Equals Than
+      - Less Equals Than
       - Between
       - Not Between
       - Is Null
@@ -330,12 +330,12 @@ script:
       - Excludes
       - Starts With
       - Ends With
-      - =
-      - <>
-      - '>'
-      - <
-      - '>='
-      - <=
+      - Equals
+      - Not Equals
+      - Greater Than
+      - Less Than
+      - Greater Equals Than
+      - Less Equals Than
       - Between
       - Not Between
       - Is Null
@@ -376,12 +376,12 @@ script:
       - Excludes
       - Starts With
       - Ends With
-      - =
-      - <>
-      - '>'
-      - <
-      - '>='
-      - <=
+      - Equals
+      - Not Equals
+      - Greater Than
+      - Less Than
+      - Greater Equals Than
+      - Less Equals Than
       - Between
       - Not Between
       - Is Null
