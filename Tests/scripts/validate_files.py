@@ -128,8 +128,10 @@ class FilesValidator(object):
                     modified_files_list.add(file_path)
                 else:
                     modified_files_list.add((file_data[1], file_data[2]))
+
             elif checked_type(file_path, [SCHEMA_REGEX]):
                 modified_files_list.add(file_path)
+
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
                     file_path, file_status))
@@ -213,6 +215,10 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print('Validating {}'.format(file_path))
+            if not checked_type(file_path):
+                print_warning('- Skipping validation of non-content entity file.')
+                continue
+
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
