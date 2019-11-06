@@ -609,7 +609,7 @@ def get_saved_question_result(client, data_args):
     if rows is None:
         context = {'SavedQuestionID': id_, 'Status': 'Pending'}
         return f'Question is still executing, Question id: {str(id_)}',\
-                {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
+            {f'Tanium.SavedQuestionResult(val.SavedQuestionID == {id_})': context}, res
 
     context = {'SavedQuestionID': id_, 'Status': 'Completed', 'Results': rows}
     context = createContext(context, removeNull=True)
