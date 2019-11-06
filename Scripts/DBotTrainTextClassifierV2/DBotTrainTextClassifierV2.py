@@ -10,9 +10,11 @@ from CommonServerPython import *
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
-    'micro avg': 'The metrics is applied globally by counting the total true positives, false negatives and false positives',
+    'micro avg': 'The metrics is applied globally by counting the total true positives, '
+                 'false negatives and false positives',
     'macro avg': 'The metrics is applied for each label, and find their unweighted mean.',
-    'weighted avg': 'The metrics is applied for each label, and find their average weighted by support (the number of true instances for each label). This alters ‘macro’ to account for label imbalance;'
+    'weighted avg': 'The metrics is applied for each label, and find their average weighted by support '
+                    '(the number of true instances for each label). This alters ‘macro’ to account for label imbalance;'
 }
 
 DBOT_TAG_FIELD = "dbot_internal_tag_field"
