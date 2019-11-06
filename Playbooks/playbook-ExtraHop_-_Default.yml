@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71394f2c-bc76-4885-8bab-b55ce0094789
+    taskid: e05c49e8-d5fc-49cc-8e4f-febae049f470
     type: start
     task:
-      id: 71394f2c-bc76-4885-8bab-b55ce0094789
+      id: e05c49e8-d5fc-49cc-8e4f-febae049f470
       version: -1
       name: ""
       description: ""
@@ -34,10 +34,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0e0163c7-a066-42d3-8ee5-3d788d4e32ed
+    taskid: aacb39b5-ff6b-405e-8891-e03e73e4b101
     type: title
     task:
-      id: 0e0163c7-a066-42d3-8ee5-3d788d4e32ed
+      id: aacb39b5-ff6b-405e-8891-e03e73e4b101
       version: -1
       name: Done
       description: ""
@@ -57,10 +57,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 7e5d5075-f15f-4cab-8313-2c97430e3b57
+    taskid: c46704ba-c334-4b3b-887f-fa1dd8339fd0
     type: condition
     task:
-      id: 7e5d5075-f15f-4cab-8313-2c97430e3b57
+      id: c46704ba-c334-4b3b-887f-fa1dd8339fd0
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
       description: Checks if there is an active instance of the ExtraHop Reveal(x)
@@ -109,10 +109,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 4d0fdf54-942f-440c-8070-a96a04634662
+    taskid: b24f8753-bb48-4a77-8b97-a33ed472cd05
     type: playbook
     task:
-      id: 4d0fdf54-942f-440c-8070-a96a04634662
+      id: b24f8753-bb48-4a77-8b97-a33ed472cd05
       version: -1
       name: ExtraHop - Ticket Tracking
       description: Links the Demisto incident back to the ExtraHop detection that
@@ -141,10 +141,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 9d236607-cbcb-403c-8d8c-516c56b13422
+    taskid: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
     type: regular
     task:
-      id: 9d236607-cbcb-403c-8d8c-516c56b13422
+      id: a67d8b24-4516-46c0-85a0-3fd3cf7c2279
       version: -1
       name: Add initial investigation notes
       description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
@@ -169,10 +169,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 8e6b9a9f-24ab-4a4b-8c59-e24442d11918
+    taskid: 03bac09d-d03d-45d5-86f1-4209973b4a4d
     type: title
     task:
-      id: 8e6b9a9f-24ab-4a4b-8c59-e24442d11918
+      id: 03bac09d-d03d-45d5-86f1-4209973b4a4d
       version: -1
       name: Detection Playbooks
       description: Check whether the values provided in arguments are equal. If either
@@ -196,10 +196,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 2e429114-7e8a-4fdc-8d53-bd6ff3476efb
+    taskid: f4749919-007f-47da-85ce-4428c0000d64
     type: title
     task:
-      id: 2e429114-7e8a-4fdc-8d53-bd6ff3476efb
+      id: f4749919-007f-47da-85ce-4428c0000d64
       version: -1
       name: Ticket Tracking
       description: ""
@@ -222,10 +222,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: aa42ed03-0f15-4adc-87f6-70f770567f36
+    taskid: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
     type: condition
     task:
-      id: aa42ed03-0f15-4adc-87f6-70f770567f36
+      id: 7a4202c3-81a2-4275-8ceb-474fa9f90a39
       version: -1
       name: Does the detection have a playbook?
       description: Check if the incoming detection has a specific playbook to run.
@@ -235,20 +235,20 @@ tasks:
     nexttasks:
       '#default#':
       - "2"
-      CVE-2019-0708:
+      BlueKeep:
       - "21"
     separatecontext: false
     conditions:
-    - label: CVE-2019-0708
+    - label: BlueKeep
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: incident.name
             iscontext: true
           right:
             value:
-              simple: CVE-2019-0708 RDP Exploit Attempt
+              simple: CVE-2019-0708
     view: |-
       {
         "position": {
@@ -261,10 +261,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: c7560d1c-2f61-4c27-8e9c-b3f09825b590
+    taskid: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
     type: playbook
     task:
-      id: c7560d1c-2f61-4c27-8e9c-b3f09825b590
+      id: ecbb3f9e-7e2b-4497-800d-b13e7dfcb858
       version: -1
       name: ExtraHop - CVE-2019-0708 (BlueKeep)
       description: |-
@@ -281,6 +281,9 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      AutoBlockIp:
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -300,8 +303,8 @@ view: |-
   {
     "linkLabelsPosition": {
       "15_2_#default#": 0.18,
-      "20_21_CVE-2019-0708": 0.51,
-      "20_2_#default#": 0.22
+      "20_21_BlueKeep": 0.44,
+      "20_2_#default#": 0.19
     },
     "paper": {
       "dimensions": {
@@ -313,6 +316,18 @@ view: |-
     }
   }
 inputs: []
-outputs: []
+outputs:
+- contextPath: CVE
+  description: Details on the CVE.
+  type: unknown
+- contextPath: ExtraHop.Device
+  description: 'Details on the host and any peer devices found. '
+  type: unknown
+- contextPath: ExtraHop.ActivityMap
+  description: The link to a visual activity map in ExtraHop.
+  type: string
+- contextPath: ExtraHop.Record.Source
+  description: Associated transaction records from ExtraHop.
+  type: unknown
 tests:
 - ExtraHop_v2-Test

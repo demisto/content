@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 71394f2c-bc76-4885-8bab-b55ce0094789
+    taskid: bf60ce0f-ce07-4119-8d54-0ce64f1a0e00
     type: start
     task:
-      id: 71394f2c-bc76-4885-8bab-b55ce0094789
+      id: bf60ce0f-ce07-4119-8d54-0ce64f1a0e00
       version: -1
       name: ""
       description: ""
@@ -35,10 +35,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: f4953d89-2219-4d74-8acf-d819728d0ac9
+    taskid: 2fbd50da-8e6e-4b1a-8b1f-5cf90cebc303
     type: title
     task:
-      id: f4953d89-2219-4d74-8acf-d819728d0ac9
+      id: 2fbd50da-8e6e-4b1a-8b1f-5cf90cebc303
       version: -1
       name: Done
       description: ""
@@ -58,10 +58,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 416da4b1-f8f7-4845-82c0-cb389d224631
+    taskid: cf740c00-0812-4696-8dc1-33877ccf12d5
     type: regular
     task:
-      id: 416da4b1-f8f7-4845-82c0-cb389d224631
+      id: cf740c00-0812-4696-8dc1-33877ccf12d5
       version: -1
       name: Search for peer devices in ExtraHop Reveal(x)
       description: Get the list of all of the peers that communicated with the given
@@ -121,10 +121,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 62105272-7fd7-4799-87e8-e41c0ade44c8
+    taskid: 1b5c7cbd-6f0c-4a82-8314-335cd0e92066
     type: regular
     task:
-      id: 62105272-7fd7-4799-87e8-e41c0ade44c8
+      id: 1b5c7cbd-6f0c-4a82-8314-335cd0e92066
       version: -1
       name: Search for device in ExtraHop Reveal(x)
       description: Search for the device within ExtraHop using the provided name,
@@ -171,10 +171,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: fcfbff68-d288-45ef-89b8-dd44d6d8a336
+    taskid: bcd55624-cc38-49fe-8f93-f45bc97a5d4b
     type: condition
     task:
-      id: fcfbff68-d288-45ef-89b8-dd44d6d8a336
+      id: bcd55624-cc38-49fe-8f93-f45bc97a5d4b
       version: -1
       name: Is there a host?
       description: Check if the host information required to search for peers was
@@ -218,10 +218,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 281c54f6-e598-4b2a-8eda-cb0291c125e2
+    taskid: 4703272c-c182-4ecf-8e41-4705ed8d0c54
     type: condition
     task:
-      id: 281c54f6-e598-4b2a-8eda-cb0291c125e2
+      id: 4703272c-c182-4ecf-8e41-4705ed8d0c54
       version: -1
       name: Was a device found?
       description: Check if a device was found.
@@ -258,10 +258,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 076a2991-f4ba-4e39-8f03-5f039fa69321
+    taskid: f93ea96a-09bf-4503-8fe6-fc791422d554
     type: condition
     task:
-      id: 076a2991-f4ba-4e39-8f03-5f039fa69321
+      id: f93ea96a-09bf-4503-8fe6-fc791422d554
       version: -1
       name: Is ExtraHop Reveal(x) enabled?
       description: Checks if there is an active instance of the ExtraHop Reveal(x)
@@ -309,10 +309,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: bd13a6e0-af76-4c8a-8940-9acbe86c4926
+    taskid: ed8c477b-6860-429c-8c8b-888a1ac3e1d7
     type: regular
     task:
-      id: bd13a6e0-af76-4c8a-8940-9acbe86c4926
+      id: ed8c477b-6860-429c-8c8b-888a1ac3e1d7
       version: -1
       name: Get a link to a live activity map in ExtraHop Reveal(x)
       description: Get a link to a live activity map for the given device in the specified
@@ -403,6 +403,12 @@ inputs:
   required: false
   description: The ending timestamp of the time range the playbook will use to search,
     expressed in seconds since the epoch.
-outputs: []
+outputs:
+- contextPath: ExtraHop.Device
+  description: 'Details on the host and any peer devices found. '
+  type: unknown
+- contextPath: ExtraHop.ActivityMap
+  description: The link to a visual activity map in ExtraHop.
+  type: string
 tests:
 - ExtraHop_v2-Test
