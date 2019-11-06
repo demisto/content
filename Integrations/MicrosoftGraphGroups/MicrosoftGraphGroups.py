@@ -27,26 +27,32 @@ def camel_case_to_readable(text: str) -> str:
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_outputs(groups_data: Dict[str, str]) -> Tuple[Dict, Dict]:
+def parse_outputs(groups_data: Dict[str, str]) -> Tuple[dict, dict]:
     """
-    Parse user data as received from Microsoft Graph API into Demisto's conventions
+    Parse group data as received from Microsoft Graph API into Demisto's conventions
     """
+    fields_to_drop = ['@odata.context', '@odata.nextLink', '@odata.deltaLink', '@odata.type', '@removed',
+                      'resourceProvisioningOptions', 'securityIdentifier', 'onPremisesSecurityIdentifier',
+                      'onPremisesNetBiosName', 'onPremisesProvisioningErrors', 'onPremisesSamAccountName',
+                      'resourceBehaviorOptions', 'creationOptions', 'preferredDataLocation']
     if isinstance(groups_data, list):
         groups_readable, groups_outputs = [], []
         for group_data in groups_data:
-            group_readable = {camel_case_to_readable(k): v for k, v in group_data.items() if k not in
-                              ['@odata.context', '@odata.type']}
+            group_readable = {camel_case_to_readable(i): j for i, j in group_data.items() if i not in fields_to_drop}
+            if '@removed' in group_data:
+                group_readable['Status'] = 'deleted'
             groups_readable.append(group_readable)
             groups_outputs.append({k.replace(' ', ''): v for k, v in group_readable.copy().items()})
 
         return groups_readable, groups_outputs
 
     else:
-        group_readable = {camel_case_to_readable(k): v for k, v in groups_data.items() if k not in
-                          ['@odata.context', '@odata.type']}
-        user_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+        group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
+        if '@removed' in groups_data:
+            group_readable['Status'] = 'deleted'
+        group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
 
-        return group_readable, user_outputs
+        return group_readable, group_outputs
 
 
 def epoch_seconds() -> int:
@@ -168,14 +174,20 @@ class Client:
         })
         return access_token
 
-    def http_request(self, method: str, url_suffix: str, params: Dict = None, body: Dict = None):
+    def http_request(self, method: str, url_suffix: str = None, params: Dict = None, body: Dict = None,
+                     next_link: str = None):
         """
         Generic request to Microsoft Graph
         """
         token = self.get_access_token()
+        if next_link:
+            url = next_link
+        else:
+            url = self.base_url + url_suffix
+
         response = requests.request(
             method,
-            self.base_url + url_suffix,
+            url,
             headers={
                 'Authorization': 'Bearer ' + token,
                 'Content-Type': 'application/json',
@@ -224,9 +236,13 @@ class Client:
             return_error(f'API call to MS Graph failed, could not parse result. '
                          f'Please check authentication related parameters. [{response.status_code}]')
 
-    def list_groups(self, order_by: str) -> Dict:
+    def list_groups(self, order_by: str, next_link: str = None) -> Dict:
         params = {'$orderby': order_by} if order_by else {}
-        groups = self.http_request('GET', f'groups', params=params)
+        if next_link:  # pagination
+            groups = self.http_request('GET', next_link=next_link)
+        else:
+            groups = self.http_request('GET', f'groups', params=params)
+
         return groups
 
     def get_group(self, id_: str) -> Dict:
@@ -242,12 +258,20 @@ class Client:
         #  It does not return anything in the response body.
         self.http_request('DELETE ', f'groups/{group_id}')
 
-    def get_delta(self, properties: Dict[str, str]) -> Dict:
-        users = self.http_request('GET', 'users/delta', params={'$select': properties}).get('value')
-        return users
+    def get_delta(self, properties: Dict[str, str], next_link: str = None) -> Dict:
+        if next_link:  # pagination
+            groups = self.http_request('GET', next_link)
+        else:
+            groups = self.http_request('GET', 'groups/delta', params={'$select': properties})
 
-    def list_members(self, group_id: str) -> Dict:
-        members = self.http_request('GET', f'groups/{group_id}/members')
+        return groups
+
+    def list_members(self, group_id: str, next_link: str = None) -> Dict:
+        if next_link:  # pagination
+            members = self.http_request('GET', next_link)
+        else:
+            members = self.http_request('GET', f'groups/{group_id}/members')
+
         return members
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
@@ -267,13 +291,24 @@ def test_function_command(client: Client, args: Dict):
 
 def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     order_by = args.get('order_by')
-    groups = client.list_groups(order_by)
+    next_link = args.get('next_link')
+    groups = client.list_groups(order_by, next_link)
 
     groups_readable, groups_outputs = parse_outputs(groups['value'])
     human_readable = tableToMarkdown(name="Groups:", t=groups_readable,
                                      headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
                                      removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID == obj.ID)': groups_outputs}
+
+    next_link_response = ''
+    if '@odata.nextLink' in groups:
+        next_link_response = groups['@odata.nextLink']
+
+    if next_link_response:
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID).NextLink': next_link_response,
+                         f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+    else:
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+
     return human_readable, entry_context, groups
 
 
@@ -282,8 +317,11 @@ def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group = client.get_group(id_)
 
     group_readable, group_outputs = parse_outputs(group)
-    human_readable = tableToMarkdown(name="Groups:", t=group_readable, removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID == obj.ID)': group_outputs}
+    human_readable = tableToMarkdown(name="Groups:", t=group_readable,
+                                     headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
+                                              'Security Enabled', 'Visibility'],
+                                     removeNull=True)
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_outputs}
     return human_readable, entry_context, group
 
 
@@ -302,9 +340,10 @@ def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group_readable, group_outputs = parse_outputs(group)
     human_readable = tableToMarkdown(name=f"{required_properties['displayName']} was created successfully:",
                                      t=group_readable,
-                                     headers=['ID', 'Display Name', 'Description', 'Security Enabled', 'Mail Enabled'],
+                                     headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
+                                              'Security Enabled', 'Mail Enabled'],
                                      removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID == obj.ID)': group_outputs}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_outputs}
     return human_readable, entry_context, group
 
 
@@ -312,30 +351,62 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group_id = args.get('group_id')
     client.delete_group(group_id)
 
+    # add a field that indicates that the group was deleted
+    group_output = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id})')
+    group_output['Deleted'] = True
+
     human_readable = f'Group: "{group_id}" was deleted successfully.'
-    return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
+    return human_readable, group_output, NO_OUTPUTS
 
 
 def get_delta_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     properties = args.get('properties')
-    groups_data = client.get_delta(properties)
-    headers = list(set([camel_case_to_readable(p) for p in argToList(properties)] + ['ID']))
+    next_link = args.get('next_link')
+    groups_data = client.get_delta(properties, next_link)
 
-    groups_readable, groups_outputs = parse_outputs(groups_data)
-    human_readable = tableToMarkdown(name='All Graph Users', headers=headers, t=groups_readable, removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID == obj.ID)': groups_outputs}
-    return human_readable, entry_context, groups_data
+    if not groups_data['value']:  # if no data, say that for now there is no delta and leave the context as is
+        return 'There is no Group Delta currently.', NO_OUTPUTS, NO_OUTPUTS
+    else:
+        groups_readable, groups_outputs = parse_outputs(groups_data['value'])
+        # Pagination - append the new data to the context
+        next_link_response = ''
+        if '@odata.nextLink' in groups_data:
+            next_link_response = groups_data.get('@odata.nextLink')
+        elif '@odata.deltaLink' in groups_data:
+            next_link_response = groups_data.get('@odata.deltaLink')
+
+        # Override the current data in the context if the user wants to see a new diff
+        if next_link and 'deltatoken' in next_link:
+            appendContext(f'{INTEGRATION_CONTEXT_NAME}Delta', NO_OUTPUTS)
+
+        if next_link_response:
+            appendContext(f'{INTEGRATION_CONTEXT_NAME}Delta.NextLink', next_link_response)
+
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}Delta(val.ID === obj.ID)': groups_outputs}
+
+        human_readable = tableToMarkdown(name='All Graph Groups:',
+                                         headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
+                                         t=groups_readable, removeNull=True)
+
+        return human_readable, entry_context, groups_data
 
 
 def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group_id = args.get('group_id')
-    members = client.list_members(group_id)
+    next_link = args.get('next_link')
+    members = client.list_members(group_id, next_link)
 
     members_readable, members_outputs = parse_outputs(members['value'])
     human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
                                      headers=['ID', 'Display Name', 'Job Title', 'Mail'],
                                      removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID == obj.ID)': members_outputs}
+
+    if '@odata.nextLink' in members:
+        members_outputs['NextLink'] = members['@odata.nextLink']
+    members_outputs['GroupId'] = group_id
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}Members(val.ID === obj.ID)': members_outputs}
+
     return human_readable, entry_context, members
 
 
@@ -374,7 +445,6 @@ def main():
     use_ssl = not demisto.params().get('insecure', False)
     proxies = handle_proxy()
     if len(auth_and_token_url) != 2:
-
         # token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
     else:
         token_retrieval_url = auth_and_token_url[1]
