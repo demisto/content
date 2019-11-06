@@ -2948,8 +2948,7 @@ script:
         if (params.timeZone === '0') {
             tz = 0;
         }
-        var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
-        offset = tz ? parseInt(tz) : 0;
+
         offset = tz ? 60 * 1000 * parseInt(tz) : 60 * 1000 * new Date().getTimezoneOffset();
 
         var cmd = commands.searchRecords;
@@ -2981,10 +2980,7 @@ script:
         if (incidents.length > 0){
             shouldAddOffset = true;
             lastTime = incidents[incidents.length-1].occurred;
-
-            if (params.useEuropeanTime) {
-                lastTime = lastTime.getTime()
-            }
+            lastTime = lastTime.getTime()
         }
         var newLastTime = shouldAddOffset ? lastTime + offset : lastTime;
         setLastRun({ lastTime: newLastTime});
