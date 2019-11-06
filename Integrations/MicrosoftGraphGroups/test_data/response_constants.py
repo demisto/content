@@ -151,18 +151,3 @@ RESPONSE_CREATE_GROUP = {
     "securityIdentifier": "S-1-12-1-464174966-1127616274-1724460434-658509210",
     "visibility": None
 }
-RESPONSE_GET_DELTA = {
-    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#groups",
-    "value": [
-        {
-            "createdDateTime": "2017-10-29T10:56:35Z",
-            "displayName": "AAD DC Administrators",
-            "id": "id_",
-            "mailEnabled": False,
-            "mailNickname": "AADDCAdministrators",
-            "renewedDateTime": "2017-10-29T10:56:35Z",
-            "securityEnabled": True,
-            "visibility": None
-        }
-    ]
-}

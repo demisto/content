@@ -258,14 +258,6 @@ class Client:
         #  It does not return anything in the response body.
         self.http_request('DELETE ', f'groups/{group_id}')
 
-    def get_delta(self, properties: Dict[str, str], next_link: str = None) -> Dict:
-        if next_link:  # pagination
-            groups = self.http_request('GET', next_link)
-        else:
-            groups = self.http_request('GET', 'groups/delta', params={'$select': properties})
-
-        return groups
-
     def list_members(self, group_id: str, next_link: str = None) -> Dict:
         if next_link:  # pagination
             members = self.http_request('GET', next_link)
@@ -352,44 +344,11 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     client.delete_group(group_id)
 
     # add a field that indicates that the group was deleted
-    group_output = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id})')
-    group_output['Deleted'] = True
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Deleted': True}
 
     human_readable = f'Group: "{group_id}" was deleted successfully.'
 
-    return human_readable, group_output, NO_OUTPUTS
-
-
-def get_delta_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    properties = args.get('properties')
-    next_link = args.get('next_link')
-    groups_data = client.get_delta(properties, next_link)
-
-    if not groups_data['value']:  # if no data, say that for now there is no delta and leave the context as is
-        return 'There is no Group Delta currently.', NO_OUTPUTS, NO_OUTPUTS
-    else:
-        groups_readable, groups_outputs = parse_outputs(groups_data['value'])
-        # Pagination - append the new data to the context
-        next_link_response = ''
-        if '@odata.nextLink' in groups_data:
-            next_link_response = groups_data.get('@odata.nextLink')
-        elif '@odata.deltaLink' in groups_data:
-            next_link_response = groups_data.get('@odata.deltaLink')
-
-        # Override the current data in the context if the user wants to see a new diff
-        if next_link and 'deltatoken' in next_link:
-            appendContext(f'{INTEGRATION_CONTEXT_NAME}Delta', NO_OUTPUTS)
-
-        if next_link_response:
-            appendContext(f'{INTEGRATION_CONTEXT_NAME}Delta.NextLink', next_link_response)
-
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}Delta(val.ID === obj.ID)': groups_outputs}
-
-        human_readable = tableToMarkdown(name='All Graph Groups:',
-                                         headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
-                                         t=groups_readable, removeNull=True)
-
-        return human_readable, entry_context, groups_data
+    return human_readable, entry_context, NO_OUTPUTS
 
 
 def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -397,15 +356,20 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     next_link = args.get('next_link')
     members = client.list_members(group_id, next_link)
 
-    members_readable, members_outputs = parse_outputs(members['value'])
-    human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
-                                     headers=['ID', 'Display Name', 'Job Title', 'Mail'],
-                                     removeNull=True)
-
-    if '@odata.nextLink' in members:
-        members_outputs['NextLink'] = members['@odata.nextLink']
-    members_outputs['GroupId'] = group_id
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}Members(val.ID === obj.ID)': members_outputs}
+    if not members['value']:
+        human_readable = f'The group {group_id} has no members.'
+        return human_readable, NO_OUTPUTS, NO_OUTPUTS
+    else:
+        members_readable, members_outputs = parse_outputs(members['value'])
+        human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
+                                         headers=['ID', 'Display Name', 'Job Title', 'Mail'],
+                                         removeNull=True)
+        if '@odata.nextLink' in members:
+            next_link_response = members['@odata.nextLink']
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': next_link_response,
+                             f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        else:
+            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
 
     return human_readable, entry_context, members
 
@@ -445,7 +409,7 @@ def main():
     use_ssl = not demisto.params().get('insecure', False)
     proxies = handle_proxy()
     if len(auth_and_token_url) != 2:
-        # token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
     else:
         token_retrieval_url = auth_and_token_url[1]
 
@@ -455,7 +419,6 @@ def main():
         'msgraph-groups-get-group': get_group_command,
         'msgraph-groups-create-group': create_group_command,
         'msgraph-groups-delete-group': delete_group_command,
-        'msgraph-groups-get-group-delta': get_delta_command,
         'msgraph-groups-list-members': list_members_command,
         'msgraph-groups-add-member': add_member_command,
         'msgraph-groups-remove-member': remove_member_command

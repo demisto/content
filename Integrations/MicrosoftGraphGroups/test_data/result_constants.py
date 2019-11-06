@@ -98,17 +98,3 @@ EXPECTED_CREATE_GROUP = {
         "Visibility": None
     }
 }
-EXPECTED_GET_DELTA = {
-    "MSGraphGroupsDelta(val.ID === obj.ID)": [
-        {
-            "CreatedDateTime": "2017-10-29T10:56:35Z",
-            "DisplayName": "AAD DC Administrators",
-            "ID": "id_",
-            "MailEnabled": False,
-            "MailNickname": "AADDCAdministrators",
-            "RenewedDateTime": "2017-10-29T10:56:35Z",
-            "SecurityEnabled": True,
-            "Visibility": None
-        }
-    ]
-}

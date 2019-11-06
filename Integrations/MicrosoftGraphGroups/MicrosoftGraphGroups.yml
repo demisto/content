@@ -103,7 +103,7 @@ script:
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
       description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"].'
+        For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
       description: 'Timestamp of when the group was last renewed. This cannot be modified
@@ -183,7 +183,7 @@ script:
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
       description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"].'
+        For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
       description: 'Timestamp of when the group was last renewed. This cannot be modified
@@ -288,7 +288,7 @@ script:
       type: String
     - contextPath: MSGraphGroup.ProxyAddresses
       description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"].'
+        For example: ["SMTP: support@demisto.com", "smtp: support@demisto.com"].'
       type: String
     - contextPath: MSGraphGroup.RenewedDateTime
       description: 'Timestamp of when the group was last renewed. This cannot be modified
@@ -315,162 +315,12 @@ script:
     execution: false
     name: msgraph-groups-delete-group
     outputs:
-    - contextPath: MSGraphGroups.Classification
-      description: Describes a classification for the group (such as low, medium or
-        high business impact).
-      type: String
-    - contextPath: MSGraphGroups.CreatedDateTime
-      description: Timestamp of when the group was created.
-      type: String
-    - contextPath: MSGraphGroups.DeletedDateTime
-      description: Timestamp of when the group was deleted.
-      type: String
-    - contextPath: MSGraphGroups.Description
-      description: An optional description for the group.
-      type: String
-    - contextPath: MSGraphGroups.GroupTypes
-      description: |-
-        Specifies the group type and its membership.
-        If the collection contains Unified then the group is an Office 365 group; otherwise it's a security group.
-        If the collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static.
-      type: String
     - contextPath: MSGraphGroups.ID
       description: The unique identifier for the group.
-      type: String
-    - contextPath: MSGraphGroup.IsAssignableToRole
-      description: Is the group assigned to a specific role.
-      type: String
-    - contextPath: MSGraphGroup.Mail
-      description: The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
-      type: String
-    - contextPath: MSGraphGroup.MailEnabled
-      description: Specifies whether the group is mail-enabled.
-      type: Boolean
-    - contextPath: MSGraphGroup.MailNickname
-      description: The mail alias for the group, unique in the organization.
-      type: String
-    - contextPath: MSGraphGroup.OnPremisesDomainName
-      description: Contains the on-premises domain FQDN, also called dnsDomainName
-        synchronized from the on-premises directory.
-      type: String
-    - contextPath: MSGraphGroup.OnPremisesLastSyncDateTime
-      description: 'Indicates the last time at which the group was synced with the
-        on-premises directory.The Timestamp type represents date and time information
-        using ISO 8601 format and is always in UTC time. For example, midnight UTC
-        on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: String
-    - contextPath: MSGraphGroup.OnPremisesSyncEnabled
-      description: |
-        true if this group is synced from an on-premises directory; false if this group was originally synced from an on-premises directory but is no longer synced; null if this object has never been synced from an on-premises directory (default).
-      type: String
-    - contextPath: MSGraphGroup.ProxyAddresses
-      description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"].'
-      type: String
-    - contextPath: MSGraphGroup.RenewedDateTime
-      description: 'Timestamp of when the group was last renewed. This cannot be modified
-        directly and is only updated via the renew service action. The Timestamp type
-        represents date and time information using ISO 8601 format and is always in
-        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: String
-    - contextPath: MSGraphGroup.SecurityEnabled
-      description: Specifies whether the group is a security group.
-      type: Boolean
-    - contextPath: MSGraphGroup.Visibility
-      description: 'Specifies the visibility of an Office 365 group. Possible values
-        are: Private, Public, or Hiddenmembership; blank values are treated as public.'
       type: String
     - contextPath: MSGraphGroup.Deleted
       description: Specifies whether the group was deleted.
       type: Boolean
-  - arguments:
-    - default: false
-      description: Group properties to return, 'ID' is always returned.
-      isArray: false
-      name: properties
-      required: false
-      secret: false
-    - default: false
-      description: URL to the next page of results
-      isArray: false
-      name: next_link
-      required: false
-      secret: false
-    deprecated: false
-    description: Get newly created, updated, or deleted groups, including group membership
-      changes.
-    execution: false
-    name: msgraph-groups-get-group-delta
-    outputs:
-    - contextPath: MSGraphGroupsDelta.NextLink
-      description: URL to the next page of results or to learn about new changes to
-        groups.
-      type: String
-    - contextPath: MSGraphGroupsDelta.Classification
-      description: Describes a classification for the group (such as low, medium or
-        high business impact).
-      type: String
-    - contextPath: MSGraphGroupsDelta.CreatedDateTime
-      description: Timestamp of when the group was created.
-      type: String
-    - contextPath: MSGraphGroupsDelta.DeletedDateTime
-      description: Timestamp of when the group was deleted.
-      type: String
-    - contextPath: MSGraphGroupsDelta.Description
-      description: An optional description for the group.
-      type: String
-    - contextPath: MSGraphGroupsDelta.GroupTypes
-      description: |-
-        Specifies the group type and its membership.
-        If the collection contains Unified then the group is an Office 365 group; otherwise it's a security group.
-        If the collection includes DynamicMembership, the group has dynamic membership; otherwise, membership is static.
-      type: String
-    - contextPath: MSGraphGroupsDelta.ID
-      description: The unique identifier for the group.
-      type: String
-    - contextPath: MSGraphGroupsDelta.IsAssignableToRole
-      description: Is the group assigned to a specific role.
-      type: String
-    - contextPath: MSGraphGroupsDelta.Mail
-      description: The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
-      type: String
-    - contextPath: MSGraphGroupsDelta.MailEnabled
-      description: Specifies whether the group is mail-enabled.
-      type: Boolean
-    - contextPath: MSGraphGroupsDelta.MailNickname
-      description: The mail alias for the group, unique in the organization.
-      type: String
-    - contextPath: MSGraphGroupsDelta.OnPremisesDomainName
-      description: Contains the on-premises domain FQDN, also called dnsDomainName
-        synchronized from the on-premises directory.
-      type: String
-    - contextPath: MSGraphGroupsDelta.OnPremisesLastSyncDateTime
-      description: 'Indicates the last time at which the group was synced with the
-        on-premises directory.The Timestamp type represents date and time information
-        using ISO 8601 format and is always in UTC time. For example, midnight UTC
-        on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: String
-    - contextPath: MSGraphGroupsDelta.OnPremisesSyncEnabled
-      description: |
-        true if this group is synced from an on-premises directory; false if this group was originally synced from an on-premises directory but is no longer synced; null if this object has never been synced from an on-premises directory (default).
-      type: String
-    - contextPath: MSGraphGroupsDelta.ProxyAddresses
-      description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"].'
-      type: String
-    - contextPath: MSGraphGroupsDelta.RenewedDateTime
-      description: 'Timestamp of when the group was last renewed. This cannot be modified
-        directly and is only updated via the renew service action. The Timestamp type
-        represents date and time information using ISO 8601 format and is always in
-        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: String
-    - contextPath: MSGraphGroupsDelta.SecurityEnabled
-      description: Specifies whether the group is a security group.
-      type: Boolean
-    - contextPath: MSGraphGroupsDelta.Visibility
-      description: 'Specifies the visibility of an Office 365 group. Possible values
-        are: Private, Public, or Hiddenmembership; blank values are treated as public.'
-      type: String
   - arguments:
     - default: false
       description: The group ID.
@@ -488,6 +338,45 @@ script:
     description: List group members.
     execution: false
     name: msgraph-groups-list-members
+    outputs:
+    - contextPath: MSGraphGroups.Members.BussinessPhones
+      description: The telephone numbers for the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.GivenName
+      description: The given name (first name) of the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.MobilePhone
+      description: The primary cellular telephone number for the user.
+      type: String
+    - contextPath: MSGraphGroups.Members.DisplayName
+      description: |-
+        The name displayed in the address book for the user.
+        This is usually the combination of the user's first name, middle initial and last name.
+      type: String
+    - contextPath: MSGraphGroups.Members.UserPrincipalName
+      description: |-
+        The user principal name (UPN) of the user.
+        The UPN is an Internet-style login name for the user based on the Internet standard RFC 822.
+        By convention, this should map to the user's email name.
+        The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains.      type: String
+    - contextPath: MSGraphGroups.Members.OfficeLocation
+      description: The office location in the user's place of business.
+      type: String
+    - contextPath: MSGraphGroups.Members.Mail
+      description: The SMTP address for the user, for example, "jeff@contoso.onmicrosoft.com".
+      type: String
+    - contextPath: MSGraphGroups.Members.PreferredLanguage
+      description: The preferred language for the user. Should follow ISO 639-1 Code; for example "en-US".
+      type: String
+    - contextPath: MSGraphGroups.Members.Surname
+      description: The user's surname (family name or last name).
+      type: String
+    - contextPath: MSGraphGroups.Members.JobTitle
+      description: The user’s job title.
+      type: String
+    - contextPath: MSGraphGroups.Members.ID
+      description: The unique identifier for the user.
+      type: String
   - arguments:
     - default: false
       description: The group ID.
