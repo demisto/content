@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 import urllib3
 import requests
 from datetime import datetime
@@ -174,7 +174,7 @@ class Client(BaseClient):
         })
         return access_token
 
-    def http_request(self, method: str, url_suffix: str = None, params: Dict = None, body: Dict = None,
+    def http_request(self, method: str, url_suffix: str = None, params: Dict = None, body: Optional[str] = None,
                      next_link: str = None):
         """
         Generic request to Microsoft Graph
@@ -183,7 +183,7 @@ class Client(BaseClient):
         if next_link:
             url = next_link
         else:
-            url = self.base_url + url_suffix
+            url = f'{self.base_url}{url_suffix}'
 
         response = requests.request(
             method,
@@ -236,7 +236,7 @@ class Client(BaseClient):
             return_error(f'API call to MS Graph failed, could not parse result. '
                          f'Please check authentication related parameters. [{response.status_code}]')
 
-    def list_groups(self, order_by: str, next_link: str = None) -> Dict:
+    def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
@@ -249,7 +249,7 @@ class Client(BaseClient):
         group = self.http_request('GET', f'groups/{id_}')
         return group
 
-    def create_group(self, properties: Dict[str, str]) -> Dict:
+    def create_group(self, properties: Dict[str, str] = None) -> Dict:
         group = self.http_request('POST', 'groups', body=json.dumps(properties))
         return group
 
@@ -305,7 +305,7 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    id_ = args.get('id')
+    id_ = str(args.get('id'))
     group = client.get_group(id_)
 
     group_readable, group_outputs = parse_outputs(group)
@@ -319,8 +319,8 @@ def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     required_properties = {
-        'displayName': args.get('display_name'),
-        'mailNickname': args.get('mail_nickname'),
+        'displayName': str(args.get('display_name')),
+        'mailNickname': str(args.get('mail_nickname')),
         'mailEnabled': args.get('mail_enabled') == 'true',
         'securityEnabled': args.get('security_enabled')
     }
@@ -340,7 +340,7 @@ def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    group_id = args.get('group_id')
+    group_id = str(args.get('group_id'))
     client.delete_group(group_id)
 
     # add a field that indicates that the group was deleted
@@ -352,7 +352,7 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    group_id = args.get('group_id')
+    group_id = str(args.get('group_id'))
     next_link = args.get('next_link')
     members = client.list_members(group_id, next_link)
 
@@ -375,8 +375,8 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    group_id = args.get('group_id')
-    user_id = args.get('user_id')
+    group_id = str(args.get('group_id'))
+    user_id = str(args.get('user_id'))
     required_properties = {
         "@odata.id": f'https://graph.microsoft.com/v1.0/users/{user_id}'}
     client.add_member(group_id, required_properties)
@@ -386,8 +386,8 @@ def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def remove_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    group_id = args.get('group_id')
-    user_id = args.get('user_id')
+    group_id = str(args.get('group_id'))
+    user_id = str(args.get('user_id'))
     client.remove_member(group_id, user_id)
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
