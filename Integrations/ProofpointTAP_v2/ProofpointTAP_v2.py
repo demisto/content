@@ -20,6 +20,7 @@ BLOCKED_MESSAGES = "Blocked Messages"
 DELIVERED_MESSAGES = "Delivered Messages"
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DEFAULT_LIMIT = 50
 
 """ Helper functions """
 
@@ -157,17 +158,17 @@ def get_events_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50,
-                    integration_context=None):
+def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
+                    limit=DEFAULT_LIMIT, integration_context=None):
     incidents: list = []
     # check if there're incidents saved in context
     if integration_context:
-        remained_incidents = integration_context.get('incidents')
+        remained_incidents = integration_context.get("incidents")
         # return incidents if exists in context.
         if remained_incidents:
             return last_run, remained_incidents[:limit], remained_incidents[limit:]
     # Get the last fetch time, if exists
-    start_query_time = last_run.get('last_fetch')
+    start_query_time = last_run.get("last_fetch")
     # Handle first time fetch, fetch incidents retroactively
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
@@ -188,7 +189,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             event_guid = raw_events.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event), 'occurred': raw_event["messageTime"]
+                "rawJSON": json.dumps(raw_event),
+                "occurred": raw_event["messageTime"]
             }
             incidents.append(incident)
 
@@ -199,7 +201,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             incident = {
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
-                'occured': raw_event["messageTime"],
+                "occured": raw_event["messageTime"],
             }
             incidents.append(incident)
 
@@ -229,7 +231,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
 
     # Cut the milliseconds from last fetch if exists
     end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
-    next_run = {'last_fetch': end_query_time}
+    next_run = {"last_fetch": end_query_time}
     return next_run, incidents[:limit], incidents[limit:]
 
 
