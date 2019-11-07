@@ -4,7 +4,9 @@
     "tests": [
         {
             "integrations": "CloudShark",
-            "playbookID": "CloudShark - Test Playbook"
+            "playbookID": "CloudShark - Test Playbook",
+            "timeout": 500,
+            "nightly": true
         },
         {
             "integrations": "nmap",
