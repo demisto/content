@@ -27,7 +27,7 @@ class IntegrationValidator(object):
             f = get_remote_file(old_integration_file, old_git_branch)
             self.old_integration = f or None
             if not self.old_integration:
-                print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                print_warning("Could not find the old integration please make sure that you did not break "
                               "backward compatibility "
                               "for: {} old file: {} branch: {}".format(file_path, old_integration_file, old_git_branch))
 

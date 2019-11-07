@@ -28,7 +28,7 @@ class ScriptValidator(object):
             f = get_remote_file(old_script_file, old_git_branch)
             self.old_script = f or None
             if not self.old_script:
-                print_warning("{}\nCould not find the old script please make sure that you did not break "
+                print_warning("Could not find the old script please make sure that you did not break "
                               "backward compatibility "
                               "for: {} old file: {} branch: {}".format(file_path, old_script_file, old_git_branch))
 
