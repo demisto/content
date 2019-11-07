@@ -3,7 +3,7 @@ import sys
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 
 
-def get_base_branch(pr_num) -> str:
+def get_base_branch(pr_num):
     """
     Fetches the base branch name of PR num {pr_num}
     :param pr_num: The PR number
