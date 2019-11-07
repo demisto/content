@@ -8,14 +8,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e7bbc097-1b79-4498-8b31-d918bbb99724
+    taskid: 143400cc-bc76-4d6e-8a38-f46da34b74d5
     type: start
     task:
-      id: e7bbc097-1b79-4498-8b31-d918bbb99724
+      id: 143400cc-bc76-4d6e-8a38-f46da34b74d5
       version: -1
       name: ""
-      iscommand: false
       description: Start.
+      iscommand: false
       brand: ""
     nexttasks:
       '#none#':
@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 377.5,
           "y": 50
         }
       }
@@ -33,10 +33,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 29081bbb-91a7-4dbd-8846-4abaa1816c8d
+    taskid: edc7890e-7604-42cc-89c8-15e0b513c9ad
     type: regular
     task:
-      id: 29081bbb-91a7-4dbd-8846-4abaa1816c8d
+      id: edc7890e-7604-42cc-89c8-15e0b513c9ad
       version: -1
       name: Archive Search
       description: Initiates a new archive search.
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "6"
     scriptarguments:
       end:
         complex:
@@ -76,7 +76,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 377.5,
           "y": 195
         }
       }
@@ -85,10 +85,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 8821e771-89af-48e8-8ee4-28e5c3e4df24
+    taskid: 473a8564-2302-4afc-80cd-405e56e53991
     type: condition
     task:
-      id: 8821e771-89af-48e8-8ee4-28e5c3e4df24
+      id: 473a8564-2302-4afc-80cd-405e56e53991
       version: -1
       name: Are There Searches That Didn't Finish?
       description: Check status of search
@@ -109,6 +109,15 @@ tasks:
             value:
               complex:
                 root: FireEyeHelixSearch
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: FireEyeHelixSearch.State
+                      iscontext: true
+                    right:
+                      value:
+                        simple: cancelled
                 accessor: PercentComplete
                 transformers:
                 - operator: floor
@@ -116,13 +125,13 @@ tasks:
           right:
             value:
               complex:
-                root: inputs.Threshold
+                root: "100"
             iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -130,12 +139,12 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: f02961f1-0f64-47d7-802a-7a38a7ab3a48
+    taskid: 45a4c9df-a4f0-4dfd-8876-adcd2ac79463
     type: regular
     task:
-      id: f02961f1-0f64-47d7-802a-7a38a7ab3a48
+      id: 45a4c9df-a4f0-4dfd-8876-adcd2ac79463
       version: -1
-      name: Get Search Results
+      name: Get Search Results Without Incomplete Searches
       description: Fetches archive search results.
       script: '|||fireeye-helix-archive-search-get-results'
       type: regular
@@ -145,13 +154,22 @@ tasks:
       search_id:
         complex:
           root: FireEyeHelixSearch
+          filters:
+          - - operator: isNotEqualNumber
+              left:
+                value:
+                  simple: FireEyeHelixSearch.PercentComplete
+                iscontext: true
+              right:
+                value:
+                  simple: "100"
           accessor: ID
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
@@ -159,10 +177,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 5e48afa5-4d4b-4f22-871d-1c8e42e040ee
+    taskid: ddf16391-704b-41e4-886e-a188df0096f8
     type: playbook
     task:
-      id: 5e48afa5-4d4b-4f22-871d-1c8e42e040ee
+      id: ddf16391-704b-41e4-886e-a188df0096f8
       version: -1
       name: GenericPolling
       description: |-
@@ -198,7 +216,7 @@ tasks:
         complex:
           root: inputs.Timeout
       dt:
-        simple: FireEyeHelixSearch(val.PercentComplete < ${inputs.Threshold}).ID
+        simple: FireEyeHelixSearch(val.PercentComplete < 100).ID
     separatecontext: true
     loop:
       iscommand: false
@@ -207,8 +225,72 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -200,
-          "y": 540
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 97da4134-2fbf-426e-86a8-d1dc791e56a9
+    type: condition
+    task:
+      id: 97da4134-2fbf-426e-86a8-d1dc791e56a9
+      version: -1
+      name: Are There Searches That Weren't Cancelled?
+      description: Checks whether there are searches that weren't cancelled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: FireEyeHelixSearch
+                accessor: State
+            iscontext: true
+          right:
+            value:
+              simple: cancelled
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: f5a31249-1556-4fc6-82cd-4c8c6ebc7bb9
+    type: title
+    task:
+      id: f5a31249-1556-4fc6-82cd-4c8c6ebc7bb9
+      version: -1
+      name: FireEye Helix Couldn't Run The Search
+      description: FireEye Helix couldn't run the search
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 560
         }
       }
     note: false
@@ -219,9 +301,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 630,
-        "x": -200,
+        "height": 940,
+        "width": 922.5,
+        "x": 50,
         "y": 50
       }
     }
@@ -260,12 +342,6 @@ inputs:
   value: {}
   required: false
   description: Number of events to search.
-- key: Threshold
-  value:
-    simple: "100"
-  required: true
-  description: Target percentage of the search that was completed. Default is 100
-    - the playbook will return a result only once the search is done.
 - key: Timeout
   value:
     simple: "10"
