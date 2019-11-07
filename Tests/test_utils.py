@@ -11,6 +11,9 @@ from distutils.version import LooseVersion
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
 
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 
 class LOG_COLORS:
     NATIVE = '\033[m'
