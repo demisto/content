@@ -1071,6 +1071,16 @@
             "instance_names": "ms_graph_user_prod"
         },
         {
+            "integrations": "Microsoft Graph Groups",
+            "playbookID": "Microsoft Graph Groups - Test",
+            "instance_names": "ms_graph_groups_dev"
+        },
+        {
+            "integrations": "Microsoft Graph Groups",
+            "playbookID": "Microsoft Graph Groups - Test",
+            "instance_names": "ms_graph_groups_prod"
+        },
+        {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true

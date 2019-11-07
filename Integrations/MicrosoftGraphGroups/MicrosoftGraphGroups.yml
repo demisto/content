@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: MicrosoftGraphGroups
+  id: Microsoft Graph Groups
   version: -1
 configuration:
 - defaultvalue: https://graph.microsoft.com
@@ -32,7 +32,7 @@ configuration:
 description: Microsoft Graph Groups provide the foundational membership service for
   users to share conversations, files, notes, calendars, plans, and many other assets.
 display: Microsoft Graph Groups
-name: MicrosoftGraphGroups
+name: Microsoft Graph Groups
 script:
   commands:
   - arguments:
@@ -420,4 +420,4 @@ script:
   subtype: python3
   type: python
 tests:
-- MicrosoftGraphMail-Test
+- Microsoft Graph Groups - Test
