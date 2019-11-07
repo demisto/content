@@ -85,7 +85,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', ]
+                         'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
 USE_PROXY = demisto.params().get('proxy', False)
