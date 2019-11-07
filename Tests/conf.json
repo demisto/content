@@ -1909,7 +1909,6 @@
     ],
     "skipped_tests": {
         "NetWitness Endpoint Test": "Issue 19878",
-        "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
@@ -1980,7 +1979,6 @@
         "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
-        "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
         "SumoLogic": "Issue 18441",
