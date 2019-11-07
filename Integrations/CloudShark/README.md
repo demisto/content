@@ -1,49 +1,33 @@
+<h2>Overview</h2>
 <p>
-Upload and manage captures on CloudShark
-
-This integration was integrated and tested with version xx of CloudShark
+CloudShark is a collaboration platform focused on PCAP analysis for networking
+and security teams, CS Enterprise delivers secure storage, organization, access
+control, and powerful analysis tools in an elegant, responsive web interface.
 </p>
-<h2>CloudShark Playbook</h2>
-<p>Populate this section with relevant playbook names.</p>
 <h2>Use Cases</h2>
 <ul>
-<li>Use case 1</li>
-<li>Use case 2</li>
-</ul><h2>Detailed Description</h2>
-<ul>
-<li>CloudShark is a web-based packet capture analysis platform built for</li>
-<li>collaboration. This integration allows customers to upload, open and manage</li>
-<li>pcap files using CloudShark.</li>
-<li></li>
-<li>To use this all of the commands in this integration you will need an </li>
-<li>[API Token](https://support.cloudshark.io/api/) # disable-secrets-detection</li>
-<li>with the following permisstions enabled:</li>
-<li></li>
-<li>* Get Info/Annotations</li>
-<li>* Delete captures files</li>
-<li>* Download original</li>
-<li>* Upload capture files</li>
-<li></li>
-</ul><h2>Fetch Incidents</h2>
-<p>Populate this section with Fetch incidents data</p>
-<h2>Configure CloudShark on Demisto</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for CloudShark.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>CloudShark URL</strong></li>
-   <li><strong>API Key</strong></li>
-   <li><strong>Use system proxy settings</strong></li>
-   <li><strong>Check the TLS certificate of the server</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
+<li>Upload capture to analyze on web platform</li>
+<li>Collaborate on analysis with others</li>
+<li>Collect meta-information about capture file</li>
+<li>Manage capture files on CloudShark</li>
+<h2>To set up CloudShark to work with Demisto</h2>
+You will need the following before setting up the CloudShark integration on
+Demisto:
+<li><b>CloudShark URL:</b> The URL of the CloudShark instance</li>
+<li><b><a href="https://support.cloudshark.io/api/">API Token</a>:</b> API Token from
+CloudShark with upload, info, download, and delete permissions enabled</li>
+<h2> Configure the CloudShark Integration on Demisto</h2>
+<ol type="1">
+  <li>Go to <b>Settings > Integrations > Servers & Services.</b></li>
+  <li>Search for CloudShark</li>
+  <li>Click Add instance to create and configure a new integration
+  instance.</li>
+  <ul>
+    <li><b>Name:</b> a textual name for the integration instance.</li>
+    <li><b>CloudShark URL:</b> The URL of the CloudShark Instance</li>
+    <li><b>API Token:</b> CloudShark API token</li>
+  </ul>
+  <li>Click <b>Test</b> to validate the CloudShark URL</li>
 </ol>
 <h2>Commands</h2>
 <p>
@@ -64,12 +48,6 @@ This integration was integrated and tested with version xx of CloudShark
   <code>cloudshark-upload</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -146,14 +124,14 @@ This integration was integrated and tested with version xx of CloudShark
         "CaptureId": "5277a3a64076"
     },
     "URL": {
-        "Data": "https://www.cloudshark.org/captures/5277a3a64076"
+        "Data": "CLOUDSHARK_URL/captures/5277a3a64076"
     }
 }
 </pre>
 <h5>Human Readable Output</h5>
 <p>
 <p>
-[Open Capture in CloudShark](https://www.cloudshark.org/captures/5277a3a64076)
+[Open Capture in CloudShark](https://<CLOUDSHARK_URL>/captures/5277a3a64076)
 </p>
 <!-- remove the following comments to manually add an image: -->
 <!--
@@ -170,12 +148,6 @@ This integration was integrated and tested with version xx of CloudShark
   <code>cloudshark-info</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -231,6 +203,7 @@ This integration was integrated and tested with version xx of CloudShark
   <code>!cloudshark-info capture_id=ccaa62cbbb06</code>
 </p>
 <h5>Context Example</h5>
+<!-- disable-secrets-detection-start -->
 <pre>
 {
     "CloudShark": {
@@ -262,11 +235,11 @@ This integration was integrated and tested with version xx of CloudShark
             "start_time": "2019-07-26T18:22:00+00:00",
             "tag_list": "",
             "truncated": "No",
-            "user": "tom@cloudshark.org"
         }
     }
 }
 </pre>
+<!-- disable-secrets-detection-end -->
 <h5>Human Readable Output</h5>
 <p>
 <h3>Capture file info</h3>
@@ -332,7 +305,6 @@ This integration was integrated and tested with version xx of CloudShark
       <td> 2019-07-26T18:22:00+00:00 </td>
       <td>  </td>
       <td> No </td>
-      <td> tom@cloudshark.org </td>
     </tr>
   </tbody>
 </table>
@@ -352,12 +324,6 @@ This integration was integrated and tested with version xx of CloudShark
   <code>cloudshark-download</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -431,12 +397,6 @@ This integration was integrated and tested with version xx of CloudShark
   <code>cloudshark-delete</code>
 </p>
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
 <h5>Input</h5>
 <table style="width:750px" border="2" cellpadding="6">
   <thead>
@@ -521,4 +481,4 @@ This integration was integrated and tested with version xx of CloudShark
  alt="image" width="749" height="412"></a>
  -->
 </p>
-<h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2>
+<!-- <h2>Additional Information</h2><h2>Known Limitations</h2><h2>Troubleshooting</h2> -->
