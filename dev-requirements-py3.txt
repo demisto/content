@@ -11,3 +11,4 @@ autopep8==1.4.4
 mypy==0.730
 beautifulsoup4==4.8.1
 pypdf2==1.26.0
+demisto-py==2.0.6
