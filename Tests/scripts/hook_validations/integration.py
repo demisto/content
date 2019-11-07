@@ -4,7 +4,7 @@ import requests
 import yaml
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_remote_file
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -27,22 +27,13 @@ class IntegrationValidator(object):
         self.file_path = file_path
         if check_git:
             self.current_integration = get_yaml(file_path)
-            # The replace in the end is for Windows support
-            if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_integration = yaml.safe_load(file_content)
-            else:
-                try:
-                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
-                        "\\", "/")
-                    res = requests.get(file_path_from_old_branch, verify=False)
-                    res.raise_for_status()
-                    self.old_integration = yaml.safe_load(res.content)
-                except Exception as e:
-                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
-                                  "backward compatibility".format(str(e)))
-                    self.old_integration = None
+            old_integration_file = old_file_path or file_path
+            f = get_remote_file(old_integration_file, old_git_branch)
+            self.old_integration = f or None
+            if not self.old_integration:
+                print_warning("{}\nCould not find the old integration please make sure that you did not break "
+                              "backward compatibility "
+                              "for: {} old file: {} branch: {}".format(file_path, old_integration_file, old_git_branch))
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
