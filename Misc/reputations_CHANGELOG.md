@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added support to identify URLs and domains prefixed with 'http:' or 'http:\\'.
 Support for prefixed with 'http:' and 'http:\\' URLs.
 Added support for fqdn extraction as a domain indicator type
 
