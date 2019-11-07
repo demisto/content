@@ -1905,6 +1905,9 @@
         {
             "integrations": "Kenna",
             "playbookID": "Kenna Test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
