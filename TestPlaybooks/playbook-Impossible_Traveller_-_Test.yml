@@ -273,8 +273,8 @@ tasks:
     task:
       id: fc7f15ff-08b8-41ac-8261-9443a4a2c573
       version: -1
-      name: Impossible Traveller_dev
-      playbookName: Impossible Traveller_dev
+      name: Impossible Traveller
+      playbookName: Impossible Traveller
       type: playbook
       iscommand: false
       brand: ""
