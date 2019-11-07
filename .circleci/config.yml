@@ -59,7 +59,10 @@ jobs:
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            
+            find Tests/scripts/infrastructure_tests -name "*.py" | grep -v check_base_branch | xargs -n1 python -m pytest -v
+            find Tests/scripts/infrastructure_tests -name "*.py" | grep check_base_branch | xargs -n1 python3 -m pytest -v
+
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -108,16 +111,12 @@ jobs:
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
-          name: Check Base Branch for External PR
+          name: Verify Base Branch for Contirbution
           when: always
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
               then
                 python3 ./Tests/scripts/check_base_branch_for_external_pr.py $CIRCLE_BRANCH
-            
-              else
-                echo "Skipping base branch test for internal PRs"
-                exit 0
             fi
       - run:
           name: Download Artifacts

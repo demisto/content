@@ -74,6 +74,8 @@ PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 
+EXTERNAL_PR_REGEX = r'^pull/\d+$'
+
 
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r'{}.*dashboard-.*\.json$'.format(DASHBOARDS_DIR)
