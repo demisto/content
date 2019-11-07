@@ -34,6 +34,5 @@
 	"unsearchable": false,
 	"useAsKpi": false,
 	"validationRegex": "",
-	"version": -1,
-	"fromversion": "5.0.0"
+	"version": -1
 }
