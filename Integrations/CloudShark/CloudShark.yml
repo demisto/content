@@ -1,0 +1,77 @@
+commonfields:
+  id: CloudShark
+  version: -1
+name: CloudShark
+display: CloudShark
+category: Data Enrichment & Threat Intelligence
+description: Upload and manage captures on CloudShark
+configuration:
+- display: CloudShark URL
+  name: url
+  defaultvalue: https://www.cloudshark.org # disable-secrets-detection
+  type: 0
+  required: true
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Check the TLS certificate of the server
+  name: check_certificate
+  defaultvalue: "true"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cloudshark-upload
+    arguments:
+    - name: file
+      required: true
+      description: EntryID of the capture to upload
+    - name: additional_tags
+      description: A comma-separated list of tags to apply to the capture file
+    - name: filename
+      description: Specify the filename of the capture in CloudShark
+    outputs:
+    - contextPath: URL.Data
+      description: URL to the capture on CloudShark
+      type: string
+    - contextPath: CloudShark.CaptureId
+      description: Capture id of the capture on CloudShark
+      type: string
+    description: Upload a capture file to CloudShark
+  - name: cloudshark-info
+    arguments:
+    - name: capture_id
+      required: true
+      description: Capture id of the capture on CloudShark
+    outputs:
+    - contextPath: CloudShark.CaptureInfo
+      description: Meta-information of capture file
+    description: Retrieve meta-infomation of capture on CloudShark
+  - name: cloudshark-download
+    arguments:
+    - name: capture_id
+      description: Capture id of the capture on CloudShark
+    outputs:
+    - contextPath: File
+      description: File downloaded from CloudShark
+    description: Download a capture file from CloudShark
+  - name: cloudshark-delete
+    arguments:
+    - name: capture_id
+      description: Capture id of the capture on CloudShark
+    outputs:
+    - contextPath: CloudShark.Result
+      description: Result of delete command
+    description: Delete capture file from CloudShark
+  dockerimage: demisto/python3:3.7.3.286
+  runonce: false
+  subtype: python3
