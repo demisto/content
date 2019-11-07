@@ -230,6 +230,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
     :return: The slack API response.
     """
     set_name_and_icon(body, method)
+    total_try_time = 0
     while True:
         try:
             if http_verb == 'POST':
@@ -243,7 +244,8 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             response = api_error.response
             if 'Retry-After' in response.headers:
                 retry_after = int(response.headers['Retry-After'])
-                if retry_after < MAX_LIMIT_TIME:
+                total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
                     time.sleep(retry_after)
                     continue
             raise
@@ -264,6 +266,7 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
     :return: The slack API response.
     """
     set_name_and_icon(body, method)
+    total_try_time = 0
     while True:
         try:
             if http_verb == 'POST':
@@ -276,8 +279,9 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
         except SlackApiError as api_error:
             response = api_error.response
             if 'Retry-After' in response.headers:
-                retry_after = response.headers['Retry-After']
-                if retry_after < MAX_LIMIT_TIME:
+                retry_after = int(response.headers['Retry-After'])
+                total_try_time += retry_after
+                if total_try_time < MAX_LIMIT_TIME:
                     await asyncio.sleep(retry_after)
                     continue
             raise
