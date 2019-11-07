@@ -1,6 +1,6 @@
 ## [Unreleased]
-- Fixed the Archer fetch incidents offset bug.
-- Fixed the bug in fetched incidents details.
+- Fixed an issue in the Archer fetch incidents offset.
+- Fixed an issue in the fetched incidents details.
 - Improved errors and added debug logs.
 
 ## [19.10.2] - 2019-10-29
