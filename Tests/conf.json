@@ -26,6 +26,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "AlienVault OTX v2",
+            "playbookID": "Alienvault_OTX_v2 - Test"
+        },
+        {
             "integrations": "AWS - SQS",
             "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
@@ -1727,6 +1731,11 @@
             "playbookID": "Exabeam - Test"
         },
         {
+            "integrations": "DomainTools Iris",
+            "playbookID": "DomainTools Iris - Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1892,6 +1901,10 @@
         {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
+        },
+        {
+            "integrations": "Kenna",
+            "playbookID": "Kenna Test"
         }
     ],
     "skipped_tests": {
@@ -1912,7 +1925,7 @@
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
         "Qualys-Test": "Issue 16486",
-        "TruSTAR Test": "Issue 19756",
+        "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "ip_enrichment_generic_test": "Issue 19815",

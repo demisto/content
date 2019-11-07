@@ -287,6 +287,11 @@ def update_with_tests_sections(missing_ids, modified_files, test_ids, tests):
 
 
 def collect_changed_ids(integration_ids, playbook_names, script_names, modified_files):
+    tests_set = set([])
+    updated_script_names = set([])
+    updated_playbook_names = set([])
+    catched_scripts, catched_playbooks = set([]), set([])
+
     script_to_version = {}
     playbook_to_version = {}
     integration_to_version = {}
@@ -296,6 +301,12 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
             name = get_name(file_path)
             script_names.add(name)
             script_to_version[name] = (get_from_version(file_path), get_to_version(file_path))
+
+            package_name = os.path.dirname(file_path)
+            if glob.glob(package_name + "/*_test.py"):
+                catched_scripts.add(name)
+                tests_set.add('Found a unittest for the script {}'.format(package_name))
+
         elif re.match(PLAYBOOK_REGEX, file_path, re.IGNORECASE):
             name = get_name(file_path)
             playbook_names.add(name)
@@ -313,11 +324,6 @@ def collect_changed_ids(integration_ids, playbook_names, script_names, modified_
     script_set = id_set['scripts']
     playbook_set = id_set['playbooks']
     integration_set = id_set['integrations']
-
-    catched_scripts, catched_playbooks = set([]), set([])
-    updated_script_names = set([])
-    updated_playbook_names = set([])
-    tests_set = set([])
 
     for script_id in script_names:
         enrich_for_script_id(script_id, script_to_version[script_id], script_names, script_set, playbook_set,
@@ -396,6 +402,7 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
     for script in script_set:
         script_data = list(script.values())[0]
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         command_to_integration = script_data.get('command_to_integration', {})
@@ -410,6 +417,11 @@ def enrich_for_integration_id(integration_id, given_version, integration_command
                         if tests:
                             catched_scripts.add(script_name)
                             update_test_set(tests, tests_set)
+
+                        package_name = os.path.dirname(script_file_path)
+                        if glob.glob(package_name + "/*_test.py"):
+                            catched_scripts.add(script_name)
+                            tests.add('Found a unittest for the script {}'.format(script_name))
 
                         updated_script_names.add(script_name)
                         new_versions = (script_fromversion, script_toversion)
@@ -445,6 +457,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
     for script in script_set:
         script_data = list(script.values())[0]
         script_name = script_data.get('name')
+        script_file_path = script_data.get('file_path')
         script_fromversion = script_data.get('fromversion', '0.0.0')
         script_toversion = script_data.get('toversion', '99.99.99')
         if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
@@ -454,6 +467,11 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 if tests:
                     catched_scripts.add(script_name)
                     update_test_set(tests, tests_set)
+
+                package_name = os.path.dirname(script_file_path)
+                if glob.glob(package_name + "/*_test.py"):
+                    catched_scripts.add(script_name)
+                    tests.add('Found a unittest for the script {}'.format(script_name))
 
                 updated_script_names.add(script_name)
                 new_versions = (script_fromversion, script_toversion)
@@ -533,6 +551,7 @@ def get_test_list(files_string, branch_name):
 
     # Adding a unique test for a json file.
     if is_reputations_json:
+        tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
 
     if is_indicator_json:
