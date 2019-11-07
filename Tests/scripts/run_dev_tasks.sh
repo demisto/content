@@ -16,7 +16,7 @@
 pylint_return=0
 if [ -z "${PYLINT_SKIP}" ]; then
     echo "======== Running pylint on files: ${PYLINT_FILES} ==========="
-    python -m pylint -E -f parseable --generated-members=requests.packages.urllib3,requests.codes.ok \
+    python -m pylint -E -e string -f parseable --generated-members=requests.packages.urllib3,requests.codes.ok \
         ${PYLINT_FILES}
     pylint_return=$?
     echo "Pylint completed with status code: $pylint_return"
