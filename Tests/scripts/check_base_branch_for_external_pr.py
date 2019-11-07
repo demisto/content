@@ -14,11 +14,11 @@ def get_base_branch(pr_num):
     requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
     try:
-        url = f'https://api.github.com/repos/demisto/content/pulls/{pr_num}'
+        url = 'https://api.github.com/repos/demisto/content/pulls/{}'.format(pr_num)
         res = requests.get(url, verify=False)
         if res.status_code != 200:
             # If we didn't succeed to fetch the pr maybe it doesn't exist - then we don't want the build to fail
-            print_warning(f'Unable to fetch PR num {pr_num}')
+            print_warning('Unable to fetch PR num {}'.format(pr_num))
             return ''
         response = res.json()
         # Seems like GitHub API return a dict if it's only one PR, but it doesn't mentioned in their API
@@ -36,21 +36,21 @@ def get_base_branch(pr_num):
                 return base_branch
     except requests.exceptions.ConnectionError:
         # If we didn't succeed to fetch the pr maybe it doesn't exist - then we don't want the build to fail
-        print_warning(f'Unable to fetch PR num {pr_num}')
+        print_warning('Unable to fetch PR num {}'.format(pr_num))
         return ''
 
     return ''
 
 
 def check_base_branch(pr_num):
-    print_color(f'Starting to fetch the base branch of PR num {pr_num}', LOG_COLORS.GREEN)
+    print_color('Starting to fetch the base branch of PR num {}'.format(pr_num), LOG_COLORS.GREEN)
     base_branch = get_base_branch(pr_num)
-    print_color(f'Finished to fetch the base branch of PR num {pr_num}', LOG_COLORS.GREEN)
+    print_color('Finished to fetch the base branch of PR num {}'.format(pr_num), LOG_COLORS.GREEN)
     if base_branch == 'master':
         print_error("You cannot merge into master when creating an external PR.")
         sys.exit(1)
     else:
-        print_color(f'Base branch of PR num {pr_num} is not master - Great!', LOG_COLORS.GREEN)
+        print_color('Base branch of PR num {} is not master - Great!'.format(pr_num), LOG_COLORS.GREEN)
         sys.exit(0)
 
 
