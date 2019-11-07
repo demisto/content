@@ -60,12 +60,18 @@ def run_command(command, is_silenced=True, exit_on_error=True):
 
 
 def get_remote_file(full_file_path, tag='master'):
+    # 'origin/' prefix is used to compared with remote branches but it is not a part of the github url.
+    tag = tag.replace('origin/', '')
+
+    # The replace in the end is for Windows support
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
-    res = requests.get(github_path, verify=False)
-    if res.status_code != 200:
+    try:
+        res = requests.get(github_path, verify=False)
+        res.raise_for_status()
+    except Exception as exc:
         print_warning('Could not find the old entity file under "{}".\n'
                       'please make sure that you did not break backward compatibility. '
-                      'Reason: {}'.format(github_path, res.reason))
+                      'Reason: {}'.format(github_path, exc))
         return {}
 
     if full_file_path.endswith('json'):

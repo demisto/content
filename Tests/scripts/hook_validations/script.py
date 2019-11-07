@@ -1,12 +1,5 @@
-import os
-import yaml
-import requests
-
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+from Tests.scripts.constants import PYTHON_SUBTYPES
+from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare
 
 
 class ScriptValidator(object):
@@ -26,19 +19,10 @@ class ScriptValidator(object):
 
         if check_git:
             self.current_script = get_yaml(file_path)
-            # The replace in the end is for Windows support
             if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
+                self.old_script = get_remote_file(old_file_path, old_git_branch)
             else:
-                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace("\\", "/")
-
-            try:
-                res = requests.get(git_hub_path, verify=False)
-                res.raise_for_status()
-                self.old_script = yaml.safe_load(res.content)
-            except Exception as e:
-                print_warning("{}\nCould not find the old script please make sure that you did not break "
-                              "backward compatibility".format(str(e)))
+                self.old_script = get_remote_file(file_path, old_git_branch)
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
