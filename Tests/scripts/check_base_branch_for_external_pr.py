@@ -49,9 +49,9 @@ def check_base_branch(pr_num):
 
 if __name__ == '__main__':
     circle_branch = sys.argv[1]
-    pr_number = re.findall(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE)
-    if pr_number:
-        pr_number = pr_number[0]
+    pr_numbers_list = re.findall(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE)
+    if pr_numbers_list:
+        pr_number = pr_numbers_list[0]
         check_base_branch(pr_number)
     else:
         print_warning('Unable to fetch pull request.')

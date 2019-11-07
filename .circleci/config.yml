@@ -60,13 +60,8 @@ jobs:
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
             
-            find Tests/scripts/infrastructure_tests -name "*.py" | grep -v check_base_branch | xargs -n1 python -m pytest -v
-            echo ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-            python3 -V
-            python3 -m pytest -v check_base_branch_for_external_pr_test.py
-            echo ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
-            find Tests/scripts/infrastructure_tests -name "*.py" | grep check_base_branch | xargs -n1 python3 -m pytest -v
-            echo ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+            find Tests/scripts/infrastructure_tests -name "*.py" | grep -v check_base_branch | xargs python -m pytest -v
+            find Tests/scripts/infrastructure_tests -name "*.py" | grep check_base_branch | xargs python3 -m pytest -v
 
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
