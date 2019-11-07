@@ -1504,6 +1504,11 @@
             "playbookID": "FilterByList - Test",
             "fromversion": "4.5.0"
         },
+            {
+            "playbookID": "Impossible Traveller - Test",
+            "integrations": "Ipstack",
+            "fromversion": "4.5.0"
+        },
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
