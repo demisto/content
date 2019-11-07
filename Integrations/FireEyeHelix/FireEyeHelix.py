@@ -1,3 +1,5 @@
+import math
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -296,7 +298,7 @@ class Client(BaseClient):
         """
         suffix = f'/api/v1/search'
         params = assign_params(query=query)
-        return self._http_request('GET', suffix, params=params)
+        return self._http_request('GET', suffix, params=params, timeout=30)
 
     def archive_search_alert(self, query: str = None):
         """Searches for alerts based on query
@@ -346,7 +348,7 @@ class Client(BaseClient):
             Response from API.
         """
         suffix = f'/api/v1/search/archive/{search_id}/results'
-        return self._http_request('GET', suffix)
+        return self._http_request('GET', suffix, timeout=30)
 
     def update_alert_by_id(self, body: Dict) -> Dict:
         """Updates a single alert by sending a POST request.
@@ -901,6 +903,29 @@ def build_search_result(raw_response: dict, search_id: Union[str, int] = None):
         return f'{INTEGRATION_NAME} - Search did not find any result.', {}, {}
 
 
+def build_title_with_page_numbers(title: str, count: int, limit: int, offset: int) -> str:
+    """Tries to build a title with page numbers from raw response and given title
+
+    Args:
+        title: Title without page numbers
+        count: Total number of entries
+        limit: Max amount of entries returned
+        offset:
+
+    Returns:
+
+    """
+    try:
+        tot_pages = math.ceil(count / limit)
+        page = math.floor((offset / count) * tot_pages) + 1
+        # In case offset > count
+        if page > tot_pages:
+            page = tot_pages
+        return f'{title}\n### Page {page}/{tot_pages}'
+    except (TypeError, ValueError, ZeroDivisionError):
+        return title
+
+
 def build_single_list_result(raw_response):
     """Builds a list result from API response
 
@@ -998,14 +1023,23 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    limit = int(args.get('limit') or 0)
+    limit = int(args.get('limit') or 30)
+    # api response for limit=0 is equivalent to limit=30
+    if limit == 0:
+        limit = 30
     offset = int(args.get('offset') or 0)
     raw_response = client.list_alerts(limit=limit, offset=offset)
     alerts = raw_response.get('results')
     if alerts:
-        title = f'{INTEGRATION_NAME} - List alerts:'
-        context_entry = create_context_result(alerts, ALERTS_TRANS)
         count = demisto.get(raw_response, 'meta.count')
+        title = f'{INTEGRATION_NAME} - List alerts:'
+        try:
+            count = int(count)
+            title = build_title_with_page_numbers(title, count, limit, offset)
+        except (TypeError, ValueError):
+            # don't change title if count ins't an int
+            pass
+        context_entry = create_context_result(alerts, ALERTS_TRANS)
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry,
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.Count).Count': count
@@ -1034,7 +1068,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry
         }
-        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'Description', 'State', 'Severity'])
+        human_readable = tableToMarkdown(title, context_entry)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
@@ -1503,21 +1537,31 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
+    limit = int(args.get('limit') or 30)
+    offset = int(args.get('offset') or 0)
     raw_response = client.list_rules(
-        limit=int(args.get('limit') or 0),
-        offset=int(args.get('offset') or 0),
+        limit=limit,
+        offset=offset,
         sort=args.get('sort')
     )
     rules = raw_response.get('rules')
     if rules:
+        count = demisto.get(raw_response, 'meta.totalCount')
         title = f'{INTEGRATION_NAME} - List rules:'
+        try:
+            count = int(count)
+            title = build_title_with_page_numbers(title, count, limit, offset)
+        except (TypeError, ValueError):
+            # don't change title if count ins't an int
+            pass
         context_entry = create_context_result(rules, RULES_TRANS)
         context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.ID && val.ID === obj.ID)': context_entry,
+            f'{INTEGRATION_CONTEXT_NAME}.Rule(val.Count)': count
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry,
-                                         ['ID', 'Type', 'Description', 'Risk', 'Confidence', 'Severity'])
+                                         ['ID', 'Type', 'Description', 'Risk', 'Confidence', 'Severity', 'Enabled'])
         # Return data to Demisto
         return human_readable, context, raw_response
     else:

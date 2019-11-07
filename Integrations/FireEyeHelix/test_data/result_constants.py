@@ -310,12 +310,31 @@ EXPECTED_RULES_RSLT = {
             "Risk": "Medium",
             "Confidence": "Medium",
             "Severity": "Medium",
-            "Tags": [
-                "demisto",
-                "malware",
-                "http",
-                "md-info"
-            ],
+            "Tags": ["demisto", "malware", "http", "md-info"],
+            "Type": "alert"
+        }
+    ],
+    "FireEyeHelix.Rule(val.Count)": None
+}
+
+EXPECTED_RULE_RSLT = {
+    "FireEyeHelix.Rule(val.ID && val.ID === obj.ID)": [
+        {
+            "ID": "1.1.1",
+            "RulePack": "1.1.1",
+            "Description": "demisto",
+            "Internal": True,
+            "Deleted": False,
+            "Enabled": True,
+            "Supported": False,
+            "CreatorID": "demisto",
+            "CreatorName": "Demisto",
+            "UpdatedByID": "demisto",
+            "UpdatedByName": "Demisto",
+            "Risk": "Medium",
+            "Confidence": "Medium",
+            "Severity": "Medium",
+            "Tags": ["demisto", "malware", "http", "md-info"],
             "Type": "alert"
         }
     ]
