@@ -36,7 +36,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -63,6 +63,11 @@ configuration:
   required: false
 - display: Run this query to fetch new events as incidents
   name: fetchQuery
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Time between fetches (in seconds)
+  name: fetchDelay
   defaultvalue: ""
   type: 0
   required: false
@@ -188,21 +193,31 @@ script:
             }
             var now = (new Date()).getTime();
             var lastRun = getLastRun();
+
             if (!lastRun || !lastRun.time) {
-                // First time, retrieve events from the last 10 min
-                lastRun = {time: now - 10 * 60 * 1000};
+                // First time, retrieve events from the last 15 min
+                lastRun = {time: now - (60*24*3) * 60 * 1000};
+                setLastRun({time: now});
             }
+
+            if (params.fetchDelay) {
+                if (now < lastRun.time + parseInt(params.fetchDelay) * 1000) {
+                    return JSON.stringify([]);
+                }
+            }
+
             var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), false,
                 a2i(params.sleepBetweenChecks, defaultSleep));
             var incidents = [];
-            if (s.messages) {
-                for (var i=0; i<s.messages.length; i++) {
-                    var incident = {name: 'Incident from SumoLogic ' + s.messages[i]._messageid,
-                        details: s.messages[i]._raw, labels: [], rawJSON: JSON.stringify(s.messages[i])};
-                    var props = Object.getOwnPropertyNames(s.messages[i]);
+
+            if (s.records) {
+                for (var i=0; i<s.records.length; i++) {
+                    var incident = {name: 'Incident from SumoLogic',
+                        details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
+                    var props = Object.getOwnPropertyNames(s.records[i]);
                     for (var j=0; j<props.length; j++) {
                         if (props[j] !== '_raw') {
-                            incident.labels.push({type: props[j], value: s.messages[i][props[j]]});
+                            incident.labels.push({type: props[j], value: s.records[i][props[j]]});
                         }
                     }
                     incidents.push(incident);
@@ -259,29 +274,32 @@ script:
       description: 'The ISO 8601 date of the time range to end the search. For example:
         2016-08-28T12:00:00). Can also be milliseconds since epoch.'
     - name: limit
-      description: Maximum number of results to return from the query. Default is 100. The value specified will override the default set in the "limit" parameter.
+      description: Maximum number of results to return from the query. Default is
+        100. The value specified will override the default set in the "limit" parameter.
       defaultValue: "100"
     - name: offset
       description: Return results starting at this offset. should be int - by default
         is 0
       defaultValue: "0"
     - name: timezone
-      description: The time zone if from/to is not in milliseconds. Default is UTC. See
-        this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article
+      description: The time zone if from/to is not in milliseconds. Default is UTC.
+        See this (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) article
         for a list of time zone codes.
       defaultValue: UTC
     - name: maxTimeToWaitForResults
-      description: Maximum amount of time (in minutes) to wait for the search to complete. Default is 10
-        minutes.
+      description: Maximum amount of time (in minutes) to wait for the search to complete.
+        Default is 10 minutes.
       defaultValue: "10"
     - name: headers
-      description: 'A CSV list of table headers that are displayed in order. For example: "_blockid,_collector,_format".'
+      description: 'A CSV list of table headers that are displayed in order. For example:
+        "_blockid,_collector,_format".'
     - name: byReceiptTime
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If "true", the search is executed using receipt time. Default is "false".
+      description: If "true", the search is executed using receipt time. Default is
+        "false".
       defaultValue: "false"
     outputs:
     - contextPath: Search.Messages
