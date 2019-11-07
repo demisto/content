@@ -456,6 +456,7 @@ def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nig
         return
 
     # Skip version mismatch test
+    print(str(t))
     test_from_version = t.get('fromversion', '0.0.0')
     test_to_version = t.get('toversion', '99.99.99')
     if (server_version_compare(test_from_version, server_numeric_version) > 0
@@ -589,6 +590,8 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         print("Restarting demisto service")
         restart_demisto_service(ami, c)
         print("Demisto service restarted\n")
+
+    print(str(mockless_tests))
 
     for t in mockless_tests:
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
