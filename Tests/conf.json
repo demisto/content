@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "CloudShark",
+            "playbookID": "CloudShark - Test Playbook"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },

@@ -1,5 +1,5 @@
-id: 0869943e-aeb8-45ba-827c-b69f85ffc137
-version: 13
+id: CloudShark - Test Playbook
+version: -1
 name: CloudShark - Test Playbook
 starttaskid: "0"
 tasks:
