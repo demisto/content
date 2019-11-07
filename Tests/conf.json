@@ -26,6 +26,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "AlienVault OTX v2",
+            "playbookID": "Alienvault_OTX_v2 - Test"
+        },
+        {
             "integrations": "AWS - SQS",
             "playbookID": "fd93f620-9a2d-4fb6-85d1-151a6a72e46d"
         },
@@ -1727,6 +1731,11 @@
             "playbookID": "Exabeam - Test"
         },
         {
+            "integrations": "DomainTools Iris",
+            "playbookID": "DomainTools Iris - Test",
+            "fromversion": "4.1.0"
+        },
+        {
             "integrations": "Cisco Spark",
             "playbookID": "efc817d2-6660-4d4f-890d-90513ca1e180"
         },
@@ -1892,11 +1901,14 @@
         {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
+        },
+        {
+            "integrations": "Kenna",
+            "playbookID": "Kenna Test"
         }
     ],
     "skipped_tests": {
         "NetWitness Endpoint Test": "Issue 19878",
-        "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
         "ThreatQ - Test": "Issue 19468",
         "VxStream Test": "Issue 19439",
@@ -1913,7 +1925,7 @@
         "entity_enrichment_generic_test": "Issue 16490",
         "ArcSight Logger test": "Issue 19117",
         "Qualys-Test": "Issue 16486",
-        "TruSTAR Test": "Issue 19756",
+        "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
         "ip_enrichment_generic_test": "Issue 19815",
@@ -1964,6 +1976,7 @@
 
 
       "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
@@ -2013,12 +2026,11 @@
         "SlackV2": "Issue 19558",
 
       "_comment": "~~~ OTHER ~~~",
-        "LogRhythm": "Issue 19849",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "MailListener - POP3": "Issue 18580",
-        "Forescout": "Can only be run from within PANW network. Look im keeper for - Demisto in the LAB",
+        "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
