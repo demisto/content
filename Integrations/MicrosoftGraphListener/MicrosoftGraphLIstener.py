@@ -1,8 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Union, Optional
-
 ''' IMPORTS '''
 import requests
 import base64
@@ -931,7 +929,7 @@ def main():
     refresh_token = demisto.getIntegrationContext().get('current_refresh_token') or params.get('refresh_token', '')
     enc_key = params.get('enc_key')
     # todo change the retrieval url to production
-    token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/msgraph-listener_ProvideAccessTokenFunction'  # disable-secrets-detection
+    token_retrieval_url = 'https://us-central1-oproxy-dev.cloudfunctions.net/msgraph-listener_ProvideAccessTokenFunction' # guardrails-disable-line disable-secrets-detection
     app_name = 'ms-graph-mail-listener'
 
     # params related to common instance configuration
