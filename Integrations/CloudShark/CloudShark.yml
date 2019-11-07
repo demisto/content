@@ -11,7 +11,7 @@ configuration:
   defaultvalue: https://www.cloudshark.org # disable-secrets-detection
   type: 0
   required: true
-- display: API Key
+- display: API Token
   name: apikey
   defaultvalue: ""
   type: 4
