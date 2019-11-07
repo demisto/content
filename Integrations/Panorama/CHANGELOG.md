@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Change the url argument in the ***panorama-log-query*** from equal to contains.
-  - Improved the descriptions of the ***panorama-move-rule*** command.
+  - Changed the *url* argument from equal to contains in the ***panorama-log-query*** command.
+  - Improved descriptions in the ***panorama-move-rule*** command.
 
 ## [19.10.2] - 2019-10-29
 Added the ***panorama-security-policy-match*** command.
