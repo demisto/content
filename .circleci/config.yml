@@ -59,10 +59,7 @@ jobs:
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            
-            find Tests/scripts/infrastructure_tests -name "*.py" | grep -v check_base_branch | xargs -I{} python -m pytest {} -v
-            find Tests/scripts/infrastructure_tests -name "*.py" | grep check_base_branch | xargs -I{} python3 -m pytest {} -v
-
+            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -116,7 +113,7 @@ jobs:
           command: |
             if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
               then
-                python3 ./Tests/scripts/check_base_branch_for_external_pr.py $CIRCLE_BRANCH
+                python3 ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
             fi
       - run:
           name: Download Artifacts
