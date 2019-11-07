@@ -25,7 +25,7 @@ def get_base_branch(pr_num):
         if response and isinstance(response, dict):
             base = response.get('base', {})
             base_branch = base.get('ref')
-            if base_branch:
+            if base_branch: 
                 return base_branch
         # GitHub usually returns a list of PRs
         elif response and isinstance(response, list) and len(response) == 1:
