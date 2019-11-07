@@ -1,0 +1,27 @@
+commonfields:
+  id: CalculateTimeDifference
+  version: -1
+name: CalculateTimeDifference
+type: python
+tags:
+- Utilities
+comment: Calculate the time difference in minutes
+enabled: true
+script: '-'
+args:
+- name: start_time
+  required: true
+  description: First time argument in ISO-8601 format to begin the calculation.
+- name: end_time
+  required: true
+  description: Second time argument in ISO-8601 to end the calculation.
+outputs:
+- contextPath: Time.Difference
+  description: Calculated time difference in minutes.
+- contextPath: Time.Start
+  description: Start time.
+- contextPath: Time.End
+  description: End time.
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

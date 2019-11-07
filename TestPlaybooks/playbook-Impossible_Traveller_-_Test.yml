@@ -1,0 +1,414 @@
+id: Impossible Traveller - Test
+version: -1
+name: Impossible Traveller - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee333755-7738-48f1-8adc-552a535ae108
+    type: start
+    task:
+      id: ee333755-7738-48f1-8adc-552a535ae108
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 02e90978-27c5-4e96-8b10-6abbf5d406f9
+    type: regular
+    task:
+      id: 02e90978-27c5-4e96-8b10-6abbf5d406f9
+      version: -1
+      name: Set impossible traveller data
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedhosts: {}
+      affectedindividualscontactinformation: {}
+      affectedips: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      daysbetweenreportcreation: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip:
+        simple: 31.177.34.128
+      destntdomain: {}
+      details: {}
+      detectedusers: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailfromdisplayname: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderdomain: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailsubjectlanguage: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      hostid: {}
+      hostname: {}
+      htmlimage: {}
+      htmlrenderedimage: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      mdtest: {}
+      measurestomitigate: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      phishingsubtype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previoussignindatetime:
+        simple: 2019-10-31T11:49:00.989403Z
+      previoussourceip:
+        simple: 104.196.188.170
+      relateddomain: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      reporteremailaddress: {}
+      reportinguser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      sectorofaffectedparty: {}
+      selector: {}
+      severity: {}
+      signature: {}
+      signindatetime:
+        simple: 2019-10-31T11:55:00.989403Z
+      single: {}
+      single2: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      source: {}
+      sourceip:
+        simple: 176.10.104.240
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username:
+        simple: donotdelete
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdr: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 680e69d9-90d1-4e28-8681-d36cd5318888
+    type: regular
+    task:
+      id: 680e69d9-90d1-4e28-8681-d36cd5318888
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: fc7f15ff-08b8-41ac-8261-9443a4a2c573
+    type: playbook
+    task:
+      id: fc7f15ff-08b8-41ac-8261-9443a4a2c573
+      version: -1
+      name: Impossible Traveller_dev
+      playbookName: Impossible Traveller_dev
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7b8dd237-2ec4-42a7-856d-3a715ff3b8fc
+    type: condition
+    task:
+      id: 7b8dd237-2ec4-42a7-856d-3a715ff3b8fc
+      version: -1
+      name: Was trip data detected?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: previouscoordinates
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: coordinates
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: previoussignindatetime
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 75b4f2ac-8b0e-4be7-8119-158893f2fb9a
+    type: title
+    task:
+      id: 75b4f2ac-8b0e-4be7-8119-158893f2fb9a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 4e1aa533-a14a-46dd-88ce-4d1a370999de
+    type: regular
+    task:
+      id: 4e1aa533-a14a-46dd-88ce-4d1a370999de
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      message:
+        simple: Not all expected values were retrieved about the impossible traveller.
+          Maybe Ipstack quota error, or IP geo location not found anymore.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_7_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 800,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
