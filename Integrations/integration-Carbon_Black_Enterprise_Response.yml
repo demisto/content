@@ -18,7 +18,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -716,16 +716,27 @@ script:
 
         let res = getBinaryRequest(args.md5);
         let fileEntryId = saveFile(res.Bytes);
-        let fileEntries = decompressFile(fileEntryId);
 
-        fileEntries.forEach(fileEntry => {
-            entries.push({
-                Type: fileEntry.Type,
-                FileID: fileEntry.FileID,
-                File: fileEntry.File,
-                Contents: fileEntry.Contents
+        if (args.decompress && args.decompress === 'no') {
+            return {
+                Type: entryTypes.file,
+                FileID: fileEntryId,
+                File: 'results.zip',
+                Contents:  fileEntry.Contents
+            };
+        }
+
+        else {
+            let fileEntries = decompressFile(fileEntryId);
+            fileEntries.forEach(fileEntry => {
+                entries.push({
+                    Type: fileEntry.Type,
+                    FileID: fileEntry.FileID,
+                    File: fileEntry.File,
+                    Contents: fileEntry.Contents
+                });
             });
-        });
+        }
 
         return entries;
     }
@@ -1348,6 +1359,13 @@ script:
       - "yes"
       - "no"
       description: Whether to include summary
+    - name: decompress
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      defaultValue: "yes"
+      description: Whether to decompress results
     outputs:
     - contextPath: File.DigSig.Publisher
       description: The publisher of the Digital Signature
