@@ -19,5 +19,5 @@ pytest
 requests
 pykwalify
 mock
-git+https://github.com/demisto/demisto-py.git@test-content
+git+https://github.com/demisto/demisto-py.git
 slackclient
