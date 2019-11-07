@@ -592,7 +592,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                           is_filter_configured,
-                          filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+                          filtered_tests, skipped_tests, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key, is_ami)
 
