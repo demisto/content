@@ -372,7 +372,7 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration %s succeed'.format(integration_name,))
+        print('Create integration {} succeed'.format(integration_name, ''))
 
     # create incident with playbook
     incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
