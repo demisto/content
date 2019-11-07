@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: entry id of the file we want to zip
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  description: 'Name of the output file, for example: zipName="test" would result
+    in output file "test.zip"'
+  isArray: false
+  name: zipName
+  required: false
+  secret: false
+- default: false
+  description: 'Used to create a password protected zip file. Example: password="abcd"'
+  isArray: false
+  name: password
+  required: false
+  secret: false
+comment: Zip a file and upload to war room
+commonfields:
+  id: ZipFile
+  version: -1
+enabled: true
+name: ZipFile
+outputs:
+- contextPath: ZipFile.ZippedFile
+  description: The zipped file
+  type: string
+script: '-'
+system: false
+tags:
+- Utility
+- file
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python_zipfile
+runonce: false
