@@ -167,18 +167,18 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         if remained_incidents:
             return last_run, remained_incidents[:limit], remained_incidents[limit:]
     # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
+    start_query_time = last_run.get('last_fetch')
     # Handle first time fetch, fetch incidents retroactively
-    if not last_fetch:
-        last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    fetch_times = get_fetch_times(last_fetch)
+    if not start_query_time:
+        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+    fetch_times = get_fetch_times(start_query_time)
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
         if index < fetch_time_count - 1:
-            last_fetch = fetch_times[index + 1]
+            end_query_time = fetch_times[index + 1]
         else:
-            last_fetch = get_now().strftime(DATE_FORMAT)
-        raw_events = client.get_events(interval=fetch_time + "/" + last_fetch,
+            end_query_time = get_now().strftime(DATE_FORMAT)
+        raw_events = client.get_events(interval=fetch_time + "/" + end_query_time,
                                        event_type_filter=event_type_filter,
                                        threat_status=threat_status, threat_type=threat_type)
 
@@ -188,15 +188,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             event_guid = raw_events.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event), 'occurred': raw_event["messageTime"]
             }
-            last_event_fetch = raw_event["messageTime"]
-
-            threat_info_map = raw_event.get("threatsInfoMap", [])
-            for threat in threat_info_map:
-                last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                    "threatTime"]
-            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
@@ -205,16 +198,9 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             event_guid = raw_events.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event),
+                'occured': raw_event["messageTime"],
             }
-            last_event_fetch = raw_event["messageTime"]
-
-            threat_info_map = raw_event.get("threatsInfoMap", [])
-            for threat in threat_info_map:
-                last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                    "threatTime"]
-
-            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
@@ -242,10 +228,8 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             incidents.append(incident)
 
     # Cut the milliseconds from last fetch if exists
-    last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
-    last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    last_fetch = last_fetch_datetime.strftime(DATE_FORMAT)
-    next_run = {'last_fetch': last_fetch}
+    end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
+    next_run = {'last_fetch': end_query_time}
     return next_run, incidents[:limit], incidents[limit:]
 
 
