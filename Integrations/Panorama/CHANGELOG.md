@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Bug Fix: !panorama-custom-block-rule failed when trying to block an edl or an address group object.
   - Changed the *url* argument from equal to contains in the ***panorama-log-query*** command.
   - Improved descriptions in the ***panorama-move-rule*** command.
 
