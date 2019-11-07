@@ -46,7 +46,7 @@ def check_base_branch(pr_num):
     print_color('Fetching the base branch of pull request #{}.'.format(pr_num), LOG_COLORS.NATIVE)
     base_branch = get_base_branch(pr_num)
     if base_branch == 'master':
-        print_error("Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.")
+        print_error('Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.')
         sys.exit(1)
     else:
         print_color('Verified pull request #{} base branch successfully.'.format(pr_num), LOG_COLORS.GREEN)
