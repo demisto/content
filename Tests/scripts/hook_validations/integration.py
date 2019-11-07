@@ -6,6 +6,7 @@ import yaml
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
 from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
 from structure import StructureValidator
+
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -21,8 +22,9 @@ class IntegrationValidator(StructureValidator):
        old_integration (dict): Json representation of the current integration from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
-        super(IntegrationValidator, self).__init__(file_path)
+    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master', is_added_file=False,
+                 is_renamed=False):
+        super(IntegrationValidator, self).__init__(file_path, is_added_file=is_added_file, is_renamed=is_renamed)
         self._is_valid = True
 
         self.file_path = file_path
@@ -89,7 +91,8 @@ class IntegrationValidator(StructureValidator):
                 if configuration_param['display'] != param_display:
                     err_msgs.append('The display name of the {} parameter should be \'{}\''.format(param_name,
                                                                                                    param_display))
-                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue', '') != '':
+                elif configuration_param.get('defaultvalue', '') != 'false' and configuration_param.get('defaultvalue',
+                                                                                                        '') != '':
                     err_msgs.append('The default value of the {} parameter should be \'\''.format(param_name))
 
                 elif configuration_param.get('required', False):
