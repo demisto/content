@@ -445,7 +445,6 @@ def disable_all_integrations(client):
                                                        path='/settings/integration/search',
                                                        body=body)
         int_instances = ast.literal_eval(int_resp[0])
-        print(str(int_instances))
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to disable all integrations, error trying to communicate with demisto server: '
