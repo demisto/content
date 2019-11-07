@@ -2095,8 +2095,7 @@ inputs:
     the geographical distance and difference in time between logins is greater than
     this value, then the user will be considered an impossible traveller.
 - key: WhitelistedIPs
-  value:
-    simple: 104.196.188.170
+  value: {}
   required: false
   description: CSV of IP addresses that are allowed to be used across long distances.
 - key: AutomaticallyBlockIPs
