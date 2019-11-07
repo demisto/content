@@ -15,13 +15,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "17"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -100
+          "y": -360
         }
       }
     note: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: b6b0d224-f573-467d-8efd-8c25be29735d
+    taskid: d3c88dfb-cf79-4445-89c0-e99bc38aece5
     type: regular
     task:
-      id: b6b0d224-f573-467d-8efd-8c25be29735d
+      id: d3c88dfb-cf79-4445-89c0-e99bc38aece5
       version: -1
       name: cloudshark-upload
       description: Upload a capture file to CloudShark
@@ -143,7 +143,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 30
         }
       }
     note: false
@@ -440,15 +440,58 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "17":
+    id: "17"
+    taskid: e428256d-7286-4f65-8cc0-b064edc66f9b
+    type: regular
+    task:
+      id: e428256d-7286-4f65-8cc0-b064edc66f9b
+      version: -1
+      name: Download Test PCAP
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: capture.pcap
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/TestPcapPost.pcap
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2535,
+        "height": 2795,
         "width": 1040,
         "x": 120,
-        "y": -100
+        "y": -360
       }
     }
   }
