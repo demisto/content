@@ -49,6 +49,7 @@ def check_base_branch(pr_num):
         sys.exit(1)
     else:
         print_color(f'Base branch of PR num {pr_num} is not master - Great!', LOG_COLORS.GREEN)
+        sys.exit(0)
 
 
 def main():
