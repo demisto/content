@@ -37,6 +37,12 @@ def get_base_branch(pr_num):
 
 
 def check_base_branch(pr_num):
+    """Checks if the base branch is master or not
+
+    Args:
+        pr_num (string): The string representation of the pr number
+
+    """
     print_color('Fetching the base branch of pull request #{}.'.format(pr_num), LOG_COLORS.NATIVE)
     base_branch = get_base_branch(pr_num)
     if base_branch == 'master':
