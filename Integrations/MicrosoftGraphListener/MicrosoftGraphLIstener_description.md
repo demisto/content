@@ -1,0 +1,3 @@
+  To allow us access to Microsoft Graph Mail, an admin has to approve our app using an admin consent flow, by clicking on the following [link](http://localhost:3000/ms-graph-mail-listener).
+  After authorizing the Demisto app, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields.
+  CHANGE THE DESCRIPTION AND THE URL ADDRESS.....
