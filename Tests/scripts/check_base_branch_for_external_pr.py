@@ -21,11 +21,13 @@ def get_base_branch(pr_num) -> str:
             print_warning(f'Unable to fetch PR num {pr_num}')
             return ''
         response = res.json()
+        # Seems like GitHub API return a dict if it's only one PR, but it doesn't mentioned in their API
         if response and isinstance(response, dict):
             base = response.get('base', {})
             base_branch = base.get('ref')
             if base_branch:
                 return base_branch
+        # GitHub usually returns a list of PRs
         elif response and isinstance(response, list) and len(response) == 1:
             pr = response[0]
             base = pr.get('base', {})
