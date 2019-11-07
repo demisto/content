@@ -524,6 +524,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     username = conf.get('username')
+    print('\n\n\n Username is: '+username)
     password = conf.get('userPassword')
     demisto_api_key = conf.get('temp_apikey')
 
