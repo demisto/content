@@ -3347,11 +3347,12 @@ def test_get_user_by_name_paging_rate_limit(mocker):
     from Slack import get_user_by_name, init_globals
     from slack.errors import SlackApiError
     from slack.web.slack_response import SlackResponse
+    import time
 
     # Set
     init_globals()
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
-                                                data={'ok': False}, status_code=429, headers={'Retry-After': 0.001})
+                                                data={'ok': False}, status_code=429, headers={'Retry-After': 30})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
     second_call = SlackApiError('Rate limit reached!', err_response)
     third_call = {'members': [{'id': 'U248918AB', 'name': 'alexios'}], 'response_metadata': {'next_cursor': ''}}
@@ -3359,6 +3360,7 @@ def test_get_user_by_name_paging_rate_limit(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(slack.WebClient, 'api_call', side_effect=[first_call, second_call, third_call])
+    mocker.patch.object(time, 'sleep')
 
     # Arrange
     user = get_user_by_name('alexios')
@@ -3379,18 +3381,20 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
     from Slack import get_user_by_name, init_globals
     from slack.errors import SlackApiError
     from slack.web.slack_response import SlackResponse
+    import time
 
     # Set
     init_globals()
     err_response: SlackResponse = SlackResponse(api_url='', client=None, http_verb='GET', req_args={},
-                                                data={'ok': False}, status_code=429, headers={'Retry-After': 61})
+                                                data={'ok': False}, status_code=429, headers={'Retry-After': 40})
     first_call = {'members': js.loads(USERS), 'response_metadata': {'next_cursor': 'dGVhbTpDQ0M3UENUTks='}}
     second_call = SlackApiError('Rate limit reached!', err_response)
     third_call = {'members': [{'id': 'U248918AB', 'name': 'alexios'}], 'response_metadata': {'next_cursor': ''}}
 
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
-    mocker.patch.object(slack.WebClient, 'api_call', side_effect=[first_call, second_call, third_call])
+    mocker.patch.object(slack.WebClient, 'api_call', side_effect=[first_call, second_call, second_call, third_call])
+    mocker.patch.object(time, 'sleep')
 
     # Arrange
     with pytest.raises(SlackApiError):
@@ -3401,7 +3405,7 @@ def test_get_user_by_name_paging_rate_limit_error(mocker):
     # Assert
     assert len(first_args['params']) == 1
     assert first_args['params']['limit'] == 200
-    assert slack.WebClient.api_call.call_count == 2
+    assert slack.WebClient.api_call.call_count == 3
 
 
 def test_get_user_by_name_paging_normal_error(mocker):
