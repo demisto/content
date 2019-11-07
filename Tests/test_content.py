@@ -523,8 +523,11 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_name = options.buildName
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
-    username = None
-    password = None
+
+    username = conf.get('username')
+    password = conf.get('userPassword')
+
+    print('\n\n\n Username is: '+str(username))
     demisto_api_key = conf.get('temp_apikey')
 
     c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
