@@ -375,13 +375,6 @@ def extract_filtered_tests():
     return filtered_tests, is_filter_configured, run_all
 
 
-def generate_demisto_api_key():
-    with open("./conf_secret.json", "r") as conf_json:
-        data = json.load(conf_json)
-        demisto_api_key = data['temp_apikey']
-    return demisto_api_key
-
-
 def load_conf_files(conf_path, secret_conf_path):
     with open(conf_path) as data_file:
         conf = json.load(data_file)
@@ -415,9 +408,9 @@ def organize_tests(tests, unmockable_integrations, skipped_integrations_conf, ni
 
 def run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                       skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests, is_filter_configured,
-                      filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+                      filtered_tests, skipped_tests, secret_params, failed_playbooks,
                       unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server, build_name,
-                      server_numeric_version, is_ami=True):
+                      server_numeric_version, demisto_api_key, is_ami=True):
     playbook_id = t['playbookID']
     nightly_test = t.get('nightly', False)
     integrations_conf = t.get('integrations', [])
@@ -529,10 +522,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_number = options.buildNumber
     build_name = options.buildName
 
-    demisto_api_key = generate_demisto_api_key()
-    c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
+    username = conf.get('username')
+    password = conf.get('userPassword')
+    demisto_api_key = conf.get('temp_apikey')
+
+    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
     default_test_timeout = conf.get('testTimeout', 30)
 
@@ -584,9 +579,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
             run_test_scenario(t, c, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
-                              filtered_tests, skipped_tests, demisto_api_key, secret_params, failed_playbooks,
+                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
-                              build_name, server_numeric_version)
+                              build_name, server_numeric_version, demisto_api_key)
 
         print("\nRunning mock-disabled tests")
         proxy.configure_proxy_in_demisto('')
