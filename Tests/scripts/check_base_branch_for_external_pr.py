@@ -49,9 +49,9 @@ def check_base_branch(pr_num):
 
 if __name__ == '__main__':
     circle_branch = sys.argv[1]
-    if re.match(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE):
-        # we expect only 1 sequence of numbers in the circle branch name
-        pr_number = re.findall(r'\d+', circle_branch)[0]
+    pr_number = re.findall(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE)
+    if pr_number:
+        pr_number = pr_number[0]
         check_base_branch(pr_number)
     else:
         print_warning('Unable to fetch pull request.')
