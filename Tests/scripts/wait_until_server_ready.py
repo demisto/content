@@ -6,7 +6,6 @@ import argparse
 from time import sleep
 import datetime
 import requests
-from requests import Session
 
 import demisto_client.demisto_api
 from typing import List, AnyStr
@@ -38,13 +37,6 @@ def get_username_password():
     return conf['username'], conf['userPassword'], options.contentVersion
 
 
-def generate_demisto_api_key():
-    with open("./conf_secret.json", "r") as conf_json:
-        data = json.load(conf_json)
-        demisto_api_key = data['temp_apikey']
-    return demisto_api_key
-
-
 def is_correct_content_installed(ips, content_version, username, password):
     # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
@@ -61,50 +53,35 @@ def is_correct_content_installed(ips, content_version, username, password):
 
     for ami_instance_name, ami_instance_ip in ips:
         host = "https://{}".format(ami_instance_ip)
-        with Session() as session:
-            r = session.get(host, verify=False)
-            xsrf = r.cookies["XSRF-TOKEN"]
-            h = {"Accept": "application/json",
-                 "Content-type": "application/json",
-                 "X-XSRF-TOKEN": xsrf}
-            body = json.dumps({"user": username, "password": password})
-            session.post(host + "/login", headers=h, verify=False, data=body)
-            demisto_api_key = generate_demisto_api_key()
-            apikey_json = {
-                'name': 'test_apikey',
-                'apikey': demisto_api_key
-            }
-            session.post(host + "/apikeys", headers=h, verify=False,
-                         data=json.dumps(apikey_json))
-            api_key = demisto_api_key
-            client = demisto_client.configure(base_url=host, api_key=api_key, verify_ssl=False)
-            try:
-                resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
-                                                           method='POST', accept='application/json',
-                                                           content_type='application/json')
-                resp_json = ast.literal_eval(resp[0])
-                if not isinstance(resp_json, dict):
-                    raise ValueError('Response from server is not a Dict, got [{}].\n'
-                                     'Text: {}'.format(type(resp_json), resp_json))
-                release = resp_json.get("release")
-                notes = resp_json.get("releaseNotes")
-                installed = resp_json.get("installed")
-                if not (release and content_version in release and notes and installed):
-                    print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
-                                "".format(ami_instance_name, release, content_version))
-                    return False
-                else:
-                    print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
-                        instance_name=ami_instance_name, content_version=release),
-                        LOG_COLORS.GREEN
-                    )
-            except ValueError as exception:
-                err_msg = "Failed to verify content version on server [{}]\n" \
-                          "Error: [{}]\n".format(ami_instance_name, str(exception))
-                if resp_json is not None:
-                    err_msg += "Server response: {}".format(resp_json)
-                print_error(err_msg)
+
+        client = demisto_client.configure(base_url=host, username=username, password=password, verify_ssl=False)
+        try:
+            resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
+                                                       method='POST', accept='application/json',
+                                                       content_type='application/json')
+            resp_json = ast.literal_eval(resp[0])
+            if not isinstance(resp_json, dict):
+                raise ValueError('Response from server is not a Dict, got [{}].\n'
+                                 'Text: {}'.format(type(resp_json), resp_json))
+            release = resp_json.get("release")
+            notes = resp_json.get("releaseNotes")
+            installed = resp_json.get("installed")
+            if not (release and content_version in release and notes and installed):
+                print_error("Failed install content on instance [{}]\nfound content version [{}], expected [{}]"
+                            "".format(ami_instance_name, release, content_version))
                 return False
+            else:
+                print_color("Instance [{instance_name}] content verified with version [{content_version}]".format(
+                    instance_name=ami_instance_name, content_version=release),
+                    LOG_COLORS.GREEN
+                )
+        except ValueError as exception:
+            err_msg = "Failed to verify content version on server [{}]\n" \
+                      "Error: [{}]\n".format(ami_instance_name, str(exception))
+            if resp_json is not None:
+                err_msg += "Server response: {}".format(resp_json)
+            print_error(err_msg)
+            return False
     print_color("Content was installed successfully on all of the instances! :)", LOG_COLORS.GREEN)
     return True
 
