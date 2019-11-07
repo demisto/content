@@ -455,7 +455,11 @@ CloudShark with upload, info, download, and delete permissions enabled</li>
 <pre>
 {
     "CloudShark": {
-        "Result": "ccaa62cbbb06"
+        "Result": {
+            "id": "5277a3a64076",
+            "message": "Capture deleted successfully.",
+            "status": 200
+        }
     }
 }
 </pre>

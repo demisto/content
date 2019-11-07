@@ -163,7 +163,7 @@ def delete_command():
     # Set resulot
     contents = result
     human_readable['Response'] = result
-    contxt['CloudShark']['Result'] = capture_id
+    contxt['CloudShark']['Result'] = result
     ec = contxt
 
     demisto.results({
