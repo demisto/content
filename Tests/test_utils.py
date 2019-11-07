@@ -312,3 +312,14 @@ def run_threads_list(threads_list):
     # wait for the commands to complete
     for t in threads_list:
         t.join()
+
+
+def get_dockerimage45(script_object):
+    """Get the docker image used up to 4.5 (including).
+
+    Arguments:
+        script_object {dict} -- [script object containing the dockerimage configuration]
+    """
+    if 'dockerimage45' in script_object:
+        return script_object['dockerimage45']
+    return script_object.get('dockerimage', '')
