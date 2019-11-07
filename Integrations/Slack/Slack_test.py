@@ -3517,3 +3517,37 @@ async def test_message_not_setting_name_and_icon_async(mocker):
     # Assert
     assert 'username' not in send_args['json']
     assert 'icon_url' not in send_args['json']
+
+
+def test_set_proxy_and_ssl(mocker):
+    import Slack
+    import ssl
+
+    # Set
+    mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'proxy': 'true'})
+    mocker.patch.object(slack, 'WebClient')
+    mocker.patch.object(Slack, 'handle_proxy', return_value={'https': 'https_proxy', 'http': 'http_proxy'})
+
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
+    # Arrange
+    Slack.init_globals()
+    init_args = slack.WebClient.call_args[1]
+    assert init_args['ssl'].check_hostname is False
+    assert init_args['ssl'].verify_mode == ssl.CERT_NONE
+    assert init_args['proxy'] == 'http_proxy'
+
+
+def test_unset_proxy_and_ssl(mocker):
+    from Slack import init_globals
+
+    # Set
+    mocker.patch.object(slack, 'WebClient')
+
+    # Arrange
+    init_globals()
+    init_args = slack.WebClient.call_args[1]
+    assert init_args['ssl'] is None
+    assert init_args['proxy'] is None

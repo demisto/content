@@ -10,7 +10,7 @@ import asyncio
 import concurrent
 import requests
 import ssl
-from typing import Tuple
+from typing import Tuple, Optional
 
 # disable unsecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -56,7 +56,7 @@ NOTIFY_INCIDENTS: bool
 INCIDENT_TYPE: str
 SEVERITY_THRESHOLD: int
 VERIFY_CERT: bool
-SSL_CONTEXT: ssl.SSLContext
+SSL_CONTEXT: Optional[ssl.SSLContext]
 QUESTION_LIFETIME: int
 BOT_NAME: str
 BOT_ICON_URL: str
@@ -1268,7 +1268,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') -> dict:
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') -> SlackResponse:
     """
     Sends a message to provided destinations Slack.
     :param destinations: Destinations to send to.
@@ -1277,7 +1277,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     :param blocks: Message blocks to send
     :return: The Slack send response.
     """
-    response: dict = {}
+    response: Optional[SlackResponse] = None
     body: dict = {}
 
     if message:
@@ -1294,7 +1294,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     return response
 
 
-def send_file(destinations: list, file: dict, integration_context: dict, thread_id: str) -> dict:
+def send_file(destinations: list, file: dict, integration_context: dict, thread_id: str) -> SlackResponse:
     """
     Sends a file to Slack.
     :param destinations: Destinations to send the file to.
@@ -1318,7 +1318,7 @@ def send_file(destinations: list, file: dict, integration_context: dict, thread_
     return response
 
 
-def send_file_to_destinations(destinations: list, file: dict, thread_id: str) -> dict:
+def send_file_to_destinations(destinations: list, file: dict, thread_id: str) -> SlackResponse:
     """
     Sends a file to provided destinations in Slack.
     :param destinations: The destinations to send to.
@@ -1326,7 +1326,7 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
     :param thread_id: A thread ID to send to.
     :return: The Slack send response.
     """
-    response: dict = {}
+    response: Optional[SlackResponse] = None
     body = {
         'filename': file['name'],
         'initial_comment': file['comment']
@@ -1342,7 +1342,7 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
 
 
 def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', blocks: str = '', file: dict = None) -> dict:
+                       thread_id: str = '', message: str = '', blocks: str = '', file: dict = None) -> SlackResponse:
     """
     Requests to send a message or a file to Slack.
     :param to: A Slack user to send to.
@@ -1657,12 +1657,13 @@ def init_globals():
         SSL_CONTEXT.check_hostname = False
         SSL_CONTEXT.verify_mode = ssl.CERT_NONE
     else:
-        SSL_CONTEXT = None  # type: ignore[assignment]
+        # Use default SSL context
+        SSL_CONTEXT = None
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
     proxies = handle_proxy()
-    PROXY = proxies.get('http')
+    PROXY = proxies.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
     CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
     CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
