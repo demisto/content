@@ -1,7 +1,10 @@
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 import slack
 import pytest
 import asyncio
-import demistomock as demisto
+
 import json as js
 import datetime
 from unittest.mock import mock_open
@@ -2738,6 +2741,50 @@ def test_send_message(mocker):
     assert args[0] == ['channel']
     assert args[1] == 'yo' + '\nView it on: ' + link
     assert args[2] is None
+
+
+def test_send_message_to_destinations(mocker):
+    import Slack
+    # Set
+
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'send_slack_request_sync')
+
+    # Arrange
+    Slack.send_message_to_destinations(['channel'], 'yo', None, '')
+
+    args = Slack.send_slack_request_sync.call_args[1]
+
+    # Assert
+    assert Slack.send_slack_request_sync.call_count == 1
+    assert 'http_verb' not in args
+    assert args['body']['channel'] == 'channel'
+    assert args['body']['text']
+
+
+def test_send_file_to_destinations(mocker):
+    import Slack
+    # Set
+
+    link = 'https://www.eizelulz.com:8443/#/WarRoom/727'
+    mocker.patch.object(demisto, 'investigation', return_value={'type': 1})
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'warRoom': link})
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'send_slack_request_sync')
+
+    # Arrange
+    Slack.send_file_to_destinations(['channel'], {'name': 'name', 'data': 'yo'}, None)
+
+    args = Slack.send_slack_request_sync.call_args[1]
+
+    # Assert
+    assert Slack.send_slack_request_sync.call_count == 1
+    assert 'http_verb' not in args
+    assert args['file_'] == 'yo'
+    assert args['body']['filename'] == 'name'
 
 
 def test_send_message_retry(mocker):
