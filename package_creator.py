@@ -4,10 +4,10 @@ import os
 import io
 import sys
 import glob
-import yaml
 import base64
 import argparse
 import re
+import yaml
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
@@ -57,8 +57,11 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
     if dir_name == 'Scripts':
         script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    elif dir_name == 'Integrations' or 'Beta_Integrations':
+    elif dir_name in ('Integrations', 'Beta_Integrations'):
         script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
+    else:
+        # default to python
+        script_type = '.py'
 
     with io.open(yml_path, mode='r', encoding='utf-8') as yml_file:
         yml_text = yml_file.read()
@@ -66,12 +69,12 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     image_path = None
     desc_path = None
-    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
+    if dir_name in ('Integrations', 'Beta_Integrations'):
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
-    with io.open(output_path, mode='w', encoding='utf-8') as f:
-        f.write(yml_text)
+    with io.open(output_path, mode='w', encoding='utf-8') as file_:
+        file_.write(yml_text)
     return output_path, yml_path, script_path, image_path, desc_path
 
 
@@ -80,7 +83,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_base64 = base64.b64encode(image_data)
     try:
         image_base64 = image_base64.decode('utf-8')
-    except:  # noqa: E722
+    except AttributeError:
         # decode only relevant for python3
         pass
     image_data = IMAGE_PREFIX + image_base64
@@ -102,7 +105,7 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
     desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
     try:
         desc_data = desc_data.decode('utf-8')
-    except:  # noqa: E722
+    except AttributeError:
         # decode only relevant for python3
         pass
 
@@ -147,7 +150,8 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
@@ -175,7 +179,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
                                  .format(package_path))
 
-    elif dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
+    elif dir_name in ('Integrations', 'Beta_Integrations'):
         if yml_data.get('script', {}).get('script'):
             if yml_data['script']['script'] != '-' and yml_data['script']['script'] != '':
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
@@ -219,7 +223,7 @@ def get_package_path():
         package_path = package_path + '/'
 
     directory_name = ""
-    for dir_name in DIR_TO_PREFIX.keys():
+    for dir_name in DIR_TO_PREFIX:
         if dir_name in package_path:
             directory_name = dir_name
 
@@ -231,7 +235,11 @@ def get_package_path():
     return package_path, directory_name, dest_path
 
 
-if __name__ == "__main__":
+def main():
     package_path, dir_name, dest_path = get_package_path()
-    output, yml, script, image, desc = merge_script_package_to_yml(package_path, dir_name, dest_path)
+    output, yml, script, image, _ = merge_script_package_to_yml(package_path, dir_name, dest_path)
     print("Done creating: {}, from: {}, {}, {}".format(output, yml, script, image))
+
+
+if __name__ == "__main__":
+    main()
