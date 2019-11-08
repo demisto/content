@@ -37,6 +37,9 @@ ZIP_PRE = 'content_yml'
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
 
+# server can't handle long file names
+MAX_FILE_NAME = 85
+
 
 def is_ge_version(version1, version2):
     # fix the version to arrays of numbers
@@ -82,6 +85,9 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
     for path in scan_files:
+        if len(path) >= MAX_FILE_NAME:
+            raise ValueError(f'File {path} is longer than {MAX_FILE_NAME}.')
+
         with open(path, 'r') as file_:
             yml_info = yaml.safe_load(file_)
 
@@ -105,14 +111,18 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
-        shutil.copyfile(path, os.path.join(bundle_pre, os.path.basename(path)))
+        shutil.copyfile(path, os.path.join(bundle_pre, dpath))
         # this part is a workaround because server doesn't support indicatorfield-*.json naming
-        shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
+        shutil.copyfile(path, os.path.join(bundle_test, dpath))
         if dir_name == 'IndicatorFields':
             new_path = dpath.replace('incidentfield-', 'incidentfield-indicatorfield-')
             if os.path.isfile(new_path):
                 raise NameError('Failed while trying to create {}. File already exists.'.format(new_path))
             dpath = new_path
+
+        if len(dpath) >= MAX_FILE_NAME:
+            raise ValueError(f'File {dpath} is longer than {MAX_FILE_NAME}.')
+
         shutil.copyfile(path, os.path.join(bundle_post, dpath))
         shutil.copyfile(path, os.path.join(bundle_pre, dpath))
         shutil.copyfile(path, os.path.join(bundle_test, dpath))
