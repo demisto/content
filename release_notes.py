@@ -69,7 +69,7 @@ def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content():
+class Content(object):  # pylint: disable=useless-object-inheritance
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
@@ -227,7 +227,7 @@ class ScriptContent(Content):
         return release_notes_item(data["name"], data["comment"])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(ScriptContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["name"], release_note)
@@ -247,7 +247,7 @@ class PlaybookContent(Content):
         return release_notes_item(data["name"], data['description'])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(PlaybookContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["name"], release_note)
@@ -267,7 +267,7 @@ class ReportContent(Content):
         return release_notes_item(data["name"], data["description"])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(ReportContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["name"], release_note)
@@ -287,7 +287,7 @@ class DashboardContent(Content):
         return release_notes_item(data["name"], data["description"])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(DashboardContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["name"], release_note)
@@ -307,7 +307,7 @@ class WidgetContent(Content):
         return release_notes_item(data["name"], data["description"])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(WidgetContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["name"], release_note)
@@ -318,7 +318,7 @@ class WidgetContent(Content):
 
 class IncidentFieldContent(Content):
     def __init__(self):
-        super().__init__()
+        super(IncidentFieldContent, self).__init__()
         self.show_secondary_header = False
 
     def load_data(self, data):
@@ -332,7 +332,7 @@ class IncidentFieldContent(Content):
             return release_notes_item(data['name'], data['description'])
 
         # using the 'modified' function instead of 'added' function to handle ignored RN
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data['name'], release_note)
@@ -341,7 +341,7 @@ class IncidentFieldContent(Content):
         return release_note
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return add_dot(release_note) + "\n"
@@ -358,7 +358,7 @@ class LayoutContent(Content):
         return "Incident Layouts"
 
     def get_release_notes(self, file_path, data):
-        release_note = super().get_release_notes(file_path, data)
+        release_note = super(LayoutContent, self).get_release_notes(file_path, data)
         if not release_note:
             return release_note
 
@@ -378,7 +378,7 @@ class LayoutContent(Content):
         return self.get_release_notes(file_path, data)
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(LayoutContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return self.get_release_notes(file_path, data)
@@ -395,7 +395,7 @@ class ClassifierContent(Content):
         return "Classification & Mapping"
 
     def get_release_notes(self, file_path, data):
-        release_note = super().get_release_notes(file_path, data)
+        release_note = super(ClassifierContent, self).get_release_notes(file_path, data)
         brand_name = data.get("brandName")
         if not brand_name:
             print_error('Invalid classifier brand name {}'.format(brand_name))
@@ -407,7 +407,7 @@ class ClassifierContent(Content):
         return release_note
 
     def added_release_notes(self, file_path, data):
-        release_note = super().added_release_notes(file_path, data)
+        release_note = super(ClassifierContent, self).added_release_notes(file_path, data)
 
         if release_note:
             return self.get_release_notes(file_path, data)
@@ -416,7 +416,7 @@ class ClassifierContent(Content):
         return release_note
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(ClassifierContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return self.get_release_notes(file_path, data)
@@ -427,7 +427,7 @@ class ClassifierContent(Content):
 
 class ReputationContent(Content):
     def __init__(self):
-        super().__init__()
+        super(ReputationContent, self).__init__()
         self.show_secondary_header = False
 
     def load_data(self, data):
@@ -441,7 +441,7 @@ class ReputationContent(Content):
         return ""
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(ReputationContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return add_dot(release_note) + "\n"
@@ -460,7 +460,7 @@ class IntegrationContent(Content):
         return release_notes_item(data["display"], data["description"])
 
     def modified_release_notes(self, file_path, data):
-        release_note = super().modified_release_notes(file_path, data)
+        release_note = super(IntegrationContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data["display"], release_note)
