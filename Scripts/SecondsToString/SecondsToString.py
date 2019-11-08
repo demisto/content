@@ -27,5 +27,5 @@ def main(value):
     return formatted_time
 
 
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins'):
     demisto.results(main(**demisto.args()))
