@@ -4,7 +4,17 @@
 Docker is a tool used by developers to package together dependencies into a single container (or image). What this means for *you* is that in order to use your integration, you are not required to "pip install" all of the packages required. They are part of a container that "docks" to the server and contains all of the libraries you need. To learn more about docker, [visit their site here](https://docs.docker.com/)
 
 # Why Use Docker?
-Primarily we use docker to run python scripts in a controlled environment. They run isolated from the server to prevent someone from accidentally damaging the server. By packaging libraries and dependencies together, we can prevent unknown issues from occurring since the environment is all the same.
+Primarily we use docker to run python scripts and integrations in a controlled environment. They run isolated from the server to prevent someone from accidentally damaging the server. By packaging libraries and dependencies together, we can prevent unknown issues from occurring since the environment is all the same.
+
+## Script/Integration Configuration
+Specifying which docker image to use is done in the Demisto IDE (Open: Settings -> Docker image name). If you don't specify a docker image, a default docker image using Python 2.7 is used. For new scripts and integrations, unless there is a specific reason not to use Python 2 (for example: a need to use a library which is not available for Python 3), we require using a Python 3 image. 
+
+**Note**: Starting in Demisto 5.0, you can specify in the Demisto IDE the Python version (2.7 or 3.x). Once you choose 3.x, the latest Demisto Python 3 Docker image will be selected automatically.
+
+The selected docker image is configured in the script/integration yaml file under the key: `dockerimage`. See: [Yaml File Overview](../yaml-file-integration/).
+
+## Updating Docker Images
+Starting with Demisto 5.0, it is possible to update the docker image of a script/integration. Demisto 4.5 and below doesn't support updating the docker image without creating a new script/integration (v2). Do update the docker image for Demisto 5.0 only and still generate a 4.5 version with the original 4.5 docker image, it is possible to add an additional configuration to the script/integration yaml file with the key: `dockerimage45`. This key should contain the docker image to use by Demisto 4.5 and below. When the key is present, the content creator script will generate two unified yaml files: one for Demisto 4.5 and below and one for 5.0 and above. For an example see: [Kafka V2 Integration](../../Integrations/Kafka_V2/Kafka_V2.yml).
 
 # Docker Images 
 
