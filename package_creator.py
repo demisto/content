@@ -80,7 +80,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_base64 = base64.b64encode(image_data)
     try:
         image_base64 = image_base64.decode('utf-8')
-    except:
+    except:  # noqa: E722
         # decode only relevant for python3
         pass
     image_data = IMAGE_PREFIX + image_base64
@@ -102,7 +102,7 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
     desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
     try:
         desc_data = desc_data.decode('utf-8')
-    except:
+    except:  # noqa: E722
         # decode only relevant for python3
         pass
 
