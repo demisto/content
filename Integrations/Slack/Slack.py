@@ -1332,9 +1332,12 @@ def send_file_to_destinations(destinations: list, file: dict, thread_id: str) ->
     """
     response: Optional[SlackResponse] = None
     body = {
-        'filename': file['name'],
-        'initial_comment': file['comment']
+        'filename': file['name']
     }
+
+    if 'comment' in file:
+        body['initial_comment'] = file['comment']
+
     for destination in destinations:
         body['channels'] = destination
         if thread_id:
