@@ -17,7 +17,7 @@ def display_time(seconds):
         value = seconds // count
         if value:
             seconds -= value * count
-            result.append("{}{}".format(value, name))
+            result.append(f'{value}{name}')
     return ' '.join(result)
 
 
