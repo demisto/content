@@ -41,7 +41,7 @@ ZIP_TEST = 'content_test'
 def is_ge_version(version1, version2):
     # fix the version to arrays of numbers
     version1 = [int(i) for i in str(version1).split('.')]
-    ver2 = [int(i) for i in str(version2).split('.')]
+    version2 = [int(i) for i in str(version2).split('.')]
 
     for ver1, ver2 in zip(version1, version2):
         if ver1 > ver2:
@@ -55,9 +55,9 @@ def is_ge_version(version1, version2):
 
 def add_tools_to_bundle(bundle):
     for directory in glob.glob(os.path.join('Tools', '*')):
-        zipf = zipfile.ZipFile(os.path.join(bundle, 'tools-%s.zip' % (os.path.basename(directory), )), 'w',
+        zipf = zipfile.ZipFile(os.path.join(bundle, f'tools-{os.path.basename(directory)}.zip'), 'w',
                                zipfile.ZIP_DEFLATED)
-        zipf.comment = '{ "system": true }'
+        zipf.comment = b'{ "system": true }'
         for root, _, files in os.walk(directory):
             for file in files:
                 zipf.write(os.path.join(root, file), file)
