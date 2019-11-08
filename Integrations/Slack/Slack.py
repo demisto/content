@@ -1294,7 +1294,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
 
     for destination in destinations:
         body['channel'] = destination
-        response = send_slack_request_sync(CLIENT, 'chat.postMessage', http_verb='GET', body=body)
+        response = send_slack_request_sync(CLIENT, 'chat.postMessage', body=body)
     return response
 
 
