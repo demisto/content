@@ -9,6 +9,7 @@ import yaml
 from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, SCRIPTS_DIR, INCIDENT_FIELDS_DIR, CLASSIFIERS_DIR, LAYOUTS_DIR, CONNECTIONS_DIR, \
     BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
+from Tests.test_utils import print_error
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml
 
 CONTENT_DIRS = [
@@ -39,6 +40,7 @@ ZIP_TEST = 'content_test'
 
 # server can't handle long file names
 MAX_FILE_NAME = 85
+PROBLEMATIC_FILES = []
 
 
 def is_ge_version(version1, version2):
@@ -86,7 +88,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     post_files = 0
     for path in scan_files:
         if len(path) >= MAX_FILE_NAME:
-            raise ValueError(f'File {path} is longer than {MAX_FILE_NAME}.')
+            PROBLEMATIC_FILES.append(path)
 
         with open(path, 'r') as file_:
             yml_info = yaml.safe_load(file_)
@@ -121,7 +123,7 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
             dpath = new_path
 
         if len(dpath) >= MAX_FILE_NAME:
-            raise ValueError(f'File {dpath} is longer than {MAX_FILE_NAME}.')
+            PROBLEMATIC_FILES.append(dpath)
 
         shutil.copyfile(path, os.path.join(bundle_post, dpath))
         shutil.copyfile(path, os.path.join(bundle_pre, dpath))
@@ -215,3 +217,7 @@ def test_version_compare(version_num):
 
 if __name__ == '__main__':
     main(sys.argv[1])
+    if PROBLEMATIC_FILES:
+        print_error(f'The following files exceeded to file name length limit of {MAX_FILE_NAME}:\n'
+                    f'{json.dumps(PROBLEMATIC_FILES, indent=4)}')
+        sys.exit(1)
