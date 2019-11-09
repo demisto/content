@@ -1,3 +1,4 @@
 ## [Unreleased]
   - Added the *fetchDelay* parameter to define time between ***fetch-incidents*** executions.
-  - ***fetch-incidents*** command now aggregates results (instead of messages).
+  - Added the *fetchRecords* parameter to fetch aggregate results (instead of messages).
+  - Updated the SumoLogic logo.
