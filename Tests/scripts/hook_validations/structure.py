@@ -1,3 +1,7 @@
+import re
+
+from Tests.test_utils import run_command
+
 try:
     from pykwalify.core import Core
 except ImportError:
@@ -35,6 +39,25 @@ class StructureValidator(object):
             (bool) is the scheme is valid
         """
         pass
+
+    def is_valid_fromversion_on_modified(self, change_string=None):
+        """Check that the fromversion property was not changed on existing Content files.
+
+        Args:
+            change_string (string): the string that indicates the changed done on the file(git diff)
+
+        Returns:
+            bool. Whether the files' fromversion as been modified or not.
+        """
+        pass
+
+    @staticmethod
+    def is_release_branch():
+        """Check if we are working on a release branch."""
+        diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
+        if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
+            return True
+        return False
 
     class Errors(object):
         @staticmethod
