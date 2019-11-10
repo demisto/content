@@ -36,7 +36,7 @@ tasks:
       id: 1bb42ce1-0326-4406-82dd-c9414d7ec4b6
       version: -1
       name: Fetch incidents
-      description: Execute FetchIncident for a given instance
+      description: Execute FetchIncident for a given instance.
       scriptName: FetchFromInstance
       type: regular
       iscommand: false
