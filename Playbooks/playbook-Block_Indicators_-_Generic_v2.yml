@@ -343,9 +343,9 @@ outputs:
 - contextPath: CheckpointFWRule.Type
   description: Rule Type.
 - contextPath: CheckpointFWRule.DestinationNegate
-  description: Rule destination negate status (Trus/False).
+  description: Rule destination negate status (True/False).
 - contextPath: CheckpointFWRule.Action
-  description: Rule action (Accept, Drop, Apply Layer, Ask, Info).
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
 - contextPath: CheckpointFWRule.Destination
   description: Rule Destination.
 - contextPath: CheckpointFWRule.ActionSetting
@@ -357,7 +357,7 @@ outputs:
 - contextPath: CheckpointFWRule.DataDirection
   description: Rule data direction.
 - contextPath: CheckpointFWRule.DataNegate
-  description: Rule data negate status (Trus/False).
+  description: Rule data negate status (True/False).
 - contextPath: CheckpointFWRule.Hits
   description: Rule hits count.
 - contextPath: PanoramaRule.Direction
