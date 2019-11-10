@@ -147,7 +147,7 @@ inputs:
 - key: EndpointId
   value: {}
   required: false
-  description: Traps endpoint ID to isolate.
+  description: Endpoint ID to isolate using Traps.
 outputs: []
 tests:
   - No Test
