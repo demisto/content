@@ -217,7 +217,7 @@ script:
       name: properties
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: DEPRECATED  - We recommend not useing this command since it will
       return a single page only, it is equivalent to msgraph-user-list command - Gets
       newly created, updated, or deleted users without performing a full read of the
