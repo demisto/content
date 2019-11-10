@@ -1017,5 +1017,5 @@ script:
       type: string
     description: Checks the status of a submission.
   runonce: false
-  tests:
-    - detonate_file_-_generic_test
+tests:
+  - detonate_file_-_generic_test
