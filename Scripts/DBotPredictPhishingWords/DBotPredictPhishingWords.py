@@ -1,15 +1,12 @@
 # pylint: disable=no-member
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 import demisto_ml
+
+from CommonServerPython import *
 
 
 def get_model_data(model_name, store_type):
     res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-
 
     if is_error(res_model_list) and not is_error(res_model):
         return res_model['Contents']['modelData']
@@ -32,7 +29,8 @@ def handle_error(message, is_return_error):
         sys.exit(1)
 
 
-def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold, word_threshold, top_word_limit, is_return_error):
+def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
+                           word_threshold, top_word_limit, is_return_error):
     model_data = get_model_data(model_name, model_store_type)
     model = demisto_ml.decode_model(model_data)
     text = "%s %s" % (email_subject, email_body)
