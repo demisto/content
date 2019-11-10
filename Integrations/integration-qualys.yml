@@ -155,7 +155,7 @@ script:
         'pcScanList':['scan_id','scan_ref','state','processed','type','target','user_login',
                         'launched_after_datetime','launched_before_datetime',
                             'show_ags','show_op','show_status','show_last'],
-        'pcScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header',
+        'pcScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header','iscanner_id',
                         'exclude_ip_per_scan','default_scanner','scanners_in_ag','target_from','tag_include_selector',
                         'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id'],
         'reportFetch': ['id'],
@@ -163,7 +163,7 @@ script:
                         'target', 'user_login', 'launched_after_datetime',
                         'launched_before_datetime', 'show_ags', 'show_op',
                         'show_status', 'show_last'],
-        'vmScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header',
+        'vmScanLaunch': ['scan_title','option_id','option_title','ip','asset_group_ids','asset_groups','runtime_http_header','iscanner_id',
                         'exclude_ip_per_scan','default_scanner','scanners_in_ag','target_from','tag_include_selector',
                         'tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude','use_ip_nt_range_tags','ip_network_id'],
         'vmScanAction': ['action','scan_ref'],
@@ -1244,6 +1244,9 @@ script:
         used in the “Qualys-Scan:” header that will be set for many CGI and web application
         fingerprinting checks. Some discovery and web server fingerprinting checks
         will not use this header.
+    - name: iscanner_id
+      description: The Id of the scanner appliance. A virtual or physical scanner appliance is needed for scanning IP addresses
+        within your internal network.
     description: ' launch vulnerability scans in the user’s account.'
   - name: qualys-vm-scan-action
     arguments:
@@ -1457,6 +1460,9 @@ script:
         used in the “Qualys-Scan:” header that will be set for many CGI and web application
         fingerprinting checks. Some discovery and web server fingerprinting checks
         will not use this header.
+    - name: iscanner_id
+      description: The Id of the scanner appliance. A virtual or physical scanner appliance is needed for scanning IP addresses
+        within your internal network.
     outputs:
     - contextPath: Qualys.Scan.ID
       description: Scan ID
