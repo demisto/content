@@ -1506,7 +1506,11 @@
         },
             {
             "playbookID": "Impossible Traveller - Test",
-            "integrations": "Ipstack",
+            "integrations": [
+            "Ipstack",
+            "Rasterize",
+            "Active Directory Query v2"
+            ],
             "fromversion": "4.5.0"
         },
         {
