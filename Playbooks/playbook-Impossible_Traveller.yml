@@ -21,13 +21,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '77'
+      - '62'
+      - '61'
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 570,
-          "y": -340
+          "y": -140
         }
       }
     note: false
@@ -116,16 +117,16 @@ tasks:
     ignoreworker: false
   '29':
     id: '29'
-    taskid: a7cac723-7751-4965-82b3-3b7aef3399dd
+    taskid: 09f24959-1fbf-4314-86e4-e187658d0df6
     type: regular
     task:
-      id: a7cac723-7751-4965-82b3-3b7aef3399dd
+      id: 09f24959-1fbf-4314-86e4-e187658d0df6
       version: -1
       name: Calculate geographical distance between logins
       description: Compute the distance between two sets of coordinates in miles.
       tags:
       - geodistance
-      script: CalculateGeoDistance
+      scriptName: CalculateGeoDistance
       type: regular
       iscommand: false
       brand: ''
@@ -157,17 +158,16 @@ tasks:
     ignoreworker: false
   '30':
     id: '30'
-    taskid: b5bc3e07-4832-4011-8bf0-cfde7b1fac7c
+    taskid: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
     type: regular
     task:
-      id: b5bc3e07-4832-4011-8bf0-cfde7b1fac7c
+      id: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
       version: -1
       name: Calculate time difference between logins
-      description: Calculates the time difference between the two user login times.
-        It returns it in minutes.
+      description: Calculate the time difference in minutes
       tags:
       - eventduration
-      script: CalculateTimeDifference
+      scriptName: CalculateTimeDifference
       type: regular
       iscommand: false
       brand: ''
@@ -933,22 +933,23 @@ tasks:
     ignoreworker: false
   '61':
     id: '61'
-    taskid: d51ea77c-af93-4651-8663-42ef5fee91ca
+    taskid: 96c82618-e6b7-4845-8919-9c426d70252b
     type: regular
     task:
-      id: d51ea77c-af93-4651-8663-42ef5fee91ca
+      id: 96c82618-e6b7-4845-8919-9c426d70252b
       version: -1
       name: Get previous login IP location information
       description: Gets geo-location information about the previous IP that the user
         logged in from.
-      script: Ipstack|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: Ipstack
+      brand: ''
     nexttasks:
       '#none#':
       - '50'
     scriptarguments:
+      days: {}
       fullResponse: {}
       include_inactive: {}
       ip:
@@ -961,6 +962,7 @@ tasks:
       retries: {}
       sampleSize: {}
       threshold: {}
+      verbose: {}
       wait: {}
     reputationcalc: 1
     separatecontext: false
@@ -976,18 +978,18 @@ tasks:
     ignoreworker: false
   '62':
     id: '62'
-    taskid: 159d78ec-43a3-49f5-8665-74f1fef01b10
+    taskid: cc0e79e3-1860-4fac-82aa-d3c1a9b71907
     type: regular
     task:
-      id: 159d78ec-43a3-49f5-8665-74f1fef01b10
+      id: cc0e79e3-1860-4fac-82aa-d3c1a9b71907
       version: -1
       name: Get login IP location information
       description: Gets geo-location information about the IP that the user logged
         in from.
-      script: Ipstack|||ip
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: Ipstack
+      brand: ''
     nexttasks:
       '#none#':
       - '50'
@@ -1977,87 +1979,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  '77':
-    id: '77'
-    taskid: e6fa5496-611b-4935-8a0f-a43b744250ae
-    type: condition
-    task:
-      id: e6fa5496-611b-4935-8a0f-a43b744250ae
-      version: -1
-      name: Is Ipstack enabled?
-      description: Checks whether the Ipstack integration is enabled.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '78'
-      'yes':
-      - '62'
-      - '61'
-    separatecontext: false
-    conditions:
-    - label: 'yes'
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Ipstack
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": -210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '78':
-    id: '78'
-    taskid: 937e4820-b0fd-46a5-8a85-c6a92a9c37a0
-    type: title
-    task:
-      id: 937e4820-b0fd-46a5-8a85-c6a92a9c37a0
-      version: -1
-      name: Cannot Retrieve Location
-      type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '54'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1470,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   '79':
     id: '79'
     taskid: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
@@ -2102,16 +2023,14 @@ view: |-
       "74_34_yes": 0.35,
       "74_75_#default#": 0.33,
       "75_34_Approval Granted": 0.63,
-      "75_76_Unapproved": 0.42,
-      "77_61_yes": 0.7,
-      "77_78_#default#": 0.44
+      "75_76_Unapproved": 0.42
     },
     "paper": {
       "dimensions": {
-        "height": 4755,
-        "width": 2740,
+        "height": 4555,
+        "width": 2390,
         "x": -890,
-        "y": -340
+        "y": -140
       }
     }
   }
