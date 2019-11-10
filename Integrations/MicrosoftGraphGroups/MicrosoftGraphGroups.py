@@ -31,6 +31,7 @@ def parse_outputs(groups_data: Dict[str, str]) -> Tuple[dict, dict]:
     """
     Parse group data as received from Microsoft Graph API into Demisto's conventions
     """
+    # Unnecessary fields, dropping as to not load the incident context.
     fields_to_drop = ['@odata.context', '@odata.nextLink', '@odata.deltaLink', '@odata.type', '@removed',
                       'resourceProvisioningOptions', 'securityIdentifier', 'onPremisesSecurityIdentifier',
                       'onPremisesNetBiosName', 'onPremisesProvisioningErrors', 'onPremisesSamAccountName',
@@ -137,8 +138,8 @@ class Client(BaseClient):
         if dbot_response.status_code not in {200, 201}:
             msg = 'Error in authentication. Try checking the credentials you entered.'
             try:
-                demisto.info('Authentication failure from server: {} {} {}'.format(
-                    dbot_response.status_code, dbot_response.reason, dbot_response.text))
+                demisto.info(f'Authentication failure from server: {dbot_response.status_code}'
+                             f' {dbot_response.reason} {dbot_response.text}')
                 err_response = dbot_response.json()
                 server_msg = err_response.get('message')
                 if not server_msg:
@@ -147,9 +148,9 @@ class Client(BaseClient):
                     if title:
                         server_msg = f'{title}. {detail}'
                 if server_msg:
-                    msg += ' Server message: {}'.format(server_msg)
+                    msg += f' Server message: {server_msg}'
             except Exception as ex:
-                demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+                demisto.error(f'Failed parsing error response - Exception: {ex}')
             raise Exception(msg)
         try:
             gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')

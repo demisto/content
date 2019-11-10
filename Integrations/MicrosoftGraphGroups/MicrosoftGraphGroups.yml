@@ -29,8 +29,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft Graph Groups provide the foundational membership service for
-  users to share conversations, files, notes, calendars, plans, and many other assets.
+description: Microsoft Graph Groups allows you to create and manage different types of groups and group functionality according to your scenario.
 display: Microsoft Graph Groups
 name: Microsoft Graph Groups
 script:
