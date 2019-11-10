@@ -358,20 +358,15 @@ class IntegrationValidator(object):
         Returns:
             bool. Whether the new dictionary is a sub set of the old dictionary.
         """
-       # print_warning("newDict: " + str(new_dict))
-       # print_warning("oldDict: " + str(old_dict))
         for arg, required in old_dict.items():
             if arg not in new_dict.keys():
-                print("1")
                 return False
 
             if required != new_dict[arg] and new_dict[arg]:
-                print("2")
                 return False
 
         for arg, required in new_dict.items():
             if arg not in old_dict.keys() and required:
-                print("3")
                 return False
 
         return True
