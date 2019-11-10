@@ -66,6 +66,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
+  description: Whether to to return error when there is no prediction
   isArray: false
   name: returnError
   predefined:
@@ -99,6 +100,7 @@ outputs:
     support the model decision.
   type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - ml
