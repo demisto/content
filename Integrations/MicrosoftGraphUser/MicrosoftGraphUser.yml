@@ -218,8 +218,10 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets newly created, updated, or deleted users without performing
-      a full read of the entire user collection.
+    description: DEPRECATED  - We recommend not useing this command since it will
+      return a single page only, it is equivalent to msgraph-user-list command - Gets
+      newly created, updated, or deleted users without performing a full read of the
+      entire user collection.
     execution: false
     name: msgraph-user-get-delta
     outputs:
@@ -317,6 +319,12 @@ script:
       name: properties
       required: false
       secret: false
+    - default: false
+      description: The URL for the next page in the list
+      isArray: false
+      name: next_page
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a list of user objects.
     execution: false
@@ -355,8 +363,13 @@ script:
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
       type: Unknown
+    - contextPath: MSGraphUser.NextPage
+      description: A token to be put to the next list command to get further results.
+      type: String
   dockerimage: demisto/crypto:1.0.0.303
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
   type: python
