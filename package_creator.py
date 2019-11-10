@@ -26,7 +26,7 @@ IMAGE_PREFIX = 'data:image/png;base64,'
 
 
 def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
-    """Write out the yaml file taking into account the dockerimage45 tag. 
+    """Write out the yaml file taking into account the dockerimage45 tag.
     If it is present will create 2 integration files
     One for 4.5 and below and one for 5.0.
 
@@ -53,7 +53,8 @@ def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
         else:
             yml_text45 = 'toversion: 4.5.9\n' + yml_text45
         if script_obj.get('dockerimage45'):  # we have a value for dockerimage45 set it as dockerimage
-            yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'), yml_text45, flags=re.MULTILINE)
+            yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'),
+                                yml_text45, flags=re.MULTILINE)
         else:  # no value for dockerimage45 remove the dockerimage entry
             yml_text45 = re.sub(r'^\s*dockerimage:.*\n?', '', yml_text45, flags=re.MULTILINE)
         output_path45 = re.sub(r'\.yml$', '_45.yml', output_path)

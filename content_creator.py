@@ -85,10 +85,10 @@ def copy_dir_yml(dir_name, bundle_post):
         with open(path, 'r') as f:
             yml_info = yaml.safe_load(f)
 
-        ver = yml_info.get('fromversion', '0')        
+        ver = yml_info.get('fromversion', '0')
         print ' - processing: %s (%s)' % (ver, path, )
         copy_yaml_post(path, os.path.join(bundle_post, os.path.basename(path)), yml_info)
-        post_files += 1     
+        post_files += 1
     print ' - total files: %d' % (post_files, )
 
 
@@ -103,7 +103,7 @@ def copy_dir_json(dir_name, bundle_post):
             if os.path.isfile(new_path):
                 raise NameError('Failed while trying to create {}. File already exists.'.format(new_path))
             dpath = new_path
-        shutil.copyfile(path, os.path.join(bundle_post, dpath))        
+        shutil.copyfile(path, os.path.join(bundle_post, dpath))
 
 
 def copy_dir_files(*args):
@@ -134,7 +134,7 @@ def main(circle_artifacts):
     print 'creating dir for bundles ...'
     for b in [BUNDLE_POST, BUNDLE_TEST]:
         os.mkdir(b)
-    
+
     add_tools_to_bundle(BUNDLE_POST)
 
     convert_incident_fields_to_array()
