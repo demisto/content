@@ -81,7 +81,7 @@ configuration:
   defaultvalue: UTC
   type: 0
   required: false
-- display: Fetch aggregate results (instead of messages)
+- display: Fetch aggregate records (instead of messages)
   name: fetchRecords
   defaultvalue: "false"
   type: 8
