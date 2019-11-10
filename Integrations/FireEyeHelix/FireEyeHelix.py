@@ -52,6 +52,7 @@ Attributes:
 INTEGRATION_NAME = 'FireEye Helix'
 INTEGRATION_COMMAND_NAME = 'fireeye-helix'
 INTEGRATION_CONTEXT_NAME = 'FireEyeHelix'
+DEFAULT_PAGE_SIZE = 30
 ALERTS_TRANS = {
     'id': 'ID',
     'alert_type.id': 'AlertTypeID',
@@ -298,7 +299,7 @@ class Client(BaseClient):
         """
         suffix = f'/api/v1/search'
         params = assign_params(query=query)
-        return self._http_request('GET', suffix, params=params, timeout=30)
+        return self._http_request('GET', suffix, params=params, timeout=DEFAULT_PAGE_SIZE)
 
     def archive_search_alert(self, query: str = None):
         """Searches for alerts based on query
@@ -348,7 +349,7 @@ class Client(BaseClient):
             Response from API.
         """
         suffix = f'/api/v1/search/archive/{search_id}/results'
-        return self._http_request('GET', suffix, timeout=30)
+        return self._http_request('GET', suffix, timeout=DEFAULT_PAGE_SIZE)
 
     def update_alert_by_id(self, body: Dict) -> Dict:
         """Updates a single alert by sending a POST request.
@@ -856,12 +857,13 @@ def build_search_groupby_result(aggregations: Dict, separator: str) -> List:
     return res
 
 
-def build_search_result(raw_response: dict, search_id: Union[str, int] = None):
+def build_search_result(raw_response: dict, search_id: Union[str, int] = None, headers: List = None):
     """Builds search result from search raw_response
 
     Args:
         raw_response: Search raw response
         search_id: Search ID (relevant for archive search)
+        headers: Headers to show in hr table
 
     Returns:
         Search result
@@ -882,7 +884,7 @@ def build_search_result(raw_response: dict, search_id: Union[str, int] = None):
                 context['Result'].append(create_context_result(hit.get('_source'), EVENTS_TRANS))  # type: ignore
         # Human readable value is ok for both no result found and result found cases
         hr = tableToMarkdown(f'{INTEGRATION_NAME} - Search result for {context["MQL"]}', context.get('Result'),
-                             ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
+                             headers,
                              headerTransform=pascalToSpace,
                              removeNull=True)
         # Group by results
@@ -1023,10 +1025,11 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    limit = int(args.get('limit') or 30)
+    limit = int(args.get('page_size') or DEFAULT_PAGE_SIZE)
+    headers = argToList(args.get('headers'))
     # api response for limit=0 is equivalent to limit=30
     if limit == 0:
-        limit = 30
+        limit = DEFAULT_PAGE_SIZE
     offset = int(args.get('offset') or 0)
     raw_response = client.list_alerts(limit=limit, offset=offset)
     alerts = raw_response.get('results')
@@ -1044,7 +1047,9 @@ def list_alerts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry,
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.Count).Count': count
         }
-        human_readable = tableToMarkdown(title, context_entry, ['ID', 'Name', 'Description', 'State', 'Severity'])
+        if not headers:
+            headers = ['ID', 'Name', 'Description', 'State', 'Severity']
+        human_readable = tableToMarkdown(title, context_entry, headers)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
@@ -1061,6 +1066,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         Outputs
     """
     _id = args.get('id')
+    headers = argToList(args.get('headers'))
     raw_response = client.get_alert_by_id(_id=_id)
     if raw_response:
         title = f'{INTEGRATION_NAME} - Alert {_id}:'
@@ -1068,7 +1074,7 @@ def get_alert_by_id_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
         context = {
             f'{INTEGRATION_CONTEXT_NAME}.Alert(val.ID && val.ID === obj.ID)': context_entry
         }
-        human_readable = tableToMarkdown(title, context_entry)
+        human_readable = tableToMarkdown(title, context_entry, headers=headers, removeNull=True)
         return human_readable, context, raw_response
     else:
         return f'{INTEGRATION_NAME} - Could not find any alerts.', {}, {}
@@ -1166,6 +1172,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
         Outputs
     """
     alert_id = args.get('alert_id')
+    headers = argToList(args.get('headers'))
     raw_response = client.get_events_by_alert(alert_id=alert_id)
     events = raw_response.get('results')
     if events:
@@ -1178,7 +1185,7 @@ def get_events_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, 
         }
         # Creating human readable for War room
         human_readable = tableToMarkdown(title, context_entry,
-                                         ['ID', 'Type', 'Result', 'EventTime', 'MatchedAt', 'Confidence'],
+                                         headers,
                                          headerTransform=pascalToSpace,
                                          removeNull=True)
         # Return data to Demisto
@@ -1229,7 +1236,7 @@ def get_cases_by_alert_command(client: Client, args: Dict) -> Tuple[str, Dict, D
         Outputs
     """
     alert_id = args.get('alert_id')
-    raw_response = client.get_cases_by_alert(alert_id=alert_id, limit=args.get('limit'), offset=args.get('offset'),
+    raw_response = client.get_cases_by_alert(alert_id=alert_id, limit=args.get('page_size'), offset=args.get('offset'),
                                              order_by=args.get('order_by'))
     cases = raw_response.get('results')
     if cases:
@@ -1262,7 +1269,7 @@ def get_lists_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     is_internal = args.get('is_internal')
     is_protected = args.get('is_protected')
     raw_response = client.get_lists(
-        limit=args.get('limit'),
+        limit=args.get('page_size'),
         offset=args.get('offset'),
         created_at=args.get('created_at'),
         description=args.get('description'),
@@ -1508,7 +1515,7 @@ def list_sensors_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     raw_response = client.list_sensors(
-        limit=int(args.get('limit') or 0),
+        limit=int(args.get('page_size') or 0),
         offset=int(args.get('offset') or 0),
         hostname=args.get('hostname'),
         status=args.get('status')
@@ -1537,7 +1544,7 @@ def list_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    limit = int(args.get('limit') or 30)
+    limit = int(args.get('page_size') or DEFAULT_PAGE_SIZE)
     offset = int(args.get('offset') or 0)
     raw_response = client.list_rules(
         limit=limit,
@@ -1609,7 +1616,8 @@ def search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     query = build_mql_query(**args)
     raw_response = client.search(query)
-    return build_search_result(raw_response)
+    headers = argToList(args.get('headers'))
+    return build_search_result(raw_response, headers=headers)
 
 
 def archive_search_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:

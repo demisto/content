@@ -100,7 +100,7 @@ def test_build_title_with_page_numbers_zero_div():
 
 
 @pytest.mark.parametrize('command,args,response,expected_result', [
-    (list_alerts_command, {'limit': 2}, ALERTS_RESP, EXPECTED_ALERTS_RSLT),
+    (list_alerts_command, {'page_size': 2}, ALERTS_RESP, EXPECTED_ALERTS_RSLT),
     (get_alert_by_id_command, {'id': 3232}, ALERT_RESP, EXPECTED_ALERT_RSLT),
     (get_alert_notes_command, {'id': 3232}, NOTES_GET_RESP, EXPECTED_NOTES_GET_RSLT),
     (create_alert_note_command, {'note': 'This is a note test', 'alert_id': 3232}, NOTES_CREATE_RESP,
@@ -108,7 +108,7 @@ def test_build_title_with_page_numbers_zero_div():
     (get_events_by_alert_command, {'alert_id': 3232}, EVENTS_BY_ALERT_RESP, EXPECTED_EVENTS_BY_ALERT_RSLT),
     (get_endpoints_by_alert_command, {'alert_id': 3232, 'offset': 0}, ENDPOINTS_BY_ALERT_RESP,
      EXPECTED_ENDPOINTS_BY_ALERT_RSLT),
-    (get_cases_by_alert_command, {'alert_id': 3232, 'offset': 0, 'limit': 1}, CASES_BY_ALERT_RESP,
+    (get_cases_by_alert_command, {'alert_id': 3232, 'offset': 0, 'page_size': 1}, CASES_BY_ALERT_RESP,
      EXPECTED_CASES_NY_ALERT_RSLT),
     (add_list_item_command, {'list_id': 3232, 'value': 'test', 'type': 'misc', 'risk': 'Low'}, LIST_SINGLE_ITEM_RESP,
      EXPECTED_SINGLE_LIST_ITEM_RSLT),

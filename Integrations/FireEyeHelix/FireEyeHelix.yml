@@ -51,13 +51,20 @@ script:
     - default: false
       description: Maximum number of results to return per page.
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
       description: The initial index from which to return the results.
       isArray: false
       name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Output values to display in the command result (comma seperated values, with no spaces
+        as they appear in the context. e.g. ID,Name,Hostname).
+      isArray: true
+      name: headers
       required: false
       secret: false
     deprecated: false
@@ -233,6 +240,13 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
+    - default: false
+      description: Output values to display in the command result (comma seperated values, with no spaces
+        as they appear in the context. e.g. ID,Name,Hostname).
+      isArray: true
+      name: headers
+      required: false
       secret: false
     deprecated: false
     description: Get alert by id.
@@ -447,6 +461,13 @@ script:
       name: alert_id
       required: true
       secret: false
+    - default: false
+      description: Output values to display in the command result (comma seperated values, with no spaces
+        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      isArray: true
+      name: headers
+      required: false
+      secret: false
     deprecated: false
     description: Lists alert events for a specific alert.
     execution: false
@@ -633,7 +654,7 @@ script:
     - default: false
       description: Number of results to return per page.
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -733,7 +754,7 @@ script:
     - default: false
       description: Number of results to return per page.
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -1193,7 +1214,7 @@ script:
     - default: false
       description: Max number of results to return per page.
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -1222,7 +1243,7 @@ script:
     - default: false
       description: Max number of results to return per page.
       isArray: false
-      name: limit
+      name: page_size
       required: false
       secret: false
     - default: false
@@ -1436,6 +1457,13 @@ script:
       description: Number of events to search.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Output values to display in the command result (comma seperated values, with no spaces
+        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      isArray: true
+      name: headers
       required: false
       secret: false
     deprecated: false
@@ -1781,6 +1809,13 @@ script:
       isArray: false
       name: search_id
       required: true
+      secret: false
+    - default: false
+      description: Output values to display in the command result (comma seperated values, with no spaces
+        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      isArray: true
+      name: headers
+      required: false
       secret: false
     deprecated: false
     description: Fetches archive search results.
