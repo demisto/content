@@ -1,7 +1,9 @@
-from CommonServerPython import *
 from collections import defaultdict
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words
+
 import pytest
+
+from CommonServerPython import *
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words
 
 
 def get_args():
@@ -77,7 +79,6 @@ def test_predict_phishing_words_no_words(mocker):
     mocker.patch('demisto_ml.filter_model_words', return_value=("", 10), create=True)
     with pytest.raises(SystemExit):
         predict_phishing_words("modelName", "list", "subject", "body", 20, 0, 0, 10, True)
-
 
 
 def test_predict_phishing_words_hashed(mocker):
