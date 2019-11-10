@@ -1,0 +1,81 @@
+category: Authentication
+commonfields:
+  id: infoblox
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: User Name
+  name: user
+  required: false
+  type: 9
+- display: Password
+  name: password
+  required: false
+  type: 4
+- defaultvalue: 'true'
+  display: Trust any certificate (insecure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy
+  name: proxy
+  required: false
+  type: 8
+description: Integration Template
+display: infoblox
+name: infoblox
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: 'This is a list argument, please provide comma separated list (example:
+        "1,2,3"). This item is mandatory so it must be provided in order to use the
+        command.'
+      isArray: true
+      name: item_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Get only active items, acts as boolean
+      isArray: false
+      name: is_active
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: limit number of returned results, to avoid flooding context
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get items from service.
+    execution: false
+    name: example-get-items
+    outputs:
+    - contextPath: Example.Item.ID
+      description: Item ID
+      type: number
+    - contextPath: Example.Item.Name
+      description: Item name
+      type: string
+    - contextPath: Example.Item.CreatedDate
+      description: Item creation date
+      type: date
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
