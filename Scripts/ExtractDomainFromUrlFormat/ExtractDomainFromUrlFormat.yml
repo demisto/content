@@ -8,7 +8,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: True if extract FQDN is needed
+  description: Whether to extract the FQDN. Default is false.
   isArray: false
   name: extractFQDN
   predefined:
@@ -16,7 +16,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Extract Domain(s) from URL(s) and/or Email(s)
+comment: Extract domains from URLs and emails.
 commonfields:
   id: ExtractDomainFromUrlAndEmail
   version: -1
