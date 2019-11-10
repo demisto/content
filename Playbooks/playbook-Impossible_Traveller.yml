@@ -125,7 +125,7 @@ tasks:
       description: Compute the distance between two sets of coordinates in miles.
       tags:
       - geodistance
-      scriptName: CalculateGeoDistance
+      script: 75b05f2f-5572-40aa-8fa5-950f5ffa885a
       type: regular
       iscommand: false
       brand: ''
@@ -167,7 +167,7 @@ tasks:
         It returns it in minutes.
       tags:
       - eventduration
-      scriptName: CalculateTimeDifference
+      script: 00bead21-9499-4171-84d2-3a2ce1c347d8
       type: regular
       iscommand: false
       brand: ''
@@ -227,13 +227,13 @@ tasks:
     ignoreworker: false
   '34':
     id: '34'
-    taskid: 6e05a17e-7597-4197-8d70-e726fc214c8b
+    taskid: a1c09ea2-4966-47ff-868e-5e412effa507
     type: regular
     task:
-      id: 6e05a17e-7597-4197-8d70-e726fc214c8b
+      id: a1c09ea2-4966-47ff-868e-5e412effa507
       version: -1
       name: Disable user account
-      description: "Disables the account of the offending user, using Active Directory."
+      description: Disables the account of the offending user, using Active Directory.
       script: '|||ad-disable-account'
       type: regular
       iscommand: true
@@ -518,19 +518,20 @@ tasks:
     ignoreworker: false
   '38':
     id: '38'
-    taskid: ffced627-05eb-41cc-8334-1181be8240cc
+    taskid: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
     type: condition
     task:
-      id: ffced627-05eb-41cc-8334-1181be8240cc
+      id: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
       version: -1
-      name: Should the source IPs be blocked?
-      description: "Checks whether the source IPs that the user used to login from, can be blocked automatically, according to the playbook inputs."
+      name: Should the source IPs be blocked automatically?
+      description: Checks whether the source IPs that the user used to login from,
+        can be blocked automatically, according to the playbook inputs.
       type: condition
       iscommand: false
       brand: ''
     nexttasks:
       '#default#':
-      - '70'
+      - '79'
       'yes':
       - '71'
     separatecontext: false
@@ -793,7 +794,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
+          "x": 1120,
           "y": 1370
         }
       }
@@ -1693,13 +1694,13 @@ tasks:
     ignoreworker: false
   '70':
     id: '70'
-    taskid: c6fab3c4-cc45-46b1-8101-a78525857747
+    taskid: bfe4ebc4-f732-4e64-875a-2f836d058242
     type: regular
     task:
-      id: c6fab3c4-cc45-46b1-8101-a78525857747
+      id: bfe4ebc4-f732-4e64-875a-2f836d058242
       version: -1
       name: Close investigation
-      description: "Closes the investigation."
+      description: Closes the investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1719,8 +1720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 4280
+          "x": 600,
+          "y": 4320
         }
       }
     note: false
@@ -1880,13 +1881,14 @@ tasks:
     ignoreworker: false
   '74':
     id: '74'
-    taskid: eedc9840-1e89-4489-8483-0adb794aa3c9
+    taskid: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
     type: condition
     task:
-      id: eedc9840-1e89-4489-8483-0adb794aa3c9
+      id: 2a735eb6-0f6f-4b71-8415-b8e3eab1d9bd
       version: -1
       name: Can the user be disabled automatically?
-      description: "Checks whether the user can be disabled automatically, as configured in the playbook inputs."
+      description: Checks whether the user can be disabled automatically, as configured
+        in the playbook inputs.
       type: condition
       iscommand: false
       brand: ''
@@ -1950,13 +1952,14 @@ tasks:
     ignoreworker: false
   '76':
     id: '76'
-    taskid: 3a260e5c-34aa-4887-8e73-6a8c38d00487
+    taskid: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
     type: regular
     task:
-      id: 3a260e5c-34aa-4887-8e73-6a8c38d00487
+      id: 03607bd4-a69c-4ffe-8800-aa190cdf53c1
       version: -1
-      name: Manually contain the incident
-      description: Please take manual steps to contain the incident.
+      name: Manually disable user account
+      description: Please take manual steps to disable the user account, or expire
+        his or her password.
       type: regular
       iscommand: false
       brand: ''
@@ -2055,13 +2058,39 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  '79':
+    id: '79'
+    taskid: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+    type: regular
+    task:
+      id: 9a9e3f9d-a33c-4e62-8c5f-d361b3a3bf9f
+      version: -1
+      name: Manually block IPs
+      description: Please take manual steps to block the offending IPs.
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '70'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
       "17_19_yes": 0.59,
-      "17_51_#default#": 0.54,
-      "38_70_#default#": 0.21,
+      "17_51_#default#": 0.46,
       "38_71_yes": 0.35,
+      "52_54_#default#": 0.43,
       "52_58_yes": 0.84,
       "52_59_yes": 0.9,
       "63_66_#default#": 0.18,
@@ -2079,7 +2108,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4715,
+        "height": 4755,
         "width": 2740,
         "x": -890,
         "y": -340

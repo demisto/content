@@ -4,8 +4,8 @@ from CommonServerUserPython import *
 import datetime
 
 entries = []
-start_time = demisto.args()['start_time'].replace('"','')
-end_time = demisto.args()['end_time'].replace('"','')
+start_time = demisto.args()['start_time'].replace('"', '')
+end_time = demisto.args()['end_time'].replace('"', '')
 
 try:
     # Strip microseconds and convert to datetime object
@@ -13,12 +13,12 @@ try:
     end_time_obj = datetime.datetime.strptime(end_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
     # Calculate the difference in minutes
     time_diff = end_time_obj - start_time_obj
-    mins = round((time_diff.total_seconds() / 60),2)
+    mins = round((time_diff.total_seconds() / 60), 2)
 
     entries.append({
         "Type": entryTypes['note'],
         "Contents": mins,
-        "ContentsFormat" : formats['text'],
+        "ContentsFormat": formats['text'],
         "HumanReadable": "Calculated Time Difference: {} minutes.".format(str(mins)),
         "EntryContext": {
             "Time.Difference": mins,

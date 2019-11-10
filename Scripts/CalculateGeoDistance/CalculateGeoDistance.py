@@ -20,11 +20,11 @@ try:
     entries.append({
         "Type": entryTypes['note'],
         "Contents": geo_distance,
-        "ContentsFormat" : formats['text'],
+        "ContentsFormat": formats['text'],
         "HumanReadable": "Calculated Distance: {} miles.".format(str(geo_distance)),
         "EntryContext": {
             "Geo.Distance": geo_distance,
-            "Geo.Coordinates": [src_coords,dest_coords]
+            "Geo.Coordinates": [src_coords, dest_coords]
         }
     })
 
