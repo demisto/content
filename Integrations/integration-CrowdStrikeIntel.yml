@@ -871,5 +871,6 @@ script:
       description: The ID of the report to retrieve
     description: Retrieve the Falcon Intel Report PDF
   runonce: false
+fromversion: 3.5.0
 tests:
 - CrowdStrike Falcon Intel v2

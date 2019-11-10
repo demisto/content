@@ -1,6 +1,7 @@
 import re
 
 # dirs
+PACKS_DIR = 'Packs'
 INTEGRATIONS_DIR = 'Integrations'
 SCRIPTS_DIR = 'Scripts'
 PLAYBOOKS_DIR = 'Playbooks'
@@ -51,6 +52,24 @@ IMAGE_REGEX = r'.*\.png$'
 DESCRIPTION_REGEX = r'.*\.md'
 CONF_REGEX = 'Tests/conf.json'
 SCHEMA_REGEX = 'Tests/schemas/.*.yml'
+
+PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/\2\.py'.format(PACKS_DIR)  # Ignores tests
+PACKS_INTEGRATION_TEST_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/\2_test\.py'.format(PACKS_DIR)
+PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/([^.]+)\.yml'.format(PACKS_DIR)
+PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/([^.]+)\.yml'.format(PACKS_DIR)
+PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/\2\.py'.format(PACKS_DIR)  # Ignores tests
+PACKS_SCRIPT_TEST_PY_REGEX = r'{}/([^/]+)/Scripts/([^/]+)/\2_test\.py'.format(PACKS_DIR)
+PACKS_PLAYBOOK_YML_REGEX = r'{}/([^/]+)/Playbooks/([^.]+)\.yml'.format(PACKS_DIR)
+PACKS_TEST_PLAYBOOKS_REGEX = r'{}/([^/]+)/TestPlaybooks/([^.]+)\.yml'.format(PACKS_DIR)
+PACKS_CLASSIFIERS_REGEX = r'{}/([^/]+)/Classifiers/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_DASHBOARDS_REGEX = r'{}/([^/]+)/Dashboards/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_INCIDENTTYPES_REGEX = r'{}/([^/]+)/IncidentTypes/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_INCIDENTFIELDS_REGEX = r'{}/([^/]+)/IncidentFields/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_LAYOUTS_REGEX = r'{}/([^/]+)/Layouts/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_WIDGETS_REGEX = r'{}/([^/]+)/Widgets/([^.]+)\.json'.format(PACKS_DIR)
+PACKS_CHANGELOG_REGEX = r'{}/([^/]+)/CHANGELOG\.md'.format(PACKS_DIR)
+PACKS_README_REGEX = r'{}/([^/]+)/README\.md'.format(PACKS_DIR)
+PACKS_PACKAGEMETA_REGEX = r'{}/([^/]+)/package-meta\.json'.format(PACKS_DIR)
 
 SCRIPT_TYPE_REGEX = '.*script-.*.yml'
 SCRIPT_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(SCRIPTS_DIR)

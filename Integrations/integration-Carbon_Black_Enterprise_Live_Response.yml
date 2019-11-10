@@ -2665,5 +2665,6 @@ script:
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
   runonce: false
+fromversion: 4.0.0
 tests:
   - CarbonBlackLiveResponseTest

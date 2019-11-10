@@ -2266,5 +2266,6 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
+fromversion: 3.5.0
 tests:
   - ThreatGridTest
