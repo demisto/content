@@ -186,7 +186,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         message_delivered = raw_events.get("messagesDelivered", [])
         for raw_event in message_delivered:
             raw_event["type"] = "messages delivered"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
@@ -197,7 +197,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         message_blocked = raw_events.get("messagesBlocked", [])
         for raw_event in message_blocked:
             raw_event["type"] = "messages blocked"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
@@ -208,7 +208,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         clicks_permitted = raw_events.get("clicksPermitted", [])
         for raw_event in clicks_permitted:
             raw_event["type"] = "clicks permitted"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
@@ -220,7 +220,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         clicks_blocked = raw_events.get("clicksBlocked", [])
         for raw_event in clicks_blocked:
             raw_event["type"] = "clicks blocked"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
