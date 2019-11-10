@@ -44,12 +44,8 @@ script: |-
         }
         // Not Proofpoint so just un-escape
         if (v === 0) {
-            //Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-            var url = input.replace(/\[\.\]/g, '.').replace(/hxxp/i, 'http').replace(/&amp;/g, '&').replace(/http:\\\\/g, 'http://')
+            var url = input.replace(/\[\.\]/g, '.').replace(/hxxp/i, 'http').replace(/&amp;/g, '&');
             // Normalize the URL with http prefix
-            if (url.search(/http:/i) === 0 && url.search(/http:\/\//i) !== 0) {
-                url = url.replace(/http:/i, 'http://')
-            }
             if (url.search(/http/i) !== 0 && url.search(/ftp/i) !== 0) {
                 return 'http://' + url;
             }
