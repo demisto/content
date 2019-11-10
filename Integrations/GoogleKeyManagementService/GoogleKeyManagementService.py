@@ -103,6 +103,8 @@ def clear_label_commas(labels: Any):
 
     cleared_labels = {}  # type:Dict
     for label in labels.keys():
+        # A label key can come in the form of: 'info' or _'info' (with an extra space)
+        # The following check is whether to drop the first 2 characters or just one
         if str(label).startswith(' '):
             cleared_label_key = label[2:-1]
 
@@ -495,9 +497,8 @@ def symmetric_encrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
     elif args.get('entry_id'):
         file = demisto.getFilePath(args.get('entry_id'))
         file_path = file['path']
-        fp = open(file_path, 'rb')
-        plaintext = base64.b64encode(fp.read())
-        fp.close()
+        with open(file_path, 'rb') as fp:
+            plaintext = base64.b64encode(fp.read())
 
     else:
         raise ValueError("No object to encrypt.")
@@ -554,9 +555,8 @@ def symmetric_decrypt_key_command(client: Client, args: Dict[str, Any]) -> Tuple
     elif args.get('entry_id'):
         file = demisto.getFilePath(args.get('entry_id'))
         file_path = file['path']
-        fp = open(file_path, 'rb')
-        ciphertext = base64.b64decode(fp.read())
-        fp.close()
+        with open(file_path, 'rb') as fp:
+            ciphertext = base64.b64decode(fp.read())
 
     else:
         raise ValueError("No object to decrypt.")
@@ -850,9 +850,8 @@ def asymmetric_encrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     elif args.get('entry_id'):
         file = demisto.getFilePath(args.get('entry_id'))
         file_path = file['path']
-        fp = open(file_path, 'rb')
-        plaintext = base64.b64encode(fp.read())
-        fp.close()
+        with open(file_path, 'rb') as fp:
+            plaintext = base64.b64encode(fp.read())
 
     else:
         raise ValueError("No object to encrypt.")
@@ -934,9 +933,8 @@ def asymmetric_decrypt_command(client: Client, args: Dict[str, Any]) -> Tuple[st
     elif args.get('entry_id'):
         file = demisto.getFilePath(args.get('entry_id'))
         file_path = file['path']
-        fp = open(file_path, 'rb')
-        ciphertext = base64.b64decode(fp.read())
-        fp.close()
+        with open(file_path, 'rb') as fp:
+            ciphertext = base64.b64decode(fp.read())
 
     else:
         raise ValueError("No object to decrypt.")
