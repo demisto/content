@@ -210,7 +210,7 @@ class Client(BaseClient):
 
         except TypeError as ex:
             demisto.debug(str(ex))
-            return_error(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
+            raise Exception(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
 
     def test_function(self):
         token = self.get_access_token()
@@ -227,15 +227,15 @@ class Client(BaseClient):
         try:
             data = response.json() if response.text else {}
             if not response.ok:
-                return_error(f'API call to MS Graph failed. Please check authentication related parameters.'
-                             f' [{response.status_code}] - {demisto.get(data, "error.message")}')
+                raise Exception(f'API call to MS Graph failed. Please check authentication related parameters.'
+                                f' [{response.status_code}] - {demisto.get(data, "error.message")}')
 
             demisto.results('ok')
 
         except TypeError as ex:
             demisto.debug(str(ex))
-            return_error(f'API call to MS Graph failed, could not parse result. '
-                         f'Please check authentication related parameters. [{response.status_code}]')
+            raise Exception(f'API call to MS Graph failed, could not parse result. '
+                            f'Please check authentication related parameters. [{response.status_code}]')
 
     def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
         params = {'$orderby': order_by} if order_by else {}
