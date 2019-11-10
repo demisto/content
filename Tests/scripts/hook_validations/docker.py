@@ -184,6 +184,7 @@ def parse_docker_image(docker_image: str) -> Tuple[str, str]:
             name = re.findall(r'demisto\/.+:(.+)', docker_image, re.IGNORECASE)[0]
             return name, tag
         except IndexError:
+            # TODO: Check if need to raise Exception
             print_error("the docker image isn't of format - demisto/image_name:0.0.0")
             return '', ''
     else:
@@ -208,4 +209,3 @@ class DockerImageValidator(object):
             if docker_image_latest_tag != self.docker_image_tag:
                 self.is_latest_tag = False
         return self.is_latest_tag
-
