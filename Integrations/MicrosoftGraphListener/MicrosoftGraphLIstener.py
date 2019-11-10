@@ -966,10 +966,10 @@ def main():
             human_readable, ec, raw_response = client.create_draft(**args)
             return_outputs(human_readable, ec, raw_response)
         elif command == 'msgraph-mail-reply-to':
-            human_readable = client.reply_to(**args)
+            human_readable = client.reply_to(**args)  # pylint: disable=E1123
             return_outputs(human_readable)
         elif command == 'msgraph-mail-send-draft':
-            human_readable = client.send_draft(**args)
+            human_readable = client.send_draft(**args)  # pylint: disable=E1123
             return_outputs(human_readable)
         elif command == 'send-mail':
             human_readable, ec = client.send_email(**args)
