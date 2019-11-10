@@ -1,5 +1,3 @@
-import pytest
-
 bad_response = {
     'base': {
         'ref': 'master'
