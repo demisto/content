@@ -1940,7 +1940,6 @@
         "ssdeepreputationtest": "Issue 19845",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Intezer Testing": "Issue 19853",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
