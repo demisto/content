@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The URL(s) or Email(s) to process
+  description: The URLs or emails to process.
   isArray: true
   name: input
   required: false
@@ -16,7 +16,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Extract domains from URLs and emails.
+comment: Extracts domains from URLs and emails.
 commonfields:
   id: ExtractDomainFromUrlAndEmail
   version: -1
