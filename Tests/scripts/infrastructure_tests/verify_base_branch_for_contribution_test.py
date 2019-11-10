@@ -11,7 +11,7 @@ good_response = {
 }
 
 
-def test_check_base_branch(requests_mock):
+def test_verify_base_branch(requests_mock):
     url = 'https://api.github.com/repos/demisto/content/pulls/528'
     from Tests.scripts.verify_base_branch_for_contribution import verify_base_branch
     requests_mock.get(url, json=bad_response)
