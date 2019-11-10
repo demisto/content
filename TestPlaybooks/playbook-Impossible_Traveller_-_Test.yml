@@ -22,7 +22,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 70
         }
       }
     note: false
@@ -43,6 +43,8 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+      - "9"
+      - "10"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -225,7 +227,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 350
+          "y": 370
         }
       }
     note: false
@@ -233,10 +235,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 680e69d9-90d1-4e28-8681-d36cd5318888
+    taskid: 615ff182-d323-43c5-8958-7aa393d6d058
     type: regular
     task:
-      id: 680e69d9-90d1-4e28-8681-d36cd5318888
+      id: 615ff182-d323-43c5-8958-7aa393d6d058
       version: -1
       name: Delete context
       description: Delete field from context
@@ -254,13 +256,12 @@ tasks:
       key: {}
       keysToKeep: {}
       subplaybook: {}
-    reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 190
+          "y": 210
         }
       }
     note: false
@@ -280,64 +281,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "7"
     separatecontext: true
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 7b8dd237-2ec4-42a7-856d-3a715ff3b8fc
-    type: condition
-    task:
-      id: 7b8dd237-2ec4-42a7-856d-3a715ff3b8fc
-      version: -1
-      name: Was trip data detected?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "yes":
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: previouscoordinates
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: coordinates
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: previoussignindatetime
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 720
+          "y": 540
         }
       }
     note: false
@@ -345,10 +295,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 75b4f2ac-8b0e-4be7-8119-158893f2fb9a
+    taskid: c129e988-4dc1-4886-8a99-62b88c42f943
     type: title
     task:
-      id: 75b4f2ac-8b0e-4be7-8119-158893f2fb9a
+      id: c129e988-4dc1-4886-8a99-62b88c42f943
       version: -1
       name: Done
       type: title
@@ -359,22 +309,23 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1090
+          "y": 760
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 4e1aa533-a14a-46dd-88ce-4d1a370999de
+  "9":
+    id: "9"
+    taskid: c2c80c34-9f64-49b1-8284-604ecd4a8297
     type: regular
     task:
-      id: 4e1aa533-a14a-46dd-88ce-4d1a370999de
+      id: c2c80c34-9f64-49b1-8284-604ecd4a8297
       version: -1
-      name: Raise error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
+      name: Automatically unapprove user disable
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      scriptName: ScheduleCommand
       type: regular
       iscommand: false
       brand: ""
@@ -382,16 +333,57 @@ tasks:
       '#none#':
       - "7"
     scriptarguments:
-      message:
-        simple: Not all expected values were retrieved about the impossible traveller.
-          Maybe Ipstack quota error, or IP geo location not found anymore.
+      command:
+        simple: '!CompleteManualTask id=${incident.id} type=condition closing_option=UNAPPROVED'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "10"
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 870,
-          "y": 920
+          "x": 880,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 21c43a27-3352-4272-8093-cea11b552409
+    type: regular
+    task:
+      id: 21c43a27-3352-4272-8093-cea11b552409
+      version: -1
+      name: Automatically close manual investigation
+      description: Schedule a command to run inside the war room at a future time
+        (once or reoccurring)
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/3 * * * *'
+      endDate: {}
+      times:
+        simple: "2"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 540
         }
       }
     note: false
@@ -399,15 +391,13 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "6_7_yes": 0.53
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1105,
-        "width": 800,
-        "x": 450,
-        "y": 50
+        "height": 755,
+        "width": 1270,
+        "x": -10,
+        "y": 70
       }
     }
   }
