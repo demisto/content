@@ -743,7 +743,7 @@ class MsGraphClient(BaseClient):
         :rtype: ``list``
         """
 
-        attachment_results = []
+        attachment_results = []  # type: ignore
         suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
         attachments = self._http_request('Get', suffix_endpoint).get('value', [])
 
