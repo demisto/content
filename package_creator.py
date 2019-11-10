@@ -8,6 +8,7 @@ import yaml
 import base64
 import argparse
 import re
+from Tests.test_utils import server_version_compare
 
 IS_CI = os.getenv('CI', False)
 
@@ -45,10 +46,16 @@ def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
         yml_text = re.sub(r'^\s*dockerimage45:.*\n?', '', yml_text, flags=re.MULTILINE)  # remove the dockerimage45 line
         yml_text45 = yml_text
         if 'fromversion' in yml_data:
+            # validate that this is a script/integration which targets both 4.5 and 5.0+.
+            if server_version_compare(yml_data['fromversion'], '5.0.0') >= 0:
+                raise ValueError('Failed: {}. dockerimage45 set for 5.0 and later only'.format(output_path))
             yml_text = re.sub(r'^fromversion:.*$', 'fromversion: 5.0.0', yml_text, flags=re.MULTILINE)
         else:
             yml_text = 'fromversion: 5.0.0\n' + yml_text
         if 'toversion' in yml_data:
+            # validate that this is a script/integration which targets both 4.5 and 5.0+.
+            if server_version_compare(yml_data['toversion'], '5.0.0') < 0:
+                raise ValueError('Failed: {}. dockerimage45 set for 4.5 and earlier only'.format(output_path))
             yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text45, flags=re.MULTILINE)
         else:
             yml_text45 = 'toversion: 4.5.9\n' + yml_text45
