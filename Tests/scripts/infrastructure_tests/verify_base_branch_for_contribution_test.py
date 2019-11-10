@@ -19,6 +19,7 @@ def test_check_base_branch(requests_mock, capsys):
     requests_mock.get(url, json=bad_response)
     with pytest.raises(SystemExit) as se:
         check_base_branch('528')
+        assert 'p' == 'k'
         out, _ = capsys.readouterror()
         assert 'Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.' in out
         assert se.value.code == 1
