@@ -14,22 +14,15 @@ try:
     time_diff = end_time_obj - start_time_obj
     mins = round((time_diff.total_seconds() / 60), 2)
 
-    entries.append({
-        "Type": entryTypes['note'],
-        "Contents": mins,
-        "ContentsFormat": formats['text'],
-        "HumanReadable": "Calculated Time Difference: {} minutes.".format(str(mins)),
-        "EntryContext": {
-            "Time.Difference": mins,
-            "Time.Start": start_time,
-            "Time.End": end_time
-        }
-    })
+    hr = 'Calculated Time Difference: {} minutes.'.format(str(mins))
+    context = {
+        "Time.Difference": mins,
+        "Time.Start": start_time,
+        "Time.End": end_time
+    }
+
+    return_outputs(hr, context, mins)
+
 
 except Exception as ex:
-    entries.append({
-        "Type": entryTypes["error"],
-        "ContentsFormat": formats["text"],
-        "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex)
-    })
-demisto.results(entries)
+    return_error('Error occurred while parsing output from command. Exception info:\n' + str(ex))

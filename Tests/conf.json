@@ -1507,9 +1507,9 @@
             {
             "playbookID": "Impossible Traveller - Test",
             "integrations": [
-            "Ipstack",
-            "Rasterize",
-            "Active Directory Query v2"
+                "Ipstack",
+                "Rasterize",
+                "Active Directory Query v2"
             ],
             "fromversion": "4.5.0",
             "timeout": 300
