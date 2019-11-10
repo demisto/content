@@ -7,7 +7,7 @@
   "widgetType": "text",
   "query": "",
   "fromVersion": "5.0.0",
-  "description": "page break widget that can be placed within a report to cause a page break on all widget after it",
+  "description": "page break widget can be placed within a report to cause a page break before all widgets after it",
   "isPredefined": true,
   "dateRange": {
     "period": {
