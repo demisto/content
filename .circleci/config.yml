@@ -2,31 +2,49 @@ version: 2
 jobs:
   build:
     docker:
-      - image: devdemisto/content-build-2and3:2.0.0.1785  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.10.0"
+      CONTENT_VERSION: "19.10.2"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "f2e65c13c84a348d0d8c52804a45398a4639afee" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
       - run:
           name: Prepare Environment
           when: always
           command: |
               echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
-              echo 'export PATH="/home/circleci/.pyenv/shims:/home/circleci/.local/bin:/home/circleci/.pyenv/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+              echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
               echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
               echo "=== sourcing $BASH_ENV ==="
               source $BASH_ENV
               sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
               chmod +x ./Tests/scripts/*
               chmod +x ./Tests/lastest_server_build_scripts/*
-              pyenv versions
+              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+              if [ ! -e "venv" ]; then
+                echo "installing venv"
+                NO_HOOKS=1 .hooks/bootstrap
+                source ./venv/bin/activate
+                pip install -r .circleci/build-requirements.txt
+                pip3 install -r .circleci/build-requirements.txt
+              else
+                echo "venv exists (from cache). activating"
+                source ./venv/bin/activate
+              fi
+              # store in bash env so we load our venv in each step
+              echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
               python --version
               python3 --version
-              echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+      - save_cache:
+          paths:
+            - venv
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+
       - add_ssh_keys:
           fingerprints:
               - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
@@ -40,16 +58,16 @@ jobs:
           name: Infrastucture testing
           when: always
           command: |
-            pytest ./Tests/scripts/hook_validations/tests/ -v
-            pytest ./Tests/scripts/infrastructure_tests/ -v
-            pytest ./Tests/scripts/test_configure_tests.py -v
+            python -m pytest ./Tests/scripts/hook_validations/tests/ -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
           when: always
           command: |
               # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
               ./Tests/scripts/pyflake.sh *.py
-              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations  \) | xargs ./Tests/scripts/pyflake.sh
+              find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
@@ -89,6 +107,14 @@ jobs:
           name: Run Unit Testing and Lint
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+      - run:
+          name: Verify Base Branch for Contirbution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - run:
           name: Download Artifacts
           when: always
@@ -223,6 +249,11 @@ jobs:
               else
                 echo "Not AMI run, can't run on this version"
             fi
+            cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
@@ -231,7 +262,7 @@ jobs:
               echo "Skipping instance tests for forked PRs"
               exit 0
             fi
-            ./Tests/scripts/slack_notifier.sh
+            ./Tests/scripts/slack_notifier.sh ./env_results.json
           when: always
       - run:
           name: Validate Docker Images
@@ -255,6 +286,10 @@ jobs:
               exit 0
             fi
             python ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json
+
+            export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
+            zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log
+            rm -f $CIRCLE_ARTIFACTS/server*.log
           when: always
       - store_artifacts:
           path: artifacts

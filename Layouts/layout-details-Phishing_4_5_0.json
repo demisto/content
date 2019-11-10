@@ -103,6 +103,27 @@
 				"queryType": ""
 			},
 			{
+				"description": "Critical Assets that were found, at the investigation stage, to be involved in the incident.",
+				"fields": [
+					{
+						"fieldId": "incident_criticalassets",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
+					}
+				],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "Involved Critical Assets",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": "",
+				"version": 0
+			},
+			{
 				"id": "",
 				"version": 0,
 				"modified": "0001-01-01T00:00:00Z",

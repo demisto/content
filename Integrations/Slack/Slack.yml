@@ -24,6 +24,7 @@ configuration:
   display: Minimum incident severity to send messages to slack by
   name: min_severity
   options:
+  - Unknown
   - Low
   - Medium
   - High
@@ -53,6 +54,14 @@ configuration:
   name: longRunning
   required: false
   type: 8
+- display: Bot display name in Slack (Demisto Integration by default)
+  name: bot_name
+  required: false
+  type: 0
+- display: Bot icon in Slack - URL Image (Demisto icon by default)
+  name: bot_icon
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2
@@ -501,8 +510,8 @@ script:
   isfetch: false
   longRunning: true
   longRunningPort: false
-  subtype: python3
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 fromversion: 5.0.0

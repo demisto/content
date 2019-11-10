@@ -37,7 +37,12 @@ def proofpoint_get_original_url(safe_url):
 
 
 def unescape_url(escaped_url):
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')
+    # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
+    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
+        .replace('http:\\\\', 'http://')
+    # Normalize the URL with http prefix
+    if url.find('http:') == 0 and url.find('http://') == -1:
+        url = url.replace('http:', 'http://')
     if url.find('http') != 0 and url.find('ftp') != 0:
         return 'http://' + url
     return url
@@ -73,15 +78,23 @@ def extract_domain(the_input):
 
     # convert None to empty string if needed
     domain = '' if not domain else domain
+    if type(domain) == unicode:
+        domain = domain.encode('utf-8', errors='ignore')
     return domain
 
 
-domains = []
-the_input = demisto.args().get('input')
-# argToList returns the argument as is if it's already a list so no need to check here
-the_input = argToList(the_input)
+def main():
+    domains = []
+    the_input = demisto.args().get('input')
+    # argToList returns the argument as is if it's already a list so no need to check here
+    the_input = argToList(the_input)
 
-# Otherwise assumes it's already an array
-for item in the_input:
-    domains.append(extract_domain(item))
-demisto.results(domains)
+    # Otherwise assumes it's already an array
+    for item in the_input:
+        domains.append(extract_domain(item))
+    demisto.results(domains)
+
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ == "__builtin__" or __name__ == "builtins":
+    main()

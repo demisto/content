@@ -1,0 +1,23 @@
+commonfields:
+  id: IsRFC1918Address
+  version: -1
+name: IsRFC1918Address
+script: ''
+type: python
+subtype: python3
+tags:
+- filter
+comment: A filter that determines whether an IPv4 address is in the private RFC-1918 address
+  space (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16).  For more information, see https://en.wikipedia.org/wiki/Private_network
+enabled: true
+args:
+- name: value
+  required: true
+  default: true
+  description: The IPv4 address to check.
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.7.4.2728
+runas: DBotWeakRole
+tests:
+  - No test - unit test

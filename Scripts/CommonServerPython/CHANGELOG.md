@@ -1,5 +1,9 @@
 ## [Unreleased]
-The *return_outputs* function can now return readable_output.
+Fixed the IntegrationLogger auto-replace of sensitive strings.
+
+## [19.10.1] - 2019-10-15
+ - Added ***is_debug_mode*** wrapper function for checking if **debug-mode** is enabled. 
+ - The ***return_outputs*** function can now return readable_output.
 
 ## [19.10.0] - 2019-10-03
   - Added requests debugging logger when `debug-mode=true`.

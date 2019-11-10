@@ -610,16 +610,17 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
-                pswrd = self.encode(demisto.getParam('credentials').get('password'))
-                self.add_replace_strs(pswrd, b64_encode(pswrd))
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
                 for (k, v) in demisto.params().items():
                     k_lower = k.lower()
                     for p in sensitive_params:
-                        if p in k_lower and v:
-                            self.add_replace_strs(v, b64_encode(v))
+                        if p in k_lower:
+                            if isinstance(v, STRING_OBJ_TYPES):
+                                self.add_replace_strs(v, b64_encode(v))
+                            if isinstance(v, dict) and v.get('password'):  # credentials object case
+                                pswrd = v.get('password')
+                                self.add_replace_strs(pswrd, b64_encode(pswrd))
 
     def encode(self, message):
         try:
@@ -1490,12 +1491,12 @@ def return_outputs(readable_output, outputs=None, raw_response=None):
     }
     # Return 'readable_output' only if needed
     if readable_output and not outputs and not raw_response:
-        demisto.results(readable_output)
+        return_entry["Contents"] = readable_output
+        return_entry["ContentsFormat"] = formats["text"]
     elif outputs and raw_response is None:
         # if raw_response was not provided but outputs were provided then set Contents as outputs
         return_entry["Contents"] = outputs
-    else:
-        demisto.results(return_entry)
+    demisto.results(return_entry)
 
 
 def return_error(message, error='', outputs=None):
@@ -1928,6 +1929,16 @@ def get_demisto_version():
         raise AttributeError('demistoVersion attribute not found.')
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to demisto.debug
@@ -1989,8 +2000,7 @@ class DebugLogger(object):
 
 _requests_logger = None
 try:
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    if hasattr(demisto, 'is_debug') and demisto.is_debug:
+    if is_debug_mode():
         _requests_logger = DebugLogger()
 except Exception as ex:
     # Should fail silently so that if there is a problem with the logger it will

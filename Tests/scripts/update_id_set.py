@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 import re
 import os
@@ -8,10 +8,15 @@ import argparse
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
 import time
+import sys
 
-from Tests.scripts.constants import *
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command
+    LOG_COLORS, print_color, run_command  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
@@ -116,6 +121,7 @@ def get_integration_data(file_path):
     cmd_list = [command.get('name') for command in commands]
 
     integration_data['name'] = name
+    integration_data['file_path'] = file_path
     if toversion:
         integration_data['toversion'] = toversion
     if fromversion:
@@ -142,6 +148,7 @@ def get_playbook_data(file_path):
     command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
+    playbook_data['file_path'] = file_path
     if toversion:
         playbook_data['toversion'] = toversion
     if fromversion:
@@ -172,9 +179,10 @@ def get_script_data(file_path, script_code=None):
     deprecated = data_dictionary.get('deprecated')
     fromversion = data_dictionary.get('fromversion')
     depends_on, command_to_integration = get_depends_on(data_dictionary)
-    script_executions = sorted(list(set(re.findall("demisto.executeCommand\\(['\"](\w+)['\"].*", script_code))))
+    script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
+    script_data['file_path'] = file_path
     if toversion:
         script_data['toversion'] = toversion
     if fromversion:
@@ -207,8 +215,8 @@ def get_depends_on(data_dict):
 
 def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
     change_string = run_command("git diff HEAD {0}".format(file_path))
-    is_added_from_version = True if re.search('\+fromversion: .*', change_string) else False
-    is_added_to_version = True if re.search('\+toversion: .*', change_string) else False
+    is_added_from_version = True if re.search(r'\+fromversion: .*', change_string) else False
+    is_added_to_version = True if re.search(r'\+toversion: .*', change_string) else False
 
     file_to_version = get_to_version(file_path)
     file_from_version = get_from_version(file_path)
@@ -390,13 +398,13 @@ def re_create_id_set():
 
 
 def sort(data):
-    data.sort(key=lambda r: r.keys()[0].lower())  # Sort data by key value
+    data.sort(key=lambda r: list(r.keys())[0].lower())  # Sort data by key value
     return data
 
 
 def update_id_set():
     branches = run_command("git branch")
-    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name_reg = re.search(r"\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
     print("Getting added files")
