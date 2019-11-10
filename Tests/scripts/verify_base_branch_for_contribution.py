@@ -42,15 +42,16 @@ def verify_base_branch(pr_num):
     Args:
         pr_num (string): The string representation of the pr number
 
+    Returns:
+        True if valid, False otherwise. And attaches the appropriate message to the user.
     """
+
     print_color('Fetching the base branch of pull request #{}.'.format(pr_num), LOG_COLORS.NATIVE)
     base_branch = get_base_branch(pr_num)
     if base_branch == 'master':
-        print_error('Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.')
-        return False
+        return 'Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.', False
     else:
-        print_color('Verified pull request #{} base branch successfully.'.format(pr_num), LOG_COLORS.GREEN)
-        return True
+        return 'Verified pull request #{} base branch successfully.'.format(pr_num), True
 
 
 if __name__ == '__main__':
@@ -58,7 +59,11 @@ if __name__ == '__main__':
     pr_numbers_list = re.findall(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE)
     if pr_numbers_list:
         pr_number = pr_numbers_list[0]
-        if not verify_base_branch(pr_number):
+        msg, is_valid = verify_base_branch(pr_number)
+        if is_valid:
+            print_color(msg, LOG_COLORS.GREEN)
+        else:
+            print_error(msg)
             sys.exit(1)
     else:
         print_warning('Unable to fetch pull request.')
