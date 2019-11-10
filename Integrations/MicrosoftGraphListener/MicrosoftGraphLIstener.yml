@@ -379,5 +379,6 @@ script:
   runonce: false
   script: '-'
   type: python
+  subtype: python3
 tests:
 - No test
