@@ -242,6 +242,10 @@ jobs:
                 echo "Not AMI run, can't run on this version"
             fi
             cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
