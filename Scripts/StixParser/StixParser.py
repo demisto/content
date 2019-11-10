@@ -274,8 +274,6 @@ def extract_indicators(data):
             Second dict contains indicators value to STIX object defining them
 
     """
-
-    # Check if is `objects` keyword exists
     must_have_in_stix = [
         "created",
         "firstSeen",
@@ -289,13 +287,17 @@ def extract_indicators(data):
         "valid_from"
     ]
     if isinstance(data, dict):
-        # Create objects
+        # Check if is `objects` keyword exists
         if "objects" in data:
             objects = data.get("objects")
+        # If its STIX
         elif all([key in data for key in must_have_in_stix]):
             objects = data
         else:
             return_error("No STIX2 object could be parsed")
+    if isinstance(data, dict) and "objects" in data:
+        # Create objects
+        objects = data.get("objects")
         # Use regex to extract indicators
         patterns_lists, entries_dict = get_indicators(objects)
 

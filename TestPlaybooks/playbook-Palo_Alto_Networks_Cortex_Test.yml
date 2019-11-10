@@ -1,15 +1,14 @@
 id: Palo Alto Networks Cortex Test
 version: -1
 name: Palo Alto Networks Cortex Test
-fromversion: 4.1.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 459137f7-cf03-450e-87d2-94cec22b590d
+    taskid: edf28dd0-abd7-4bd6-8247-fdc9093505af
     type: start
     task:
-      id: 459137f7-cf03-450e-87d2-94cec22b590d
+      id: edf28dd0-abd7-4bd6-8247-fdc9093505af
       version: -1
       name: ""
       iscommand: false
@@ -30,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: b4056e07-be74-4f27-8514-dcdbc5700a6f
+    taskid: fc21e1dd-eb73-4c6f-8a51-efa34e802a98
     type: regular
     task:
-      id: b4056e07-be74-4f27-8514-dcdbc5700a6f
+      id: fc21e1dd-eb73-4c6f-8a51-efa34e802a98
       version: -1
       name: Query Logs
       description: Query Cortex Logging service
@@ -63,10 +62,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0d4f433b-00ef-445e-8460-3719365cd961
+    taskid: b41f9512-fb16-4568-8457-73b0e988f08c
     type: condition
     task:
-      id: 0d4f433b-00ef-445e-8460-3719365cd961
+      id: b41f9512-fb16-4568-8457-73b0e988f08c
       version: -1
       name: Verify Query Logs Outputs
       type: condition
@@ -145,11 +144,6 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: Cortex.Logging.nat
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
               simple: Cortex.Logging.natdport
             iscontext: true
       - - operator: isExists
@@ -174,10 +168,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f87c9945-4496-47b8-8655-059ecc878341
+    taskid: 17527902-aa07-4acc-8db5-1f3aba1533f5
     type: title
     task:
-      id: f87c9945-4496-47b8-8655-059ecc878341
+      id: 17527902-aa07-4acc-8db5-1f3aba1533f5
       version: -1
       name: Success
       description: Query Cortex Logging service according to pre-set queries
@@ -197,10 +191,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 57bc1e0a-2b44-4b32-8db5-48c4f57407a1
+    taskid: 4fb983b7-2e2b-4b89-8411-8f967774fd0f
     type: regular
     task:
-      id: 57bc1e0a-2b44-4b32-8db5-48c4f57407a1
+      id: 4fb983b7-2e2b-4b89-8411-8f967774fd0f
       version: -1
       name: Fetch events
       description: Execute FetchIncident for a given instance
@@ -230,10 +224,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 3e01dc08-f22a-4916-83f3-7f49eb5aeeee
+    taskid: 2a7f60cd-c668-4cb8-85af-ab7de14bfa33
     type: regular
     task:
-      id: 3e01dc08-f22a-4916-83f3-7f49eb5aeeee
+      id: 2a7f60cd-c668-4cb8-85af-ab7de14bfa33
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -264,10 +258,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 0dbc00b5-9ce6-4cb0-819f-0e74fb784bdd
+    taskid: 1d338cf1-a603-4dd7-8eb6-92b5301287dd
     type: regular
     task:
-      id: 0dbc00b5-9ce6-4cb0-819f-0e74fb784bdd
+      id: 1d338cf1-a603-4dd7-8eb6-92b5301287dd
       version: -1
       name: cortex-query-threat-logs
       description: TBD
@@ -306,10 +300,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d5f516b7-49b9-4d9a-8ad1-aefcb14f3346
+    taskid: c409f106-b13e-4566-8e43-60ad0756075e
     type: condition
     task:
-      id: d5f516b7-49b9-4d9a-8ad1-aefcb14f3346
+      id: c409f106-b13e-4566-8e43-60ad0756075e
       version: -1
       name: Verify Query Threat Logs Outputs
       type: condition
@@ -355,10 +349,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: cca21371-284c-469a-864f-81ad1b536f14
+    taskid: a38e4c3a-283d-4056-82e3-db119769db60
     type: regular
     task:
-      id: cca21371-284c-469a-864f-81ad1b536f14
+      id: a38e4c3a-283d-4056-82e3-db119769db60
       version: -1
       name: cortex-query-traffic-logs
       description: TBD
@@ -395,10 +389,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: d64311fe-5e67-4c45-86eb-755ccd394db9
+    taskid: bf212a19-2209-4316-860f-a879c39cd06c
     type: condition
     task:
-      id: d64311fe-5e67-4c45-86eb-755ccd394db9
+      id: bf212a19-2209-4316-860f-a879c39cd06c
       version: -1
       name: Verify Query Traffic Logs Outputs
       type: condition
@@ -444,10 +438,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: f8aec994-140c-4380-8a27-8fe33c9cff76
+    taskid: ccadc483-ddd0-4466-83e4-e7d1c55ea670
     type: regular
     task:
-      id: f8aec994-140c-4380-8a27-8fe33c9cff76
+      id: ccadc483-ddd0-4466-83e4-e7d1c55ea670
       version: -1
       name: cortex-query-traps-logs
       description: TBD
@@ -483,10 +477,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 10e444de-59b6-490a-89fe-e93441323559
+    taskid: 28a1aabd-6c4d-4f89-8164-ac13d30278b9
     type: regular
     task:
-      id: 10e444de-59b6-490a-89fe-e93441323559
+      id: 28a1aabd-6c4d-4f89-8164-ac13d30278b9
       version: -1
       name: cortex-query-analytics-logs
       description: TBD
@@ -522,10 +516,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 67d15807-20ee-4592-8631-81cba3ee2cc8
+    taskid: de7978f6-928b-4385-8479-1fd2fc37a82a
     type: condition
     task:
-      id: 67d15807-20ee-4592-8631-81cba3ee2cc8
+      id: de7978f6-928b-4385-8479-1fd2fc37a82a
       version: -1
       name: Verify Query Traps Logs Outputs
       type: condition
@@ -578,10 +572,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 093e8226-3fe1-419d-8d0b-39ac0a0a8cab
+    taskid: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
     type: condition
     task:
-      id: 093e8226-3fe1-419d-8d0b-39ac0a0a8cab
+      id: 33fe8ccd-134b-4f1b-8c6a-03dbb692800b
       version: -1
       name: Verify Query Analytics Logs Outputs
       type: condition
