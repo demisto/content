@@ -1893,7 +1893,6 @@
     ],
     "skipped_tests": {
         "PAN-OS Create Or Edit Rule Test": "Issue 20037",
-        "Cloaken-Test": "Issue 20036",
         "NetWitness Endpoint Test": "Issue 19878",
         "LogRhythm REST test": "Issue 19870",
         "IntSights Test": "Issue 19869",
