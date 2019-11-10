@@ -101,32 +101,7 @@ def http_request(url_suffix: str, params=None, body=None, raw_response=False) ->
         return {}
 
 
-def test_function() -> None:
-    try:
-        response = requests.get(
-            BASE_URL + '/processed_reports',
-            headers=HEADERS,
-            params="",
-            verify=USE_SSL,
-        )
-        if demisto.getParam("isFetch"):
-            fetch_reports()
-
-        if response.ok:
-            demisto.results('ok')
-
-        else:
-            return_error(
-                f'API call to Cofense Triage failed. Please check Server URL, or authentication related parameters.'
-                f' [{response.status_code}] - {response.reason}')
-
-    except Exception as ex:
-        demisto.debug(str(ex))
-        return_error(f'API call to Cofense Triage failed, please check URL, or authentication related parameters.')
-
-
-def fetch_reports() -> None:
-    # parameters importing
+def get_fetch_reponse():
     start_date, _ = parse_date_range(demisto.getParam('date_range'), date_format=TIME_FORMAT)
     max_fetch = int(demisto.getParam('max_fetch'))  # type: int
     params = {
@@ -137,7 +112,36 @@ def fetch_reports() -> None:
     }
 
     # running the API command
-    reports = http_request(url_suffix='/processed_reports', params=params)
+    response = requests.get(
+        BASE_URL + '/processed_reports',
+        headers=HEADERS,
+        params=params,
+        verify=USE_SSL,
+    )
+
+    return response, max_fetch
+
+
+def test_function() -> None:
+    try:
+        response, _ = get_fetch_reponse()
+
+        if response.ok:
+            demisto.results('ok')
+
+        else:
+            return_error(
+                f'API call to Cofense Triage failed. Please check Server URL, or integration parameters.'
+                f' [{response.status_code}] - {response.reason}')
+
+    except Exception as ex:
+        demisto.debug(str(ex))
+        return_error(f'API call to Cofense Triage failed, please check URL, or integration parameters.')
+
+
+def fetch_reports() -> None:
+    # parameters importing
+    reports, max_fetch = get_fetch_reponse()
 
     # loading last_run
     last_run = json.loads(demisto.getLastRun().get('value', '{}'))
