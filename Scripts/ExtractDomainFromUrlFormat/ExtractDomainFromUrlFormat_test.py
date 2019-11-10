@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 from ExtractDomainFromUrlFormat import extract_domain
-from ExtractDomainFromUrlFormat import unescape_url
 import pytest
 
 
 @pytest.mark.parametrize('input,domain', [
                         ('http://this.is.test.com', 'test.com'),
-                        ('http:example.com', 'example.com'),
-                        ('http:\\\\example.com', 'example.com'),
                         ('https://caseapi.phishlabs.com', 'phishlabs.com'),
                          # output needs to be bytes string utf-8 encoded (otherwise python loop demisto.results fails)
                         (u'www.bücher.de', u'bücher.de'.encode('utf-8')),
@@ -18,11 +15,3 @@ import pytest
 def test_extract_domain(input, domain):
     res = extract_domain(input)
     assert res == domain
-
-
-@pytest.mark.parametrize('input,url', [
-                        ('http:example.com', 'http://example.com'),
-                        ('http:\\\\example.com', 'http://example.com')])  # noqa: E124
-def test_unescaped_url(input, url):
-    unescaped_urls = unescape_url(input)
-    assert unescaped_urls == url
