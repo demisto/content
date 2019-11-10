@@ -66,9 +66,9 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Time between fetches (in seconds)
+- display: Time between fetches, in seconds. The actual time will be the maximum between the selected value and the server configuration.
   name: fetchDelay
-  defaultvalue: ""
+  defaultvalue: 60
   type: 0
   required: false
 - display: Default max total wait for results (in milliseconds)
