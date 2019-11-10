@@ -24,14 +24,15 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '50'
-  description: 'Maximum number of positive/negative words to return for the model decision. '
+  defaultValue: '20'
+  description: 'Maximum number of positive/negative words to return for the model
+    decision. '
   isArray: false
   name: topWordsLimit
   required: false
   secret: false
 - default: false
-  defaultValue: '0.1'
+  defaultValue: '0.05'
   description: Threshold to determine word importance (range 0-1).
   isArray: false
   name: wordThreshold
@@ -49,7 +50,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '20'
+  defaultValue: '5'
   description: Minimum number of characters for the prediction.
   isArray: false
   name: minTextLength
@@ -60,6 +61,16 @@ args:
   description: The label probability threshold.
   isArray: false
   name: labelProbabilityThreshold
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  isArray: false
+  name: returnError
+  predefined:
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
@@ -80,7 +91,8 @@ outputs:
   description: A list of words in the input text that supports the model decision.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.NegativeWords
-  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  description: A list of words in the input text that do not support the model decision.
+    These words better support a different classification class.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.TextTokensHighlighted
   description: The input text (after pre-processing) with the positive words that
