@@ -321,7 +321,7 @@ class MsGraphClient(BaseClient):
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
-        return super()._http_request(*args, headers=headers, **kwargs)
+        return super()._http_request(*args, headers=headers, **kwargs)  # type: ignore
 
     def _get_root_folder_children(self, user_id):
         """
