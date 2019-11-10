@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import datetime
 
 entries = []
 start_time = demisto.args()['start_time'].replace('"', '')

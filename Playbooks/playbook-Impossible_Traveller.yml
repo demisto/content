@@ -125,7 +125,7 @@ tasks:
       description: Compute the distance between two sets of coordinates in miles.
       tags:
       - geodistance
-      script: 75b05f2f-5572-40aa-8fa5-950f5ffa885a
+      script: CalculateGeoDistance
       type: regular
       iscommand: false
       brand: ''
@@ -167,7 +167,7 @@ tasks:
         It returns it in minutes.
       tags:
       - eventduration
-      script: 00bead21-9499-4171-84d2-3a2ce1c347d8
+      script: CalculateTimeDifference
       type: regular
       iscommand: false
       brand: ''
