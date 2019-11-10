@@ -715,10 +715,10 @@ script:
       description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The type of indicator.
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The Vendor that was used to calculate the score.
+      description: The vendor reporting the URL as malicious.
       type: string
     - contextPath: DBotScore.Score
       description: The actual score
