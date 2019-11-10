@@ -245,11 +245,13 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
-            cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
       - store_artifacts:
           path: artifacts
           destination: artifacts
