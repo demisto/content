@@ -25,6 +25,52 @@ TYPE_TO_EXTENSION = {
 IMAGE_PREFIX = 'data:image/png;base64,'
 
 
+def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
+    """Write out the yaml file taking into account the dockerimage45 tag. 
+    If it is present will create 2 integration files
+    One for 4.5 and below and one for 5.0.
+
+    Arguments:
+        output_path {str} -- output path
+        yml_text {str} -- yml text
+        yml_data {dict} -- yml object
+        script_obj {dict} -- script object
+
+    Returns:
+        dict -- dictionary mapping output path to text data
+    """
+    output_map = {output_path: yml_text}
+    if 'dockerimage45' in script_obj:
+        # we need to split into two files 45 and 50. Current one will be from version 5.0
+        yml_text = re.sub(r'^\s*dockerimage45:.*\n?', '', yml_text, flags=re.MULTILINE)  # remove the dockerimage45 line
+        yml_text45 = yml_text
+        if 'fromversion' in yml_data:
+            yml_text = re.sub(r'^fromversion:.*$', 'fromversion: 5.0.0', yml_text, flags=re.MULTILINE)
+        else:
+            yml_text = 'fromversion: 5.0.0\n' + yml_text
+        if 'toversion' in yml_data:
+            yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text45, flags=re.MULTILINE)
+        else:
+            yml_text45 = 'toversion: 4.5.9\n' + yml_text45
+        if script_obj.get('dockerimage45'):  # we have a value for dockerimage45 set it as dockerimage
+            yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'), yml_text45, flags=re.MULTILINE)
+        else:  # no value for dockerimage45 remove the dockerimage entry
+            yml_text45 = re.sub(r'^\s*dockerimage:.*\n?', '', yml_text45, flags=re.MULTILINE)
+        output_path45 = re.sub(r'\.yml$', '_45.yml', output_path)
+        output_map = {
+            output_path: yml_text,
+            output_path45: yml_text45
+        }
+    for file_path, file_text in output_map.items():
+        if IS_CI and os.path.isfile(file_path):
+            raise ValueError('Output file already exists: {}.'
+                             ' Make sure to remove this file from source control'
+                             ' or rename this package (for example if it is a v2).'.format(output_path))
+        with io.open(file_path, mode='w', encoding='utf-8') as f:
+            f.write(file_text)
+    return output_map
+
+
 def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     """Merge the various components to create an output yml file
 
@@ -73,33 +119,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
-    output_map = {output_path: yml_text}
-    if 'dockerimage45' in script_obj:
-        # we need to split into two files 45 and 50. Current one will be from version 5.0
-        yml_text = re.sub(r'^\s*dockerimage45:.*\n?', '', yml_text, flags=re.MULTILINE)  # remove the dockerimage45 line
-        yml_text45 = yml_text
-        if 'fromversion' in yml_data:
-            yml_text = re.sub(r'^fromversion:.*$', 'fromversion: 5.0.0', yml_text, flags=re.MULTILINE)
-        else:
-            yml_text = 'fromversion: 5.0.0\n' + yml_text
-        if 'toversion' in yml_data:
-            yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text45, flags=re.MULTILINE)
-        else:
-            yml_text45 = 'toversion: 4.5.9\n' + yml_text45
-        yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'), yml_text45, flags=re.MULTILINE)
-        output_path45 = re.sub(r'\.yml$', '_45.yml', output_path)
-        output_map = {
-            output_path: yml_text,
-            output_path45: yml_text45
-        }
-
-    for file_path, file_text in output_map.items():
-        if IS_CI and os.path.isfile(file_path):
-            raise ValueError('Output file already exists: {}.'
-                             ' Make sure to remove this file from source control'
-                             ' or rename this package (for example if it is a v2).'.format(output_path))
-        with io.open(file_path, mode='w', encoding='utf-8') as f:
-            f.write(file_text)
+    output_map = write_yaml_with_docker(output_path, yml_text, yml_data, script_obj)
     return list(output_map.keys()), yml_path, script_path, image_path, desc_path
 
 
