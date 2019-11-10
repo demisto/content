@@ -36,7 +36,7 @@ def get_base_branch(pr_num):
         return ''
 
 
-def check_base_branch(pr_num):
+def verify_base_branch(pr_num):
     """Checks if the base branch is master or not
 
     Args:
@@ -47,10 +47,10 @@ def check_base_branch(pr_num):
     base_branch = get_base_branch(pr_num)
     if base_branch == 'master':
         print_error('Cannot merge a contribution directly to master, the pull request reviewer will handle that soon.')
-        sys.exit(1)
+        return False
     else:
         print_color('Verified pull request #{} base branch successfully.'.format(pr_num), LOG_COLORS.GREEN)
-        sys.exit(0)
+        return True
 
 
 if __name__ == '__main__':
@@ -58,6 +58,7 @@ if __name__ == '__main__':
     pr_numbers_list = re.findall(EXTERNAL_PR_REGEX, circle_branch, re.IGNORECASE)
     if pr_numbers_list:
         pr_number = pr_numbers_list[0]
-        check_base_branch(pr_number)
+        if not verify_base_branch(pr_number):
+            sys.exit(1)
     else:
         print_warning('Unable to fetch pull request.')
