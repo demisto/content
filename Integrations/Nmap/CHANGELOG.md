@@ -1,4 +1,5 @@
 ## [Unreleased]
+ - Now able to run '-sn' flag for ping scan.
 
 
 ## [19.10.0] - 2019-10-03
