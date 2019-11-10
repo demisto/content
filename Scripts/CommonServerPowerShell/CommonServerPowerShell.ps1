@@ -1,3 +1,5 @@
+# Silence Progress STDOUT (e.g. long http request download progress)
+$progressPreference = 'silentlyContinue'
 function tableToMarkdown {
 <#
 .DESCRIPTION
@@ -30,5 +32,4 @@ Remove empty columns from the table.
 Metadata about the table contents
 #>
 
-    Write-Host 'tableToMarkdown'
 }
