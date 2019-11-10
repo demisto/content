@@ -161,6 +161,7 @@ def get_events_command(client, args):
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
                     limit=DEFAULT_LIMIT, integration_context=None):
     incidents: list = []
+    end_query_time = ''
     # check if there're incidents saved in context
     if integration_context:
         remained_incidents = integration_context.get("incidents")
@@ -176,10 +177,15 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     fetch_time_count = len(fetch_times)
     for index, fetch_time in enumerate(fetch_times):
         if index < fetch_time_count - 1:
+            # Set interval start/stop
+            start_query_time = fetch_times[index]
             end_query_time = fetch_times[index + 1]
         else:
+            # Need to get last interval / now
+            if end_query_time:
+                start_query_time = end_query_time
             end_query_time = get_now().strftime(DATE_FORMAT)
-        raw_events = client.get_events(interval=fetch_time + "/" + end_query_time,
+        raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
                                        event_type_filter=event_type_filter,
                                        threat_status=threat_status, threat_type=threat_type)
 

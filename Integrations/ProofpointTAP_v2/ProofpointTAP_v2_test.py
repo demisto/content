@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 
+import pytest
 from ProofpointTAP_v2 import fetch_incidents, Client, ALL_EVENTS, ISSUES_EVENTS, get_events_command
 
 MOCK_URL = "http://123-fake-api.com"
@@ -277,7 +278,7 @@ def test_next_fetch(requests_mock, mocker):
 
 def test_fetch_limit(requests_mock, mocker):
     mock_date = "2010-01-01T00:00:00Z"
-    this_run = {"last_fetch": mock_date}
+    this_run = {"last_fetch": "2010-01-01T00:00:00Z"}
     mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_date, "%Y-%m-%dT%H:%M:%SZ"))
     requests_mock.get(MOCK_URL + '/v2/siem/all', json=MOCK_ALL_EVENTS)
 
@@ -319,11 +320,15 @@ def test_fetch_limit(requests_mock, mocker):
     assert not remained
 
 
-def test_get_fetch_times():
-    from datetime import datetime, timedelta
-    from ProofpointTAP_v2 import get_fetch_times
+FETCH_TIMES_MOCK = [
+    ("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 4),
+    ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 1)
+]
 
-    now = datetime.now()
-    before_two_hours = now - timedelta(hours=2)
-    times = get_fetch_times(before_two_hours)
-    assert len(times) == 3
+
+@pytest.mark.parametrize('mock_past, mock_now, expected', FETCH_TIMES_MOCK)
+def test_get_fetch_times(mocker, mock_past, mock_now, expected):
+    from ProofpointTAP_v2 import get_fetch_times
+    mocker.patch('ProofpointTAP_v2.get_now', return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
+    times = get_fetch_times(mock_past)
+    assert len(times) == expected
