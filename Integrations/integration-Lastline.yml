@@ -26,12 +26,12 @@ configuration:
   required: true
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "true"
+  defaultvalue: ""
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Threshold
@@ -555,7 +555,7 @@ script:
         try {
             result = doReq('POST', '/analysis/get', {uuid: uuid});
         } catch (err) {
-            if (err == 'Analysis report is not ready yet') {
+            if (err == 'Analysis report is not ready yet.') {
                 return 'Report for Task UUID: ' + uuid + ' is not ready';
             } else {
                 throw err;
