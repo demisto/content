@@ -1,4 +1,5 @@
 import re
+import sys
 
 from Tests.test_utils import run_command
 
@@ -59,6 +60,14 @@ class StructureValidator(object):
             return True
         return False
 
+    def is_file_id_without_slashes(self):
+        """Check if the ID of the file contains any slashes ('/').
+
+        Returns:
+            bool. Whether the file's ID contains slashes or not.
+        """
+        pass
+
     class Errors(object):
         @staticmethod
         def wrong_filename(filepath, file_type):
@@ -66,6 +75,55 @@ class StructureValidator(object):
 
         @staticmethod
         def wrong_version(file_path, expected="-1"):
-            # type: (str, str) -> str
             return "The version for our files should always be -1, please update the file {}.".format(file_path,
                                                                                                       expected)
+
+        @staticmethod
+        def missing_outputs(command_name, missing_outputs, context_standard):
+            return "The DBotScore outputs of the reputation command {} aren't valid. Missing: {}. " \
+                   "Fix according to context standard {} ".format(command_name, missing_outputs, context_standard)
+
+        @staticmethod
+        def missing_dbot_description(command_name, missing_descriptions, context_standard):
+            return "The DBotScore description of the reputation command {} aren't valid. Missing: {}. " \
+                   "Fix according to context standard {} ".format(command_name, missing_descriptions, context_standard)
+
+        @staticmethod
+        def missing_reputation(command_name, reputation_output, context_standard):
+            return "The outputs of the reputation command {} aren't valid. The {} outputs is missing. " \
+                   "Fix according to context standard {} ".format(command_name, reputation_output, context_standard)
+
+        @staticmethod
+        def wrong_subtype(file_name):
+            return "The subtype for our yml files should be either python2 or python3, " \
+                   "please update the file {}.".format(file_name)
+
+        @staticmethod
+        def breaking_backwards(file_path):
+            return "Possible backwards compatibility break, You've changed the subtype " \
+                   "of the file {}".format(file_path)
+
+        @staticmethod
+        def beta_in_str(file_path, field):
+            return "Field '{}' should NOT contain the substring \"beta\" in a new beta integration. " \
+                   "please change the id in the file {}".format(field, file_path)
+
+        @classmethod
+        def beta_in_id(cls, file_path):
+            return cls.beta_in_str(file_path, 'id')
+
+        @classmethod
+        def beta_in_name(cls, file_path):
+            return cls.beta_in_str(file_path, 'name')
+
+        @staticmethod
+        def duplicate_command(arg, command, integration_name):
+            return "The argument '{}' of the command '{}' is duplicated in the integration '{}', " \
+                   "please remove one of its appearances as we do not allow duplicates".format(arg, command,
+                                                                                               integration_name)
+
+        @staticmethod
+        def duplicate_param(param_name, current_integration):
+            return "The parameter '{}' of the " \
+                   "integration '{}' is duplicated, please remove one of its appearances as we do not " \
+                   "allow duplicated parameters".format(param_name, current_integration)

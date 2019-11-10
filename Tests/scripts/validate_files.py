@@ -230,7 +230,7 @@ class FilesValidator(object):
                                                              old_git_branch=old_branch)
                 if is_backward_check and not integration_validator.is_backward_compatible():
                     self._is_valid = False
-                if not integration_validator.is_valid_integration():
+                if not integration_validator.is_file_valid():
                     self._is_valid = False
 
             # If beta integration
@@ -314,7 +314,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
-                if not integration_validator.is_valid_integration():
+                if not integration_validator.is_file_valid():
                     self._is_valid = False
 
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \

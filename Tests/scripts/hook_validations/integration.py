@@ -65,7 +65,7 @@ class IntegrationValidator(StructureValidator):
 
         return self._is_valid
 
-    def is_valid_integration(self):
+    def is_file_valid(self):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         self.is_valid_subtype()
         self.is_default_arguments()
@@ -195,13 +195,10 @@ class IntegrationValidator(StructureValidator):
                             # self._is_valid = False - Do not fail build over wrong description
 
                 if missing_outputs:
-                    print_error("The DBotScore outputs of the reputation command {} aren't valid. Missing: {}."
-                                " Fix according to context standard {} "
-                                .format(command_name, missing_outputs, context_standard))
+                    print_error(self.Errors.missing_outputs(command_name, missing_outputs, context_standard))
                 if missing_descriptions:
-                    print_warning("The DBotScore description of the reputation command {} aren't valid. Missing: {}."
-                                  " Fix according to context standard {} "
-                                  .format(command_name, missing_descriptions, context_standard))
+                    print_warning(
+                        self.Errors.missing_dbot_description(command_name, missing_descriptions, context_standard))
 
                 # validate the IOC output
                 command_to_output = {
@@ -213,9 +210,7 @@ class IntegrationValidator(StructureValidator):
                 reputation_output = command_to_output.get(command_name)
                 if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error("The outputs of the reputation command {} aren't valid. The {} outputs is missing"
-                                "Fix according to context standard {} "
-                                .format(command_name, reputation_output, context_standard))
+                    print_error(self.Errors.missing_reputation(command_name, reputation_output, context_standard))
 
         return self._is_valid
 
@@ -225,10 +220,8 @@ class IntegrationValidator(StructureValidator):
         if type_ == 'python':
             subtype = self.current_integration.get('script', {}).get('subtype')
             if subtype not in PYTHON_SUBTYPES:
-                print_error("The subtype for our yml files should be either python2 or python3, "
-                            "please update the file {}.".format(self.current_integration.get('name')))
+                print_error(self.Errors.wrong_subtype(self.current_integration.gey('name')))
                 self._is_valid = False
-
         return self._is_valid
 
     def is_changed_subtype(self):
@@ -239,8 +232,7 @@ class IntegrationValidator(StructureValidator):
             if self.old_integration:
                 old_subtype = self.old_integration.get('script', {}).get('subtype', "")
                 if old_subtype and old_subtype != subtype:
-                    print_error("Possible backwards compatibility break, You've changed the subtype"
-                                " of the file {}".format(self.file_path))
+                    print_error(self.Errors.breaking_backwards(self.file_path))
                     self._is_valid = False
 
         return self._is_valid
@@ -259,9 +251,7 @@ class IntegrationValidator(StructureValidator):
         common_fields = self.current_integration.get('commonfields', {})
         integration_id = common_fields.get('id', '')
         if 'beta' in integration_id.lower():
-            print_error(
-                "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
-                "please change the id in the file {}".format(self.file_path))
+            print_error(self.Errors.beta_in_id(self.file_path))
             return False
         return True
 
@@ -269,8 +259,7 @@ class IntegrationValidator(StructureValidator):
         """Checks that 'name' field dose not include the substring 'beta'"""
         name = self.current_integration.get('name', '')
         if 'beta' in name.lower():
-            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
-            "please change the id in the file {}".format(self.file_path)
+            print_error(self.Errors.beta_in_name(self.file_path))
             return False
         return True
 
@@ -304,10 +293,8 @@ class IntegrationValidator(StructureValidator):
             for arg in command.get('arguments', []):
                 if arg in arg_list:
                     self._is_valid = False
-                    print_error("The argument '{}' of the command '{}' is duplicated in the integration '{}', "
-                                "please remove one of its appearances "
-                                "as we do not allow duplicates".format(arg, command['name'],
-                                                                       self.current_integration.get('name')))
+                    print_error(self.Errors.duplicate_command(arg, command['name'], self.current_integration.get(
+                        'name')))
                 else:
                     arg_list.append(arg)
 
@@ -325,10 +312,7 @@ class IntegrationValidator(StructureValidator):
             param_name = configuration_param['name']
             if param_name in param_list:
                 self._is_valid = False
-                print_error("The parameter '{}' of the "
-                            "integration '{}' is duplicated, please remove one of its appearances as we do not "
-                            "allow duplicated parameters".format(param_name,
-                                                                 self.current_integration.get('name')))
+                print_error(self.Errors.duplicate_param(param_name, self.current_integration))
             else:
                 param_list.append(param_name)
 
