@@ -8,8 +8,8 @@ end_time = demisto.args()['end_time'].replace('"', '')
 
 try:
     # Strip microseconds and convert to datetime object
-    start_time_obj = datetime.datetime.strptime(start_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
-    end_time_obj = datetime.datetime.strptime(end_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
+    start_time_obj = datetime.strptime(start_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
+    end_time_obj = datetime.strptime(end_time.split(".")[0], "%Y-%m-%dT%H:%M:%S")
     # Calculate the difference in minutes
     time_diff = end_time_obj - start_time_obj
     mins = round((time_diff.total_seconds() / 60), 2)
