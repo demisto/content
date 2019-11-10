@@ -1855,7 +1855,7 @@
             "playbookID": "Bluecat Address Manager test"
         },
         {
-            "integrations": "MailListener - POP3",
+            "integrations": "MailListener - POP3 Beta",
             "playbookID": "MailListener-POP3 - Test"
         },
         {
@@ -2025,7 +2025,6 @@
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
-        "MailListener - POP3": "Issue 18580",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
       "_comment": "~~~ QUOTA ISSUES ~~~",
