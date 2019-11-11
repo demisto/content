@@ -196,18 +196,24 @@ class Client(BaseClient):
         else:
             url = f'{self.base_url}{url_suffix}'
 
-        response = requests.request(
-            method,
-            url,
-            headers={
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            params=params,
-            data=body,
-            verify=self.use_ssl,
-        )
+        try:
+            response = requests.request(
+                method,
+                url,
+                headers={
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                params=params,
+                data=body,
+                verify=self.use_ssl,
+            )
+        except requests.ConnectionError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.'
+                            f'Check your Server URL parameter. {err}')
+
         try:
             data = response.json() if response.text else {}
             if not response.ok:
@@ -228,29 +234,8 @@ class Client(BaseClient):
         Returns:
             ok if successful.
         """
-        token = self.get_access_token()
-        response = requests.get(
-            self.base_url + 'groups',
-            headers={
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            params={'$orderby': 'displayName'},
-            verify=self.use_ssl
-        )
-        try:
-            data = response.json() if response.text else {}
-            if not response.ok:
-                raise Exception(f'API call to MS Graph failed. Please check authentication related parameters.'
-                                f' [{response.status_code}] - {demisto.get(data, "error.message")}')
-
-            demisto.results('ok')
-
-        except TypeError as ex:
-            demisto.debug(str(ex))
-            raise Exception(f'API call to MS Graph failed, could not parse result. '
-                            f'Please check authentication related parameters. [{response.status_code}]')
+        self.http_request('GET', 'groups', params={'$orderby': 'displayName'})
+        demisto.results('ok')
 
     def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
         """Returns all groups by sending a GET request.
@@ -266,7 +251,7 @@ class Client(BaseClient):
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
         else:
-            groups = self.http_request('GET', f'groups', params=params)
+            groups = self.http_request('GET', 'groups', params=params)
 
         return groups
 
@@ -367,9 +352,6 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     groups = client.list_groups(order_by, next_link)
 
     groups_readable, groups_outputs = parse_outputs(groups['value'])
-    human_readable = tableToMarkdown(name="Groups:", t=groups_readable,
-                                     headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
-                                     removeNull=True)
 
     next_link_response = ''
     if '@odata.nextLink' in groups:
@@ -378,8 +360,14 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if next_link_response:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID).NextLink': next_link_response,
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+        title = 'Groups (Note that there are more results. Please use the next_link argument to see them.):'
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': groups_outputs}
+        title = 'Groups:'
+
+    human_readable = tableToMarkdown(name=title, t=groups_readable,
+                                     headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail'],
+                                     removeNull=True)
 
     return human_readable, entry_context, groups
 
@@ -477,15 +465,20 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return human_readable, NO_OUTPUTS, NO_OUTPUTS
 
     members_readable, members_outputs = parse_outputs(members['value'])
-    human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
-                                     headers=['ID', 'Display Name', 'Job Title', 'Mail'],
-                                     removeNull=True)
+
     if '@odata.nextLink' in members:
         next_link_response = members['@odata.nextLink']
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': next_link_response,
                          f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        title = f'Group {group_id} members ' \
+                f'(Note that there are more results. Please use the next_link argument to see them.):'
     else:
         entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        title = f'Group {group_id} members:'
+
+    human_readable = tableToMarkdown(name=title, t=members_readable,
+                                     headers=['ID', 'Display Name', 'Job Title', 'Mail'],
+                                     removeNull=True)
 
     return human_readable, entry_context, members
 
