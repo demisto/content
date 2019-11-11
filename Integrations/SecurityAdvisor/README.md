@@ -27,7 +27,7 @@ You need an API key for this integration.
     * __use system proxy__
     * __trust any certificate__
     * __API Endpoint URL__ = "https://www.securityadvisor.io/
-    * __api key__ = See Prerequisites above to get your API key
+    * __API Key__ = See Prerequisites above to get your API key
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ## Commands
