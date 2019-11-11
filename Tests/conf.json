@@ -223,6 +223,10 @@
             "playbookID": "ExtraHop-Test"
         },
         {
+            "integrations": "ExtraHop v2",
+            "playbookID": "ExtraHop_v2-Test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -1969,6 +1973,7 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "ExtraHop v2": "No instance",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
