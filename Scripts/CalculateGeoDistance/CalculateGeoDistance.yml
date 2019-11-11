@@ -27,4 +27,4 @@ runonce: false
 dockerimage: demisto/geopy:1.0.0.3443
 runas: DBotWeakRole
 tests:
-  - Impossible Traveller - Test
+  - Impossible Traveler - Test

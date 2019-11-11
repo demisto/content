@@ -2,7 +2,7 @@
 	"fromVersion": "5.0.0",
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Impossible Traveller"
+		"Impossible Traveler"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -11,7 +11,7 @@
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "The IP address the impossible traveller logged in to.",
+	"description": "The IP address the impossible traveler logged in to.",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,

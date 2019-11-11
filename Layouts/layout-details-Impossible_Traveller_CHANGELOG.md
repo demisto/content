@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added a layout for the Impossible Traveller incident type.
+Added a layout for the Impossible Traveler incident type.

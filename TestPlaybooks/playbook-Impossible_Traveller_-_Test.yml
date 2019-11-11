@@ -1,7 +1,7 @@
-id: Impossible Traveller - Test
+id: Impossible Traveler - Test
 version: -1
 fromversion: 5.0.0
-name: Impossible Traveller - Test
+name: Impossible Traveler - Test
 starttaskid: "0"
 tasks:
   "0":
@@ -35,7 +35,7 @@ tasks:
     task:
       id: 02e90978-27c5-4e96-8b10-6abbf5d406f9
       version: -1
-      name: Set impossible traveller data
+      name: Set impossible traveler data
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -370,8 +370,8 @@ tasks:
     task:
       id: 6b822678-dc93-4f5d-839b-a89697413e86
       version: -1
-      name: Impossible Traveller
-      playbookName: Impossible Traveller
+      name: Impossible Traveler
+      playbookName: Impossible Traveler
       type: playbook
       iscommand: false
       brand: ""

@@ -1,10 +1,10 @@
 {
-	"TypeName": "Impossible Traveller",
+	"TypeName": "Impossible Traveler",
 	"kind": "details",
 	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
-		"id": "Impossible Traveller",
+		"id": "Impossible Traveler",
 		"kind": "details",
 		"modified": "2019-11-11T14:04:04.055405772Z",
 		"name": "",
@@ -542,9 +542,9 @@
 				"type": "custom"
 			}
 		],
-		"typeId": "Impossible Traveller",
+		"typeId": "Impossible Traveler",
 		"version": 11
 	},
-	"typeId": "Impossible Traveller",
+	"typeId": "Impossible Traveler",
 	"version": -1
 }

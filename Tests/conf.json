@@ -1505,7 +1505,7 @@
             "fromversion": "4.5.0"
         },
             {
-            "playbookID": "Impossible Traveller - Test",
+            "playbookID": "Impossible Traveler - Test",
             "integrations": [
                 "Ipstack",
                 "ipinfo",

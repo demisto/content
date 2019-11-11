@@ -2,7 +2,7 @@
 	"fromVersion": "5.0.0",
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Impossible Traveller"
+		"Impossible Traveler"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

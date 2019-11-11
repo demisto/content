@@ -1,9 +1,9 @@
-id: Impossible Traveller
+id: Impossible Traveler
 version: -1
 fromversion: 5.0.0
-name: Impossible Traveller
+name: Impossible Traveler
 description: |-
-  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveller). The playbook gathers user, timestamp and IP information
+  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveler). The playbook gathers user, timestamp and IP information
   associated with the multiple application login attempts.
 
   The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
@@ -191,7 +191,7 @@ tasks:
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is an impossible
-        traveller, and sets the incident severity to high.
+        traveler, and sets the incident severity to high.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -268,7 +268,7 @@ tasks:
       destntdomain: {}
       details:
         simple: A user has logged in from multiple geographical locations in too short
-          an amount of time. The user is an impossible traveller according to the
+          an amount of time. The user is an impossible traveler according to the
           maximum miles per hour allowed.
       detectedusers: {}
       detectorid: {}
@@ -916,7 +916,7 @@ tasks:
       id: 3c33b8c9-3f92-4ba1-8eb2-ce8462c3a58b
       version: -1
       name: Did the user travel more than the allowed MPH?
-      description: Checks whether the user travelled faster than the allowed speed
+      description: Checks whether the user traveled faster than the allowed speed
         in MPH.
       type: condition
       iscommand: false
@@ -972,7 +972,7 @@ tasks:
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is a legitimate
-        traveller, and sets the incident severity to low.
+        traveler, and sets the incident severity to low.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1339,7 +1339,7 @@ tasks:
       version: -1
       name: Update incident details and set severity
       description: Updates the incident details to say that the user is a legitimate
-        traveller because the login events originated from whitelisted IP addresses,
+        traveler because the login events originated from whitelisted IP addresses,
         and sets the incident severity to low.
       script: Builtin|||setIncident
       type: regular
@@ -2206,7 +2206,7 @@ tasks:
       cc: {}
       email: {}
       message:
-        simple: '!Print value="User ${incident.username} travelled ${Geo.Distance}
+        simple: '!Print value="User ${incident.username} traveled ${Geo.Distance}
           miles in ${(Time.Difference)} minutes. Was this an expected event?"'
       option1: {}
       option2: {}
@@ -2217,7 +2217,7 @@ tasks:
       retries: {}
       roles: {}
       subject:
-        simple: User ${incident.username} is an impossible traveller!
+        simple: User ${incident.username} is an impossible traveler!
       task:
         simple: TravelQuestion
     reputationcalc: 1
@@ -2601,7 +2601,7 @@ inputs:
   required: false
   description: The maximum miles per hour that is still considered reasonable. If
     the geographical distance and difference in time between logins is greater than
-    this value, the user will be considered an impossible traveller.
+    this value, the user will be considered an impossible traveler.
 - key: WhitelistedIPs
   value: {}
   required: false
@@ -2618,19 +2618,19 @@ inputs:
   required: false
   description: The default link from which to create a travel map. The "SOURCE" and
     "DESTINATION" words are replaced with the previous coordinates and current coordinates
-    of the traveller, respectively.
+    of the traveler, respectively.
 - key: AutomaticallyDisableUser
   value:
     simple: 'False'
   required: false
-  description: Whether to automatically disable the impossible traveller account using
+  description: Whether to automatically disable the impossible traveler account using
     Active Directory.
 - key: ContactUserManager
   value:
     simple: 'False'
   required: false
   description: Whether to ask the user manager for the legitimacy of the login events,
-    in case of an alleged impossible traveller.
+    in case of an alleged impossible traveler.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
@@ -2692,4 +2692,4 @@ outputs:
   description: Endpoint domain name
   type: string
 tests:
-  - Impossible Traveller - Test
+  - Impossible Traveler - Test
