@@ -31,6 +31,9 @@ def get_docker_images(script_obj):
     alt_imgs = script_obj.get('alt_dockerimages')
     if alt_imgs:
         imgs.extend(alt_imgs)
+    if 'dockerimage45' in script_obj:
+        img45 = script_obj.get('dockerimage45') or DEF_DOCKER
+        imgs.append(img45)
     return imgs
 
 
@@ -306,6 +309,9 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         script_obj = script_obj.get('script')
     script_type = script_obj.get('type')
     if script_type != 'python':
+        if script_type == 'powershell':
+            # TODO powershell linting
+            return 0
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
     dockers = get_docker_images(script_obj)

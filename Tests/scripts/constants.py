@@ -57,12 +57,14 @@ SCHEMA_REGEX = 'Tests/schemas/.*.yml'
 SCRIPT_TYPE_REGEX = '.*script-.*.yml'
 SCRIPT_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(SCRIPTS_DIR)
 SCRIPT_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(SCRIPTS_DIR)
+SCRIPT_PS_REGEX = r'{}/([^\\/]+)/\1.ps1$'.format(SCRIPTS_DIR)
 SCRIPT_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(SCRIPTS_DIR)
 TEST_SCRIPT_REGEX = r'{}.*script-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 SCRIPT_REGEX = r'{}/(script-[^\\/]+)\.yml$'.format(SCRIPTS_DIR)
 
 INTEGRATION_PY_REGEX = r'{}/([^\\/]+)/\1.py$'.format(INTEGRATIONS_DIR)
 INTEGRATION_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(INTEGRATIONS_DIR)
+INTEGRATION_PS_REGEX = r'{}/([^\\/]+)/\1.ps1$'.format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
@@ -75,6 +77,8 @@ BETA_PLAYBOOK_REGEX = r'{}.*playbook-.*\.yml$'.format(BETA_INTEGRATIONS_DIR)
 PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
+
+EXTERNAL_PR_REGEX = r'^pull/(\d+)$'
 
 
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
@@ -101,7 +105,7 @@ CHECKED_TYPES_REGEXES = [PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX,
 
 PACKAGE_SUPPORTING_DIRECTORIES = [INTEGRATIONS_DIR, SCRIPTS_DIR, BETA_INTEGRATIONS_DIR]
 
-IGNORED_TYPES_REGEXES = [DESCRIPTION_REGEX, IMAGE_REGEX, PIPFILE_REGEX]
+IGNORED_TYPES_REGEXES = [DESCRIPTION_REGEX, IMAGE_REGEX, PIPFILE_REGEX, SCHEMA_REGEX]
 
 
 PACKAGE_YML_FILE_REGEX = r'(?:\./)?(?:Integrations|Scripts)/([^\\/]+)/\1.yml'
@@ -134,19 +138,22 @@ SPELLCHECK_FILE_TYPES = [
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
 
-CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
+CODE_FILES_REGEX = [INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX,
+                    INTEGRATION_PS_REGEX, SCRIPT_PS_REGEX]
 
-SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX]
+SCRIPTS_REGEX_LIST = [SCRIPT_YML_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX]
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js'
+    'javascript': '.js',
+    'powershell': '.ps1'
 }
 
 FILE_TYPES_FOR_TESTING = [
     '.py',
     '.js',
-    '.yml'
+    '.yml',
+    '.ps1'
 ]
 
 # python subtypes
