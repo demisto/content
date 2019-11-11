@@ -122,10 +122,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 70b1ec08-66fc-4e25-8f77-7fd2aef4ef24
+    taskid: 4cebffbf-fc15-405c-8120-8203f238ca28
     type: playbook
     task:
-      id: 70b1ec08-66fc-4e25-8f77-7fd2aef4ef24
+      id: 4cebffbf-fc15-405c-8120-8203f238ca28
       version: -1
       name: DBot Create Phishing Classifier V2
       playbookName: DBot Create Phishing Classifier V2
@@ -136,37 +136,7 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
-    scriptarguments:
-      dedupThreshold:
-        simple: "0.99"
-      emailSubjectKey:
-        simple: emailsubject
-      emailTagKey:
-        simple: emailclassification
-      emailTextKey:
-        simple: details
-      hashSeed: {}
-      historicalDataFileListName: {}
-      incidentTypes:
-        simple: Phishing
-      incidentsQuery: {}
-      maxIncidentsToFetchOnTraining:
-        simple: "3000"
-      modelName:
-        simple: phishing_model
-      modelTargetAccuracy:
-        simple: "0.8"
-      overrideModel:
-        simple: "true"
-      phishingLabels:
-        simple: '*'
-      removeShortTextThreshold:
-        simple: "15"
     separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
     view: |-
       {
         "position": {

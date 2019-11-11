@@ -132,9 +132,9 @@ def store_model_in_demisto(model_name, model_override, train_text_data, train_ta
                                                    'modelOverride': model_override})
     if is_error(res):
         return_error(get_error(res))
-
+    confusion_matrix_no_all = confusion_matrix.drop("All", axis=0, errors='ignore').drop("All", axis=1, errors='ignore')
     res = demisto.executeCommand('evaluateMLModel',
-                                 {'modelConfusionMatrix': confusion_matrix.to_json(),
+                                 {'modelConfusionMatrix': confusion_matrix_no_all.to_json(),
                                   'modelName': model_name})
     if is_error(res):
         return_error(get_error(res))
