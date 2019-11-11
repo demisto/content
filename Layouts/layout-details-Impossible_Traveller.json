@@ -1,10 +1,10 @@
 {
 	"kind": "details",
-	"fromVersion": "4.1.0",
+	"fromVersion": "4.5.0",
 	"layout": {
 		"id": "Impossible Traveller",
 		"kind": "details",
-		"modified": "2019-11-06T18:03:42.06566925Z",
+		"modified": "2019-11-11T09:23:34.712718418Z",
 		"name": "",
 		"sections": [
 			{
@@ -184,6 +184,13 @@
 						"isVisible": true,
 						"modified": "0001-01-01T00:00:00Z",
 						"version": 0
+					},
+					{
+						"fieldId": "incident_travelmaplink",
+						"id": "",
+						"isVisible": true,
+						"modified": "0001-01-01T00:00:00Z",
+						"version": 0
 					}
 				],
 				"id": "",
@@ -223,12 +230,29 @@
 				"id": "",
 				"isVisible": true,
 				"modified": "0001-01-01T00:00:00Z",
-				"name": "Incident Files",
+				"name": "Event Calculations",
 				"query": {
 					"categories": [],
 					"tags": [
 						"eventduration",
 						"geodistance"
+					]
+				},
+				"queryType": "warRoomFilter",
+				"readOnly": true,
+				"type": "invTimeline",
+				"version": 0
+			},
+			{
+				"description": "Information about the offending user.",
+				"fields": [],
+				"id": "",
+				"isVisible": true,
+				"modified": "0001-01-01T00:00:00Z",
+				"name": "User Information",
+				"query": {
+					"tags": [
+						"userinfo"
 					]
 				},
 				"queryType": "warRoomFilter",
@@ -432,7 +456,7 @@
 		],
 		"system": false,
 		"typeId": "Impossible Traveller",
-		"version": 13
+		"version": 15
 	},
 	"typeId": "Impossible Traveller"
 }

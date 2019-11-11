@@ -42,9 +42,9 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
       - "9"
       - "10"
+      - "11"
     scriptarguments:
       addLabels: {}
       affecteddata: {}
@@ -267,32 +267,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: fc7f15ff-08b8-41ac-8261-9443a4a2c573
-    type: playbook
-    task:
-      id: fc7f15ff-08b8-41ac-8261-9443a4a2c573
-      version: -1
-      name: Impossible Traveller
-      playbookName: Impossible Traveller
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "7":
     id: "7"
     taskid: c129e988-4dc1-4886-8a99-62b88c42f943
@@ -384,6 +358,32 @@ tasks:
         "position": {
           "x": -10,
           "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 6b822678-dc93-4f5d-839b-a89697413e86
+    type: playbook
+    task:
+      id: 6b822678-dc93-4f5d-839b-a89697413e86
+      version: -1
+      name: Impossible Traveller
+      playbookName: Impossible Traveller
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
         }
       }
     note: false
