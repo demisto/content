@@ -58,7 +58,8 @@ def coach_end_user_command(client, args):
     context = args.get('context')
     data = json.dumps({"username": user, "context": context})
     result = client.http_request_coachuser(data)
-    readable_output = "## {0}".format(result)
+    readable_output = tableToMarkdown("Coaching Status", [result], ['message', 'coaching_status', 'coaching_score',
+                                                                    'coaching_date'])
     contxt = makehash()
     contxt['user'] = user
     contxt['context'] = context
@@ -79,10 +80,13 @@ def coach_end_user_command(client, args):
 
 def test_module(client):
     """Test Module when testing integration"""
-    data = json.dumps(
-        {"username": "track@securityadvisor.io", "context": "malware"})
+    data = json.dumps({
+        "username": "track@securityadvisor.io",
+        "context": "malware"
+    })
     client.http_request_coachuser(data)
-    return('ok')
+
+    return 'ok'
 
 
 ''' EXECUTION '''
