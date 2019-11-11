@@ -1,8 +1,8 @@
+from CommonServerPython import *
+
 import uuid
 import pickle
 from dateutil import parser
-
-from CommonServerPython import *
 
 
 def parse_datetime(datetime_str):
