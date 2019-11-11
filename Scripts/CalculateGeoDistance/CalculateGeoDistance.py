@@ -5,8 +5,6 @@ import geopy.distance
 
 requests.packages.urllib3.disable_warnings()
 
-entries = []
-
 try:
     # Extract each set of coordinates and create a list
     src_coords_list = argToList(demisto.args()['src_coords'])
@@ -29,4 +27,3 @@ try:
 
 except Exception as ex:
     return_error('Error occurred while parsing output from command. Exception info:\n' + str(ex))
-

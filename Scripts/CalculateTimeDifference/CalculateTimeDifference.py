@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-entries = []
 start_time = demisto.args()['start_time'].replace('"', '')
 end_time = demisto.args()['end_time'].replace('"', '')
 
