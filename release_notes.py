@@ -70,7 +70,7 @@ def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content:
+class Content(object):  # pylint: disable=useless-object-inheritance
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):

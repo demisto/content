@@ -4,10 +4,11 @@ import os
 import io
 import sys
 import glob
-import yaml
 import base64
 import argparse
 import re
+import yaml
+
 from Tests.test_utils import server_version_compare
 
 IS_CI = os.getenv('CI', False)
@@ -75,8 +76,8 @@ def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
             raise ValueError('Output file already exists: {}.'
                              ' Make sure to remove this file from source control'
                              ' or rename this package (for example if it is a v2).'.format(output_path))
-        with io.open(file_path, mode='w', encoding='utf-8') as f:
-            f.write(file_text)
+        with io.open(file_path, mode='w', encoding='utf-8') as file_:
+            file_.write(file_text)
     return output_map
 
 
@@ -124,7 +125,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     yml_text, script_path = insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data)
     image_path = None
     desc_path = None
-    if dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
+    if dir_name in ('Integrations', 'Beta_Integrations'):
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
@@ -134,7 +135,8 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_data, found_img_path = get_data(dir_name, package_path, "*png")
-    image_data = IMAGE_PREFIX + base64.b64encode(image_data)
+    image_base64 = base64.b64encode(image_data).decode('utf-8')
+    image_data = IMAGE_PREFIX + image_base64
 
     if yml_data.get('image'):
         yml_text = yml_text.replace(yml_data['image'], image_data)
@@ -150,18 +152,19 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
 
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
-    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
-
     if yml_data.get('detaileddescription'):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
                          ' in the package: {}'.format(package_path))
+
+    desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
     if desc_data:
+        desc_data = desc_data.decode('utf-8')
         if not desc_data.startswith('"'):
             # for multiline detailed-description, if it's not wrapped in quotation marks
             # add | to the beginning of the description, and shift everything to the right
             desc_data = '|\n  ' + desc_data.replace('\n', '\n  ')
         temp_yml_text = u"detaileddescription: "
-        temp_yml_text += desc_data.encode("utf-8")
+        temp_yml_text += desc_data
         temp_yml_text += u"\n"
         temp_yml_text += yml_text
 
@@ -193,7 +196,8 @@ def get_code_file(package_path, script_type):
     :rtype: str
     """
 
-    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
+    ignore_regex = r'CommonServerPython\.py|CommonServerUserPython\.py|' \
+                   r'demistomock\.py|test_.*\.py|_test\.py|conftest\.py'
     if not package_path.endswith('/'):
         package_path += '/'
     if package_path.endswith('Scripts/CommonServerPython/'):
@@ -221,7 +225,7 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
                                  .format(package_path))
 
-    elif dir_name == 'Integrations' or dir_name == 'Beta_Integrations':
+    elif dir_name in ('Integrations', 'Beta_Integrations'):
         if yml_data.get('script', {}).get('script'):
             if yml_data['script']['script'] != '-' and yml_data['script']['script'] != '':
                 raise ValueError("Please change the script to be blank or a dash(-) for package {}"
@@ -265,7 +269,7 @@ def get_package_path():
         package_path = package_path + '/'
 
     directory_name = ""
-    for dir_name in DIR_TO_PREFIX.keys():
+    for dir_name in DIR_TO_PREFIX:
         if dir_name in package_path:
             directory_name = dir_name
 
@@ -277,7 +281,11 @@ def get_package_path():
     return package_path, directory_name, dest_path
 
 
-if __name__ == "__main__":
+def main():
     package_path, dir_name, dest_path = get_package_path()
-    output, yml, script, image, desc = merge_script_package_to_yml(package_path, dir_name, dest_path)
+    output, yml, script, image, _ = merge_script_package_to_yml(package_path, dir_name, dest_path)
     print("Done creating: {}, from: {}, {}, {}".format(output, yml, script, image))
+
+
+if __name__ == "__main__":
+    main()
