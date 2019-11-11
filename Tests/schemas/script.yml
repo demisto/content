@@ -59,6 +59,8 @@ mapping:
     type: text
   dockerimage:
     type: str
+  dockerimage45:
+    type: str
   alt_dockerimages:
     type: seq
     sequence:
