@@ -125,7 +125,7 @@ script:
       description: Job state
       type: string
     - contextPath: Accessdata.Job.Result
-      description: Job result
+      description: Path to snapshot with processes list
       type: string
     - contextPath: Accessdata.Job.ID
       description: ID of the job
@@ -152,7 +152,7 @@ script:
       description: Job state
       type: string
     - contextPath: Accessdata.Job.Result
-      description: Job result
+      description: Path to memory dump
       type: string
     - contextPath: Accessdata.Job.ID
       description: ID of the job

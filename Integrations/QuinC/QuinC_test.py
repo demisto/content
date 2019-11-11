@@ -109,7 +109,7 @@ def test_command_accessdata_get_jobstatus_processlist(mocker, requests_mock):
     assert entry_context['ID'] == MOCK_GET_STATUS_ARGS["jobID"]
     assert entry_context['CaseJobID'] == str(MOCK_GET_STATUS_ARGS["caseID"]) + "_" + str(MOCK_GET_STATUS_ARGS["jobID"])
     assert entry_context['State'] == 'Success'
-    assert entry_context['Result']['SnapshotDetails']['File'] == '\\\\' + MOCK_BASE_URL + '\\D$\\Program Files\\AccessData\\' + \
+    assert entry_context['Result'] == '\\\\' + MOCK_BASE_URL + '\\D$\\Program Files\\AccessData\\' + \
         'QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_967\\' + \
         'eb849680-2e81-4416-b1b5-5047fd1bc4b1\\1\\snapshot.xml'
 
