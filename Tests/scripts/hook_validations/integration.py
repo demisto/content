@@ -1,5 +1,6 @@
 from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, get_dockerimage45
+from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, \
+    get_dockerimage45
 
 
 class IntegrationValidator(object):
@@ -238,15 +239,17 @@ class IntegrationValidator(object):
                 "Field 'id' should NOT contain the substring \"beta\" in a new beta integration. "
                 "please change the id in the file {}".format(self.file_path))
             return False
+
         return True
 
     def _name_has_no_beta_substring(self):
         """Checks that 'name' field dose not include the substring 'beta'"""
         name = self.current_integration.get('name', '')
         if 'beta' in name.lower():
-            "Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
-            "please change the id in the file {}".format(self.file_path)
+            print_error("Field 'name' should NOT contain the substring \"beta\" in a new beta integration. "
+                        "please change the id in the file {}".format(self.file_path))
             return False
+
         return True
 
     def _has_beta_param(self):
@@ -265,6 +268,7 @@ class IntegrationValidator(object):
                 "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
                 " in the file {}".format(self.file_path))
             return False
+
         return True
 
     def is_there_duplicate_args(self):

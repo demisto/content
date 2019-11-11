@@ -1,9 +1,6 @@
 from Tests.scripts.constants import PYTHON_SUBTYPES
 from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare, get_dockerimage45
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
 
 class ScriptValidator(object):
     """ScriptValidator is designed to validate the correctness of the file structure we enter to content repo. And
