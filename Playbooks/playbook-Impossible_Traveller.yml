@@ -1906,6 +1906,7 @@ tasks:
       id: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
       version: -1
       name: Can the account be enriched?
+      description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -2235,6 +2236,7 @@ tasks:
       id: a2636351-dafa-4e59-83e2-1000af044c4d
       version: -1
       name: Get manager response
+      description: Gets a response from the manager as to whether the travel done by the user was expected. The response is received from the email reply that the manager sends.
       tags:
       - TravelQuestion
       type: condition
