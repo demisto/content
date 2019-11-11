@@ -8,7 +8,8 @@ from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGR
     INTEGRATION_YML_REGEX, PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATION_YML_REGEX, INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, BETA_INTEGRATION_YML_REGEX
 from Tests.scripts.hook_validations.error_constants import Errors
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_release_notes_file_path
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_release_notes_file_path, \
+    get_latest_release_notes_text
 from yml_based import YMLBasedValidator
 
 # disable insecure warnings
@@ -390,7 +391,8 @@ class IntegrationValidator(YMLBasedValidator):
 
         return False
 
-    def _get_command_to_context_paths(self, integration_json):
+    @classmethod
+    def _get_command_to_context_paths(cls, integration_json):
         """Get a dictionary command name to it's context paths.
 
         Args:
