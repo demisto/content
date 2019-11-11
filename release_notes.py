@@ -33,6 +33,7 @@ LAYOUT_TYPE_TO_NAME = {
     "close": "Close",
     "quickView": "Quick View",
     "indicatorsDetails": "Indicator Details",
+    "mobile": "Mobile",
 }
 
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
