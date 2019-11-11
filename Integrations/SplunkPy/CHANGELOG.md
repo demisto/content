@@ -1,5 +1,5 @@
 ## [Unreleased]
-Increased Splunk maximal fetch limit.
+Increased the maximum fetch limit for Splunk.
 
 ## [19.10.2] - 2019-10-29
   - Improved handling of the *app context* parameter.
