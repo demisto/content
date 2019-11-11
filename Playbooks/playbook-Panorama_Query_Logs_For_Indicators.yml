@@ -1,20 +1,20 @@
-id: Panorama Query Logs For Indicators
-version: -1
+id: Panorama Query Logs For Indicators1
+version: 3
 name: Panorama Query Logs For Indicators
 fromversion: 4.5.0
-description: 'Query Panorama Logs of types in one playbook: traffic, threat, url, data-filtering and
-  wildfire. The playbook accepts inputs such as IP. hash, url.'
+description: 'Query Panorama Logs of types in one playbook: traffic, threat, url,
+  data-filtering and wildfire. The playbook accepts inputs such as IP. hash, url.'
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 08b8e29f-c033-4801-83df-a9a9e8d7202d
+    taskid: c1ddd525-1f6c-49ab-80fd-7fe685a9686b
     type: start
     task:
-      description: Start
-      id: 08b8e29f-c033-4801-83df-a9a9e8d7202d
+      id: c1ddd525-1f6c-49ab-80fd-7fe685a9686b
       version: -1
       name: ""
+      description: Start
       iscommand: false
       brand: ""
     nexttasks:
@@ -33,10 +33,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 46bab627-cd26-406e-8059-798bec0fbbc3
+    taskid: 57d0d3cd-1935-48e5-8691-a8a617ee352f
     type: condition
     task:
-      id: 46bab627-cd26-406e-8059-798bec0fbbc3
+      id: 57d0d3cd-1935-48e5-8691-a8a617ee352f
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
       description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
@@ -69,14 +69,6 @@ tasks:
                     right:
                       value:
                         simple: Panorama
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama V2
                 - - operator: isEqualString
                     left:
                       value:
@@ -99,10 +91,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: df85d1e4-475c-4efd-8c48-7861e3ba8973
+    taskid: 56a847a1-6a9f-418e-886a-7f84868c2700
     type: regular
     task:
-      id: df85d1e4-475c-4efd-8c48-7861e3ba8973
+      id: 56a847a1-6a9f-418e-886a-7f84868c2700
       version: -1
       name: Panorama query traffic logs
       description: Query logs
@@ -144,10 +136,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 815e353e-6597-4efd-8490-1b1a5de72926
+    taskid: a7646f68-c9f8-4c44-8a9f-f4b892db03da
     type: playbook
     task:
-      id: 815e353e-6597-4efd-8490-1b1a5de72926
+      id: a7646f68-c9f8-4c44-8a9f-f4b892db03da
       version: -1
       name: GenericPolling
       description: |-
@@ -199,10 +191,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0843a172-3f3c-4e7a-8a6a-70e32e21c456
+    taskid: e7b5d193-6157-43dd-8a93-ac7a2e86db35
     type: regular
     task:
-      id: 0843a172-3f3c-4e7a-8a6a-70e32e21c456
+      id: e7b5d193-6157-43dd-8a93-ac7a2e86db35
       version: -1
       name: Panorama Get Logs
       description: Retrieves logs query data by job ID.
@@ -241,13 +233,13 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: ad2ca30f-252a-4665-8c4c-eb638a091803
+    taskid: 241187f0-f89c-484a-8289-eafe4587aa58
     type: title
     task:
-      description: Header
-      id: ad2ca30f-252a-4665-8c4c-eb638a091803
+      id: 241187f0-f89c-484a-8289-eafe4587aa58
       version: -1
       name: Done
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -264,10 +256,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 583be7f7-7667-4ec6-80cd-54577d3d3d87
+    taskid: eef44548-c566-4939-8f7e-a9d0402d7bd1
     type: regular
     task:
-      id: 583be7f7-7667-4ec6-80cd-54577d3d3d87
+      id: eef44548-c566-4939-8f7e-a9d0402d7bd1
       version: -1
       name: Panorama Check Logs Status
       description: Checks the status of a logs query.
@@ -296,13 +288,13 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: dc243818-9e35-4e7f-878e-7effa857f3b6
+    taskid: 49b27e13-f4ba-4205-892b-3542011945b6
     type: condition
     task:
-      id: dc243818-9e35-4e7f-878e-7effa857f3b6
-      description: Filter JobID
+      id: 49b27e13-f4ba-4205-892b-3542011945b6
       version: -1
       name: Filter JobID
+      description: Filter JobID
       type: condition
       iscommand: false
       brand: ""
@@ -343,13 +335,13 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: c0bd410c-2179-4615-8c34-94088c9f6407
+    taskid: 130de51c-f381-425a-8e69-34f78c72f23a
     type: condition
     task:
-      id: c0bd410c-2179-4615-8c34-94088c9f6407
-      description: Search ip in traffic logs?
+      id: 130de51c-f381-425a-8e69-34f78c72f23a
       version: -1
       name: Search ip in traffic logs?
+      description: Search ip in traffic logs?
       type: condition
       iscommand: false
       brand: ""
@@ -382,10 +374,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 46925eaa-c4b2-459f-80af-764364a4d766
+    taskid: fbbab8fb-3e4c-4685-8586-a5f15274b55e
     type: regular
     task:
-      id: 46925eaa-c4b2-459f-80af-764364a4d766
+      id: fbbab8fb-3e4c-4685-8586-a5f15274b55e
       version: -1
       name: Panorama query threat logs
       description: Query logs
@@ -427,13 +419,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 041f4f5e-cdae-40bf-8bbd-b7041e167bb7
+    taskid: 8941513b-1034-42c9-87d0-bab58c52a174
     type: condition
     task:
-      id: 041f4f5e-cdae-40bf-8bbd-b7041e167bb7
-      description: Search ip in threat logs?
+      id: 8941513b-1034-42c9-87d0-bab58c52a174
       version: -1
       name: Search ip in threat logs?
+      description: Search ip in threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -466,13 +458,13 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 93197282-50c0-4c15-8bc2-7e78a948b5e6
+    taskid: 54a954f5-f35f-4dd1-87ca-0da2e4f86fa7
     type: title
     task:
-      id: 93197282-50c0-4c15-8bc2-7e78a948b5e6
-      description: Header
+      id: 54a954f5-f35f-4dd1-87ca-0da2e4f86fa7
       version: -1
       name: IP search
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -492,13 +484,13 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 274d8fd4-b255-40dc-8adb-f1fa7078e228
+    taskid: c808c230-8889-421c-8c8c-54517e9c4854
     type: condition
     task:
-      id: 274d8fd4-b255-40dc-8adb-f1fa7078e228
-      description: Is there an IP?
+      id: c808c230-8889-421c-8c8c-54517e9c4854
       version: -1
       name: Is there an IP?
+      description: Is there an IP?
       type: condition
       iscommand: false
       brand: ""
@@ -532,13 +524,13 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 01307e37-d664-471a-842b-8c30d276ccb7
+    taskid: 6abcd080-9c88-486c-8885-674e250cd1b7
     type: condition
     task:
-      id: 01307e37-d664-471a-842b-8c30d276ccb7
-      description: Search ip in wildfire logs?
+      id: 6abcd080-9c88-486c-8885-674e250cd1b7
       version: -1
       name: Search ip in wildfire logs?
+      description: Search ip in wildfire logs?
       type: condition
       iscommand: false
       brand: ""
@@ -571,10 +563,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 433b635a-3335-437e-8ead-4292624ae24e
+    taskid: f108c67e-d3dc-4d55-86e9-213251c633fc
     type: regular
     task:
-      id: 433b635a-3335-437e-8ead-4292624ae24e
+      id: f108c67e-d3dc-4d55-86e9-213251c633fc
       version: -1
       name: Panorama query wildfire logs
       description: Query logs
@@ -616,13 +608,13 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: abab5609-2e98-44e0-8963-dce941d0b23b
+    taskid: 0553f836-c133-423b-853f-d6407089d802
     type: condition
     task:
-      id: abab5609-2e98-44e0-8963-dce941d0b23b
-      description: Search ip in data logs?
+      id: 0553f836-c133-423b-853f-d6407089d802
       version: -1
       name: Search ip in data logs?
+      description: Search ip in data logs?
       type: condition
       iscommand: false
       brand: ""
@@ -655,13 +647,13 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 680fe8ad-c9e4-4b64-8044-22eab4286aba
+    taskid: 0c948f70-0717-4637-8e2a-ed3b8ee51c95
     type: title
     task:
-      id: 680fe8ad-c9e4-4b64-8044-22eab4286aba
-      description: Header
+      id: 0c948f70-0717-4637-8e2a-ed3b8ee51c95
       version: -1
       name: Done
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -678,10 +670,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: 7e92169a-e278-4a73-8bed-fe815cf5429f
+    taskid: 6ed2f451-1236-4c74-8f1c-981b71c40fb3
     type: regular
     task:
-      id: 7e92169a-e278-4a73-8bed-fe815cf5429f
+      id: 6ed2f451-1236-4c74-8f1c-981b71c40fb3
       version: -1
       name: Panorama query data logs
       description: Query logs
@@ -723,10 +715,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 84a17660-82cb-4ec4-8db6-11ca08ef2a3a
+    taskid: 584466b4-3862-43aa-8672-71372d09e9b2
     type: regular
     task:
-      id: 84a17660-82cb-4ec4-8db6-11ca08ef2a3a
+      id: 584466b4-3862-43aa-8672-71372d09e9b2
       version: -1
       name: Panorama query url logs
       description: Query logs
@@ -768,13 +760,13 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: b9b1b349-679d-492f-8965-1524ded67176
+    taskid: 9e7a84f6-55e5-4e37-8e3f-fbc97cc57bec
     type: condition
     task:
-      id: b9b1b349-679d-492f-8965-1524ded67176
-      description: Search ip in url logs?
+      id: 9e7a84f6-55e5-4e37-8e3f-fbc97cc57bec
       version: -1
       name: Search ip in url logs?
+      description: Search ip in url logs?
       type: condition
       iscommand: false
       brand: ""
@@ -807,13 +799,13 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: 2ff96076-2589-41af-83dc-dd00a767dd79
+    taskid: cec1e5f0-ae10-4a05-8159-7a54f018dc7b
     type: title
     task:
-      id: 2ff96076-2589-41af-83dc-dd00a767dd79
-      description: Header
+      id: cec1e5f0-ae10-4a05-8159-7a54f018dc7b
       version: -1
       name: Hash Search
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -833,13 +825,13 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: d56e5752-22d0-4097-8aab-099d70a65705
+    taskid: 80cffc16-2b3c-45d2-8d94-1349b73fd418
     type: condition
     task:
-      id: d56e5752-22d0-4097-8aab-099d70a65705
-      description: Is there a hash?
+      id: 80cffc16-2b3c-45d2-8d94-1349b73fd418
       version: -1
       name: Is there a hash?
+      description: Is there a hash?
       type: condition
       iscommand: false
       brand: ""
@@ -869,13 +861,13 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: ffabee77-4688-4473-8479-046cf6e8f330
+    taskid: 21a3c219-f4f1-4105-8cdb-421e4307e466
     type: condition
     task:
-      id: ffabee77-4688-4473-8479-046cf6e8f330
-      description: Search hash in wildfire logs?
+      id: 21a3c219-f4f1-4105-8cdb-421e4307e466
       version: -1
       name: Search hash in wildfire logs?
+      description: Search hash in wildfire logs?
       type: condition
       iscommand: false
       brand: ""
@@ -908,10 +900,10 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: c7d8781c-df8b-448d-8b02-7bcd3cfba82f
+    taskid: fa08e49d-32c7-4b77-8ab8-7a210e81edf7
     type: regular
     task:
-      id: c7d8781c-df8b-448d-8b02-7bcd3cfba82f
+      id: fa08e49d-32c7-4b77-8ab8-7a210e81edf7
       version: -1
       name: Panorama query wildfire logs
       description: Query logs
@@ -953,13 +945,13 @@ tasks:
     ignoreworker: false
   "24":
     id: "24"
-    taskid: 7a97a340-7f8e-4547-86c0-9681cab15a14
+    taskid: 17564b13-b2f6-4b2c-8cb3-9258d5d38f02
     type: title
     task:
-      id: 7a97a340-7f8e-4547-86c0-9681cab15a14
-      description: Header
+      id: 17564b13-b2f6-4b2c-8cb3-9258d5d38f02
       version: -1
       name: Url search
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -979,13 +971,13 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 1ddae29f-0830-48ab-8f9f-e1f05704fd06
+    taskid: e1f9aed0-7681-4de8-883d-02dbe84b58dd
     type: condition
     task:
-      id: 1ddae29f-0830-48ab-8f9f-e1f05704fd06
-      description: Is there a url?
+      id: e1f9aed0-7681-4de8-883d-02dbe84b58dd
       version: -1
       name: Is there a url?
+      description: Is there a url?
       type: condition
       iscommand: false
       brand: ""
@@ -1017,13 +1009,13 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: b784fa3a-f2b1-4e27-8f05-d240b6023e0a
+    taskid: b5070580-5f74-47d0-849e-7ffbc56c9d1a
     type: title
     task:
-      id: b784fa3a-f2b1-4e27-8f05-d240b6023e0a
-      description: Header
+      id: b5070580-5f74-47d0-849e-7ffbc56c9d1a
       version: -1
       name: Done
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -1040,13 +1032,13 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: d6dda979-efdb-4154-8b07-af42f1b2cb24
+    taskid: 2fcfbd50-e536-4269-8bd6-ddbbd8acd279
     type: condition
     task:
-      id: d6dda979-efdb-4154-8b07-af42f1b2cb24
-      description: Search hash in threat logs?
+      id: 2fcfbd50-e536-4269-8bd6-ddbbd8acd279
       version: -1
       name: Search hash in threat logs?
+      description: Search hash in threat logs?
       type: condition
       iscommand: false
       brand: ""
@@ -1079,13 +1071,13 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: a5c85264-2361-4305-8fdf-ed4d3db0bdf0
+    taskid: 88a52db7-ebf4-410e-8980-86648005f59f
     type: condition
     task:
-      id: a5c85264-2361-4305-8fdf-ed4d3db0bdf0
-      description: Search hash in url logs?
+      id: 88a52db7-ebf4-410e-8980-86648005f59f
       version: -1
       name: Search hash in url logs?
+      description: Search hash in url logs?
       type: condition
       iscommand: false
       brand: ""
@@ -1118,13 +1110,13 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: bb31a658-f070-46e4-8c72-5b0c9db85027
+    taskid: 085d32b0-c1d5-4750-8389-66ba66c54d9a
     type: condition
     task:
-      id: bb31a658-f070-46e4-8c72-5b0c9db85027
-      description: Search hash in data logs?
+      id: 085d32b0-c1d5-4750-8389-66ba66c54d9a
       version: -1
       name: Search hash in data logs?
+      description: Search hash in data logs?
       type: condition
       iscommand: false
       brand: ""
@@ -1157,10 +1149,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 5e6470f8-6ac9-4494-8cba-3845298c7e76
+    taskid: 13affb47-f167-4474-86a8-6f461571568c
     type: regular
     task:
-      id: 5e6470f8-6ac9-4494-8cba-3845298c7e76
+      id: 13affb47-f167-4474-86a8-6f461571568c
       version: -1
       name: Panorama query threat logs
       description: Query logs
@@ -1202,10 +1194,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 0d89c626-6853-4197-8cb2-8d030f1b6fe3
+    taskid: 0a38376a-bd1c-4f54-8f38-c63c628e40f8
     type: regular
     task:
-      id: 0d89c626-6853-4197-8cb2-8d030f1b6fe3
+      id: 0a38376a-bd1c-4f54-8f38-c63c628e40f8
       version: -1
       name: Panorama query data logs
       description: Query logs
@@ -1247,10 +1239,10 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: 085440ec-0a84-445d-81c7-d3b73a014c74
+    taskid: a4389c54-f814-4e60-87ba-86b270dbc8fb
     type: regular
     task:
-      id: 085440ec-0a84-445d-81c7-d3b73a014c74
+      id: a4389c54-f814-4e60-87ba-86b270dbc8fb
       version: -1
       name: Panorama query url logs
       description: Query logs
