@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "nmap",
-            "playbookID": "Nmap - Test"
+            "playbookID": "Nmap - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
