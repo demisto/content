@@ -146,7 +146,8 @@ def get_yaml(file_path):
                 data_dictionary = yaml.safe_load(f)
             except Exception as e:
                 print_error(file_path + " has yml structure issue. Error was: " + str(e))
-                return []
+                # TODO: Check with rony why did he returned [] and not {}
+                return {}
 
     if type(data_dictionary) is dict:
         return data_dictionary
