@@ -49,7 +49,7 @@ def http_request(method, url_suffix, json=None, wait=0, retries=0):
         if r.status_code == 429:
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error('API rate limit reached. Use the retries and wait arguments whe submitting multile URls')
+                return_error('API rate limit reached. Use the retries and wait arguments when submitting multiple URls')
             else:
                 time.sleep(wait)
                 return http_request(method, url_suffix, json, wait, retries - 1)
