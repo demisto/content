@@ -1,10 +1,8 @@
-import requests
-import re
-
-from Tests.test_utils import get_yaml, print_error
-from typing import Tuple
+from Tests.test_utils import get_yaml, print_error, server_version_compare
 from pkg_resources import parse_version
 from CommonServerPython import *
+import re
+import requests
 
 
 # disable insecure warnings
@@ -141,7 +139,7 @@ def find_latest_tag_by_date(tags):
 
 def get_docker_image_latest_tag(docker_image_name):
     try:
-        tag: str = ''
+        tag = ''
         auth_token = docker_auth(docker_image_name, False, DEFAULT_REGISTRY)
         headers = ACCEPT_HEADER.copy()
         if auth_token:
@@ -177,7 +175,7 @@ def get_docker_image_latest_tag(docker_image_name):
         return_error("Failed getting tag for: {}. Err: {}".format(docker_image_name, str(ex)))
 
 
-def parse_docker_image(docker_image: str) -> Tuple[str, str]:
+def parse_docker_image(docker_image):
     if docker_image:
         try:
             tag = re.findall(r'(demisto\/.+):.+', docker_image, re.IGNORECASE)[0]
@@ -189,14 +187,16 @@ def parse_docker_image(docker_image: str) -> Tuple[str, str]:
             return '', ''
     else:
         # If the yml file has no docker image we provide the default one 'demisto/python:1.3-alpine'
+        # TODO: Check if the default docker image needs to be updated or not
         return 'demisto/python', '1.3-alpine'
 
 
 class DockerImageValidator(object):
 
-    def __init__(self, yml_file_path):
-        self.yml_file_path = yml_file_path
+    def __init__(self, yml_file_path, is_modified_file):
+        self.is_modified_file = is_modified_file
         self.yml_file = get_yaml(yml_file_path)
+        self.from_version = self.yml_file.get('fromversion', '0')
         self.docker_image_name, self.docker_image_tag = parse_docker_image(self.yml_file.get('dockerimage', ''))
         self.is_latest_tag = True
 
@@ -205,7 +205,11 @@ class DockerImageValidator(object):
             # If the docker image isn't in the format we expect it to be
             self.is_latest_tag = False
         else:
-            docker_image_latest_tag = get_docker_image_latest_tag(self.docker_image_name)
-            if docker_image_latest_tag != self.docker_image_tag:
-                self.is_latest_tag = False
+            # We validate only if the file is new file or it's a modified file with version >= 5.0.0
+            if (self.is_modified_file and server_version_compare(self.from_version, '5.0.0') >= 0) or not \
+                    self.is_modified_file:
+                docker_image_latest_tag = get_docker_image_latest_tag(self.docker_image_name)
+                if docker_image_latest_tag != self.docker_image_tag:
+                    self.is_latest_tag = False
+
         return self.is_latest_tag
