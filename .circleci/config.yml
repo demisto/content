@@ -108,6 +108,14 @@ jobs:
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
       - run:
+          name: Verify Base Branch for Contirbution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
+      - run:
           name: Download Artifacts
           when: always
           command: |
@@ -237,10 +245,17 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
