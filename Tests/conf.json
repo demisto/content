@@ -213,6 +213,10 @@
             "playbookID": "ExtraHop-Test"
         },
         {
+            "integrations": "ExtraHop v2",
+            "playbookID": "ExtraHop_v2-Test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
