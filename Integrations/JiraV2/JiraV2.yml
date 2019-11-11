@@ -5,7 +5,7 @@ name: jira-v2
 display: Atlassian Jira (v2)
 fromversion: 5.0.0
 category: Case Management
-description: Use the Jira integration to manage issues and create Demisto incidents from the projects.
+description: Use the Jira integration to manage issues and create Demisto incidents from projects.
 configuration:
 - display: ' Jira URL, for example: https://demisto.atlassian.net/ '
   name: url
@@ -213,14 +213,14 @@ script:
       description: The ID of the issue.
     - name: comment
       required: true
-      description: The actual comment body.
+      description: The comment body.
     - name: visibility
-      description: ' The roles that can view the comment, for example: "Administrators". '
+      description: 'The roles that can view the comment, for example: "Administrators". '
     description: Adds a new comment to an existing Jira issue.
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided and a remote issue link exists with that
+      description: If a globalId is provided, and a remote issue link exists with that
         globalId, the remote issue link is updated.
     - name: relationship
       description: ' The object relationship to issue, for example: "causes". '
@@ -267,7 +267,7 @@ script:
     - contextPath: Ticket.Key
       description: The key of the ticket.
     - contextPath: Ticket.Assignee
-      description: The sser assigned to the ticket.
+      description: The user assigned to the ticket.
     - contextPath: Ticket.Creator
       description: The user who created the ticket.
     - contextPath: Ticket.Summary
@@ -279,7 +279,7 @@ script:
     arguments:
     - name: issueId
       required: true
-      description: The ID of the issue to get comments of.
+      description: The ID of the issue from which to get the comments.
     outputs:
     - contextPath: Ticket.Comment.Comment
       description: The text of the comment.
