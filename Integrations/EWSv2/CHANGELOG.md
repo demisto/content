@@ -1,6 +1,8 @@
 ## [Unreleased]
-- Improved implementation of the ***ews-move-item-between-mailboxes*** command.
--  ***ews-get-items*** and ***ews-search-mailbox*** commands - the mail body will now be printed to the war room and not only in context.
+  - Improved implementation of the ***ews-move-item-between-mailboxes*** command.
+  -  The email body now prints to context and the War Room for the following commands:
+    - ***ews-get-items***
+    - ***ews-search-mailbox***
 
 ## [19.10.2] - 2019-10-29
 - Improved implementation of the ***ews-search-mailbox*** command.
