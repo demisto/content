@@ -6,7 +6,7 @@ type: python
 script: '-'
 tags:
 - Utilities
-comment: Compute the distance between two sets of coordinates in miles.
+comment: Compute the distance between two sets of coordinates, in miles.
 enabled: true
 args:
 - name: src_coords
@@ -19,7 +19,7 @@ args:
     format 1.23,4.56
 outputs:
 - contextPath: Geo.Distance
-  description: Distance between two sets of coordinates in miles.
+  description: Distance between two sets of coordinates, in miles.
 - contextPath: Geo.Coordinates
   description: List of coordinates used in the calculation.
 scripttarget: 0
