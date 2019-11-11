@@ -35,6 +35,7 @@ from Tests.scripts.hook_validations.structure import StructureValidator  # noqa:
 from Tests.scripts.hook_validations.integration import IntegrationValidator  # noqa: E402
 from Tests.scripts.hook_validations.description import DescriptionValidator  # noqa: E402
 from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator  # noqa: E402
+from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: E402
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
     get_yaml, filter_packagify_changes, collect_ids, str2bool  # noqa: E402
 
@@ -239,6 +240,10 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
+                docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                if not docker_image_validator.is_docker_image_latest_tag():
+                    self._is_valid = False
+
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -255,6 +260,12 @@ class FilesValidator(object):
                 if not script_validator.is_valid_script():
                     self._is_valid = False
 
+                # TODO: Check here what about JS script
+                docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                if not docker_image_validator.is_docker_image_latest_tag():
+                    self._is_valid = False
+
+            # TODO: Check here only for py files
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
@@ -277,6 +288,7 @@ class FilesValidator(object):
                 if is_backward_check and not incident_field_validator.is_backward_compatible():
                     self._is_valid = False
 
+    # TODO: Check here for all cases
     def validate_added_files(self, added_files):
         """Validate the added files from your branch.
 
@@ -379,6 +391,7 @@ class FilesValidator(object):
                 schema_changed = True
         # Ensure schema change did not break BC
         if schema_changed:
+            # TODO: Check if needs to edit here also
             self.validate_all_files()
         else:
             self.validate_no_secrets_found(branch_name)
