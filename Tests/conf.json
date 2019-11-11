@@ -1508,6 +1508,18 @@
             "playbookID": "FilterByList - Test",
             "fromversion": "4.5.0"
         },
+            {
+            "playbookID": "Impossible Traveler - Test",
+            "integrations": [
+                "Ipstack",
+                "ipinfo",
+                "Rasterize",
+                "Active Directory Query v2",
+                "Demisto REST API"
+            ],
+            "fromversion": "5.0.0",
+            "timeout": 700
+        },
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
