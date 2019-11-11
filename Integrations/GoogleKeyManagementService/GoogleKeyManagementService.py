@@ -46,13 +46,13 @@ class Client:
             self.kms_client = self._init_kms_client()
 
         except JSONDecodeError:
-            raise Exception("Service Account json has missing details, re-create it")
+            raise Exception("Service Account json has missing details. You need to re-create the json file.")
 
     def _init_kms_client(self):
         """Creates the Python API client for Google Cloud KMS using service account credentials."""
         dictionary_test = json.loads(str(self.service_account))
         if not isinstance(dictionary_test, dict):
-            raise Exception("Service Account json is not formatted well, re-enter it.")
+            raise Exception("Service Account json is not formatted well. You need to change the json file.")
 
         credentials_file_name = demisto.uniqueFile() + '.json'
         credentials_file_path = os.path.join(os.getcwd(), credentials_file_name)
