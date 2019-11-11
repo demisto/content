@@ -39,7 +39,7 @@ ZIP_TEST = 'content_test'
 
 # server can't handle long file names
 MAX_FILE_NAME = 85
-PROBLEMATIC_FILES = []
+LONG_FILE_NAMES = []
 
 
 def add_tools_to_bundle(bundle):
@@ -88,7 +88,7 @@ def copy_dir_yml(dir_name, bundle_post):
     post_files = 0
     for path in scan_files:
         if len(os.path.basename(path)) >= MAX_FILE_NAME:
-            PROBLEMATIC_FILES.append(path)
+            LONG_FILE_NAMES.append(path)
 
         with open(path, 'r') as file_:
             yml_info = yaml.safe_load(file_)
@@ -113,7 +113,7 @@ def copy_dir_json(dir_name, bundle_post):
             dpath = new_path
 
         if len(dpath) >= MAX_FILE_NAME:
-            PROBLEMATIC_FILES.append(os.path.basename(dpath))
+            LONG_FILE_NAMES.append(os.path.basename(dpath))
 
         shutil.copyfile(path, os.path.join(bundle_post, dpath))
 
@@ -183,7 +183,7 @@ def main(circle_artifacts):
 
 if __name__ == '__main__':
     main(sys.argv[1])
-    if PROBLEMATIC_FILES:
+    if LONG_FILE_NAMES:
         print_error(f'The following files exceeded to file name length limit of {MAX_FILE_NAME}:\n'
-                    f'{json.dumps(PROBLEMATIC_FILES, indent=4)}')
+                    f'{json.dumps(LONG_FILE_NAMES, indent=4)}')
         sys.exit(1)
