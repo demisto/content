@@ -1,18 +1,15 @@
-from CommonServerPython import *
-
-''' IMPORTS '''
 from typing import Dict, Tuple, Optional, Any
-import urllib3
-import requests
 from datetime import datetime
 import base64
+import urllib3
+import requests
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
-INTEGRATION_NAME = 'Microsoft Graph Groups'
 INTEGRATION_CONTEXT_NAME = 'MSGraphGroups'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-groups'
@@ -96,8 +93,8 @@ def get_encrypted(content: str, key: str) -> str:
         nonce = create_nonce()
         # Create ciphered data
         data = string.encode()
-        ct = aes_gcm.encrypt(nonce, data, None)
-        return base64.b64encode(nonce + ct)
+        ct_ = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct_)
 
     now = epoch_seconds()
     encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
@@ -123,11 +120,10 @@ class Client(BaseClient):
         if access_token and valid_until:
             if epoch_seconds() < valid_until:
                 return access_token
-        headers = {'Accept': 'application/json'}
 
         dbot_response = requests.post(
             self.token_retrieval_url,
-            headers=headers,
+            headers={'Accept': 'application/json'},
             data=json.dumps({
                 'app_name': APP_NAME,
                 'registration_id': self.auth_id,
@@ -149,8 +145,8 @@ class Client(BaseClient):
                         server_msg = f'{title}. {detail}'
                 if server_msg:
                     msg += f' Server message: {server_msg}'
-            except Exception as ex:
-                demisto.error(f'Failed parsing error response - Exception: {ex}')
+            except Exception as err:
+                demisto.error(f'Failed parsing error response - Exception: {err}')
             raise Exception(msg)
         try:
             gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
@@ -163,7 +159,6 @@ class Client(BaseClient):
             )
         access_token = parsed_response.get('access_token')
         expires_in = parsed_response.get('expires_in', 3595)
-        time_now = epoch_seconds()
         time_buffer = 5  # seconds by which to shorten the validity period
         if expires_in - time_buffer > 0:
             # err on the side of caution with a slightly shorter access token validity period
@@ -171,7 +166,7 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext({
             'access_token': access_token,
-            'valid_until': time_now + expires_in
+            'valid_until': epoch_seconds() + expires_in
         })
         return access_token
 
@@ -362,17 +357,17 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'
         return human_readable, NO_OUTPUTS, NO_OUTPUTS
+
+    members_readable, members_outputs = parse_outputs(members['value'])
+    human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
+                                     headers=['ID', 'Display Name', 'Job Title', 'Mail'],
+                                     removeNull=True)
+    if '@odata.nextLink' in members:
+        next_link_response = members['@odata.nextLink']
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': next_link_response,
+                         f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
     else:
-        members_readable, members_outputs = parse_outputs(members['value'])
-        human_readable = tableToMarkdown(name=f'Group {group_id} members:', t=members_readable,
-                                         headers=['ID', 'Display Name', 'Job Title', 'Mail'],
-                                         removeNull=True)
-        if '@odata.nextLink' in members:
-            next_link_response = members['@odata.nextLink']
-            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': next_link_response,
-                             f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
-        else:
-            entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
 
     return human_readable, entry_context, members
 
@@ -436,8 +431,8 @@ def main():
         # create a war room entry
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)
 
-    except Exception as e:
-        return_error(str(e))
+    except Exception as err:
+        return_error(str(err))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
