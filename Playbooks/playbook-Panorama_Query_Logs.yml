@@ -113,6 +113,9 @@ tasks:
       addr-src:
         complex:
           root: inputs.addr-src
+      ip:
+        complex:
+          root: inputs.ip
       filedigest:
         complex:
           root: inputs.filedigest
@@ -380,6 +383,10 @@ inputs:
   value: {}
   required: false
   description: Destination address.
+- key: ip
+  value: {}
+  required: false
+  description: Source or Destination address.
 - key: zone-src
   value: {}
   required: false
