@@ -21,14 +21,14 @@ try:
 except Exception as ex:
     error = str(ex)
 
-if (not converted is None) and ('root' in converted) and ('Process' in converted['root']):
+if (converted is not None) and ('root' in converted) and ('Process' in converted['root']):
     process_list = [process['Name'] for process in converted['root']['Process']]
 
     if process_name in process_list:
         proc['Exists'] = "Yes"
 
 humanReadable = 'Process "' + proc['Name'] + '" exists: ' + proc['Exists']
-if not error is None:
+if error is not None:
     humanReadable = humanReadable + " Error: {}".format(error)
 
 demisto.results({

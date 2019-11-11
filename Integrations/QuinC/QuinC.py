@@ -24,6 +24,8 @@ JOBSTATE_KEY = 'Accessdata.Job.State'
 JOB_KEY = 'Accessdata.Job'
 
 ''' HELPERS '''
+
+
 def create_jobstate_context(contents):
     if 'CaseJobID' not in contents:
         return {
@@ -141,14 +143,15 @@ class Client:
                 if result['OperationType'] == 24:  # software inventory
                     contents = create_contents(
                         caseID, jobID, 'Success', res['Applications'])
-                    return wrap_jobstate_context(contents,
-                                                 tableToMarkdown(
-                                                    'Applications', res['Applications'],
-                                                    [
-                                                        'Name', 'Version', 'Publisher', 'InstallDate',
-                                                        'InstallLocation', 'InstallSource',
-                                                        'EstimatedSizeInBytes'
-                                                    ]))
+                    return wrap_jobstate_context(
+                        contents,
+                        tableToMarkdown(
+                            'Applications', res['Applications'],
+                            [
+                                'Name', 'Version', 'Publisher', 'InstallDate',
+                                'InstallLocation', 'InstallSource',
+                                'EstimatedSizeInBytes'
+                            ]))
                 elif result['OperationType'] == 12:  # volatile data
                     contents = create_contents(caseID, jobID, 'Success', res)
                     return wrap_jobstate_context(contents, "Job completed successfully")
@@ -233,7 +236,7 @@ class Client:
 
     def legacyagent_runvolatilejob(self, args):
 
-        if (not 'caseid' in args or args['caseid'] is None):
+        if ('caseid' not in args or args['caseid'] is None):
             args['caseid'] = self.get_processing_case_id()['Contents']
 
         url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + '/volatile'
@@ -263,7 +266,7 @@ class Client:
 
     def legacyagent_runmemoryacquisition(self, args):
 
-        if (not 'caseid' in args or args['caseid'] is None):
+        if ('caseid' not in args or args['caseid'] is None):
             args['caseid'] = self.get_processing_case_id()['Contents']
 
         url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + \
@@ -341,8 +344,10 @@ def quinc_legacyagent_runmemoryacquisition_command(client, args):
 def quinc_read_casefile_command(client, args):
     return client.read_casefile(args)
 
+
 def quinc_get_processing_case_id_command(client):
     return client.get_processing_case_id()
+
 
 def main():
 
