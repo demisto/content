@@ -7,15 +7,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+    taskid: f96785c7-7d04-4f99-8da3-929501848239
     type: start
     task:
-      id: d43d5bc7-608a-4580-856a-6c07aaf1b3dc
+      id: f96785c7-7d04-4f99-8da3-929501848239
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "9"
@@ -32,16 +31,15 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+    taskid: a9333d16-a1b0-4f04-8ce6-f13e0da7ebea
     type: title
     task:
-      id: f44bf907-a56b-4fc9-8db0-a79831c9b27a
+      id: a9333d16-a1b0-4f04-8ce6-f13e0da7ebea
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
@@ -55,14 +53,15 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 48a1fd70-7f0f-40ec-8049-64d41714dd06
+    taskid: 5e19ea89-ccf7-40c8-811b-f683ba5ac94a
     type: regular
     task:
-      id: 48a1fd70-7f0f-40ec-8049-64d41714dd06
+      id: 5e19ea89-ccf7-40c8-811b-f683ba5ac94a
       version: -1
       name: Get Incidents
-      description: Gets a list of incident objects and the associated incident outputs that match
-        the specified query and filters. The results are returned in a structured data file.
+      description: Gets a list of incident objects and the associated incident outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
       scriptName: GetIncidentsByQuery
       type: regular
       iscommand: false
@@ -81,7 +80,7 @@ tasks:
       limit:
         simple: ${inputs.maxIncidentsToFetchOnTraining}
       outputFormat:
-        simple: pickle
+        simple: ${inputs.outputFormat}
       query:
         simple: ${inputs.incidentsQuery}
       timeField:
@@ -100,10 +99,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 4cd11300-c982-4628-868c-db215aa3a6ba
+    taskid: fc975c48-a318-4c51-86ab-f80d6957f6fc
     type: regular
     task:
-      id: 4cd11300-c982-4628-868c-db215aa3a6ba
+      id: fc975c48-a318-4c51-86ab-f80d6957f6fc
       version: -1
       name: Pre-process file
       description: |-
@@ -132,7 +131,7 @@ tasks:
       inputType:
         simple: ${GetIncidentsByQuery.FileFormat}
       outputFormat:
-        simple: pickle
+        simple: ${inputs.outputFormat}
       preProcessType:
         simple: nlp
       removeShortTextThreshold:
@@ -154,10 +153,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: dfe802aa-a1a6-4534-80c9-e03fe1243536
+    taskid: f42d000f-11f8-43a8-8c65-f7fba092c75a
     type: regular
     task:
-      id: dfe802aa-a1a6-4534-80c9-e03fe1243536
+      id: f42d000f-11f8-43a8-8c65-f7fba092c75a
       version: -1
       name: Train Model
       description: Train the machine learning text classifier.
@@ -210,10 +209,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 4b329e39-33f9-4565-8566-d1ad2cd82f13
+    taskid: 0ee35628-0387-4595-84f8-17968fdabcdc
     type: condition
     task:
-      id: 4b329e39-33f9-4565-8566-d1ad2cd82f13
+      id: 0ee35628-0387-4595-84f8-17968fdabcdc
       version: -1
       name: Historical data exist?
       description: Check if we have input with historical data file - usually from
@@ -247,10 +246,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 99f5cc03-1224-4c0d-8d03-6c1337096de1
+    taskid: 7174d475-f61d-440b-80c7-dfe59c635595
     type: regular
     task:
-      id: 99f5cc03-1224-4c0d-8d03-6c1337096de1
+      id: 7174d475-f61d-440b-80c7-dfe59c635595
       version: -1
       name: Get Historical File
       description: Converts Base64 file in a list to a binary file and upload to WarRoom.
@@ -298,14 +297,14 @@ inputs:
   description: The model name to store in the system.
 - key: emailTextKey
   value:
-    simple: details
+    simple: emailbody|emailbodyhtml|details
   required: false
-  description: A comma-separated list of incident fields names with the email body or html body.
-    You can also use "|" if you want to choose the first non-empty value from a list
-    of fields.
+  description: A comma-separated list of incident fields names with the email body
+    or html body. You can also use "|" if you want to choose the first non-empty value
+    from a list of fields.
 - key: emailSubjectKey
   value:
-    simple: emailsubject
+    simple: emailsubject|name
   required: false
   description: A comma-separated list of incident fields names with the email subject.
     You can also use "|" if you want to choose the first non-empty value from a list
@@ -314,8 +313,8 @@ inputs:
   value:
     simple: emailclassification
   required: false
-  description: The field name with the email tag. Supports a comma-separated list, the first
-    non-empty value will be taken.
+  description: The field name with the email tag. Supports a comma-separated list,
+    the first non-empty value will be taken.
 - key: phishingLabels
   value:
     simple: '*'
@@ -345,15 +344,17 @@ inputs:
 - key: historicalDataFileListName
   value: {}
   required: false
-  description: The name of demisto list contains historical data training samples for the model.
+  description: The name of demisto list contains historical data training samples
+    for the model.
 - key: overrideModel
   value:
     simple: "true"
   required: false
-  description: Whether to override the existing model if a model with the same name exists. Default is "false".
+  description: Whether to override the existing model if a model with the same name
+    exists. Default is "false".
 - key: incidentTypes
   value:
-    simple: "Phishing"
+    simple: Phishing
   required: false
   description: A common-separatetd list of incident types by which to filter.
 - key: dedupThreshold
@@ -366,13 +367,18 @@ inputs:
   value:
     simple: "15"
   required: false
-  description: Sample text of which the total number words are less than or equal to this number
-    will be ignored.
+  description: Sample text of which the total number words are less than or equal
+    to this number will be ignored.
 - key: modelTargetAccuracy
   value:
     simple: "0.8"
   required: false
   description: The model target accuracy, between 0 and 1.
+- key: outputFormat
+  value:
+    simple: pickle
+  required: false
+  description: The files output format, choose between json \ pickle.
 outputs:
 - contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
   description: F1 score (0-1)
