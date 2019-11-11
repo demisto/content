@@ -60,6 +60,9 @@ def run_command(command, is_silenced=True, exit_on_error=True):
 
 
 def get_remote_file(full_file_path, tag='master'):
+    org_prefix = 'origin/'
+    if tag.startswith(org_prefix):  # remove origin/ prefix
+        tag = tag[len(org_prefix):]
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
     res = requests.get(github_path, verify=False)
     if res.status_code != 200:
@@ -309,3 +312,14 @@ def run_threads_list(threads_list):
     # wait for the commands to complete
     for t in threads_list:
         t.join()
+
+
+def get_dockerimage45(script_object):
+    """Get the docker image used up to 4.5 (including).
+
+    Arguments:
+        script_object {dict} -- [script object containing the dockerimage configuration]
+    """
+    if 'dockerimage45' in script_object:
+        return script_object['dockerimage45']
+    return script_object.get('dockerimage', '')
