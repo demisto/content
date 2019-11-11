@@ -8,6 +8,9 @@ import yaml
 import base64
 import argparse
 import re
+from Tests.test_utils import server_version_compare
+
+IS_CI = os.getenv('CI', False)
 
 DIR_TO_PREFIX = {
     'Integrations': 'integration',
@@ -17,10 +20,64 @@ DIR_TO_PREFIX = {
 
 TYPE_TO_EXTENSION = {
     'python': '.py',
-    'javascript': '.js'
+    'javascript': '.js',
+    'powershell': '.ps1'
 }
 
 IMAGE_PREFIX = 'data:image/png;base64,'
+
+
+def write_yaml_with_docker(output_path, yml_text, yml_data, script_obj):
+    """Write out the yaml file taking into account the dockerimage45 tag.
+    If it is present will create 2 integration files
+    One for 4.5 and below and one for 5.0.
+
+    Arguments:
+        output_path {str} -- output path
+        yml_text {str} -- yml text
+        yml_data {dict} -- yml object
+        script_obj {dict} -- script object
+
+    Returns:
+        dict -- dictionary mapping output path to text data
+    """
+    output_map = {output_path: yml_text}
+    if 'dockerimage45' in script_obj:
+        # we need to split into two files 45 and 50. Current one will be from version 5.0
+        yml_text = re.sub(r'^\s*dockerimage45:.*\n?', '', yml_text, flags=re.MULTILINE)  # remove the dockerimage45 line
+        yml_text45 = yml_text
+        if 'fromversion' in yml_data:
+            # validate that this is a script/integration which targets both 4.5 and 5.0+.
+            if server_version_compare(yml_data['fromversion'], '5.0.0') >= 0:
+                raise ValueError('Failed: {}. dockerimage45 set for 5.0 and later only'.format(output_path))
+            yml_text = re.sub(r'^fromversion:.*$', 'fromversion: 5.0.0', yml_text, flags=re.MULTILINE)
+        else:
+            yml_text = 'fromversion: 5.0.0\n' + yml_text
+        if 'toversion' in yml_data:
+            # validate that this is a script/integration which targets both 4.5 and 5.0+.
+            if server_version_compare(yml_data['toversion'], '5.0.0') < 0:
+                raise ValueError('Failed: {}. dockerimage45 set for 4.5 and earlier only'.format(output_path))
+            yml_text45 = re.sub(r'^toversion:.*$', 'toversion: 4.5.9', yml_text45, flags=re.MULTILINE)
+        else:
+            yml_text45 = 'toversion: 4.5.9\n' + yml_text45
+        if script_obj.get('dockerimage45'):  # we have a value for dockerimage45 set it as dockerimage
+            yml_text45 = re.sub(r'(^\s*dockerimage:).*$', r'\1 ' + script_obj.get('dockerimage45'),
+                                yml_text45, flags=re.MULTILINE)
+        else:  # no value for dockerimage45 remove the dockerimage entry
+            yml_text45 = re.sub(r'^\s*dockerimage:.*\n?', '', yml_text45, flags=re.MULTILINE)
+        output_path45 = re.sub(r'\.yml$', '_45.yml', output_path)
+        output_map = {
+            output_path: yml_text,
+            output_path45: yml_text45
+        }
+    for file_path, file_text in output_map.items():
+        if IS_CI and os.path.isfile(file_path):
+            raise ValueError('Output file already exists: {}.'
+                             ' Make sure to remove this file from source control'
+                             ' or rename this package (for example if it is a v2).'.format(output_path))
+        with io.open(file_path, mode='w', encoding='utf-8') as f:
+            f.write(file_text)
+    return output_map
 
 
 def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
@@ -55,10 +112,11 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
 
-    if dir_name == 'Scripts':
-        script_type = TYPE_TO_EXTENSION[yml_data['type']]
-    elif dir_name == 'Integrations' or 'Beta_Integrations':
-        script_type = TYPE_TO_EXTENSION[yml_data['script']['type']]
+    script_obj = yml_data
+
+    if dir_name != 'Scripts':
+        script_obj = yml_data['script']
+    script_type = TYPE_TO_EXTENSION[script_obj['type']]
 
     with io.open(yml_path, mode='r', encoding='utf-8') as yml_file:
         yml_text = yml_file.read()
@@ -70,9 +128,8 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         yml_text, image_path = insert_image_to_yml(dir_name, package_path, yml_data, yml_text)
         yml_text, desc_path = insert_description_to_yml(dir_name, package_path, yml_data, yml_text)
 
-    with io.open(output_path, mode='w', encoding='utf-8') as f:
-        f.write(yml_text)
-    return output_path, yml_path, script_path, image_path, desc_path
+    output_map = write_yaml_with_docker(output_path, yml_text, yml_data, script_obj)
+    return list(output_map.keys()), yml_path, script_path, image_path, desc_path
 
 
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
@@ -187,10 +244,13 @@ def insert_script_to_yml(package_path, script_type, yml_text, dir_name, yml_data
     return yml_text, script_path
 
 
-def clean_python_code(script_code):
+def clean_python_code(script_code, remove_print_future=True):
     script_code = script_code.replace("import demistomock as demisto", "")
     script_code = script_code.replace("from CommonServerPython import *", "")
     script_code = script_code.replace("from CommonServerUserPython import *", "")
+    # print function is imported in python loop
+    if remove_print_future:  # docs generation requires to leave this
+        script_code = script_code.replace("from __future__ import print_function", "")
     return script_code
 
 

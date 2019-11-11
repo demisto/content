@@ -31,7 +31,7 @@ If you want to run the same logic as is done in CI. Run this script with CI=true
 END
 )
 
-if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython ) ]]; then
+if [[ -n "${DIFF_COMPARE}" ]] && [[ $(git diff --name-status $DIFF_COMPARE Scripts/CommonServerPython | grep -v CHANGELOG ) ]]; then
     if [[ -n "$CI" ]]; then
         echo "CommonServerPython modified. Going to ignore git changes and run all tests"
         DIFF_COMPARE=""

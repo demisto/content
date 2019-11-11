@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
+import demistomock as demisto
 import copy
 import json
 import os
 import sys
 import requests
 from pytest import raises, mark
-
-import demistomock as demisto
+import pytest
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, parse_date_range
+    IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO  # noqa
 
 INFO = {'b': 1,
         'a': {
@@ -543,6 +549,35 @@ def test_logger_write(mocker):
     assert '<XX_REPLACED>' in args[0]
 
 
+def test_logger_init_key_name(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'key': {'password': 'my_password'},
+        'secret': 'my_secret'
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password and my_secret")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert 'my_secret' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
+def test_logger_replace_strs(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'my_apikey',
+    })
+    ilog = IntegrationLogger()
+    ilog.add_replace_strs('special_str', '')  # also check that empty string is not added by mistake
+    ilog('my_apikey is special_str and b64: ' + b64_encode('my_apikey'))
+    assert ('' not in ilog.replace_strs)
+    assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
@@ -869,6 +904,39 @@ def test_parse_date_string():
     ) == datetime(2019, 9, 17, 6, 16, 39, 404000)
 
 
+def test_override_print(mocker):
+    mocker.patch.object(demisto, 'info')
+    int_logger = IntegrationLogger()
+    int_logger.set_buffering(False)
+    int_logger.print_override("test", "this")
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    demisto.info.reset_mock()
+    int_logger.print_override("test", "this", file=sys.stderr)
+    assert demisto.info.call_count == 1
+    assert demisto.info.call_args[0][0] == "test this"
+    buf = StringIO()
+    # test writing to custom file (not stdout/stderr)
+    int_logger.print_override("test", "this", file=buf)
+    assert buf.getvalue() == 'test this\n'
+
+
+def test_http_client_debug(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '/')
+    r = con.getresponse()
+    r.read()
+    assert demisto.info.call_count > 5
+    assert debug_log is not None
+
+
 def test_parse_date_range():
     utc_now = datetime.utcnow()
     utc_start_time, utc_end_time = parse_date_range('2 days', utc=True)
@@ -881,3 +949,40 @@ def test_parse_date_range():
     # testing local datetime and range of 73 minutes
     assert local_now.replace(microsecond=0) == local_end_time.replace(microsecond=0)
     assert abs(local_start_time - local_end_time).seconds / 60 == 73
+
+
+class TestReturnOutputs:
+    def test_return_outputs(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        raw_response = {'event': 1}
+        return_outputs(md, outputs, raw_response)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert raw_response == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']
+
+    def test_return_outputs_only_md(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        return_outputs(md)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert md == results['HumanReadable']
+        assert 'text' == results['ContentsFormat']
+
+    def test_return_outputs_raw_none(self, mocker):
+        mocker.patch.object(demisto, 'results')
+        md = 'md'
+        outputs = {'Event': 1}
+        return_outputs(md, outputs, None)
+        results = demisto.results.call_args[0][0]
+        assert len(demisto.results.call_args[0]) == 1
+        assert demisto.results.call_count == 1
+        assert outputs == results['Contents']
+        assert outputs == results['EntryContext']
+        assert md == results['HumanReadable']

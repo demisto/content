@@ -70,7 +70,15 @@ An explanation of these fields is as follows:
 | **display** | The display name for the field. |
 | **name** | The parameter which is used within the integration |
 | **defaultvalue** | If there is a default for the field, it should be located here |
-| **type** | An Integer that represents the type for the field. [See Entry Types Here](https://github.com/demisto/etc/wiki/_new#entry-types) |
+| **type** | An Integer that represents the type for the field. |
+| | Type 0 - Short text field |
+| | Type 4 - Encrypted text field |
+| | Type 8 - Boolean checkbox |
+| | Type 9 - Authentication text - allows switching to credentials |
+| | Type 12 - Long text block |
+| | Type 13 - special use - automatically added - Incident type single select dropdown |
+| | Type 15 - Single select dropdown | 
+| | Type 16 - Multiple select dropdown |
 | **required** | Boolean value to indicate that the parameter is required |
 
 ## Script
@@ -87,8 +95,10 @@ script:
             re_read_documentation()
 
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.7.5.3066
 ```
-Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript.
+Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript. When using Python specifying `subtype` field is required (either: `python2` or `python3`). Additionally, when using Python `dockerimage` should be specified. If `dockerimage` is not specified a default Python 2 image will be used.
 
 ## Commands
 The command section tells Demisto what arguments are required for your command as well as what the outputs are.
