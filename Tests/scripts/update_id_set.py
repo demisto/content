@@ -308,52 +308,39 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_YML_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
-        elif re.match(PACKS_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            print("adding {0} to id_set".format(file_path))
-            res.append(get_integration_data(file_path))
-    else:  # In case we encountered a package
-        if re.match(PACKS_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            print("adding {0} to id_set".format(file_path))
-            res.append(get_integration_data(file_path))
-        else:
-            for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
-                print("adding {0} to id_set".format(yml_file))
-                res.append(get_integration_data(yml_file))
+    else:
+        for yml_file in glob.glob(os.path.join(file_path, os.path.basename(file_path) + '.yml')):
+            print("adding {0} to id_set".format(yml_file))
+            res.append(get_integration_data(yml_file))
     return res
 
 
 def process_script(file_path):
-
     res = []
     if os.path.isfile(file_path):
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, (SCRIPT_REGEX, PACKS_SCRIPT_YML_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_script_data(file_path))
-        elif re.match(PACKS_SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
-            print("adding {0} to id_set".format(file_path))
-            res.append(get_script_data(file_path))
-    else:  # In case we encountered a package
-        if re.match(PACKS_SCRIPT_YML_REGEX, file_path, re.IGNORECASE):
-            print("adding {0} to id_set".format(file_path))
-            res.append(get_script_data(file_path))
-        else:
-            yml_path, code = get_script_package_data(file_path)
-            print("adding {0} to id_set".format(file_path))
-            res.append(get_script_data(yml_path, script_code=code))
+    else:
+        yml_path, code = get_script_package_data(file_path)
+        print("adding {0} to id_set".format(file_path))
+        res.append(get_script_data(yml_path, script_code=code))
     return res
 
 
 def process_playbook(file_path):
     res = []
-    print("adding {0} to id_set".format(file_path))
-    res.append(get_playbook_data(file_path))
-    if re.match(PACKS_PLAYBOOK_YML_REGEX, file_path, re.IGNORECASE):
-        print('adding {0} to id_set'.format(file_path))
-        res.append(get_playbook_data(file_path))
+    if os.path.isfile(file_path):
+        if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX)):
+            print('adding {0} to id_set'.format(file_path))
+            res.append(get_playbook_data(file_path))
+    else:
+        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+            print("adding {0} to id_set".format(yml_file))
+            res.append(get_playbook_data(yml_file))
     return res
 
 
@@ -370,12 +357,11 @@ def process_testplaybook_path(file_path):
     print("adding {0} to id_set".format(file_path))
     script = None
     playbook = None
-    if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE) or \
-            re.match(PACKS_TEST_PLAYBOOKS_REGEX, file_path, re.IGNORECASE):
+    if checked_type(file_path, (TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
         script = get_script_data(file_path)
-    elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE) or \
-            re.match(PACKS_TEST_PLAYBOOKS_REGEX, file_path, re.IGNORECASE):
+    elif checked_type(file_path, (TEST_PLAYBOOK_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
         playbook = get_playbook_data(file_path)
+
     return playbook, script
 
 
@@ -407,7 +393,6 @@ def get_scripts_paths():
 
 
 def get_playbooks_paths():
-
     path_list = [
         ['Playbooks', '*.yml'],
         ['Packs', '*', 'Playbooks', '*.yml']
@@ -421,7 +406,6 @@ def get_playbooks_paths():
 
 
 def get_test_playbooks_paths():
-
     path_list = [
         ['TestPlaybooks', '*'],
         ['Packs', '*', 'TestPlaybooks', '*.yml']
@@ -497,7 +481,23 @@ def find_duplicates(id_set):
         if has_duplicate(integrations, integration_id):
             integration_list.append(integration_id)
 
-    return scripts_list, integration_list
+    playbooks = id_set['playbooks']
+    playbook_ids = set([playbook.keys()[0] for playbook in playbooks])
+
+    playbooks_list = []
+    for playbook_id in playbook_ids:
+        if has_duplicate(playbooks, playbook_id):
+            integration_list.append(playbook_id)
+
+    test_playbooks = id_set['TestPlaybooks']
+    test_playbook_ids = set([test_playbook.keys()[0] for test_playbook in test_playbooks])
+
+    test_playbooks_list = []
+    for test_playbook_id in test_playbook_ids:
+        if has_duplicate(test_playbooks, test_playbook_id):
+            test_playbooks_list.append(test_playbook_id)
+
+    return scripts_list, integration_list, playbooks_list, test_playbooks_list
 
 
 def has_duplicate(id_set, id_to_check):
@@ -514,19 +514,18 @@ def has_duplicate(id_set, id_to_check):
         dict2_to_version = LooseVersion(dict2.get('toversion', '99.99.99'))
 
         if dict1['name'] != dict2['name']:
-            print_error('The ID and the name should be the same.')
-
+            print_error('The following objects has the same ID but different names: {}, {}.'.format(dict1['name'],
+                                                                                                    dict2['name']))
+        is_duplicate = True
         if dict1_from_version >= dict2_to_version:
-            return False
+            is_duplicate = False
         if dict2_to_version > dict1_to_version:
-            return False
+            is_duplicate = False
         if dict2_from_version > dict1_to_version:
-            return False
+            is_duplicate = False
         if dict1_from_version > dict2_from_version:
-            return False
-        # if not dict2_to_version:
-        #     return True
-    return True
+            is_duplicate = False
+    return is_duplicate
 
 
 def sort(data):
