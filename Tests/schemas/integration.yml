@@ -57,9 +57,11 @@ mapping:
         required: true
       type:
         type: str
-        enum: ['javascript', 'python']
+        enum: ['javascript', 'python', 'powershell']
         required: true
       dockerimage:
+        type: str
+      dockerimage45:
         type: str
       alt_dockerimages:
         type: seq
