@@ -1510,7 +1510,8 @@
                 "Ipstack",
                 "ipinfo",
                 "Rasterize",
-                "Active Directory Query v2"
+                "Active Directory Query v2",
+                "Demisto REST API"
             ],
             "fromversion": "5.0.0",
             "timeout": 600
