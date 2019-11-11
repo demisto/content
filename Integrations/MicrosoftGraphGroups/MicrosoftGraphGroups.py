@@ -9,15 +9,19 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' GLOBALS/PARAMS '''
 INTEGRATION_CONTEXT_NAME = 'MSGraphGroups'
 NO_OUTPUTS: dict = {}
 APP_NAME = 'ms-graph-groups'
 
 
 def camel_case_to_readable(text: str) -> str:
-    """
-    'camelCase' -> 'Camel Case'
+    """'camelCase' -> 'Camel Case'
+
+    Args:
+        text: the text to transform
+
+    Returns:
+        A Camel Cased string.
     """
     if text == 'id':
         return 'ID'
@@ -25,8 +29,15 @@ def camel_case_to_readable(text: str) -> str:
 
 
 def parse_outputs(groups_data: Dict[str, str]) -> Tuple[dict, dict]:
-    """
-    Parse group data as received from Microsoft Graph API into Demisto's conventions
+    """Parse group data as received from Microsoft Graph API into Demisto's conventions
+
+    Args:
+        groups_data: a dictionary containing the group data
+
+    Returns:
+        A Camel Cased dictionary with the relevant fields.
+        groups_readable: for the human readable
+        groups_outputs: for the entry context
     """
     # Unnecessary fields, dropping as to not load the incident context.
     fields_to_drop = ['@odata.context', '@odata.nextLink', '@odata.deltaLink', '@odata.type', '@removed',
@@ -44,13 +55,12 @@ def parse_outputs(groups_data: Dict[str, str]) -> Tuple[dict, dict]:
 
         return groups_readable, groups_outputs
 
-    else:
-        group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
-        if '@removed' in groups_data:
-            group_readable['Status'] = 'deleted'
-        group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
+    group_readable = {camel_case_to_readable(i): j for i, j in groups_data.items() if i not in fields_to_drop}
+    if '@removed' in groups_data:
+        group_readable['Status'] = 'deleted'
+    group_outputs = {k.replace(' ', ''): v for k, v in group_readable.copy().items()}
 
-        return group_readable, group_outputs
+    return group_readable, group_outputs
 
 
 def epoch_seconds() -> int:
@@ -114,6 +124,11 @@ class Client(BaseClient):
         self.proxies = proxies
 
     def get_access_token(self):
+        """Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
+
+        Returns:
+            The access token.
+        """
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get('access_token')
         valid_until = integration_context.get('valid_until')
@@ -208,6 +223,11 @@ class Client(BaseClient):
             raise Exception(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
 
     def test_function(self):
+        """Performs basic GET request to check if the API is reachable and authentication is successful.
+
+        Returns:
+            ok if successful.
+        """
         token = self.get_access_token()
         response = requests.get(
             self.base_url + 'groups',
@@ -233,7 +253,15 @@ class Client(BaseClient):
                             f'Please check authentication related parameters. [{response.status_code}]')
 
     def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
-        # https://docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+        """Returns all groups by sending a GET request.
+
+        Args:
+            order_by: the group fields to order by the response.
+            next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
+                docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+        Returns:
+            Response from API.
+        """
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
@@ -243,20 +271,49 @@ class Client(BaseClient):
         return groups
 
     def get_group(self, id_: str) -> Dict:
+        """Returns a single group by sending a GET request.
+
+        Args:
+            id_: the group id.
+
+        Returns:
+            Response from API.
+        """
         group = self.http_request('GET', f'groups/{id_}')
         return group
 
     def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
+        """Create a single group by sending a POST request.
+
+        Args:
+            properties: the group properties.
+
+        Returns:
+            Response from API.
+        """
         group = self.http_request('POST', 'groups', body=json.dumps(properties))
         return group
 
     def delete_group(self, group_id: str):
+        """Delete a single group by sending a DELETE request.
+
+        Args:
+            group_id: the group id to delete.
+        """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         self.http_request('DELETE ', f'groups/{group_id}')
 
     def list_members(self, group_id: str, next_link: str = None) -> Dict:
-        # https://docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
+        """List all group members by sending a GET request.
+
+        Args:
+            group_id: the group id to list its members.
+            next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
+                docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
+        Returns:
+            Response from API.
+        """
         if next_link:  # pagination
             members = self.http_request('GET', next_link)
         else:
@@ -265,21 +322,46 @@ class Client(BaseClient):
         return members
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
+        """Add a single member to a group by sending a POST request.
+        Args:
+            group_id: the group id to add the member to.
+            properties: the member properties.
+        """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         self.http_request('POST', f'groups/{group_id}/members/$ref', body=json.dumps(properties))
 
     def remove_member(self, group_id: str, user_id: str):
+        """Remove a single member to a group by sending a DELETE request.
+        Args:
+            group_id: the group id to add the member to.
+            user_id: the user id to remove.
+        """
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         self.http_request('DELETE', f'groups/{group_id}/members/{user_id}/$ref')
 
 
 def test_function_command(client: Client, args: Dict):
+    """Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+    """
     client.test_function()
 
 
 def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Lists all groups and return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     order_by = args.get('order_by')
     next_link = args.get('next_link')
     groups = client.list_groups(order_by, next_link)
@@ -303,6 +385,15 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Get a group by group id and return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     id_ = str(args.get('id'))
     group = client.get_group(id_)
 
@@ -316,6 +407,15 @@ def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create a group and return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     required_properties = {
         'displayName': str(args.get('display_name')),
         'mailNickname': str(args.get('mail_nickname')),
@@ -338,6 +438,15 @@ def create_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Delete a group by group id and return outputs in Demisto's format
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     group_id = str(args.get('group_id'))
     client.delete_group(group_id)
 
@@ -350,6 +459,15 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """List a group members by group id. return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     group_id = str(args.get('group_id'))
     next_link = args.get('next_link')
     members = client.list_members(group_id, next_link)
@@ -373,6 +491,15 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Add a member to a group by group id and user id. return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     group_id = str(args.get('group_id'))
     user_id = str(args.get('user_id'))
     required_properties = {
@@ -384,15 +511,21 @@ def add_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 
 def remove_member_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Remove a member from a group by group id and user id. return outputs in Demisto's format.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
     group_id = str(args.get('group_id'))
     user_id = str(args.get('user_id'))
     client.remove_member(group_id, user_id)
 
     human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
     return human_readable, NO_OUTPUTS, NO_OUTPUTS
-
-
-''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
 def main():
