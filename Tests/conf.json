@@ -1508,6 +1508,7 @@
             "playbookID": "Impossible Traveller - Test",
             "integrations": [
                 "Ipstack",
+                "ipinfo",
                 "Rasterize",
                 "Active Directory Query v2"
             ],

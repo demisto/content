@@ -267,8 +267,9 @@ tasks:
       destip: {}
       destntdomain: {}
       details:
-        simple: A user has logged in from multiple geographical locations in too short an amount of time. The user is an impossible
-          traveller according to the maximum miles per hour allowed.
+        simple: A user has logged in from multiple geographical locations in too short
+          an amount of time. The user is an impossible traveller according to the
+          maximum miles per hour allowed.
       detectedusers: {}
       detectorid: {}
       dpoemailaddress: {}
@@ -491,11 +492,11 @@ tasks:
       id: fda33d67-1286-4602-8bbd-dec192b4e1d0
       version: -1
       name: IP Enrichment - Generic v2
-      description: ''
       playbookName: IP Enrichment - Generic v2
       type: playbook
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '51'
@@ -760,7 +761,8 @@ tasks:
       id: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
       version: -1
       name: Save previous source IP geolocation data
-      description: Saves the geolocation of the IP associated with the previous user login.
+      description: Saves the geolocation of the IP associated with the previous user
+        login.
       scriptName: Set
       type: regular
       iscommand: false
@@ -955,7 +957,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1830
+          "y": 1870
         }
       }
     note: false
@@ -1414,8 +1416,9 @@ tasks:
       destip: {}
       destntdomain: {}
       details:
-        simple: A user has logged in from multiple geographical locations in a short amount of time. However, they
-          logged in from whitelisted IP addresses, so the login was considered legitimate.
+        simple: A user has logged in from multiple geographical locations in a short
+          amount of time. However, they logged in from whitelisted IP addresses, so
+          the login was considered legitimate.
       detectedusers: {}
       detectorid: {}
       dpoemailaddress: {}
@@ -1683,20 +1686,20 @@ tasks:
     ignoreworker: false
   '72':
     id: '72'
-    taskid: 93bc2f34-8be5-46d4-840a-215440c8df2b
+    taskid: abf73ffa-84f4-480f-8933-54d98d7d56b7
     type: regular
     task:
-      id: 93bc2f34-8be5-46d4-840a-215440c8df2b
+      id: abf73ffa-84f4-480f-8933-54d98d7d56b7
       version: -1
-      name: Generate travel map
-      description: Create a travel map link and saves it in the context.
+      name: Generate travel map link
+      description: Creates a travel map link and saves it in the context.
       scriptName: Set
       type: regular
       iscommand: false
       brand: ''
     nexttasks:
       '#none#':
-      - '63'
+      - '89'
     scriptarguments:
       append: {}
       key:
@@ -1740,7 +1743,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1580
+          "y": 1560
         }
       }
     note: false
@@ -1906,7 +1909,8 @@ tasks:
       id: c345d9c6-e5bf-47e5-8e62-1c3a99b8d3da
       version: -1
       name: Can the account be enriched?
-      description: Checks whether there is a username for the offending user in context, and whether Active Directory v2 is enabled.
+      description: Checks whether there is a username for the offending user in context,
+        and whether Active Directory v2 is enabled.
       type: condition
       iscommand: false
       brand: ''
@@ -2133,7 +2137,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 2000
+          "y": 2040
         }
       }
     note: false
@@ -2222,7 +2226,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 2200
+          "y": 2230
         }
       }
     note: false
@@ -2236,7 +2240,9 @@ tasks:
       id: a2636351-dafa-4e59-83e2-1000af044c4d
       version: -1
       name: Get manager response
-      description: Gets a response from the manager as to whether the travel done by the user was expected. The response is received from the email reply that the manager sends.
+      description: Gets a response from the manager as to whether the travel done
+        by the user was expected. The response is received from the email reply that
+        the manager sends.
       tags:
       - TravelQuestion
       type: condition
@@ -2252,7 +2258,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 2370
+          "y": 2410
         }
       }
     note: false
@@ -2517,6 +2523,45 @@ tasks:
     - fieldname: detectionsla
       action: stop
     ignoreworker: false
+  '89':
+    id: '89'
+    taskid: ebb78788-b984-401d-8e4b-0eea1afcab71
+    type: regular
+    task:
+      id: ebb78788-b984-401d-8e4b-0eea1afcab71
+      version: -1
+      name: Create travel map image
+      description: Converts the contents of a URL to an image file or a PDF file.
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '63'
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        complex:
+          root: TravelMap
+          transformers:
+          - operator: uniq
+      wait_time:
+        simple: '15'
+      width: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2571,9 +2616,9 @@ inputs:
   value:
     simple: https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION
   required: false
-  description: The default link from which to create a travel map. The "SOURCE" and "DESTINATION"
-    words are replaced with the previous coordinates and current coordinates of
-    the traveller, respectively.
+  description: The default link from which to create a travel map. The "SOURCE" and
+    "DESTINATION" words are replaced with the previous coordinates and current coordinates
+    of the traveller, respectively.
 - key: AutomaticallyDisableUser
   value:
     simple: 'False'
