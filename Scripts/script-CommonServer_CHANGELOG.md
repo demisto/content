@@ -1,2 +1,2 @@
 ## [Unreleased]
-  - Added spaces between cells for ***tableToMarkdown*** function output, to prevent auto-extract over multiple cells.
+Added spaces between cells in the output of the ***tableToMarkdown*** function output, which prevents auto-extract over multiple cells.
