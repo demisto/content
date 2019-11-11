@@ -27,7 +27,7 @@ configuration:
   required: false
 - display: Min vulnerability severity for fetching incidents.
   name: incidentSeverity
-  defaultvalue: critical
+  defaultvalue: medium
   type: 15
   required: false
   options:
@@ -62,16 +62,8 @@ script:
     - name: label_name
       description: Get assets with given label name (put name in quotes if spaces
         are required).
-    - name: scanned_within_last
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "7"
-      - "30"
-      - "60"
-      - "90"
-      - "180"
-      description: Get hosts scanned within the given range (in days)
+    - name: max_days_since_scan
+      description: Get hosts scanned within the given max day
     - name: hostname
       description: Get asset for given hostname
     outputs:
@@ -81,8 +73,22 @@ script:
     - contextPath: FrontlineVM.IPList
       description: IP address list of found hosts.
       type: unknown
-    - contextPath: FrontlineVM.HostId
-      description: ID number of Host pulled
+    - contextPath: FrontlineVM.Hosts.ID
+      description: Host ID number
+    - contextPath: FrontlineVM.Hosts.Hostname
+      description: Hostname of asset
+    - contextPath: FrontlineVM.Hosts.IP
+      description: IP address
+    - contextPath: FrontlineVM.Hosts.DNSHostname
+      description: DNS Hostname
+    - contextPath: FrontlineVM.MAC
+      description: MAC Address
+    - contextPath: FrontlineVM.Hosts.OS
+      description: Operating System
+    - contextPath: FrontlineVM.Hosts.OSType
+      description: Operating System Type
+    - contextPath: FrontlineVM.Hosts.CriticalVulnCount
+      description: DDI critical vulnerability severity count
     description: Pull asset information from FrontlineVM
   - name: frontline-get-vulns
     arguments:
@@ -108,24 +114,10 @@ script:
       - trivial
       - info
       description: Will pull all vulnerabilities from Frontline with this severity.
-    - name: days_older_than
-      auto: PREDEFINED
-      predefined:
-      - "30"
-      - "60"
-      - "90"
-      - "180"
-      - "365"
+    - name: max_days_since_created
       description: Will pull vulnerabilities first found older than the given input
         (in days from now).
-    - name: days_newer_than
-      auto: PREDEFINED
-      predefined:
-      - "1"
-      - "7"
-      - "30"
-      - "60"
-      - "90"
+    - name: min_days_since_created
       description: Will pull vulnerabilities first found to be newer than the given
         input (in days from now).
     - name: host_id
@@ -155,6 +147,12 @@ script:
     outputs:
     - contextPath: FrontlineVM.Scan
       description: The response output of requested scan to perform.
+    - contextPath: FrontlineVM.Scan.ID
+      description: Scan ID number
+    - contextPath: FrontlineVM.Scan.Name
+      description: Scan name
+    - contextPath: FrontlineVM.Scan.Policy
+      description: Scan policy name
     description: Performs a scan on a given asset.
   isfetch: true
   runonce: false

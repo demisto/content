@@ -1,5 +1,5 @@
 id: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
-version: -1
+version: 46
 name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
 description: This will query Frontline.Cloud's active view for any critical level
   vulnerabilities found to be older than 90 days.
@@ -31,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 6adec74a-c52b-47f5-8052-ce63cedd9c2c
+    taskid: faf51086-4513-4c89-870c-d073e8bf37e2
     type: regular
     task:
-      id: 6adec74a-c52b-47f5-8052-ce63cedd9c2c
+      id: faf51086-4513-4c89-870c-d073e8bf37e2
       version: -1
       name: Frontline-get-vulns (critical vulns older than 90 days)
       script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
@@ -54,6 +54,9 @@ tasks:
       host_id: {}
       hostId: {}
       ip_address: {}
+      max_days_since_created:
+        simple: "90"
+      min_days_since_created: {}
       min_severity: {}
       minSeverity: {}
       severity:

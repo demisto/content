@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 666db8ce-232c-400f-8f49-1096833be613
+    taskid: 38c58547-425f-4ba8-8e6d-5fdbbc55b429
     type: regular
     task:
-      id: 666db8ce-232c-400f-8f49-1096833be613
+      id: 38c58547-425f-4ba8-8e6d-5fdbbc55b429
       version: -1
       name: frontline-get-assets (scanned within last 60 days)
       description: Pull asset information from FrontlineVM
@@ -51,6 +51,8 @@ tasks:
         simple: ${incident.details}
       label_name: {}
       labelName: {}
+      max_days_since_scan:
+        simple: "60"
       scanned_within_last:
         simple: "60"
       scannedWithinLast:
