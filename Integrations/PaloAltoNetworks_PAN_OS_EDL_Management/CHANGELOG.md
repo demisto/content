@@ -1,4 +1,5 @@
 ## [Unreleased]
+  - Updated the detailed description.
   - Fixed an issue where the ***pan-os-edl-update*** command failed when the file path included space characters at *scp_execute()*.
   - Fixed an issue where the *ssh_execute()* functioned failed when the file name included space characters.
   - Added the ***pan-os-edl-update-internal-list***, ***pan-os-edl-update-external-file*** commands.
