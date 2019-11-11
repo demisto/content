@@ -394,7 +394,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Travel Metadata",
+						"name": "Travel Information",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -524,7 +524,7 @@
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Traveller Information",
+						"name": "User Details",
 						"query": {
 							"tags": [
 								"userinfo"
