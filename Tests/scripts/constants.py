@@ -105,6 +105,7 @@ PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 
+INCIDENT_TYPE_REGEX = r'{}/incidenttype-.*\.json$'.format(INCIDENT_TYPE_DIR)
 INDICATOR_FIELDS_REGEX = r'{}/incidentfield-.*\.json$'.format(INDICATOR_FIELDS_DIR)
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r'{}.*dashboard-.*\.json$'.format(DASHBOARDS_DIR)
