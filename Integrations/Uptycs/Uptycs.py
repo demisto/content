@@ -1238,11 +1238,11 @@ def uptycs_get_process_event_information_command():
     human_readable = tableToMarkdown('Process event information',
                                      query_results.get('items'),
                                      ['upt_hostname', 'parent', 'pid',
-                                      'path', 'cmdline'])
+                                      'path', 'cmdline', 'ancestor_list'])
     context = query_results.get('items')
 
     context_entries_to_keep = ['upt_hostname', 'upt_asset_id', 'pid', 'path',
-                               'upt_time', 'parent', 'cmdline', 'cwd']
+                               'upt_time', 'parent', 'cmdline', 'cwd', 'ancestor_list']
 
     if context is not None:
         remove_context_entries(context, context_entries_to_keep)
@@ -1336,6 +1336,8 @@ def uptycs_get_parent_event_information():
     http_method = 'post'
     api_call = '/query'
     child_add_time = demisto.args().get('child_add_time')
+    child_ancestor_list = demisto.args().get('child_ancestor_list')
+    parent = demisto.args().get('parent')
 
     if child_add_time is not None:
         day = child_add_time.replace(" ", "-")
@@ -1349,9 +1351,18 @@ def uptycs_get_parent_event_information():
         uptday = int("%s%s%s" %
                      (str(day_list[0]), str(day_list[1]), str(day_list[2])))
 
-    query = ("SELECT * FROM process_events WHERE upt_day = %s AND pid=%s AND \
-upt_time<=CAST('%s' AS TIMESTAMP)" %
-             (uptday, demisto.args().get('parent'), child_add_time))
+    if child_ancestor_list is not None:
+        child_ancestor_list = child_ancestor_list[2:len(child_ancestor_list) - 2].split('}, {')
+    ancestors = []
+    for ancestor in child_ancestor_list:
+        ancestors.append(json.loads("{" + ancestor + "}"))
+
+    if ancestors[0].get("upt_rid", None) is not None:
+        query = "SELECT * FROM process_events WHERE upt_day <= {0} \
+AND upt_rid = '{1}'".format(uptday, ancestors[0].get("upt_rid", None))
+    else:
+        query = "SELECT * FROM process_events WHERE upt_day <= {0} AND pid={1} \
+AND upt_time<=CAST('{2}' AS TIMESTAMP)".format(uptday, parent, child_add_time)
 
     equal_cuts = {
         "upt_asset_id": demisto.args().get('asset_id'),
@@ -1559,8 +1570,20 @@ def uptycs_set_asset_tag():
     http_method = 'get'
     api_call = ('/assets/%s' % demisto.args().get('asset_id'))
     tags = restcall(http_method, api_call).get('tags')
-    tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
-        'tag_value'))
+
+    tag_set = False
+    for tag in tags:
+        if demisto.args().get('tag_key') in tag:
+            temp_tag = tag.split('=')
+            new_tag = temp_tag[0] + '=' + temp_tag[1] + ', ' + demisto.args().get('tag_value')
+            tags.remove(tag)
+            tag_set = True
+
+    if tag_set:
+        tags.append(new_tag)
+    else:
+        tags.append(demisto.args().get('tag_key') + '=' + demisto.args().get(
+            'tag_value'))
 
     http_method = 'put'
     post_data = {
