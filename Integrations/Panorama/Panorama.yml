@@ -1005,7 +1005,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the custom URL category (Panorama instances).
+      description: The device group for which to return addresses for the custom URL
+        category (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1047,8 +1048,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the custom URL category (Panorama
-        instances).
+      description: The device group for which to return addresses for the custom URL
+        category (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1160,7 +1161,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the URL Filter (Panorama instances).
+      description: The device group for which to return addresses for the URL Filter
+        (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1237,7 +1239,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the URL Filter (Panorama instances).
+      description: The device group for which to return addresses for the URL Filter
+        (Panorama instances).
       isArray: false
       name: device-group
       required: false
@@ -1338,7 +1341,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the URL filter (Panorama instances)
+      description: The device group for which to return addresses for the URL filter
+        (Panorama instances)
       isArray: false
       name: device-group
       required: false
@@ -1356,7 +1360,8 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1395,7 +1400,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1474,7 +1480,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1562,7 +1569,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1586,7 +1594,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The device group for which to return addresses for the EDL (Panorama instances).
+      description: The device group for which to return addresses for the EDL (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1706,7 +1715,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1827,7 +1837,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -1874,7 +1885,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Where to move the rule. Can be "before", "after", "top", or "bottom".
-        If you specify "up" or "down", you need to supply the "dst" argument.
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
       isArray: false
       name: where
       predefined:
@@ -1885,8 +1896,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination rule relative to the rule you are moving. Relevant
-        if you specify "up" or "down" for the "where" argument.
+      description: Destination rule relative to the rule that you are moving.
+        This field is only relevant if you specify "top" or "bottom" in the "where" argument.
       isArray: false
       name: dst
       required: false
@@ -1902,7 +1913,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -2023,7 +2035,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The device group for which to return addresses for the rule (Panorama instances).
+      description: The device group for which to return addresses for the rule (Panorama
+        instances).
       isArray: false
       name: device-group
       required: false
@@ -2795,14 +2808,126 @@ script:
         A list of the URL filtering categories that the firewall used to
         enforce the policy.
       type: String
+  - arguments:
+    - default: false
+      description: The application name.
+      isArray: false
+      name: application
+      required: false
+      secret: false
+    - default: false
+      description: The category name.
+      isArray: false
+      name: category
+      required: false
+      secret: false
+    - default: false
+      description: The destination IP address.
+      isArray: false
+      name: destination
+      required: true
+      secret: false
+    - default: false
+      description: The destination port.
+      isArray: false
+      name: destination-port
+      required: false
+      secret: false
+    - default: false
+      description: The from zone.
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: The to zone.
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: The IP protocol value.
+      isArray: false
+      name: protocol
+      required: true
+      secret: false
+    - default: false
+      description: The source IP address.
+      isArray: false
+      name: source
+      required: true
+      secret: false
+    - default: false
+      description: The source user.
+      isArray: false
+      name: source-user
+      required: false
+      secret: false
+    deprecated: false
+    description: Checks whether a session matches the specified security policy. This
+      command is only available on Firewall instances.
+    execution: false
+    name: panorama-security-policy-match
+    outputs:
+    - contextPath: Panorama.SecurityPolicyMatch.Query
+      description: Query for the session to test.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Name
+      description: The matching rule name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Action
+      description: The matching rule action.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Category
+      description: The matching rule category.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Destination
+      description: The matching rule destination.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.From
+      description: The matching rule from zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.Source
+      description: The matching rule source.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.Rules.To
+      description: The matching rule to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Application
+      description: The application name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Category
+      description: The category name.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Destination
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.DestinationPort
+      description: The destination port.
+      type: Number
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
+      description: The from zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
+      description: The to zone.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
+      description: The IP protocol value.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Source
+      description: The destination IP address.
+      type: String
+    - contextPath: Panorama.SecurityPolicyMatch.QueryFields.SourceUser
+      description: The source user.
+      type: String
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
 - palo_alto_firewall_test_pb
 - palo_alto_panorama_test_pb

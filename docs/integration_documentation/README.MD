@@ -29,7 +29,7 @@ Where there is missing information, be sure to fill out the document completely.
 To automatically generate example output (human readable and context), you should create a text file containing command examples, one per line. The command examples should appear the same way they would as in the CLI in Demisto, for example `!url url=8.8.8.8`.
 Commands will be executed one at a time, in the order in which they appear in the file. If there are duplicates of a command included in the text file, only the output of the command's first execution  will be included in the generated documentation output.
 
-Example for commands file: [commands.txt](https://github.com/demisto/etc/files/3641127/commands.txt)
+Example for commands file: [commands.txt](https://github.com/demisto/content/blob/master/docs/integration_documentation/commands.txt)
 
 
 ![ScreenRecording2019-09-22at16241](https://user-images.githubusercontent.com/31018228/65404184-313ced00-dde0-11e9-9257-e61e2943fd75.gif)

@@ -1,3 +1,5 @@
+import traceback
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -28,6 +30,8 @@ try:
     os.remove(OUTPUT_FILE_PATH)
     return_outputs(readable_output='Successfully generated docx',
                    outputs={}, raw_response={'data': encoded})
-except Exception as e:
-    err = repr(e)
+except Exception:
+    tb = traceback.format_exc()
+    wrap = "=====sane-doc-reports error====="
+    err = f'{wrap}\n{tb}{wrap}\n'
     return_error(f'[SaneDocReports Automation Error] - {err}')

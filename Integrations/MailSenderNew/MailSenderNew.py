@@ -17,6 +17,7 @@ import re
 import random
 import string
 import smtplib
+import sys
 
 SERVER = None
 UTF_8 = 'utf-8'
@@ -293,10 +294,25 @@ def create_msg():
         msg['CC'] = header(','.join(cc))
     if additional_header:
         for h in additional_header:
-            header_name_and_value = h.split('=')
+            header_name_and_value = h.split('=', 1)
             msg[header_name_and_value[0]] = header(header_name_and_value[1])
     # Notice we should not add BCC header since Python2 does not filter it
     return msg.as_string(), to, cc, bcc
+
+
+def swap_stderr(new_stderr):
+    '''swap value of stderr if given, return old value.
+
+    smtplib uses sys.stderr directly in newer versions, so use that instead
+    '''
+    if hasattr(smtplib, 'stderr'):
+        module = smtplib
+    else:
+        module = sys  # type: ignore
+    old_stderr = getattr(module, 'stderr')
+    if new_stderr:
+        setattr(module, 'stderr', new_stderr)
+    return old_stderr
 
 
 def main():
@@ -305,10 +321,11 @@ def main():
     global SERVER
     FROM = demisto.getParam('from')
     FQDN = demisto.params().get('fqdn')
-    stderr_org = smtplib.stderr  # type: ignore
+    FQDN = (FQDN and FQDN.strip()) or None
+    stderr_org = None
     try:
         if demisto.command() == 'test-module':
-            smtplib.stderr = LOG  # type: ignore
+            stderr_org = swap_stderr(LOG)
             smtplib.SMTP.debuglevel = 1
         SERVER = SMTP(demisto.getParam('host'), int(demisto.params().get('port', 0)), local_hostname=FQDN)
         SERVER.ehlo()
@@ -319,7 +336,7 @@ def main():
             SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
     except Exception as e:
         # also reset at the bottom finally
-        smtplib.stderr = stderr_org  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore
         smtplib.SMTP.debuglevel = 0
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
@@ -334,7 +351,15 @@ def main():
             SERVER.quit()
             demisto.results('ok')
         elif demisto.command() == 'send-mail':
-            (str_msg, to, cc, bcc) = create_msg()
+            raw_message = demisto.getArg('raw_message')
+            if raw_message:
+                to = argToList(demisto.getArg('to'))
+                cc = argToList(demisto.getArg('cc'))
+                bcc = argToList(demisto.getArg('bcc'))
+                str_msg = raw_message
+            else:
+                (str_msg, to, cc, bcc) = create_msg()
+
             SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore
             SERVER.quit()  # type: ignore
             demisto.results('Mail sent successfully')
@@ -346,7 +371,7 @@ def main():
     except Exception as e:
         return_error_mail_sender(e)
     finally:
-        smtplib.stderr = stderr_org  # type: ignore
+        swap_stderr(stderr_org)  # type: ignore
         smtplib.SMTP.debuglevel = 0
 
 

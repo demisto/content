@@ -1,10 +1,6 @@
-import os
-
 import requests
-import yaml
-
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_remote_file, get_dockerimage45
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -27,22 +23,13 @@ class IntegrationValidator(object):
         self.file_path = file_path
         if check_git:
             self.current_integration = get_yaml(file_path)
-            # The replace in the end is for Windows support
-            if old_file_path:
-                git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
-                file_content = requests.get(git_hub_path, verify=False).content
-                self.old_integration = yaml.safe_load(file_content)
-            else:
-                try:
-                    file_path_from_old_branch = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace(
-                        "\\", "/")
-                    res = requests.get(file_path_from_old_branch, verify=False)
-                    res.raise_for_status()
-                    self.old_integration = yaml.safe_load(res.content)
-                except Exception as e:
-                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
-                                  "backward compatibility".format(str(e)))
-                    self.old_integration = None
+            old_integration_file = old_file_path or file_path
+            f = get_remote_file(old_integration_file, old_git_branch)
+            self.old_integration = f or None
+            if not self.old_integration:
+                print_warning("Could not find the old integration please make sure that you did not break "
+                              "backward compatibility "
+                              "for: {} old file: {} branch: {}".format(file_path, old_integration_file, old_git_branch))
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
@@ -176,7 +163,7 @@ class IntegrationValidator(object):
                 DBot_Score = {
                     'DBotScore.Indicator': 'The indicator that was tested.',
                     'DBotScore.Type': 'The indicator type.',
-                    'DBotScore.Vendor': 'Vendor used to calculate the score.',
+                    'DBotScore.Vendor': 'The vendor used to calculate the score.',
                     'DBotScore.Score': 'The actual score.'
                 }
                 missing_outputs = set()
@@ -415,7 +402,11 @@ class IntegrationValidator(object):
                 continue
 
             for output in command.get('outputs', []):
-                context_list.append(output['contextPath'])
+                command_name = command['name']
+                try:
+                    context_list.append(output['contextPath'])
+                except KeyError:
+                    print('Invalid context output for command {}. Output is {}'.format(command_name, output))
 
             command_to_context_list[command['name']] = sorted(context_list)
 
@@ -476,10 +467,11 @@ class IntegrationValidator(object):
         """Check if the Docker image was changed or not."""
         # Unnecessary to check docker image only on 5.0 and up
         if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
-            if self.old_integration.get('script', {}).get('dockerimage', "") != \
-                    self.current_integration.get('script', {}).get('dockerimage', ""):
+            old_docker = get_dockerimage45(self.old_integration.get('script', {}))
+            new_docker = get_dockerimage45(self.current_integration.get('script', {}))
+            if old_docker != new_docker:
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                            " this is not allowed.".format(self.file_path))
+                            " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 self._is_valid = False
                 return True
 

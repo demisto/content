@@ -10,7 +10,8 @@
 # PYLINT_FILES: file names to pass to pylint
 # PYLINT_SKIP: if set will skip pylint
 # PYTEST_SKIP: if set will skip pytest
-# PYTEST_FAIL_NO_TESTS: if set will fail if no tests are defined 
+# PYTEST_FAIL_NO_TESTS: if set will fail if no tests are defined
+# CPU_NUM: number of CPUs to run tests on
 
 pylint_return=0
 if [ -z "${PYLINT_SKIP}" ]; then
@@ -45,7 +46,7 @@ fi
 
 pytest_return=0
 if [ -z "${PYTEST_SKIP}" ]; then
-    python -m pytest -v
+    python -m pytest -v -n="${CPU_NUM}"
     pytest_return=$?
     echo "Pytest completed with status code: $pytest_return"
 fi

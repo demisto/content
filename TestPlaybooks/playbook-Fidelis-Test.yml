@@ -581,7 +581,7 @@ tasks:
       - "20"
     scriptarguments:
       alert_id:
-        simple: "15"
+        simple: "20"
     separatecontext: false
     view: |-
       {

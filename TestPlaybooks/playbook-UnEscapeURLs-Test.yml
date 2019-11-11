@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 07304c78-535f-4583-8e8c-8e6a4296d30a
+    taskid: 110bbe78-9a18-4db5-8015-faa2e3c22a39
     type: start
     task:
-      id: 07304c78-535f-4583-8e8c-8e6a4296d30a
+      id: 110bbe78-9a18-4db5-8015-faa2e3c22a39
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 915b9fdc-4a30-49e6-80a7-ce29f90e7c9e
+    taskid: 8466bd15-ce6b-4863-8896-3333e79ca589
     type: regular
     task:
-      id: 915b9fdc-4a30-49e6-80a7-ce29f90e7c9e
+      id: 8466bd15-ce6b-4863-8896-3333e79ca589
       version: -1
       name: Delete Context
       scriptName: DeleteContext
@@ -48,6 +48,8 @@ tasks:
       - "15"
       - "17"
       - "20"
+      - "22"
+      - "24"
     scriptarguments:
       all:
         simple: "yes"
@@ -68,10 +70,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: a9fcb49d-9bb7-41b3-8b8a-9ae9436fea63
+    taskid: b430b958-0f85-44c1-8c8d-755a2a966546
     type: regular
     task:
-      id: a9fcb49d-9bb7-41b3-8b8a-9ae9436fea63
+      id: b430b958-0f85-44c1-8c8d-755a2a966546
       version: -1
       name: UnescapeUrl
       scriptName: UnEscapeURLs
@@ -83,7 +85,7 @@ tasks:
       - "5"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e= # disable-secrets-detection
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=
     separatecontext: false
     view: |-
       {
@@ -97,10 +99,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 5626f24a-57cc-452d-8a6d-62b080d739e5
+    taskid: 272fd686-c972-4055-81cc-6e88d01bd18c
     type: regular
     task:
-      id: 5626f24a-57cc-452d-8a6d-62b080d739e5
+      id: 272fd686-c972-4055-81cc-6e88d01bd18c
       version: -1
       name: UnEscapeUrl
       scriptName: UnEscapeURLs
@@ -112,7 +114,7 @@ tasks:
       - "8"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e= # disable-secrets-detection
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e=
     separatecontext: false
     view: |-
       {
@@ -126,10 +128,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 50b1190a-ef09-4ba3-85be-208cc2a8ecda
+    taskid: 9a9ddc89-e4dd-4fdc-8050-5baa8af9bf0d
     type: regular
     task:
-      id: 50b1190a-ef09-4ba3-85be-208cc2a8ecda
+      id: 9a9ddc89-e4dd-4fdc-8050-5baa8af9bf0d
       version: -1
       name: Check Url
       scriptName: VerifyHumanReadableContains
@@ -143,7 +145,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100 # disable-secrets-detection
+        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100
     separatecontext: false
     view: |-
       {
@@ -157,10 +159,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 6d4e9316-f100-40cd-8e1d-d9a5ea19cb30
+    taskid: 4027fe7a-6c92-432b-8145-b0b7a2ebf211
     type: title
     task:
-      id: 6d4e9316-f100-40cd-8e1d-d9a5ea19cb30
+      id: 4027fe7a-6c92-432b-8145-b0b7a2ebf211
       version: -1
       name: Done
       type: title
@@ -179,10 +181,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 233c1a56-8fdc-4abf-86c3-89bdd1a3c1f7
+    taskid: 61ab7d81-da06-4dc2-83b5-faa7a6013b4b
     type: regular
     task:
-      id: 233c1a56-8fdc-4abf-86c3-89bdd1a3c1f7
+      id: 61ab7d81-da06-4dc2-83b5-faa7a6013b4b
       version: -1
       name: Check Url
       scriptName: VerifyHumanReadableContains
@@ -196,7 +198,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://maokvo.eu # disable-secrets-detection
+        simple: http://maokvo.eu
     separatecontext: false
     view: |-
       {
@@ -210,10 +212,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 391c2adb-080e-4475-843b-1a6c247b6bae
+    taskid: 0797c305-01e6-463e-84f7-844a16e8926e
     type: regular
     task:
-      id: 391c2adb-080e-4475-843b-1a6c247b6bae
+      id: 0797c305-01e6-463e-84f7-844a16e8926e
       version: -1
       name: UnEscapeURL - ATP Safelink
       scriptName: UnEscapeURLs
@@ -239,10 +241,10 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: d2c830e3-af52-4a64-8380-67758e4f63c2
+    taskid: 5d0f1a72-cc7b-4e6f-852d-71cd62d7049b
     type: regular
     task:
-      id: d2c830e3-af52-4a64-8380-67758e4f63c2
+      id: 5d0f1a72-cc7b-4e6f-852d-71cd62d7049b
       version: -1
       name: UnEscapeURL - ATP Safelink
       scriptName: UnEscapeURLs
@@ -268,10 +270,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 54be0fee-6b20-42ad-843c-369d429e6045
+    taskid: f200d31f-d8de-4d9f-8c48-2321fa944534
     type: regular
     task:
-      id: 54be0fee-6b20-42ad-843c-369d429e6045
+      id: f200d31f-d8de-4d9f-8c48-2321fa944534
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -299,10 +301,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: d24848be-055d-4805-84d4-4c10dfd1767c
+    taskid: a02aa6fc-8d62-43e5-8eff-7a5002e4f6c4
     type: regular
     task:
-      id: d24848be-055d-4805-84d4-4c10dfd1767c
+      id: a02aa6fc-8d62-43e5-8eff-7a5002e4f6c4
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -316,7 +318,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: https://twitter.com/PhilipsBeLux # disable-secrets-detection
+        simple: https://twitter.com/PhilipsBeLux
     separatecontext: false
     view: |-
       {
@@ -330,10 +332,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 3e2f95cb-6f7b-462a-8c8c-1f0ed4dbc0bd
+    taskid: 844a0d48-536c-4536-8c55-c6853d711ce3
     type: regular
     task:
-      id: 3e2f95cb-6f7b-462a-8c8c-1f0ed4dbc0bd
+      id: 844a0d48-536c-4536-8c55-c6853d711ce3
       version: -1
       name: UnEscapeURL
       scriptName: UnEscapeURLs
@@ -359,10 +361,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 241b4d21-28e0-4656-8709-d0e2c951751d
+    taskid: 710c9bdd-5220-4579-8db2-3be93373bd10
     type: regular
     task:
-      id: 241b4d21-28e0-4656-8709-d0e2c951751d
+      id: 710c9bdd-5220-4579-8db2-3be93373bd10
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -390,10 +392,10 @@ tasks:
     ignoreworker: false
   "17":
     id: "17"
-    taskid: a9fac1a0-f7a5-4f6c-88e5-489544ffb101
+    taskid: 0ffe9db1-865d-440c-895b-af20f8739254
     type: regular
     task:
-      id: a9fac1a0-f7a5-4f6c-88e5-489544ffb101
+      id: 0ffe9db1-865d-440c-895b-af20f8739254
       version: -1
       name: UnEscapeURLs an Array of urls
       description: |-
@@ -411,7 +413,7 @@ tasks:
       - "19"
     scriptarguments:
       input:
-        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.facebook.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=rSVqfaVO2V23rdg6L7rly%2BbWdn4WmvUk1T5YQ8%2BACbk%3D&reserved=0%3E,https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=,hxxps://www[.]demisto[.]com,https://google.com,www.spotify.com # disable-secrets-detection
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.facebook.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=rSVqfaVO2V23rdg6L7rly%2BbWdn4WmvUk1T5YQ8%2BACbk%3D&reserved=0%3E,https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=,hxxps://www[.]demisto[.]com,https://google.com,www.spotify.com
     separatecontext: false
     view: |-
       {
@@ -425,10 +427,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: 995a12c8-31fa-426d-8a2c-bdc5b07e36aa
+    taskid: 7183867c-643d-44d3-867b-b24c7a7a8639
     type: regular
     task:
-      id: 995a12c8-31fa-426d-8a2c-bdc5b07e36aa
+      id: 7183867c-643d-44d3-867b-b24c7a7a8639
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -463,10 +465,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: 03274ce9-2214-458d-83fb-8898ab209ee1
+    taskid: 20a38a91-927c-4785-82cb-dd7982166855
     type: regular
     task:
-      id: 03274ce9-2214-458d-83fb-8898ab209ee1
+      id: 20a38a91-927c-4785-82cb-dd7982166855
       version: -1
       name: Check URL
       scriptName: VerifyHumanReadableContains
@@ -487,7 +489,7 @@ tasks:
                 value:
                   simple: "0"
       substring:
-        simple: https://www.facebook.com/PhilipsBeLux # disable-secrets-detection
+        simple: https://www.facebook.com/PhilipsBeLux
     separatecontext: false
     view: |-
       {
@@ -501,10 +503,10 @@ tasks:
     ignoreworker: false
   "20":
     id: "20"
-    taskid: ff117381-34ce-4049-8743-20848d8e6f75
+    taskid: ed41442b-1c19-4ad4-81e5-8270e97d5747
     type: regular
     task:
-      id: ff117381-34ce-4049-8743-20848d8e6f75
+      id: ed41442b-1c19-4ad4-81e5-8270e97d5747
       version: -1
       name: UnEscapeURL with capitalized 'HTTPS'
       description: |-
@@ -523,7 +525,7 @@ tasks:
       extend-context:
         simple: output=
       input:
-        simple: HTTPS://autodesk.com/POSTSTUFF # disable-secrets-detection
+        simple: HTTPS://autodesk.com/POSTSTUFF
     separatecontext: false
     view: |-
       {
@@ -537,10 +539,10 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: e3a2bd48-ad69-40ef-802b-05754745c77f
+    taskid: 0fc6cab6-490b-4e84-88a1-f5fea7ba7f17
     type: condition
     task:
-      id: e3a2bd48-ad69-40ef-802b-05754745c77f
+      id: 0fc6cab6-490b-4e84-88a1-f5fea7ba7f17
       version: -1
       name: Verify that the output URL is correct
       description: Check whether the values provided in arguments are equal. If either
@@ -557,7 +559,7 @@ tasks:
         complex:
           root: output
       right:
-        simple: HTTPS://autodesk.com/POSTSTUFF # disable-secrets-detection
+        simple: HTTPS://autodesk.com/POSTSTUFF
     results:
     - AreValuesEqual
     separatecontext: false
@@ -571,14 +573,144 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 7a43adf7-32f0-4f0c-872f-dd204b7b89ba
+    type: regular
+    task:
+      id: 7a43adf7-32f0-4f0c-872f-dd204b7b89ba
+      version: -1
+      name: UnEscapeURLs - Proofpoint V3 Link (Outlook Modified Link)
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      input:
+        simple: https://urldefense.com/v3/__http:/www.nintendo.com__;!83Wvu-Cv-B_8k64!-XmeoAPIhKFgj4X-lVVmbQXWouodrfqiYRhDEj7kMbX6Kx_EZpL_Nh1iKyoLTt4QjpI$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: d04e3a4b-740e-4bd8-81c9-5097bafa3209
+    type: regular
+    task:
+      id: d04e3a4b-740e-4bd8-81c9-5097bafa3209
+      version: -1
+      name: Check URL
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://www.nintendo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 779105a9-8b99-4bf7-8685-23f49ad03039
+    type: regular
+    task:
+      id: 779105a9-8b99-4bf7-8685-23f49ad03039
+      version: -1
+      name: UnEscapeURLs - Proofpoint V3 Link
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      input:
+        simple: https://urldefense.com/v3/__http://m.mvch.cl/agenda__;!qki1pd3dcsl!dcNm4mQ8wag7yRE_wmFd9RliH_A0V77yEw4ch9MxaEHin-FiA_GGGGGGG_Xc2aY5p-6_Dg # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 7d4c4cf5-806d-4942-84b1-d19eef3b4558
+    type: regular
+    task:
+      id: 7d4c4cf5-806d-4942-84b1-d19eef3b4558
+      version: -1
+      name: Check URL
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://m.mvch.cl/agenda # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 735,
-        "width": 3390,
-        "x": 50,
+        "width": 4250,
+        "x": -810,
         "y": 50
       }
     }

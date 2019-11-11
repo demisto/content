@@ -332,12 +332,13 @@ class IncidentFieldContent(Content):
         if data.get('description'):
             return release_notes_item(data['name'], data['description'])
 
-        release_note = super(IncidentFieldContent, self).added_release_notes(file_path, data)
+        # using the 'modified' function instead of 'added' function to handle ignored RN
+        release_note = super(IncidentFieldContent, self).modified_release_notes(file_path, data)
 
         if release_note:
             return release_notes_item(data['name'], release_note)
 
-        # error
+        # error or ignored release_note
         return release_note
 
     def modified_release_notes(self, file_path, data):

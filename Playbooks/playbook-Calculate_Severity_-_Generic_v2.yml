@@ -78,8 +78,6 @@ tasks:
       blah: {}
       booltest: {}
       bugtraq: {}
-      campaigntargetcount: {}
-      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
@@ -777,12 +775,12 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 2bcd5d89-5bdc-4d12-8c97-97400decb679
+    taskid: f0d6dc7b-0638-4a10-82eb-8e81360a0062
     type: condition
     task:
-      id: 2bcd5d89-5bdc-4d12-8c97-97400decb679
+      id: f0d6dc7b-0638-4a10-82eb-8e81360a0062
       version: -1
-      name: Determine severity 
+      name: Determine incident severity
       description: Determines the severity level based on the highest result of all
         severity calculations.
       type: condition
@@ -836,14 +834,14 @@ tasks:
                       value:
                         simple: Critical
                     ignorecase: true
-                  - operator: containsGeneral
+                  - operator: isEqualString
                     left:
                       value:
                         simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
-                        simple: Critical
+                        simple: "4"
                     ignorecase: true
             iscontext: true
     - label: High
@@ -881,14 +879,14 @@ tasks:
                       value:
                         simple: High
                     ignorecase: true
-                  - operator: containsGeneral
+                  - operator: isEqualString
                     left:
                       value:
                         simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
-                        simple: High
+                        simple: "3"
                     ignorecase: true
             iscontext: true
     - label: Medium
@@ -925,14 +923,14 @@ tasks:
                     right:
                       value:
                         simple: Medium
-                  - operator: containsGeneral
+                  - operator: isEqualString
                     left:
                       value:
                         simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
-                        simple: Medium
+                        simple: "2"
                     ignorecase: true
             iscontext: true
           ignorecase: true
@@ -971,14 +969,14 @@ tasks:
                       value:
                         simple: Low
                     ignorecase: true
-                  - operator: containsGeneral
+                  - operator: isEqualString
                     left:
                       value:
                         simple: Severities.IncidentSeverity
                       iscontext: true
                     right:
                       value:
-                        simple: Low
+                        simple: "1"
                     ignorecase: true
             iscontext: true
     view: |-
@@ -993,12 +991,12 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 091d4064-026d-4c61-856b-8cf0b831ff8d
+    taskid: 69f21366-2cbf-4803-8090-ec97bc904a2f
     type: regular
     task:
-      id: 091d4064-026d-4c61-856b-8cf0b831ff8d
+      id: 69f21366-2cbf-4803-8090-ec97bc904a2f
       version: -1
-      name: Get incident severity
+      name: Get current incident severity
       description: Sets the current severity of the incident in the context.
       scriptName: Set
       type: regular
@@ -1162,13 +1160,13 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: e202e5a3-661e-4723-8150-01dd38b146f4
+    taskid: 429d77e2-31e3-4796-8b53-655951abeedf
     type: regular
     task:
-      id: e202e5a3-661e-4723-8150-01dd38b146f4
+      id: 429d77e2-31e3-4796-8b53-655951abeedf
       version: -1
-      name: Set the incident severity level to "Unknown"
-      description: Sets the incident severity to "Medium".
+      name: Set incident severity level to "Unknown"
+      description: Sets the incident severity to "Unknown".
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -1196,6 +1194,8 @@ tasks:
       attachmenttype: {}
       backupowner: {}
       bugtraq: {}
+      campaigntargetcount: {}
+      campaigntargets: {}
       city: {}
       closeNotes: {}
       closeReason: {}
@@ -1210,6 +1210,7 @@ tasks:
       country: {}
       countrywherebusinesshasitsmainestablishment: {}
       countrywherethebreachtookplace: {}
+      criticalassets: {}
       customFields: {}
       cve: {}
       cvss: {}
@@ -1225,6 +1226,7 @@ tasks:
       dpoemailaddress: {}
       duration: {}
       emailaddress: {}
+      emailauthenticitycheck: {}
       emailbcc: {}
       emailbody: {}
       emailbodyformat: {}
@@ -1394,7 +1396,8 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: Indicates the email authenticity resulting from EmailAuthenticityCheck script.
+  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
+    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
 outputs:
 - contextPath: CriticalAssets
   description: All critical assets involved in the incident.
