@@ -1,16 +1,16 @@
 id: Panorama Query Logs For Indicators Test
 version: -1
-fromversion: 4.5.0
 name: Panorama Query Logs For Indicators Test
 description: This is a test playbook for Panorama Query Logs For Indicators
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 76c17328-4ca8-4656-8a99-df48fc6b601a
+    taskid: bc808813-c98b-48e8-8aa6-aca287120872
     type: start
     task:
-      id: 76c17328-4ca8-4656-8a99-df48fc6b601a
+      id: bc808813-c98b-48e8-8aa6-aca287120872
       version: -1
       name: ""
       iscommand: false
@@ -29,56 +29,15 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 625e87a1-e072-40a1-8ab5-4dcb26b6e6c6
-    type: playbook
-    task:
-      id: 625e87a1-e072-40a1-8ab5-4dcb26b6e6c6
-      version: -1
-      name: Panorama Query Logs For Indicators
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire. The playbook accepts inputs such as IP. hash, url.'
-      playbookName: Panorama Query Logs For Indicators
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      filedigest:
-        simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
-      ip:
-        simple: 192.168.1.12,8.8.8.8
-      log_type:
-        simple: traffic,threat,wildfire,data,url
-      url:
-        simple: microsoft.com,windowsupdate.com
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "2":
     id: "2"
-    taskid: 8d5e063c-2c0d-47b0-87b2-d3bf025719fe
+    taskid: 1fd30e08-2913-4a2e-882d-87c2513a64e1
     type: title
     task:
-      id: 8d5e063c-2c0d-47b0-87b2-d3bf025719fe
-      description: Header
+      id: 1fd30e08-2913-4a2e-882d-87c2513a64e1
       version: -1
       name: Done
+      description: Header
       type: title
       iscommand: false
       brand: ""
@@ -95,10 +54,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: f7468682-d376-4eb2-80f1-bdeff2b936f0
+    taskid: ea17a0ce-9bbd-4c52-8a8e-9407cd3ff013
     type: regular
     task:
-      id: f7468682-d376-4eb2-80f1-bdeff2b936f0
+      id: ea17a0ce-9bbd-4c52-8a8e-9407cd3ff013
       version: -1
       name: Delete context
       description: Delete field from context
@@ -108,7 +67,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     scriptarguments:
       all:
         simple: "yes"
@@ -122,6 +81,48 @@ tasks:
         "position": {
           "x": 450,
           "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 8261ea22-c615-4c52-8eee-07de32e02ca6
+    type: playbook
+    task:
+      id: 8261ea22-c615-4c52-8eee-07de32e02ca6
+      version: -1
+      name: Panorama Query Logs For Indicators1
+      description: 'Query Panorama Logs of types in one playbook: traffic, threat,
+        url, data-filtering and wildfire. The playbook accepts inputs such as IP.
+        hash, url.'
+      playbookName: Panorama Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      filedigest:
+        simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
+      ip:
+        simple: 8.8.8.8,192.168.1.12
+      log_type:
+        simple: traffic,threat,wildfire,data,url
+      url:
+        simple: microsoft.com,windowsupdate.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
         }
       }
     note: false
