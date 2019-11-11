@@ -10,6 +10,7 @@ DASHBOARDS_DIR = 'Dashboards'
 WIDGETS_DIR = 'Widgets'
 INCIDENT_FIELDS_DIR = 'IncidentFields'
 INCIDENT_TYPE_DIR = 'IncidentTypes'
+INDICATOR_FIELDS_DIR = 'IndicatorFields'
 LAYOUTS_DIR = 'Layouts'
 CLASSIFIERS_DIR = 'Classifiers'
 MISC_DIR = 'Misc'
@@ -104,7 +105,7 @@ PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 
-
+INDICATOR_FIELDS_REGEX = r'{}/incidentfield-.*\.json$'.format(INDICATOR_FIELDS_DIR)
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r'{}.*dashboard-.*\.json$'.format(DASHBOARDS_DIR)
 CONNECTIONS_REGEX = r'{}.*canvas-context-connections.*\.json$'.format(CONNECTIONS_DIR)
@@ -191,6 +192,7 @@ CHECKED_TYPES_REGEXES = [
     LAYOUT_REGEX,
     PACKS_LAYOUTS_REGEX,
     INCIDENT_FIELD_REGEX,
+    INDICATOR_FIELDS_REGEX,
     MISC_REGEX,
     REPORT_REGEX,
     REPUTATION_REGEX
@@ -219,6 +221,7 @@ DIR_LIST = [
     CLASSIFIERS_DIR,
     MISC_DIR,
     CONNECTIONS_DIR,
+    INDICATOR_FIELDS_DIR,
 ]
 
 SPELLCHECK_FILE_TYPES = [
@@ -230,7 +233,6 @@ SPELLCHECK_FILE_TYPES = [
 ]
 
 KNOWN_FILE_STATUSES = ['a', 'm', 'd', 'r'] + ['r{:03}'.format(i) for i in range(101)]
-
 
 CODE_FILES_REGEX = [
     INTEGRATION_JS_REGEX,
