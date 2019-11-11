@@ -1,11 +1,11 @@
 args:
 - default: true
-  description: The URL(s) or Email(s) to process
+  description: The URLs or emails to process.
   isArray: true
   name: input
   required: false
   secret: false
-comment: Extract FQDN(s) from URL(s) and/or Email(s)
+comment: Extracts FQDNs from URLs and emails.
 commonfields:
   id: ExtractFQDNFromUrlAndEmail
   version: -1
