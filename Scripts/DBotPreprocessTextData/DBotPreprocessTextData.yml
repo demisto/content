@@ -7,7 +7,7 @@ args:
   secret: false
 - default: false
   defaultValue: '15'
-  description: Sample text with whose total words are less than or equal this nuimber
+  description: Sample text of which the total number words are less than or equal to this number
     will be ignored.
   isArray: false
   name: removeShortTextThreshold
@@ -23,7 +23,7 @@ args:
   secret: false
 - default: false
   defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: Comma-separaed value of incident fields names with the text to process.
+  description: A comma-separated list of incident fields names with the text to process.
     You can also use "|" if you want to choose the first non-empty value from a list
     of fields.
   isArray: false
@@ -51,7 +51,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: nlp
-  description: Text pre-processing type
+  description: Text pre-processing type.
   isArray: false
   name: preProcessType
   predefined:
@@ -62,7 +62,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'true'
-  description: Remove HTML tags
+  description: Whether to remove HTML tags. Default is "true".
   isArray: false
   name: cleanHTML
   predefined:
@@ -71,13 +71,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: Filter only these fields inside the json, comma-separated value.
+  description: A comma-separate list of fields inside the JSON by which to filter.
   isArray: false
   name: whitelistFields
   required: false
   secret: false
 - default: false
-  description: If non-empty, hash every word with this seed
+  description: If non-empty, hash every word with this seed.
   isArray: false
   name: hashSeed
   required: false
@@ -85,7 +85,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: pickle
-  description: The output file format
+  description: The output file format.
   isArray: false
   name: outputFormat
   predefined:
@@ -93,7 +93,7 @@ args:
   - pickle
   required: false
   secret: false
-comment: Pre-process text data for machine learning text classifier
+comment: Pre-process text data for the machine learning text classifier.
 commonfields:
   id: DBotPreProcessTextData
   version: -1
@@ -101,16 +101,16 @@ enabled: false
 name: DBotPreProcessTextData
 outputs:
 - contextPath: DBotPreProcessTextData.Filename
-  description: The output filename
+  description: The output file name.
   type: String
 - contextPath: DBotPreProcessTextData.TextField
-  description: The original text field inside the file
+  description: The original text field inside the file.
   type: String
 - contextPath: DBotPreProcessTextData.TextFieldProcessed
-  description: The processed text field inside the json file
+  description: The processed text field inside the JSON file.
   type: String
 - contextPath: DBotPreProcessTextData.FileFormat
-  description: The output file format
+  description: The output file format.
   type: String
 script: '-'
 system: false
