@@ -21,7 +21,7 @@ configuration:
   defaultvalue: https://www.securityadvisor.io/
   type: 0
   required: true
-- display: api key
+- display: Access Token
   name: apikey
   defaultvalue: ""
   type: 4
