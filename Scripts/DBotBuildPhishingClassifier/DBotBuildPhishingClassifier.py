@@ -1,4 +1,5 @@
 from CommonServerPython import *
+import base64
 
 
 def main():
@@ -14,7 +15,8 @@ def main():
     text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8'))
     text_pre_process_args['preProcessType'] = 'nlp'
     text_pre_process_args['textFields'] = text_pre_process_args['emailContentFields']
-    text_pre_process_args['whitelistFields'] = "{0},{1}".format('dbot_processed_text', text_pre_process_args['tagField'])
+    text_pre_process_args['whitelistFields'] = "{0},{1}".format('dbot_processed_text',
+                                                                text_pre_process_args['tagField'])
     res = demisto.executeCommand("DBotPreProcessTextData", text_pre_process_args)
     if is_error(res):
         return_error(get_error(res))

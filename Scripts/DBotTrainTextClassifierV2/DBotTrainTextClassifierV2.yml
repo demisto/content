@@ -115,7 +115,7 @@ args:
   secret: false
 comment: Train a machine learning text classifier.
 commonfields:
-  id: d7105a84-8fd8-45a4-b2d7-2b0c01062871
+  id: DBotTrainTextClassifierV2
   version: -1
 enabled: false
 name: DBotTrainTextClassifierV2

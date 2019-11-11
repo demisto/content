@@ -1,36 +1,36 @@
 args:
 - default: false
-  description: The incidents query
+  description: Additional text by which to query incidents.
   isArray: false
   name: query
   required: false
   secret: false
 - default: false
   defaultValue: Phishing
-  description: Filter by incidents types, comma-separated value
+  description: A common-separatetd list of incident types by which to filter.
   isArray: false
   name: incidentTypes
   required: false
   secret: false
 - default: false
   description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-    +0200")'
+        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+        +0200")'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
   description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
-    +0200")'
+        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+        +0200")'
   isArray: false
   name: toDate
   required: false
   secret: false
 - default: false
   defaultValue: '3000'
-  description: Maximum number of incidents to fetch
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
@@ -38,7 +38,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Fetch incident context
+  description: Whether to query and fetch incident context.
   isArray: false
   name: includeContext
   predefined:
@@ -49,7 +49,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: The time field to consider in the incident query
+  description: The incident field (created or modified) to specify for the date range.
   isArray: false
   name: timeField
   predefined:
@@ -58,14 +58,15 @@ args:
   required: false
   secret: false
 - default: false
-  description: The tag field in the JSON file.
+  description: The field name with the label. Supports a comma-separated list, the first
+    non-empty value will be taken.
   isArray: false
   name: tagField
   required: true
   secret: false
 - default: false
   defaultValue: emailsubject|name,emailbody|emailbodyhtml
-  description: Comma-separaed value of incident fields names with the text to process.
+  description: A comma-separated list of incident fields names with the email text to process.
     You can also use "|" if you want to choose the first non-empty value from a list
     of fields.
   isArray: false
@@ -74,7 +75,8 @@ args:
   secret: false
 - default: false
   defaultValue: '15'
-  description: Remove emails with text shorter then this threshold (number of words)
+  description: Sample text of which the total number words are less than or equal to this number
+    will be ignored.
   isArray: false
   name: removeShortTextThreshold
   required: false
@@ -88,33 +90,33 @@ args:
   required: false
   secret: false
 - default: false
-  description: Hash function seed (hash every word)
+  description: If non-empty, hash every word with this seed.
   isArray: false
   name: hashSeed
   required: false
   secret: false
 - default: false
-  description: The model name.
+  description: The model name to store in the system.
   isArray: false
   name: modelName
   required: false
   secret: false
 - default: false
   defaultValue: '*'
-  description: 'Comma-separated values of email tags values and mapping. The script
-    going to consider only the tags specify in this field. You can map label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
-    4 values in email tag: malicious, credentials harvesting, inner communitcation,
-    external legit email, unclassified. While training, we want to ignore "unclassified"
-    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
-    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
-    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
-    external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script
+      considers only the tags specified in this field. You can map label to another
+      value by using this format: LABEL:MAPPED_LABEL. For example, for
+      4 values in email tag: malicious, credentials harvesting, inner communitcation,
+      external legit email, unclassified. While training, we want to ignore "unclassified"
+      tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
+      "inner communitcation" and "external legit email" to one tag called "non-malicious".
+      The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+      external legit email:non-malicious'
   isArray: false
   name: phishingLabels
   required: false
   secret: false
-comment: Create a phishing classifier
+comment: Create a phishing classifier using machine learning technique, based on email content.
 commonfields:
   id: DBotBuildPhishingClassifier
   version: -1
