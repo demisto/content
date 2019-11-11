@@ -57,7 +57,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names, by
+  description: A comma-separated list of non-empty value incident field names by
     which to filter incidents.
   isArray: false
   name: NonEmptyFields
@@ -74,7 +74,7 @@ args:
   - pickle
   required: false
   secret: false
-comment: Get a list of incident objects and the associated incident outputs that match
+comment: Gets a list of incident objects and the associated incident outputs that match
   the specified query and filters. The results are returned in a structured data file.
 commonfields:
   id: GetIncidentsByQuery
