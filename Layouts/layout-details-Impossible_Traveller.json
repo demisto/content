@@ -1,6 +1,7 @@
 {
 	"TypeName": "Impossible Traveller",
 	"kind": "details",
+	"fromVersion": "5.0.0",
 	"layout": {
 		"TypeName": "",
 		"id": "Impossible Traveller",
