@@ -345,19 +345,26 @@ def get_vulnerability_details_command():
 
 
 def args_to_request_params(hostname, ip, date_range):
-    params = {"filter.0.filter": "host.target", "filter.0.quality": "eq"}
+    if not hostname and not ip:
+        return_error("Please provide one of the following arguments: hostname, ip")
+
+    indicator = hostname if hostname else ip
+
+    # Query filter parameters to be passed in request
+    params = {
+        "filter.0.filter": "host.target",  # filter by host target
+        "filter.0.quality": "eq",  # operator
+        "filter.0.value": indicator  # value
+    }
+
+    # Add date_range filter if provided (timeframe to retrieve results, in days)
     if date_range:
         if not date_range.isdigit():
             return_error("Invalid date range: {}".format(date_range))
         else:
             params["date_range"] = date_range
-    if hostname:
-        params["filter.0.value"] = hostname
-        return params, hostname
-    elif ip:
-        params["filter.0.value"] = ip
-        return params, ip
-    return_error("Please provide one of the following arguments: hostname, ip")
+
+    return params, indicator
 
 
 def get_vulnerabilities_by_asset_command():
