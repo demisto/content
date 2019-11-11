@@ -1,5 +1,4 @@
 from __future__ import print_function
-import demistomock as demisto
 import pytest
 from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indicator
 
@@ -63,13 +62,15 @@ no_engines_data = {'CustomFields': {}, 'ManuallyEditedFields': None, 'account': 
 
 
 @pytest.mark.parametrize('indicator_data, expected_result', [
-    (detect_positive_not_zero_1, '71, 10'),
-    (detect_positive_not_zero_2, '71, 8'),
-    (positive_zero, '71, 10')
+    (detect_positive_not_zero_1, (10, 61)),
+    (detect_positive_not_zero_2, (8, 63)),
+    (positive_zero, (0, 71))
 ])
 def test_zero_not_treated_as_none(indicator_data, expected_result):
     extract_result = extract_engines_data_from_indicator(indicator_data)
-    assert extract_result == extract_result
+    detection_engines = extract_result['Contents']['stats'][0]['data'][0]
+    positive_detections = extract_result['Contents']['stats'][1]['data'][0]
+    assert (detection_engines, positive_detections) == expected_result
 
 
 @pytest.mark.parametrize('indicator_data', [no_engines_data])
