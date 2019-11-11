@@ -4,6 +4,7 @@ import uuid
 import pickle
 from HTMLParser import HTMLParser
 from io import BytesIO, StringIO
+import base64
 
 import demisto_ml
 import pandas as pd

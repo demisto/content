@@ -2,7 +2,7 @@ id: DBot Create Phishing Classifier V2
 version: -1
 name: DBot Create Phishing Classifier V2
 description: Create a phishing classifier using machine learning technique, based
-  on email content
+  on email content.
 starttaskid: "0"
 tasks:
   "0":
@@ -61,8 +61,8 @@ tasks:
       id: 48a1fd70-7f0f-40ec-8049-64d41714dd06
       version: -1
       name: Get Incidents
-      description: Get incidents by query. We will use those incident to train the
-        machine learning phishing model.
+      description: Gets a list of incident objects and the associated incident outputs that match
+        the specified query and filters. The results are returned in a structured data file.
       scriptName: GetIncidentsByQuery
       type: regular
       iscommand: false
@@ -107,12 +107,12 @@ tasks:
       version: -1
       name: Pre-process file
       description: |-
-        Pre-process the text data for the machine learning text classifier.
+        Pre-process text data for the machine learning text classifier.
         The pre-process normalize the text:
         - Remove HTML tags
         - Convert every word to it's root (goes -> go)
-        - Remove text shorted then threshold
-        - Remove duplicate text samples
+        - Remove sample text of which the total number words are less than or equal to a threshold
+        - Remove emails with similarity greater then some threshold.
       scriptName: DBotPreProcessTextData
       type: regular
       iscommand: false
@@ -160,7 +160,7 @@ tasks:
       id: dfe802aa-a1a6-4534-80c9-e03fe1243536
       version: -1
       name: Train Model
-      description: Train the machine learning text classifier
+      description: Train the machine learning text classifier.
       scriptName: DBotTrainTextClassifierV2
       type: regular
       iscommand: false
@@ -217,7 +217,7 @@ tasks:
       version: -1
       name: Historical data exist?
       description: Check if we have input with historical data file - usually from
-        external source, or data we used to have in Demisto
+        external source, or data we used to have in Demisto.
       type: condition
       iscommand: false
       brand: ""
@@ -253,7 +253,7 @@ tasks:
       id: 99f5cc03-1224-4c0d-8d03-6c1337096de1
       version: -1
       name: Get Historical File
-      description: Converts Base64 file in a list to a binary file and upload to WarRoom
+      description: Converts Base64 file in a list to a binary file and upload to WarRoom.
       scriptName: Base64ListToFile
       type: regular
       iscommand: false
@@ -295,77 +295,84 @@ inputs:
   value:
     simple: phishing_model
   required: false
-  description: The name of Demisto list to store the model
+  description: The model name to store in the system.
 - key: emailTextKey
   value:
     simple: details
   required: false
-  description: Incident key to extract email body text
+  description: A comma-separated list of incident fields names with the email body or html body.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
 - key: emailSubjectKey
   value:
     simple: emailsubject
   required: false
-  description: Incident key to extract email subject
+  description: A comma-separated list of incident fields names with the email subject.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
 - key: emailTagKey
   value:
     simple: emailclassification
   required: false
-  description: Incident key expression to extract email tag
+  description: The field name with the email tag. Supports a comma-separated list, the first
+    non-empty value will be taken.
 - key: phishingLabels
   value:
     simple: '*'
   required: false
-  description: 'Comma-separated values of email tags values and mapping. The script
-    going to consider only the tags specify in this field. You can map label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example: let''s say we have
-    4 values in email tag: malicious, credentials harvesting, inner communitcation,
-    external legit email, unclassified. While training, we want to ignore "unclassified"
-    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to
-    merge "inner communitcation" and "external legit email" to one tag called "non-malicious".
-    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
-    external legit email:non-malicious'
+  description: 'A comma-separated list of email tags values and mapping. The script
+      considers only the tags specified in this field. You can map label to another
+      value by using this format: LABEL:MAPPED_LABEL. For example, for
+      4 values in email tag: malicious, credentials harvesting, inner communitcation,
+      external legit email, unclassified. While training, we want to ignore "unclassified"
+      tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
+      "inner communitcation" and "external legit email" to one tag called "non-malicious".
+      The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+      external legit email:non-malicious'
 - key: incidentsQuery
   value: {}
   required: false
-  description: The incidents query to fetch the training data for the model
+  description: The incidents query to fetch the training data for the model.
 - key: maxIncidentsToFetchOnTraining
   value:
     simple: "3000"
   required: false
-  description: Maximum number of incidents to fetch while training the model
+  description: The maximum number of incidents to fetch.
 - key: hashSeed
   value: {}
   required: false
-  description: Preform hash function to the words (to anonymize the data). Choose prime integer (5381 for example).
+  description: If non-empty, hash every word with this seed.
 - key: historicalDataFileListName
   value: {}
   required: false
-  description: The name of demisto list contains historical data samples for the algorithm
+  description: The name of demisto list contains historical data training samples for the model.
 - key: overrideModel
   value:
     simple: "true"
   required: false
-  description: Override model, if model with the same name already exist (true\false)
+  description: Whether to override the existing model if a model with the same name exists. Default is "false".
 - key: incidentTypes
   value:
     simple: "Phishing"
   required: false
-  description: Filter incidents with incident types. Comma separated value
+  description: A common-separatetd list of incident types by which to filter.
 - key: dedupThreshold
   value:
     simple: "0.99"
   required: false
-  description: Drop duplicate incidents with this threshold, value in range 0-1
+  description: Remove emails with similarity greater then this threshold, range 0-1,
+    where 1 is completly identical.
 - key: removeShortTextThreshold
   value:
     simple: "15"
   required: false
-  description: Remove text shorter then this threshold (number of words)
+  description: Sample text of which the total number words are less than or equal to this number
+    will be ignored.
 - key: modelTargetAccuracy
   value:
     simple: "0.8"
   required: false
-  description: The target accuracy of the model
+  description: The model target accuracy, between 0 and 1.
 outputs:
 - contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
   description: F1 score (0-1)

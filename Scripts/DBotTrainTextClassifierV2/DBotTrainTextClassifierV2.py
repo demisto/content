@@ -1,12 +1,14 @@
 # pylint: disable=no-member
+from CommonServerPython import *
+
 from collections import defaultdict
 from io import BytesIO, StringIO
 
 import demisto_ml
 import pandas as pd
 from tabulate import tabulate
+import base64
 
-from CommonServerPython import *
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {
