@@ -502,6 +502,7 @@ def find_duplicates(id_set):
 
 def has_duplicate(id_set, id_to_check):
     duplicates = [duplicate for duplicate in id_set if duplicate.get(id_to_check)]
+
     if len(duplicates) < 2:
         return False
 
