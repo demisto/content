@@ -1,6 +1,6 @@
 id: Impossible Traveller
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Impossible Traveller
 description: |-
   This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveller). The playbook gathers user, timestamp and IP information

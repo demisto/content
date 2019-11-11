@@ -1,6 +1,6 @@
 id: Impossible Traveller - Test
 version: -1
-fromversion: 4.5.0
+fromversion: 5.0.0
 name: Impossible Traveller - Test
 starttaskid: "0"
 tasks:

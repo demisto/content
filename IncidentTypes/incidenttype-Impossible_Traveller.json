@@ -1,4 +1,5 @@
 {
+	"fromVersion": "5.0.0",
 	"autorun": true,
 	"closureScript": "",
 	"color": "#fefe01",

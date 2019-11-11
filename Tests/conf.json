@@ -1511,8 +1511,8 @@
                 "Rasterize",
                 "Active Directory Query v2"
             ],
-            "fromversion": "4.5.0",
-            "timeout": 300
+            "fromversion": "5.0.0",
+            "timeout": 600
         },
         {
             "integrations": "Kafka V2",
