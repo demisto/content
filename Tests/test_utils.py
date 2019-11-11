@@ -6,6 +6,7 @@ import json
 import requests
 import argparse
 from subprocess import Popen, PIPE
+from distutils.version import LooseVersion
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
@@ -43,7 +44,7 @@ def run_command(command, is_silenced=True, exit_on_error=True):
         string. The output of the command you are trying to execute.
     """
     if is_silenced:
-        p = Popen(command.split(), stdout=PIPE, stderr=PIPE)
+        p = Popen(command.split(), stdout=PIPE, stderr=PIPE, universal_newlines=True)
     else:
         p = Popen(command.split())
 
@@ -59,6 +60,9 @@ def run_command(command, is_silenced=True, exit_on_error=True):
 
 
 def get_remote_file(full_file_path, tag='master'):
+    org_prefix = 'origin/'
+    if tag.startswith(org_prefix):  # remove origin/ prefix
+        tag = tag[len(org_prefix):]
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
     res = requests.get(github_path, verify=False)
     if res.status_code != 200:
@@ -132,7 +136,7 @@ def get_last_release_version():
     """
     tags = run_command('git tag').split('\n')
     tags = [tag for tag in tags if re.match(r'\d+\.\d+\.\d+', tag) is not None]
-    tags.sort(cmp=server_version_compare, reverse=True)
+    tags.sort(key=LooseVersion, reverse=True)
 
     return tags[0]
 
@@ -308,3 +312,14 @@ def run_threads_list(threads_list):
     # wait for the commands to complete
     for t in threads_list:
         t.join()
+
+
+def get_dockerimage45(script_object):
+    """Get the docker image used up to 4.5 (including).
+
+    Arguments:
+        script_object {dict} -- [script object containing the dockerimage configuration]
+    """
+    if 'dockerimage45' in script_object:
+        return script_object['dockerimage45']
+    return script_object.get('dockerimage', '')

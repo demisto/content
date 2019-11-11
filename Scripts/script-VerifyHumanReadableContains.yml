@@ -1,6 +1,6 @@
 commonfields:
-  id: dfa728bb-8291-4f8c-8185-53fad210f1b5
-  version: 24
+  id: VerifyHumanReadableContains
+  version: -1
 name: VerifyHumanReadableContains
 script: |-
   var entryRes = executeCommand('getEntry', {'id': args.humanReadableEntryId});
