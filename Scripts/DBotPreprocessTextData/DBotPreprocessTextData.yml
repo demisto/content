@@ -116,7 +116,7 @@ script: '-'
 system: false
 tags:
 - ml
-timeout: 12µs
+timeout: 120µs
 type: python
 dockerimage: demisto/dl:1.4
 runonce: true
