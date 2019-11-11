@@ -58,8 +58,7 @@ def coach_end_user_command(client, args):
     context = args.get('context')
     data = json.dumps({"username": user, "context": context})
     result = client.http_request_coachuser(data)
-    readable_output = tableToMarkdown("Coaching Status", [result], ['message', 'coaching_status', 'coaching_score',
-                                                                    'coaching_date'])
+
     contxt = makehash()
     contxt['user'] = user
     contxt['context'] = context
@@ -70,6 +69,8 @@ def coach_end_user_command(client, args):
     outputs = ({
         'SecurityAdvisor.CoachUser(val.user == obj.user && val.context == obj.context)': contxt,
     })
+
+    readable_output = tableToMarkdown("Coaching Status", [contxt])
 
     return (
         readable_output,
