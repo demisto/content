@@ -230,53 +230,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
-    taskid: c7a5863e-3c7d-4c96-8023-aeb7f5d68afe
-    type: condition
-    task:
-      id: c7a5863e-3c7d-4c96-8023-aeb7f5d68afe
-      version: -1
-      name: Verify Context
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "7"
-      "yes":
-      - "10"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CloakenScreenshot.Url
-            iscontext: true
-          right:
-            value:
-              simple: https://google.com
-      - - operator: isEqualString
-          left:
-            value:
-              simple: CloakenScreenshot.Status
-            iscontext: true
-          right:
-            value:
-              simple: Success
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "10":
     id: "10"
     taskid: 23193a7a-0698-451d-8b99-f918cdc98f19
