@@ -1,0 +1,134 @@
+args:
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: Phishing
+  description: A common-separatetd list of incident types by which to filter.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  description: 'The start date by which to filter incidents. Date format will be the
+        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+        +0200")'
+  isArray: false
+  name: fromDate
+  required: false
+  secret: false
+- default: false
+  description: 'The end date by which to filter incidents. Date format will be the
+        same as in the incidents query page (valid strings exaple: "3 days ago", ""2019-01-01T00:00:00
+        +0200")'
+  isArray: false
+  name: toDate
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to fetch.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to query and fetch incident context.
+  isArray: false
+  name: includeContext
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: created
+  description: The incident field (created or modified) to specify for the date range.
+  isArray: false
+  name: timeField
+  predefined:
+  - created
+  - modified
+  required: false
+  secret: false
+- default: false
+  description: The field name with the label. Supports a comma-separated list, the first
+    non-empty value will be taken.
+  isArray: false
+  name: tagField
+  required: true
+  secret: false
+- default: false
+  defaultValue: emailsubject|name,emailbody|emailbodyhtml
+  description: A comma-separated list of incident fields names with the email text to process.
+    You can also use "|" if you want to choose the first non-empty value from a list
+    of fields.
+  isArray: false
+  name: emailContentFields
+  required: false
+  secret: false
+- default: false
+  defaultValue: '15'
+  description: Sample text of which the total number words are less than or equal to this number
+    will be ignored.
+  isArray: false
+  name: removeShortTextThreshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.99'
+  description: Remove emails with similarity greater then this threshold, range 0-1,
+    where 1 is completly identical.
+  isArray: false
+  name: dedupThreshold
+  required: false
+  secret: false
+- default: false
+  description: If non-empty, hash every word with this seed.
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+- default: false
+  description: The model name to store in the system.
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- default: false
+  defaultValue: '*'
+  description: 'A comma-separated list of email tags values and mapping. The script
+      considers only the tags specified in this field. You can map label to another
+      value by using this format: LABEL:MAPPED_LABEL. For example, for
+      4 values in email tag: malicious, credentials harvesting, inner communitcation,
+      external legit email, unclassified. While training, we want to ignore "unclassified"
+      tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
+      "inner communitcation" and "external legit email" to one tag called "non-malicious".
+      The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+      external legit email:non-malicious'
+  isArray: false
+  name: phishingLabels
+  required: false
+  secret: false
+comment: Create a phishing classifier using machine learning technique, based on email content.
+commonfields:
+  id: DBotBuildPhishingClassifier
+  version: -1
+enabled: false
+name: DBotBuildPhishingClassifier
+script: '-'
+system: false
+tags:
+- ml
+timeout: 12µs
+type: python
+tests:
+- Create Phishing Classifier V2 ML Test
+subtype: python2
+fromversion: 4.5.0
