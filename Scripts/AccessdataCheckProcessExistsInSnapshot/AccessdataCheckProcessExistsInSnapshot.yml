@@ -12,6 +12,9 @@ args:
 - name: process
   required: true
   description: Process name that need to be checked
+- name: filepath
+  required: true
+  description: Path to the file with processes
 outputs:
 - contextPath: Accessdata.Process.Exists
   description: ""

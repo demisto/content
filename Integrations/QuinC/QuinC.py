@@ -1,5 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
+from CommonServerUserPython import *
+
+
 ''' IMPORTS '''
 
 import os
@@ -14,14 +17,13 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+ACCESS_DATA = 'Accessdata'
 JOBID_KEY = 'Accessdata.Job.ID'
 JOBRESULT_KEY = 'Accessdata.Job.Result'
 JOBSTATE_KEY = 'Accessdata.Job.State'
 JOB_KEY = 'Accessdata.Job'
 
 ''' HELPERS '''
-
-
 def create_jobstate_context(contents):
     if 'CaseJobID' not in contents:
         return {
@@ -139,15 +141,14 @@ class Client:
                 if result['OperationType'] == 24:  # software inventory
                     contents = create_contents(
                         caseID, jobID, 'Success', res['Applications'])
-                    return wrap_jobstate_context(
-                        contents,
-                        tableToMarkdown(
-                            'Applications', res['Applications'],
-                            [
-                                'Name', 'Version', 'Publisher', 'InstallDate',
-                                'InstallLocation', 'InstallSource',
-                                'EstimatedSizeInBytes'
-                            ]))
+                    return wrap_jobstate_context(contents,
+                                                 tableToMarkdown(
+                                                    'Applications', res['Applications'],
+                                                    [
+                                                        'Name', 'Version', 'Publisher', 'InstallDate',
+                                                        'InstallLocation', 'InstallSource',
+                                                        'EstimatedSizeInBytes'
+                                                    ]))
                 elif result['OperationType'] == 12:  # volatile data
                     contents = create_contents(caseID, jobID, 'Success', res)
                     return wrap_jobstate_context(contents, "Job completed successfully")
@@ -165,27 +166,24 @@ class Client:
     def get_jobstatus_processlist(self, args):
         jobStatus = self.get_jobstatus(args)
         contents = jobStatus['Contents']
-        newContents = create_contents(contents['CaseID'], contents['ID'], contents['State'])
-        newContents['Result'] = {}
+        newContents = create_contents(contents['CaseID'], contents['ID'], contents['State'], "")
 
         message = "(to get path to snapshot job should be finished) "
 
         if 'Result' not in contents:
             message += "No Result in response scheme"
             return wrap_jobstate_context(newContents, message)
-        newContents['Result']['SnapshotDetails'] = {}
 
         if 'SnapshotDetails' not in contents['Result']:
             message += "No Result.SnapshotDetails in response scheme"
             return wrap_jobstate_context(newContents, message)
-        newContents['Result']['SnapshotDetails']['File'] = {}
 
         if 'File' not in contents['Result']['SnapshotDetails']:
             message += "No Result.SnapshotDetails.File in response scheme"
             return wrap_jobstate_context(newContents, message)
-        newContents['Result']['SnapshotDetails']['File'] = contents['Result']['SnapshotDetails']['File']
+        newContents['Result'] = contents['Result']['SnapshotDetails']['File']
 
-        return wrap_jobstate_context(newContents, newContents['Result']['SnapshotDetails']['File'])
+        return wrap_jobstate_context(newContents, newContents['Result'])
 
     def get_jobstatus_memorydump(self, args):
         jobStatus = self.get_jobstatus(args)
@@ -194,7 +192,7 @@ class Client:
             contents['CaseID'],
             contents['ID'],
             contents['State'],
-            "No memory dump")
+            "")
         contents = contents['Result']
 
         message = "(to get path to memory dump job should be finished) "
@@ -229,11 +227,14 @@ class Client:
                                       preparedParameters['jobID'],
                                       'Unknown')
         if 'State' not in contents:
-            return wrap_jobstate_context(newContents, "No data in job result")
+            return wrap_jobstate_context(newContents, "No state in job result")
         newContents['State'] = contents['State']
         return wrap_jobstate_context(newContents, "Current job state: " + newContents['State'])
 
     def legacyagent_runvolatilejob(self, args):
+
+        if (not 'caseid' in args or args['caseid'] is None):
+            args['caseid'] = self.get_processing_case_id()['Contents']
 
         url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + '/volatile'
         data = {
@@ -261,6 +262,9 @@ class Client:
         }
 
     def legacyagent_runmemoryacquisition(self, args):
+
+        if (not 'caseid' in args or args['caseid'] is None):
+            args['caseid'] = self.get_processing_case_id()['Contents']
 
         url = 'api/v2/enterpriseapi/agent/' + str(args['caseid']) + \
             '/memoryacquistion'
@@ -291,6 +295,18 @@ class Client:
             'ContentsFormat': formats['text'],
             'Contents': data,
             'EntryContext': {'Accessdata.File.Contents': data}
+        }
+
+    def get_processing_case_id(self):
+
+        url = 'api/v2/enterpriseapi/processingcaseid'
+        processingcaseId = self.http_request('GET', url)
+
+        return {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': processingcaseId,
+            'EntryContext': {ACCESS_DATA + '.ProcessingCaseId': processingcaseId}
         }
 
 
@@ -325,6 +341,8 @@ def quinc_legacyagent_runmemoryacquisition_command(client, args):
 def quinc_read_casefile_command(client, args):
     return client.read_casefile(args)
 
+def quinc_get_processing_case_id_command(client):
+    return client.get_processing_case_id()
 
 def main():
 
@@ -341,6 +359,7 @@ def main():
             del os.environ['http_proxy']
         if 'https_proxy' in os.environ:
             del os.environ['https_proxy']
+
         PROXIES = {
             'http': None,
             'https': None
@@ -389,6 +408,10 @@ def main():
             demisto.results(
                 quinc_read_casefile_command(
                     client, demisto.args()))
+
+        if demisto.command() == 'accessdata-get-processing-case-id':
+            demisto.results(
+                quinc_get_processing_case_id_command(client))
 
     except Exception as e:
         return_error(
