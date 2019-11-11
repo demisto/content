@@ -1,5 +1,8 @@
 from Tests.scripts.constants import PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare
+from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare, get_dockerimage45
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 class ScriptValidator(object):
@@ -19,10 +22,9 @@ class ScriptValidator(object):
 
         if check_git:
             self.current_script = get_yaml(file_path)
-            if old_file_path:
-                self.old_script = get_remote_file(old_file_path, old_git_branch)
-            else:
-                self.old_script = get_remote_file(file_path, old_git_branch)
+
+            old_script_file = old_file_path or file_path
+            self.old_script = get_remote_file(old_script_file, old_git_branch)
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
@@ -162,9 +164,11 @@ class ScriptValidator(object):
         """Check if the docker image as been changed."""
         # Unnecessary to check docker image only on 5.0 and up
         if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
-            if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
+            old_docker = get_dockerimage45(self.old_script)
+            new_docker = get_dockerimage45(self.current_script)
+            if old_docker != new_docker:
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                            " this is not allowed.".format(self.file_path))
+                            " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 return True
 
         return False
