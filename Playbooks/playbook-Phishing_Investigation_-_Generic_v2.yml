@@ -188,7 +188,7 @@ tasks:
       bcc: {}
       body:
         simple: "Hi ${.=function(val) { var reporter = val.ReporterAddress ;var account\
-          \ = val.Account.filter(function(acc) { return acc.DisplayName && acc.Email\
+          \ = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && acc.Email\
           \ && acc.Email.Address === reporter }); return account[0] && account[0].DisplayName\
           \ || reporter; }(val)},\nWe've received your email and are investigating.\n\
           Please do not touch the email until further notice.\n\nCordially, \n  Your\
