@@ -43,7 +43,7 @@ class YMLBasedValidator(StructureValidator):
         pass
 
     @abstractmethod
-    def is_there_duplicates_args(self):
+    def is_there_duplicate_args(self):
         pass
 
     @abstractmethod

@@ -384,8 +384,7 @@ class IntegrationValidator(YMLBasedValidator):
         for command, args_dict in old_command_to_args.items():
             if command not in current_command_to_args.keys() or \
                     not self.is_subset_dictionary(current_command_to_args[command], args_dict):
-                print_error("Possible backwards compatibility break, You've changed the name of a command or its arg in"
-                            " the file {0} please undo, the command was:\n{1}".format(self.file_path, command))
+                print_error(Errors.breaking_backwards_command_arg_changed(self.file_path, command))
                 self._is_valid = False
                 return True
 

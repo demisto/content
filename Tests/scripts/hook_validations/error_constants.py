@@ -1,4 +1,6 @@
 class Errors(object):
+    BACKWARDS = "Possible backwards compatibility break"
+
     @staticmethod
     def wrong_filename(filepath, file_type):
         return '"{}" is not a valid {} filename.'.format(filepath, file_type)
@@ -29,11 +31,6 @@ class Errors(object):
                "please update the file {}.".format(file_name)
 
     @staticmethod
-    def breaking_backwards_subtype(file_path):
-        return "Possible backwards compatibility break, You've changed the subtype " \
-               "of the file {}".format(file_path)
-
-    @staticmethod
     def beta_in_str(file_path, field):
         return "Field '{}' should NOT contain the substring \"beta\" in a new beta integration. " \
                "please change the id in the file {}".format(field, file_path)
@@ -59,26 +56,6 @@ class Errors(object):
                "allow duplicated parameters".format(param_name, current_integration)
 
     @staticmethod
-    def breaking_backwards_no_old_script(e):
-        return "{}\nCould not find the old file please make sure that you did not break " \
-               "backward compatibility".format(str(e))
-
-    @staticmethod
-    def breaking_backwards_context(file_path):
-        return "Possible backwards compatibility break, You've changed the context in the file {}," \
-               " please undo.".format(file_path)
-
-    @staticmethod
-    def breaking_backwards_command(file_path, old_command):
-        return "Possible backwards compatibility break, You've changed the context in the file {0} please " \
-               "undo, the command is:\n{1}".format(file_path, old_command)
-
-    @staticmethod
-    def breaking_backwards_docker(file_path):
-        return "Possible backwards compatibility break, You've changed the docker for the file {}" \
-               " this is not allowed.".format(file_path)
-
-    @staticmethod
     def added_required_fields(file_path, field):
         return "You've added required fields in the file '{}', the field is '{}'".format(file_path, field)
 
@@ -90,3 +67,37 @@ class Errors(object):
     def from_version_modified(file_path):
         return "You've added fromversion to an existing file in the system, this is not allowed, please undo. " \
                "the file was {}.".format(file_path)
+
+    @classmethod
+    def breaking_backwards_no_old_script(cls, e):
+        return "{}\n{}, Could not find the old file.".format(cls.BACKWARDS, str(e))
+
+    @classmethod
+    def breaking_backwards_subtype(cls, file_path):
+        return "{}, You've changed the subtype " \
+               "of the file {}".format(cls.BACKWARDS, file_path)
+
+    @classmethod
+    def breaking_backwards_context(cls, file_path):
+        return "{}, You've changed the context in the file {}," \
+               " please undo.".format(cls.BACKWARDS, file_path)
+
+    @classmethod
+    def breaking_backwards_command(cls, file_path, old_command):
+        return "{}, You've changed the context in the file {} please " \
+               "undo, the command is:\n{}".format(cls.BACKWARDS, file_path, old_command)
+
+    @classmethod
+    def breaking_backwards_docker(cls, file_path):
+        return "{}, You've changed the docker for the file {}" \
+               " this is not allowed.".format(cls.BACKWARDS, file_path)
+
+    @classmethod
+    def breaking_backwards_arg_changed(cls, file_path):
+        return "{}, You've changed the name of an arg in " \
+               "the file {}, please undo.".format(cls.BACKWARDS, file_path)
+
+    @classmethod
+    def breaking_backwards_command_arg_changed(cls, file_path, command):
+        return "{}, You've changed the name of a command or its arg in" \
+               " the file {} please undo, the command was:\n{}".format(cls.BACKWARDS, file_path, command)

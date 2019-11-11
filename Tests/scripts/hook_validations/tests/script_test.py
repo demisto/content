@@ -349,7 +349,7 @@ def test_duplicate_arg_in_script():
         ]
     }
 
-    assert validator.is_there_duplicates_args(), "The script validator didn't found the duplicate arg"
+    assert validator.is_there_duplicate_args(), "The script validator didn't found the duplicate arg"
 
 
 def test_no_duplicate_arg_in_script():
@@ -365,7 +365,7 @@ def test_no_duplicate_arg_in_script():
         ]
     }
 
-    assert validator.is_there_duplicates_args() is False, 'The script validator found duplicate arg although ' \
+    assert validator.is_there_duplicate_args() is False, 'The script validator found duplicate arg although ' \
         'there no such'
 
 

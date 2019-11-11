@@ -51,7 +51,7 @@ class ScriptValidator(YMLBasedValidator):
             self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
-            self.is_there_duplicates_args(),
+            self.is_there_duplicate_args(),
             self.is_changed_subtype()
         ]
 
@@ -120,7 +120,7 @@ class ScriptValidator(YMLBasedValidator):
 
         return False
 
-    def is_there_duplicates_args(self):
+    def is_there_duplicate_args(self):
         """Check if there are duplicated arguments."""
         args = [arg['name'] for arg in self.current_script.get('args', [])]
         if len(args) != len(set(args)):
@@ -134,8 +134,7 @@ class ScriptValidator(YMLBasedValidator):
         old_args = [arg['name'] for arg in self.old_script.get('args', [])]
 
         if not self._is_sub_set(current_args, old_args):
-            print_error("Possible backwards compatibility break, You've changed the name of an arg in "
-                        "the file {}, please undo.".format(self.file_path))
+            print_error(Errors.breaking_backwards_arg_changed(self.file_path))
             return True
 
         return False
