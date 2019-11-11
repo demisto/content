@@ -1,7 +1,7 @@
 id: Block File - Cylance Protect v2
 version: -1
 name: Block File - Cylance Protect v2
-fromversion: 4.0.0
+fromversion: 4.5.0
 description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine
   list using the Cylance Protect v2 integration.
 starttaskid: "0"
