@@ -1,5 +1,5 @@
-id: AWS - IAM Test Playbook
-version: 16
+id: d5cb69b1-c81c-4f27-8a40-3106c0cb2620
+version: -1
 name: AWS - IAM Test Playbook
 starttaskid: "0"
 tasks:
