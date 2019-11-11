@@ -3,9 +3,11 @@ version: -1
 fromversion: 4.5.0
 name: Impossible Traveller
 description: |-
-  This playbook investigates an impossible traveller event gathering user, timestamp and IP information associated with multiple application login attempts.
+  This playbook investigates an event whereby a user has multiple application login attempts from various locations in a short time period (impossible traveller). The playbook gathers user, timestamp and IP information
+  associated with the multiple application login attempts.
 
-  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether the user is indeed an impossible traveller. Finally, it takes steps to contain the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
+  The playbook then measures the time difference between the multiple login attempts and computes the distance between the two locations to verify whether it is possible the user could traverse the distance
+  in the amount of time determined. Also, it takes steps to remediate the incident by blocking the offending IPs and disabling the user account, if chosen to do so.
 starttaskid: '0'
 tasks:
   '0':
@@ -80,7 +82,7 @@ tasks:
       id: 7949c4db-df1d-4a40-8091-813f3d348d08
       version: -1
       name: Get user manager information
-      description: Gets information about the manager of the user.
+      description: Gets information about the user's manager.
       script: '|||ad-get-user'
       type: regular
       iscommand: true
@@ -123,7 +125,7 @@ tasks:
       id: 09f24959-1fbf-4314-86e4-e187658d0df6
       version: -1
       name: Calculate geographical distance between logins
-      description: Compute the distance between two sets of coordinates in miles.
+      description: Compute the distance between two sets of coordinates, in miles.
       tags:
       - geodistance
       scriptName: CalculateGeoDistance
@@ -164,7 +166,7 @@ tasks:
       id: 1ed29c55-64ab-4bca-8ba5-7f75a951c470
       version: -1
       name: Calculate time difference between logins
-      description: Calculate the time difference in minutes
+      description: Calculate the time difference, in minutes.
       tags:
       - eventduration
       scriptName: CalculateTimeDifference
@@ -346,8 +348,7 @@ tasks:
       destip: {}
       destntdomain: {}
       details:
-        simple: A user has logged in from a considerable distance away from where
-          they previously logged in, in a short amount of time. The user is an impossible
+        simple: A user has logged in from multiple geographical locations in too short an amount of time. The user is an impossible
           traveller according to the maximum miles per hour allowed.
       detectedusers: {}
       detectorid: {}
@@ -524,7 +525,7 @@ tasks:
       id: 81bcf6f0-7966-475a-80a8-f9c99a8bb8ce
       version: -1
       name: Should the source IPs be blocked automatically?
-      description: Checks whether the source IPs that the user used to login from,
+      description: Checks whether the source IPs that the user used to login from
         can be blocked automatically, according to the playbook inputs.
       type: condition
       iscommand: false
@@ -783,7 +784,7 @@ tasks:
       name: Manually investigate the incident
       description: Manually investigate the incident. Try to understand the locations
         from which the user connected, and the time difference between the two logins.
-        Contain the incident if needed.
+        Contain the incident, if needed.
       type: regular
       iscommand: false
       brand: ''
@@ -809,8 +810,7 @@ tasks:
       id: 01219670-caf0-4a29-8042-dcc86459e5e7
       version: -1
       name: Save source IP geolocation data
-      description: Saves the geolocation of the IP associated with the  login of the
-        user.
+      description: Saves the geolocation of the IP associated with the user's login.
       scriptName: Set
       type: regular
       iscommand: false
@@ -874,8 +874,7 @@ tasks:
       id: 87d065fc-ac14-4f6b-8f43-1f3fb4b962c2
       version: -1
       name: Save previous source IP geolocation data
-      description: Saves the geolocation of the IP associated with the previous login
-        of the user.
+      description: Saves the geolocation of the IP associated with the previous user login.
       scriptName: Set
       type: regular
       iscommand: false
@@ -939,7 +938,7 @@ tasks:
       id: 96c82618-e6b7-4845-8919-9c426d70252b
       version: -1
       name: Get previous login IP location information
-      description: Gets geo-location information about the previous IP that the user
+      description: Gets geolocation information about the previous IP that the user
         logged in from.
       script: '|||ip'
       type: regular
@@ -984,7 +983,7 @@ tasks:
       id: cc0e79e3-1860-4fac-82aa-d3c1a9b71907
       version: -1
       name: Get login IP location information
-      description: Gets geo-location information about the IP that the user logged
+      description: Gets geolocation information about the IP that the user logged
         in from.
       script: '|||ip'
       type: regular
@@ -1524,8 +1523,7 @@ tasks:
       destip: {}
       destntdomain: {}
       details:
-        simple: A user has logged in from a considerable distance away from where
-          they previously logged in, in a short amount of time, however - the user
+        simple: A user has logged in from multiple geographical locations in a short amount of time. However, they
           logged in from whitelisted IP addresses, so the login was considered legitimate.
       detectedusers: {}
       detectorid: {}
@@ -1795,8 +1793,7 @@ tasks:
       id: 6a974eb2-e9d5-4c97-81d5-0a061c0277e2
       version: -1
       name: Generate travel map
-      description: Generates an image of a map that shows the trip the user had to
-        do between the two logins.
+      description: Generates an image of a map that shows the trip the user made between the two logins.
       script: '|||rasterize'
       type: regular
       iscommand: true
@@ -2041,7 +2038,7 @@ inputs:
   required: false
   description: The maximum miles per hour that is still considered reasonable. If
     the geographical distance and difference in time between logins is greater than
-    this value, then the user will be considered an impossible traveller.
+    this value, the user will be considered an impossible traveller.
 - key: WhitelistedIPs
   value: {}
   required: false
@@ -2056,14 +2053,14 @@ inputs:
   value:
     simple: https://bing.com/maps/default.aspx?rtp=pos.SOURCE~pos.DESTINATION
   required: false
-  description: The default link to create a travel map. The "SOURCE" and "DESTINATION"
-    words will be replaced with the previous coordinates and current coordinates of
+  description: The default link from which to create a travel map. The "SOURCE" and "DESTINATION"
+    words are replaced with the previous coordinates and current coordinates of
     the traveller, respectively.
 - key: AutomaticallyDisableUser
   value:
     simple: 'False'
   required: false
-  description: Whether to automatically disable the impossible traveller user using
+  description: Whether to automatically disable the impossible traveller account using
     Active Directory.
 outputs:
 - contextPath: Account.Email.Address
@@ -2084,7 +2081,7 @@ outputs:
   description: Type of the Account entity
   type: string
 - contextPath: Account.Groups
-  description: The groups the Account is part of
+  description: The groups the Account is a part of
 - contextPath: Account
   description: Account object
   type: unknown
