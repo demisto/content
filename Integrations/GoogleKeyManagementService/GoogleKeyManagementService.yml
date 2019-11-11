@@ -253,7 +253,7 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
          creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
@@ -551,11 +551,11 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-         Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+         The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
          creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: The period for which the nextRotationTime is be advanced, when the service
+      description: The period for which the nextRotationTime is advanced, when the service
         automatically rotates a key. 
         hours.
       type: String
@@ -645,7 +645,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
         creates a new version of this CryptoKey and marks the new version as primary.
         Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
@@ -763,7 +763,7 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically 
         creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
@@ -1469,7 +1469,7 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically
+        The date when the next scheduled rotation is due to run. At nextRotationTime, the Key Management Service automatically
         creates a new version of this CryptoKey and
         marks the new version as primary.
       type: Date
