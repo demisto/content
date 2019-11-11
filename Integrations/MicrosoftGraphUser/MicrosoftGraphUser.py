@@ -352,16 +352,16 @@ def list_users_command():
     next_page = demisto.args().get('next_page', None)
     users_data, result_next_page = list_users(properties, next_page)
     users_readable, users_outputs = parse_outputs(users_data)
-    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True)
-
+    metadata = None
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
 
     if result_next_page:
         metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
-        human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
         # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
         outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
+
+    human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
     return_outputs(readable_output=human_readable, outputs=outputs, raw_response=users_data)
 
