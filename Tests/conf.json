@@ -1514,7 +1514,7 @@
                 "Demisto REST API"
             ],
             "fromversion": "5.0.0",
-            "timeout": 600
+            "timeout": 700
         },
         {
             "integrations": "Kafka V2",

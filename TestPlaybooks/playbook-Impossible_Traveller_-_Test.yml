@@ -347,10 +347,10 @@ tasks:
       command:
         simple: '!CompleteManualTask id=${incident.id}'
       cron:
-        simple: '*/3 * * * *'
+        simple: '*/2 * * * *'
       endDate: {}
       times:
-        simple: "2"
+        simple: "10"
     reputationcalc: 1
     separatecontext: false
     view: |-
