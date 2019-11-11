@@ -1,2 +1,2 @@
 ## [Unreleased]
-Add batch support to ipinfo.
+Added batch support to IPinfo.
