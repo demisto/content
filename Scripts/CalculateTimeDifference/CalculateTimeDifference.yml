@@ -5,16 +5,16 @@ name: CalculateTimeDifference
 type: python
 tags:
 - Utilities
-comment: Calculate the time difference in minutes
+comment: Calculate the time difference, in minutes
 enabled: true
 script: '-'
 args:
 - name: start_time
   required: true
-  description: First time argument in ISO-8601 format to begin the calculation.
+  description: The time at which travel started.
 - name: end_time
   required: true
-  description: Second time argument in ISO-8601 to end the calculation.
+  description: The time at which travel ended.
 outputs:
 - contextPath: Time.Difference
   description: Calculated time difference in minutes.
