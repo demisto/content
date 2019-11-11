@@ -299,6 +299,31 @@ def prepare_security_rule_params(api_action: str = None, rulename: str = None, s
     return params
 
 
+def get_pan_os_version() -> str:
+    """Retrieves pan-os version
+
+       Returns:
+           String representation of the version
+       """
+    params = {
+        'type': 'version',
+        'key': API_KEY
+    }
+    result = http_request(URL, 'GET', params=params)
+    version = result['response']['result']['sw-version']
+    return version
+
+
+def get_pan_os_major_version() -> str:
+    """Retrieves pan-os major version
+
+    Returns:
+        String representation of the major version
+    """
+    major_version = int(get_pan_os_version().split('.')[0])
+    return major_version
+
+
 ''' FUNCTIONS'''
 
 
@@ -1802,11 +1827,16 @@ def panorama_get_custom_url_category_command():
 
 @logger
 def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
+    element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
+    major_version = get_pan_os_major_version()
+    if major_version >= 9:
+        element += add_argument("URL List", 'type', False)
+
     params = {
         'action': 'set',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': add_argument(description, 'description', False) + add_argument_list(sites, 'list', True),
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
@@ -1893,13 +1923,20 @@ def panorama_delete_custom_url_category_command():
 
 @logger
 def panorama_edit_custom_url_category(custom_url_category_name, sites, description=None):
+    description = add_argument(description, 'description', False)
+    sites_list = add_argument_list(sites, 'list', True)
+    major_version = get_pan_os_major_version()
+    if major_version >= 9:
+        list_type = add_argument("URL List", 'type', False)
+        element = f'<entry name=\'{custom_url_category_name}\'>{description}{sites_list}{list_type}</entry>'
+    else:
+        element = f'<entry name=\'{custom_url_category_name}\'>{description}{sites_list}</entry>'
+
     params = {
         'action': 'edit',
         'type': 'config',
         'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
-        'element': "<entry name='" + custom_url_category_name + "'>"
-                   + add_argument(description, 'description', False)
-                   + add_argument_list(sites, 'list', True) + "</entry>",
+        'element': element,
         'key': API_KEY
     }
     result = http_request(
