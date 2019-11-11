@@ -197,7 +197,7 @@ def test_not_changed_context_in_integration():
         ]
     }
 
-    assert validator.is_changed_context_path() is False, "The script validator found a backward compatability " \
+    assert validator.is_context_path_changed() is False, "The script validator found a backward compatability " \
         "change although no such change was done"
 
 
@@ -232,7 +232,7 @@ def test_changed_context_in_integration():
         }
     }
 
-    assert validator.is_changed_context_path(), "The script validator didn't find a backward compatability " \
+    assert validator.is_context_path_changed(), "The script validator didn't find a backward compatability " \
         "issue although the context path has changed"
 
 
@@ -266,7 +266,7 @@ def test_added_context_in_integration():
         ]
     }
 
-    assert validator.is_changed_context_path() is False, "The script validator didn't find a backward compatability " \
+    assert validator.is_context_path_changed() is False, "The script validator didn't find a backward compatability " \
         "issue although the context path has changed"
 
 
@@ -305,7 +305,7 @@ def test_added_new_command_context_path_in_integration():
         ]
     }
 
-    assert validator.is_changed_context_path() is False, "The script validator found a backward compatibility " \
+    assert validator.is_context_path_changed() is False, "The script validator found a backward compatibility " \
         "issue although the context path has not changed"
 
 

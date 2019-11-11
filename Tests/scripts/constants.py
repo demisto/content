@@ -66,7 +66,7 @@ INTEGRATION_JS_REGEX = r'{}/([^\\/]+)/\1.js$'.format(INTEGRATIONS_DIR)
 INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
-
+# TODO packs beta
 PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/\2\.py'.format(
     PACKS_DIR)  # Ignores tests
 PACKS_INTEGRATION_TEST_PY_REGEX = r'{}/([^/]+)/Integrations/([^/]+)/\2_test\.py'.format(

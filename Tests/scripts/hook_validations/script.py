@@ -3,13 +3,15 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.scripts.hook_validations.yml_based import YMLBasedValidator
 from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
+from error_constants import Errors
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
-class ScriptValidator(object):
+class ScriptValidator(YMLBasedValidator):
     """ScriptValidator is designed to validate the correctness of the file structure we enter to content repo. And
         also try to catch possible Backward compatibility breaks due to the preformed changes.
 
@@ -19,8 +21,9 @@ class ScriptValidator(object):
        old_script (dict): Json representation of the current script from master.
     """
 
-    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
-        self.file_path = file_path
+    def __init__(self, file_path, is_added_file, is_renamed, check_git=True, old_file_path=None,
+                 old_git_branch='master'):
+        super(ScriptValidator, self).__init__(file_path, is_added_file, is_renamed)
         self.current_script = {}
         self.old_script = {}
 
@@ -31,23 +34,12 @@ class ScriptValidator(object):
                 git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, old_file_path).replace("\\", "/")
             else:
                 git_hub_path = os.path.join(CONTENT_GITHUB_LINK, old_git_branch, file_path).replace("\\", "/")
-
             try:
                 res = requests.get(git_hub_path, verify=False)
                 res.raise_for_status()
                 self.old_script = yaml.safe_load(res.content)
             except Exception as e:
-                print_warning("{}\nCould not find the old script please make sure that you did not break "
-                              "backward compatibility".format(str(e)))
-
-    @classmethod
-    def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
-        """Check if supposed_smaller_list is a subset of the supposed_bigger_list"""
-        for check_item in supposed_smaller_list:
-            if check_item not in supposed_bigger_list:
-                return False
-
-        return True
+                print_warning(Errors.breaking_backwards_no_old_script(e))
 
     def is_backward_compatible(self):
         """Check if the script is backward compatible."""
@@ -85,22 +77,8 @@ class ScriptValidator(object):
 
         return is_script_valid
 
-    @classmethod
-    def _get_arg_to_required_dict(cls, script_json):
-        """Get a dictionary arg name to its required status.
-
-        Args:
-            script_json (dict): Dictionary of the examined script.
-
-        Returns:
-            dict. arg name to its required status.
-        """
-        arg_to_required = {}
-        args = script_json.get('args', [])
-        for arg in args:
-            arg_to_required[arg.get('name')] = arg.get('required', False)
-
-        return arg_to_required
+    def _get_arg_to_required_dict(self, json_object, args='args'):
+        return super(ScriptValidator, self)._get_arg_to_required_dict(json_object, 'args')
 
     def is_changed_subtype(self):
         """Validate that the subtype was not changed."""
@@ -168,10 +146,8 @@ class ScriptValidator(object):
         old_context = [output['contextPath'] for output in self.old_script.get('outputs', [])]
 
         if not self._is_sub_set(current_context, old_context):
-            print_error("Possible backwards compatibility break, You've changed the context in the file {0},"
-                        " please undo.".format(self.file_path))
+            print_error(Errors.breaking_backwards_context(self.file_path))
             return True
-
         return False
 
     def is_docker_image_changed(self):
@@ -179,8 +155,7 @@ class ScriptValidator(object):
         # Unnecessary to check docker image only on 5.0 and up
         if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
             if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
-                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                            " this is not allowed.".format(self.file_path))
+                print_error(Errors.breaking_backwards_docker(self.file_path))
                 return True
 
         return False

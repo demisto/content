@@ -1,17 +1,21 @@
 import os
+import re
 
 import requests
 import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare
-from structure import StructureValidator
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, INTEGRATION_PY_REGEX, \
+    INTEGRATION_YML_REGEX, PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATION_YML_REGEX, INTEGRATION_REGEX, \
+    BETA_INTEGRATION_REGEX, BETA_INTEGRATION_YML_REGEX
+from Tests.scripts.hook_validations.error_constants import Errors
+from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_release_notes_file_path
+from yml_based import YMLBasedValidator
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
-class IntegrationValidator(StructureValidator):
+class IntegrationValidator(YMLBasedValidator):
     """IntegrationValidator is designed to validate the correctness of the file structure we enter to content repo. And
     also try to catch possible Backward compatibility breaks due to the preformed changes.
 
@@ -21,6 +25,16 @@ class IntegrationValidator(StructureValidator):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
+
+    regexes = [
+        INTEGRATION_PY_REGEX,
+        INTEGRATION_YML_REGEX,
+        PACKS_INTEGRATION_PY_REGEX,
+        PACKS_INTEGRATION_YML_REGEX,
+        INTEGRATION_REGEX,
+        BETA_INTEGRATION_REGEX,
+        BETA_INTEGRATION_YML_REGEX
+    ]
 
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master', is_added_file=False,
                  is_renamed=False):
@@ -43,8 +57,7 @@ class IntegrationValidator(StructureValidator):
                     res.raise_for_status()
                     self.old_integration = yaml.safe_load(res.content)
                 except Exception as e:
-                    print_warning("{}\nCould not find the old integration please make sure that you did not break "
-                                  "backward compatibility".format(str(e)))
+                    print_warning(Errors.breaking_backwards_no_old_script(e))
                     self.old_integration = None
 
     def is_backward_compatible(self):
@@ -52,7 +65,7 @@ class IntegrationValidator(StructureValidator):
         if not self.old_integration:
             return True
 
-        self.is_changed_context_path()
+        self.is_context_path_changed()
         self.is_docker_image_changed()
         self.is_added_required_fields()
         self.is_changed_command_name_or_arg()
@@ -62,7 +75,6 @@ class IntegrationValidator(StructureValidator):
 
         # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
         self.is_outputs_for_reputations_commands_valid()
-
         return self._is_valid
 
     def is_file_valid(self):
@@ -232,7 +244,7 @@ class IntegrationValidator(StructureValidator):
             if self.old_integration:
                 old_subtype = self.old_integration.get('script', {}).get('subtype', "")
                 if old_subtype and old_subtype != subtype:
-                    print_error(self.Errors.breaking_backwards(self.file_path))
+                    print_error(self.Errors.breaking_backwards_subtype(self.file_path))
                     self._is_valid = False
 
         return self._is_valid
@@ -378,14 +390,6 @@ class IntegrationValidator(StructureValidator):
 
         return False
 
-    def _is_sub_set(self, supposed_bigger_list, supposed_smaller_list):
-        """Check if supposed_smaller_list is a subset of the supposed_bigger_list"""
-        for check_item in supposed_smaller_list:
-            if check_item not in supposed_bigger_list:
-                return False
-
-        return True
-
     def _get_command_to_context_paths(self, integration_json):
         """Get a dictionary command name to it's context paths.
 
@@ -413,7 +417,7 @@ class IntegrationValidator(StructureValidator):
 
         return command_to_context_list
 
-    def is_changed_context_path(self):
+    def is_context_path_changed(self):
         """Check if a context path as been changed.
 
         Returns:
@@ -426,14 +430,13 @@ class IntegrationValidator(StructureValidator):
             if old_command in current_command_to_context_paths.keys() and \
                     not self._is_sub_set(current_command_to_context_paths[old_command],
                                          old_context_paths):
-                print_error("Possible backwards compatibility break, You've changed the context in the file {0} please "
-                            "undo, the command is:\n{1}".format(self.file_path, old_command))
+                print_error(self.Errors.breaking_backwards_command(self.file_path, old_command))
                 self._is_valid = False
                 return True
 
         return False
 
-    def _get_field_to_required_dict(self, integration_json):
+    def _get_field_to_required_dict(self, integration_json, args='configuration'):
         """Get a dictionary field name to its required status.
 
         Args:
@@ -442,12 +445,7 @@ class IntegrationValidator(StructureValidator):
         Returns:
             dict. Field name to its required status.
         """
-        field_to_required = {}
-        configuration = integration_json.get('configuration', [])
-        for field in configuration:
-            field_to_required[field.get('name')] = field.get('required', False)
-
-        return field_to_required
+        return super(IntegrationValidator, self)._get_arg_to_required_dict(integration_json, args)
 
     def is_added_required_fields(self):
         """Check if required field were added."""
@@ -457,11 +455,9 @@ class IntegrationValidator(StructureValidator):
         for field, required in current_field_to_required.items():
             if (field not in old_field_to_required.keys() and required) or \
                     (required and field in old_field_to_required.keys() and required != old_field_to_required[field]):
-                print_error("You've added required fields in the integration "
-                            "file '{}', the field is '{}'".format(self.file_path, field))
+                print_error(Errors.added_required_fields(self.file_path, field))
                 self._is_valid = False
                 return True
-
         return False
 
     def is_docker_image_changed(self):
@@ -470,9 +466,31 @@ class IntegrationValidator(StructureValidator):
         if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
             if self.old_integration.get('script', {}).get('dockerimage', "") != \
                     self.current_integration.get('script', {}).get('dockerimage', ""):
-                print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
-                            " this is not allowed.".format(self.file_path))
+                print_error(Errors.breaking_backwards_docker(self.file_path))
                 self._is_valid = False
                 return True
-
         return False
+
+    def _is_beta_integration(self):
+        """Checks if file is under Beta_integration dir"""
+        return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
+               re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE) or \
+               re.match(PACKS_INTEGRATION_PY_REGEX, self.file_path, re.IGNORECASE)
+
+    def validate_file_release_notes(self):
+        """Validate that the file has proper release notes when modified.
+
+        This function updates the class attribute self._is_valid instead of passing it back and forth.
+        """
+        if self.is_renamed:
+            print_warning("You might need RN please make sure to check that.")
+            return
+
+        if os.path.isfile(self.file_path):
+            rn_path = get_release_notes_file_path(self.file_path)
+            rn = get_latest_release_notes_text(rn_path)
+
+            # check rn file exists and contain text
+            if rn is None:
+                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
+                self._is_valid = False
