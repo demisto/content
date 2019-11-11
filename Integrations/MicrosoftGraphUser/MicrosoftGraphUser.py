@@ -357,9 +357,8 @@ def list_users_command():
     outputs = {'MSGraphUser(val.ID == obj.ID)': users_outputs}
 
     if result_next_page:
-        human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True,
-                                         metadata="To get further results, enter this to the next_page parameter:\n"
-                                                  + str(result_next_page))
+        metadata = "To get further results, enter this to the next_page parameter:\n" + str(result_next_page)
+        human_readable = tableToMarkdown(name='All Graph Users', t=users_readable, removeNull=True, metadata=metadata)
 
         # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
         outputs['MSGraphUser(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': result_next_page}
