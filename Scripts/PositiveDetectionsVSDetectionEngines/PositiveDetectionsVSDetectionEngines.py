@@ -2,12 +2,15 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-positive_detections = demisto.get(demisto.args()['indicator'], 'CustomFields.positivedetections')
-detection_engines = demisto.get(demisto.args()['indicator'], 'CustomFields.detectionengines')
+indicator_data = demisto.args().get('indicator')
 
-if not (positive_detections and detection_engines):
+if not (indicator_data and 'detectionengines' in indicator_data['CustomFields']
+        and 'positivedetections' in indicator_data['CustomFields']):
     demisto.results("None")
     sys.exit(0)
+
+detection_engines = indicator_data['CustomFields']['detectionengines']
+positive_detections = indicator_data['CustomFields']['positivedetections']
 
 data = {
     "Type": 17,
