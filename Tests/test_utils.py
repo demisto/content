@@ -64,7 +64,7 @@ def run_command(command, is_silenced=True, exit_on_error=True):
 
 def get_remote_file(full_file_path, tag='master'):
     # 'origin/' prefix is used to compared with remote branches but it is not a part of the github url.
-    tag = tag.replace('origin/', '')
+    tag = tag.lstrip('origin/')
 
     # The replace in the end is for Windows support
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
@@ -318,3 +318,14 @@ def run_threads_list(threads_list):
     # wait for the commands to complete
     for t in threads_list:
         t.join()
+
+
+def get_dockerimage45(script_object):
+    """Get the docker image used up to 4.5 (including).
+
+    Arguments:
+        script_object {dict} -- [script object containing the dockerimage configuration]
+    """
+    if 'dockerimage45' in script_object:
+        return script_object['dockerimage45']
+    return script_object.get('dockerimage', '')
