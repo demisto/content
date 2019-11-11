@@ -51,7 +51,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Google Key Management Service API for CryptoKey managment and
+description: Use the Google Key Management Service API for CryptoKey management and
   encrypt/decrypt functionality.
 display: Google Key Management Service
 name: Google Key Management Service
@@ -62,9 +62,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -100,16 +100,15 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the created crypto-key - It must be unique within a
-        KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}
+      description: The ID for the created crypto-key. It must be unique within a
+        KeyRing and match the regular expression [a-zA-Z0-9_-]{1,63}.
       isArray: false
       name: crypto_key
       required: true
@@ -122,23 +121,21 @@ script:
       secret: false
     - default: false
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
-        Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
+        Date of the next scheduled rotation time. The Key Management Service automatically creates a new version of this CryptoKey and 
+        marks the new version as primary at the next rotation time.
+        Key rotations performed manually through cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
         Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted.
 
-        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z".
 
-        Leave empty to set in 90 days.
+        If left empty, it is set in 90 days.
       isArray: false
       name: next_rotation_time
       required: false
       secret: false
     - default: false
-      description: Statement that was generated and signed by the HSM at key creation
+      description: The statement that was generated and signed by the HSM at the key creation
         time. Use this statement to verify attributes of the key as stored on the
         HSM, independently of Google. Only provided for key versions with protectionLevel
         HSM.
@@ -149,7 +146,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ENABLED
-      description: The state of a CryptoKeyVersion, indicating if it can be used.
+      description: 'The state of a CryptoKeyVersion, indicating if it can be used. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED, "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED",  "DESTROY_SCHEDULED" , "PENDING_IMPORT", " IMPORT_FAILED".'
       isArray: false
       name: state
       predefined:
@@ -166,9 +163,9 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ENCRYPT_DECRYPT
-      description: CryptoKeyPurpose describes the cryptographic capabilities of a
+      description: 'The cryptographic capabilities of a
         CryptoKey. A given key can only be used for the operations allowed by its
-        purpose.
+        purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
       isArray: false
       name: purpose
       predefined:
@@ -180,9 +177,9 @@ script:
       secret: false
     - default: false
       defaultValue: '7776000'
-      description: next_rotation_time will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours. Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other
+      description: The time between when new key versions are generated automatically.
+        Must be between 24 hours and 876,000
+        hours. Keys with ENCRYPT_DECRYPT purpose support automatic rotation. For other
         keys, this field must be omitted. A duration in seconds.
       isArray: false
       name: rotation_period
@@ -217,8 +214,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: SOFTWARE
-      description: protection_level to use when creating a CryptoKeyVersion. Defaults
-        to SOFTWARE.
+      description: 'Protections levels for cryptographic operations when creating a CryptoKeyVersion. Can be:
+        Can be: "PROECTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM". Default is "SOFTWARE".'
       isArray: false
       name: protection_level
       predefined:
@@ -230,8 +227,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: If set to true, the request will create a CryptoKey without any
-        CryptoKeyVersions. You will have to create the CryptoKeyVersion in order to
+      description: Whether to create a CryptoKey without any
+        CryptoKeyVersions. You have to create the CryptoKeyVersion to
         use this key.
       isArray: false
       name: skip_initial_version_creation
@@ -241,7 +238,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a new CryptoKey within a KeyRing.
+    description: Creates a new CryptoKey within a KeyRing.
     execution: false
     name: google-kms-create-key
     outputs:
@@ -252,25 +249,22 @@ script:
       description: The immutable purpose of this CryptoKey.
       type: String
     - contextPath: GoogleKMS.CryptoKey.CreationTime
-      description: The time at which this CryptoKey was created.
+      description: The time when this CryptoKey was created.
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
+         Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+         creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: nextRotationTime will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours.
+      description: The period for which the nextRotationTime is advanced, when the service
+        automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
+      description: The protection level describing how cryptographic operations are performed
         with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
@@ -283,14 +277,14 @@ script:
       description: The current state of the CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.CreationTime
-      description: The time at which this CryptoKeyVersion was created.
+      description: The time when this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
+      description: The ProtectionLevel describing how cryptographic operations are performed
         with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
-      description: The algorithm in use in the primary CryptoKeyVersion
+      description: The algorithm in use in the primary CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
@@ -300,9 +294,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical region where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -338,36 +332,34 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to use
+      description: The ID for the crypto-key to use.
       isArray: false
       name: crypto_key
       required: true
       secret: false
     - default: false
-      description: Ciphertext to decryp to simple plaintext
+      description: The ciphertext to decrypt to simple plain text.
       isArray: false
       name: simple_ciphertext
       required: false
       secret: false
     - default: false
       description: |-
-        Optional data that must match the data originally supplied in EncryptRequest.additional_authenticated_data.
-
-        A base64-encoded string.
+        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. 
+        The optional data that must match the data originally supplied in the EncryptRequest.additional_authenticated_data.        
       isArray: false
       name: additional_authenticated_data
       required: false
       secret: false
     - default: false
-      description: Ciphertext to decrypt to base64 plaintext
+      description: The ciphertext to decrypt to base64 plain text.
       isArray: false
       name: base64_ciphertext
       required: false
@@ -384,22 +376,22 @@ script:
     name: google-kms-symmetric-decrypt
     outputs:
     - contextPath: GoogleKMS.SymmetricDecrypt.CryptoKey
-      description: The CryptoKey in use
+      description: The CryptoKey in use.
       type: String
     - contextPath: GoogleKMS.SymmetricDecrypt.IsBase64
-      description: Is the original plaintext in base64
+      description: Whether the original plain text is in base64.
       type: Boolean
     - contextPath: GoogleKMS.SymmetricDecrypt.Plaintext
-      description: The decrypted plaintext
+      description: The decrypted plaintext.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -435,70 +427,67 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes. 
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to use
+      description: The ID for the crypto-key to use.
       isArray: false
       name: crypto_key
       required: true
       secret: false
     - default: false
-      description: Siimple plantext to encrypt. Must be no larger than 64KiB.
+      description: Simple plain text to encrypt. Must be no larger than 64KiB.
       isArray: false
       name: simple_plaintext
       required: false
       secret: false
     - default: false
       description: |-
-        Optional data that, if specified, must also be provided during decryption through DecryptRequest.additional_authenticated_data.
-
-        The maximum size depends on the key version's protectionLevel. For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plaintext and additionalAuthenticatedData fields must be no larger than 8KiB.
-
-        A base64-encoded string.
+        A base64-encoded string passed to Cloud KMS as part of an encrypt or decrypt request. Must also be provided during decryption through DecryptRequest.additional_authenticated_data.
+        The maximum size depends on the key version's protection level. 
+        For SOFTWARE keys, the AAD must be no larger than 64KiB. For HSM keys, the combined length of the plain text and additionalAuthenticatedData fields must be no larger than 8KiB.        
       isArray: false
       name: additional_authenticated_data
       required: false
       secret: false
     - default: false
-      description: Base64 plaintext to encrypt.
+      description: The Base64 plain text to encrypt.
       isArray: false
       name: base64_plaintext
       required: false
       secret: false
     - default: false
-      description: Entry ID for the file to encrypt.
+      description: The entry ID for the file to encrypt.
       isArray: false
       name: entry_id
       required: false
       secret: false
     deprecated: false
-    description: Encrypts data, so that it can only be recovered by a call to Decrypt.
+    description: Encrypts data, so it can only be recovered by a call to Decrypt.
     execution: false
     name: google-kms-symmetric-encrypt
     outputs:
     - contextPath: GoogleKMS.SymmetricEncrypt.CryptoKey
-      description: The CryptoKey used
+      description: The CryptoKey used.
       type: String
     - contextPath: GoogleKMS.SymmetricEncrypt.IsBase64
-      description: Is the original plaintext in base 64
+      description: Whether the original plain text is in base 64.
       type: Boolean
     - contextPath: GoogleKMS.SymmetricEncrypt.Ciphertext
-      description: The encrypted ciphertext
+      description: The encrypted ciphertext.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For example, https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' sets the location to the default location.
       isArray: false
       name: location
       predefined:
@@ -534,9 +523,8 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
@@ -548,7 +536,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns metadata for a given CryptoKey, as well as its primary CryptoKeyVersion.
+    description: Returns metadata for a given CryptoKey, and its primary CryptoKeyVersion.
     execution: false
     name: google-kms-get-key
     outputs:
@@ -563,21 +551,19 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
+         Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+         creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: nextRotationTime will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
+      description: The period for which the nextRotationTime is be advanced, when the service
+        automatically rotates a key. 
         hours.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
+      description: The ProtectionLevel describing how cryptographic operations are performed
         with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.VersionTemplate.Algorithm
@@ -593,11 +579,11 @@ script:
       description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
+      description: The ProtectionLevel describing how cryptographic operations are performed
         with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
-      description: The algorithm in use in the primary CryptoKeyVersion
+      description: The algorithm used in the primary CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
@@ -607,9 +593,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -645,9 +631,8 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
@@ -660,15 +645,13 @@ script:
       secret: false
     - default: false
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
+        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+        creates a new version of this CryptoKey and marks the new version as primary.
         Key rotations performed manually via cryptoKeyVersions.create and cryptoKeys.updatePrimaryVersion do not affect nextRotationTime.
 
-        Keys with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this field must be omitted.
+        Keys with purpose ENCRYPT_DECRYPT, support automatic rotation. For other keys, this field must be omitted.
 
-        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. Example: "2014-10-02T15:01:23.045123456Z".
+        A timestamp or a date in RFC3339 UTC "Zulu" format, accurate to nanoseconds. For example, "2014-10-02T15:01:23.045123456Z".
       isArray: false
       name: next_rotation_time
       required: false
@@ -684,7 +667,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The state of a CryptoKeyVersion, indicating if it can be used.
+      description: 'The state of a CryptoKeyVersion, indicating if it can be used. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED, "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED",  "DESTROY_SCHEDULED" , "PENDING_IMPORT", " IMPORT_FAILED".'
       isArray: false
       name: state
       predefined:
@@ -700,9 +683,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: CryptoKeyPurpose describes the cryptographic capabilities of a
+      description: 'CryptoKeyPurpose describes the cryptographic capabilities of a
         CryptoKey. A given key can only be used for the operations allowed by its
-        purpose.
+        purpose. Can be: "CRYPTO_KEY_PURPOSE_UNSPECIFIED", "ENCRYPT_DECRYPT", "ASYMMETRIC_SIGN", "ASYMMETRIC_DECRYPT".'
       isArray: false
       name: purpose
       predefined:
@@ -713,9 +696,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: next_rotation_time will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours. If rotation_period is set, next_rotation_time must also be set.  Keys
+      description: Time between when new key versions are generated automatically.
+        Must between 24 hours and 876,000 hours. If rotation_period is set, next_rotation_time must also be set.  Keys
         with purpose ENCRYPT_DECRYPT support automatic rotation. For other keys, this
         field must be omitted. A duration in seconds.
       isArray: false
@@ -749,8 +731,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: protection_level to use when creating a CryptoKeyVersion based
-        on this template.
+      description: 'The protection_level to use when creating a CryptoKeyVersion based
+        on this template. Can be: "PROTECTION_LEVEL_UNSPECIFIED", "SOFTWARE", "HSM".'
       isArray: false
       name: protection_level
       predefined:
@@ -766,12 +748,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a CryptoKey.
+    description: Updates a CryptoKey.
     execution: false
     name: google-kms-update-key
     outputs:
     - contextPath: GoogleKMS.CryptoKey.Name
-      description: The resource name for this CryptoKeyץ
+      description: The resource name for this CryptoKey.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Purpose
       description: The immutable purpose of this CryptoKey.
@@ -781,15 +763,12 @@ script:
       type: String
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
+        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically 
+        creates a new version of this CryptoKey and marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: nextRotationTime will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours.
+      description: The period for which the nextRotationTime is advanced, when the service
+        automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
@@ -811,11 +790,11 @@ script:
       description: The time at which this CryptoKeyVersion was created.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.ProtectionLevel
-      description: The ProtectionLevel describing how crypto operations are performed
+      description: The ProtectionLevel describing how cryptographic operations are performed
         with this CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.Algorithm
-      description: The algorithm in use in the primary CryptoKeyVersion
+      description: The algorithm in use in the primary CryptoKeyVersion.
       type: String
     - contextPath: GoogleKMS.CryptoKey.PrimaryCryptoKeyVersion.GenerateTime
       description: The time this CryptoKeyVersion's key material was generated.
@@ -825,9 +804,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
+        and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -863,15 +842,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to destroy
+      description: The ID for the crypto-key to destroy.
       isArray: false
       name: crypto_key
       required: true
@@ -885,7 +863,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Schedule a CryptoKeyVersion for destruction.
+    description: Schedules a CryptoKeyVersion for destruction.
     execution: false
     name: google-kms-destroy-key
   - arguments:
@@ -893,9 +871,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
+        and where the corresponding cryptographic keys are stored. For example, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -931,15 +909,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to restore
+      description: The ID for the crypto-key to restore.
       isArray: false
       name: crypto_key
       required: true
@@ -953,7 +930,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state.
+    description: Restores a CryptoKeyVersion in the DESTROY_SCHEDULED state.
     execution: false
     name: google-kms-restore-key
   - arguments:
@@ -961,9 +938,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled,
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -999,15 +976,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to disable
+      description: The ID for the crypto-key to disable.
       isArray: false
       name: crypto_key
       required: true
@@ -1021,7 +997,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Disable a CryptoKeyVersion of a given CryptoKey
+    description: Disables a CryptoKeyVersion of a given CryptoKey.
     execution: false
     name: google-kms-disable-key
   - arguments:
@@ -1029,9 +1005,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1067,9 +1043,8 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
@@ -1089,7 +1064,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Enable a CryptoKeyVersion of a given CryptoKey.
+    description: Enables a CryptoKeyVersion of a given CryptoKey.
     execution: false
     name: google-kms-enable-key
   - arguments:
@@ -1097,9 +1072,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1135,17 +1110,17 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Show only keys with this primary CryptoKeyVersion state. Leave
-        empty to show all.
+      description: 'Shows only keys with this primary CryptoKeyVersion state. Leave
+        empty to show all. Can be: "CRYPTO_KEY_VERSION_STATE_UNSPECIFIED", "PENDING_GENERATION", "ENABLED", "DISABLED", "DESTROYED",
+        "DESTROY_SCHEDULED", "PENDING_IMPORT", "IMPORT_FAILED".'
       isArray: false
       name: key_state
       predefined:
@@ -1160,7 +1135,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Lists all keys in key ring
+    description: Lists all keys in key ring.
     execution: false
     name: google-kms-list-keys
   - arguments:
@@ -1168,9 +1143,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the location to the default location.
       isArray: false
       name: location
       predefined:
@@ -1206,15 +1181,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to use
+      description: The ID for the crypto-key to use.
       isArray: false
       name: crypto_key
       required: true
@@ -1226,25 +1200,25 @@ script:
       required: true
       secret: false
     - default: false
-      description: Simple plaintext to encrypt. Must be no larger than 64KiB.
+      description: Simple plain text to encrypt. Must be no larger than 64KiB.
       isArray: false
       name: simple_plaintext
       required: false
       secret: false
     - default: false
-      description: Base64 plantext to encrypt
+      description: Base64 plain text to encrypt.
       isArray: false
       name: base64_plaintext
       required: false
       secret: false
     - default: false
-      description: Entry ID of the file to encrypt.
+      description: The entry ID of the file to encrypt.
       isArray: false
       name: entry_id
       required: false
       secret: false
     deprecated: false
-    description: Encrypt using a asymmetric CryptoKey
+    description: Encrypts data using a asymmetric CryptoKey
     execution: false
     name: google-kms-asymmetric-encrypt
     outputs:
@@ -1262,9 +1236,8 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1300,15 +1273,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to use
+      description: The ID for the crypto-key to use.
       isArray: false
       name: crypto_key
       required: true
@@ -1320,45 +1292,45 @@ script:
       required: true
       secret: false
     - default: false
-      description: Ciphertext to decrypt to simple plaintext.
+      description: Ciphertext to decrypt to simple plain text.
       isArray: false
       name: simple_ciphertext
       required: false
       secret: false
     - default: false
-      description: Ciphertext to decrypt to base64 plaintext
+      description: Ciphertext to decrypt to base64 plain text.
       isArray: false
       name: base64_ciphertext
       required: false
       secret: false
     - default: false
-      description: The entry ID of the file to decrypt
+      description: The entry ID of the file to decrypt.
       isArray: false
       name: entry_id
       required: false
       secret: false
     deprecated: false
-    description: Decrypt using an asymmetric CryptoKey
+    description: Decrypts data using an asymmetric CryptoKey.
     execution: false
     name: google-kms-asymmetric-decrypt
     outputs:
     - contextPath: GoogleKMS.AsymmetricDecrypt.CryptoKey
-      description: The CryptoKey in use
+      description: The CryptoKey in use.
       type: String
     - contextPath: GoogleKMS.AsymmetricDecrypt.IsBase64
-      description: Is the original plaintext in base64
+      description: Whether the original plain text is in base64.
       type: Boolean
     - contextPath: GoogleKMS.AsymmetricDecrypt.Plaintext
-      description: The decrypted plaintext
+      description: The decrypted plain text.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1394,7 +1366,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Get all KeyRings from all Locations
+      description: Returns all KeyRings from all locations. Default is no.
       isArray: false
       name: all
       predefined:
@@ -1403,24 +1375,24 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all KeyRings in a given location
+    description: Lists all KeyRings in a given location.
     execution: false
     name: google-kms-list-key-rings
     outputs:
     - contextPath: GoogleKMS.KeyRing.Name
-      description: The name of the KeyRing
+      description: The name of the KeyRing.
       type: String
     - contextPath: GoogleKMS.KeyRing.CreateTime
-      description: The creation time of the KeyRing
+      description: The creation time of the KeyRing.
       type: Date
   - arguments:
     - auto: PREDEFINED
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1456,7 +1428,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: Get all CryptoKey from all KeyRings across all locations
+      description: Whether to return all CryptoKeys from all KeyRings across all locations.
       isArray: false
       name: all
       predefined:
@@ -1466,7 +1438,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Show only keys with this primary CryptoKeyVersion state. Leave
+      description: Shows only keys with this primary CryptoKeyVersion state. Leave
         empty to show all.
       isArray: false
       name: key_state
@@ -1482,7 +1454,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all CryptoKeys across all KeyRings in a given location
+    description: Lists all CryptoKeys across all KeyRings in a given location.
     execution: false
     name: google-kms-list-all-keys
     outputs:
@@ -1497,15 +1469,13 @@ script:
       type: Date
     - contextPath: GoogleKMS.CryptoKey.NextRotationTime
       description: |-
-        At nextRotationTime, the Key Management Service will automatically:
-
-        Create a new version of this CryptoKey.
-        Mark the new version as primary.
+        Date of the next scheduled rotation time. At nextRotationTime, the Key Management Service automatically
+        creates a new version of this CryptoKey and
+        marks the new version as primary.
       type: Date
     - contextPath: GoogleKMS.CryptoKey.RotationPeriod
-      description: nextRotationTime will be advanced by this period when the service
-        automatically rotates a key. Must be at least 24 hours and at most 876,000
-        hours.
+      description: The period for which the nextRotationTime is advanced, when the service
+        automatically rotates a key.
       type: String
     - contextPath: GoogleKMS.CryptoKey.Labels
       description: Labels with user-defined metadata.
@@ -1541,9 +1511,9 @@ script:
       default: false
       defaultValue: default
       description: |-
-        The geographical regions where requests to Cloud KMS regarding a given resource are handled, and where the corresponding cryptographic keys are stored. (see: https://cloud.google.com/kms/docs/locations)
-
-        Keyword 'default' to to use Default Location set.
+        The geographical regions where requests to Cloud KMS for a given resource are handled, 
+        and where the corresponding cryptographic keys are stored. For more information, see https://cloud.google.com/kms/docs/locations.
+        Keyword 'default' uses the default location.
       isArray: false
       name: location
       predefined:
@@ -1579,15 +1549,14 @@ script:
     - default: false
       defaultValue: default
       description: |-
-        A key ring is a grouping of keys for organizational purposes.
-
-        Keyword 'default' to to use Default KeyRing set.
+        A grouping of keys for organizational purposes.
+        Keyword 'default' uses the default KeyRing.
       isArray: false
       name: key_ring
       required: true
       secret: false
     - default: false
-      description: The ID for the crypto-key to use
+      description: The ID for the crypto-key to use.
       isArray: false
       name: crypto_key
       required: true
@@ -1599,7 +1568,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the public key from a given CryptoKey
+    description: Returns the public key from a given CryptoKey.
     execution: false
     name: google-kms-get-public-key
     outputs:
