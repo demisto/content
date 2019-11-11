@@ -156,7 +156,8 @@ script:
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.
       type: number
-  dockerimage: demisto/pykafka:1.0.0.128
+  dockerimage45: demisto/pykafka:1.0.0.128
+  dockerimage: demisto/pykafka:1.0.0.3321
   isfetch: true
   longRunning: false
   longRunningPort: false
