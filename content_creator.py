@@ -87,7 +87,7 @@ def copy_dir_yml(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
     scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
     post_files = 0
     for path in scan_files:
-        if len(path) >= MAX_FILE_NAME:
+        if len(os.path.basename(path)) >= MAX_FILE_NAME:
             PROBLEMATIC_FILES.append(path)
 
         with open(path, 'r') as file_:
@@ -123,7 +123,7 @@ def copy_dir_json(dir_name, version_num, bundle_pre, bundle_post, bundle_test):
             dpath = new_path
 
         if len(dpath) >= MAX_FILE_NAME:
-            PROBLEMATIC_FILES.append(dpath)
+            PROBLEMATIC_FILES.append(os.path.basename(dpath))
 
         shutil.copyfile(path, os.path.join(bundle_post, dpath))
         shutil.copyfile(path, os.path.join(bundle_pre, dpath))
