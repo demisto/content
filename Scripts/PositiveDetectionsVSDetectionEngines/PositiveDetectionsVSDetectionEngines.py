@@ -42,12 +42,12 @@ def extract_engines_data_from_indicator(indicator_data):
         }
     }
 
-    demisto.results(data)
+    return data
 
 
 def main():
     indicator_data = demisto.args().get('indicator')
-    return extract_engines_data_from_indicator(indicator_data)
+    demisto.results(extract_engines_data_from_indicator(indicator_data))
 
 
 # python2 uses __builtin__ python3 uses builtins
