@@ -1,7 +1,7 @@
 id: Block File - Cybereason
 version: -1
 name: Block File - Cybereason
-fromversion: 4.0.0
+fromversion: 4.5.0
 description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
   integration.
 starttaskid: "0"
