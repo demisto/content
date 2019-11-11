@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+- Fixed an issue where the task that saves the email address of the reporter of the phishing email, was disconnected from the previous task.
+- Fixed an issue where the DT that was used to get the display name of the user who reported the email was invalid.
 
 ## [19.10.2] - 2019-10-29
 Added a task to save the reporter email address in an incident field, so it can be displayed on the summary page.
