@@ -295,9 +295,6 @@ def extract_indicators(data):
             objects = data
         else:
             return_error("No STIX2 object could be parsed")
-    if isinstance(data, dict) and "objects" in data:
-        # Create objects
-        objects = data.get("objects")
         # Use regex to extract indicators
         patterns_lists, entries_dict = get_indicators(objects)
 
