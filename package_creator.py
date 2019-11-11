@@ -136,11 +136,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
 def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
     image_data, found_img_path = get_data(dir_name, package_path, "*png")
     image_base64 = base64.b64encode(image_data)
-    try:
-        image_base64 = image_base64.decode('utf-8')
-    except AttributeError:
-        # decode only relevant for python3
-        pass
+    image_base64 = image_base64.decode('utf-8')
     image_data = IMAGE_PREFIX + image_base64
 
     if yml_data.get('image'):
@@ -158,11 +154,7 @@ def insert_image_to_yml(dir_name, package_path, yml_data, yml_text):
 
 def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
     desc_data, found_desc_path = get_data(dir_name, package_path, '*_description.md')
-    try:
-        desc_data = desc_data.decode('utf-8')
-    except AttributeError:
-        # decode only relevant for python3
-        pass
+    desc_data = desc_data.decode('utf-8')
 
     if yml_data.get('detaileddescription'):
         raise ValueError('Please move the detailed description from the yml to a description file (.md)'
