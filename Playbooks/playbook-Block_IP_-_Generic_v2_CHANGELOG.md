@@ -1,5 +1,5 @@
 ## [Unreleased]
-Fixed outputs descriptions.
+Fixed output descriptions.
 
 ## [19.9.1] - 2019-09-18
 Fixed bug from Block IP - Generic:
