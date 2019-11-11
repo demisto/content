@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '50'
-  display: Fetch Limit (No more than 200, preferably under 50)
+  display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
   required: false
   type: 0
