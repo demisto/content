@@ -238,6 +238,7 @@ class Client(BaseClient):
                             f'Please check authentication related parameters. [{response.status_code}]')
 
     def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
+        # https://docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
@@ -260,6 +261,7 @@ class Client(BaseClient):
         self.http_request('DELETE ', f'groups/{group_id}')
 
     def list_members(self, group_id: str, next_link: str = None) -> Dict:
+        # https://docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
         if next_link:  # pagination
             members = self.http_request('GET', next_link)
         else:
