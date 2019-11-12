@@ -475,20 +475,6 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Filter cases based on the case status
-      isArray: false
-      name: status
-      predefined:
-      - New
-      - Closed
-      - Assigned
-      - Rejected
-      - Duplicate
-      - Pending Input
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
       description: Filter cases by case type
       isArray: false
       name: case_type
@@ -722,20 +708,6 @@ script:
       description: Name servers of the URL
       type: String
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Filter cases based on the case status
-      isArray: false
-      name: status
-      predefined:
-      - New
-      - Closed
-      - Assigned
-      - Rejected
-      - Duplicate
-      - Pending Input
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: Filter cases by case type
