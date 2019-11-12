@@ -1,21 +1,17 @@
-## Before starting to design an integration
-- Find the documentation for the API of your product. It'll help to know what is supported via the API in order to design the commands and outputs for each one.
+# Integration Design
+## Intro
+In this tutorial we'll talk about how to get from an initial need or idea for an integration you want to implement in Demisto, to a design document that'll help you get organized and understand exactly what you need to implement.
 
-## Design Guidelines Checklist
-- Make sure your integration is categorized correctly. Use cases can be helpful for the categorization as well as looking for similar integrations to the one you are working on. 
-- Logo must be under 10kb. Make sure to use the company logo (and not the product’s). Eynav and Ido will help with this. 
-- When mapping score to DBOT score stay as close as possible to the vendor’s scoring thresholds and categorization (these are usually documented/can be understood from the UI). Dbot score reputation includes the following scores: 0 – unknown, 1 – good, 2 – suspicious, 3 – bad. Give users a threshold argument in order to let customers override and set another scoring logic.
-- Add score thresholds and DBOT score mapping to the integration documentation. 
-- Add generic reputation commands such as “!url,ip,file,domain”. 
-- Global Context outputs – Don’t forget global context outputs for dbot scoring and global indicators. You can find them [here](https://github.com/demisto/content/tree/master/docs/context_standards)
-- Time arguments – When the command supports filtering results by time, use start + end time parameters (if supported by UI), and a timeframe parameter, that accepts inputs such as “4 days ago”, “5 minutes ago”, etc. 
-- The data we return should make sense to an analyst (convert EPOCH, decrypt data if needed, If you return IDs, make sure to return the original asset name, category type, group name etc.)
-- Make sure the parameters and command descriptions are in fact descriptive. 
-- Stay as true to the product as possible- keep the same names as used by the vendor, the UI is a good baseline for what the human readable should look like. 
-- Context limitation – If the result can include a lot of data, limit the context size. For example "Fetch Incidents" shouldn't return more than 100 records per fetch.
-- Polling playbook & check status command – If the command can take more than a few minutes (vulnerability scan, complex search, detonation, etc) make sure to add a polling playbook. If implemented, do remember to include a “status” command as well. 
-- Backwards compatibility – Don’t break it. Few suggested workarounds- keep the old context, add new paths as needed and update the outputs accordingly, if a command needs major changes- deprecate it and add a new one
 
+## Why do I need a design document in the first place?
+You might be thinking "Why do I need to write this document? Why not just start writing?" 
+Well, we beleive that writing such a document before starting any code writing will help you better understand your use of this integration, understand what exactly you want to do and what you want to get out of each command or fetch.
+(We also require this documentation for our review and final inclusion in Demisto, but the former reason is the more important one).
+
+
+
+## Identify What Type of Integration I'm Building
+You can divide most integrations in Demisto into one of the following categories. We advise you to try to understand in which your integration fits in. Each link is to a short list of use-cases for such integration and examples of existing integrations and commands so that you can have some idea as to how or what to implement:
 ## Usecases
 1. [Analytics and SIEM](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/Analytics_SIEM_usecase)
 2. [Authentication](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/Authentication_usecase)
@@ -27,3 +23,82 @@
 8. [Network Security (Firewall)](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/network_security_IDS_IPS_usecase)
 9. [Network Security (IDS/IPS)](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/network_security_firewall_usecase)
 10. [Vulnerability Management](https://github.com/demisto/content/tree/master/docs/integration_design/usecases/vulnerability_management_usecase)
+
+
+
+## Understanding and Documenting the Use Cases
+If your'e on your way to writing an integration for Demisto you probably are already familiar with the product you want to integrate, but it might help to go into the product again to see what actions you want to implemnt, how you think they'll work once in Demisto.
+Write down the use cases for your integration, how you would use it and how you think outher people will use it.
+```Markdown
+# Use Cases:
+- Create, get, edit, close a ticket/issue, add + view comments.
+- Assign a ticket/issue to a specified user.
+- List all tickets, filter by name, date, assignee
+```
+## Parameters
+In this section write what are the parameters you need in order to create an instance of the product and connect to it. These parameters will be accessible and used in all the integration. 
+We require 2 fields as part of the parameters:
+1. proxy - You probably recoginze this field as "Use system proxy settings". This is a boolean field that handles proxy if True
+2. insecure - (a.k.a. Trust any certificate (not secure)) This field is also boolean and indicates if to use only certified certificates.
+
+When implementing the integration have a look at existing integrations to see how we implement this.
+If your integration implements `Fetches incidents` also add a boolean field called `isFetch`
+## Commands, Arguments & Outputs
+Now let's write down exactly what commands you want to implement. Each command has 3 parts:
+1. Command name
+2. Command arguments
+3. Command outputs
+#### Command Name
+We have a standard for a command's name: `productName-command`
+For example `intsights-get-alert-activities`
+If your commands checks the maliciousness of an IP/Domain/URL/File name your command simply `ip`\ `domain`\ `url`\ `file`. If this is the case make sure your outputs (which we'll get to in a second) match the [context standards](https://github.com/demisto/content/tree/master/docs/context_standards).
+
+#### Command argument
+These are the arguments for the command for example `!intsights-get-alert-activities alert-id=`
+
+#### Command Outputs
+There are 3 type of outputs from the command:
+1. Human Readable output - This is what will be printed to the war room. It should be in Markdown form.
+2. Raw Json - A JSON of the raw response that was returned from the API. 
+3. Context Output - The outputs that will be in the context. 
+
+The Context Outupt will be a JSON in the following format `{Product.TypeofOuput.Info}`. For more info about this have a look [here](https://github.com/demisto/content/tree/master/docs/context_and_ouputs)
+
+### Command Deisgn
+The final result for each command should look something like this:
+
+**Command Name**: cisco-asa-list-rules
+
+###### Arguments
+argument | type | description|mandatory
+---|---|---|---
+InterfaceName|String|the name of the interface|no
+InterfaceType|choose|In/Out/Global|no
+
+###### Context Outputs
+* CiscoASA.Rule.Interface
+* CiscoASA.Rule.SourceIP
+* CiscoASA.Rule.DestIP
+* CiscoASA.Rule.Permit
+* CiscoASA.Rule.Active
+* CiscoASA.Rule.Remarks
+* CiscoASA.Rule.Position
+* CiscoASA.Rule.ID
+###### Human Readable Output
+**All Rules for interface {} of type{}**:
+
+RuleID|InterfaceName|SourceIP|DestIP|Position|
+---|---|---|---|---|
+...|...|...|...|...|
+
+
+## Additinal Comments
+1. Please  add a link to the REST API documentation to this document both so you could have it handy when needed and so we can have it ready when we review the integration.
+2. Find a logo for this integration to be displayed in Demisto that is under 10 kb.
+3. If caclulating DBot Score stay as close as possible to the vendor’s scoring thresholds and categorization (these are usually documented/can be understood from the UI). Dbot score reputation includes the following scores: 0 – unknown, 1 – good, 2 – suspicious, 3 – bad. Give users a threshold argument in order to let customers override and set another scoring logic.
+4. The data we return should make sense to an analyst so please convert EPOCH, decrypt data if needed, If you return IDs, make sure to return the original asset name, category type, group name etc.
+5. Stay as true to the product as possible- keep the same names as used by the vendor, the UI is a good baseline for what the human readable should look like.
+6. If you think a command or fetch may return a lot of data - limit it. We allow 200 results max in Demisto. Make sure to include this in the design for each command that you limit.
+7. If some commands may take a long time make sure you add a polling command. For example if you initiate a Compliance Search in EWS, an action that may take several minutes make sure you have a check-status command as well.
+ts accordingly, if a command needs major changes- deprecate it and add a new one
+
