@@ -193,4 +193,4 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.7.4.1900
 tests:
-- No test - implemented unit tests instead
+- No tests
