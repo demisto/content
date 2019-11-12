@@ -5,7 +5,7 @@ In this tutorial we'll talk about how to get from an initial need or idea for an
 
 ## Why do I need a design document in the first place?
 You might be thinking "Why do I need to write this document? Why not just start writing?" 
-Well, we beleive that writing such a document before starting any code writing will help you better understand your use of this integration, understand what exactly you want to do and what you want to get out of each command or fetch.
+Well, we believe that writing such a document before starting any code writing will help you better understand your use of this integration, understand what exactly you want to do and what you want to get out of each command or fetch.
 (We also require this documentation for our review and final inclusion in Demisto, but the former reason is the more important one).
 
 
