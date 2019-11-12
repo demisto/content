@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Improved handling of error messages.
 
 ## [19.11.0] - 2019-11-12
 -
