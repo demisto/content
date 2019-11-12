@@ -1954,16 +1954,17 @@ def panorama_delete_custom_url_category_command():
 def panorama_edit_custom_url_category(custom_url_category_name, type_, items, description=None):
     major_version = get_pan_os_major_version()
     if major_version >= 9:
-        element = f'<entry name=\'{custom_url_category_name}\'>{description}{items}{type_}</entry>'
+        element = '<members>' + add_argument_list(items, 'member', False) + '</members>'
     else:
         if type_ == 'Category Match':
             return_error('The Categories argument is only relevant for PAN-OS 9.x versions.')
-        element = f'<entry name=\'{custom_url_category_name}\'>{description}{items}</entry>'
+        element = '<members>' + add_argument_list(items, 'member', False) + '</members>'
 
     params = {
         'action': 'edit',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
+        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='"
+                 + custom_url_category_name + "']/members",
         'element': element,
         'key': API_KEY
     }
@@ -2027,16 +2028,6 @@ def panorama_custom_url_category_remove_items(custom_url_category_name, items, t
         return_error('Please commit the instance prior to editing the Custom URL Category.')
     description = custom_url_category.get('description')
 
-    #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
-    # if 'type' in custom_url_category:
-    #     pretty_custom_url_category['Type'] = custom_url_category['type']
-    #     if pretty_custom_url_category['Type'] == 'Category Match':
-    #         pretty_custom_url_category['Categories'] = custom_url_category['list']['member']
-    #     else:
-    #         pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
-    # else:
-    #     pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
-    # if 'type' in custom_url_category and custom_url_category['type'] == 'Category Match':
     if 'list' in custom_url_category:
         if 'member' in custom_url_category['list']:
             custom_url_category_items = custom_url_category['list']['member']
