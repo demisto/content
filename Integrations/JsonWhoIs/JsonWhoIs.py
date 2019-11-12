@@ -34,23 +34,17 @@ USE_SSL = not PARAMS.get('insecure', False)
 ''' HELPER FUNCTIONS '''
 @logger
 def http_request(method, url_suffix, params=None, max_retry=3):
-    # A wrapper for requests lib to send our requests and handle requests and responses better
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        headers=HEADERS
-    )
-    # Handle error responses gracefully
-    if res.status_code not in {200}:
-        if max_retry > 0:
-            max_retry -= 1
-            return http_request(method=method,
-                                url_suffix=url_suffix,
-                                params=params,
-                                max_retry=max_retry)
-
+    for trial in range(max_retry):
+        res = requests.request(
+            method,
+            BASE_URL + url_suffix,
+            verify=USE_SSL,
+            params=params,
+            headers=HEADERS
+        )
+        if res.status_code == 200:  # ignore: typing
+            break
+    if res.status_code != 200:  # ignore: typing
         raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')
     return res.json()
 
@@ -77,8 +71,8 @@ def list_by_ec(cur_list: list, needed_keys: list):
         return None
     cur_list = [createContext(index, removeNull=True) for index in cur_list]
 
-    def cur_ec(index):
-        return {key.capitalize(): index[key] for key in index if key in needed_keys}
+    def cur_ec(index_ec):
+        return {key.capitalize(): index_ec[key] for key in index_ec if key in needed_keys}
     cur_list = [cur_ec(contact) for contact in cur_list]
     return cur_list
 
