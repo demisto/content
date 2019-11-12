@@ -391,13 +391,6 @@ script:
     - name: name
       description: The Active Directory name of the group.
       required: true
-    - name: group-class
-      description: 'The group class in the hierarchy. Can be: "top", or "group".'
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - group
-      - top
     - name: group-type
       description: 'The type of group. Can be: "security", or "distribution".'
       required: true
