@@ -499,6 +499,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
 
 
 def update_test_set(tests_set, tests):
+    tests_set = set(tests_set)
     for test in tests:
         tests_set.add(test)
 
