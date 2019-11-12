@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 - Fixed an issue where the task that saves the email address of the reporter of the phishing email, was disconnected from the previous task.
 - Fixed an issue where the DT that was used to get the display name of the user who reported the email was invalid.
 

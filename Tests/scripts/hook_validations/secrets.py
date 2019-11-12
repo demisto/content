@@ -12,10 +12,10 @@ from Tests.scripts.constants import *
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 4.2
+ENTROPY_THRESHOLD = 4.0
 
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile'}
-ACCEPTED_FILE_STATUSES = ['M', 'A', "R099"]
+ACCEPTED_FILE_STATUSES = ['M', 'A']
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
@@ -83,11 +83,11 @@ def get_all_diff_text_files(branch_name, is_circle):
     """
     if is_circle:
         branch_changed_files_string = \
-            run_command("git diff --name-status origin/master...{}".format(branch_name))
+            run_command('git diff --name-status origin/master...{}'.format(branch_name))
         text_files_list = get_diff_text_files(branch_changed_files_string)
 
     else:
-        local_changed_files_string = run_command("git diff --name-status --no-merges HEAD")
+        local_changed_files_string = run_command('git diff --name-status --no-merges HEAD')
         text_files_list = get_diff_text_files(local_changed_files_string)
 
     return text_files_list
@@ -107,18 +107,18 @@ def get_diff_text_files(files_string):
             continue
 
         file_status = file_data[0]
-        if file_status.upper() == "R099":
-            # if filename renamed
-            # sometimes the R comes with numbers R099,
-            # the R status file usually will look like:
-            # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
-            # that is why we set index 2 to file_path - the second index is the updated file name
+        # if filename renamed
+        # the R status file usually will look like:
+        # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
+        # that is why we set index 2 to file_path - the second index is the updated file name
+        r = re.compile(r"R\d{2,3}")
+        is_renamed_file_status = r.match(file_status)
+        if is_renamed_file_status:
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # only modified/added file, text readable, exclude white_list file
-        if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path):
+        if (file_status.upper() in ACCEPTED_FILE_STATUSES or is_renamed_file_status) and is_text_file(file_path):
             if not any(skipped_file in file_path for skipped_file in SKIPPED_FILES):
                 text_files_list.add(file_path)
 
