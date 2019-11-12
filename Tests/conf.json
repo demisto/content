@@ -2090,6 +2090,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
+        "Microsoft Graph Groups": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
     }
 }
