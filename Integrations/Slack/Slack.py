@@ -47,7 +47,8 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 BOT_TOKEN: str
 ACCESS_TOKEN: str
-PROXY: str
+PROXY_URL: str
+PROXIES: dict
 DEDICATED_CHANNEL: str
 CLIENT: slack.WebClient
 CHANNEL_CLIENT: slack.WebClient
@@ -608,7 +609,7 @@ def check_for_answers(now: datetime):
             'token': BOT_TOKEN,
             'entitlement': question.get('entitlement')
         }
-        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, verify=VERIFY_CERT)
+        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT)
         if res.status_code != 200:
             demisto.error('Slack - failed to poll for answers: {}, status code: {}'  # type: ignore[str-bytes-safe]
                           .format(res.content, res.status_code))
@@ -718,7 +719,7 @@ async def slack_loop():
                 run_async=True,
                 loop=loop,
                 auto_reconnect=False,
-                proxy=PROXY,
+                proxy=PROXY_URL,
                 ssl=SSL_CONTEXT
             )
 
@@ -1654,7 +1655,7 @@ def init_globals():
     """
     Initializes global variables according to the integration parameters
     """
-    global BOT_TOKEN, ACCESS_TOKEN, PROXY, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
+    global BOT_TOKEN, ACCESS_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, CHANNEL_CLIENT
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, NOTIFY_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT
 
@@ -1669,11 +1670,11 @@ def init_globals():
 
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
-    proxies = handle_proxy()
-    PROXY = proxies.get('http')  # aiohttp only supports http proxy
+    PROXIES = handle_proxy()
+    PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
-    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
-    CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY, ssl=SSL_CONTEXT)
+    CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
+    CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     SEVERITY_THRESHOLD = SEVERITY_DICT.get(demisto.params().get('min_severity', 'Low'), 1)
     ALLOW_INCIDENTS = demisto.params().get('allow_incidents', False)
     NOTIFY_INCIDENTS = demisto.params().get('notify_incidents', True)
