@@ -1,5 +1,7 @@
 ## [Unreleased]
-
+  - Fixed an issue where the ***panorama-custom-block-rule*** failed when trying to block an EDL or an address group object.
+  - Changed the *url* argument from equals to contains in the ***panorama-log-query*** command.
+  - Improved descriptions in the ***panorama-move-rule*** command.
 
 ## [19.10.2] - 2019-10-29
 Added the ***panorama-security-policy-match*** command.
