@@ -2004,6 +2004,8 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Microsoft Graph": "Issue 20096",
+        "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
