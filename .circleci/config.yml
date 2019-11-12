@@ -59,7 +59,14 @@ jobs:
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            # after moving to all to python3, run the tests by folder
+            # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
+
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -99,7 +106,7 @@ jobs:
       - run:
           name: Create Content Artifacts
           when: always
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+          command: python3 content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -107,6 +114,14 @@ jobs:
           name: Run Unit Testing and Lint
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+      - run:
+          name: Verify Base Branch for Contirbution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - run:
           name: Download Artifacts
           when: always
@@ -237,11 +252,17 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
-            cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
