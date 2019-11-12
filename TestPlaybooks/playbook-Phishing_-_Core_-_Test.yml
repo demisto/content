@@ -103,7 +103,7 @@ tasks:
       command:
         simple: '!taskComplete id=manual parentPlaybookID=27'
       cron:
-        simple: '*/5 * * * *'
+        simple: '*/8 * * * *'
       endDate: {}
       times:
         simple: "15"
