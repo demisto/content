@@ -1,7 +1,12 @@
 {
     "testTimeout": 160,
     "testInterval": 20,
-    "tests": [{
+    "tests": [
+        {
+            "integrations": "JsonWhoIs",
+            "playbookID": "JsonWhoIs-Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },
