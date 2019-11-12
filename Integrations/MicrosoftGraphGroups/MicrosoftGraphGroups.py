@@ -218,8 +218,8 @@ class Client(BaseClient):
         try:
             data = response.json() if response.text else {}
             if not response.ok:
-                return_error(f'API call to MS Graph failed [{response.status_code}]'
-                             f' - {demisto.get(data, "error.message")}')
+                raise Exception(f'API call to MS Graph failed [{response.status_code}]'
+                                f' - {demisto.get(data, "error.message")}')
             elif response.status_code == 206:  # 206 indicates Partial Content, reason will be in the warning header
                 demisto.debug(str(response.headers))
 
