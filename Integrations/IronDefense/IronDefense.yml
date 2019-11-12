@@ -12,14 +12,6 @@ configuration:
   name: ironAPIPort
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Username
   name: credentials
   required: true
@@ -29,7 +21,10 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-description: Integrates with IronDefense
+description:
+  The IronDefense Integration for Demisto allows users to interact with IronDefense alerts within Demisto. The
+  Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, and to report
+  observed bad activity.
 display: IronDefense
 name: IronDefense
 script:
@@ -149,7 +144,53 @@ script:
     description: Sets the status of an IronDefense alert
     execution: false
     name: irondefense-set-alert-status
+  - arguments:
+    - default: false
+      description: The name of the Threat Intelligence Rule (TIR) to be created.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: A description of the observed bad endpoint.
+      isArray: false
+      name: description
+      required: true
+      secret: false
+    - default: false
+      description: The IP address of the observed bad endpoint.
+      isArray: false
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The domain name of the observed bad endpoint.
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    - default: false
+      description: The start time of the observed bad activity in RFC 3339 format.
+      isArray: false
+      name: activity_start_time
+      required: true
+      secret: false
+    - default: false
+      description: The end time of the observed bad activity in RFC 3339 format.
+      isArray: false
+      name: activity_end_time
+      required: true
+      secret: false
+    deprecated: false
+    description: Submits an observed bad endpoint to IronDefense to create Threat
+      Intelligence Rules (TIR).
+    execution: false
+    name: irondefense-report-observed-bad-activity
   isfetch: false
   runonce: false
   script: '-'
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.7.4.1900
+tests:
+- No test - implemented unit tests instead
