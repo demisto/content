@@ -22,9 +22,21 @@ from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect
     LOG_COLORS, print_color, run_command, print_error  # noqa: E402
 
 
-CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX, PACKS_INTEGRATION_YML_REGEX,
-                         PACKS_SCRIPT_YML_REGEX, PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)
+CHECKED_TYPES_REGEXES = (
+    # Integrations
+    INTEGRATION_REGEX,
+    INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_YML_REGEX,
+    PACKS_INTEGRATION_REGEX,
+    # Scripts
+    SCRIPT_REGEX,
+    PACKS_SCRIPT_YML_REGEX,
+    # Playbooks
+    PLAYBOOK_REGEX,
+    TEST_PLAYBOOK_REGEX,
+    PACKS_PLAYBOOK_YML_REGEX,
+    PACKS_TEST_PLAYBOOKS_REGEX
+)
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
@@ -125,7 +137,7 @@ def get_integration_data(file_path):
     cmd_list = [command.get('name') for command in commands]
 
     integration_data['name'] = name
-    integration_data['path'] = file_path
+    integration_data['file_path'] = file_path
     if toversion:
         integration_data['toversion'] = toversion
     if fromversion:
@@ -152,7 +164,7 @@ def get_playbook_data(file_path):
     command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
-    playbook_data['path'] = file_path
+    playbook_data['file_path'] = file_path
     if toversion:
         playbook_data['toversion'] = toversion
     if fromversion:
@@ -186,7 +198,7 @@ def get_script_data(file_path, script_code=None):
     script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
-    script_data['path'] = file_path
+    script_data['file_path'] = file_path
     if toversion:
         script_data['toversion'] = toversion
     if fromversion:
@@ -309,7 +321,8 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_YML_REGEX)):
+        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_YML_REGEX,
+                                    PACKS_INTEGRATION_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
     else:
@@ -335,7 +348,7 @@ def process_script(file_path):
 def process_playbook(file_path):
     res = []
     if os.path.isfile(file_path):
-        if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX)):
+        if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX)):
             print('adding {0} to id_set'.format(file_path))
             res.append(get_playbook_data(file_path))
     else:
@@ -370,8 +383,7 @@ def get_integrations_paths():
     path_list = [
         ['Integrations', '*'],
         ['Beta_Integrations', '*'],
-        ['Packs', '*', 'Integrations', '*', '*.yml'],  # Case of package
-        ['Packs', '*', 'Integrations', '*.yml']
+        ['Packs', '*', 'Integrations', '*']
     ]
     integration_files = list()
     for path in path_list:
@@ -383,8 +395,7 @@ def get_integrations_paths():
 def get_scripts_paths():
     path_list = [
         ['Scripts', '*'],
-        ['Packs', '*', 'Scripts', '*', '*.yml'],  # Case of package
-        ['Packs', '*', 'Scripts', '*.yml']
+        ['Packs', '*', 'Scripts', '*']
     ]
     script_files = list()
     for path in path_list:
@@ -396,7 +407,8 @@ def get_scripts_paths():
 def get_playbooks_paths():
     path_list = [
         ['Playbooks', '*.yml'],
-        ['Packs', '*', 'Playbooks', '*.yml']
+        ['Packs', '*', 'Playbooks', '*.yml'],
+        ['Beta_Integrations', '*.yml']
     ]
 
     playbook_files = list()
@@ -461,7 +473,7 @@ def re_create_id_set():
     print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
 
     duplicates = find_duplicates(new_ids_dict)
-    if duplicates:
+    if any(duplicates):
         print_error('The following duplicates were found: {}'.format(duplicates))
         sys.exit(1)
 
@@ -520,13 +532,10 @@ def has_duplicate(id_set, id_to_check):
             print_error('The following objects has the same ID but different names: {}, {}.'.format(dict1['name'],
                                                                                                     dict2['name']))
         is_duplicate = True
-        if dict1_from_version >= dict2_to_version:
-            is_duplicate = False
-        if dict2_to_version > dict1_to_version:
-            is_duplicate = False
-        if dict2_from_version > dict1_to_version:
-            is_duplicate = False
-        if dict1_from_version > dict2_from_version:
+        if dict1_from_version >= dict2_to_version or \
+                dict2_to_version > dict1_to_version or \
+                dict2_from_version > dict1_to_version or \
+                dict1_from_version > dict2_from_version:
             is_duplicate = False
     return is_duplicate
 
