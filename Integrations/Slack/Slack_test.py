@@ -1639,7 +1639,7 @@ async def test_handle_text(mocker):
     assert entry_args['footer'] == '\n**From Slack**'
 
 
-def test_check_for_answers(mocker, requests_mock):
+def test_check_for_answers_no_proxy(mocker, requests_mock):
     import Slack
 
     # Set
@@ -1672,7 +1672,55 @@ def test_check_for_answers(mocker, requests_mock):
 
     # Assert
     assert demisto.handleEntitlementForUser.call_count == 1
+    assert requests_mock._adapter.last_request.proxies == OrderedDict()
+    assert result_args[0] == '22'
+    assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
+    assert result_args[2] == 'spengler@ghostbusters.example.com'
+    assert result_args[3] == 'Eyy'
+    assert result_args[4] == '43'
 
+    # Should delete the question
+    assert demisto.getIntegrationContext()['questions'] == js.dumps([])
+
+
+def test_check_for_answers_proxy(mocker, requests_mock):
+    import Slack
+
+    # Set
+    mocker.patch.object(Slack, 'handle_proxy', return_value={'https': 'https_proxy', 'http': 'http_proxy'})
+    Slack.init_globals()
+    proxy_dict = OrderedDict()
+    proxy_dict['https'] = 'https_proxy'
+    proxy_dict['http'] = 'http_proxy'
+    mocker.patch.object(demisto, 'handleEntitlementForUser')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    requests_mock.post(
+        'https://oproxy.demisto.ninja/slack-poll',
+        json={'payload': PAYLOAD_JSON}
+    )
+
+    integration_context = get_integration_context()
+    integration_context['questions'] = js.dumps([{
+        'thread': 'cool',
+        'entitlement': 'e95cb5a1-e394-4bc5-8ce0-508973aaf298@22|43',
+        'reply': 'Thanks bro',
+        'expiry': '3000-09-26 18:38:25',
+        'default_response': 'NoResponse',
+        'last_poll_time': '2019-09-26 18:34:25'
+    }])
+
+    set_integration_context(integration_context)
+
+    # Arrange
+    Slack.check_for_answers(datetime.datetime(2019, 9, 26, 18, 38, 25))
+
+    result_args = demisto.handleEntitlementForUser.call_args_list[0][0]
+
+    # Assert
+    assert demisto.handleEntitlementForUser.call_count == 1
+    assert requests_mock._adapter.last_request.proxies == proxy_dict
     assert result_args[0] == '22'
     assert result_args[1] == 'e95cb5a1-e394-4bc5-8ce0-508973aaf298'
     assert result_args[2] == 'spengler@ghostbusters.example.com'
