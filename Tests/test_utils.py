@@ -1,15 +1,18 @@
 import re
 import os
 import sys
-import yaml
 import json
-import requests
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+import yaml
+import requests
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
     PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
+
+# disable insecure warnings
+requests.packages.urllib3.disable_warnings()
 
 
 class LOG_COLORS:
@@ -60,15 +63,18 @@ def run_command(command, is_silenced=True, exit_on_error=True):
 
 
 def get_remote_file(full_file_path, tag='master'):
-    org_prefix = 'origin/'
-    if tag.startswith(org_prefix):  # remove origin/ prefix
-        tag = tag[len(org_prefix):]
+    # 'origin/' prefix is used to compared with remote branches but it is not a part of the github url.
+    tag = tag.lstrip('origin/')
+
+    # The replace in the end is for Windows support
     github_path = os.path.join(CONTENT_GITHUB_LINK, tag, full_file_path).replace('\\', '/')
-    res = requests.get(github_path, verify=False)
-    if res.status_code != 200:
+    try:
+        res = requests.get(github_path, verify=False)
+        res.raise_for_status()
+    except Exception as exc:
         print_warning('Could not find the old entity file under "{}".\n'
                       'please make sure that you did not break backward compatibility. '
-                      'Reason: {}'.format(github_path, res.reason))
+                      'Reason: {}'.format(github_path, exc))
         return {}
 
     if full_file_path.endswith('json'):
@@ -96,9 +102,11 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag='ma
         if file_path.split("/")[0] in PACKAGE_SUPPORTING_DIRECTORIES:
             details = get_remote_file(file_path, tag)
             if details:
-                uniq_identifier = '_'.join([details['name'],
-                                           details.get('fromversion', '0.0.0'),
-                                           details.get('toversion', '99.99.99')])
+                uniq_identifier = '_'.join([
+                    details['name'],
+                    details.get('fromversion', '0.0.0'),
+                    details.get('toversion', '99.99.99')
+                ])
                 packagify_diff[uniq_identifier] = file_path
 
     updated_added_files = set()
@@ -107,9 +115,11 @@ def filter_packagify_changes(modified_files, added_files, removed_files, tag='ma
             with open(file_path) as f:
                 details = yaml.safe_load(f.read())
 
-            uniq_identifier = '_'.join([details['name'],
-                                        details.get('fromversion', '0.0.0'),
-                                        details.get('toversion', '99.99.99')])
+            uniq_identifier = '_'.join([
+                details['name'],
+                details.get('fromversion', '0.0.0'),
+                details.get('toversion', '99.99.99')
+            ])
             if uniq_identifier in packagify_diff:
                 # if name appears as added and removed, this is packagify process - treat as modified.
                 removed_files.remove(packagify_diff[uniq_identifier])
@@ -153,8 +163,8 @@ def get_yaml(file_path):
 
     if type(data_dictionary) is dict:
         return data_dictionary
-    else:
-        return {}
+
+    return {}
 
 
 def get_json(file_path):
@@ -169,8 +179,8 @@ def get_json(file_path):
 
     if type(data_dictionary) is dict:
         return data_dictionary
-    else:
-        return {}
+
+    return {}
 
 
 def get_script_or_integration_id(file_path):
@@ -203,6 +213,8 @@ def get_from_version(file_path):
 
         return from_version
 
+    return '0.0.0'
+
 
 def get_to_version(file_path):
     data_dictionary = get_yaml(file_path)
@@ -215,14 +227,17 @@ def get_to_version(file_path):
 
         return to_version
 
+    return '99.99.99'
+
 
 def str2bool(v):
     if v.lower() in ('yes', 'true', 't', 'y', '1'):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+
+    if v.lower() in ('no', 'false', 'f', 'n', '0'):
         return False
-    else:
-        raise argparse.ArgumentTypeError('Boolean value expected.')
+
+    raise argparse.ArgumentTypeError('Boolean value expected.')
 
 
 def get_release_notes_file_path(file_path):
@@ -230,10 +245,10 @@ def get_release_notes_file_path(file_path):
 
     if re.match(PACKAGE_YML_FILE_REGEX, file_path):
         return os.path.join(dir_name, 'CHANGELOG.md')
-    else:
-        # outside of packages, change log file will include the original file name.
-        file_name = os.path.basename(file_path)
-        return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_CHANGELOG.md')
+
+    # outside of packages, change log file will include the original file name.
+    file_name = os.path.basename(file_path)
+    return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_CHANGELOG.md')
 
 
 def get_latest_release_notes_text(rn_path):
@@ -258,7 +273,8 @@ def get_latest_release_notes_text(rn_path):
     return new_rn if new_rn else None
 
 
-def checked_type(file_path, compared_regexes=CHECKED_TYPES_REGEXES):
+def checked_type(file_path, compared_regexes=None):
+    compared_regexes = compared_regexes or CHECKED_TYPES_REGEXES
     for regex in compared_regexes:
         if re.match(regex, file_path, re.IGNORECASE):
             return True

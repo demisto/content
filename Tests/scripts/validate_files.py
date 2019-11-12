@@ -370,7 +370,7 @@ class FilesValidator(object):
                         'The files are:\n{}'.format('\n'.join(list(invalid_files))))
             self._is_valid = False
 
-    def validate_committed_files(self, branch_name, is_backward_check=True):
+    def validate_committed_files(self, branch_name, is_backward_check=True, is_forked=False):
         """Validate that all the committed files in your branch are valid
 
         Args:
@@ -387,7 +387,8 @@ class FilesValidator(object):
         if schema_changed:
             self.validate_all_files()
         else:
-            self.validate_no_secrets_found(branch_name)
+            if not is_forked:
+                self.validate_no_secrets_found(branch_name)
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
@@ -420,7 +421,7 @@ class FilesValidator(object):
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
-    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
+    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None, is_forked=False):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
         Args:
@@ -435,7 +436,7 @@ class FilesValidator(object):
 
         if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
-            self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
+            self.validate_committed_files(branch_name, is_backward_check=is_backward_check, is_forked=is_forked)
             if not prev_ver:
                 # validate against master if no version was provided
                 prev_ver = 'origin/master'
@@ -488,13 +489,14 @@ def main():
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
+    is_forked = re.match(EXTERNAL_PR_REGEX, branch_name) is not None
 
     logging.basicConfig(level=logging.CRITICAL)
 
     print_color('Starting validating files structure', LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle, print_ignored_files=True)
     if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check,
-                                              prev_ver=options.prev_ver):
+                                              prev_ver=options.prev_ver, is_forked=is_forked):
         sys.exit(1)
     if options.test_filter:
         try:
