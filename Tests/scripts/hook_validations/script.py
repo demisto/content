@@ -1,10 +1,5 @@
-import requests
-
 from Tests.scripts.constants import PYTHON_SUBTYPES
-from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare, get_remote_file, get_dockerimage45
-
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare, get_dockerimage45
 
 
 class ScriptValidator(object):
@@ -24,13 +19,9 @@ class ScriptValidator(object):
 
         if check_git:
             self.current_script = get_yaml(file_path)
+
             old_script_file = old_file_path or file_path
-            f = get_remote_file(old_script_file, old_git_branch)
-            self.old_script = f or None
-            if not self.old_script:
-                print_warning("Could not find the old script please make sure that you did not break "
-                              "backward compatibility "
-                              "for: {} old file: {} branch: {}".format(file_path, old_script_file, old_git_branch))
+            self.old_script = get_remote_file(old_script_file, old_git_branch)
 
     @classmethod
     def _is_sub_set(cls, supposed_bigger_list, supposed_smaller_list):
