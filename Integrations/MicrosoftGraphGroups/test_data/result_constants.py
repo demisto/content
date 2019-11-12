@@ -50,7 +50,7 @@ EXPECTED_LIST_GROUPS = {
     ]
 }
 EXPECTED_GET_GROUP = {
-    "MSGraphGroups(val.ID === obj.ID)": {
+    "MSGraphGroups(obj.ID === 123)": {
         "Classification": None,
         "CreatedDateTime": "2019-08-24T09:39:03Z",
         "DeletedDateTime": None,
