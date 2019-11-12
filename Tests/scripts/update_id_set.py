@@ -19,7 +19,7 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command, print_error  # noqa: E402
+    LOG_COLORS, print_color, run_command, print_error, print_warning  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (
@@ -321,14 +321,18 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_YML_REGEX,
-                                    PACKS_INTEGRATION_REGEX)):
+        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
     else:
-        for yml_file in glob.glob(os.path.join(file_path, os.path.basename(file_path) + '.yml')):
-            print("adding {0} to id_set".format(yml_file))
-            res.append(get_integration_data(yml_file))
+        if os.path.isfile(file_path):
+            if checked_type(file_path, PACKS_INTEGRATION_YML_REGEX):
+                print("adding {0} to id_set".format(file_path))
+                res.append(get_integration_data(file_path))
+        else:
+            for yml_file in glob.glob(os.path.join(file_path, os.path.basename(file_path) + '.yml')):
+                print("adding {0} to id_set".format(yml_file))
+                res.append(get_integration_data(yml_file))
     return res
 
 
@@ -475,7 +479,6 @@ def re_create_id_set():
     duplicates = find_duplicates(new_ids_dict)
     if any(duplicates):
         print_error('The following duplicates were found: {}'.format(duplicates))
-        sys.exit(1)
 
 
 def find_duplicates(id_set):
@@ -529,8 +532,8 @@ def has_duplicate(id_set, id_to_check):
         dict2_to_version = LooseVersion(dict2.get('toversion', '99.99.99'))
 
         if dict1['name'] != dict2['name']:
-            print_error('The following objects has the same ID but different names: {}, {}.'.format(dict1['name'],
-                                                                                                    dict2['name']))
+            print_warning('The following objects has the same ID but different names: '
+                          '"{}", "{}".'.format(dict1['name'], dict2['name']))
         is_duplicate = True
         if dict1_from_version >= dict2_to_version or \
                 dict2_to_version > dict1_to_version or \
