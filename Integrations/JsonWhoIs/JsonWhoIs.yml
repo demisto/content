@@ -16,7 +16,7 @@ configuration:
   required: false
   type: 8
 description: Provides data enrichment for domains and IP addresses.
-display: JsonWhoIs REST API
+display: JsonWhoIs
 name: JsonWhoIs
 script:
   commands:
