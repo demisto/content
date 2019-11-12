@@ -489,7 +489,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 tests = playbook_data.get('tests', [])
                 if tests:
                     catched_playbooks.add(playbook_name)
-                    update_test_set(tests, tests_set)
+                    update_test_set(tests, set(tests_set))
 
                 updated_playbook_names.add(playbook_name)
                 new_versions = (playbook_fromversion, playbook_toversion)
