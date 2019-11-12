@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Support creating and editing custom URL categories in PAN-OS 9.x versions. 
+  - Support get, creating and editing custom URL categories objects in PAN-OS 9.x versions, including using categories. 
   - Support as array the job_id argument in the ***panorama-query-logs*** , ***panorama-check-logs-status*** commands.
   - Add the ip argument in the ***panorama-query-logs*** command.
   - Fixed an issue where the ***panorama-custom-block-rule*** failed when trying to block an EDL or an address group object.
