@@ -1,5 +1,5 @@
 
-#!/usr/bin/env python
+# !/usr/bin/env python
 import itertools
 import re
 import os
@@ -463,6 +463,7 @@ def re_create_id_set():
     duplicates = find_duplicates(new_ids_dict)
     if duplicates:
         print_error('The following duplicates were found: {}'.format(duplicates))
+        sys.exit(1)
 
 
 def find_duplicates(id_set):
