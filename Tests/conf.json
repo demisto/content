@@ -20,6 +20,11 @@
             "playbookID": "AttackIQ - Test"
         },
         {
+            "playbookID": "Create Phishing Classifier V2 ML Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "ZeroFox",
             "playbookID": "ZeroFox-Test",
             "fromversion": "4.1.0"
