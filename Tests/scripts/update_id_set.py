@@ -1,5 +1,6 @@
-#!/usr/bin/env python2
 
+#!/usr/bin/env python
+import itertools
 import re
 import os
 import glob
@@ -7,8 +8,10 @@ import json
 import argparse
 from collections import OrderedDict
 from multiprocessing import Pool, cpu_count
+from distutils.version import LooseVersion
 import time
 import sys
+
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
@@ -16,11 +19,12 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.test_utils import get_yaml, get_to_version, get_from_version, collect_ids, get_script_or_integration_id, \
-    LOG_COLORS, print_color, run_command  # noqa: E402
+    LOG_COLORS, print_color, run_command, print_error  # noqa: E402
 
 
 CHECKED_TYPES_REGEXES = (INTEGRATION_REGEX, PLAYBOOK_REGEX, SCRIPT_REGEX,
-                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX)
+                         TEST_PLAYBOOK_REGEX, INTEGRATION_YML_REGEX, PACKS_INTEGRATION_YML_REGEX,
+                         PACKS_SCRIPT_YML_REGEX, PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)
 
 
 def checked_type(file_path, regex_list=CHECKED_TYPES_REGEXES):
@@ -121,7 +125,7 @@ def get_integration_data(file_path):
     cmd_list = [command.get('name') for command in commands]
 
     integration_data['name'] = name
-    integration_data['file_path'] = file_path
+    integration_data['path'] = file_path
     if toversion:
         integration_data['toversion'] = toversion
     if fromversion:
@@ -148,7 +152,7 @@ def get_playbook_data(file_path):
     command_to_integration = get_commmands_from_playbook(data_dictionary)
 
     playbook_data['name'] = name
-    playbook_data['file_path'] = file_path
+    playbook_data['path'] = file_path
     if toversion:
         playbook_data['toversion'] = toversion
     if fromversion:
@@ -182,7 +186,7 @@ def get_script_data(file_path, script_code=None):
     script_executions = sorted(list(set(re.findall(r"demisto.executeCommand\(['\"](\w+)['\"].*", script_code))))
 
     script_data['name'] = name
-    script_data['file_path'] = file_path
+    script_data['path'] = file_path
     if toversion:
         script_data['toversion'] = toversion
     if fromversion:
@@ -305,12 +309,11 @@ def process_integration(file_path):
     """
     res = []
     if os.path.isfile(file_path):
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+        if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_YML_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
-    else:  # In case we encountered a package
-        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+    else:
+        for yml_file in glob.glob(os.path.join(file_path, os.path.basename(file_path) + '.yml')):
             print("adding {0} to id_set".format(yml_file))
             res.append(get_integration_data(yml_file))
     return res
@@ -319,9 +322,10 @@ def process_integration(file_path):
 def process_script(file_path):
     res = []
     if os.path.isfile(file_path):
-        print("adding {0} to id_set".format(file_path))
-        res.append(get_script_data(file_path))
-    else:  # In case we encountered a package
+        if checked_type(file_path, (SCRIPT_REGEX, PACKS_SCRIPT_YML_REGEX)):
+            print("adding {0} to id_set".format(file_path))
+            res.append(get_script_data(file_path))
+    else:
         yml_path, code = get_script_package_data(file_path)
         print("adding {0} to id_set".format(file_path))
         res.append(get_script_data(yml_path, script_code=code))
@@ -330,8 +334,14 @@ def process_script(file_path):
 
 def process_playbook(file_path):
     res = []
-    print("adding {0} to id_set".format(file_path))
-    res.append(get_playbook_data(file_path))
+    if os.path.isfile(file_path):
+        if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX)):
+            print('adding {0} to id_set'.format(file_path))
+            res.append(get_playbook_data(file_path))
+    else:
+        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
+            print("adding {0} to id_set".format(yml_file))
+            res.append(get_playbook_data(yml_file))
     return res
 
 
@@ -348,11 +358,64 @@ def process_testplaybook_path(file_path):
     print("adding {0} to id_set".format(file_path))
     script = None
     playbook = None
-    if re.match(TEST_SCRIPT_REGEX, file_path, re.IGNORECASE):
+    if checked_type(file_path, (TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
         script = get_script_data(file_path)
-    elif re.match(TEST_PLAYBOOK_REGEX, file_path, re.IGNORECASE):
+    elif checked_type(file_path, (TEST_PLAYBOOK_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
         playbook = get_playbook_data(file_path)
+
     return playbook, script
+
+
+def get_integrations_paths():
+    path_list = [
+        ['Integrations', '*'],
+        ['Beta_Integrations', '*'],
+        ['Packs', '*', 'Integrations', '*', '*.yml'],  # Case of package
+        ['Packs', '*', 'Integrations', '*.yml']
+    ]
+    integration_files = list()
+    for path in path_list:
+        integration_files.extend(glob.glob(os.path.join(*path)))
+
+    return integration_files
+
+
+def get_scripts_paths():
+    path_list = [
+        ['Scripts', '*'],
+        ['Packs', '*', 'Scripts', '*', '*.yml'],  # Case of package
+        ['Packs', '*', 'Scripts', '*.yml']
+    ]
+    script_files = list()
+    for path in path_list:
+        script_files.extend(glob.glob(os.path.join(*path)))
+
+    return script_files
+
+
+def get_playbooks_paths():
+    path_list = [
+        ['Playbooks', '*.yml'],
+        ['Packs', '*', 'Playbooks', '*.yml']
+    ]
+
+    playbook_files = list()
+    for path in path_list:
+        playbook_files.extend(glob.glob(os.path.join(*path)))
+
+    return playbook_files
+
+
+def get_test_playbooks_paths():
+    path_list = [
+        ['TestPlaybooks', '*'],
+        ['Packs', '*', 'TestPlaybooks', '*.yml']
+    ]
+    test_playbook_files = list()
+    for path in path_list:
+        test_playbook_files.extend(glob.glob(os.path.join(*path)))
+
+    return test_playbook_files
 
 
 def re_create_id_set():
@@ -366,18 +429,19 @@ def re_create_id_set():
 
     print_color("Starting the creation of the id_set", LOG_COLORS.GREEN)
     print_color("Starting iterating over Integrations", LOG_COLORS.GREEN)
-    integration_files = glob.glob(os.path.join('Integrations', '*'))
-    integration_files.extend(glob.glob(os.path.join('Beta_Integrations', '*')))
-    for arr in pool.map(process_integration, integration_files):
+    for arr in pool.map(process_integration, get_integrations_paths()):
         integration_list.extend(arr)
+
     print_color("Starting iterating over Playbooks", LOG_COLORS.GREEN)
-    for arr in pool.map(process_playbook, glob.glob(os.path.join('Playbooks', '*.yml'))):
+    for arr in pool.map(process_playbook, get_playbooks_paths()):
         playbooks_list.extend(arr)
+
     print_color("Starting iterating over Scripts", LOG_COLORS.GREEN)
-    for arr in pool.map(process_script, glob.glob(os.path.join('Scripts', '*'))):
+    for arr in pool.map(process_script, get_scripts_paths()):
         scripts_list.extend(arr)
+
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    for pair in pool.map(process_testplaybook_path, glob.glob(os.path.join('TestPlaybooks', '*'))):
+    for pair in pool.map(process_testplaybook_path, get_test_playbooks_paths()):
         if pair[0]:
             testplaybooks_list.append(pair[0])
         if pair[1]:
@@ -395,6 +459,75 @@ def re_create_id_set():
         json.dump(new_ids_dict, id_set_file, indent=4)
     exec_time = time.time() - start_time
     print_color("Finished the creation of the id_set. Total time: {} seconds".format(exec_time), LOG_COLORS.GREEN)
+
+    duplicates = find_duplicates(new_ids_dict)
+    if duplicates:
+        print_error('The following duplicates were found: {}'.format(duplicates))
+
+
+def find_duplicates(id_set):
+    scripts = id_set['scripts']
+    script_ids = set([script.keys()[0] for script in scripts])
+
+    scripts_list = []
+    for script_id in script_ids:
+        if has_duplicate(scripts, script_id):
+            scripts_list.append(script_id)
+
+    integrations = id_set['integrations']
+    integration_ids = set([integration.keys()[0] for integration in integrations])
+
+    integration_list = []
+    for integration_id in integration_ids:
+        if has_duplicate(integrations, integration_id):
+            integration_list.append(integration_id)
+
+    playbooks = id_set['playbooks']
+    playbook_ids = set([playbook.keys()[0] for playbook in playbooks])
+
+    playbooks_list = []
+    for playbook_id in playbook_ids:
+        if has_duplicate(playbooks, playbook_id):
+            integration_list.append(playbook_id)
+
+    test_playbooks = id_set['TestPlaybooks']
+    test_playbook_ids = set([test_playbook.keys()[0] for test_playbook in test_playbooks])
+
+    test_playbooks_list = []
+    for test_playbook_id in test_playbook_ids:
+        if has_duplicate(test_playbooks, test_playbook_id):
+            test_playbooks_list.append(test_playbook_id)
+
+    return scripts_list, integration_list, playbooks_list, test_playbooks_list
+
+
+def has_duplicate(id_set, id_to_check):
+    duplicates = [duplicate for duplicate in id_set if duplicate.get(id_to_check)]
+
+    if len(duplicates) < 2:
+        return False
+
+    for dup1, dup2 in itertools.combinations(duplicates, 2):
+        dict1 = dup1.values()[0]
+        dict2 = dup2.values()[0]
+        dict1_from_version = LooseVersion(dict1.get('fromversion', '0.0.0'))
+        dict2_from_version = LooseVersion(dict2.get('fromversion', '0.0.0'))
+        dict1_to_version = LooseVersion(dict1.get('toversion', '99.99.99'))
+        dict2_to_version = LooseVersion(dict2.get('toversion', '99.99.99'))
+
+        if dict1['name'] != dict2['name']:
+            print_error('The following objects has the same ID but different names: {}, {}.'.format(dict1['name'],
+                                                                                                    dict2['name']))
+        is_duplicate = True
+        if dict1_from_version >= dict2_to_version:
+            is_duplicate = False
+        if dict2_to_version > dict1_to_version:
+            is_duplicate = False
+        if dict2_from_version > dict1_to_version:
+            is_duplicate = False
+        if dict1_from_version > dict2_from_version:
+            is_duplicate = False
+    return is_duplicate
 
 
 def sort(data):
