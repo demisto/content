@@ -259,12 +259,14 @@ script:
                 # Check if user selected fetch frequency is within last_run[start_time]:
                 fetch_frequency_td = get_fetch_frequency_td()
                 if ((datetime.utcnow() - datetime.utcfromtimestamp(int(start_time))) < fetch_frequency_td):
-                    demisto.debug("FrontlineVM fetch_incident -- frequency (" + str(fetch_frequency_td) + ") within last start_time, sending empty incidents.")
+                    debug_msg = "frequency (" + str(fetch_frequency_td) + ") is within last start_time, sending empty incidents."
+                    demisto.debug("FrontlineVM fetch_incidents -- " + debug_msg)
                     demisto.setLastRun({'start_time': last_run.get('start_time')})
                     demisto.incidents([])
                     return
                 else:
-                    demisto.debug("FrontlineVM fetch_incident -- frequency (" + str(fetch_frequency_td) + ") exceeds last start_time, continuing to fetch incident events.")
+                    debug_msg = "frequency (" + str(fetch_frequency_td) + ") exceeds last start_time, getting incident events."
+                    demisto.debug("FrontlineVM fetch_incident -- " + debug_msg)
             else:
                 now = datetime.utcnow()
                 start_time = now.strftime("%s")
@@ -314,7 +316,8 @@ script:
                 query_date = get_query_date_param(max_days_since_scan)
                 req_params['gte_host_date_created'] = str(query_date)
             except ValueError:
-                demisto.debug("FrontlineVM get_hosts -- incorrect data type input for argument max_days_since_scan, should be number of days")
+                debug_msg = "incorrect data type input for argument max_days_since_scan, should be number of days"
+                demisto.debug("FrontlineVM get_hosts -- " + debug_msg)
                 return_error("Error: max_days_since_scan value should be a number representing days.")
         req_params = parse_params(req_params)
         hosts = get_fvm_data(HOST_ENDPOINT, params=req_params)
@@ -357,12 +360,23 @@ script:
         ec = {'FrontlineVM(val.Hosts && val.Hosts == obj.Hosts)': asset_output}
 
         output = {
-            'Type': entryTypes['note'],         # indicates entry type to the War room
-            'Contents': hosts,                  # raw data callable from War Room CLI with "raw-response=true"
-            'ContentsFormat': formats['json'],  # format of the content from the Contents field
-            'HumanReadable': tableToMarkdown('FrontlineVM: Assets Found', host_list, headers=HOST_HEADERS, removeNull=True),    # content that displays in the War Room
-            'ReadableContentsFormat': formats['markdown'],      # Format of the content from the HumanReadable field
-            'EntryContext': ec  # Data added to the investigation context (Output Context), which you can use in playbooks
+            # indicates entry type to the War room
+            'Type': entryTypes['note'],
+
+            # raw data callable from War Room CLI with "raw-response=true"
+            'Contents': hosts,
+
+            # format of the content from the Contents field
+            'ContentsFormat': formats['json'],
+
+            # content that displays in the War Room:
+            'HumanReadable': tableToMarkdown('FrontlineVM: Assets Found', host_list, headers=HOST_HEADERS, removeNull=True),
+
+            # Format of the content from the HumanReadable field
+            'ReadableContentsFormat': formats['markdown'],
+
+            # Data added to the investigation context (Output Context), which you can use in playbooks
+            'EntryContext': ec
         }
         demisto.results(output)
 
@@ -371,7 +385,8 @@ script:
         # Prepare parameters for Frontline API request:
         req_params = {}
         if min_severity and severity:
-            demisto.debug("FrontlineVM get_vulns -- Selecting both \'min_severity\' and \'severity\' arguments will yield to selecting the minimum severity of vulnerabilities to pull.")
+            debug_msg = "Selecting both \'min_severity\' and \'severity\' will yield to the minimum severity."
+            demisto.debug("FrontlineVM get_vulns -- " + debug_msg)
         if min_severity:
             req_params['lte_vuln_severity_ddi'] = str(min_severity)
         elif severity:
@@ -381,14 +396,16 @@ script:
                 query_date = get_query_date_param(max_days_since_created)
                 req_params['lte_vuln_active_view_date_first_created'] = str(query_date)
             except ValueError:
-                demisto.debug("FrontlineVM get_vulns -- incorrect data type input for argument max_days_since_created, should be number of days")
+                debug_msg = "incorrect input type for argument max_days_since_created, should be number of days"
+                demisto.debug("FrontlineVM get_vulns -- " + debug_msg)
                 return_error("Error: max_days_since_created value should be a number representing days.")
         if min_days_since_created:
             try:
                 query_date = get_query_date_param(min_days_since_created)
                 req_params['gte_vuln_date_created'] = str(query_date)
             except ValueError:
-                demisto.debug("FrontlineVM get_vulns -- incorrect data type input for argument min_days_since_created, should be number of days")
+                debug_msg = "incorrect input type for argument min_days_since_created, should be number of days"
+                demisto.debug("FrontlineVM get_vulns -- " + debug_msg)
                 return_error("Error: min_days_since_created value should be a number representing days.")
         if host_id:
             VulnEndpoint = HOST_ENDPOINT + str(host_id) + "/vulnerabilities/"
@@ -416,11 +433,14 @@ script:
         vuln_data_ec = {
             'FrontlineVM(val.Vulns && val.Vulns == obj.Vulns)': vuln_data_output
         }
+
+        # To decrease line number length:
+        table_name = "FrontlineVM: Vulnerabilities Found"
         return {
             'Type': entryTypes['note'],
             'Contents': vuln_list,
             'ContentsFormat': formats['json'],
-            'HumanReadable': tableToMarkdown('FrontlineVM: Vulnerabilities Found', vuln_data_list, headers=VULN_DATA_HEADERS, removeNull=True),
+            'HumanReadable': tableToMarkdown(table_name, vuln_data_list, headers=VULN_DATA_HEADERS, removeNull=True),
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': vuln_data_ec
         }
@@ -543,7 +563,10 @@ script:
 
 
     def long2ip(ip_address):
-        ''' Convert a 32-bit packed IPv4 address (a bytes-like object four bytes in length) to its standard dotted-quad string representation.  '''
+        '''
+            Convert a 32-bit packed IPv4 address (a bytes-like object four bytes in length)
+            to its standard dotted-quad string representation.
+        '''
         return socket.inet_ntoa(struct.pack("!L", ip_address))
 
 
@@ -584,7 +607,10 @@ script:
                         have_all_data = True
                 for rule in profile_data:
                     if rule.get('ip_address_range', None):
-                        if (rule['ip_address_range']['high_ip_number'] >= high_ip) and (rule['ip_address_range']['low_ip_number'] <= low_ip):
+                        # to decrease line number length:
+                        rule_high_ip_num = rule['ip_address_range']['high_ip_number']
+                        rule_low_ip_num = rule['ip_address_range']['low_ip_number']
+                        if (rule_high_ip_num >= high_ip) and (rule_low_ip_num <= low_ip):
                             return json.dumps({'profile_id': profile['id']})
         return_error("Error: no scan data found.")
 
