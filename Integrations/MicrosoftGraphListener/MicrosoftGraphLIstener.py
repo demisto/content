@@ -179,7 +179,7 @@ def read_file_and_encode64(attach_id):
             file_size = os.path.getsize(file_info['path'])
             return b64_encoded_data, file_size, file_info['name']
     except Exception as e:
-        return_error(f'Unable to read and decode in base 64 file with id {attach_id}', e)
+        raise Exception(f'Unable to read and decode in base 64 file with id {attach_id}', e)
 
 
 def prepare_args(command, args):
@@ -341,7 +341,7 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = f'users/{user_id}/mailFolders/msgfolderroot/childFolders?$top=250'
         root_folder_children = self._http_request('GET', suffix_endpoint).get('value', None)
         if not root_folder_children:
-            return_error("No folders found under Top Of Information Store folder")
+            raise Exception("No folders found under Top Of Information Store folder")
 
         return root_folder_children
 
@@ -381,7 +381,7 @@ class MsGraphClient(BaseClient):
         suffix_endpoint = f'users/{user_id}/mailFolders/{folder_id}'
         folder_info = self._http_request('GET', suffix_endpoint)
         if not folder_info:
-            return_error(f'No info found for folder {folder_id}')
+            raise Exception(f'No info found for folder {folder_id}')
         return folder_info
 
     def _get_folder_by_path(self, user_id, folder_path):
@@ -425,7 +425,7 @@ class MsGraphClient(BaseClient):
                             f.get('displayName', '').lower() == folder_name.lower() or f.get('id', '') == folder_name]
 
             if not found_folder:  # no folder found, return error
-                return_error(f'No such folder exist: {folder_path}')
+                raise Exception(f'No such folder exist: {folder_path}')
             found_folder = found_folder[0]  # found_folder will be list with only one element in such case
 
             if index == len(folders_names) - 1:  # reached the final folder in the path
@@ -635,7 +635,7 @@ class MsGraphClient(BaseClient):
         provided_names = bool(attach_names)
 
         if provided_names and len(ids) != len(attach_names):
-            return_error("Invalid input, attach_ids and attach_names lists should be the same length.")
+            raise Exception("Invalid input, attach_ids and attach_names lists should be the same length.")
 
         file_attachments_result = []
         # in case that no attach names where provided, ids are zipped together and the attach_name value is ignored
