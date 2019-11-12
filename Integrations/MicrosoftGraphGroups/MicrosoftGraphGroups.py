@@ -112,16 +112,17 @@ def get_encrypted(content: str, key: str) -> str:
 
 
 class Client(BaseClient):
+    """
+    Client to use in the MS Grpah Groups integration. Overrides BaseClient
+    """
     def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
-                 enc_key: str, use_ssl: bool, proxies: dict):
-        self.base_url = base_url
+                 enc_key: str, verify: bool, proxy: dict):
+        super().__init__(base_url, verify, proxy)
         self.tenant = tenant
         self.auth_and_token_url = auth_and_token_url
         self.auth_id = auth_id
         self.token_retrieval_url = token_retrieval_url
         self.enc_key = enc_key
-        self.use_ssl = use_ssl
-        self.proxies = proxies
 
     def get_access_token(self):
         """Get the Microsoft Graph Access token from the instance token or generates a new one if needed.
@@ -144,7 +145,7 @@ class Client(BaseClient):
                 'registration_id': self.auth_id,
                 'encrypted_token': get_encrypted(self.tenant, self.enc_key)
             }),
-            verify=self.use_ssl
+            verify=self._verify
         )
         if dbot_response.status_code not in {200, 201}:
             msg = 'Error in authentication. Try checking the credentials you entered.'
@@ -194,7 +195,7 @@ class Client(BaseClient):
         if next_link:
             url = next_link
         else:
-            url = f'{self.base_url}{url_suffix}'
+            url = f'{self._base_url}{url_suffix}'
 
         try:
             response = requests.request(
@@ -207,7 +208,7 @@ class Client(BaseClient):
                 },
                 params=params,
                 data=body,
-                verify=self.use_ssl,
+                verify=self._verify,
             )
         except requests.ConnectionError as err:
             demisto.debug(str(err))
@@ -224,8 +225,8 @@ class Client(BaseClient):
 
             return data
 
-        except TypeError as ex:
-            demisto.debug(str(ex))
+        except TypeError as exc:
+            demisto.debug(str(exc))
             raise Exception(f'Error in API call to Microsoft Graph, could not parse result [{response.status_code}]')
 
     def test_function(self):
@@ -440,7 +441,7 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
-    if type(group_data) is list:
+    if isinstance(group_data, list):
         group_data = group_data[0]
 
     # add a field that indicates that the group was deleted
@@ -473,7 +474,7 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     # get the group data from the context
     group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
-    if type(group_data) is list:
+    if isinstance(group_data, list):
         group_data = group_data[0]
 
     if '@odata.nextLink' in members:
@@ -542,8 +543,8 @@ def main():
     auth_and_token_url = demisto.params().get('auth_id').split('@')
     auth_id = auth_and_token_url[0]
     enc_key = demisto.params().get('enc_key')
-    use_ssl = not demisto.params().get('insecure', False)
-    proxies = handle_proxy()
+    verify = not demisto.params().get('insecure', False)
+    proxy = handle_proxy()
     if len(auth_and_token_url) != 2:
         token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
     else:
@@ -563,7 +564,7 @@ def main():
     LOG(f'Command being called is {command}')
 
     try:
-        client = Client(base_url, tenant, auth_and_token_url, auth_id, token_retrieval_url, enc_key, use_ssl, proxies)
+        client = Client(base_url, tenant, auth_and_token_url, auth_id, token_retrieval_url, enc_key, verify, proxy)
         # Run the command
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())
         # create a war room entry
