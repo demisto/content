@@ -18,7 +18,7 @@ Top Use-Cases:
 
 ## Command Examples
 
-### sep-endpoints-info <a name="info-example"><\a>
+### sep-endpoints-info <a name="info-example"> <\a>
 ---
 Get information about endpoints.
 ##### Base Command
@@ -86,7 +86,7 @@ Get information about endpoints.
 ```
 ##### Human Readable Output
 ![screen shot 2019-02-03 at 16 44 55](https://user-images.githubusercontent.com/44666568/52178121-1d059a80-27d3-11e9-8479-e3873d269238.png)
-### sep-endpoint-quarantine <a name="quarantine-example></a>
+### sep-endpoint-quarantine <a name="quarantine-example"> </a>
 ---
 Quarantines the endpoint according to its policy.
 ##### Base Command
