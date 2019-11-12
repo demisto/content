@@ -8,7 +8,7 @@ configuration:
   name: auth_id
   required: true
   type: 4
-- display: Refresh token (received from the authorization step - see Detailed Instructions
+- display: Token (received from the authorization step - see Detailed Instructions
     (?) section)
   name: refresh_token
   required: true
@@ -42,12 +42,12 @@ configuration:
   type: 0
 - defaultvalue: 15 minutes
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch_interval
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
   display: Maximum number of emails to pull per fetch.
-  name: emails_fetch_limit
+  name: fetch_limit
   required: false
   type: 0
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
@@ -61,7 +61,7 @@ script:
       description: A CSV list of email addresses for the 'to' field.
       isArray: true
       name: to
-      required: true
+      required: false
       secret: false
     - default: false
       description: A CSV list of email addresses for the 'cc' field.
@@ -216,7 +216,7 @@ script:
       description: A CSV list of email addresses for the 'to' field.
       isArray: true
       name: to
-      required: true
+      required: false
       secret: false
     - default: false
       description: A CSV list of email addresses for the 'cc' field.
@@ -381,5 +381,5 @@ script:
   script: '-'
   type: python
   subtype: python3
-tests:
+tests: # manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
 - No test
