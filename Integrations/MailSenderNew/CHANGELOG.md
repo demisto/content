@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
  - Added support for versions of *smtplib* that use stderr from sys.
  - Fixed support for CRAM-MD5 authentication.
 
