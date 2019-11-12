@@ -454,7 +454,6 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
 
 def enrich_for_script_id(given_script_id, given_version, script_names, script_set, playbook_set, playbook_names,
                          updated_script_names, updated_playbook_names, catched_scripts, catched_playbooks, tests_set):
-    tests_set = set(tests_set)
     for script in script_set:
         script_data = list(script.values())[0]
         script_name = script_data.get('name')
@@ -467,7 +466,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 tests = script_data.get('tests', [])
                 if tests:
                     catched_scripts.add(script_name)
-                    update_test_set(tests, set(tests_set))
+                    update_test_set(tests, tests_set)
 
                 package_name = os.path.dirname(script_file_path)
                 if glob.glob(package_name + "/*_test.py"):
@@ -490,16 +489,15 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                 tests = playbook_data.get('tests', [])
                 if tests:
                     catched_playbooks.add(playbook_name)
-                    update_test_set(tests, set(tests_set))
+                    update_test_set(tests, tests_set)
 
                 updated_playbook_names.add(playbook_name)
                 new_versions = (playbook_fromversion, playbook_toversion)
                 enrich_for_playbook_id(playbook_name, new_versions, playbook_names, script_set, playbook_set,
-                                       updated_playbook_names, catched_playbooks, set(tests_set))
+                                       updated_playbook_names, catched_playbooks, tests_set)
 
 
 def update_test_set(tests_set, tests):
-    tests_set = set(tests_set)
     for test in tests:
         tests_set.add(test)
 
