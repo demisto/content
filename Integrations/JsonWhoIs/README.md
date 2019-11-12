@@ -313,5 +313,5 @@
 </table>
 <h2>Known Limitations</h2>
 <ul>
-  <li>JsonWhoIs isn't stable api, therefor the implementation try to query 3 times before failing.</li>
+  <li>JsonWhoIs isn't a stable API, therefor the implementation try to query 3 times before failing.</li>
 </ul>
