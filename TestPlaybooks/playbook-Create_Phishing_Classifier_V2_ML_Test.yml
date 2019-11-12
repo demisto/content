@@ -1,0 +1,531 @@
+id: Create Phishing Classifier V2 ML Test
+version: -1
+name: Create Phishing Classifier V2 ML Test
+description: Test CreatePhishingClassifierML playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 486b1966-bf74-4105-88af-bacaf935e70a
+    type: start
+    task:
+      id: 486b1966-bf74-4105-88af-bacaf935e70a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c61ba631-278b-474c-8af0-99f85c0add9a
+    type: regular
+    task:
+      id: c61ba631-278b-474c-8af0-99f85c0add9a
+      version: -1
+      name: Create incidents
+      scriptName: TestCreateIncidentsForPhishingClassifier
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      historicListName:
+        simple: test_phishing_historic_data
+      numberOfIncidents:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 8be22093-cfff-4bac-8e47-b8103af713c4
+    type: regular
+    task:
+      id: 8be22093-cfff-4bac-8e47-b8103af713c4
+      version: -1
+      name: Predict Tag1
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      emailBody: {}
+      emailSubject:
+        simple: closed church squeamish squeamish moaning closed closed closed church
+          squeamish squeamish moaning closed closed closed church squeamish squeamish
+          moaning closed closed
+      hashSeed: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: test_phishing_model
+      modelStoreType:
+        simple: mlModel
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9ca04b14-c8f9-4e8b-86b0-45b5b41a0211
+    type: title
+    task:
+      id: 9ca04b14-c8f9-4e8b-86b0-45b5b41a0211
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: a288888c-e77a-4004-85a4-6b0f449ea4a8
+    type: regular
+    task:
+      id: a288888c-e77a-4004-85a4-6b0f449ea4a8
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 67e23d97-26b6-4b92-893e-2596b09b5bae
+    type: regular
+    task:
+      id: 67e23d97-26b6-4b92-893e-2596b09b5bae
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: DBotPredictPhishingWords
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 39d98d31-573c-44c4-8f4b-973d3ea2bbbf
+    type: playbook
+    task:
+      id: 39d98d31-573c-44c4-8f4b-973d3ea2bbbf
+      version: -1
+      name: DBot Create Phishing Classifier V2
+      description: Create a phishing classifier using machine learning technique,
+        based on email content
+      playbookName: DBot Create Phishing Classifier V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      dedupThreshold:
+        simple: "1"
+      emailSubjectKey:
+        simple: ${EmailSujbectKey}
+      emailTagKey:
+        simple: ${EmailTagKey}
+      emailTextKey:
+        simple: ${EmailBodyKey}
+      hashSeed: {}
+      historicalDataFileListName:
+        simple: test_phishing_historic_data
+      incidentTypes:
+        simple: Simulation
+      incidentsQuery:
+        simple: ${IncidentsQuery}
+      maxIncidentsToFetchOnTraining:
+        simple: "3000"
+      modelName:
+        simple: test_phishing_model
+      overrideModel:
+        simple: "true"
+      phishingLabels:
+        simple: '*'
+      removeShortTextThreshold:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 38a64850-8fef-436b-8644-6a8a72a1f5ef
+    type: condition
+    task:
+      id: 38a64850-8fef-436b-8644-6a8a72a1f5ef
+      version: -1
+      name: Model evaluation exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotPhishingClassifier.EvaluationScores.micro_avg
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 53a9f1e9-7930-4a0f-8c18-e7ef316e4fe9
+    type: condition
+    task:
+      id: 53a9f1e9-7930-4a0f-8c18-e7ef316e4fe9
+      version: -1
+      name: 'Check the prediction label: Tag1'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Tag1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 00ca7798-9e0f-4899-8a93-2211b1f9c60f
+    type: condition
+    task:
+      id: 00ca7798-9e0f-4899-8a93-2211b1f9c60f
+      version: -1
+      name: 'Check the prediction label: Tag2'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Tag2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 405125d4-86fc-45a1-8142-147679ba56be
+    type: regular
+    task:
+      id: 405125d4-86fc-45a1-8142-147679ba56be
+      version: -1
+      name: Predict Tag2
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      emailBody: {}
+      emailSubject:
+        simple: ntidy boy substance faulty waves type boat argument ntidy boy substance
+          faulty waves type boat argument ntidy boy substance faulty waves type boat
+          argument
+      hashSeed: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: test_phishing_model
+      modelStoreType:
+        simple: mlModel
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 8464bed5-94e4-4ed1-8472-5867ff62d57b
+    type: regular
+    task:
+      id: 8464bed5-94e4-4ed1-8472-5867ff62d57b
+      version: -1
+      name: Predict Tag3
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      emailBody: {}
+      emailSubject:
+        simple: suspend trucks aboriginal thread succeed gray last fall fall suspend
+          trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal
+          thread succeed gray last fall fall
+      hashSeed: {}
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: test_phishing_model
+      modelStoreType:
+        simple: mlModel
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 13e8aad3-ce3e-4ff2-8b0e-6d76c83c27c4
+    type: regular
+    task:
+      id: 13e8aad3-ce3e-4ff2-8b0e-6d76c83c27c4
+      version: -1
+      name: clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: DBotPredictPhishingWords
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 112e1f82-1bc8-4919-836d-16f96bf79972
+    type: condition
+    task:
+      id: 112e1f82-1bc8-4919-836d-16f96bf79972
+      version: -1
+      name: 'Check the prediction label: Tag3'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Tag3
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: "4.5.0"
