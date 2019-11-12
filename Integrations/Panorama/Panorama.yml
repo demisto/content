@@ -1018,16 +1018,22 @@ script:
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
       description: Custom URL category name.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.Description
       description: Custom URL category description.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.Sites
       description: Custom URL category list of sites.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.DeviceGroup
       description: Device group for the Custom URL Category (Panorama instances).
-      type: string
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Categories
+      description: Custom URL category list of categories.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Type
+      description: Custom URL category type.
+      type: String
   - arguments:
     - default: false
       description: Name of the custom URL category to create.
@@ -1054,6 +1060,22 @@ script:
       name: device-group
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: URL category type. Only from PAN-OS 9.x version
+      isArray: false
+      name: type
+      predefined:
+      - URL List
+      - Category Match
+      required: false
+      secret: false
+    - default: false
+      description: List of categories. Only from PAN-OS 9.x version
+      isArray: true
+      name: categories
+      required: false
+      secret: false
     deprecated: false
     description: Creates a custom URL category.
     execution: false
@@ -1061,16 +1083,22 @@ script:
     outputs:
     - contextPath: Panorama.CustomURLCategory.Name
       description: Custom URL category name.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.Description
       description: Custom URL category description.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.Sites
       description: Custom URL category list of sites.
-      type: string
+      type: String
     - contextPath: Panorama.CustomURLCategory.DeviceGroup
       description: Device group for the Custom URL Category (Panorama instances).
-      type: string
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Sites
+      description: Custom URL category list of categories.
+      type: String
+    - contextPath: Panorama.CustomURLCategory.Type
+      description: Custom URL category type.
+      type: String
   - arguments:
     - default: false
       description: Name of the custom URL category to delete.
@@ -1106,17 +1134,23 @@ script:
       description: CSV list of sites to add to the custom URL category.
       isArray: true
       name: sites
-      required: true
+      required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Add or remove sites. Can be "Add", "Remove".
+      description: Add or remove sites/categories. Can be "Add", "Remove".
       isArray: true
       name: action
       predefined:
       - add
       - remove
       required: true
+      secret: false
+    - default: false
+      description: CSV list of categories to add to the custom URL category.
+      isArray: true
+      name: categories
+      required: false
       secret: false
     deprecated: false
     description: Add or remove sites to and from a custom URL category.
@@ -1896,8 +1930,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination rule relative to the rule that you are moving.
-        This field is only relevant if you specify "top" or "bottom" in the "where" argument.
+      description: Destination rule relative to the rule that you are moving. This
+        field is only relevant if you specify "top" or "bottom" in the "where" argument.
       isArray: false
       name: dst
       required: false
@@ -2559,9 +2593,9 @@ script:
       required: false
       secret: false
     - default: false
-      name: ip
       description: Destination or Source address.
       isArray: true
+      name: ip
       required: false
       secret: false
     - default: false

@@ -1780,7 +1780,14 @@ def prettify_custom_url_category(custom_url_category):
     if 'description' in custom_url_category:
         pretty_custom_url_category['Description'] = custom_url_category['description']
 
-    if 'list' in custom_url_category:
+    #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
+    if 'type' in custom_url_category:
+        pretty_custom_url_category['Type'] = custom_url_category['type']
+        if pretty_custom_url_category['Type'] == 'Category Match':
+            pretty_custom_url_category['Categories'] = custom_url_category['list']['member']
+        else:
+            pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
+    else:
         pretty_custom_url_category['Sites'] = custom_url_category['list']['member']
 
     return pretty_custom_url_category
@@ -1818,7 +1825,7 @@ def panorama_get_custom_url_category_command():
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -1826,11 +1833,28 @@ def panorama_get_custom_url_category_command():
 
 
 @logger
-def panorama_create_custom_url_category(custom_url_category_name: str, sites, description: str = None):
-    element = add_argument(description, 'description', False) + add_argument_list(sites, 'list', True)
+def panorama_create_custom_url_category(custom_url_category_name: str, type_: Any = None,
+                                        sites=None, categories=None, description: str = None):
+    #  In PAN-OS 9.X changes to the default behavior were introduced regarding custom url categories.
     major_version = get_pan_os_major_version()
-    if major_version >= 9:
-        element += add_argument("URL List", 'type', False)
+    element = add_argument(description, 'description', False)
+    if major_version <= 8:
+        if type_ or categories:
+            return_error('The type and categories arguments are only relevant for PAN-OS 9.x versions.')
+        element += add_argument_list(sites, 'list', True)
+    else:  # major is 9.x
+        if not type_:
+            return_error('The type argument is mandatory for PAN-OS 9.x versions.')
+        if (not sites and not categories) or (sites and categories):
+            return_error('Exactly one of the sites and categories arguments should be defined.')
+        if (type_ == 'URL List' and categories) or (type_ == 'Category Match' and sites):
+            return_error('URL List type is only for sites, Category Match is only for categories.')
+
+        if sites:
+            element += add_argument_list(sites, 'list', True)
+        else:
+            element += add_argument_list(categories, 'list', True)
+        element += add_argument(type_, 'type', False)
 
     params = {
         'action': 'set',
@@ -1848,11 +1872,14 @@ def panorama_create_custom_url_category(custom_url_category_name: str, sites, de
     custom_url_category_output = {'Name': custom_url_category_name}
     if DEVICE_GROUP:
         custom_url_category_output['DeviceGroup'] = DEVICE_GROUP
-    if sites:
-        custom_url_category_output['Sites'] = sites
     if description:
         custom_url_category_output['Description'] = description
-
+    if type_:
+        custom_url_category_output['Type'] = type_
+    if sites:
+        custom_url_category_output['Sites'] = sites
+    else:
+        custom_url_category_output['Categories'] = categories
     return result, custom_url_category_output
 
 
@@ -1861,19 +1888,21 @@ def panorama_create_custom_url_category_command():
     Create a custom URL category
     """
     custom_url_category_name = demisto.args()['name']
+    type_ = demisto.args()['type'] if 'type' in demisto.args() else None
     sites = argToList(demisto.args()['sites']) if 'sites' in demisto.args() else None
+    categories = argToList(demisto.args()['categories']) if 'categories' in demisto.args() else None
     description = demisto.args().get('description')
 
     custom_url_category, custom_url_category_output = panorama_create_custom_url_category(custom_url_category_name,
-                                                                                          sites, description)
-
+                                                                                          type_, sites, categories,
+                                                                                          description)
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': custom_url_category,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Created Custom URL Category:', custom_url_category_output,
-                                         ['Name', 'Sites', 'Description'], removeNull=True),
+                                         ['Name', 'Type', 'Categories', 'Sites', 'Description'], removeNull=True),
         'EntryContext': {
             "Panorama.CustomURLCategory(val.Name == obj.Name)": custom_url_category_output
         }
@@ -1956,9 +1985,9 @@ def panorama_edit_custom_url_category(custom_url_category_name, sites, descripti
     return result, custom_url_category_output
 
 
-def panorama_custom_url_category_add_sites_command():
+def panorama_custom_url_category_add_sites_or_categories_command():
     """
-    Add sites to a configured custom url category
+    Add sites or categories to a configured custom url category
     """
     custom_url_category_name = demisto.args()['name']
 
@@ -1992,9 +2021,9 @@ def panorama_custom_url_category_add_sites_command():
     })
 
 
-def panorama_custom_url_category_remove_sites_command():
+def panorama_custom_url_category_remove_sites_or_categories_command():
     """
-    Add sites to a configured custom url category
+    Add sites or categories to a configured custom url category
     """
     custom_url_category_name = demisto.args()['name']
 
@@ -4180,9 +4209,9 @@ def main():
 
         elif demisto.command() == 'panorama-edit-custom-url-category':
             if demisto.args()['action'] == 'remove':
-                panorama_custom_url_category_remove_sites_command()
+                panorama_custom_url_category_remove_sites_or_categories_command()
             else:
-                panorama_custom_url_category_add_sites_command()
+                panorama_custom_url_category_add_sites_or_categories_command()
 
         # URL Filtering capabilities
         elif demisto.command() == 'panorama-get-url-category':
