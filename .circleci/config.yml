@@ -59,7 +59,14 @@ jobs:
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            # after moving to all to python3, run the tests by folder
+            # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
+
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
       - run:
           name: Validate Files and Yaml
@@ -70,6 +77,7 @@ jobs:
               find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Configure Test Filter
@@ -99,7 +107,7 @@ jobs:
       - run:
           name: Create Content Artifacts
           when: always
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+          command: python3 content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts

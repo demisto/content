@@ -1,6 +1,7 @@
 id: SecurityAdvisor-Test
 version: -1
 name: SecurityAdvisor-Test
+fromversion: 4.5.0
 description: Test Playbook for SecurityAdvisor integration. Tests coach-end-user command.
 starttaskid: "0"
 tasks:

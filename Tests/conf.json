@@ -1929,7 +1929,8 @@
         },
         {
             "integrations": "SecurityAdvisor",
-            "playbookID": "SecurityAdvisor-Test"
+            "playbookID": "SecurityAdvisor-Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Google Key Management Service",
