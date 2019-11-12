@@ -1,0 +1,982 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: PhishLabs IOC DRP
+  version: -1
+configuration:
+- defaultvalue: https://caseapi.phishlabs.com
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: User
+  name: credentials
+  required: true
+  type: 9
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- defaultvalue: 1 hours
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetchTime
+  required: false
+  type: 0
+- defaultvalue: '20'
+  display: Fetch limit (min 20)
+  name: fetchLimit
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Get live feeds of IOC DRP data from PhishLabs.
+display: PhishLabs IOC DRP
+name: PhishLabs IOC DRP
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases based on the case status
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Closed
+      - Assigned
+      - Rejected
+      - Duplicate
+      - Pending Input
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases by case type
+      isArray: false
+      name: case_type
+      predefined:
+      - 419 Scam
+      - Credential Recovery
+      - Crimeware
+      - Mobile Abuse
+      - Job Scam
+      - Other
+      - Pharming
+      - Phishing
+      - Phishing Redirect
+      - Vishing
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of cases to return, default is 20, maximum is 200
+      isArray: false
+      name: max_records
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Paginate results used in conjunction with maxRecords.
+      isArray: false
+      name: offset
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Field to use to query using dateBegin and dateEnd parameters.
+      isArray: false
+      name: date_field
+      predefined:
+      - caseOpen
+      - caseClose
+      - caseModify
+      required: false
+      secret: false
+    - default: false
+      description: Date query beginning date
+      isArray: false
+      name: begin_date
+      required: false
+      secret: false
+    - default: false
+      description: Date query endining date
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Get cases of Phishlabs DRP service by filters
+    execution: false
+    name: phishlabs-ioc-drp-get-cases
+    outputs:
+    - contextPath: PhishlabsIOC.DRP.CaseID
+      description: Case ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Title
+      description: Case title
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Description
+      description: Case description
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseNumber
+      description: Case number
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Resolution
+      description: Resolution
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ResolutionStatus
+      description: Resolution status
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.ID
+      description: Case creator ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.Name
+      description: Case creator name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.DisplayName
+      description: Case creator display name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Brand
+      description: Brand reported in case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Email
+      description: Email of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseType
+      description: Type of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseStatus
+      description: Status of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateCreated
+      description: Case creation date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateClosed
+      description: Case closing date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateModified
+      description: Case modification date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Customer
+      description: Customer reporting the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IP
+      description: IP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.ISP
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Country
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.FQDN
+      description: FQDN of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Domain
+      description: Domain of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IsMaliciousDomain
+      description: Detect if domain of attack source is malicious
+      type: Boolean
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.ID
+      description: ID of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Type
+      description: Type of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Description
+      description: Description of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.DateAdded
+      description: Date adding of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileName
+      description: File name of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileURL
+      description: File URL of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationName
+      description: Application reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Platform
+      description: Platform reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Severity
+      description: Sevirity of DRP
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Developer
+      description: Developer of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DeveloperWebsite
+      description: Developer website of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationDescription
+      description: Descripion of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Language
+      description: Language of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Phone
+      description: Phone number of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+  - arguments:
+    - default: false
+      description: ID of case
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get case by ID of Phishlabs DRP service
+    execution: false
+    name: phishlabs-ioc-drp-get-case-by-id
+    outputs:
+    - contextPath: PhishlabsIOC.DRP.CaseID
+      description: Case ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Title
+      description: Case title
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Description
+      description: Case description
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseNumber
+      description: Case number
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Resolution
+      description: Resolution
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ResolutionStatus
+      description: Resolution status
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.ID
+      description: Case creator ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.Name
+      description: Case creator name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.DisplayName
+      description: Case creator display name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Brand
+      description: Brand reported in case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Email
+      description: Email of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseType
+      description: Type of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseStatus
+      description: Status of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateCreated
+      description: Case creation date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateClosed
+      description: Case closing date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateModified
+      description: Case modification date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Customer
+      description: Customer reporting the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IP
+      description: IP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.ISP
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Country
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.FQDN
+      description: FQDN of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Domain
+      description: Domain of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IsMaliciousDomain
+      description: Detect if domain of attack source is malicious
+      type: Boolean
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.ID
+      description: ID of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Type
+      description: Type of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Description
+      description: Description of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.DateAdded
+      description: Date adding of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileName
+      description: File name of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileURL
+      description: File URL of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationName
+      description: Application reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Platform
+      description: Platform reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Severity
+      description: Sevirity of DRP
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Developer
+      description: Developer of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DeveloperWebsite
+      description: Developer website of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationDescription
+      description: Descripion of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Language
+      description: Language of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Phone
+      description: Phone number of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases based on the case status
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Closed
+      - Assigned
+      - Rejected
+      - Duplicate
+      - Pending Input
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases by case type
+      isArray: false
+      name: case_type
+      predefined:
+      - 419 Scam
+      - Credential Recovery
+      - Crimeware
+      - Mobile Abuse
+      - Job Scam
+      - Other
+      - Pharming
+      - Phishing
+      - Phishing Redirect
+      - Vishing
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: Maximum number of cases to return, default is 20, maximum is 200
+      isArray: false
+      name: max_records
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Paginate results used in conjunction with maxRecords, first 200
+        records maxRecords=200&offset=0 second 200 records maxRecords=200&offset=200
+      isArray: false
+      name: offset
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Field to use to query using dateBegin and dateEnd parameters.
+      isArray: false
+      name: date_field
+      predefined:
+      - caseOpen
+      - caseClose
+      - caseModify
+      required: false
+      secret: false
+    - default: false
+      description: Date query beginning date
+      isArray: false
+      name: begin_date
+      required: false
+      secret: false
+    - default: false
+      description: Date query beginning date
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Get open cases of Phishlabs DRP service by filters
+    execution: false
+    name: phishlabs-ioc-drp-get-open-cases
+    outputs:
+    - contextPath: PhishlabsIOC.DRP.CaseID
+      description: Case ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Title
+      description: Case title
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Description
+      description: Case description
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseNumber
+      description: Case number
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Resolution
+      description: Resolution
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ResolutionStatus
+      description: Resolution status
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.ID
+      description: Case creator ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.Name
+      description: Case creator name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.DisplayName
+      description: Case creator display name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Brand
+      description: Brand reported in case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Email
+      description: Email of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseType
+      description: Type of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseStatus
+      description: Status of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateCreated
+      description: Case creation date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateClosed
+      description: Case closing date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateModified
+      description: Case modification date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Customer
+      description: Customer reporting the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IP
+      description: IP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.ISP
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Country
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.FQDN
+      description: FQDN of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Domain
+      description: Domain of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IsMaliciousDomain
+      description: Detect if domain of attack source is malicious
+      type: Boolean
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.ID
+      description: ID of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Type
+      description: Type of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Description
+      description: Description of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.DateAdded
+      description: Date adding of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileName
+      description: File name of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileURL
+      description: File URL of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationName
+      description: Application reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Platform
+      description: Platform reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Severity
+      description: Sevirity of DRP
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Developer
+      description: Developer of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DeveloperWebsite
+      description: Developer website of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationDescription
+      description: Descripion of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Language
+      description: Language of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Phone
+      description: Phone number of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases based on the case status
+      isArray: false
+      name: status
+      predefined:
+      - New
+      - Closed
+      - Assigned
+      - Rejected
+      - Duplicate
+      - Pending Input
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter cases by case type
+      isArray: false
+      name: case_type
+      predefined:
+      - 419 Scam
+      - Credential Recovery
+      - Crimeware
+      - Mobile Abuse
+      - Job Scam
+      - Other
+      - Pharming
+      - Phishing
+      - Phishing Redirect
+      - Vishing
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: maximum number of cases to return, default is 20, maximum is 200
+      isArray: false
+      name: max_records
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Paginate results used in conjunction with maxRecords, first 200
+        records maxRecords=200&offset=0 second 200 records maxRecords=200&offset=200
+      isArray: false
+      name: offset
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Field to use to query using dateBegin and dateEnd parameters.
+      isArray: false
+      name: Date_field
+      predefined:
+      - caseOpen
+      - caseClose
+      - caseModify
+      required: false
+      secret: false
+    - default: false
+      description: Date query beginning date
+      isArray: false
+      name: begin_date
+      required: false
+      secret: false
+    - default: false
+      description: Date query beginning date
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    deprecated: false
+    description: Get closed cases of Phishlabs DRP service by filters
+    execution: false
+    name: phishlabs-ioc-drp-get-closed-cases
+    outputs:
+    - contextPath: PhishlabsIOC.DRP.CaseID
+      description: Case ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Title
+      description: Case title
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Description
+      description: Case description
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseNumber
+      description: Case number
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Resolution
+      description: Resolution
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ResolutionStatus
+      description: Resolution status
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.ID
+      description: Case creator ID
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.Name
+      description: Case creator name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CreatedBy.DisplayName
+      description: Case creator display name
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Brand
+      description: Brand reported in case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Email
+      description: Email of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseType
+      description: Type of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.CaseStatus
+      description: Status of the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateCreated
+      description: Case creation date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateClosed
+      description: Case closing date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DateModified
+      description: Case modification date
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Customer
+      description: Customer reporting the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IP
+      description: IP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.ISP
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Country
+      description: ISP of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.FQDN
+      description: FQDN of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.Domain
+      description: Domain of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.IsMaliciousDomain
+      description: Detect if domain of attack source is malicious
+      type: Boolean
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AttackSources.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.ID
+      description: ID of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Type
+      description: Type of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.Description
+      description: Description of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.DateAdded
+      description: Date adding of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileName
+      description: File name of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Attachments.FileURL
+      description: File URL of case attachment
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationName
+      description: Application reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Platform
+      description: Platform reported in the case
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Severity
+      description: Sevirity of DRP
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Developer
+      description: Developer of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.DeveloperWebsite
+      description: Developer website of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.ApplicationDescription
+      description: Descripion of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Language
+      description: Language of the application reported
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Phone
+      description: Phone number of case creator
+      type: String
+    - contextPath: PhishlabsIOC.DRP.Hardware
+      description: Hardware used by the application
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.URL
+      description: URL of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.UrlType
+      description: URL type of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.TargetedBrands
+      description: Target brands of the attack source
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registrant
+      description: URL of the registrant
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Created
+      description: Creation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Expires
+      description: Expiriation date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Updated
+      description: Update date of the registration
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.Registration.Registrar
+      description: Registrar of the URL
+      type: String
+    - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
+      description: Name servers of the URL
+      type: String
+  dockerimage: demisto/python3:3.7.5.3066
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PhishlabsIOC_DRP-Test
