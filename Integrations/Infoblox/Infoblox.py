@@ -24,6 +24,11 @@ Attributes:
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
+RETURN_FIELDS_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+
+RESPONSE_TRANSLATION_DICTIONARY = {
+    '_ref': 'ReferenceID'
+}
 
 
 class Client(BaseClient):
@@ -35,8 +40,8 @@ class Client(BaseClient):
                       data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
         if params:
             self.params.update(params)
-        super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data, files,
-                              timeout, resp_type, ok_codes, **kwargs)
+        return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data, files,
+                                     timeout, resp_type, ok_codes, **kwargs)
 
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -66,8 +71,10 @@ class Client(BaseClient):
             Response JSON
         """
         suffix = 'ipv4address'
-        params = assign_params(ip_address=ip)
-        return self._http_request('GET', suffix, params=params)
+
+        request_params = assign_params(ip_address=ip)
+        request_params.update(RETURN_FIELDS_EXTRA_ATTRIBUTES)
+        return self._http_request('GET', suffix, params=request_params)
 
     def lock_account(self, account_id: AnyStr) -> Dict:
         """Locks an account by the account ID.
@@ -350,19 +357,18 @@ def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     ip = args.get('ip')
     raw_response = client.get_ip(ip)
-    return list(raw_response)
-    raw_response['account'] = [
-        assign_params(keys_to_ignore=['password'], **account) for account in raw_response.get('account', [])
-    ]
-    accounts = raw_response['account']
-    if accounts:
-        title = f'{INTEGRATION_NAME} - Account list.'
-        context_entry = account_response_to_context(accounts)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Account(val.ID && val.ID ==== obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - Could not find any users.', {}, {}
+    ip_list = raw_response['result']
+
+    # If no IP object was returned
+    if not ip_list:
+        return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
+    fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                      ip_list[0].items()}
+    title = f'{INTEGRATION_NAME} - IP info.'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID ==== obj.ReferenceID)': fixed_keys_obj}
+    human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -437,11 +443,10 @@ def main():  # pragma: no cover
     proxy = params.get('proxy') == 'true'
     user = demisto.get(params, 'credentials.identifier')
     password = demisto.get(params, 'credentials.password')
-    params = {
-        '_return_as_object': '1',
-        '_return_fields%2b': 'extattrs'
+    default_request_params = {
+        '_return_as_object': '1'
     }
-    client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=params)
+    client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
