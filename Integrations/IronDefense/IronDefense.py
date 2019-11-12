@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-import time
 import json
 import requests
 import traceback
+from http.client import HTTPException
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -24,75 +24,20 @@ class DemistoLogger:
         demisto.error(self.log_prefix + msg)
 
 
-class DemistoDataStore:
-    """Convenience class to persist and retrieve data between plugin calls"""
-
-    class DataStoreMethod:
-        """Enum class describing ways data can be persisted"""
-        def __init__(self):
-            pass
-        CONTEXT = 1
-        LAST_RUN = 2
-
-    def __init__(self, d):
-        self.demisto = d
-        self.last_run = demisto.getLastRun() if demisto.getLastRun() is not None else {}
-        self.context = demisto.context() if demisto.context() is not None else {}
-
-        if demisto.command() == 'fetch-incidents':
-            self.data_store_method = self.DataStoreMethod.LAST_RUN
-        elif demisto.command() != 'test-module':
-            self.data_store_method = self.DataStoreMethod.CONTEXT
-        else:
-            self.data_store_method = None
-
-    def set_context(self, key, value, msg=''):
-        demisto.results({
-            'Type': 1,
-            'Contents': msg,
-            'ContentsFormat': 'text',
-            'EntryContext': {key: [value]}
-        })
-
-    def set_last_run(self, key, value):
-        self.last_run[key] = value
-
-    def get_last_run(self):
-        return self.last_run
-
-    def get(self, key):
-        if self.data_store_method == self.DataStoreMethod.LAST_RUN:
-            return self.last_run.get(key)
-        elif self.data_store_method == self.DataStoreMethod.CONTEXT:
-            return self.context.get(key)
-        else:
-            return None
-
-    def flush(self):
-        demisto.setLastRun(self.last_run)
-
-
-'''Custom exception types'''
-
-
-class HttpException(Exception):
-    pass
-
-
 class IronDefense:
     """Main class for performing plugin actions"""
 
-    def __init__(self, session, host, port, credentials, logger, data_store, request_timeout=60.0):
+    def __init__(self, demisto, session, host, port, credentials, logger, request_timeout=60.0):
+        self.demisto = demisto
         self.session = session
         self.host = host
         self.base_url = 'https://{}:{}/IronApi'.format(host, port)
         self.credentials = credentials
         self.request_timeout = request_timeout
         self.logger = logger
-        self.data_store = data_store
 
         self.session.headers.update({'Content-Type': 'application/json'})
-        self._configure_session_auth(data_store.get('IronDefense'))
+        self._configure_session_auth(self.demisto.getIntegrationContext())
 
     ''' HELPER FUNCTIONS '''
     def _get_jwt(self, context):
@@ -100,7 +45,7 @@ class IronDefense:
             return None
 
         try:
-            return context['Sessions']['JWT']
+            return context.get('JWT')
         except KeyError:
             return None
 
@@ -148,24 +93,9 @@ class IronDefense:
         if auth is not None:
             # persist the jwt
             jwt = resp.headers.get('auth-token')
-            # save the jwt
-            if self.data_store.data_store_method is DemistoDataStore.DataStoreMethod.LAST_RUN:
-                # the context does not exist which means we are running 'fetch-incidents'
-                # save the jwt in last run so we can retrieve it later
-                self.data_store.set_last_run('IronDefense', {
-                    'Sessions': {
-                        'Host': self.host,
-                        'JWT': jwt
-                    }
-                })
-            elif self.data_store.data_store_method is DemistoDataStore.DataStoreMethod.CONTEXT:
-                context_entry = {
-                    'Host': self.host,
-                    'JWT': jwt
-                }
-                # save the jwt in the context so we can retrieve it later
-                self.data_store.set_context('IronDefense.Sessions(obj.Host===val.Host)', context_entry,
-                                            msg='Successfully logged in')
+            self.demisto.setIntegrationContext({
+                'JWT': jwt
+            })
 
         return resp
 
@@ -177,35 +107,38 @@ class IronDefense:
 
     '''MAIN FUNCTIONS'''
 
-    def fetch_incidents(self):
-        last_run = self.data_store.get_last_run()
-        now = time.time()
-        # update the last run time
-        self.data_store.set_last_run('last_run_time', now)
-        self.logger.debug('Fetching incidents...')
+    # This function will be completed at a later date
+    # def fetch_incidents(self):
+    #     last_run = self.demisto.getLastRun()
+    #     now = time.time()
+    #     # update the last run time
+    #     last_run['last_run_time'] = now
+    #     self.demisto.setLastRun(last_run)
+    #     self.logger.debug('Fetching incidents...')
 
-        last_run_time = last_run.get('last_run_time')
-        self.logger.debug('Last run time was: ' + str(last_run.get('last_run_time')))
+    #     # last_run_time = last_run.get('last_run_time')
+    #     self.logger.debug('Last run time was: ' + str(last_run.get('last_run_time')))
 
-        if last_run_time:
-            self.logger.debug('No new incidents')
-            # we already ran. This is for testing only so the integration does not flood demisto with test incidents.
-            # In the near future this block will be removed.
-            return []
-        else:
-            resp = self._http_request('GET', '/Alert')
-            if resp.status_code == 200:
-                self.logger.debug('json response is: ' + json.dumps(resp.json()))
-                alert = {
-                    'name': '',
-                    'details': '',
-                    'occurred': '',
-                    'rawJSON': json.dumps(resp.json())
-                }
-                self.logger.debug('1 incident fetched')
-                return [alert]
-            else:
-                raise Exception('Fetch failed. Status code was ' + str(resp.status_code))
+    #     if last_run_time:
+    #         self.logger.debug('No new incidents')
+    #         # we already ran. This is for testing only so the integration does not flood demisto with test incidents.
+    #         # In the near future this block will be removed.
+    #         return []
+    #     else:
+    #         resp = self._http_request('GET', '/Alert')
+    #         if resp.status_code == 200:
+    #             self.logger.debug('json response is: ' + json.dumps(resp.json()))
+    #             alert = {
+    #                 'name': '',
+    #                 'details': '',
+    #                 'occurred': '',
+    #                 'rawJSON': json.dumps(resp.json())
+    #             }
+    #             self.logger.debug('1 incident fetched')
+    #             return [alert]
+    #         else:
+    #             raise Exception('Fetch failed. Status code was ' + str(resp.status_code))
+    #     return []
 
     def test_module(self):
         self.logger.debug('Testing module...')
@@ -235,7 +168,7 @@ class IronDefense:
             err_msg = self._get_error_msg_from_response(response)
             self.logger.error('Failed to rate alert ({}). The response failed with status code {}. The response was: '
                               '{}'.format(alert_id, response.status_code, response.text))
-            raise HttpException('Failed to rate alert {} ({}): {}'.format(alert_id, response.status_code, err_msg))
+            raise HTTPException('Failed to rate alert {} ({}): {}'.format(alert_id, response.status_code, err_msg))
         else:
             self.logger.debug('Successfully submitted rating for alert ({})'.format(alert_id))
             return 'Submitted analyst rating to IronDefense!'
@@ -254,7 +187,7 @@ class IronDefense:
             err_msg = self._get_error_msg_from_response(response)
             self.logger.error('Failed to add comment to alert ({}). The response failed with status code {}. The '
                               'response was: {}'.format(alert_id, response.status_code, response.text))
-            raise HttpException('Failed to add comment to alert {} ({}): {}'.format(alert_id, response.status_code,
+            raise HTTPException('Failed to add comment to alert {} ({}): {}'.format(alert_id, response.status_code,
                                 err_msg))
         else:
             self.logger.debug('Successfully added comment to alert ({})'.format(alert_id))
@@ -275,19 +208,47 @@ class IronDefense:
             err_msg = self._get_error_msg_from_response(response)
             self.logger.error('Failed to set status for alert ({}). The response failed with status code {}. The '
                               'response was: {}'.format(alert_id, response.status_code, response.text))
-            raise HttpException('Failed to set status for alert {} ({}): {}'.format(alert_id, response.status_code,
+            raise HTTPException('Failed to set status for alert {} ({}): {}'.format(alert_id, response.status_code,
                                 err_msg))
         else:
             self.logger.debug('Successfully submitted status for alert ({})'.format(alert_id))
             return 'Submitted status to IronDefense!'
 
+    def report_observed_bad_activity(self, name, description='', ip='', domain='',
+                                     activity_start_time='1970-01-01T00:00:00Z',
+                                     activity_end_time='1970-01-01T00:00:00Z'):
+        self.logger.debug('Submitting observed bad activity: Name={} Description={} IP={} Domain={} '
+                          'Activity Start Time={} Activity End Time={}'.format(name, description, ip, domain,
+                                                                               activity_start_time, activity_end_time))
+
+        req_body = {
+            'name': name,
+            'description': description,
+            'ip': ip,
+            'domain': domain,
+            'activity_start_time': activity_start_time,
+            'activity_end_time': activity_end_time
+        }
+        response = self._http_request('POST', '/ReportObservedBadActivity', body=json.dumps(req_body))
+        if response.ok:
+            self.logger.debug('Successfully submitted observed bad activity for IP={} and Domain={}'.format(ip, domain))
+            return 'Submitted observed bad activity to IronDefense!'
+        else:
+            err_msg = self._get_error_msg_from_response(response)
+            self.logger.error('Failed to submit observed bad activity for IP={} and Domain={}. The response failed with'
+                              ' status code {}. The response was: {}'
+                              .format(ip, domain, response.status_code, response.text))
+            raise HTTPException('Failed to submit observed bad activity for IP={} and Domain={} ({}): {}'
+                                .format(ip, domain, response.status_code, err_msg))
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def fetch_incidents_command():
-    incidents = IRON_DEFENSE.fetch_incidents()
-    demisto.incidents(incidents)
+# This will be enabled at a later date.
+# def fetch_incidents_command():
+#     incidents = IRON_DEFENSE.fetch_incidents()
+#     demisto.incidents(incidents)
 
 
 def test_module_command():
@@ -327,13 +288,27 @@ def set_alert_status_command():
     demisto.results(results)
 
 
+def report_observed_bad_activity_command():
+    name = demisto.getArg('name')
+    description = demisto.getArg('description')
+    ip = demisto.getArg('ip')
+    domain = demisto.getArg('domain')
+    activity_start_time = demisto.getArg('activity_start_time')
+    activity_end_time = demisto.getArg('activity_end_time')
+    results = IRON_DEFENSE.report_observed_bad_activity(name, description=description, ip=ip, domain=domain,
+                                                        activity_start_time=activity_start_time,
+                                                        activity_end_time=activity_end_time)
+    demisto.results(results)
+
+
 COMMANDS = {
     'test-module': test_module_command,
     # For now, we will not support fetching of incidents
     # 'fetch-incidents': fetch_incidents_command,
     'irondefense-rate-alert': update_analyst_ratings_command,
     'irondefense-comment-alert': add_comment_to_alert_command,
-    'irondefense-set-alert-status': set_alert_status_command
+    'irondefense-set-alert-status': set_alert_status_command,
+    'irondefense-report-observed-bad-activity': report_observed_bad_activity_command,
 }
 COOKIE_KEY = 'user_sid'
 LOG_PREFIX = 'IronDefense Integration: '
@@ -348,12 +323,11 @@ if __name__ == '__builtin__':
         HOST = PARAMS.get('ironAPIHost', 'localhost')
         PORT = PARAMS.get('ironAPIPort', 443)
         REQUEST_TIMEOUT = float(PARAMS.get('requestTimeout', 60))
-        DATA_STORE = DemistoDataStore(demisto)
         LOGGER = DemistoLogger(demisto, LOG_PREFIX)
 
         # initialize the IronDefense object
-        IRON_DEFENSE = IronDefense(requests.session(), HOST, PORT, CREDENTIALS, LOGGER,
-                                   DATA_STORE, request_timeout=REQUEST_TIMEOUT)
+        IRON_DEFENSE = IronDefense(demisto, requests.Session(), HOST, PORT, CREDENTIALS, LOGGER,
+                                   request_timeout=REQUEST_TIMEOUT)
 
         LOGGER.debug('Invoking integration with Command: ' + demisto.command())
         if demisto.command() in COMMANDS.keys():
@@ -361,8 +335,6 @@ if __name__ == '__builtin__':
         else:
             LOGGER.error('Command not found: ' + demisto.command())
             return_error('Command not found: ' + demisto.command())  # type: ignore[name-defined]
-
-        DATA_STORE.flush()
 
     except Exception as e:
         demisto.error(traceback.format_exc())

@@ -1,22 +1,18 @@
 import json
 import unittest
 import demistomock as demisto
-from IronDefense import IronDefense, DemistoDataStore, LOG_PREFIX, HttpException
+from IronDefense import IronDefense, LOG_PREFIX
 from unittest import TestCase
 import mock
 import requests
 from typing import Dict
+from http.client import HTTPException
 requests.packages.urllib3.disable_warnings()
 
 
 class IronDefenseTest(TestCase):
 
     COOKIE_KEY = 'some_cookie_key'
-
-    demisto_data_store_patcher = mock.patch('IronDefense.DemistoDataStore', autospec=True)
-    MockDemistoDataStore = demisto_data_store_patcher.start()
-    MockDemistoDataStore.DataStoreMethod.LAST_RUN = DemistoDataStore.DataStoreMethod.LAST_RUN
-    MockDemistoDataStore.DataStoreMethod.CONTEXT = DemistoDataStore.DataStoreMethod.CONTEXT
 
     # Create a mock logger so nothing gets written to stdout
     demisto_logger_patcher = mock.patch('IronDefense.DemistoLogger', autospec=True)
@@ -36,25 +32,24 @@ class IronDefenseTest(TestCase):
             'password': 'somepassword'
         }
 
-        self.mock_data_store = self.MockDemistoDataStore(None)
-        self.mock_data_store.data_store_method = DemistoDataStore.DataStoreMethod.CONTEXT
         logger = self.MockDemistoLogger(demisto, LOG_PREFIX)
         self.mock_session = self.MockSession()
         self.mock_session.headers = {}
         # initialize the IronDefense object
-        self.class_under_test = IronDefense(self.mock_session,
+        self.class_under_test = IronDefense(demisto,
+                                            self.mock_session,
                                             self.host,
                                             self.port,
                                             self.credentials,
-                                            logger,
-                                            self.mock_data_store)
+                                            logger)
+
+    def tearDown(self):
+        demisto.setIntegrationContext({})
 
     def test_get_jwt(self):
         test_jwt = 'jwt token'
         test_context = {
-            'Sessions': {
-                'JWT': test_jwt
-            }
+            'JWT': test_jwt
         }
         self.assertEqual(test_jwt, self.class_under_test._get_jwt(test_context), 'Unexpected result')
         self.assertEqual(None, self.class_under_test._get_jwt(None), 'None context should return None')
@@ -70,9 +65,7 @@ class IronDefenseTest(TestCase):
         # test loading jwt token
         test_jwt = 'jwt token'
         test_context = {
-            'Sessions': {
-                'JWT': test_jwt
-            }
+            'JWT': test_jwt
         }
         self.class_under_test._configure_session_auth(test_context)
         self.assertEqual('Bearer ' + test_jwt, self.mock_session.headers.get('Authorization'))
@@ -146,10 +139,8 @@ class IronDefenseTest(TestCase):
                       auth=(self.credentials['identifier'], self.credentials['password']), verify=False)
         ])
         # check to see if the jwt was stored
-        self.mock_data_store.set_context.assert_called_with('IronDefense.Sessions(obj.Host===val.Host)', {
-            'Host': self.class_under_test.host,
-            'JWT': mock_jwt_value
-        }, msg='Successfully logged in')
+        self.assertDictEqual({'JWT': mock_jwt_value}, demisto.getIntegrationContext(), 'JWT value should be the same '
+                                                                                       'as the stored value.')
         self.assertEqual(200, test_response.status_code, 'Unexpected status code')
         self.assertEqual(2, self.mock_session.request.call_count, '_http_request should have made 2 calls')
 
@@ -246,7 +237,7 @@ class IronDefenseTest(TestCase):
         }
         self.mock_session.request.return_value = mock_response
 
-        self.assertRaises(HttpException, self.class_under_test.update_analyst_ratings, alert_id, severity=severity,
+        self.assertRaises(HTTPException, self.class_under_test.update_analyst_ratings, alert_id, severity=severity,
                           expectation=expectation, comments=comments, share_irondome=share_irondome)
 
         self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
@@ -289,7 +280,7 @@ class IronDefenseTest(TestCase):
         }
         self.mock_session.request.return_value = mock_response
 
-        self.assertRaises(HttpException, self.class_under_test.add_comment_to_alert, alert_id, comment=comment,
+        self.assertRaises(HTTPException, self.class_under_test.add_comment_to_alert, alert_id, comment=comment,
                           share_irondome=share_irondome)
 
         self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
@@ -334,8 +325,62 @@ class IronDefenseTest(TestCase):
         }
         self.mock_session.request.return_value = mock_response
 
-        self.assertRaises(HttpException, self.class_under_test.set_alert_status, alert_id, status=status,
+        self.assertRaises(HTTPException, self.class_under_test.set_alert_status, alert_id, status=status,
                           comments=comments, share_irondome=share_irondome)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+    @mock.patch('requests.Response', autospec=True)
+    def test_report_observed_bad_activity(self, MockResponse):
+        MockResponse.return_value.headers = {}
+
+        name = 'test_name'
+        description = 'asdf'
+        ip = '1.1.1.1'
+        domain = 'bad.com'
+        activity_start_time = '2019-01-01T00:00:00Z'
+        activity_end_time = '2019-02-01T00:00:00Z'
+
+        expected_uri = 'https://{}:{}{}{}'.format(self.host, self.port, self.url_prefix, '/ReportObservedBadActivity')
+        expected_body = json.dumps({
+            'name': name,
+            'description': description,
+            'ip': ip,
+            'domain': domain,
+            'activity_start_time': activity_start_time,
+            'activity_end_time': activity_end_time,
+        })
+
+        # Test successful response
+        mock_response = MockResponse()
+        mock_response.status_code = 200
+        mock_response.ok = True
+        mock_response.headers['auth-token'] = 'some jwt token'
+        self.mock_session.request.return_value = mock_response
+
+        self.class_under_test.report_observed_bad_activity(name, description=description, ip=ip, domain=domain,
+                                                           activity_start_time=activity_start_time,
+                                                           activity_end_time=activity_end_time)
+
+        self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
+                                                     files=None, timeout=self.class_under_test.request_timeout,
+                                                     auth=None, verify=False)
+
+        # Test failed response
+        mock_response = MockResponse()
+        mock_response.status_code = 403
+        mock_response.ok = False
+        mock_response.headers['auth-token'] = 'some jwt token'
+        mock_response.json.return_value = {
+            'msg': 'Some error'
+        }
+        self.mock_session.request.return_value = mock_response
+
+        self.assertRaises(HTTPException, self.class_under_test.report_observed_bad_activity, name,
+                          description=description, ip=ip, domain=domain, activity_start_time=activity_start_time,
+                          activity_end_time=activity_end_time)
 
         self.mock_session.request.assert_called_with('POST', expected_uri, headers={}, data=expected_body, params={},
                                                      files=None, timeout=self.class_under_test.request_timeout,

@@ -1,6 +1,7 @@
 # IronDefense Integration for Demisto
 The IronDefense Integration for Demisto allows users to interact with IronDefense alerts within Demisto. The 
-Integration provides the ability to rate alerts, update alert statuses, and add comments to alerts. 
+Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, and to report 
+observed bad activity.
 ## Setup
 The following table describes all the parameters required to setup the Integration.
 
