@@ -371,7 +371,7 @@ def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Locks a vault by vault ID.
     Args:
         client: Client object
@@ -380,7 +380,7 @@ def lock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    vault_to_lock = args.get('vault_id')
+    ip = args.get('ip')
     raw_response = client.lock_vault(vault_to_lock)
     vaults = raw_response.get('vault')
     if vaults and vaults[0].get('vaultId') == vault_to_lock and vaults[0].get('isLocked') is True:
@@ -456,10 +456,9 @@ def main():  # pragma: no cover
         'test-module': test_module_command,
         'fetch-credentials': fetch_credentials,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
-        f'{INTEGRATION_COMMAND_NAME}-lock-account': lock_account_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-unlock-account': unlock_account_command,
         f'{INTEGRATION_COMMAND_NAME}-reset-account': reset_account_command,
-        f'{INTEGRATION_COMMAND_NAME}-lock-vault': lock_vault_command,
         f'{INTEGRATION_COMMAND_NAME}-unlock-vault': unlock_vault_command,
         f'{INTEGRATION_COMMAND_NAME}-list-vaults': list_vaults_command
     }
