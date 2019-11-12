@@ -271,7 +271,7 @@ Get memory dump path from result of the memory dump job
 {
     "Accessdata.Job": {
         "ID": "154", 
-        "Result": "\\\\10.10.0.135\\data\\SiteServer\\storage\\60564598-ca55-475c-9f27-ab4992e8ff46\\1\\memdump.mem", 
+        "Result": "\\\\X.X.X.X\\data\\SiteServer\\storage\\60564598-ca55-475c-9f27-ab4992e8ff46\\1\\memdump.mem", 
         "CaseID": "2", 
         "State": "Success", 
         "CaseJobID": "2_154"
@@ -280,7 +280,7 @@ Get memory dump path from result of the memory dump job
 ```
 
 ##### Human Readable Output
-\\10.10.0.135\data\SiteServer\storage\60564598-ca55-475c-9f27-ab4992e8ff46\1\memdump.mem
+\\X.X.X.X\data\SiteServer\storage\60564598-ca55-475c-9f27-ab4992e8ff46\1\memdump.mem
 
 ### accessdata-get-processing-case-id
 ---
