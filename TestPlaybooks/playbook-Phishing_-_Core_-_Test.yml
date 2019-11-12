@@ -84,10 +84,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 8da75c1a-01b8-4ce4-8729-8198c1abc3a0
+    taskid: 312cbf88-1940-4449-8efa-692adda3c97e
     type: regular
     task:
-      id: 8da75c1a-01b8-4ce4-8729-8198c1abc3a0
+      id: 312cbf88-1940-4449-8efa-692adda3c97e
       version: -1
       name: Close manual review
       description: Closes the manual task to pass the test successfully. The task
@@ -101,12 +101,12 @@ tasks:
       - "3"
     scriptarguments:
       command:
-        simple: '!taskComplete id=manual parentPlaybookID=26'
+        simple: '!taskComplete id=manual parentPlaybookID=27'
       cron:
-        simple: '*/8 * * * *'
+        simple: '*/5 * * * *'
       endDate: {}
       times:
-        simple: "10"
+        simple: "15"
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -170,7 +170,7 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "26"
+      - "27"
     scriptarguments:
       body: {}
       filename:
@@ -234,14 +234,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 94b22083-6d4b-4bca-82fd-8e0e384d5512
+  "27":
+    id: "27"
+    taskid: 1cb6933a-1d83-4f69-87de-e0e991a07e9c
     type: playbook
     task:
-      id: 94b22083-6d4b-4bca-82fd-8e0e384d5512
+      id: 1cb6933a-1d83-4f69-87de-e0e991a07e9c
       version: -1
-      name: Phishing - Simple_dev
+      name: Phishing - Core
       playbookName: Phishing - Core
       type: playbook
       iscommand: false
@@ -260,7 +260,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 490,
           "y": 680
         }
       }
@@ -273,7 +273,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1150,
-        "width": 810,
+        "width": 820,
         "x": 50,
         "y": -190
       }
