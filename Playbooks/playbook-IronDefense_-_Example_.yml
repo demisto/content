@@ -6,52 +6,24 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc3f425b-e52e-4d47-80a4-b8c711288cc0
+    taskid: 6d74573f-a262-4138-8408-c27b296a346e
     type: start
     task:
-      id: cc3f425b-e52e-4d47-80a4-b8c711288cc0
+      description: ""
+      id: 6d74573f-a262-4138-8408-c27b296a346e
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
-      - "20"
-      - "23"
+      - "25"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1247.5,
+          "x": 162.5,
           "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "1":
-    id: "1"
-    taskid: b1b0cb3c-57a0-4d7c-8df9-a9431ec3dd49
-    type: condition
-    task:
-      id: b1b0cb3c-57a0-4d7c-8df9-a9431ec3dd49
-      version: -1
-      name: Should perform enrichment?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "3"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 720
         }
       }
     note: false
@@ -59,10 +31,11 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 0cb06894-5c0c-4413-8f65-5ba8e3f4de4a
+    taskid: 13d204a3-4db5-40d9-845f-7b9529893c37
     type: regular
+    description: ""
     task:
-      id: 0cb06894-5c0c-4413-8f65-5ba8e3f4de4a
+      id: 13d204a3-4db5-40d9-845f-7b9529893c37
       version: -1
       name: Choose analyst
       scriptName: AssignAnalystToIncident
@@ -71,7 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "14"
     scriptarguments:
       assignBy:
         simple: random
@@ -82,136 +55,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1915
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
-    taskid: b2bc18e1-0079-4838-89aa-f12180105d9d
-    type: title
-    task:
-      id: b2bc18e1-0079-4838-89aa-f12180105d9d
-      version: -1
-      name: Enrich indicators
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
-    taskid: b9a8a4f4-6583-4d6a-8f03-e4f822d6bac0
-    type: playbook
-    task:
-      id: b9a8a4f4-6583-4d6a-8f03-e4f822d6bac0
-      version: -1
-      name: ""
-      playbookName: Extract Indicators - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1040
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 47afb7d2-bb8e-4f0b-8cda-c3c5667e0934
-    type: playbook
-    task:
-      id: 47afb7d2-bb8e-4f0b-8cda-c3c5667e0934
-      version: -1
-      name: ""
-      playbookName: Entity Enrichment - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
-    taskid: 5a29122f-b1f5-4c1a-8517-f656dd796e4b
-    type: playbook
-    task:
-      id: 5a29122f-b1f5-4c1a-8517-f656dd796e4b
-      version: -1
-      name: ""
-      playbookName: Calculate Severity - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "7":
-    id: "7"
-    taskid: f9b0c31b-e22b-468b-8f56-0d552d196275
-    type: regular
-    task:
-      id: f9b0c31b-e22b-468b-8f56-0d552d196275
-      version: -1
-      name: Manually review the incident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2090
+          "x": 162.5,
+          "y": 545
         }
       }
     note: false
@@ -219,10 +64,11 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 042198aa-0de5-4739-8a3a-042af87a9a65
+    taskid: 2e02327f-facb-45cc-8df1-8f490a185722
+    description: ""
     type: regular
     task:
-      id: 042198aa-0de5-4739-8a3a-042af87a9a65
+      id: 2e02327f-facb-45cc-8df1-8f490a185722
       version: -1
       name: Close Investigation
       description: Close the current incident
@@ -240,8 +86,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 2615
+          "x": 162.5,
+          "y": 2295
         }
       }
     note: false
@@ -249,10 +95,11 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: be7e215a-bbbd-4796-8b3e-bb704108ad61
+    description: ""
+    taskid: feda1c00-d9dd-46ba-8700-3da29e450cc3
     type: collection
     task:
-      id: be7e215a-bbbd-4796-8b3e-bb704108ad61
+      id: feda1c00-d9dd-46ba-8700-3da29e450cc3
       version: -1
       name: Rate the Incident
       type: collection
@@ -265,8 +112,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2265
+          "x": 162.5,
+          "y": 720
         }
       }
     note: false
@@ -361,11 +208,12 @@ tasks:
       expired: false
       totalanswers: 0
   "15":
+    description: ""
     id: "15"
-    taskid: 9ee28fd1-67d8-4bb2-84b3-732fed1c68ae
+    taskid: fa4f2594-9cc6-42af-8746-65f6395e8815
     type: regular
     task:
-      id: 9ee28fd1-67d8-4bb2-84b3-732fed1c68ae
+      id: fa4f2594-9cc6-42af-8746-65f6395e8815
       version: -1
       name: Submit Incident Rating to IronDefense
       script: IronDefense|||irondefense-rate-alert
@@ -374,7 +222,7 @@ tasks:
       brand: IronDefense
     nexttasks:
       '#none#':
-      - "8"
+      - "32"
     scriptarguments:
       alert_id:
         simple: ${incident.labels.id}
@@ -390,196 +238,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2440
+          "x": 162.5,
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 6f0e004b-55ac-44de-853d-615fd149f420
-    type: condition
-    task:
-      id: 6f0e004b-55ac-44de-853d-615fd149f420
-      version: -1
-      name: Is Domain Blacklisted?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "17"
-      "yes":
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.destntdomain
-            iscontext: true
-          right:
-            value:
-              simple: baddomain.net
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1565
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: 82500721-1fa9-4bbf-8fde-7ddc4ba79a8d
-    type: condition
-    task:
-      id: 82500721-1fa9-4bbf-8fde-7ddc4ba79a8d
-      version: -1
-      name: Is Domain Whitelisted?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: incident.destntdomain
-            iscontext: true
-          right:
-            value:
-              simple: gooddomain.net
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1740
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "18":
-    id: "18"
-    taskid: d5341d3c-c9ec-4c7b-8ac9-64dadce0cbdd
-    type: regular
-    task:
-      id: d5341d3c-c9ec-4c7b-8ac9-64dadce0cbdd
-      version: -1
-      name: Submit Malicious Rating to IronDefense
-      script: IronDefense|||irondefense-rate-alert
-      type: regular
-      iscommand: true
-      brand: IronDefense
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      alert_id:
-        simple: ${incident.labels.id}
-      comments:
-        simple: This is known malicious activity!
-      expectation:
-        simple: EXP_UNEXPECTED
-      severity:
-        simple: SEVERITY_MALICIOUS
-      share_comment_with_irondome:
-        simple: "true"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 2f407cba-6776-4e43-8b55-fc588344355a
-    type: regular
-    task:
-      id: 2f407cba-6776-4e43-8b55-fc588344355a
-      version: -1
-      name: Submit Benign Rating to IronDefense
-      script: IronDefense|||irondefense-rate-alert
-      type: regular
-      iscommand: true
-      brand: IronDefense
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      alert_id:
-        simple: ${incident.labels.id}
-      comments:
-        simple: This is benign activity.
-      expectation:
-        simple: EXP_EXPECTED
-      severity:
-        simple: SEVERITY_BENIGN
-      share_comment_with_irondome:
-        simple: "false"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 2440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "20":
-    id: "20"
-    taskid: 2b67e6b3-87a2-4f06-8b06-88e359d8e1ee
-    type: condition
-    task:
-      id: 2b67e6b3-87a2-4f06-8b06-88e359d8e1ee
-      version: -1
-      name: Comment On Alert?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "Yes":
-      - "21"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1247.5,
-          "y": 2090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
+    description: ""
   "21":
     id: "21"
-    taskid: 39ac8d08-9d5e-4957-8673-36fac5544202
+    taskid: 8ed7117c-797e-4fe4-823d-5a7d76991b46
     type: collection
     task:
-      id: 39ac8d08-9d5e-4957-8673-36fac5544202
+      id: 8ed7117c-797e-4fe4-823d-5a7d76991b46
       version: -1
       name: Write Comment
       type: collection
@@ -592,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2265
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -652,10 +324,10 @@ tasks:
       totalanswers: 0
   "22":
     id: "22"
-    taskid: f13ba09d-8a3e-4673-81b3-0f459d80ce22
+    taskid: f9ad5ff5-6585-4bf3-8ea2-4b943e78df51
     type: regular
     task:
-      id: f13ba09d-8a3e-4673-81b3-0f459d80ce22
+      id: f9ad5ff5-6585-4bf3-8ea2-4b943e78df51
       version: -1
       name: Submit Alert Comment to IronDefense
       script: IronDefense|||irondefense-comment-alert
@@ -664,7 +336,7 @@ tasks:
       brand: IronDefense
     nexttasks:
       '#none#':
-      - "8"
+      - "28"
     scriptarguments:
       alert_id:
         simple: ${incident.labels.id}
@@ -676,46 +348,20 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2440
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
-    timertriggers: []
-    ignoreworker: false
-  "23":
-    id: "23"
-    taskid: 4d7a3b1a-3b18-4be2-8796-abc37a4d6714
-    type: condition
-    task:
-      id: 4d7a3b1a-3b18-4be2-8796-abc37a4d6714
-      version: -1
-      name: Set Alert Status?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      "Yes":
-      - "25"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1585,
-          "y": 195
-        }
-      }
-    note: false
+    description: ""
     timertriggers: []
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 79ab29af-1073-4790-890b-e3ae01b09bcc
+    taskid: 2041b26a-01a4-4ca7-8654-952213dafb79
     type: collection
     task:
-      id: 79ab29af-1073-4790-890b-e3ae01b09bcc
+      id: 2041b26a-01a4-4ca7-8654-952213dafb79
       version: -1
       name: Set the Status
       type: collection
@@ -728,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 370
+          "x": 162.5,
+          "y": 195
         }
       }
     note: false
@@ -802,15 +448,16 @@ tasks:
           information in the comments.
       title: Set IronDefense Alert Status
       description: Set the status of ${incident.name}
+      description: ""
       sender: Your SOC team
       expired: false
       totalanswers: 0
   "26":
     id: "26"
-    taskid: 134a4a3c-ad82-4115-89d0-bb07c95a5f78
+    taskid: f243d52d-56e9-4822-8cf3-0e5fed86f3bb
     type: regular
     task:
-      id: 134a4a3c-ad82-4115-89d0-bb07c95a5f78
+      id: f243d52d-56e9-4822-8cf3-0e5fed86f3bb
       version: -1
       name: Submit Alert Status to IronDefense
       script: IronDefense|||irondefense-set-alert-status
@@ -819,8 +466,7 @@ tasks:
       brand: IronDefense
     nexttasks:
       '#none#':
-      - "8"
-      - "1"
+      - "2"
     scriptarguments:
       alert_id:
         simple: ${incident.labels.id}
@@ -834,23 +480,275 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1472.5,
-          "y": 545
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 688ea72c-7d69-4020-89f9-d10717ebcfd1
+    type: regular
+    task:
+      id: 688ea72c-7d69-4020-89f9-d10717ebcfd1
+      version: -1
+      name: Close Alert in IronDefense
+      script: IronDefense|||irondefense-set-alert-status
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      alert_id:
+        simple: ${incident.labels.id}
+      comments:
+        simple: Alert closed from Demisto.
+      share_comment_with_irondome:
+        simple: "False"
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 837fa96f-7216-4e1e-8dac-98e72c37aa25
+    type: regular
+    task:
+      id: 837fa96f-7216-4e1e-8dac-98e72c37aa25
+      version: -1
+      name: Submit Observed Bad Activity
+      description: Submits an observed bad endpoint to IronDefense to create threat
+        intel rules (TIR).
+      script: IronDefense|||irondefense-report-observed-bad-activity
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      activity_end_time:
+        simple: ${incident.labels.end_time}
+      activity_start_time:
+        simple: ${incident.labels.start_time}
+      description:
+        simple: ${Report Observed Bad Activity.Answers.1}
+      domain:
+        simple: ${Report Observed Bad Activity.Answers.3}
+      ip:
+        simple: ${Report Observed Bad Activity.Answers.2}
+      name:
+        simple: ${Report Observed Bad Activity.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 6cac37ef-c499-4acf-84be-9d1ca1ab95ff
+    type: collection
+    task:
+      id: 6cac37ef-c499-4acf-84be-9d1ca1ab95ff
+      version: -1
+      name: Report Observed Bad Activity
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Name of the TIR to be created
+        tooltip: Enter the name of the TIR to be created
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Description
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Describe the observed bad endpoint
+        tooltip: Enter a description of the observed bad endpoint.
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: 'IP (Found IPs: ${IP.Address})'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Enter the IP address of the observed bad endpoint.
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: 'Domain (Found domains: ${incident.labels.domains})'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        description: ""
+        placeholder: ""
+        tooltip: Enter the domain name of the observed bad endpoint.
+      title: Report Observed Bad Activity
+      description: Collects information to report observed bad activity in IronDefense.
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "31":
+    id: "31"
+    taskid: b99ae222-e77f-47bb-8a65-f3d8c7daab66
+    type: condition
+    task:
+      id: b99ae222-e77f-47bb-8a65-f3d8c7daab66
+      version: -1
+      name: Is Incident Malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Rate IronDefense Alert Severity.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: d406e1e1-229d-4f5e-8643-d45678f37cc0
+    type: condition
+    task:
+      id: d406e1e1-229d-4f5e-8643-d45678f37cc0
+      version: -1
+      name: Add Comment?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "Yes":
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
 view: |-
   {
-    "linkLabelsPosition": {
-      "16_18_yes": 0.28,
-      "17_19_yes": 0.82
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
-        "width": 1915,
+        "height": 2340,
+        "width": 492.5,
         "x": 50,
         "y": 50
       }
