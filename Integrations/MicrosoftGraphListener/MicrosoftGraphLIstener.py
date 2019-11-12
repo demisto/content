@@ -152,7 +152,7 @@ def upload_file(filename, content, attachments_list):
     """
     file_result = fileResult(filename, content)
 
-    if file_result['Type'] == entryTypes['error']:
+    if is_error(file_result):
         demisto.error(file_result['Contents'])
         raise Exception(file_result['Contents'])
 
@@ -174,26 +174,27 @@ def read_file_and_encode64(attach_id):
     """
     try:
         file_info = demisto.getFilePath(attach_id)
-        with open(file_info['path'], 'rb') as file:
-            b64_encoded_data = base64.b64encode(file.read())
+        with open(file_info['path'], 'rb') as file_data:
+            b64_encoded_data = base64.b64encode(file_data.read())
             file_size = os.path.getsize(file_info['path'])
             return b64_encoded_data, file_size, file_info['name']
     except Exception as e:
         return_error(f'Unable to read and decode in base 64 file with id {attach_id}', e)
 
 
-def prepare_args(command):
+def prepare_args(command, args):
     """
     Receives command and prepares the arguments for future usage.
 
     :type command: ``str``
     :param command: Command to execute
 
+    :type args: ``dict``
+    :param args: Demisto args
+
     :return: Prepared args
     :rtype: ``dict``
     """
-    args = demisto.args()
-
     if command in ['msgraph-mail-create-draft', 'send-mail']:
         return {
             'to_recipients': argToList(args.get('to')),
@@ -209,12 +210,14 @@ def prepare_args(command):
             'attach_names': argToList(args.get('attach_names')),
             'attach_cids': argToList((args.get('attach_cids')))
         }
+
     elif command == 'msgraph-mail-reply-to':
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('message_id', ''),
             'comment': args.get('comment')
         }
+
     return args
 
 
@@ -227,7 +230,7 @@ class MsGraphClient(BaseClient):
     """
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
-    CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID == obj.ID)'
+    CONTEXT_DRAFT_PATH = 'MicrosoftGraph.Draft(val.ID && val.ID == obj.ID)'
     CONTEXT_SENT_EMAIL_PATH = 'MicrosoftGraph.Email'
 
     def __init__(self, refresh_token, auth_id, enc_key, token_retrieval_url, app_name,
@@ -433,12 +436,13 @@ class MsGraphClient(BaseClient):
 
     def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
         """
-        Fetches emails from given folder that were received after specific datetime (last_fetch).
+        Fetches emails from given folder that were modified after specific datetime (last_fetch).
 
         All fields are fetched for given email using select=* clause,
         for more information https://docs.microsoft.com/en-us/graph/query-parameters.
         The email will be excluded from returned results if it's id is presented in exclude_ids.
         Number of fetched emails is limited by _emails_fetch_limit parameter.
+        The filtering and ordering is done based on modified time.
 
         :type folder_id: ``str``
         :param folder_id: Folder id
@@ -452,10 +456,10 @@ class MsGraphClient(BaseClient):
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        target_received_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
+        target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = (f"users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
-                           f"?$filter=receivedDateTime ge {target_received_time}"
-                           f"&$orderby=ReceivedDateTime &$top={self._emails_fetch_limit}&select=*")
+                           f"?$filter=lastModifiedDateTime ge {target_modified_time}"
+                           f"&$orderby=lastModifiedDateTime &$top={self._emails_fetch_limit}&select=*")
         fetched_emails = self._http_request('GET', suffix_endpoint).get('value', [])[:self._emails_fetch_limit]
 
         if exclude_ids:  # removing emails in order to prevent duplicate incidents
@@ -467,10 +471,10 @@ class MsGraphClient(BaseClient):
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns receive time of last email if exist, else utc time that was passed as start_time.
+        Returns modified time of last email if exist, else utc time that was passed as start_time.
 
-        The elements in fetched emails are ordered by received time in ascending order,
-        meaning the last element has the latest receive time.
+        The elements in fetched emails are ordered by modified time in ascending order,
+        meaning the last element has the latest modified time.
 
         :type fetched_emails: ``list``
         :param fetched_emails: List of fetched emails
@@ -481,7 +485,7 @@ class MsGraphClient(BaseClient):
         :return: Returns str date of format Y-m-dTH:M:SZ
         :rtype: `str`
         """
-        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
+        next_run_time = fetched_emails[-1].get('lastModifiedDateTime') if fetched_emails else start_time
 
         return next_run_time
 
@@ -784,7 +788,7 @@ class MsGraphClient(BaseClient):
             'name': parsed_email['Subject'],
             'details': email.get('bodyPreview', '') or parsed_email['Body'],
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
-            'occurred': parsed_email['ReceivedTime'],
+            'occurred': parsed_email['ModifiedTime'],
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email)
         }
@@ -805,7 +809,7 @@ class MsGraphClient(BaseClient):
         :rtype: ``dict`` and ``list``
         """
         start_time = get_now_utc()
-        last_fetch = last_run.get('LAST_RUN_TIME', None)
+        last_fetch = last_run.get('LAST_RUN_TIME')
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = False
@@ -940,8 +944,8 @@ def main():
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
-    first_fetch_interval = params.get('first_fetch_interval', '15 minutes')
-    emails_fetch_limit = int(params.get('emails_fetch_limit', '50'))
+    first_fetch_interval = params.get('first_fetch', '15 minutes')
+    emails_fetch_limit = int(params.get('fetch_limit', '50'))
     ok_codes = (200, 201, 202)
 
     client = MsGraphClient(refresh_token, auth_id, enc_key, token_retrieval_url, app_name, mailbox_to_fetch,
@@ -950,7 +954,7 @@ def main():
 
     try:
         command = demisto.command()
-        args = prepare_args(command)
+        args = prepare_args(command, demisto.args())
         LOG(f'Command being called is {command}')
 
         if command == 'test-module':
