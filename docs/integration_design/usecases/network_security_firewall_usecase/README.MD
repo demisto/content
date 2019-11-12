@@ -1,7 +1,7 @@
 # Network Security (Firewall)
 Top Use-Cases:
 - [Create block/accept policies (Source, Destination, Port), for IP addresses and domains.](#create)
-- [Add addresses and ports (services) to predefined groups, create groups, etc.](#address)
+- [Add addresses and ports (services) to predefined groups, create groups, etc.](#create-address)
 - Support custom url categories. 
 - Fetch network logs for a specific address for a configurable time frame.
 - URL filtering categorization change request
@@ -69,7 +69,7 @@ Creates a policy rule.
   "To": "any",
   "CustomUrlCategory": "any"
 } ```
-### panorama-create-address-group <a name="address">
+### panorama-create-address-group <a name="create-address">
 ---
 Creates a static or dynamic address book.
 ##### Required Permissions
