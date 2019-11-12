@@ -4,7 +4,7 @@ from PositiveDetectionsVSDetectionEngines import extract_engines_data_from_indic
 
 '''INDICATORS DATA FOR TESTING'''
 
-detect_positive_not_zero_1 = {  # type: Dict
+detect_positive_not_zero_1 = {  # type: dict[any]
     'CustomFields': {
         'detectionengines': 71,
         'positivedetections': 10
@@ -44,7 +44,7 @@ detect_positive_not_zero_1 = {  # type: Dict
     'version': 6
 }
 
-detect_positive_not_zero_2 = {  # type: Dict
+detect_positive_not_zero_2 = {  # type: dict[any]
     'CustomFields': {
         'detectionengines': 71,
         'positivedetections': 8
@@ -80,7 +80,7 @@ detect_positive_not_zero_2 = {  # type: Dict
     'version': 2
 }
 
-positive_zero = {  # type: Dict
+positive_zero = {  # type: dict[any]
     'CustomFields': {
         'detectionengines': 71,
         'positivedetections': 0
@@ -116,7 +116,7 @@ positive_zero = {  # type: Dict
     'version': 3
 }
 
-no_engines_data = {  # type: Dict
+no_engines_data = {  # type: dict[any]
     'CustomFields': {},
     'ManuallyEditedFields': None,
     'account': '',
