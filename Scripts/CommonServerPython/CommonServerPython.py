@@ -2233,6 +2233,7 @@ if 'requests' in sys.modules:
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
+            self._session = requests.Session()
             if proxy:
                 self._proxies = handle_proxy()
             else:
@@ -2300,7 +2301,7 @@ if 'requests' in sys.modules:
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
-                res = requests.request(
+                res = self._session.request(
                     method,
                     address,
                     verify=self._verify,
