@@ -1953,18 +1953,21 @@ def panorama_delete_custom_url_category_command():
 @logger
 def panorama_edit_custom_url_category(custom_url_category_name, type_, items, description=None):
     major_version = get_pan_os_major_version()
-    if major_version >= 9:
-        element = '<members>' + add_argument_list(items, 'member', False) + '</members>'
-    else:
+    description_element = add_argument(description, 'description', False)
+    items_element = add_argument_list(items, 'list', True)
+
+    if major_version <= 8:
         if type_ == 'Category Match':
             return_error('The Categories argument is only relevant for PAN-OS 9.x versions.')
-        element = '<members>' + add_argument_list(items, 'member', False) + '</members>'
+        element = f"<entry name='{custom_url_category_name}'>{description_element}{items_element}</entry>"
+    else:
+        type_element = add_argument(type_, 'type', False)
+        element = f"<entry name='{custom_url_category_name}'>{description_element}{items_element}{type_element}</entry>"
 
     params = {
         'action': 'edit',
         'type': 'config',
-        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='"
-                 + custom_url_category_name + "']/members",
+        'xpath': XPATH_OBJECTS + "profiles/custom-url-category/entry[@name='" + custom_url_category_name + "']",
         'element': element,
         'key': API_KEY
     }
