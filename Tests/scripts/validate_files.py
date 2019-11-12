@@ -486,7 +486,7 @@ def main():
     parser.add_argument('-b', '--backwardComp', type=str2bool, default=True, help='To check backward compatibility.')
     parser.add_argument('-t', '--test-filter', type=str2bool, default=False, help='Check that tests are valid.')
     parser.add_argument('-p', '--prev-ver', help='Previous branch or SHA1 commit to run checks against.')
-    parser.add_argument('-f', '--forked',  type=str2bool, default=False, help='Is forked PR or not')
+    parser.add_argument('-f', '--forked', type=str2bool, default=False, help='Is forked PR or not')
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
