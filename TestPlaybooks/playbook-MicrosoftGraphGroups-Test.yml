@@ -81,7 +81,7 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      id:
+      group_id:
         complex:
           root: MSGraphGroups
           filters:
