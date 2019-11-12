@@ -27,6 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 4. accessdata-jobstatus-scan
 5. accessdata-get-jobstatus-processlist
 6. accessdata-get-jobstatus-memorydump
+7. accessdata-get-processing-case-id
 ### accessdata-legacyagent-get-processlist
 ---
 Return list of process from legacy agent
@@ -37,7 +38,7 @@ Return list of process from legacy agent
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| caseid | ID of case | Required | 
+| caseid | ID of case | Optional | 
 | target_ip | IP address of agent | Required | 
 
 
@@ -48,26 +49,28 @@ Return list of process from legacy agent
 | Accessdata.Job.ID | string | ID of job | 
 | Accessdata.Job.CaseID | string | Case ID | 
 | Accessdata.Job.CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
+| Accessdata.Job.Type | string | Job type | 
+| Accessdata.Job.State | string | Job execution state | 
 
 
 ##### Command Example
-`accessdata-legacyagent-get-processlist caseid=1 target_ip=X.X.X.X`
+`accessdata-legacyagent-get-processlist caseid=2 target_ip=X.X.X.X`
 
 ##### Context Example
 ```
 {
     "Accessdata.Job": {
-        "ID": 992, 
+        "ID": 157, 
         "Type": "Volatile", 
-        "CaseID": "1", 
+        "CaseID": "2", 
         "State": "Unknown", 
-        "CaseJobID": "1_992"
+        "CaseJobID": "2_157"
     }
 }
 ```
 
 ##### Human Readable Output
-JobID: 992
+JobID: 157
 
 ### accessdata-legacyagent-get-memorydump
 ---
@@ -79,7 +82,7 @@ Creates legacy agent memory dump
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| caseid | ID of case | Required | 
+| caseid | ID of case | Optional | 
 | target_ip | IP address of agent | Required | 
 
 
@@ -90,26 +93,28 @@ Creates legacy agent memory dump
 | Accessdata.Job.ID | string | ID of job | 
 | Accessdata.Job.CaseID | string | Case ID | 
 | Accessdata.Job.CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
+| Accessdata.Job.Type | string | Job type | 
+| Accessdata.Job.State | string | Job execution state | 
 
 
 ##### Command Example
-`accessdata-legacyagent-get-memorydump caseid=1 target_ip=X.X.X.X`
+`accessdata-legacyagent-get-memorydump caseid=2 target_ip=X.X.X.X`
 
 ##### Context Example
 ```
 {
     "Accessdata.Job": {
-        "ID": 993, 
+        "ID": 158, 
         "Type": "LegacyMemoryDump", 
-        "CaseID": "1", 
+        "CaseID": "2", 
         "State": "Unknown", 
-        "CaseJobID": "1_993"
+        "CaseJobID": "2_158"
     }
 }
 ```
 
 ##### Human Readable Output
-JobID: 993
+JobID: 158
 
 ### accessdata-read-casefile
 ---
@@ -132,7 +137,7 @@ Reads file from case folder and puts its contents to current context
 
 
 ##### Command Example
-`accessdata-read-casefile filepath="\\X.X.X.X\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_987\f6fac193-89ff-4f3f-92ac-0871c30621c0\1\snapshot.xml"`
+`accessdata-read-casefile filepath="\\X.X.X.X\D$\paths\cases\ProcessingHelperCase\b389a8e9-4ce4-473d-8d2e-9026f53f925c\Jobs\job_153\fa9787a3-49a1-4d73-a194-7c944eb9a3bf\1\snapshot.xml"`
 
 ##### Context Example
 ```
@@ -165,23 +170,23 @@ Checks status of the job
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CaseID | string | Case ID | 
-| ID | string | Job ID | 
-| CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
-| State | string | State of job's execution | 
+| Accessdata.Job.CaseID | string | Case ID | 
+| Accessdata.Job.ID | string | Job ID | 
+| Accessdata.Job.CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
+| Accessdata.Job.State | string | State of job's execution | 
 
 
 ##### Command Example
-`accessdata-jobstatus-scan caseJobID=1_987`
+`accessdata-jobstatus-scan caseJobID=2_153`
 
 ##### Context Example
 ```
 {
     "Accessdata.Job": {
-        "ID": "987", 
-        "CaseID": "1", 
+        "ID": "153", 
+        "CaseID": "2", 
         "State": "Success", 
-        "CaseJobID": "1_987"
+        "CaseJobID": "2_153"
     }
 }
 ```
@@ -207,32 +212,31 @@ Get snapshot path from result of the process list job
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| State | string | Job state | 
-| Result | string | Job result | 
+| Accessdata.Job.State | string | Job state | 
+| Accessdata.Job.Result | string | Path to snapshot with processes list | 
+| Accessdata.Job.ID | number | ID of the job | 
+| Accessdata.Job.CaseID | number | Case ID of the job | 
+| Accessdata.Job.CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
 
 
 ##### Command Example
-`accessdata-get-jobstatus-processlist caseID=1 jobID=987`
+`accessdata-get-jobstatus-processlist caseID=2 jobID=153`
 
 ##### Context Example
 ```
 {
     "Accessdata.Job": {
-        "ID": "987", 
-        "Result": {
-            "SnapshotDetails": {
-                "File": "\\\\X.X.X.X\\D$\\Program Files\\AccessData\\QuinC\\app\\demo\\Demo Case\\c00a2abf-1076-412b-8dea-67305fb8015f\\Jobs\\job_987\\f6fac193-89ff-4f3f-92ac-0871c30621c0\\1\\snapshot.xml"
-            }
-        }, 
-        "CaseID": "1", 
+        "ID": "153", 
+        "Result": "\\\\X.X.X.X\\D$\\paths\\cases\\ProcessingHelperCase\\b389a8e9-4ce4-473d-8d2e-9026f53f925c\\Jobs\\job_153\\fa9787a3-49a1-4d73-a194-7c944eb9a3bf\\1\\snapshot.xml", 
+        "CaseID": "2", 
         "State": "Success", 
-        "CaseJobID": "1_987"
+        "CaseJobID": "2_153"
     }
 }
 ```
 
 ##### Human Readable Output
-\\X.X.X.X\D$\Program Files\AccessData\QuinC\app\demo\Demo Case\c00a2abf-1076-412b-8dea-67305fb8015f\Jobs\job_987\f6fac193-89ff-4f3f-92ac-0871c30621c0\1\snapshot.xml
+\\X.X.X.X\D$\paths\cases\ProcessingHelperCase\b389a8e9-4ce4-473d-8d2e-9026f53f925c\Jobs\job_153\fa9787a3-49a1-4d73-a194-7c944eb9a3bf\1\snapshot.xml
 
 ### accessdata-get-jobstatus-memorydump
 ---
@@ -252,25 +256,58 @@ Get memory dump path from result of the memory dump job
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| State | string | Job state | 
-| Result | string | Job result | 
+| Accessdata.Job.State | string | Job state | 
+| Accessdata.Job.Result | string | Path to memory dump | 
+| Accessdata.Job.ID | number | ID of the job | 
+| Accessdata.Job.CaseID | number | Case ID of the job | 
+| Accessdata.Job.CaseJobID | string | Concatenated CaseID and JobID (like "1_800") | 
 
 
 ##### Command Example
-`accessdata-get-jobstatus-memorydump caseID=1 jobID=989`
+`accessdata-get-jobstatus-memorydump caseID=2 jobID=154`
 
 ##### Context Example
 ```
 {
     "Accessdata.Job": {
-        "ID": "989", 
-        "Result": "\\\\X.X.X.X\\data\\SiteServer\\storage\\8ffafb2e-d077-4165-9aa7-f00cda29cce2\\1\\memdump.mem", 
-        "CaseID": "1", 
+        "ID": "154", 
+        "Result": "\\\\10.10.0.135\\data\\SiteServer\\storage\\60564598-ca55-475c-9f27-ab4992e8ff46\\1\\memdump.mem", 
+        "CaseID": "2", 
         "State": "Success", 
-        "CaseJobID": "1_989"
+        "CaseJobID": "2_154"
     }
 }
 ```
 
 ##### Human Readable Output
-\\X.X.X.X\data\SiteServer\storage\8ffafb2e-d077-4165-9aa7-f00cda29cce2\1\memdump.mem
+\\10.10.0.135\data\SiteServer\storage\60564598-ca55-475c-9f27-ab4992e8ff46\1\memdump.mem
+
+### accessdata-get-processing-case-id
+---
+Getting ID of Quin-C processing case
+##### Base Command
+
+`accessdata-get-processing-case-id`
+##### Input
+
+There are no input arguments for this command.
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Accessdata.ProcessingCaseId | string | ID of Quin-C processing case | 
+
+
+##### Command Example
+`accessdata-get-processing-case-id`
+
+##### Context Example
+```
+{
+    "Accessdata.ProcessingCaseId": 2
+}
+```
+
+##### Human Readable Output
+2
