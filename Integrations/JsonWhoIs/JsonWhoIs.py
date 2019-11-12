@@ -43,11 +43,11 @@ def http_request(method, url_suffix, params=None, max_retry=3):
             params=params,
             headers=HEADERS
         )
-        if res.status_code == 200:  # ignore: typing
+        if res.status_code == 200:  # type: ignore
             break
-    if res.status_code != 200:  # ignore: typing
-        raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')
-    return res.json()
+        if trial == max_retry:  # type: ignore
+            raise Exception(f'Error enrich url with JsonWhoIS API, status code {res.status_code}')  # type: ignore
+    return res.json()  # type: ignore
 
 
 def dict_by_ec(cur_dict: dict):
@@ -171,5 +171,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == ('__builtin__', 'builtins'):
+if __name__ in ('__builtin__', 'builtins'):
     main()
