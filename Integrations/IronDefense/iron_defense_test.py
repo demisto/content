@@ -2,8 +2,7 @@ import json
 import unittest
 import demistomock as demisto
 from IronDefense import IronDefense, LOG_PREFIX
-from unittest import TestCase
-import mock
+from unittest import TestCase, mock
 import requests
 from typing import Dict
 from http.client import HTTPException
