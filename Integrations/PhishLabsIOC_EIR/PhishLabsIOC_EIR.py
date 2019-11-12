@@ -342,7 +342,7 @@ def fetch_incidents_command(
             incidents_report.append({
                 'name': f"{INTEGRATION_NAME}: {incident_raw.get('id')}",
                 'occurred': occurred,
-                'rawJSON': json.dumps(incident_raw)
+                'rawJSON': incident_raw
             })
 
         new_last_run = incidents_report[-1].get('occurred')
