@@ -211,8 +211,8 @@ class Client(BaseClient):
             )
         except requests.ConnectionError as err:
             demisto.debug(str(err))
-            raise Exception(f'Connection error in the API call to Microsoft Graph.'
-                            f'Check your Server URL parameter. {err}')
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your Server URL parameter.\n\n{err}')
 
         try:
             data = response.json() if response.text else {}
@@ -255,16 +255,16 @@ class Client(BaseClient):
 
         return groups
 
-    def get_group(self, id_: str) -> Dict:
+    def get_group(self, group_id: str) -> Dict:
         """Returns a single group by sending a GET request.
 
         Args:
-            id_: the group id.
+            group_id: the group id.
 
         Returns:
             Response from API.
         """
-        group = self.http_request('GET', f'groups/{id_}')
+        group = self.http_request('GET', f'groups/{group_id}')
         return group
 
     def create_group(self, properties: Dict[str, Optional[Any]]) -> Dict:
@@ -382,15 +382,15 @@ def get_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    id_ = str(args.get('id'))
-    group = client.get_group(id_)
+    group_id = str(args.get('group_id'))
+    group = client.get_group(group_id)
 
     group_readable, group_outputs = parse_outputs(group)
     human_readable = tableToMarkdown(name="Groups:", t=group_readable,
                                      headers=['ID', 'Display Name', 'Description', 'Created Date Time', 'Mail',
                                               'Security Enabled', 'Visibility'],
                                      removeNull=True)
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_outputs}
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(obj.ID === {group_id})': group_outputs}
     return human_readable, entry_context, group
 
 
@@ -438,11 +438,16 @@ def delete_group_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group_id = str(args.get('group_id'))
     client.delete_group(group_id)
 
+    # get the group data from the context
+    group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+    if type(group_data) is list:
+        group_data = group_data[0]
+
     # add a field that indicates that the group was deleted
-    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Deleted': True}
+    group_data['Deleted'] = True  # add a field with the members to the group
+    entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
 
     human_readable = f'Group: "{group_id}" was deleted successfully.'
-
     return human_readable, entry_context, NO_OUTPUTS
 
 
@@ -466,14 +471,21 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     members_readable, members_outputs = parse_outputs(members['value'])
 
+    # get the group data from the context
+    group_data = demisto.dt(demisto.context(), f'{INTEGRATION_CONTEXT_NAME}(val.ID === "{group_id}")')
+    if type(group_data) is list:
+        group_data = group_data[0]
+
     if '@odata.nextLink' in members:
         next_link_response = members['@odata.nextLink']
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': next_link_response,
-                         f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        group_data['Members'] = members_outputs  # add a field with the members to the group
+        group_data['Members']['NextLink'] = next_link_response
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
         title = f'Group {group_id} members ' \
                 f'(Note that there are more results. Please use the next_link argument to see them.):'
     else:
-        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === {group_id}).Members': members_outputs}
+        group_data['Members'] = members_outputs  # add a field with the members to the group
+        entry_context = {f'{INTEGRATION_CONTEXT_NAME}(val.ID === obj.ID)': group_data}
         title = f'Group {group_id} members:'
 
     human_readable = tableToMarkdown(name=title, t=members_readable,

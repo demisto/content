@@ -29,7 +29,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft Graph Groups allows you to create and manage different types of groups and group functionality according to your scenario.
+description: Microsoft Graph Groups allows you to create and manage different types
+  of groups and group functionality according to your scenario.
 display: Microsoft Graph Groups
 name: Microsoft Graph Groups
 script:
@@ -124,7 +125,7 @@ script:
     - default: false
       description: Group Id.
       isArray: false
-      name: id
+      name: group_id
       required: true
       secret: false
     deprecated: false
@@ -358,6 +359,7 @@ script:
         The UPN is an Internet-style login name for the user based on the Internet standard RFC 822.
         By convention, this should map to the user's email name.
         The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains.      type: String
+      type: Unknown
     - contextPath: MSGraphGroups.Members.OfficeLocation
       description: The office location in the user's place of business.
       type: String
@@ -365,7 +367,8 @@ script:
       description: The SMTP address for the user, for example, "jeff@contoso.onmicrosoft.com".
       type: String
     - contextPath: MSGraphGroups.Members.PreferredLanguage
-      description: The preferred language for the user. Should follow ISO 639-1 Code; for example "en-US".
+      description: The preferred language for the user. Should follow ISO 639-1 Code;
+        for example "en-US".
       type: String
     - contextPath: MSGraphGroups.Members.Surname
       description: The user's surname (family name or last name).
