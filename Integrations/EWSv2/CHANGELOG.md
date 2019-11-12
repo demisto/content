@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
   - Improved implementation of the ***ews-move-item-between-mailboxes*** command.
   -  The email body now prints to context and the War Room for the following commands:
     - ***ews-get-items***

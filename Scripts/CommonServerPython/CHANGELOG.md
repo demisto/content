@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 Fixed the IntegrationLogger auto-replace of sensitive strings.
 
 ## [19.10.1] - 2019-10-15
