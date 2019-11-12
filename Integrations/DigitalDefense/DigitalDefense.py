@@ -21,7 +21,7 @@ VULN_ENDPOINT = BASE_URL + "/api/scanresults/active/vulnerabilities/"
 HOST_ENDPOINT = BASE_URL + "/api/scanresults/active/hosts/"
 SCAN_ENDPOINT = BASE_URL + "/api/scans/"
 
-# FrontlineVM request header for API calls:
+# FrontlineVM (FVM) request header for API calls:
 FVM_HEADER = {'Authorization': 'Token ' + str(API_TOKEN)}
 
 # Minimum time to timeout functions (5 mins)
@@ -80,8 +80,8 @@ def get_all_data(first_page):
     '''
     request_url = first_page.get('next')
     have_all_data = False
-    current_data = {}
-    all_data = []
+    current_data = {}   # type: Dict[str, Any]
+    all_data = []   # type: List[Dict]
     while not have_all_data:
         resp = requests.get(url=request_url, headers=FVM_HEADER, timeout=30)
         if not resp.ok:
@@ -99,8 +99,8 @@ def get_all_data(first_page):
 
 def get_fvm_data(request_url, **kwargs):
     ''' Retrieves data from FrontlineVM API '''
-    data = []
-    current_data = {}
+    data = []   # type: List
+    current_data = {}   # type: Dict
     resp = requests.get(request_url, headers=FVM_HEADER, timeout=30, **kwargs)
     resp.raise_for_status()
     current_data = json.loads(resp.text)
@@ -118,7 +118,7 @@ def get_fvm_data(request_url, **kwargs):
         except EndOfTime:
             return_error("Error: FrontlineVM get_fvm_data function exceeds timeout time.")
         except Exception as err:
-            return_error("Error: FrontlineVM get_fvm_data failed.", error=err.message)
+            return_error("Error: FrontlineVM get_fvm_data failed. \n" + str(err))
     return data
 
 
@@ -238,7 +238,7 @@ def fetch_incidents():
         demisto.setLastRun({'start_time': start_time})
         demisto.incidents(incidents)
     except Exception as err:
-        return_error("Error: FrontlineVM fetching_incidents -- " + str(err.message))
+        return_error("Error: FrontlineVM fetching_incidents -- " + str(err))
 
 
 ''' COMMAND FUNCTIONS   '''
@@ -405,8 +405,8 @@ def format_vuln_stat_output(vuln_stat_output, vuln_stat_headers):
 
 def get_vuln_outputs(vuln_list):
     output = []
-    vuln_data_output = {}
-    vuln_stat_output = {}
+    vuln_data_output = {}   # type: Dict
+    vuln_stat_output = {}   # type: Dict
 
     vuln_severity_count = {
         'critical': 0,
@@ -474,7 +474,7 @@ def get_vulns_command():
     host_id = demisto.args().get('host_id')
     ip_address = demisto.args().get('ip_address')
 
-    vulns = []
+    vulns = []  # type: List
     if ip_address:
         host_id = get_hostID_from_ip_address(ip_address)
     vulns = get_vulns(severity, min_severity, max_days_since_created, min_days_since_created, host_id)
@@ -536,7 +536,7 @@ def get_scan_data(network_data, low_ip, high_ip):
         scanner = json.loads(scanner_resp.text)
         if scanner.get('status', '') == 'online':
             url = BASE_URL + "/api/networkprofiles/" + str(profile['id']) + "/rules/"
-            profile_data = []
+            profile_data = []   # type: List
             current_data = None
             have_all_data = False
             while not have_all_data:
@@ -609,7 +609,7 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     now = datetime.now(_tz_UTC())
     tz = "UTC"
     tzoffset = 0
-    scan = {}
+    scan = {}   # type: Dict[str, Any]
 
     # Scan name will change if user is scanning range (low ip address not equal to high ip address)
     if low_ip_address == high_ip_address:
@@ -696,7 +696,7 @@ def scan_policy_exists(policy_selected):
                 return True
         return False
     except Exception as err:
-        return_error("Error: FrontlineVM scan_policy_exists failed", error=err.message)
+        return_error("Error: FrontlineVM scan_policy_exists failed " + str(err))
 
 
 def scan_asset_command():
@@ -773,7 +773,7 @@ def main():
     except Exception as e:
         LOG(e)
         LOG.print_log(verbose=False)
-        return_error("Error: " + str(e.message))
+        return_error("Error: " + str(e))
 
 
 # python2 uses __builtin__ python3 uses builtins

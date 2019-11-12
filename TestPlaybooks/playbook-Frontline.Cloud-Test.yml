@@ -97,12 +97,14 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: bdb1d3c9-8068-44e2-854e-9587cf09fd58
+    taskid: 10cd7540-7b74-400c-8b00-54f34cd98499
     type: condition
     task:
-      id: bdb1d3c9-8068-44e2-854e-9587cf09fd58
+      id: 10cd7540-7b74-400c-8b00-54f34cd98499
       version: -1
       name: Verify Command Results
+      description: Verify command results from task 'frontline-get-assets (get asset
+        that does not exits)'.
       type: condition
       iscommand: false
       brand: ""
@@ -130,12 +132,13 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: a04768f9-89ed-4f48-8160-95d8a036806d
+    taskid: 5f7db6d0-385a-4a55-80eb-71e0f58b29a5
     type: regular
     task:
-      id: a04768f9-89ed-4f48-8160-95d8a036806d
+      id: 5f7db6d0-385a-4a55-80eb-71e0f58b29a5
       version: -1
       name: Close the Investigation
+      description: Closing investigation.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -195,12 +198,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 99b14880-b827-409b-8797-b49660bb10d5
+    taskid: 57a0484c-830f-431f-8deb-5722865b31f4
     type: condition
     task:
-      id: 99b14880-b827-409b-8797-b49660bb10d5
+      id: 57a0484c-830f-431f-8deb-5722865b31f4
       version: -1
       name: Verify Command Results
+      description: Verify command results from task 'frontline-get-vulns'.
       type: condition
       iscommand: false
       brand: ""
@@ -260,12 +264,14 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: f768e22d-808e-4eed-8abd-1b6a1f423920
+    taskid: bfce8f7a-eb07-4457-891e-57e299bf3526
     type: condition
     task:
-      id: f768e22d-808e-4eed-8abd-1b6a1f423920
+      id: bfce8f7a-eb07-4457-891e-57e299bf3526
       version: -1
       name: Verify Command Results
+      description: Verify command results from task 'frontline-get-assets (get all
+        assets)'.
       type: condition
       iscommand: false
       brand: ""

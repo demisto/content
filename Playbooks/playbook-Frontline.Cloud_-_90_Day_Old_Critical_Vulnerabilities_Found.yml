@@ -31,12 +31,14 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: faf51086-4513-4c89-870c-d073e8bf37e2
+    taskid: 16d7c975-429e-4ecb-86fb-1b3307d78cdf
     type: regular
     task:
-      id: faf51086-4513-4c89-870c-d073e8bf37e2
+      id: 16d7c975-429e-4ecb-86fb-1b3307d78cdf
       version: -1
       name: Frontline-get-vulns (critical vulns older than 90 days)
+      description: Pulls critical level vulnerabilities found to be older than 90
+        days.
       script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
@@ -74,12 +76,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 8e32639d-b91e-49f5-8a28-a3e4f3d05aca
+    taskid: a0774faa-738e-477d-8f27-879e5d628e17
     type: condition
     task:
-      id: 8e32639d-b91e-49f5-8a28-a3e4f3d05aca
+      id: a0774faa-738e-477d-8f27-879e5d628e17
       version: -1
       name: Were vulnerabilities found?
+      description: Checks results of previous task.
       type: condition
       iscommand: false
       brand: ""

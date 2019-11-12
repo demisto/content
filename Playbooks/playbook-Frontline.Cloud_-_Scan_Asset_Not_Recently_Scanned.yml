@@ -73,12 +73,13 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 02689001-949f-4075-8cc8-590a7cfe6e9e
+    taskid: e99c9dd0-98af-46da-81d6-03fc156e9be9
     type: condition
     task:
-      id: 02689001-949f-4075-8cc8-590a7cfe6e9e
+      id: e99c9dd0-98af-46da-81d6-03fc156e9be9
       version: -1
       name: Has been scanned within the last 60 days?
+      description: Checks if assets has been scanned within the last 60 days.
       type: condition
       iscommand: false
       brand: ""
@@ -214,12 +215,13 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 4e2754cd-6550-483e-84db-6e65661ab638
+    taskid: ae008a32-8640-43d0-8fc6-6a3eba053b75
     type: regular
     task:
-      id: 4e2754cd-6550-483e-84db-6e65661ab638
+      id: ae008a32-8640-43d0-8fc6-6a3eba053b75
       version: -1
       name: Performing scan
+      description: Perform scan on asset with command 'frontline-scan-asset'
       script: Digital Defense Inc. FrontlineVM|||frontline-scan-asset
       type: regular
       iscommand: true
