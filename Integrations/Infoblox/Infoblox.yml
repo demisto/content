@@ -1,6 +1,6 @@
 category: Authentication
 commonfields:
-  id: infoblox
+  id: Infoblox
   version: -1
 configuration:
 - display: Incident type
@@ -13,13 +13,9 @@ configuration:
   required: true
   type: 0
 - display: User Name
-  name: user
+  name: credentials
   required: false
   type: 9
-- display: Password
-  name: password
-  required: false
-  type: 4
 - defaultvalue: 'true'
   display: Trust any certificate (insecure)
   name: insecure
@@ -30,41 +26,21 @@ configuration:
   required: false
   type: 8
 description: Integration Template
-display: infoblox
-name: infoblox
+display: Infoblox
+name: Infoblox
 script:
   commands:
   - arguments:
     - default: false
-      description: 'This is a list argument, please provide comma separated list (example:
-        "1,2,3"). This item is mandatory so it must be provided in order to use the
-        command.'
+      description: Ip to retrieve the info on.
       isArray: true
-      name: item_ids
+      name: ip
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: Get only active items, acts as boolean
-      isArray: false
-      name: is_active
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context
-      isArray: false
-      name: limit
-      required: false
-      secret: false
     deprecated: false
-    description: Get items from service.
+    description: Get IP info
     execution: false
-    name: example-get-items
+    name: infoblox-get-ip
     outputs:
     - contextPath: Example.Item.ID
       description: Item ID
@@ -72,9 +48,18 @@ script:
     - contextPath: Example.Item.Name
       description: Item name
       type: string
-    - contextPath: Example.Item.CreatedDate
-      description: Item creation date
-      type: date
+  - arguments:
+    - default: false
+      description: The IP to search by
+      isArray: false
+      name: ip
+      required: true
+      secret: false
+    deprecated: false
+    description: Serach IP related objects by a given IP.
+    execution: false
+    name: infoblox-search-related-objects-by-ip
+  dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
   script: '-'

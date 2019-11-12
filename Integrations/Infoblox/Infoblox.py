@@ -27,25 +27,37 @@ INTEGRATION_CONTEXT_NAME = 'Infoblox'
 
 
 class Client(BaseClient):
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
+        super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self.params = params
+
+    def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
+                      data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
+        if params:
+            self.params.update(params)
+        super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data, files,
+                              timeout, resp_type, ok_codes, **kwargs)
+
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
 
         Returns:
             Response JSON
         """
-        return self._http_request('GET', 'version')
+        return self.get_response_policy_zones()
 
-    def list_credentials(self) -> Dict:
+    def get_response_policy_zones(self) -> Dict:
         """Uses to fetch credentials into Demisto
         Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
 
         Returns:
             Response JSON
         """
-        suffix = 'credential'
+        suffix = 'zone_rp'
+        # return self._http_request('GET', suffix, headers={'Authorization': "Basic cGFuOnBhbl8xMjM0NTY="})
         return self._http_request('GET', suffix)
 
-    def list_accounts(self, max_results: int = None) -> Dict:
+    def get_ip(self, ip: str = None) -> Dict:
         """Lists all accounts.
         Args:
             max_results: maximum results to filter.
@@ -53,8 +65,8 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        suffix = 'account'
-        params = assign_params(limit=max_results)
+        suffix = 'ipv4address'
+        params = assign_params(ip_address=ip)
         return self._http_request('GET', suffix, params=params)
 
     def lock_account(self, account_id: AnyStr) -> Dict:
@@ -207,10 +219,11 @@ def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
 def test_module_command(client: Client, *_) -> str:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
-    results = client.test_module()
-    if 'version' in results:
-        return 'ok'
-    raise DemistoException('Test module failed, {}'.format(results))
+    try:
+        _ = client.test_module()
+        return ['ok']
+    except Exception as e:
+        raise DemistoException('Test module failed, {}'.format(e))
 
 
 def fetch_credentials(client: Client) -> list:
@@ -326,7 +339,7 @@ def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
 
 
-def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Returns credentials to user without passwords.
     Args:
         client: Client object
@@ -335,9 +348,9 @@ def list_accounts_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    max_results = int(args.get('max_results')) if args.get('max_results') else None
-    raw_response = client.list_accounts(max_results=max_results)
-    # Filtering out passwords for list_credentials, so it won't get back to the user
+    ip = args.get('ip')
+    raw_response = client.get_ip(ip)
+    return list(raw_response)
     raw_response['account'] = [
         assign_params(keys_to_ignore=['password'], **account) for account in raw_response.get('account', [])
     ]
@@ -419,11 +432,17 @@ def list_vaults_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}'/api/v1'"
+    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.7/"
     verify = not params.get('insecure', False)
     proxy = params.get('proxy') == 'true'
+    user = demisto.get(params, 'credentials.identifier')
+    password = demisto.get(params, 'credentials.password')
+    params = {
+        '_return_as_object': '1',
+        '_return_fields%2b': 'extattrs'
+    }
+    client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=params)
 
-    client = Client(base_url, verify=verify, proxy=proxy)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -431,7 +450,7 @@ def main():  # pragma: no cover
     commands = {
         'test-module': test_module_command,
         'fetch-credentials': fetch_credentials,
-        f'{INTEGRATION_COMMAND_NAME}-list-accounts': list_accounts_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-lock-account': lock_account_command,
         f'{INTEGRATION_COMMAND_NAME}-unlock-account': unlock_account_command,
         f'{INTEGRATION_COMMAND_NAME}-reset-account': reset_account_command,
@@ -448,5 +467,5 @@ def main():  # pragma: no cover
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':  # pragma: no cover
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
     main()
