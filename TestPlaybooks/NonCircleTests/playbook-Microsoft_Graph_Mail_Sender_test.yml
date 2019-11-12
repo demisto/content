@@ -1,5 +1,5 @@
 id: Microsoft Graph Mail Sender - Test
-version: 181
+version: -1
 name: Microsoft Graph Mail Sender - Test
 starttaskid: "0"
 tasks:
