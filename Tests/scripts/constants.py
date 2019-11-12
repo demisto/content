@@ -9,7 +9,7 @@ REPORTS_DIR = 'Reports'
 DASHBOARDS_DIR = 'Dashboards'
 WIDGETS_DIR = 'Widgets'
 INCIDENT_FIELDS_DIR = 'IncidentFields'
-INCIDENT_TYPE_DIR = 'IncidentTypes'
+INCIDENT_TYPES_DIR = 'IncidentTypes'
 INDICATOR_FIELDS_DIR = 'IndicatorFields'
 LAYOUTS_DIR = 'Layouts'
 CLASSIFIERS_DIR = 'Classifiers'
@@ -88,7 +88,7 @@ PACKS_PLAYBOOK_YML_REGEX = r'{}/([^/]+)/{}/([^.]+)\.yml'.format(PACKS_DIR, PLAYB
 PACKS_TEST_PLAYBOOKS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.yml'.format(PACKS_DIR, TEST_PLAYBOOKS_DIR)
 PACKS_CLASSIFIERS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, CLASSIFIERS_DIR)
 PACKS_DASHBOARDS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, DASHBOARDS_DIR)
-PACKS_INCIDENT_TYPES_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, INCIDENT_TYPE_DIR)
+PACKS_INCIDENT_TYPES_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, INCIDENT_TYPES_DIR)
 PACKS_INCIDENT_FIELDS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, INCIDENT_FIELDS_DIR)
 PACKS_LAYOUTS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, LAYOUTS_DIR)
 PACKS_WIDGETS_REGEX = r'{}/([^/]+)/{}/([^.]+)\.json'.format(PACKS_DIR, WIDGETS_DIR)
@@ -105,7 +105,7 @@ PLAYBOOK_REGEX = r'(?!Test){}/playbook-.*\.yml$'.format(PLAYBOOKS_DIR)
 TEST_PLAYBOOK_REGEX = r'{}/playbook-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 TEST_NOT_PLAYBOOK_REGEX = r'{}/(?!playbook).*-.*\.yml$'.format(TEST_PLAYBOOKS_DIR)
 
-INCIDENT_TYPE_REGEX = r'{}/incidenttype-.*\.json$'.format(INCIDENT_TYPE_DIR)
+INCIDENT_TYPE_REGEX = r'{}/incidenttype-.*\.json$'.format(INCIDENT_TYPES_DIR)
 INDICATOR_FIELDS_REGEX = r'{}/incidentfield-.*\.json$'.format(INDICATOR_FIELDS_DIR)
 WIDGETS_REGEX = r'{}/widget-.*\.json$'.format(WIDGETS_DIR)
 DASHBOARD_REGEX = r'{}.*dashboard-.*\.json$'.format(DASHBOARDS_DIR)
@@ -217,7 +217,7 @@ DIR_LIST = [
     REPORTS_DIR,
     DASHBOARDS_DIR,
     WIDGETS_DIR,
-    INCIDENT_TYPE_DIR,
+    INCIDENT_TYPES_DIR,
     INCIDENT_FIELDS_DIR,
     LAYOUTS_DIR,
     CLASSIFIERS_DIR,
