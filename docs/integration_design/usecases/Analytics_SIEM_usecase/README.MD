@@ -11,8 +11,9 @@ Top Use-Cases:
 
 **Analytics & SIEM Integration Example** – ArcSight ESM
 
+## Command Examples
 
-<a name="get-case-example"></a>### as-get-case
+### as-get-case <a name="get-case-example"></a> 
 ---
 Gets information about a single case.
 ##### Base Command
@@ -130,7 +131,7 @@ Gets information about a single case.
     }
 }
 ```
-<a name="update-example"></a> ### as-update-case
+### as-update-case <a name="update-example"></a>
 ---
 Updates a specific case.
 ##### Base Command
