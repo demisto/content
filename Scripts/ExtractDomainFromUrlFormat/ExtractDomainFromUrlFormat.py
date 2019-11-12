@@ -37,12 +37,7 @@ def proofpoint_get_original_url(safe_url):
 
 
 def unescape_url(escaped_url):
-    # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
-        .replace('http:\\\\', 'http://')
-    # Normalize the URL with http prefix
-    if url.find('http:') == 0 and url.find('http://') == -1:
-        url = url.replace('http:', 'http://')
+    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')
     if url.find('http') != 0 and url.find('ftp') != 0:
         return 'http://' + url
     return url
