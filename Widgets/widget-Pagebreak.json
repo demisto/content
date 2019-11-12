@@ -1,0 +1,27 @@
+{
+  "id": "page-break-widget",
+  "version": -1,
+  "modified": "2019-10-29T18:36:21.632663+02:00",
+  "name": "Page Break Widget",
+  "dataType": "incidents",
+  "widgetType": "text",
+  "query": "",
+  "fromVersion": "5.0.0",
+  "description": "Use the page break widget in a report to force a page break before the widgets that follow.",
+  "isPredefined": true,
+  "dateRange": {
+    "period": {
+      "by": "",
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 0,
+      "field": ""
+    }
+  },
+  "params": {
+    "text": "/pagebreak"
+  },
+  "size": 0,
+  "category": "utility"
+}
