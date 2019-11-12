@@ -619,7 +619,6 @@ def create_group():
     object_classes = ["top", "group"]
     dn = args.get('dn')
     group_name = args.get('name')
-    group_class = args.get("group-class")
     group_type_map = {"security": "2147483650", "distribution": "2"}
     group_type = group_type_map[args.get("group-type")]
     if args.get('members'):
