@@ -812,12 +812,11 @@ class MsGraphClient(BaseClient):
         last_fetch = last_run.get('LAST_RUN_TIME')
         exclude_ids = last_run.get('LAST_RUN_IDS', [])
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
-        folder_path_changed = False
+        folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
 
-        if last_run_folder_path != self._folder_to_fetch:
-            # detected folder path change, get new folder id and set flag to true
+        if folder_path_changed:
+            # detected folder path change, get new folder id
             folder_id = self._get_folder_by_path(self._mailbox_to_fetch, self._folder_to_fetch).get('id')
-            folder_path_changed = True
             demisto.info("MS-Graph-Listener: detected file path change, ignored last run.")
         else:
             # LAST_RUN_FOLDER_ID is stored in order to avoid calling _get_folder_by_path method in each fetch
