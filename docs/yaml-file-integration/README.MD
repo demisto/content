@@ -95,8 +95,10 @@ script:
             re_read_documentation()
 
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.7.5.3066
 ```
-Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript.
+Type indicates the language your integration is written in. Demisto currently supports Python and JavaScript. When using Python specifying `subtype` field is required (either: `python2` or `python3`). Additionally, when using Python `dockerimage` should be specified. If `dockerimage` is not specified a default Python 2 image will be used.
 
 ## Commands
 The command section tells Demisto what arguments are required for your command as well as what the outputs are.

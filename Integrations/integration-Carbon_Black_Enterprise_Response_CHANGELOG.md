@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 Added the *decompress* argument to the ***cb-binary-get*** command.
 
 ## [19.9.0] - 2019-09-04

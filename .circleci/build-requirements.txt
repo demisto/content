@@ -8,3 +8,4 @@ paramiko==2.6.0
 boto3==1.10.0
 pyminizip===0.2.4
 git+https://github.com/demisto/demisto-py.git@v1.0.1 # disable-secrets-detection
+requests_mock==1.7.0
