@@ -77,13 +77,8 @@ jobs:
               find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
-              if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
-                then
-                  FORKED_PR=true
-                else
-                  FORKED_PR=false
-              fi
-              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD -f $FORKED_PR
+
+              python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Configure Test Filter
           when: always
