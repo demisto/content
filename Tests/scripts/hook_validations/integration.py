@@ -26,16 +26,21 @@ class IntegrationValidator(YMLBasedValidator):
        current_integration (dict): Json representation of the current integration from the branch.
        old_integration (dict): Json representation of the current integration from master.
     """
-
-    regexes = [
-        INTEGRATION_PY_REGEX,
-        INTEGRATION_YML_REGEX,
-        PACKS_INTEGRATION_PY_REGEX,
-        PACKS_INTEGRATION_YML_REGEX,
-        INTEGRATION_REGEX,
+    beta_regexes = [
         BETA_INTEGRATION_REGEX,
         BETA_INTEGRATION_YML_REGEX
     ]
+    regexes = sum([
+        [
+            INTEGRATION_PY_REGEX,
+            INTEGRATION_YML_REGEX,
+            PACKS_INTEGRATION_PY_REGEX,
+            PACKS_INTEGRATION_YML_REGEX,
+            INTEGRATION_REGEX,
+        ],
+        beta_regexes
+    ], [])
+    scheme_name = 'integration'
 
     def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master', is_added_file=False,
                  is_renamed=False):
@@ -60,6 +65,9 @@ class IntegrationValidator(YMLBasedValidator):
                 except Exception as e:
                     print_warning(Errors.breaking_backwards_no_old_script(e))
                     self.old_integration = None
+
+    def is_valid_scheme(self):
+        return super(IntegrationValidator, self)._is_valid_scheme(self.scheme_name)
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
@@ -322,7 +330,8 @@ class IntegrationValidator(YMLBasedValidator):
             print_error(Errors.duplicate_param(duplicates, self.current_integration))
         return not self._is_valid
 
-    def _get_command_to_args(self, integration_json):
+    @staticmethod
+    def _get_command_to_args(integration_json):
         """Get a dictionary command name to it's arguments.
 
         Args:
@@ -442,9 +451,7 @@ class IntegrationValidator(YMLBasedValidator):
 
     def _is_beta_integration(self):
         """Checks if file is under Beta_integration dir"""
-        return re.match(BETA_INTEGRATION_REGEX, self.file_path, re.IGNORECASE) or \
-               re.match(BETA_INTEGRATION_YML_REGEX, self.file_path, re.IGNORECASE) or \
-               re.match(PACKS_INTEGRATION_PY_REGEX, self.file_path, re.IGNORECASE)
+        return any([re.match(regex, self.file_path, re.IGNORECASE) for regex in self.beta_regexes])
 
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.

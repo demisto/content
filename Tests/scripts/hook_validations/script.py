@@ -2,9 +2,9 @@ import os
 import yaml
 import requests
 
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES
+from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, SCRIPT_REGEX, SCRIPT_YML_REGEX
 from Tests.scripts.hook_validations.yml_based import YMLBasedValidator
-from Tests.test_utils import print_error, print_warning, get_yaml, server_version_compare
+from Tests.test_utils import print_error, print_warning, get_yaml
 from error_constants import Errors
 
 # disable insecure warnings
@@ -20,6 +20,12 @@ class ScriptValidator(YMLBasedValidator):
        current_script (dict): Json representation of the current script from the branch.
        old_script (dict): Json representation of the current script from master.
     """
+    scheme_name = 'script'
+    regexes = [
+        SCRIPT_REGEX,
+        SCRIPT_YML_REGEX,
+
+    ]
 
     def __init__(self, file_path, is_added_file, is_renamed, check_git=True, old_file_path=None,
                  old_git_branch='master'):
@@ -151,10 +157,7 @@ class ScriptValidator(YMLBasedValidator):
 
     def is_docker_image_changed(self):
         """Check if the docker image as been changed."""
-        # Unnecessary to check docker image only on 5.0 and up
-        if server_version_compare(self.old_script.get('fromversion', '0'), '5.0.0') < 0:
-            if self.old_script.get('dockerimage', "") != self.current_script.get('dockerimage', ""):
-                print_error(Errors.breaking_backwards_docker(self.file_path))
-                return True
+        return super(ScriptValidator, self)._is_docker_image_changed(self.old_script, self.current_script)
 
-        return False
+    def is_valid_scheme(self):
+        super(ScriptValidator, self)._is_valid_scheme(self.scheme_name)

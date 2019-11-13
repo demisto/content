@@ -28,7 +28,7 @@ class LayoutValidator(StructureValidator):
         layout = json_dict.get('layout')
         return layout.get('version') != -1
 
-    def is_valid_scheme(self):
+    def _is_valid_scheme(self):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:

@@ -39,8 +39,7 @@ class StructureValidator(object):
         """
         pass
 
-    @abstractmethod
-    def is_valid_scheme(self, schema_name):
+    def _is_valid_scheme(self, schema_name):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:

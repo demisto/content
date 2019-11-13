@@ -9,7 +9,7 @@ from Tests.scripts.constants import PLAYBOOK_REGEX
 def test_scheme_validation_playbook():
     validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-test.yml")
 
-    assert validator.is_valid_scheme(matching_regex=PLAYBOOK_REGEX), \
+    assert validator._is_valid_scheme(matching_regex=PLAYBOOK_REGEX), \
         "Found a problem in the scheme although there is no problem"
 
 
@@ -17,7 +17,7 @@ def test_scheme_validation_invalid_playbook():
     validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-invalid.yml")
 
     try:
-        validator.is_valid_scheme(matching_regex=PLAYBOOK_REGEX)
+        validator._is_valid_scheme(matching_regex=PLAYBOOK_REGEX)
     except TypeError as exc:
         pytest.raises(TypeError, exc)
 

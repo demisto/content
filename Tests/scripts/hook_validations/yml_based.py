@@ -14,11 +14,11 @@ class YMLBasedValidator(StructureValidator):
     def is_backward_compatible(self):
         pass
 
-    @abstractmethod
-    def is_docker_image_changed(self, script):
-        if server_version_compare(script.get('fromversion', '0'), '5.0.0') < 0:
-            if script.get('script', {}).get('dockerimage', "") != \
-                    script.get('script', {}).get('dockerimage', ""):
+    @staticmethod
+    def _is_docker_image_changed(old_script, new_script):
+        if server_version_compare(new_script.get('fromversion', '0'), '5.0.0') < 0:
+            if old_script.get('script', {}).get('dockerimage', "") != \
+                    new_script.get('script', {}).get('dockerimage', ""):
                 return True
         return False
 
@@ -41,10 +41,6 @@ class YMLBasedValidator(StructureValidator):
         for arg in args:
             arg_to_required[arg.get('name')] = arg.get('required', False)
         return arg_to_required
-
-    @abstractmethod
-    def is_arg_changed(self):
-        pass
 
     @staticmethod
     def find_duplicates(arg_list):
