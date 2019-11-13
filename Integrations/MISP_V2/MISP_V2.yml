@@ -15,7 +15,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -50,10 +50,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Supply a tag name to include a tag in the results. To exclude a
-        tag, prepend the tage name it with a '!'. You can also chain several tag commands
-        together with the '&&' operator. Note that you must use semicolors ";"" in
-        the tag search. You cannot use colons ":".
+      description: Supply a tag name to include a tag in the results. To exclude a tag, prepend the tag name it with a '!'. You can specify tags for AND, OR and NOT searches by using the logical operators AND,OR and NOT followed by  ':'  a list of tags separated by comma ',' and ends with semicolons ';'. example - AND:tag1,tag2;OR:tag3;
       isArray: false
       name: tags
       required: false
