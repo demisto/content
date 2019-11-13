@@ -1,5 +1,5 @@
-id: Frontline.Cloud-Test
-version: -1
+id: 536b2926-9c55-4432-8ee4-87ee26039ea3
+version: 24
 name: Frontline.Cloud-Test
 description: This is a test playbook for the Digital Defense Inc. FrontlineVM Integration
 starttaskid: "0"
@@ -64,17 +64,17 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 73b47569-ab38-4036-850d-3c4c93156ea6
+    taskid: d91374ad-a405-4375-89da-51f8fe06e14d
     type: regular
     task:
-      id: 73b47569-ab38-4036-850d-3c4c93156ea6
+      id: d91374ad-a405-4375-89da-51f8fe06e14d
       version: -1
       name: frontline-get-assets (get asset that does not exists)
-      description: Pull asset information from FrontlineVM
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-assets
+      description: Pull asset that does not exists within Frontline.Cloud
+      script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
@@ -156,7 +156,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1530
         }
       }
     note: false
@@ -164,17 +164,17 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 17b786a1-3b2a-4ae9-8b33-e16c809e4c55
+    taskid: e54799b3-b1f9-4f13-8ef5-2705a8127c41
     type: regular
     task:
-      id: 17b786a1-3b2a-4ae9-8b33-e16c809e4c55
+      id: e54799b3-b1f9-4f13-8ef5-2705a8127c41
       version: -1
       name: frontline-get-vulns
-      description: Pull vulnerability information from FrontlineVM
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
+      description: Pull all vulnerability data from Frontline.Cloud
+      script: '|||frontline-get-vulns'
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
@@ -232,17 +232,17 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 87711e89-d35d-4d49-818a-5e8207c51c89
+    taskid: ba3a668c-d982-414f-865d-5d51469e196f
     type: regular
     task:
-      id: 87711e89-d35d-4d49-818a-5e8207c51c89
+      id: ba3a668c-d982-414f-865d-5d51469e196f
       version: -1
       name: frontline-get-assets (get all assets)
-      description: Pull asset information from FrontlineVM
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-assets
+      description: Pull all asset data from Frontline.Cloud
+      script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -302,7 +302,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
+        "height": 1575,
         "width": 380,
         "x": 50,
         "y": 50
