@@ -2081,6 +2081,7 @@ script:
 
         if (records && records.Contents && records.Contents.length > 0) {
             for (var i = 0; i < records.Contents.length; i++) {
+                details = "";
                 logDebug("Number of records is: {0}".format(records.Contents.length));
                 var res = records.Contents[i];
                 logDebug("Current value of res is: {0}".format(JSON.stringify(res)));
@@ -2367,7 +2368,6 @@ script:
         // This function verifies the fields specified in the fieldsToValue argument are known by Archer to be compatible with the given app ID.
         var userSpecifiedFields = Object.keys(fieldsToValueJSON);
         var actualFieldsOfGivenApp = Object.keys(appFieldMapping);
-        logInfo("type of actualFieldsOfGivenApp: {0}".format(JSON.stringify(actualFieldsOfGivenApp)));
         userSpecifiedFields.forEach(function(fieldSpecifiedByUser) {
             if (!(actualFieldsOfGivenApp.indexOf(fieldSpecifiedByUser) > -1)) {
                 var wrongFieldErrorMessage = "Error: you've specified the following field in the arg fieldsToValues: {0}, which does not exist for records of the app ID: {1}. \n".format(fieldSpecifiedByUser, appID);
@@ -2948,8 +2948,9 @@ script:
         if (params.timeZone === '0') {
             tz = 0;
         }
-        var offset = tz ? (60 * 1000 * new Date().getTimezoneOffset()) : 0;
-        offset = tz ? parseInt(tz) : 0;
+
+        // The offset is given in milliseconds, thus multiplying by 1000.
+        offset = tz ? 60 * 1000 * parseInt(tz) : 60 * 1000 * new Date().getTimezoneOffset();
 
         var cmd = commands.searchRecords;
         var incidentRes = [];
@@ -2957,7 +2958,9 @@ script:
 
         var day = 60 * 1000 * 60 * 24;
         var lastTime = lastRun.lastTime;
+        var shouldAddOffset = false;
         if (!lastTime) {
+            shouldAddOffset = true;
             lastTime = new Date().getTime() - (day * 1);
         }
         dataArgs.applicationId = dataArgs.applicationId || params.fetchApplicationId ;
@@ -2976,10 +2979,12 @@ script:
         var incidents = createIncidentsArr(results, dataArgs.applicationId);
         logDebug("Incidents returned are: {0}".format(incidents.toString()));
         if (incidents.length > 0){
+            shouldAddOffset = true;
             lastTime = incidents[incidents.length-1].occurred;
+            lastTime = lastTime.getTime()
         }
-
-        setLastRun({ lastTime: lastTime + offset});
+        var newLastTime = shouldAddOffset ? lastTime + offset : lastTime;
+        setLastRun({ lastTime: newLastTime});
         return (JSON.stringify(incidents));
     }
 

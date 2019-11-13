@@ -1,0 +1,153 @@
+id: Isolate Endpoint - Generic
+version: -1
+name: Isolate Endpoint - Generic
+fromversion: 4.5.0
+description: |-
+  This playbook isolates a given endpoint using the following integrations:
+  - Carbon Black Enterprise Response
+  - Palo Alto Networks Traps
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c28a842f-4020-44b3-87be-61b3e4d321d5
+    type: start
+    task:
+      id: c28a842f-4020-44b3-87be-61b3e4d321d5
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d9b85b38-149f-4d94-87f5-2b988b4768b2
+    type: playbook
+    task:
+      id: d9b85b38-149f-4d94-87f5-2b988b4768b2
+      version: -1
+      name: Block Endpoint - Carbon Black Response
+      description: Carbon Black Response - isolate an endpoint, given a hostname.
+      playbookName: Block Endpoint - Carbon Black Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 5d7c932e-551c-4771-852a-3213db3e26aa
+    type: title
+    task:
+      id: 5d7c932e-551c-4771-852a-3213db3e26aa
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5118e345-64b7-48a0-8fa8-29b13a7920de
+    type: playbook
+    task:
+      id: 5118e345-64b7-48a0-8fa8-29b13a7920de
+      version: -1
+      name: Traps Isolate Endpoint
+      playbookName: Traps Isolate Endpoint
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      EndpointId:
+        complex:
+          root: inputs.EndpointId
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: Hostname of the endpoint to block.
+- key: EndpointId
+  value: {}
+  required: false
+  description: Endpoint ID to isolate using Traps.
+outputs: []
+tests:
+  - No Test
