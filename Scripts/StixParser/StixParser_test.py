@@ -224,5 +224,12 @@ class TestStix1:
 def test_dict_no_stix(mocker):
     from StixParser import stix2_to_demisto
     mock_demisto(mocker)
-    with pytest.raises(SystemExit):
+    is_exception = False
+    try:
         stix2_to_demisto({"not stix": []})
+    except SystemExit as e:
+        is_exception = True
+        assert demisto.results.call_args[0][0]['Contents'] == 'No STIX2 object could be parsed'
+    finally:
+        if not is_exception:
+            pytest.fail("System error not thrown!")
