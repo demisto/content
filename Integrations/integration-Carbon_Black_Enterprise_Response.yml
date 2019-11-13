@@ -728,12 +728,13 @@ script:
 
         else {
             let fileEntries = decompressFile(fileEntryId);
+
             fileEntries.forEach(fileEntry => {
                 entries.push({
                     Type: fileEntry.Type,
                     FileID: fileEntry.FileID,
                     File: fileEntry.File,
-                    Contents: fileEntry.Contents
+                    Contents: ""
                 });
             });
         }
@@ -1365,7 +1366,8 @@ script:
       - "yes"
       - "no"
       defaultValue: "yes"
-      description: Whether to decompress results
+      description: "Whether to decompress results.\n
+      **Note: This argument should be 'no' - currently the extracted files are empty**"
     outputs:
     - contextPath: File.DigSig.Publisher
       description: The publisher of the Digital Signature
