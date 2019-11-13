@@ -219,7 +219,7 @@ def get_script_data(file_path, script_code=None):
 
 def get_depends_on(data_dict):
     depends_on = data_dict.get('dependson', {}).get('must', [])
-    depends_on_list = list(set([cmd.split('|')[-1] for cmd in depends_on]))
+    depends_on_list = list(set(cmd.split('|')[-1] for cmd in depends_on))
     command_to_integration = {}
     for cmd in depends_on:
         splitted_cmd = cmd.split('|')
@@ -324,16 +324,15 @@ def process_integration(file_path):
         if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
-
     else:
+        # package integration
+        package_name = os.path.basename(file_path)
+        file_path = os.path.join(file_path, '{}.yml'.format(package_name))
         if os.path.isfile(file_path):
-            if checked_type(file_path, PACKS_INTEGRATION_YML_REGEX):
-                print("adding {0} to id_set".format(file_path))
-                res.append(get_integration_data(file_path))
-        else:
-            for yml_file in glob.glob(os.path.join(file_path, os.path.basename(file_path) + '.yml')):
-                print("adding {0} to id_set".format(yml_file))
-                res.append(get_integration_data(yml_file))
+            # locally, might have leftover dirs without committed files
+            print("adding {0} to id_set".format(file_path))
+            res.append(get_integration_data(file_path))
+
     return res
 
 
@@ -344,26 +343,23 @@ def process_script(file_path):
             print("adding {0} to id_set".format(file_path))
             res.append(get_script_data(file_path))
     else:
+        # package script
         yml_path, code = get_script_package_data(file_path)
         print("adding {0} to id_set".format(file_path))
         res.append(get_script_data(yml_path, script_code=code))
+
     return res
 
 
 def process_playbook(file_path):
     res = []
-    if os.path.isfile(file_path):
-        if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX)):
-            print('adding {0} to id_set'.format(file_path))
-            res.append(get_playbook_data(file_path))
-    else:
-        for yml_file in glob.glob(os.path.join(file_path, '*.yml')):
-            print("adding {0} to id_set".format(yml_file))
-            res.append(get_playbook_data(yml_file))
+    if checked_type(file_path, (PACKS_PLAYBOOK_YML_REGEX, PLAYBOOK_REGEX, BETA_PLAYBOOK_REGEX)):
+        print('adding {0} to id_set'.format(file_path))
+        res.append(get_playbook_data(file_path))
     return res
 
 
-def process_testplaybook_path(file_path):
+def process_test_playbook_path(file_path):
     """
     Process a yml file in the testplyabook dir. Maybe either a script or playbook
 
@@ -376,10 +372,13 @@ def process_testplaybook_path(file_path):
     print("adding {0} to id_set".format(file_path))
     script = None
     playbook = None
-    if checked_type(file_path, (TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
-        script = get_script_data(file_path)
-    elif checked_type(file_path, (TEST_PLAYBOOK_REGEX, PACKS_TEST_PLAYBOOKS_REGEX)):
-        playbook = get_playbook_data(file_path)
+    if checked_type(file_path, (TEST_SCRIPT_REGEX, PACKS_TEST_PLAYBOOKS_REGEX, TEST_PLAYBOOK_REGEX)):
+        yml_data = get_yaml(file_path)
+        if 'commonfields' in yml_data:
+            # script files contain this key
+            script = get_script_data(file_path)
+        else:
+            playbook = get_playbook_data(file_path)
 
     return playbook, script
 
@@ -458,7 +457,7 @@ def re_create_id_set():
         scripts_list.extend(arr)
 
     print_color("Starting iterating over TestPlaybooks", LOG_COLORS.GREEN)
-    for pair in pool.map(process_testplaybook_path, get_test_playbooks_paths()):
+    for pair in pool.map(process_test_playbook_path, get_test_playbooks_paths()):
         if pair[0]:
             testplaybooks_list.append(pair[0])
         if pair[1]:
@@ -484,7 +483,7 @@ def re_create_id_set():
 
 def find_duplicates(id_set):
     scripts = id_set['scripts']
-    script_ids = set([script.keys()[0] for script in scripts])
+    script_ids = set(list(script.keys())[0] for script in scripts)
 
     scripts_list = []
     for script_id in script_ids:
@@ -492,7 +491,7 @@ def find_duplicates(id_set):
             scripts_list.append(script_id)
 
     integrations = id_set['integrations']
-    integration_ids = set([integration.keys()[0] for integration in integrations])
+    integration_ids = set(list(integration.keys())[0] for integration in integrations)
 
     integration_list = []
     for integration_id in integration_ids:
@@ -500,7 +499,7 @@ def find_duplicates(id_set):
             integration_list.append(integration_id)
 
     playbooks = id_set['playbooks']
-    playbook_ids = set([playbook.keys()[0] for playbook in playbooks])
+    playbook_ids = set(list(playbook.keys())[0] for playbook in playbooks)
 
     playbooks_list = []
     for playbook_id in playbook_ids:
@@ -508,7 +507,7 @@ def find_duplicates(id_set):
             integration_list.append(playbook_id)
 
     test_playbooks = id_set['TestPlaybooks']
-    test_playbook_ids = set([test_playbook.keys()[0] for test_playbook in test_playbooks])
+    test_playbook_ids = set(list(test_playbook.keys())[0] for test_playbook in test_playbooks)
 
     test_playbooks_list = []
     for test_playbook_id in test_playbook_ids:
@@ -525,8 +524,8 @@ def has_duplicate(id_set, id_to_check):
         return False
 
     for dup1, dup2 in itertools.combinations(duplicates, 2):
-        dict1 = dup1.values()[0]
-        dict2 = dup2.values()[0]
+        dict1 = list(dup1.values())[0]
+        dict2 = list(dup2.values())[0]
         dict1_from_version = LooseVersion(dict1.get('fromversion', '0.0.0'))
         dict2_from_version = LooseVersion(dict2.get('fromversion', '0.0.0'))
         dict1_to_version = LooseVersion(dict1.get('toversion', '99.99.99'))
@@ -535,13 +534,20 @@ def has_duplicate(id_set, id_to_check):
         if dict1['name'] != dict2['name']:
             print_warning('The following objects has the same ID but different names: '
                           '"{}", "{}".'.format(dict1['name'], dict2['name']))
-        is_duplicate = True
-        if dict1_from_version >= dict2_to_version or \
-                dict2_to_version > dict1_to_version or \
-                dict2_from_version > dict1_to_version or \
-                dict1_from_version > dict2_from_version:
-            is_duplicate = False
-    return is_duplicate
+
+        # A: 3.0.0 - 3.6.0
+        # B: 3.5.0 - 4.5.0
+        # C: 3.5.2 - 3.5.4
+        # D: 4.5.0 - 99.99.99
+        if any([
+                dict1_from_version <= dict2_from_version < dict1_to_version,  # will catch (B, C), (A, B), (A, C)
+                dict1_from_version < dict2_to_version <= dict1_to_version,  # will catch (B, C), (A, C)
+                dict2_from_version <= dict1_from_version < dict2_to_version,  # will catch (C, B), (B, A), (C, A)
+                dict2_from_version < dict1_to_version <= dict2_to_version,  # will catch (C, B), (C, A)
+        ]):
+            return True
+
+    return False
 
 
 def sort(data):
@@ -567,7 +573,7 @@ def update_id_set():
             try:
                 ids_dict = json.load(id_set_file, object_pairs_hook=OrderedDict)
             except ValueError as ex:
-                if "Expecting property name" in ex.message:
+                if "Expecting property name" in str(ex):
                     # if we got this error it means we have corrupted id_set.json
                     # usually it will happen if we merged from master and we had a conflict in id_set.json
                     # so we checkout the id_set.json to be exact as in master and then run update_id_set
@@ -575,7 +581,7 @@ def update_id_set():
                     with open('./Tests/id_set.json', 'r') as id_set_file_from_master:
                         ids_dict = json.load(id_set_file_from_master, object_pairs_hook=OrderedDict)
                 else:
-                    raise ex
+                    raise
 
         test_playbook_set = ids_dict['TestPlaybooks']
         integration_set = ids_dict['integrations']
