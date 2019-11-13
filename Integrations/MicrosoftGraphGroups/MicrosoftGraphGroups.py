@@ -113,7 +113,7 @@ def get_encrypted(content: str, key: str) -> str:
 
 class Client(BaseClient):
     """
-    Client to use in the MS Grpah Groups integration. Overrides BaseClient
+    Client to use in the MS Graph Groups integration. Overrides BaseClient
     """
     def __init__(self, base_url: str, tenant: str, auth_and_token_url: str, auth_id: str, token_retrieval_url: str,
                  enc_key: str, verify: bool, proxy: dict):
