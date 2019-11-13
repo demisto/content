@@ -324,6 +324,7 @@ def process_integration(file_path):
         if checked_type(file_path, (INTEGRATION_REGEX, BETA_INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX)):
             print("adding {0} to id_set".format(file_path))
             res.append(get_integration_data(file_path))
+
     else:
         if os.path.isfile(file_path):
             if checked_type(file_path, PACKS_INTEGRATION_YML_REGEX):
