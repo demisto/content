@@ -1,0 +1,30 @@
+args:
+- default: false
+  description: "Id of the entry contains the ML model to import\t"
+  isArray: false
+  name: entryID
+  required: true
+  secret: false
+- default: false
+  defaultValue: phishing_model
+  description: 'In this name the ML model will be saved '
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+comment: 'import a file contains a ML model '
+commonfields:
+  id: ImportMLModel
+  version: -1
+enabled: true
+name: ImportMLModel
+script: '-'
+subtype: python3
+system: false
+tags:
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.5.3471
+runas: DBotWeakRole
+runonce: false
