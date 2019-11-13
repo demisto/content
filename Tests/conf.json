@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "FrontlineVM",
+            "integrations": "Digital Defense FrontlineVM",
             "playbookID": "Frontline.Cloud-Test",
             "timeout": 500
         },
