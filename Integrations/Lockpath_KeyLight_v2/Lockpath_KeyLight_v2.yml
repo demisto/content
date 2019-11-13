@@ -217,7 +217,7 @@ script:
       type: String
     - contextPath: Keylight.Record.ComponentID
       description: The ID of the component the record is in.
-      type: Unknown
+      type: String
     - contextPath: Keylight.Record.DisplayName
       description: The display name of the record.
       type: String
@@ -294,6 +294,19 @@ script:
       Filters may be applied to return only the records meeting selected criteria.
     execution: false
     name: kl-get-filtered-records
+    outputs:
+    - contextPath: Keylight.Record.ComponentID
+      description: The ID of the component the record is in.
+      type: String
+    - contextPath: Keylight.Record.DisplayName
+      description: The display name of the record.
+      type: String
+    - contextPath: Keylight.Record.FieldValues
+      description: The fields in the record.
+      type: String
+    - contextPath: Keylight.Record.ID
+      description: The record ID.
+      type: Unknown
   - arguments:
     - default: false
       description: The ID of the desired component.
