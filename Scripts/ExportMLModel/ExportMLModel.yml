@@ -1,0 +1,23 @@
+args:
+- default: false
+  description: the name of the model
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+comment: 'export existing ml model to file '
+commonfields:
+  id: b23d841e-055a-45b9-82a5-d577395b8f64
+  version: -1
+enabled: true
+name: ExportMLModel
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.7.5.3471
+runas: DBotWeakRole
+runonce: false
+tags:
+- ml
