@@ -612,6 +612,41 @@ def create_contact():
     demisto.results(demisto_entry)
 
 
+def create_group():
+    assert conn is not None
+    args = demisto.args()
+
+    object_classes = ["top", "group"]
+    dn = args.get('dn')
+    group_name = args.get('name')
+    group_type_map = {"security": "2147483650", "distribution": "2"}
+    group_type = group_type_map[args.get("group-type")]
+    if args.get('members'):
+        members = args.get('members')
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type,
+            "member": members
+        }
+    else:
+        attributes = {
+            "samAccountName": group_name,
+            "groupType": group_type
+        }
+
+    # create group
+    success = conn.add(dn, object_classes, attributes)
+    if not success:
+        raise Exception("Failed to create group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Created group with DN: {}".format(dn)
+    }
+    demisto.results(demisto_entry)
+
+
 ''' UPDATE OBJECT '''
 
 
@@ -892,6 +927,25 @@ def delete_user():
     demisto.results(demisto_entry)
 
 
+def delete_group():
+    assert conn is not None
+    args = demisto.args()
+
+    dn = args.get('dn')
+
+    # delete group
+    success = conn.delete(dn)
+    if not success:
+        raise Exception("Failed to delete group")
+
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': "Deleted group with DN: {}".format(dn)
+    }
+    demisto.results(demisto_entry)
+
+
 '''
     TEST CONFIGURATION
     authenticate user credentials while initializing connection wiith AD server
@@ -1023,6 +1077,12 @@ def main():
 
         if demisto.command() == 'ad-get-group-members':
             search_group_members(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+
+        if demisto.command() == 'ad-create-group':
+            create_group()
+
+        if demisto.command() == 'ad-delete-group':
+            delete_group()
 
     except Exception as e:
         message = "{}\nLast connection result: {}\nLast error from LDAP server: {}".format(
