@@ -551,6 +551,7 @@ def get_test_list(files_string, branch_name):
 
     # Adding a unique test for a json file.
     if is_reputations_json:
+        tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
 
     if is_indicator_json:
