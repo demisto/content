@@ -1940,6 +1940,14 @@
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "integrations": "SecBI",
+            "playbookID": "SecBI-Test",
+            "params": {
+                "API_URL": "https://demisto.secbi.com",
+                "API_KEY": "example_api_key"
+            }
         }
     ],
     "skipped_tests": {

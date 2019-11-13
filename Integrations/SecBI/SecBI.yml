@@ -1,0 +1,122 @@
+category: Network Security
+commonfields:
+  id: SecBI
+  version: -1
+configuration:
+- display: SecBI API URL (e.g. https://demisto.secbi.com)
+  name: API_URL
+  required: true
+  type: 0
+- display: SecBI API key
+  name: API_KEY
+  required: true
+  type: 4
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: A threat, intelligence, and investigation platform, enabled by automation of detection and investigation, including remediation and prevention policy enforcements on all integrated appliances.
+display: SecBI
+name: SecBI
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The Query for which to filter the incident IDs.
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '100'
+      description: Limits the amount of IDs to return. (-1) for all.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns all incident IDs in SecBI.
+    execution: false
+    name: secbi-get-incidents-list
+    outputs:
+    - contextPath: SecBI.IncidentsList
+      description: The SecBI incident IDs List.
+      type: String
+  - arguments:
+    - default: false
+      description: The SecBI incident ID
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a specific SecBI Incident by SecBI incident ID.
+    execution: false
+    name: secbi-get-incident
+    outputs:
+    - contextPath: SecBI.Incident.ID
+      description: The SecBI incident ID
+      type: String
+    - contextPath: SecBI.Incident.Host
+      description: The host names of the SecBI Incident.
+      type: String
+    - contextPath: SecBI.Incident.Identity
+      description: The identities of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.InternalIp
+      description: The internal client IP addresses of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.SIp
+      description: The server IP addresses of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.FirstAppearance
+      description: The first appearance of data of the SecBI incident
+      type: Date
+    - contextPath: SecBI.Incident.LastAppearance
+      description: The last appearance of data of the SecBI incident.
+      type: Date
+  - arguments:
+    - default: false
+      description: The host for which to get a SecBI incident.
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a specific SecBI incident by Host.
+    execution: false
+    name: secbi-get-incident-by-host
+    outputs:
+    - contextPath: SecBI.Incident.ID
+      description: SecBI incident ID.
+      type: String
+    - contextPath: SecBI.Incident.Host
+      description: Host names of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.Identity
+      description: Incident identities of SecBI.
+      type: String
+    - contextPath: SecBI.Incident.InternalIp
+      description: The internal client IP addresses of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.SIp
+      description: The server IP addresses of the SecBI incident.
+      type: String
+    - contextPath: SecBI.Incident.FirstAppearance
+      description: The first appearance of data of the SecBI incident.
+      type: Date
+    - contextPath: SecBI.Incident.LastAppearance
+      description: The last appearance of data of the SecBI incident.
+      type: Date
+  dockerimage: demisto/python3:3.7.5.3066
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
