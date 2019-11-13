@@ -722,7 +722,7 @@ script:
                 Type: entryTypes.file,
                 FileID: fileEntryId,
                 File: 'results.zip',
-                Contents:  fileEntry.Contents
+                Contents:  ""
             };
         }
 
