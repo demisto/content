@@ -225,46 +225,26 @@ def get_field_command(client: Client, args: dict) -> None:
 
 
 def get_record_command(client: Client, args: dict) -> None:
-    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''),
-                          '/ComponentService/GetRecord')
+    path = '/ComponentService/GetDetailRecord' if args.get('detailed', "False") == "True" \
+        else '/ComponentService/GetRecord'
+    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''), path)
 
 
-def get_records_command(client: Client, args: dict) -> None:
+def get_filtered_records_command(client: Client, args: dict) -> None:
     page_size = str(min(int(args.get('page_size', '10')), 100))
     component_id = args.get('component_id', '')
     page_index = args.get('page_index', "0")
     filter_type = args.get('filter_type')
     filter_value = args.get('filter_value', '')
     filter_field_id = args.get('filter_field_id', '')
-    res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetRecords',
+    detailed = '/ComponentService/GetDetailRecords' if args.get('detailed', "False") == "True" \
+        else '/ComponentService/GetRecords'
+    res = client.return_filtered_records(component_id, page_size, page_index, detailed,
                                          filter_type, filter_field_id, filter_value)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
         title += f' with filter: "{filter_type} {filter_value}" on field {filter_field_id}'
-    hr = tableToMarkdown(title, res)
-    return_outputs(hr, ec, res)
-
-
-def get_detail_record_command(client: Client, args: dict) -> None:
-    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''),
-                          '/ComponentService/GetDetailRecord')
-
-
-def get_detail_records_command(client: Client, args: dict) -> None:
-    page_size = str(min(int(args.get('page_size', '10')), 100))
-    component_id = args.get('component_id', '')
-    page_index = args.get('page_index', "0")
-    filter_type = args.get('filter_type')
-    filter_value = args.get('filter_value', '')
-    filter_field_id = args.get('filter_field_id', '')
-    res = client.return_filtered_records(component_id, page_size, page_index, '/ComponentService/GetDetailRecords',
-                                         filter_type, filter_field_id, filter_value)
-    ec = {'Keylight.Record(val.ID == obj.ID)': res}
-    title = f'Records for component {component_id}'
-    if filter_type:
-        title += f' with filter: "{filter_type} {filter_value}"' \
-            f'on field {filter_field_id}'
     hr = tableToMarkdown(title, res)
     return_outputs(hr, ec, res)
 
@@ -377,13 +357,11 @@ def main():
         'kl-get-field': get_field_command,
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
-        'kl-get-filered-records': get_records_command,
+        'kl-get-filtered-records': get_filtered_records_command,
         # 'kl-delete-record': 'ComponentService/DeleteRecord',
         # 'kl-create-record': 'ComponentService/CreateRecord',
         # 'kl-update-record': 'ComponentService/UpdateRecord',
-        'kl-get-detailed-record': get_detail_record_command,
         # 'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
-        'kl-get-detailed-filtered-records': get_detail_records_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
         # 'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
