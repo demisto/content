@@ -1,3 +1,4 @@
+import os
 
 import pytest
 import unittest
@@ -147,46 +148,39 @@ playbook_data_local = {
 
 
 class TestIntegration(unittest.TestCase):
-    def test_get_integration_data(self, is_circle=False):
+    def test_get_integration_data(self):
         """
         Test for getting all the integration data
         """
-        file_path = '~/dev/demisto/content/Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
+        file_path = 'Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
+        cwd_files = os.listdir('.')
+        if file_path not in cwd_files:
+            os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_integration_data(file_path)
-        self.assertDictEqual(data, integration_data_local)
+        self.assertDictEqual(data, integration_data)
 
-        if is_circle:
-            file_path = 'Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
-            data = get_integration_data(file_path)
-            self.assertDictEqual(data, integration_data)
-
-    def test_get_script_data(self, is_circle=False):
+    def test_get_script_data(self):
         """
         Test for getting the script data
         """
-        file_path = '~/dev/demisto/content/Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/' \
-                    'EntryWidgetNumberHostsXDR.yml'
+        file_path = 'Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml'
+        cwd_files = os.listdir('.')
+        if file_path not in cwd_files:
+            os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_script_data(file_path)
-        self.assertDictEqual(data, script_data_local)
+        self.assertDictEqual(data, script_data)
 
-        if is_circle:
-            file_path = 'Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/' \
-                    'EntryWidgetNumberHostsXDR.yml'
-            data = get_script_data(file_path)
-            self.assertDictEqual(data, script_data)
-
-    def test_get_playbook_data(self, is_circle=False):
+    def test_get_playbook_data(self):
         """
         Test for getting the paybook data
         """
-        file_path = '~/dev/demisto/content/Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
+        file_path = 'Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
+        cwd_files = os.listdir('.')
+        if file_path not in cwd_files:
+            os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_playbook_data(file_path)
-        self.assertDictEqual(data, playbook_data_local)
-
-        if is_circle:
-            file_path = 'Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
-            data = get_playbook_data(file_path)
-            self.assertDictEqual(data, playbook_data)
+        one_of_two = data == playbook_data or data == playbook_data_local
+        self.assertTrue(one_of_two, 'didn\'t match one of the two expected options')
 
 
 if __name__ == '__main__':
