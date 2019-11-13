@@ -219,3 +219,10 @@ class TestStix1:
         files_path = "./TestData/stix1/"
         mock_demisto(mocker)
         self._run_on_files(files_path, main, mocker)
+
+
+def test_dict_no_stix(mocker):
+    from StixParser import stix2_to_demisto
+    mock_demisto(mocker)
+    with pytest.raises(SystemExit):
+        stix2_to_demisto({"not stix": []})
