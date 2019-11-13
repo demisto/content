@@ -26,7 +26,7 @@ def client():
     enc_key = "dummy_enc_key"
     token_retrieval_url = "url_to_retrieval"
     app_name = "ms-graph-mail-listener"
-    mailbox_to_fetch = "dummy@mailbox.com"
+    mailbox_to_fetch = "dummy@mailbox.com"  # disable-secrets-detection
     folder_to_fetch = "Phishing"
     first_fetch_interval = "20 minutes"
     emails_fetch_limit = 50
@@ -87,7 +87,7 @@ def test_parse_email_as_label(client):
 
 
 def test_build_recipient_input(client):
-    recipient_input = ["dummy1@rec.com", "dummy2@rec.com", "dummy3@rec.com"]
+    recipient_input = ["dummy1@rec.com", "dummy2@rec.com", "dummy3@rec.com"]  # disable-secrets-detection
     result_recipients_input = client._build_recipient_input(recipient_input)
     expected_recipients_input = [{'emailAddress': {'address': 'dummy1@rec.com'}},
                                  {'emailAddress': {'address': 'dummy2@rec.com'}},
@@ -116,9 +116,9 @@ def test_build_headers_input(client):
 
 def test_build_message(client):
     message_input = {
-        'to_recipients': ['dummy@recipient.com'],
-        'cc_recipients': ['dummyCC@recipient.com'],
-        'bcc_recipients': ['dummyBCC@recipient.com'],
+        'to_recipients': ['dummy@recipient.com'],  # disable-secrets-detection
+        'cc_recipients': ['dummyCC@recipient.com'],  # disable-secrets-detection
+        'bcc_recipients': ['dummyBCC@recipient.com'],  # disable-secrets-detection
         'subject': 'Dummy Subject',
         'body': 'Dummy Body',
         'body_type': 'text',
@@ -131,8 +131,11 @@ def test_build_message(client):
     }
 
     expected_message = {'toRecipients': [{'emailAddress': {'address': 'dummy@recipient.com'}}],
+                        # disable-secrets-detection
                         'ccRecipients': [{'emailAddress': {'address': 'dummyCC@recipient.com'}}],
+                        # disable-secrets-detection
                         'bccRecipients': [{'emailAddress': {'address': 'dummyBCC@recipient.com'}}],
+                        # disable-secrets-detection
                         'subject': 'Dummy Subject', 'body': {'content': 'Dummy Body', 'contentType': 'text'},
                         'bodyPreview': 'Dummy Body', 'importance': 'Normal', 'flag': {'flagStatus': 'flagged'},
                         'attachments': []}
