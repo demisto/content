@@ -39,6 +39,7 @@ tasks:
       description: unshorten a url
       script: '|||cloaken-unshorten-url'
       type: regular
+
       iscommand: true
       brand: ""
     nexttasks:
@@ -215,7 +216,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "9"
+      - "10"
     scriptarguments:
       url:
         simple: https://google.com
@@ -255,9 +256,7 @@ tasks:
     ignoreworker: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "9_7_#default#": 0.68
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1290,
