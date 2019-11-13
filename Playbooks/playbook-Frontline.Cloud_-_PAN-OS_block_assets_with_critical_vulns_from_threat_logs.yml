@@ -105,12 +105,13 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 10436cc9-fc8e-4877-8f22-b76646bb65ea
+    taskid: b42e2ad6-6bf9-4b68-8871-8cead4050c12
     type: condition
     task:
-      id: 10436cc9-fc8e-4877-8f22-b76646bb65ea
+      id: b42e2ad6-6bf9-4b68-8871-8cead4050c12
       version: -1
       name: Log has completed
+      description: Query log status is complete.
       type: condition
       iscommand: false
       brand: ""
@@ -203,22 +204,22 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 0804d959-0212-43af-852b-668ced5d206d
+    taskid: c3573fa6-14b2-4d52-8bba-81bc68cdd7ca
     type: regular
     task:
-      id: 0804d959-0212-43af-852b-668ced5d206d
+      id: c3573fa6-14b2-4d52-8bba-81bc68cdd7ca
       version: -1
-      name: frontline-get-vulns (pull vuln data from threat source)
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
+      name: frontline-get-vulns (pull high severity vulns from threat source)
+      description: Query FrontlineVM for vulnerabilities with a minimum severity of
+        'high' found from Panorama's queried log threat source.
+      script: Digital Defense FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: Digital Defense FrontlineVM
     nexttasks:
       '#none#':
       - "7"
     scriptarguments:
-      days_newer_than: {}
-      days_older_than: {}
       host_id: {}
       ip_address:
         simple: ${Panorama.Monitor.Logs.SourceAddress}
@@ -240,12 +241,13 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: ef58155a-dd57-4f7c-84de-fe366a77f2c1
+    taskid: d2483fcc-2591-4d14-8b50-5c3830c24496
     type: condition
     task:
-      id: ef58155a-dd57-4f7c-84de-fe366a77f2c1
+      id: d2483fcc-2591-4d14-8b50-5c3830c24496
       version: -1
-      name: Check if critical vulns found.
+      name: Check if vulns found.
+      description: Check results of previous task.
       type: condition
       iscommand: false
       brand: ""
@@ -275,10 +277,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: f3212b13-3088-42b6-859d-46e0f291f2f1
+    taskid: 2b4e44d3-d2f7-4fa8-8747-d333567a389c
     type: regular
     task:
-      id: f3212b13-3088-42b6-859d-46e0f291f2f1
+      id: 2b4e44d3-d2f7-4fa8-8747-d333567a389c
       version: -1
       name: Critical vulnerabilities exist within Frontline.Cloud from PAN OS threat
         logs.
@@ -307,10 +309,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: b908714f-bfba-4062-8630-3a9487229cf3
+    taskid: a66a80d3-82d2-4c28-815b-06de2c64525d
     type: regular
     task:
-      id: b908714f-bfba-4062-8630-3a9487229cf3
+      id: a66a80d3-82d2-4c28-815b-06de2c64525d
       version: -1
       name: No critical vulnerabilities found from PAN OS threat logs.
       description: Prints text to war room (Markdown supported)
@@ -365,12 +367,15 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: ad46089d-bf36-4350-8ad8-956060c95c9d
+    taskid: 92380cc5-adee-4bc5-8d15-7b25da58d431
     type: playbook
     task:
-      id: ad46089d-bf36-4350-8ad8-956060c95c9d
+      id: 92380cc5-adee-4bc5-8d15-7b25da58d431
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
+      description: |-
+        This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
       type: playbook
       iscommand: false

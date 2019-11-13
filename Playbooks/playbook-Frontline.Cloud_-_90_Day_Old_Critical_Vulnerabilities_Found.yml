@@ -31,36 +31,28 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 16d7c975-429e-4ecb-86fb-1b3307d78cdf
+    taskid: 4f0bc3c1-b2a1-407b-8fe6-2e4360a4b276
     type: regular
     task:
-      id: 16d7c975-429e-4ecb-86fb-1b3307d78cdf
+      id: 4f0bc3c1-b2a1-407b-8fe6-2e4360a4b276
       version: -1
       name: Frontline-get-vulns (critical vulns older than 90 days)
-      description: Pulls critical level vulnerabilities found to be older than 90
-        days.
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-vulns
+      description: This will query Frontline's active view for any vulnerabilities
+        found to be critical and older than 90 days.
+      script: Digital Defense FrontlineVM|||frontline-get-vulns
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: Digital Defense FrontlineVM
     nexttasks:
       '#none#':
       - "2"
     scriptarguments:
-      days_newer_than: {}
-      days_older_than:
-        simple: "90"
-      daysNewerThan: {}
-      daysOlderThan:
-        simple: "90"
       host_id: {}
-      hostId: {}
       ip_address: {}
       max_days_since_created:
         simple: "90"
       min_days_since_created: {}
       min_severity: {}
-      minSeverity: {}
       severity:
         simple: critical
     separatecontext: false

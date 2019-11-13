@@ -32,17 +32,18 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 38c58547-425f-4ba8-8e6d-5fdbbc55b429
+    taskid: a09127d0-c096-4b65-80f7-0b05efa3ccb0
     type: regular
     task:
-      id: 38c58547-425f-4ba8-8e6d-5fdbbc55b429
+      id: a09127d0-c096-4b65-80f7-0b05efa3ccb0
       version: -1
       name: frontline-get-assets (scanned within last 60 days)
-      description: Pull asset information from FrontlineVM
-      script: Digital Defense Inc. FrontlineVM|||frontline-get-assets
+      description: Gathering the ip from the incident details value, query FrontlineVM
+        to check if the asset has been scanned within the past 60 days.
+      script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -50,15 +51,8 @@ tasks:
       hostname: {}
       ip_address:
         simple: ${incident.details}
-      ipAddress:
-        simple: ${incident.details}
       label_name: {}
-      labelName: {}
       max_days_since_scan:
-        simple: "60"
-      scanned_within_last:
-        simple: "60"
-      scannedWithinLast:
         simple: "60"
     separatecontext: false
     view: |-
@@ -73,10 +67,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: e99c9dd0-98af-46da-81d6-03fc156e9be9
+    taskid: d54922c3-f992-4f0b-88e6-e754bd329bc6
     type: condition
     task:
-      id: e99c9dd0-98af-46da-81d6-03fc156e9be9
+      id: d54922c3-f992-4f0b-88e6-e754bd329bc6
       version: -1
       name: Has been scanned within the last 60 days?
       description: Checks if assets has been scanned within the last 60 days.
@@ -109,10 +103,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 642bf18c-816d-4564-890e-959a15f980db
+    taskid: 1c6a8431-2d09-4128-8bae-f4a655a0c303
     type: regular
     task:
-      id: 642bf18c-816d-4564-890e-959a15f980db
+      id: 1c6a8431-2d09-4128-8bae-f4a655a0c303
       version: -1
       name: Asset has already been scanned.
       description: Prints text to war room (Markdown supported)
@@ -139,10 +133,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 68c26db0-6bf7-48a2-828c-a828c7e17613
+    taskid: f74b727d-f10f-4961-8c5a-4d3950117f88
     type: condition
     task:
-      id: 68c26db0-6bf7-48a2-828c-a828c7e17613
+      id: f74b727d-f10f-4961-8c5a-4d3950117f88
       version: -1
       name: Asset has not been scanned.
       description: Check whether the values provided in arguments are equal. If either
@@ -188,10 +182,10 @@ tasks:
       - No, do not perform scan
   "5":
     id: "5"
-    taskid: bf811638-a03f-4103-86a8-6db566430572
+    taskid: 94008e29-1942-4b20-8e4c-ace31eb09de2
     type: regular
     task:
-      id: bf811638-a03f-4103-86a8-6db566430572
+      id: 94008e29-1942-4b20-8e4c-ace31eb09de2
       version: -1
       name: Will not perform scan
       description: Prints text to war room (Markdown supported)
@@ -215,17 +209,17 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: ae008a32-8640-43d0-8fc6-6a3eba053b75
+    taskid: 768c960e-59fe-4595-8b7b-ab7d77c0b332
     type: regular
     task:
-      id: ae008a32-8640-43d0-8fc6-6a3eba053b75
+      id: 768c960e-59fe-4595-8b7b-ab7d77c0b332
       version: -1
       name: Performing scan
-      description: Perform scan on asset with command 'frontline-scan-asset'
-      script: Digital Defense Inc. FrontlineVM|||frontline-scan-asset
+      description: When confirmed, will perform scan on asset provided by the incident.
+      script: '|||frontline-scan-asset'
       type: regular
       iscommand: true
-      brand: Digital Defense Inc. FrontlineVM
+      brand: ""
     scriptarguments:
       ip_address:
         simple: ${incident.details}

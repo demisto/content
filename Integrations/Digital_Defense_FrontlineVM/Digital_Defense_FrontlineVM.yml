@@ -1,8 +1,8 @@
 commonfields:
   id: FrontlineVM
   version: -1
-name: Digital Defense Inc. FrontlineVM
-display: Digital Defense Inc. FrontlineVM
+name: Digital Defense FrontlineVM
+display: Digital Defense FrontlineVM
 category: Vulnerability Management
 description: Digital Defense Inc.'s Frontline Vulnerability Management solution comprehensively
   identifies and evaluates the security and business risk postures of network devices
