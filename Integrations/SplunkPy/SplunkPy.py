@@ -19,7 +19,7 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(demisto.params().get('unsecure'))
 FETCH_LIMIT = int(demisto.params().get('fetch_limit', 50))
-FETCH_LIMIT = max(min(50, FETCH_LIMIT), 1)
+FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 
 
 def get_current_splunk_time(splunk_service):
