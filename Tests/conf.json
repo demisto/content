@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "JsonWhoIs",
+            "playbookID": "JsonWhoIs-Test"
+        },
+        {
             "integrations": "nmap",
             "playbookID": "Nmap - Test"
         },
@@ -19,6 +23,11 @@
         {
             "integrations": "AttackIQFireDrill",
             "playbookID": "AttackIQ - Test"
+        },
+        {
+            "playbookID": "Create Phishing Classifier V2 ML Test",
+            "timeout" : 60000,
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "ZeroFox",
@@ -223,6 +232,10 @@
             "playbookID": "ExtraHop-Test"
         },
         {
+            "integrations": "ExtraHop v2",
+            "playbookID": "ExtraHop_v2-Test"
+        },
+        {
             "playbookID": "Test CommonServer"
         },
         {
@@ -250,7 +263,7 @@
         },
         {
             "playbookID": "CreatePhishingClassifierMLTest",
-            "timeout" : 2400
+            "timeout": 2400
         },
         {
             "integrations": "Cymon",
@@ -286,10 +299,10 @@
             "playbookID": "awake_security_test_pb"
         },
         {
-          "integrations": "Tenable.sc",
-          "playbookID": "tenable-sc-test",
-          "timeout": 240,
-          "nightly": true
+            "integrations": "Tenable.sc",
+            "playbookID": "tenable-sc-test",
+            "timeout": 240,
+            "nightly": true
         },
         {
             "integrations": "MimecastV2",
@@ -300,13 +313,13 @@
             "fromversion": "4.1.0"
         },
         {
-          "playbookID": "ReadPDFFile-Test"
+            "playbookID": "ReadPDFFile-Test"
         },
         {
             "playbookID": "ReadPDFFileV2-Test"
         },
         {
-          "playbookID": "JSONtoCSV-Test"
+            "playbookID": "JSONtoCSV-Test"
         },
         {
             "integrations": "Panorama",
@@ -344,20 +357,20 @@
             "nightly": true
         },
         {
-          "integrations": "Tenable.io",
-          "playbookID": "Tenable.io test"
+            "integrations": "Tenable.io",
+            "playbookID": "Tenable.io test"
         },
         {
-          "playbookID": "URLDecode-Test"
+            "playbookID": "URLDecode-Test"
         },
         {
-          "playbookID": "GetTime-Test"
+            "playbookID": "GetTime-Test"
         },
         {
-          "integrations": "Tenable.io",
-          "playbookID": "Tenable.io Scan Test",
-          "nightly": true,
-          "timeout": 900
+            "integrations": "Tenable.io",
+            "playbookID": "Tenable.io Scan Test",
+            "nightly": true,
+            "timeout": 900
         },
         {
             "integrations": "Tenable.sc",
@@ -485,8 +498,8 @@
             "playbookID": "block_indicators_-_generic_-_test"
         },
         {
-          "integrations": "Signal Sciences WAF",
-          "playbookID": "SignalSciences-Test"
+            "integrations": "Signal Sciences WAF",
+            "playbookID": "SignalSciences-Test"
         },
         {
             "integrations": "RTIR",
@@ -495,18 +508,18 @@
         {
             "integrations": "RedCanary",
             "playbookID": "RedCanaryTest",
-            "nightly" : true
+            "nightly": true
         },
         {
-          "integrations": "Devo",
-          "playbookID": "devo_test_playbook"
+            "integrations": "Devo",
+            "playbookID": "devo_test_playbook"
         },
         {
-          "playbookID": "URL Enrichment - Generic v2 - Test",
-          "integrations": [
-              "Rasterize",
-              "VirusTotal - Private API"
-          ],
+            "playbookID": "URL Enrichment - Generic v2 - Test",
+            "integrations": [
+                "Rasterize",
+                "VirusTotal - Private API"
+            ],
             "instance_names": "virus_total_private_api_general",
             "timeout": 500
         },
@@ -601,7 +614,8 @@
             "integrations": "Preempt",
             "playbookID": "Preempt Test"
         },
-        {   "integrations": "Gmail",
+        {
+            "integrations": "Gmail",
             "playbookID": "get_original_email_-_gmail_-_test"
         },
         {
@@ -609,7 +623,7 @@
             "playbookID": "get_original_email_-_ews-_test"
         },
         {
-            "integrations": ["EWS v2","EWS Mail Sender"],
+            "integrations": ["EWS v2", "EWS Mail Sender"],
             "playbookID": "EWS search-mailbox test",
             "timeout": 300
         },
@@ -687,7 +701,7 @@
             "playbookID": "CrowdStrike Falcon Intel v2"
         },
         {
-          "playbookID": "ContextGetters_Test"
+            "playbookID": "ContextGetters_Test"
         },
         {
             "integrations": [
@@ -807,8 +821,8 @@
             "playbookID": "CrowdStrike Endpoint Enrichment - Test"
         },
         {
-          "integrations": "FalconHost",
-          "playbookID": "crowdstrike_falconhost_test"
+            "integrations": "FalconHost",
+            "playbookID": "crowdstrike_falconhost_test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -892,9 +906,9 @@
             "playbookID": "SplunkPySearch_Test"
         },
         {
-            "integrations" : "McAfee NSM",
-            "playbookID" : "McAfeeNSMTest",
-            "timeout" : 400,
+            "integrations": "McAfee NSM",
+            "playbookID": "McAfeeNSMTest",
+            "timeout": 400,
             "nightly": true
         },
         {
@@ -904,7 +918,7 @@
         {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
-            "timeout" : 500
+            "timeout": 500
         },
         {
             "integrations": "TCPIPUtils",
@@ -1091,7 +1105,7 @@
             "nightly": true
         },
         {
-            "integrations":"Cylance Protect",
+            "integrations": "Cylance Protect",
             "playbookID": "get_file_sample_by_hash_-_cylance_protect_-_test",
             "timeout": 240
         },
@@ -1126,7 +1140,7 @@
         {
             "integrations": "icebrg",
             "playbookID": "Icebrg Test",
-            "timeout" : 500
+            "timeout": 500
         },
         {
             "integrations": "Symantec MSS",
@@ -1189,8 +1203,8 @@
             "nightly": true
         },
         {
-            "integrations" : "jira",
-            "playbookID" : "JiraCreateIssue-example-test"
+            "integrations": "jira",
+            "playbookID": "JiraCreateIssue-example-test"
         },
         {
             "integrations": "LogRhythm",
@@ -1273,14 +1287,14 @@
             "playbookID": "ExifReadTest"
         },
         {
-          "integrations": "Cuckoo Sandbox",
-          "playbookID": "CuckooTest",
-          "timeout": 700
+            "integrations": "Cuckoo Sandbox",
+            "playbookID": "CuckooTest",
+            "timeout": 700
         },
         {
-            "integrations" : "VxStream",
-            "playbookID" : "Test-Detonate URL - Crowdstrike",
-            "timeout" : 1200
+            "integrations": "VxStream",
+            "playbookID": "Test-Detonate URL - Crowdstrike",
+            "timeout": 1200
         },
         {
             "playbookID": "Detonate File - Generic Test",
@@ -1294,9 +1308,9 @@
                 "VxStream",
                 "McAfee Advanced Threat Defense"
             ],
-            "playbookID" : "Detonate File - Generic Test",
-            "timeout" : 2400,
-            "nightly" : true
+            "playbookID": "Detonate File - Generic Test",
+            "timeout": 2400,
+            "nightly": true
         },
         {
             "playbookID": "detonate_file_-_generic_test",
@@ -1306,14 +1320,14 @@
             "playbookID": "STIXParserTest"
         },
         {
-           "playbookID": "Detonate URL - Generic Test",
-           "timeout": 2000,
-           "nightly": true,
-           "integrations": [
-             "McAfee Advanced Threat Defense",
-             "VxStream",
-             "Lastline"
-           ]
+            "playbookID": "Detonate URL - Generic Test",
+            "timeout": 2000,
+            "nightly": true,
+            "integrations": [
+                "McAfee Advanced Threat Defense",
+                "VxStream",
+                "Lastline"
+            ]
         },
         {
             "playbookID": "ReadPDFFile-Test"
@@ -1504,6 +1518,18 @@
             "playbookID": "FilterByList - Test",
             "fromversion": "4.5.0"
         },
+            {
+            "playbookID": "Impossible Traveler - Test",
+            "integrations": [
+                "Ipstack",
+                "ipinfo",
+                "Rasterize",
+                "Active Directory Query v2",
+                "Demisto REST API"
+            ],
+            "fromversion": "5.0.0",
+            "timeout": 700
+        },
         {
             "integrations": "Kafka V2",
             "playbookID": "Kafka Test"
@@ -1530,7 +1556,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1200
+            "timeout": 1500
         },
         {
             "integrations": "McAfee Active Response",
@@ -1620,7 +1646,7 @@
         },
         {
             "playbookID": "PAN-OS EDL Setup Test",
-            "integrations": ["Panorama","palo_alto_networks_pan_os_edl_management"],
+            "integrations": ["Panorama", "palo_alto_networks_pan_os_edl_management"],
             "instance_names": "palo_alto_panorama",
             "timeout": 1000
         },
@@ -1855,7 +1881,7 @@
             "playbookID": "Bluecat Address Manager test"
         },
         {
-            "integrations": "MailListener - POP3",
+            "integrations": "MailListener - POP3 Beta",
             "playbookID": "MailListener-POP3 - Test"
         },
         {
@@ -1905,13 +1931,19 @@
         {
             "integrations": "Kenna",
             "playbookID": "Kenna Test"
+        },
+        {
+            "integrations": "SecurityAdvisor",
+            "playbookID": "SecurityAdvisor-Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Google Key Management Service",
+            "playbookID": "Google-KMS-test"
         }
     ],
     "skipped_tests": {
         "NetWitness Endpoint Test": "Issue 19878",
-        "IntSights Test": "Issue 19869",
-        "ThreatQ - Test": "Issue 19468",
-        "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
@@ -1942,7 +1974,6 @@
         "ssdeepreputationtest": "Issue 19845",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
-        "Intezer Testing": "Issue 19853",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
@@ -1957,7 +1988,7 @@
         "Test Playbook TrendMicroDDA": "Manual test"
     },
     "skipped_integrations": {
-      "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
+        "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
@@ -1968,6 +1999,7 @@
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
+        "ExtraHop v2": "No instance",
         "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "PolySwarm": "contribution",
         "fireeye": "Issue 19839",
@@ -1975,15 +2007,14 @@
         "Remedy On-Demand": "Issue 19835",
 
 
-      "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Microsoft Graph": "Issue 20096",
+        "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
-        "Palo Alto Networks Cortex": "Issue 19871",
         "CrowdstrikeFalcon": "Issue 19833",
-        "intsights": "Issue 19694",
         "ZeroFox": "Issue 19161",
         "Jask": "Issue 18879",
-        "SumoLogic": "Issue 18441",
         "Lastline": "Issue 19855",
         "vmray": "Issue 18752",
         "Anomali ThreatStream v2": "Issue 19182",
@@ -2018,21 +2049,20 @@
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
 
-      "_comment": "~~~ UNSTABLE ~~~",
+        "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
         "SlackV2": "Issue 19558",
 
-      "_comment": "~~~ OTHER ~~~",
+        "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
-        "MailListener - POP3": "Issue 18580",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
 
-      "_comment": "~~~ QUOTA ISSUES ~~~",
+        "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
         "VirusTotal - Private API": "reached api alloted quota.",
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
@@ -2044,6 +2074,7 @@
         "SlackV2"
     ],
     "unmockable_integrations": {
+        "Google Key Management Service": "The API requires an SSL secure connection to work",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
