@@ -52,8 +52,10 @@ XDR_INCIDENT_FIELDS = [
 ]
 
 
-def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id, fields_mapping):
-    modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp() * 1000
+def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id,
+                                               fields_mapping):
+
+    modified_in_demisto = int(parser.parse(incident_in_demisto.get("modified")).timestamp()) * 1000
     modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
 
     incident_in_demisto_was_modified = False
@@ -182,7 +184,7 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
     args_to_str = ""
     args_copy = copy.deepcopy(demisto_args)
 
-    if isinstance(latest_incident_in_xdr, dict):
+    if latest_incident_in_xdr and isinstance(latest_incident_in_xdr, dict):
         args_copy["xdr_incident_from_previous_run"] = json.dumps(latest_incident_in_xdr)
 
     args_copy["first"] = "false"
@@ -241,10 +243,12 @@ def xdr_incident_sync(incident_id, fields_mapping, xdr_incident_from_previous_ru
     if incident_in_demisto_was_modified:
         # update xdr and finish the script
         demisto.debug("the incident in demisto was modified, updating the incident in xdr accordingly. ")
-        demisto.debug("xdr_update_args: {}".format(json.dumps(xdr_update_args, indent=4)))
-        res = demisto.executeCommand("xdr-update-incident", xdr_update_args)
-        if is_error(res):
-            raise ValueError(get_error(res))
+
+        if xdr_update_args:
+            demisto.debug("xdr_update_args: {}".format(json.dumps(xdr_update_args, indent=4)))
+            res = demisto.executeCommand("xdr-update-incident", xdr_update_args)
+            if is_error(res):
+                raise ValueError(get_error(res))
 
         latest_incident_in_xdr_result, latest_incident_in_xdr, latest_incident_in_xdr_markdown = \
             get_latest_incident_from_xdr(incident_id)
