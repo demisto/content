@@ -3,10 +3,17 @@ import time
 from pprint import pformat
 import uuid
 import urllib
+import urllib3
+import ast
 import requests.exceptions
+from demisto_client.demisto_api.rest import ApiException
+import demisto_client
 
 from Tests.test_utils import print_error, print_warning, print_color, LOG_COLORS
 from Tests.scripts.constants import PB_Status
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60
@@ -19,17 +26,20 @@ ENTRY_TYPE_ERROR = 4
 
 # get integration configuration
 def __get_integration_config(client, integration_name):
-    res = client.req('POST', '/settings/integration/search', {
+    body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
-    })
+    }
+    res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
+                                                  method='POST', body=body)
 
-    res = res.json()
+    res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
     SLEEP_INTERVAL = 5
     total_sleep = 0
     while 'configurations' not in res:
         if total_sleep == TIMEOUT:
-            print_error("Timeout - failed to get integration {} configuration. Error: {}".format(integration_name, res))
+            print_error("Timeout - failed to get integration {} configuration. Error: {}".format(
+                integration_name, res))
             return None
 
         time.sleep(SLEEP_INTERVAL)
@@ -48,16 +58,21 @@ def __get_integration_config(client, integration_name):
 # __test_integration_instance
 def __test_integration_instance(client, module_instance):
     try:
-        res = client.req('POST', '/settings/integration/test', module_instance)
-    except requests.exceptions.RequestException as conn_err:
-        print_error('Failed to test integration instance, error trying to communicate with demisto server: {} '.format(
-            conn_err))
+        response_data, response_code, _ = demisto_client.generic_request_func(self=client, method='POST',
+                                                                              path='/settings/integration/test',
+                                                                              body=module_instance)
+    except ApiException as conn_err:
+        print_error(
+            'Failed to test integration instance, error trying to communicate with demisto '
+            'server: {} '.format(
+                conn_err))
         return False
-    if res.status_code != 200:
-        print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(res.status_code))
+    if int(response_code) != 200:
+        print_error('Integration-instance test ("Test" button) failed.\nBad status code: ' + str(
+            response_code))
         return False
 
-    result_object = res.json()
+    result_object = ast.literal_eval(response_data)
     success = result_object['success']
     if not success:
         print_error('Test integration failed.\n Failure message: ' + result_object['message'])
@@ -67,8 +82,10 @@ def __test_integration_instance(client, module_instance):
 
 
 # return instance name if succeed, None otherwise
-def __create_integration_instance(client, integration_name, integration_instance_name, integration_params, is_byoi):
-    print('Configuring instance for {} (instance name: {})'.format(integration_name, integration_instance_name))
+def __create_integration_instance(client, integration_name, integration_instance_name,
+                                  integration_params, is_byoi):
+    print('Configuring instance for {} (instance name: {})'.format(integration_name,
+                                                                   integration_instance_name))
     # get configuration config (used for later rest api
     configuration = __get_integration_config(client, integration_name)
     if not configuration:
@@ -78,7 +95,8 @@ def __create_integration_instance(client, integration_name, integration_instance
     if not module_configuration:
         module_configuration = []
 
-    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'), str(uuid.uuid4()))
+    instance_name = '{}_test_{}'.format(integration_instance_name.replace(' ', '_'),
+                                        str(uuid.uuid4()))
     # define module instance
     module_instance = {
         'brand': configuration['name'],
@@ -117,17 +135,21 @@ def __create_integration_instance(client, integration_name, integration_instance
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
     try:
-        res = client.req('PUT', '/settings/integration', module_instance)
-    except requests.exceptions.RequestException as conn_err:
-        print_error('Error trying to create instance for integration: {0}:\n {1}'.format(integration_name, conn_err))
+        res = demisto_client.generic_request_func(self=client, method='PUT',
+                                                  path='/settings/integration',
+                                                  body=module_instance)
+    except ApiException as conn_err:
+        print_error(
+            'Error trying to create instance for integration: {0}:\n {1}'.format(integration_name,
+                                                                                 conn_err))
         return None
 
-    if res.status_code != 200:
-        print_error('create instance failed with status code ' + str(res.status_code))
-        print_error(pformat(res.json()))
+    if res[1] != 200:
+        print_error('create instance failed with status code ' + str(res[1]))
+        print_error(pformat(res[0]))
         return None
 
-    integration_config = res.json()
+    integration_config = ast.literal_eval(res[0])
     module_instance['id'] = integration_config['id']
 
     # test integration
@@ -150,44 +172,61 @@ def __disable_integrations_instances(client, module_instances):
         module_instance['version'] = -1
 
         try:
-            res = client.req('PUT', '/settings/integration', module_instance)
-        except requests.exceptions.RequestException as conn_err:
+            res = demisto_client.generic_request_func(self=client, method='PUT',
+                                                      path='/settings/integration',
+                                                      body=module_instance)
+        except ApiException as conn_err:
             print_error(
-                'Failed to disable integration instance, error trying to communicate with demisto server: {} '.format(
+                'Failed to disable integration instance, error trying to communicate with demisto '
+                'server: {} '.format(
                     conn_err))
 
-        if res.status_code != 200:
-            print_error('disable instance failed with status code ' + str(res.status_code))
-            print_error(pformat(res.json()))
+        if res[1] != 200:
+            print_error('disable instance failed with status code ' + str(res[1]))
+            print_error(pformat(res))
 
 
 # create incident with given name & playbook, and then fetch & return the incident
 def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # create incident
-    kwargs = {'createInvestigation': True, 'playbookId': playbook_id}
-    response_json = {}
+    create_incident_request = demisto_client.demisto_api.CreateIncidentRequest()
+    create_incident_request.create_investigation = True
+    create_incident_request.playbook_id = playbook_id
+    create_incident_request.name = name
+
     try:
-        r = client.CreateIncident(name, None, None, None, None, None, None, **kwargs)
-        response_json = r.json()
+        response = client.create_incident(create_incident_request=create_incident_request)
     except RuntimeError as err:
         print_error(str(err))
 
-    inc_id = response_json.get('id', 'incCreateErr')
+    try:
+        inc_id = response.id
+    except:  # noqa: E722
+        inc_id = 'incCreateErr'
+    # inc_id = response_json.get('id', 'incCreateErr')
     if inc_id == 'incCreateErr':
-        integration_names = [integration['name'] for integration in integrations if 'name' in integration]
+        integration_names = [integration['name'] for integration in integrations if
+                             'name' in integration]
         print_error('Failed to create incident for integration names: {} and playbookID: {}.'
                     'Possible reasons are:\nMismatch between playbookID in conf.json and '
                     'the id of the real playbook you were trying to use,'
-                    'or schema problems in the TestPlaybook.'.format(str(integration_names), playbook_id))
+                    'or schema problems in the TestPlaybook.'.format(str(integration_names),
+                                                                     playbook_id))
         return False, -1
 
     # get incident
-    incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
+    search_filter = demisto_client.demisto_api.SearchIncidentsData()
+    inc_filter = demisto_client.demisto_api.IncidentFilter()
+    inc_filter.query = 'id:' + str(inc_id)
+    # inc_filter.query
+    search_filter.filter = inc_filter
+
+    incidents = client.search_incidents(filter=search_filter)
 
     # poll the incidents queue for a max time of 25 seconds
     timeout = time.time() + 25
     while incidents['total'] != 1:
-        incidents = client.SearchIncidents(0, 50, 'id:' + inc_id)
+        incidents = client.search_incidents(filter=search_filter)
         if time.time() > timeout:
             print_error('Got timeout for searching incident with id {}, '
                         'got {} incidents in the search'.format(inc_id, incidents['total']))
@@ -201,36 +240,43 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
 # returns current investigation playbook state - 'inprogress'/'failed'/'completed'
 def __get_investigation_playbook_state(client, inv_id):
     try:
-        res = client.req('GET', '/inv-playbook/' + inv_id, {})
+        investigation_playbook_raw = demisto_client.generic_request_func(self=client, method='GET',
+                                                                         path='/inv-playbook/' + inv_id)
+        investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
-            'Failed to get investigation playbook state, error trying to communicate with demisto server: {} '.format(
+            'Failed to get investigation playbook state, error trying to communicate with demisto '
+            'server: {} '.format(
                 conn_err))
         return PB_Status.FAILED
-    investigation_playbook = res.json()
 
-    if 'state' in investigation_playbook.keys():
-        return investigation_playbook['state']
-
-    else:
+    try:
+        state = investigation_playbook['state']
+        return state
+    except:  # noqa: E722
         return PB_Status.NOT_SUPPORTED_VERSION
 
 
 # return True if delete-incident succeeded, False otherwise
 def __delete_incident(client, incident):
     try:
-        res = client.req('POST', '/incident/batchDelete', {
+        body = {
             'ids': [incident['id']],
             'filter': {},
             'all': False
-        })
+        }
+        res = demisto_client.generic_request_func(self=client, method='POST',
+                                                  path='/incident/batchDelete', body=body)
     except requests.exceptions.RequestException as conn_err:
-        print_error('Failed to delete incident, error trying to communicate with demisto server: {} '.format(conn_err))
+        print_error(
+            'Failed to delete incident, error trying to communicate with demisto server: {} '
+            ''.format(
+                conn_err))
         return False
 
-    if res.status_code != 200:
-        print_error('delete incident failed\nStatus code' + str(res.status_code))
-        print_error(pformat(res.json()))
+    if int(res[1]) != 200:
+        print_error('delete incident failed\nStatus code' + str(res[1]))
+        print_error(pformat(res))
         return False
 
     return True
@@ -239,15 +285,18 @@ def __delete_incident(client, incident):
 # return True if delete-integration-instance succeeded, False otherwise
 def __delete_integration_instance(client, instance_id):
     try:
-        res = client.req('DELETE', '/settings/integration/' + urllib.quote(instance_id), {})
+        res = demisto_client.generic_request_func(self=client, method='DELETE',
+                                                  path='/settings/integration/' + urllib.quote(
+                                                      instance_id))
     except requests.exceptions.RequestException as conn_err:
         print_error(
-            'Failed to delete integration instance, error trying to communicate with demisto server: {} '.format(
+            'Failed to delete integration instance, error trying to communicate with demisto '
+            'server: {} '.format(
                 conn_err))
         return False
-    if res.status_code != 200:
-        print_error('delete integration instance failed\nStatus code' + str(res.status_code))
-        print_error(pformat(res.json()))
+    if int(res[1]) != 200:
+        print_error('delete integration instance failed\nStatus code' + str(res[1]))
+        print_error(pformat(res))
         return False
     return True
 
@@ -262,12 +311,17 @@ def __delete_integrations_instances(client, module_instances):
 
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     try:
-        res = client.req('POST', '/investigation/' + urllib.quote(investigation_id), {})
+        res = demisto_client.generic_request_func(self=client, method='POST',
+                                                  path='/investigation/' + urllib.quote(
+                                                      investigation_id))
     except requests.exceptions.RequestException as conn_err:
-        print_error('Failed to print investigation error, error trying to communicate with demisto server: {} '.format(
-            conn_err))
-    if res and res.status_code == 200:
-        entries = res.json()['entries']
+        print_error(
+            'Failed to print investigation error, error trying to communicate with demisto '
+            'server: {} '.format(
+                conn_err))
+    if res and int(res[1]) == 200:
+        resp_json = ast.literal_eval(res[0])
+        entries = resp_json['entries']
         print_color('Playbook ' + playbook_id + ' has failed:', color)
         for entry in entries:
             if entry['type'] == ENTRY_TYPE_ERROR:
@@ -309,7 +363,8 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         if is_mock_run:
             configure_proxy_unsecure(integration_params)
 
-        module_instance = __create_integration_instance(client, integration_name, integration_instance_name,
+        module_instance = __create_integration_instance(client, integration_name,
+                                                        integration_instance_name,
                                                         integration_params, is_byoi)
         if module_instance is None:
             print_error('Failed to create instance')
@@ -317,10 +372,11 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
             return False, -1
 
         module_instances.append(module_instance)
-        print('Create integration %s succeed' % (integration_name,))
+        print('Create integration {} succeed'.format(integration_name, ''))
 
     # create incident with playbook
-    incident, inc_id = __create_incident_with_playbook(client, 'inc_%s' % (playbook_id,), playbook_id, integrations)
+    incident, inc_id = __create_incident_with_playbook(client, 'inc_{}'.format(playbook_id,),
+                                                       playbook_id, integrations)
 
     if not incident:
         return False, -1
@@ -343,12 +399,14 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
         # fetch status
         playbook_state = __get_investigation_playbook_state(client, investigation_id)
 
-        if playbook_state == PB_Status.COMPLETED or playbook_state == PB_Status.NOT_SUPPORTED_VERSION:
+        if playbook_state == PB_Status.COMPLETED or playbook_state == \
+                PB_Status.NOT_SUPPORTED_VERSION:
             break
         if playbook_state == PB_Status.FAILED:
             if is_mock_run:
                 print_warning(playbook_id + ' failed with error/s')
-                __print_investigation_error(client, playbook_id, investigation_id, LOG_COLORS.YELLOW)
+                __print_investigation_error(client, playbook_id, investigation_id,
+                                            LOG_COLORS.YELLOW)
             else:
                 print_error(playbook_id + ' failed with error/s')
                 __print_investigation_error(client, playbook_id, investigation_id)
@@ -382,22 +440,29 @@ def disable_all_integrations(client):
         client -- demisto py client
     """
     try:
-        res = client.req('POST', '/settings/integration/search', {'size': 1000})
+        body = {'size': 1000}
+        int_resp = demisto_client.generic_request_func(self=client, method='POST',
+                                                       path='/settings/integration/search',
+                                                       body=body)
+        int_instances = ast.literal_eval(int_resp[0])
     except requests.exceptions.RequestException as conn_err:
         print_error(
-            'Failed to disable all integrations, error trying to communicate with demisto server: {} '.format(conn_err))
+            'Failed to disable all integrations, error trying to communicate with demisto server: '
+            '{} '.format(
+                conn_err))
         return
-    if res.status_code != 200:
-        print_error('Get all integration instances failed with status code: {}'.format(res.status_code))
+    if int(int_resp[1]) != 200:
+        print_error(
+            'Get all integration instances failed with status code: {}'.format(int_resp[1]))
         return
-    int_instances = res.json()
     if 'instances' not in int_instances:
         print("No integrations instances found to disable all")
         return
     to_disable = []
     for instance in int_instances['instances']:
         if instance.get('enabled') == 'true' and instance.get("isIntegrationScript"):
-            print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"), instance.get("brand")))
+            print("Adding to disable list. Name: {}. Brand: {}".format(instance.get("name"),
+                                                                       instance.get("brand")))
             to_disable.append(instance)
     if len(to_disable) > 0:
         __disable_integrations_instances(client, to_disable)
