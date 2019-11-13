@@ -208,10 +208,10 @@ class IntegrationValidator(YMLBasedValidator):
                             # self._is_valid = False - Do not fail build over wrong description
 
                 if missing_outputs:
-                    print_error(self.Errors.missing_outputs(command_name, missing_outputs, context_standard))
+                    print_error(Errors.missing_outputs(command_name, missing_outputs, context_standard))
                 if missing_descriptions:
                     print_warning(
-                        self.Errors.missing_dbot_description(command_name, missing_descriptions, context_standard))
+                        Errors.missing_dbot_description(command_name, missing_descriptions, context_standard))
 
                 # validate the IOC output
                 command_to_output = {
@@ -223,7 +223,7 @@ class IntegrationValidator(YMLBasedValidator):
                 reputation_output = command_to_output.get(command_name)
                 if reputation_output and not reputation_output.intersection(context_outputs_paths):
                     self._is_valid = False
-                    print_error(self.Errors.missing_reputation(command_name, reputation_output, context_standard))
+                    print_error(Errors.missing_reputation(command_name, reputation_output, context_standard))
 
         return self._is_valid
 
@@ -233,7 +233,7 @@ class IntegrationValidator(YMLBasedValidator):
         if type_ == 'python':
             subtype = self.current_integration.get('script', {}).get('subtype')
             if subtype not in PYTHON_SUBTYPES:
-                print_error(self.Errors.wrong_subtype(self.current_integration.gey('name')))
+                print_error(Errors.wrong_subtype(self.current_integration.gey('name')))
                 self._is_valid = False
         return self._is_valid
 
@@ -245,7 +245,7 @@ class IntegrationValidator(YMLBasedValidator):
             if self.old_integration:
                 old_subtype = self.old_integration.get('script', {}).get('subtype', "")
                 if old_subtype and old_subtype != subtype:
-                    print_error(self.Errors.breaking_backwards_subtype(self.file_path))
+                    print_error(Errors.breaking_backwards_subtype(self.file_path))
                     self._is_valid = False
 
         return self._is_valid
@@ -264,7 +264,7 @@ class IntegrationValidator(YMLBasedValidator):
         common_fields = self.current_integration.get('commonfields', {})
         integration_id = common_fields.get('id', '')
         if 'beta' in integration_id.lower():
-            print_error(self.Errors.beta_in_id(self.file_path))
+            print_error(Errors.beta_in_id(self.file_path))
             return False
         return True
 
@@ -272,7 +272,7 @@ class IntegrationValidator(YMLBasedValidator):
         """Checks that 'name' field dose not include the substring 'beta'"""
         name = self.current_integration.get('name', '')
         if 'beta' in name.lower():
-            print_error(self.Errors.beta_in_name(self.file_path))
+            print_error(Errors.beta_in_name(self.file_path))
             return False
         return True
 
@@ -288,9 +288,7 @@ class IntegrationValidator(YMLBasedValidator):
         """Checks that 'display' field includes the substring 'beta'"""
         display = self.current_integration.get('display', '')
         if 'beta' not in display.lower():
-            print_error(
-                "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found"
-                " in the file {}".format(self.file_path))
+            print_error(Errors.no_beta_in_display(self.file_path))
             return False
         return True
 
@@ -302,15 +300,12 @@ class IntegrationValidator(YMLBasedValidator):
         """
         commands = self.current_integration.get('script', {}).get('commands', [])
         for command in commands:
-            arg_list = []
-            for arg in command.get('arguments', []):
-                if arg in arg_list:
-                    self._is_valid = False
-                    print_error(self.Errors.duplicate_command(arg, command['name'], self.current_integration.get(
-                        'name')))
-                else:
-                    arg_list.append(arg)
-
+            duplicates = self.find_duplicates(command.get('arguments', []))
+            if duplicates:
+                self._is_valid = False
+                print_error(
+                    Errors.duplicate_arg_in_integration(duplicates, command['name'],
+                                                        self.current_integration.get('name')))
         return not self._is_valid
 
     def is_there_duplicate_params(self):
@@ -320,15 +315,11 @@ class IntegrationValidator(YMLBasedValidator):
             bool. True if there are duplicates, False otherwise.
         """
         configurations = self.current_integration.get('configuration', [])
-        param_list = []
-        for configuration_param in configurations:
-            param_name = configuration_param['name']
-            if param_name in param_list:
-                self._is_valid = False
-                print_error(self.Errors.duplicate_param(param_name, self.current_integration))
-            else:
-                param_list.append(param_name)
-
+        param_list = [configuration_param['name'] for configuration_param in configurations]
+        duplicates = self.find_duplicates(param_list)
+        if duplicates:
+            self._is_valid = False
+            print_error(Errors.duplicate_param(duplicates, self.current_integration))
         return not self._is_valid
 
     def _get_command_to_args(self, integration_json):
@@ -346,31 +337,7 @@ class IntegrationValidator(YMLBasedValidator):
             command_to_args[command['name']] = {}
             for arg in command.get('arguments', []):
                 command_to_args[command['name']][arg['name']] = arg.get('required', False)
-
         return command_to_args
-
-    def is_subset_dictionary(self, new_dict, old_dict):
-        """Check if the new dictionary is a sub set of the old dictionary.
-
-        Args:
-            new_dict (dict): current branch result from _get_command_to_args
-            old_dict (dict): master branch result from _get_command_to_args
-
-        Returns:
-            bool. Whether the new dictionary is a sub set of the old dictionary.
-        """
-        for arg, required in old_dict.items():
-            if arg not in new_dict.keys():
-                return False
-
-            if required != new_dict[arg] and new_dict[arg]:
-                return False
-
-        for arg, required in new_dict.items():
-            if arg not in old_dict.keys() and required:
-                return False
-
-        return True
 
     def is_changed_command_name_or_arg(self):
         """Check if a command name or argument as been changed.
@@ -431,27 +398,28 @@ class IntegrationValidator(YMLBasedValidator):
             if old_command in current_command_to_context_paths.keys() and \
                     not self._is_sub_set(current_command_to_context_paths[old_command],
                                          old_context_paths):
-                print_error(self.Errors.breaking_backwards_command(self.file_path, old_command))
+                print_error(Errors.breaking_backwards_command(self.file_path, old_command))
                 self._is_valid = False
                 return True
 
         return False
 
-    def _get_field_to_required_dict(self, integration_json, args='configuration'):
+    def get_arg_to_required_dict(self, integration_json, args='configuration'):
         """Get a dictionary field name to its required status.
 
         Args:
             integration_json (dict): Dictionary of the examined integration.
+            args:
 
         Returns:
             dict. Field name to its required status.
         """
-        return super(IntegrationValidator, self)._get_arg_to_required_dict(integration_json, args)
+        return super(IntegrationValidator, self).get_arg_to_required_dict(integration_json, args)
 
     def is_added_required_fields(self):
         """Check if required field were added."""
-        current_field_to_required = self._get_field_to_required_dict(self.current_integration)
-        old_field_to_required = self._get_field_to_required_dict(self.old_integration)
+        current_field_to_required = self.get_arg_to_required_dict(self.current_integration)
+        old_field_to_required = self.get_arg_to_required_dict(self.old_integration)
 
         for field, required in current_field_to_required.items():
             if (field not in old_field_to_required.keys() and required) or \

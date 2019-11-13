@@ -77,8 +77,8 @@ class ScriptValidator(YMLBasedValidator):
 
         return is_script_valid
 
-    def _get_arg_to_required_dict(self, json_object, args='args'):
-        return super(ScriptValidator, self)._get_arg_to_required_dict(json_object, 'args')
+    def get_arg_to_required_dict(self, json_object, args='args'):
+        return super(ScriptValidator, self).get_arg_to_required_dict(json_object, 'args')
 
     def is_changed_subtype(self):
         """Validate that the subtype was not changed."""
@@ -107,8 +107,8 @@ class ScriptValidator(YMLBasedValidator):
 
     def is_added_required_args(self):
         """Check if required arg were added."""
-        current_args_to_required = self._get_arg_to_required_dict(self.current_script)
-        old_args_to_required = self._get_arg_to_required_dict(self.old_script)
+        current_args_to_required = self.get_arg_to_required_dict(self.current_script)
+        old_args_to_required = self.get_arg_to_required_dict(self.old_script)
 
         for arg, required in current_args_to_required.items():
             if required:
@@ -123,9 +123,10 @@ class ScriptValidator(YMLBasedValidator):
     def is_there_duplicate_args(self):
         """Check if there are duplicated arguments."""
         args = [arg['name'] for arg in self.current_script.get('args', [])]
-        if len(args) != len(set(args)):
+        duplicates = self.find_duplicates(args)
+        if duplicates:
+            print_error(Errors.duplicate_arg_in_script(duplicates, self.file_path))
             return True
-
         return False
 
     def is_arg_changed(self):
@@ -136,7 +137,6 @@ class ScriptValidator(YMLBasedValidator):
         if not self._is_sub_set(current_args, old_args):
             print_error(Errors.breaking_backwards_arg_changed(self.file_path))
             return True
-
         return False
 
     def is_context_path_changed(self):

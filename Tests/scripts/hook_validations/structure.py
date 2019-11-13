@@ -40,11 +40,10 @@ class StructureValidator(object):
         pass
 
     @abstractmethod
-    def is_valid_scheme(self, matching_regex, schema_name):
+    def is_valid_scheme(self, schema_name):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
-            matching_regex (str): the regex we want to compare the file with.
             schema_name:
 
         Returns:
@@ -55,11 +54,8 @@ class StructureValidator(object):
         try:
             c.validate(raise_exception=True)
         except CoreError as err:
-            print_error('Failed: {} failed'.format(self.file_path))
-            print_error(str(err))
+            print_error('Failed: {} failed.\n{}'.format(self.file_path, str(err)))
             self._is_valid = False
-        except Exception as err:
-
         return self._is_valid
 
     @staticmethod
@@ -69,3 +65,26 @@ class StructureValidator(object):
         if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
         return False
+
+    @staticmethod
+    def is_subset_dictionary(new_dict, old_dict):
+        """Check if the new dictionary is a sub set of the old dictionary.
+
+        Args:
+            new_dict (dict): current branch result from _get_command_to_args
+            old_dict (dict): master branch result from _get_command_to_args
+
+        Returns:
+            bool. Whether the new dictionary is a sub set of the old dictionary.
+        """
+        for arg, required in old_dict.items():
+            if arg not in new_dict.keys():
+                return False
+
+            if required != new_dict[arg] and new_dict[arg]:
+                return False
+
+        for arg, required in new_dict.items():
+            if arg not in old_dict.keys() and required:
+                return False
+        return True

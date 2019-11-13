@@ -2,7 +2,7 @@ import re
 from abc import abstractmethod
 
 from Tests.scripts.hook_validations.error_constants import Errors
-from Tests.test_utils import print_warning, run_command, print_error
+from Tests.test_utils import print_warning, run_command, print_error, server_version_compare
 from structure import StructureValidator
 
 
@@ -15,15 +15,19 @@ class YMLBasedValidator(StructureValidator):
         pass
 
     @abstractmethod
-    def is_docker_image_changed(self):
-        pass
+    def is_docker_image_changed(self, script):
+        if server_version_compare(script.get('fromversion', '0'), '5.0.0') < 0:
+            if script.get('script', {}).get('dockerimage', "") != \
+                    script.get('script', {}).get('dockerimage', ""):
+                return True
+        return False
 
     @abstractmethod
     def is_context_path_changed(self):
         pass
 
     @classmethod
-    def _get_arg_to_required_dict(cls, json_object, args_to_get):
+    def get_arg_to_required_dict(cls, json_object, args_to_get):
         """Get a dictionary arg name to its required status.
 
         Args:
@@ -42,9 +46,16 @@ class YMLBasedValidator(StructureValidator):
     def is_arg_changed(self):
         pass
 
-    @abstractmethod
-    def is_there_duplicate_args(self):
-        pass
+    @staticmethod
+    def find_duplicates(arg_list):
+        arg_set = set()
+        duplicates_set = set()
+        for arg in arg_list:
+            if arg not in arg_set:
+                arg_set.add(arg)
+            else:
+                duplicates_set.add(arg)
+        return duplicates_set
 
     @abstractmethod
     def is_changed_subtype(self):

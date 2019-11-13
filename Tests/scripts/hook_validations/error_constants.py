@@ -44,10 +44,14 @@ class Errors(object):
         return cls.beta_in_str(file_path, 'name')
 
     @staticmethod
-    def duplicate_command(arg, command, integration_name):
+    def duplicate_arg_in_script(arg, script_path):
+        return "The argument '{}' is duplicated in the script {}, " \
+               "please remove one of its appearances.".format(str(arg), script_path)
+
+    @staticmethod
+    def duplicate_arg_in_integration(arg, command, integration_name):
         return "The argument '{}' of the command '{}' is duplicated in the integration '{}', " \
-               "please remove one of its appearances as we do not allow duplicates".format(arg, command,
-                                                                                           integration_name)
+               "please remove one of its appearances.".format(str(arg), command, integration_name)
 
     @staticmethod
     def duplicate_param(param_name, current_integration):
@@ -101,3 +105,8 @@ class Errors(object):
     def breaking_backwards_command_arg_changed(cls, file_path, command):
         return "{}, You've changed the name of a command or its arg in" \
                " the file {} please undo, the command was:\n{}".format(cls.BACKWARDS, file_path, command)
+
+    @staticmethod
+    def no_beta_in_display(file_path):
+        return "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found" \
+               " in the file {}".format(file_path)
