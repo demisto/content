@@ -31,6 +31,9 @@ def get_docker_images(script_obj):
     alt_imgs = script_obj.get('alt_dockerimages')
     if alt_imgs:
         imgs.extend(alt_imgs)
+    if 'dockerimage45' in script_obj:
+        img45 = script_obj.get('dockerimage45') or DEF_DOCKER
+        imgs.append(img45)
     return imgs
 
 
@@ -59,8 +62,8 @@ def get_python_version(docker_image):
                                      universal_newlines=True, stderr=stderr_out).strip()
     print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
-    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
-        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
+    if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
+        raise ValueError("Python version for docker image: {} is not supported: {}. "
                          "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
     return py_num
 
@@ -148,7 +151,7 @@ def docker_image_create(docker_base_image, requirements):
     lock_file = ".lock-" + target_image.replace("/", "-")
     try:
         if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
-            print("{}: Deleting old lock file: {}".format(datetime.now(). lock_file))
+            print("{}: Deleting old lock file: {}".format(datetime.now(), lock_file))
             os.remove(lock_file)
     except Exception as ex:
         print_v("Failed check and delete for lock file: {}. Error: {}".format(lock_file, ex))
@@ -160,7 +163,8 @@ def docker_image_create(docker_base_image, requirements):
             print('{}: Using already existing docker image: {}'.format(datetime.now(), target_image))
             return target_image
         if wait_print:
-            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(), target_image))
+            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(),
+                                                                                                    target_image))
             wait_print = False
         print_v("Trying to obtain lock file: " + lock_file)
         try:
@@ -180,7 +184,8 @@ def docker_image_create(docker_base_image, requirements):
             print("Pull succeeded with output: {}".format(pull_res))
             return target_image
         except subprocess.CalledProcessError as cpe:
-            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode, cpe.output))
+            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode,
+                                                                                                cpe.output))
         print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
