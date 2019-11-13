@@ -227,7 +227,7 @@ def test_dict_no_stix(mocker):
     is_exception = False
     try:
         stix2_to_demisto({"not stix": []})
-    except SystemExit as e:
+    except SystemExit:
         is_exception = True
         assert demisto.results.call_args[0][0]['Contents'] == 'No STIX2 object could be parsed'
     finally:
