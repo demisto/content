@@ -47,7 +47,7 @@ DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 BOT_TOKEN: str
 ACCESS_TOKEN: str
-PROXY_URL: str
+PROXY_URL: Optional[str]
 PROXIES: dict
 DEDICATED_CHANNEL: str
 CLIENT: slack.WebClient
