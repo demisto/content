@@ -24,7 +24,8 @@ Attributes:
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
-RETURN_FIELDS_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
     '_ref': 'ReferenceID'
@@ -40,8 +41,11 @@ class Client(BaseClient):
                       data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
         if params:
             self.params.update(params)
-        return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data, files,
-                                     timeout, resp_type, ok_codes, **kwargs)
+        try:
+            return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data,
+                                         files, timeout, resp_type, ok_codes, **kwargs)
+        except DemistoException as error:
+            print(parse_demisto_exception(error, 'text'))
 
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -62,10 +66,10 @@ class Client(BaseClient):
         # return self._http_request('GET', suffix, headers={'Authorization': "Basic cGFuOnBhbl8xMjM0NTY="})
         return self._http_request('GET', suffix)
 
-    def get_ip(self, ip: str = None) -> Dict:
-        """Lists all accounts.
+    def get_ip(self, ip: str) -> Dict:
+        """Get ip information.
         Args:
-            max_results: maximum results to filter.
+            ip: ip to retrieve.
 
         Returns:
             Response JSON
@@ -73,23 +77,40 @@ class Client(BaseClient):
         suffix = 'ipv4address'
 
         request_params = assign_params(ip_address=ip)
-        request_params.update(RETURN_FIELDS_EXTRA_ATTRIBUTES)
+        request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
 
-    def lock_account(self, account_id: AnyStr) -> Dict:
+    def search_related_objects_by_ip(self, ip: str, max_results: str) -> Dict:
+        """Get ip information.
+        Args:
+            ip: ip to retrieve.
+            max_results: maximum number of results
+
+        Returns:
+            Response JSON
+        """
+        suffix = 'search'
+
+        request_params = assign_params(address=ip, _max_results=max_results)
+        return self._http_request('GET', suffix, params=request_params)
+
+    def list_response_policy_zone_rules(self, zone: str, max_results: str, next_page_id: str) -> Dict:
         """Locks an account by the account ID.
 
         Args:
-            account_id: Account ID to lock.
+            zone: response policy zone name.
+            max_results: maximum number of results.
+            next_page_id: ID of the next page to retrieve, if given all other arguments are ignored.
 
         Returns:
             Response JSON
         """
         # The service endpoint to request from
-        suffix = 'account/lock'
+        suffix = 'allrpzrecords'
         # Dictionary of params for the request
-        params = {'account': account_id}
-        return self._http_request('POST', suffix, params=params)
+        request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
+        request_params.update(REQUEST_PARAM_PAGING_FLAG)
+        return self._http_request('GET', suffix, params=request_params)
 
     def unlock_account(self, account_id: AnyStr) -> Dict:
         """Returns events by the account ID.
@@ -167,6 +188,12 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def parse_demisto_exception(self, error: DemistoException, field_in_error: str):
+    infoblox_err = error.args[0].split('\n')[1].replace('\\', '')
+    infoblox_json = json.loads(infoblox_err)
+    return infoblox_json.get(field_in_error, 'text')
+
+
 def account_response_to_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
     """Formats the API response to Demisto context.
 
@@ -233,117 +260,118 @@ def test_module_command(client: Client, *_) -> str:
         raise DemistoException('Test module failed, {}'.format(e))
 
 
-def fetch_credentials(client: Client) -> list:
-    """Uses to fetch credentials into Demisto
-    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
-
-    Args:
-        client: Client object
-
-    Returns:
-        Outputs
-    """
-    # Get credentials from api
-    raw_response = client.list_credentials()
-    raw_credentials = raw_response.get('credential', [])
-    if raw_credentials:
-        # Creates credentials entry
-        credentials = build_credentials_fetch(raw_credentials)
-        return credentials
-    else:
-        raise DemistoException(f'`fetch-incidents` failed in `{INTEGRATION_NAME}`, no keyword `credentials` in'
-                               f' response. Check API')
-
-
-def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Locks an account by account ID.
-    Args:
-        client: Client object
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    # Get arguments from user
-    username = args.get('username', '')
-    # Make request and get raw response
-    raw_response = client.lock_account(username)
-    # Get account from raw_response
-    accounts = raw_response.get('account')
-    # Parse response into context & content entries
-    if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is True:
-        user_object = accounts[0]
-        title: str = f'{INTEGRATION_NAME} - Account `{username}` has been locked.'
-        context_entry = account_response_to_context(user_object)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry
-        }
-        # Creating human readable for War room
-        human_readable: str = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not lock account `{username}`')
-
-
-def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Unlocks an account by account ID.
-    Args:
-        client: Client object
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    # Get arguments from user
-    username = args.get('username', '')
-    # Make request and get raw response
-    raw_response = client.unlock_account(username)
-    # Get account from raw_response
-    accounts = raw_response.get('account')
-    # Parse response into context & content entries
-    if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
-        user_object = accounts[0]
-        title = f'{INTEGRATION_NAME} - Account `{username}` has been unlocked.'
-        context_entry = account_response_to_context(user_object)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock account `{username}`')
-
-
-def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Resets an account by account ID.
-    Args:
-        client: Client object
-        args: Usually demisto.args()
-
-    Returns:
-        Outputs
-    """
-    # Get arguments from user
-    username = args.get('username', '')
-    # Make request and get raw response
-    raw_response = client.reset_account(username)
-    # Get account from raw_response
-    accounts = raw_response.get('account')
-    # Parse response into context & content entries
-    if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
-        user_object = accounts[0]
-        title = f'{INTEGRATION_NAME} - Account `{username}` has been returned to default.'
-        context_entry = account_response_to_context(user_object)
-        context = {
-            f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
-        # Creating human readable for War room
-        human_readable = tableToMarkdown(title, context_entry)
-        # Return data to Demisto
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
+#
+# def fetch_credentials(client: Client) -> list:
+#     """Uses to fetch credentials into Demisto
+#     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
+#
+#     Args:
+#         client: Client object
+#
+#     Returns:
+#         Outputs
+#     """
+#     # Get credentials from api
+#     raw_response = client.list_credentials()
+#     raw_credentials = raw_response.get('credential', [])
+#     if raw_credentials:
+#         # Creates credentials entry
+#         credentials = build_credentials_fetch(raw_credentials)
+#         return credentials
+#     else:
+#         raise DemistoException(f'`fetch-incidents` failed in `{INTEGRATION_NAME}`, no keyword `credentials` in'
+#                                f' response. Check API')
+#
+#
+# def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+#     """Locks an account by account ID.
+#     Args:
+#         client: Client object
+#         args: Usually demisto.args()
+#
+#     Returns:
+#         Outputs
+#     """
+#     # Get arguments from user
+#     username = args.get('username', '')
+#     # Make request and get raw response
+#     raw_response = client.lock_account(username)
+#     # Get account from raw_response
+#     accounts = raw_response.get('account')
+#     # Parse response into context & content entries
+#     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is True:
+#         user_object = accounts[0]
+#         title: str = f'{INTEGRATION_NAME} - Account `{username}` has been locked.'
+#         context_entry = account_response_to_context(user_object)
+#         context = {
+#             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry
+#         }
+#         # Creating human readable for War room
+#         human_readable: str = tableToMarkdown(title, context_entry)
+#         # Return data to Demisto
+#         return human_readable, context, raw_response
+#     else:
+#         raise DemistoException(f'{INTEGRATION_NAME} - Could not lock account `{username}`')
+#
+#
+# def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+#     """Unlocks an account by account ID.
+#     Args:
+#         client: Client object
+#         args: Usually demisto.args()
+#
+#     Returns:
+#         Outputs
+#     """
+#     # Get arguments from user
+#     username = args.get('username', '')
+#     # Make request and get raw response
+#     raw_response = client.unlock_account(username)
+#     # Get account from raw_response
+#     accounts = raw_response.get('account')
+#     # Parse response into context & content entries
+#     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
+#         user_object = accounts[0]
+#         title = f'{INTEGRATION_NAME} - Account `{username}` has been unlocked.'
+#         context_entry = account_response_to_context(user_object)
+#         context = {
+#             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
+#         # Creating human readable for War room
+#         human_readable = tableToMarkdown(title, context_entry)
+#         # Return data
+#         return human_readable, context, raw_response
+#     else:
+#         raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock account `{username}`')
+#
+#
+# def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+#     """Resets an account by account ID.
+#     Args:
+#         client: Client object
+#         args: Usually demisto.args()
+#
+#     Returns:
+#         Outputs
+#     """
+#     # Get arguments from user
+#     username = args.get('username', '')
+#     # Make request and get raw response
+#     raw_response = client.reset_account(username)
+#     # Get account from raw_response
+#     accounts = raw_response.get('account')
+#     # Parse response into context & content entries
+#     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
+#         user_object = accounts[0]
+#         title = f'{INTEGRATION_NAME} - Account `{username}` has been returned to default.'
+#         context_entry = account_response_to_context(user_object)
+#         context = {
+#             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
+#         # Creating human readable for War room
+#         human_readable = tableToMarkdown(title, context_entry)
+#         # Return data to Demisto
+#         return human_readable, context, raw_response
+#     else:
+#         raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
 
 
 def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -364,7 +392,7 @@ def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
     fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                       ip_list[0].items()}
-    title = f'{INTEGRATION_NAME} - IP info.'
+    title = f'{INTEGRATION_NAME} - IP: {ip} info.'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID ==== obj.ReferenceID)': fixed_keys_obj}
     human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
@@ -381,20 +409,26 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
         Outputs
     """
     ip = args.get('ip')
-    raw_response = client.lock_vault(vault_to_lock)
-    vaults = raw_response.get('vault')
-    if vaults and vaults[0].get('vaultId') == vault_to_lock and vaults[0].get('isLocked') is True:
-        vault_obj = vaults[0]
-        title = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been locked'
-        context_entry = build_vaults_context(vault_obj)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not lock vault ID: {vault_to_lock}')
+    max_results = args.get('max_results')
+    raw_response = client.search_related_objects_by_ip(ip, max_results)
+    obj_list = raw_response['result']
+    if not obj_list:
+        return f'{INTEGRATION_NAME} - No objects associated to ip: {ip} were found', {}, {}
+    fixed_keys_obg_list = []
+    for obj in obj_list:
+        fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                          obj.items()}
+        fixed_keys_obg_list.append(fixed_keys_obj)
+
+    title = f'{INTEGRATION_NAME} - IP: {ip} search results.'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.IPSearchObjects(val.ReferenceID && val.ReferenceID ==== obj.ReferenceID)':
+            fixed_keys_obg_list}
+    human_readable = tableToMarkdown(title, fixed_keys_obg_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
-def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Unlocks a vault by vault ID.
     Args:
         client: Client object
@@ -403,18 +437,27 @@ def unlock_vault_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs
     """
-    vault_to_lock = args.get('vault_id', '')
-    raw_response = client.unlock_vault(vault_to_lock)
-    vaults = raw_response.get('vault')
-    if vaults and vaults[0].get('vaultId') == vault_to_lock and vaults[0].get('isLocked') is False:
-        vault_obj = vaults[0]
-        title = f'{INTEGRATION_NAME} - Vault {vault_to_lock} has been unlocked'
-        context_entry = build_vaults_context(vault_obj)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock vault ID: {vault_to_lock}')
+    zone = args.get('response_policy_zone_name')
+    max_results = args.get('page_size', 50)
+    next_page_id = args.get('next_page_id')
+    if not zone and not next_page_id:
+        raise DemistoException('To run this command either a zone or a next page ID must be given')
+    raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
+    rules_list = raw_response['result']
+    if not rules_list:
+        return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
+    fixed_keys_rule_list = []
+    for rule in rules_list:
+        fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+        fixed_keys_rule_list.append(fixed_keys_rule)
+    zone_name = {zone.capitalize()}
+    title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)':
+            {'Name': zone_name, 'Rules': fixed_keys_rule_list}}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 def list_vaults_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -454,13 +497,9 @@ def main():  # pragma: no cover
     # Switch case
     commands = {
         'test-module': test_module_command,
-        'fetch-credentials': fetch_credentials,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
-        f'{INTEGRATION_COMMAND_NAME}-unlock-account': unlock_account_command,
-        f'{INTEGRATION_COMMAND_NAME}-reset-account': reset_account_command,
-        f'{INTEGRATION_COMMAND_NAME}-unlock-vault': unlock_vault_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-vaults': list_vaults_command
+        f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
     }
     try:
         if command in commands:
