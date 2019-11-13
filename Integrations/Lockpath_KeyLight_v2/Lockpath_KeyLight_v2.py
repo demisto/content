@@ -348,7 +348,6 @@ def main():
     password = demisto.params().get('credentials', {}).get('password', '')
     client = Client(address, verify, proxy, headers={'Accept': 'application/json'})
 
-    # TODO make sure the outputs are correct.
     commands = {
         'kl-get-component-list': get_component_list_command,
         'kl-get-component': get_component_command,
