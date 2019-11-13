@@ -383,4 +383,3 @@ script:
   subtype: python3
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
-
