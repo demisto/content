@@ -8,6 +8,7 @@ import base64
 import os
 import json
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from datetime import timezone
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -57,8 +58,8 @@ def epoch_seconds(d=None):
     :rtype: ``int``
     """
     if not d:
-        d = datetime.utcnow()
-    return int((d - datetime.utcfromtimestamp(0)).total_seconds())
+        d = datetime.now(tz=timezone.utc)
+    return int((d - datetime.fromtimestamp(0, tz=timezone.utc)).total_seconds())
 
 
 def get_encrypted(content, key):

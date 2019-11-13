@@ -38,7 +38,8 @@ def client():
                          verify=True, proxy=False, ok_codes=ok_codes)
 
 
-def test_fetch_incidents(mocker, client, emails_data, expected_incident):
+@pytest.fixture
+def last_run_data():
     last_run = {
         'LAST_RUN_TIME': '2019-11-12T15:00:00Z',
         'LAST_RUN_IDS': [],
@@ -46,10 +47,14 @@ def test_fetch_incidents(mocker, client, emails_data, expected_incident):
         'LAST_RUN_FOLDER_PATH': "Phishing"
     }
 
+    return last_run
+
+
+def test_fetch_incidents(mocker, client, emails_data, expected_incident, last_run_data):
     mocker.patch('MicrosoftGraphListener.get_now_utc', return_value='2019-11-12T15:01:00Z')
     mocker.patch.object(client, '_http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
-    result_next_run, result_incidents = client.fetch_incidents(last_run)
+    result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
     assert result_next_run.get('LAST_RUN_TIME') == '2019-11-12T15:00:30Z'
     assert result_next_run.get('LAST_RUN_IDS') == ['dummy_id_1']
@@ -58,21 +63,32 @@ def test_fetch_incidents(mocker, client, emails_data, expected_incident):
 
     result_incidents = result_incidents[0]
     result_raw_json = json.loads(result_incidents.pop('rawJSON'))
+    expected_raw_json = expected_incident.pop('rawJSON', None)
 
-    assert result_raw_json == expected_incident.pop('rawJSON', None)
+    assert result_raw_json == expected_raw_json
     assert result_incidents == expected_incident
 
 
-def test_fetch_incidents_changed_folder(mocker, client, emails_data, expected_incident):
+def test_fetch_incidents_changed_folder(mocker, client, emails_data, last_run_data):
     changed_folder = "Changed_Folder"
     client._folder_to_fetch = changed_folder
     mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
                                                 return_value={'id': 'some_dummy_folder_id'})
     mocker.patch.object(client, '_http_request', return_value=emails_data)
     mocker.patch.object(demisto, "info")
-    client.fetch_incidents({})
+    client.fetch_incidents(last_run_data)
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', changed_folder)
+
+
+def test_fetch_incidents_detect_initial(mocker, client, emails_data):
+    mocker_folder_by_path = mocker.patch.object(client, '_get_folder_by_path',
+                                                return_value={'id': 'some_dummy_folder_id'})
+    mocker.patch.object(client, '_http_request', return_value=emails_data)
+    mocker.patch.object(demisto, "info")
+    client.fetch_incidents({})
+
+    mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
 
 
 def test_add_second_to_str_date():
