@@ -117,12 +117,14 @@ class Client(BaseClient):
             fields = res.get('FieldValues', [])
         fields = field_output_to_hr_fields(fields, component_id, self)
         record = {'ID': res.get('Id'),
-                  'Fields': fields,
                   'ComponentID': component_id,
                   'DisplayName': res.get('DisplayName', '')
                   }
-        ec = {'Keylight.Record(val.ID && val.ID==obj.ID))': record}
         hr = tableToMarkdown(f'Details for record {record.get("DisplayName")}:', record)
+        hr += tableToMarkdown('With the following fields:', fields)
+        record['Fields'] = fields
+        ec = {'Keylight.Record(val.ID && val.ID==obj.ID))': record}
+
         return_outputs(hr, ec, res)
 
     def return_filtered_records(self, component_id: str, page_size: str, page_index: str, suffix: str,
@@ -211,19 +213,19 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
 
 
 def field_output_to_hr_fields(field_output: dict, component_id: str, client: Client) -> dict:
-    field_map = demisto.getIntegrationContext().get(component_id)
+    field_map = demisto.getIntegrationContext().get(str(component_id))
     final_fields = {}
     if not field_map:
         client.update_field_integration_context(component_id)
-        field_map = demisto.getIntegrationContext().get(component_id)
+        field_map = demisto.getIntegrationContext().get(str(component_id))
     fields = field_map.get('fields')
     for field_dict in field_output:
         field_key = field_dict.get('Key')
         field_val = field_dict.get('Value')
-        if not fields.get(field_key):
+        if not fields.get(str(field_key)):
             client.update_field_integration_context(component_id)
-            fields = demisto.getIntegrationContext().get(component_id).get('fields')
-        field_name = fields.get(field_key)
+            fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
+        field_name = fields.get(str(field_key))
         final_fields[field_name] = field_val
     return final_fields
 
@@ -440,6 +442,8 @@ def main():
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
+        if logged_in:
+            client.logout()
         if demisto.command() == 'test-module':
             # TODO change to return_error
             print(f'Could not connect to instance. Error: {str(e)}')
