@@ -7,7 +7,7 @@ import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
 from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
 
-from CommonServerPython import *
+
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
@@ -743,6 +743,58 @@ def check_url():
     else:
         demisto.results(f'No events found in MISP for URL: {url}')
 
+def build_misp_complex_filter(demisto_query: str):
+    """
+    Args:
+        demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
+            using ',' as delimiter for parameters and ';' as delimiter for operators.
+            using the operators is optional.
+            if 'demisto_query' does not contains any of the complex operators the original
+            input will be returned
+
+    Returns:
+        dict: dictionary created for misp to perform complex auery
+        or if no complex qury found retruns the original input
+
+    Example:
+        demisto_query should look like:
+            example 1: "AND:param1,param2;OR:param3;NOT:param4,param5"
+            example 2: "NOT:param3,param5"
+            example 3 (simple syntax): "param1,param2"
+    """
+
+    regexAnd = r"(AND:)([^\;]+)(;)"
+    regexOr = r"(OR:)([^\;]+)(;)"
+    regexNot = r"(NOT:)([^\;]+)(;)"
+    andList = None
+    orList = None
+    notList = None
+    isComplexSearch = False
+    matchAnd = re.search(regexAnd, demisto_query, re.MULTILINE)
+    matchOr = re.search(regexOr, demisto_query, re.MULTILINE)
+    matchNot = re.search(regexNot, demisto_query, re.MULTILINE)
+
+    if matchAnd is not None:
+        andList = matchAnd.group(2).split(',')
+        isComplexSearch = True
+
+    if matchOr is not None:
+        orList = matchOr.group(2).split(',')
+        isComplexSearch = True
+
+    if matchNot is not None:
+        notList = matchNot.group(2).split(',')
+        isComplexSearch = True
+
+    if isComplexSearch:
+        misp_complex_query =  MISP.build_complex_query(
+            or_parameters = orList,
+            and_parameters = andList,
+            not_parameters = notList)
+        return misp_complex_query
+
+    return demisto_query
+
 
 def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     """
@@ -778,6 +830,9 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    # build MISP complex filter
+    if 'tags' in args:
+        args['tags'] = build_misp_complex_filter(args['tags'])
 
     response = MISP.search(**args)
     if response:
