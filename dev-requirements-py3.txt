@@ -2,7 +2,7 @@ flake8==3.7.8
 requests==2.22.0
 PyYAML==5.1.2
 pykwalify==1.7.0
-demisto-py==2.0.5
+demisto-py==2.0.6
 pytest==5.2.1
 pytest-mock==1.11.1
 ruamel.yaml==0.16.5
