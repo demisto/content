@@ -743,6 +743,7 @@ def check_url():
     else:
         demisto.results(f'No events found in MISP for URL: {url}')
 
+
 def build_misp_complex_filter(demisto_query: str):
     """
     Args:
@@ -787,10 +788,7 @@ def build_misp_complex_filter(demisto_query: str):
         isComplexSearch = True
 
     if isComplexSearch:
-        misp_complex_query =  MISP.build_complex_query(
-            or_parameters = orList,
-            and_parameters = andList,
-            not_parameters = notList)
+        misp_complex_query = MISP.build_complex_query(or_parameters = orList, and_parameters = andList, not_parameters = notList)
         return misp_complex_query
 
     return demisto_query
