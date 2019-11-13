@@ -7,7 +7,7 @@ import requests
 from pymisp import ExpandedPyMISP, PyMISPError, MISPObject  # type: ignore
 from pymisp.tools import EMailObject, GenericObjectGenerator  # type: ignore
 
-
+from CommonServerPython import *
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
