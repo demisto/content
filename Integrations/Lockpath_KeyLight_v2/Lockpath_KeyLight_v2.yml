@@ -414,6 +414,9 @@ script:
       record ID, documents field ID, and document ID.
     execution: false
     name: kl-get-record-attachment
+  - deprecated: false
+    execution: false
+    name: get-integration-context
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false

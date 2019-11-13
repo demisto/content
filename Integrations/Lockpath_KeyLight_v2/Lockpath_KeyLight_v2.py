@@ -115,6 +115,7 @@ class Client(BaseClient):
                 fields.append(field)
         if not field_ids:
             fields = res.get('FieldValues', [])
+        fields = field_output_to_hr_fields(fields, component_id, self)
         record = {'ID': res.get('Id'),
                   'Fields': fields,
                   'ComponentID': component_id,
@@ -154,6 +155,45 @@ class Client(BaseClient):
                 field_id = field.get('Id')
         return field_id
 
+    def update_field_integration_context(self, component_id: str) -> None:
+        '''
+
+        :param component_id: The id of the component we want to add to the integratino context
+        :return: update integration context to include the component_id and have at most 7 tables stored
+        Integration context will look: {
+                                        component_id: {
+                                            last_update: $date
+                                            fields: {field_key: field_name.
+                                                    field_key, field_name,
+                                                    ...,
+                                                    }
+                                            }
+                                        }
+
+        '''
+        field_map = demisto.getIntegrationContext()
+        if field_map.get(component_id):
+            field_map.pop(component_id)
+        params = {'componentId':component_id}
+        fields = self._http_request('GET', '/ComponentService/GetFieldList', params=params)
+        field_names = {}
+        for field in fields:
+            field_names[field.get('Id')] = field.get('Name')
+        update = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+        if len(field_map) == 7:
+            min_time = update
+            min_component = ''
+            for component in field_map.keys():
+                updated = field_map.get('component').get('updated')
+                if parse_date_string(updated) < parse_date_string(min_time):
+                    min_time = updated
+                    min_component = component
+            field_map.pop(min_component)
+        field_map[component_id] = {'fields': field_names,
+                                   'updated': update
+                                   }
+        demisto.setIntegrationContext(field_map)
+
 
 '''HELPER FUNCTIONS'''
 
@@ -169,6 +209,23 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
     }
     return filter
 
+
+def field_output_to_hr_fields(field_output: dict, component_id: str, client: Client) -> dict:
+    field_map = demisto.getIntegrationContext().get(component_id)
+    final_fields = {}
+    if not field_map:
+        client.update_field_integration_context(component_id)
+        field_map = demisto.getIntegrationContext().get(component_id)
+    fields = field_map.get('fields')
+    for field_dict in field_output:
+        field_key = field_dict.get('Key')
+        field_val = field_dict.get('Value')
+        if not fields.get(field_key):
+            client.update_field_integration_context(component_id)
+            fields = demisto.getIntegrationContext().get(component_id).get('fields')
+        field_name = fields.get(field_key)
+        final_fields[field_name] = field_val
+    return final_fields
 
 '''COMMAND FUNCTIONS'''
 
@@ -330,14 +387,14 @@ def fetch_incidents(client: Client, args: dict) -> None:
         if parse_date_string(occurred_at) > parse_date_string(max_fetch_time):
             max_fetch_time = occurred_at
         incidents.append(incident)
-    print({'last_fetch_time': max_fetch_time,
-           'component': {name: component_id},
-           'field': {filter_field: field_id}})
     demisto.setLastRun({'last_fetch_time': max_fetch_time,
                         'component': {name: component_id},
                         'field': {filter_field: field_id}})
     demisto.incidents(incidents)
 
+#TODO delete this function
+def get_integration_context():
+    print(demisto.getIntegrationContext())
 
 def main():
     proxy = demisto.params().get('proxy')
@@ -366,6 +423,9 @@ def main():
         # 'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
         'fetch-incidents': fetch_incidents
     }
+    # TODO delete this (also from yaml):
+    if demisto.command()=='get-integration-context':
+        get_integration_context()
 
     LOG(f'Command being called is {demisto.command()}')
     logged_in = False
