@@ -1946,7 +1946,6 @@
         }
     ],
     "skipped_tests": {
-        "urlscan_malicious_Test": "Issue 20111",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "SentinelOne V2 - test": "Issue 19361",
