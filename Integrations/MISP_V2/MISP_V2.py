@@ -744,7 +744,7 @@ def check_url():
         demisto.results(f'No events found in MISP for URL: {url}')
 
 
-def build_misp_complex_filter(demisto_query: str) -> dict:
+def build_misp_complex_filter(demisto_query: str) -> str:
     """
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
@@ -754,8 +754,8 @@ def build_misp_complex_filter(demisto_query: str) -> dict:
             input will be returned
 
     Returns:
-        dict: dictionary created for misp to perform complex auery
-        or if no complex qury found retruns the original input
+        str: dictionary created for misp to perform complex query
+        or if no complex query found returns the original input
 
     Example:
         demisto_query should look like:
