@@ -135,8 +135,6 @@ class TestIntegration(unittest.TestCase):
         Test for getting all the integration data
         """
         file_path = 'Packs/CortexXDR/Integrations/PaloAltoNetworks_XDR/PaloAltoNetworks_XDR.yml'
-        # if not os.path.isfile(file_path):
-        #     os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_integration_data(file_path)
         self.assertDictEqual(data, INTEGRATION_DATA)
 
@@ -145,8 +143,6 @@ class TestIntegration(unittest.TestCase):
         Test for getting the script data
         """
         file_path = 'Packs/CortexXDR/Scripts/EntryWidgetNumberHostsXDR/EntryWidgetNumberHostsXDR.yml'
-        # if not os.path.isfile(file_path):
-        #     os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_script_data(file_path)
         self.assertDictEqual(data, SCRIPT_DATA)
 
@@ -155,8 +151,6 @@ class TestIntegration(unittest.TestCase):
         Test for getting the playbook data
         """
         file_path = 'Packs/CortexXDR/Playbooks/Cortex_XDR_Incident_Handling.yml'
-        # if not os.path.isfile(file_path):
-        #     os.chdir(os.path.expanduser('~/dev/demisto/content/'))
         data = get_playbook_data(file_path)['Cortex XDR Incident Handling']
         self.assertEqual(data['name'], PLAYBOOK_DATA['name'])
         self.assertEqual(data['file_path'], PLAYBOOK_DATA['file_path'])
