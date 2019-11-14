@@ -5,7 +5,6 @@ import uuid
 import urllib
 import urllib3
 import ast
-import json
 import requests.exceptions
 from demisto_client.demisto_api.rest import ApiException
 import demisto_client
@@ -312,7 +311,7 @@ def __delete_integrations_instances(client, module_instances):
 
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     try:
-        empty_json = json.dumps({"pageSize": 1})
+        empty_json = {"pageSize": 1}
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.quote(
                                                       investigation_id), body=empty_json)
