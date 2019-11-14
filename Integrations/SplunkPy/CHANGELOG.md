@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added a new parameter to control which data is included in the labels of fetched incidents.
 
 ## [19.11.0] - 2019-11-12
 Increased the maximum fetch limit for Splunk.

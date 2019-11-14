@@ -2,6 +2,9 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
+description: Run queries on Splunk servers.
+display: SplunkPy
+name: SplunkPy
 configuration:
 - display: Host - ip (x.x.x.x)
   name: host
