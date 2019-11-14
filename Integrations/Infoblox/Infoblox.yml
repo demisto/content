@@ -50,13 +50,13 @@ script:
       type: string
   - arguments:
     - default: false
-      description: The IP to search by
+      description: The IP to search by.
       isArray: false
       name: ip
       required: true
       secret: false
     - default: false
-      description: Maximum results to return
+      description: Maximum results to return.
       isArray: false
       name: max_results
       required: false
@@ -67,7 +67,7 @@ script:
     name: infoblox-search-related-objects-by-ip
   - arguments:
     - default: false
-      description: Respone policy zone name to list the rules
+      description: Respone policy zone name to list the rules.
       isArray: false
       name: response_policy_zone_name
       required: false
@@ -91,6 +91,21 @@ script:
       policy zone.
     execution: false
     name: infoblox-list-response-policy-zone-rules
+  - arguments:
+    - default: false
+      description: Maximum results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    deprecated: false
+    description: List all response policy zones
+    execution: false
+    name: infoblox-list-response-policy-zones
+  - deprecated: false
+    description: Create response policy zone.
+    execution: false
+    name: infoblox-create-response-policy-zone
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
