@@ -7,7 +7,7 @@ from urllib import unquote
 import re
 
 # ============================================================================================================== #
-# This script is highly similar to 'ExtractFQDNFromUrlAndEmail', they are not unified due to run time performance.
+# This script is highly similar to 'ExtractDomainFromUrlFormat', they are not unified due to run time performance.
 # Please change both scripts respectively.
 # ============================================================================================================== #
 
@@ -53,7 +53,21 @@ def unescape_url(escaped_url):
     return url
 
 
-def extract_domain(the_input):
+def get_fqdn(the_input):
+    fqdn = None
+    domain = get_tld(the_input, fail_silently=True, as_object=True)
+
+    # handle fqdn if needed
+    if domain:
+        # get the subdomain using tld.subdomain
+        subdomain = domain.subdomain
+        if (subdomain):
+            fqdn = "{}.{}".format(subdomain, str(domain))
+
+    return fqdn
+
+
+def extract_fqdn(the_input):
     is_url = None
     domain_from_mail = None
     is_email = validate_email(the_input)
@@ -72,32 +86,33 @@ def extract_domain(the_input):
         # Not ATP Link or Proofpoint URL so just unescape
         else:
             the_input = unescape_url(the_input)
-        is_url = domain = get_tld(the_input, fail_silently=True)
+        is_url = fqdn = get_fqdn(the_input)
 
     # Extract domain itself from a potential subdomain
     if domain_from_mail or not is_url:
         full_domain = 'https://'
         full_domain += domain_from_mail if domain_from_mail else the_input
         # get_tld fails to parse subdomain since it is not URL, over-ride error by injecting protocol.
-        domain = get_tld(full_domain, fail_silently=True)
+        fqdn = get_fqdn(full_domain)
 
     # convert None to empty string if needed
-    domain = '' if not domain else domain
-    if type(domain) == unicode:
-        domain = domain.encode('utf-8', errors='ignore')
-    return domain
+    fqdn = '' if not fqdn else fqdn
+    if type(fqdn) == unicode:
+        fqdn = fqdn.encode('utf-8', errors='ignore')
+    return fqdn
 
 
 def main():
-    domains = []
+    fqdns = []
     the_input = demisto.args().get('input')
+
     # argToList returns the argument as is if it's already a list so no need to check here
     the_input = argToList(the_input)
 
     # Otherwise assumes it's already an array
     for item in the_input:
-        domains.append(extract_domain(item))
-    demisto.results(domains)
+        fqdns.append(extract_fqdn(item))
+    demisto.results(fqdns)
 
 
 # python2 uses __builtin__ python3 uses builtins
