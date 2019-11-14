@@ -19,7 +19,7 @@ TIMEOUT = 10
 DEFAULT_REGISTRY = "registry-1.docker.io"
 
 
-def parse_www_auth(www_auth):
+def parse_www_auth(www_auth) -> list:
     """Parse realm and service from www-authenticate string of the form:
     Bearer realm="https://auth.docker.io/token",service="registry.docker.io"
 
@@ -29,7 +29,7 @@ def parse_www_auth(www_auth):
     match = re.match(r'.*realm="(.+)",service="(.+)".*', www_auth, re.IGNORECASE)
     if not match:
         return None
-    return (match.group(1), match.group(2))
+    return [match.group(1), match.group(2)]
 
 
 def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
@@ -50,13 +50,8 @@ def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
         www_auth = res.headers.get('www-authenticate')
         if www_auth:
             parse_auth = parse_www_auth(www_auth)
-            if parse_auth:
+            if parse_auth and len(parse_auth) == 2:
                 realm, service = parse_auth
-            else:
-                demisto.info('Failed parsing www-authenticate header: {}'.format(www_auth))
-        else:
-            demisto.info('Failed extracting www-authenticate header from registry: {}, final url: {}'.format(
-                registry, res.url))
         res = requests.get(
             '{}?scope=repository:{}:pull&service={}'.format(realm, image_name, service),
             headers=ACCEPT_HEADER,
@@ -171,8 +166,10 @@ def get_docker_image_latest_tag(docker_image_name):
             if tags:
                 tag = lexical_find_latest_tag(tags)
         return tag
-    except Exception as ex:
-        return_error("Failed getting tag for: {}. Err: {}".format(docker_image_name, str(ex)))
+    except (requests.exceptions.RequestException, Exception):
+        print_error("Failed getting tag for: {}. Please check it exists and of demisto format."
+                    .format(docker_image_name))
+        return ''
 
 
 def parse_docker_image(docker_image):
@@ -183,11 +180,10 @@ def parse_docker_image(docker_image):
             return name, tag
         except IndexError:
             # TODO: Check if need to raise Exception
-            print_error("the docker image isn't of format - demisto/image_name:0.0.0")
+            print_error("The docker image isn't of format - demisto/image_name:0.0.0")
             return '', ''
     else:
         # If the yml file has no docker image we provide the default one 'demisto/python:1.3-alpine'
-        # TODO: Check if the default docker image needs to be updated or not
         return 'demisto/python', '1.3-alpine'
 
 
@@ -199,17 +195,24 @@ class DockerImageValidator(object):
         self.from_version = self.yml_file.get('fromversion', '0')
         self.docker_image_name, self.docker_image_tag = parse_docker_image(self.yml_file.get('dockerimage', ''))
         self.is_latest_tag = True
+        self.docker_image_latest_tag = get_docker_image_latest_tag(self.docker_image_name)
 
     def is_docker_image_latest_tag(self):
-        if not self.docker_image_tag and not self.docker_image_name:
+        if not self.docker_image_tag and not self.docker_image_name and not self.docker_image_latest_tag:
             # If the docker image isn't in the format we expect it to be
             self.is_latest_tag = False
         else:
-            # We validate only if the file is new file or it's a modified file with version >= 5.0.0
-            if (self.is_modified_file and server_version_compare(self.from_version, '5.0.0') >= 0) or not \
-                    self.is_modified_file:
-                docker_image_latest_tag = get_docker_image_latest_tag(self.docker_image_name)
-                if docker_image_latest_tag != self.docker_image_tag:
+            # Case of a modified file with version >= 5.0.0
+            if self.is_modified_file and server_version_compare(self.from_version, '5.0.0') >= 0:
+                # If docker image name are different and if the docker image isn't the default one
+                if self.docker_image_latest_tag != self.docker_image_tag and not \
+                        'demisto/python:1.3-alpine' == f'{self.docker_image_name}:{self.docker_image_tag}':
+                    self.is_latest_tag = False
+            # Case of an added file
+            elif not self.is_modified_file:
+                if self.docker_image_latest_tag != self.docker_image_tag:
                     self.is_latest_tag = False
 
+        if not self.is_latest_tag:
+            print_error("The docker image tag isn't the latest, please update it.")
         return self.is_latest_tag
