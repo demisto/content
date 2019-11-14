@@ -1,16 +1,15 @@
 import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 
 
 def main(args):
-    demisto.results(getValueToSet(args))
+    demisto.results(get_value_to_set(args))
 
-def getValueToSet(args):
+
+def get_value_to_set(args):
     value = args.get('value')
-    applyIfEmpty = True if args.get('applyIfEmpty', '').lower() == 'true' else False
+    apply_if_empty = True if args.get('applyIfEmpty', '').lower() == 'true' else False
 
-    if value is None or (applyIfEmpty and len(value) < 1):
+    if value is None or (apply_if_empty and len(value) < 1):
         value = args.get('defaultValue')
 
     return value

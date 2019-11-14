@@ -1,52 +1,60 @@
 
-from SetIfEmpty import getValueToSet
+from SetIfEmpty import get_value_to_set
 
-def test_WhenValueIsAValidString_ShouldReturnValue():
+
+def test_when_value_is_a_valid_string_should_return_value():
     validString = "validString"
     expectedOutput = validString
-    result = getValueToSet({'value': validString, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+    result = get_value_to_set({'value': validString, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsADictionary_ShouldReturnValue():
+
+def test_when_value_is_a_dictionary_should_return_value():
     dictionary = {'name': "John", 'lastName': 'Doe'}
     expectedOutput = dictionary
-    result = getValueToSet({'value': dictionary, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+    result = get_value_to_set({'value': dictionary, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsEmptyString_ShouldReturnDefaultValue():
+
+def test_when_value_is_empty_string_should_return_value():
     expectedOutput = "defaultValue"
-    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'True'})
+    result = get_value_to_set({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'True'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsEmptyDictionary_ShouldReturnDefaultValue():
+
+def test_when_value_is_empty_dictionary_should_return_default_value():
     expectedOutput = "defaultValue"
-    result = getValueToSet({'value': {}, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+    result = get_value_to_set({'value': {}, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsNone_ShouldReturnDefaultValue():
+
+def test_when_value_is_none_should_return_default_value():
     expectedOutput = "defaultValue"
-    result = getValueToSet({'value': None, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+    result = get_value_to_set({'value': None, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsEmptyString_AndApplyIfEmptyIsFalse_ShouldReturnEmptyString():
+
+def test_when_value_is_empty_string_and_apply_if_empty_is_false_should_return_empty_string():
     expectedOutput = ""
-    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'False'})
+    result = get_value_to_set({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'False'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsEmptyDictionary_AndApplyIfEmptyIsFalse__ShouldReturnEmptyDictionary():
+
+def test_when_value_is_empty_dictionary_and_apply_if_empty_is_false_should_return_empty_dictionary():
     expectedOutput = {}
-    result = getValueToSet({'value': {}, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'false'})
+    result = get_value_to_set({'value': {}, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'false'})
 
     assert expectedOutput == result
 
-def test_WhenValueIsNone_AndApplyIfEmptyIsFalse__ShouldReturnDefaultValue():
+
+def test_when_value_is_none_and_apply_if_empty_is_false_should_return_default_value():
     expectedOutput = "defaultValue"
-    result = getValueToSet({'value': None, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'false'})
+    result = get_value_to_set({'value': None, 'defaultValue': 'defaultValue', 'applyIfEmpty': 'false'})
 
     assert expectedOutput == result
