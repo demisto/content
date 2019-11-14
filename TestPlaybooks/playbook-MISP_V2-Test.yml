@@ -129,7 +129,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6495
+          "y": 7195
         }
       }
     note: false
@@ -732,7 +732,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6145
+          "y": 6845
         }
       }
     note: false
@@ -768,7 +768,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 6320
+          "y": 7020
         }
       }
     note: false
@@ -1054,12 +1054,12 @@ tasks:
     ignoreworker: false
   "37":
     id: "37"
-    taskid: 280df37c-5aae-494a-8ab9-e3670988fcbd
+    taskid: f4c85b83-6c72-4d90-8979-d8935fa3880a
     type: regular
     task:
-      id: 280df37c-5aae-494a-8ab9-e3670988fcbd
+      id: f4c85b83-6c72-4d90-8979-d8935fa3880a
       version: -1
-      name: Add tag 'Test1' to the first event
+      name: Add tag 'Test1' to both events
       description: Adds a tag to the given UUID event or attribute.
       script: MISP V2|||misp-add-tag
       type: regular
@@ -1067,26 +1067,18 @@ tasks:
       brand: MISP V2
     nexttasks:
       '#none#':
-      - "46"
+      - "47"
     scriptarguments:
       tag:
         simple: Test1
       uuid:
-        complex:
-          root: MISP
-          accessor: Event.UUID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "0"
+        simple: ${MISP.Event.UUID}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 3695
+          "y": 4395
         }
       }
     note: false
@@ -1094,10 +1086,10 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: f18baad8-4ab2-4622-841b-97e5a5254694
+    taskid: 4f8ab904-cb73-4791-8764-ae79ec8cc582
     type: regular
     task:
-      id: f18baad8-4ab2-4622-841b-97e5a5254694
+      id: 4f8ab904-cb73-4791-8764-ae79ec8cc582
       version: -1
       name: 'Search by tags: Test1 AND Test2'
       description: Search for events in MISP.
@@ -1115,7 +1107,7 @@ tasks:
       last: {}
       org: {}
       tags:
-        simple: AND:Test1,Test2;
+        simple: AND:Test1,Test2
       to: {}
       to_ids: {}
       type: {}
@@ -1126,7 +1118,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4395
+          "y": 4920
         }
       }
     note: false
@@ -1134,10 +1126,10 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 1ce3aca4-754c-4fd5-8861-fe2f465829da
+    taskid: de4bc348-8b61-4821-89b4-6547de97f876
     type: condition
     task:
-      id: 1ce3aca4-754c-4fd5-8861-fe2f465829da
+      id: de4bc348-8b61-4821-89b4-6547de97f876
       version: -1
       name: Is AND search work?
       type: condition
@@ -1182,7 +1174,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4570
+          "y": 5095
         }
       }
     note: false
@@ -1190,10 +1182,10 @@ tasks:
     ignoreworker: false
   "41":
     id: "41"
-    taskid: 1c108cc4-0013-492f-82fc-4db0aaf99ebe
+    taskid: 4424b68c-1987-45dd-8625-8018b4497d79
     type: regular
     task:
-      id: 1c108cc4-0013-492f-82fc-4db0aaf99ebe
+      id: 4424b68c-1987-45dd-8625-8018b4497d79
       version: -1
       name: 'Search by tags: Test1 OR Test2'
       description: Search for events in MISP.
@@ -1211,7 +1203,7 @@ tasks:
       last: {}
       org: {}
       tags:
-        simple: OR:Test1,Test2;
+        simple: OR:Test1,Test2
       to: {}
       to_ids: {}
       type: {}
@@ -1222,7 +1214,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4920
+          "y": 5445
         }
       }
     note: false
@@ -1230,10 +1222,10 @@ tasks:
     ignoreworker: false
   "42":
     id: "42"
-    taskid: 4ff17651-0b23-43b4-82a3-158bae653a84
+    taskid: 7ae1f246-40a1-4600-8a16-acf527500863
     type: condition
     task:
-      id: 4ff17651-0b23-43b4-82a3-158bae653a84
+      id: 7ae1f246-40a1-4600-8a16-acf527500863
       version: -1
       name: Is OR search work?
       type: condition
@@ -1278,7 +1270,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5095
+          "y": 5620
         }
       }
     note: false
@@ -1286,10 +1278,10 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 8e90fa4a-70cf-4089-8630-ab65dc0b99b0
+    taskid: 92229649-8d30-4ddc-899b-9b89e07dc21d
     type: regular
     task:
-      id: 8e90fa4a-70cf-4089-8630-ab65dc0b99b0
+      id: 92229649-8d30-4ddc-899b-9b89e07dc21d
       version: -1
       name: 'Search by tags: NOT Test1,Test2'
       description: Search for events in MISP.
@@ -1307,7 +1299,7 @@ tasks:
       last: {}
       org: {}
       tags:
-        simple: NOT:Test2;
+        simple: NOT:Test2
       to: {}
       to_ids: {}
       type: {}
@@ -1318,7 +1310,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5445
+          "y": 5970
         }
       }
     note: false
@@ -1337,7 +1329,7 @@ tasks:
       brand: ""
     nexttasks:
       "Yes":
-      - "55"
+      - "62"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -1368,7 +1360,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5620
+          "y": 6145
         }
       }
     note: false
@@ -1407,47 +1399,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "46":
-    id: "46"
-    taskid: bb5af3be-3e48-4ffa-89ed-be8b2dce9b0e
-    type: regular
-    task:
-      id: bb5af3be-3e48-4ffa-89ed-be8b2dce9b0e
-      version: -1
-      name: Add tag 'Test1' to the second event
-      description: Adds a tag to the given UUID event or attribute.
-      script: MISP V2|||misp-add-tag
-      type: regular
-      iscommand: true
-      brand: MISP V2
-    nexttasks:
-      '#none#':
-      - "47"
-    scriptarguments:
-      tag:
-        simple: Test1
-      uuid:
-        complex:
-          root: MISP
-          accessor: Event.UUID
-          transformers:
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 3870
+          "y": 4220
         }
       }
     note: false
@@ -1487,7 +1439,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4045
+          "y": 4570
         }
       }
     note: false
@@ -1516,7 +1468,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5970
+          "y": 6670
         }
       }
     note: false
@@ -1537,7 +1489,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "51"
+      - "56"
     scriptarguments:
       all:
         simple: "yes"
@@ -1589,7 +1541,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3345
+          "y": 4045
         }
       }
     note: false
@@ -1623,7 +1575,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4220
+          "y": 4745
         }
       }
     note: false
@@ -1657,7 +1609,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4745
+          "y": 5270
         }
       }
     note: false
@@ -1691,21 +1643,122 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5270
+          "y": 5795
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "55":
-    id: "55"
-    taskid: 90166e4b-c107-427d-81f8-3a93ab567de9
+  "56":
+    id: "56"
+    taskid: 0c24c6f2-a42b-4097-8185-13d214270871
     type: regular
     task:
-      id: 90166e4b-c107-427d-81f8-3a93ab567de9
+      id: 0c24c6f2-a42b-4097-8185-13d214270871
       version: -1
-      name: misp-search
-      description: Search for events in MISP.
+      name: Search for event with tag "Test1"
+      script: MISP V2|||misp-search
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      category: {}
+      eventid: {}
+      from: {}
+      last: {}
+      org: {}
+      tags:
+        simple: Test1
+      to: {}
+      to_ids: {}
+      type: {}
+      uuid: {}
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "58":
+    id: "58"
+    taskid: d2b0700e-a6d7-4378-80fb-169e4129f3fd
+    type: regular
+    task:
+      id: d2b0700e-a6d7-4378-80fb-169e4129f3fd
+      version: -1
+      name: Delete event
+      script: MISP V2|||misp-delete-event
+      type: regular
+      iscommand: true
+      brand: MISP V2
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      event_id:
+        simple: ${MISP.Event.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "60":
+    id: "60"
+    taskid: baa54c6f-8418-4f55-8765-9b4eb744bf82
+    type: regular
+    task:
+      id: baa54c6f-8418-4f55-8765-9b4eb744bf82
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "61":
+    id: "61"
+    taskid: c9544754-9d47-4f5c-8992-9a5598b4b75d
+    type: regular
+    task:
+      id: c9544754-9d47-4f5c-8992-9a5598b4b75d
+      version: -1
+      name: 'Search for event with tag "Test1" '
       script: MISP V2|||misp-search
       type: regular
       iscommand: true
@@ -1719,7 +1772,8 @@ tasks:
       from: {}
       last: {}
       org: {}
-      tags: {}
+      tags:
+        simple: Test1
       to: {}
       to_ids: {}
       type: {}
@@ -1730,7 +1784,79 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 5795
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "62":
+    id: "62"
+    taskid: c9d05376-7991-4570-8f3b-69d738b56840
+    type: regular
+    task:
+      id: c9d05376-7991-4570-8f3b-69d738b56840
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "64":
+    id: "64"
+    taskid: f9a62b4a-5864-40c0-8ca1-86f684359fed
+    type: condition
+    task:
+      id: f9a62b4a-5864-40c0-8ca1-86f684359fed
+      version: -1
+      name: Found old events from previous run?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: MISP.Event.ID
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
         }
       }
     note: false
@@ -1740,12 +1866,11 @@ view: |-
   {
     "linkLabelsPosition": {
       "40_53_yes": 0.88,
-      "42_54_yes": 0.81,
-      "44_55_Yes": 0.73
+      "42_54_yes": 0.81
     },
     "paper": {
       "dimensions": {
-        "height": 6510,
+        "height": 7210,
         "width": 810,
         "x": 50,
         "y": 50
