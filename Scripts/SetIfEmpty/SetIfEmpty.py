@@ -1,10 +1,6 @@
 import demistomock as demisto
 
 
-def main(args):
-    demisto.results(get_value_to_set(args))
-
-
 def get_value_to_set(args):
     value = args.get('value')
     apply_if_empty = True if args.get('applyIfEmpty', '').lower() == 'true' else False
@@ -13,6 +9,10 @@ def get_value_to_set(args):
         value = args.get('defaultValue')
 
     return value
+
+
+def main(args):
+    demisto.results(get_value_to_set(args))
 
 
 if __name__ in ('builtins', '__builtin__'):
