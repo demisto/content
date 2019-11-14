@@ -2,7 +2,6 @@ import copy
 import time
 from pprint import pformat
 import uuid
-import json
 import urllib
 import urllib3
 import ast
