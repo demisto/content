@@ -1873,7 +1873,7 @@
         {
             "integrations": "IronDefense",
             "playbookID": "IronDefense - Test"
-        },
+        }
     ],
     "skipped_tests": {
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
