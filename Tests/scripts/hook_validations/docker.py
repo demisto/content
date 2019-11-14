@@ -1,6 +1,6 @@
 from Tests.test_utils import get_yaml, print_error, server_version_compare
 from pkg_resources import parse_version
-from CommonServerPython import *
+from datetime import datetime, timedelta
 import re
 import requests
 
