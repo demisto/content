@@ -45,26 +45,26 @@ class Client(BaseClient):
             return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data,
                                          files, timeout, resp_type, ok_codes, **kwargs)
         except DemistoException as error:
-            print(parse_demisto_exception(error, 'text'))
+            raise parse_demisto_exception(error, 'text')
 
     def test_module(self) -> Dict:
-        """Performs basic GET request to check if the API is reachable and authentication is successful.
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
 
         Returns:
             Response JSON
         """
-        return self.get_response_policy_zones()
+        return self.list_response_policy_zones()
 
-    def get_response_policy_zones(self) -> Dict:
-        """Uses to fetch credentials into Demisto
-        Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
-
+    def list_response_policy_zones(self, max_results: str = None) -> Dict:
+        """List all response policy zones.
+        Args:
+                max_results:  maximum number of results
         Returns:
             Response JSON
         """
         suffix = 'zone_rp'
-        # return self._http_request('GET', suffix, headers={'Authorization': "Basic cGFuOnBhbl8xMjM0NTY="})
-        return self._http_request('GET', suffix)
+        request_params = assign_params(_max_results=max_results)
+        return self._http_request('GET', suffix, params=request_params)
 
     def get_ip(self, ip: str) -> Dict:
         """Get ip information.
@@ -74,8 +74,10 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
+        # The server endpoint to request from
         suffix = 'ipv4address'
 
+        # Dictionary of params for the request
         request_params = assign_params(ip_address=ip)
         request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
         return self._http_request('GET', suffix, params=request_params)
@@ -89,14 +91,15 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
+        # The server endpoint to request from
         suffix = 'search'
 
+        # Dictionary of params for the request
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
     def list_response_policy_zone_rules(self, zone: str, max_results: str, next_page_id: str) -> Dict:
-        """Locks an account by the account ID.
-
+        """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
             max_results: maximum number of results.
@@ -105,146 +108,24 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        # The service endpoint to request from
+        # The server endpoint to request from
         suffix = 'allrpzrecords'
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
         return self._http_request('GET', suffix, params=request_params)
 
-    def unlock_account(self, account_id: AnyStr) -> Dict:
-        """Returns events by the account ID.
-
-        Args:
-            account_id: Account ID to unlock.
-
-        Returns:
-            Response JSON
-        """
-        # The service endpoint to request from
-        suffix = 'account/unlock'
-        # Dictionary of params for the request
-        params = {'account': account_id}
-        # Send a request using our http_request wrapper
-        return self._http_request('POST', suffix, params=params)
-
-    def reset_account(self, account_id: str):
-        """Resets an account by account ID.
-
-        Args:
-            account_id: Account ID to reset.
-
-        Returns:
-            Response JSON
-        """
-        # The service endpoint to request from
-        suffix = 'account/reset'
-        # Dictionary of params for the request
-        params = {'account': account_id}
-        # Send a request using our http_request wrapper
-        return self._http_request('POST', suffix, params=params)
-
-    def unlock_vault(self, vault_to_lock: AnyStr) -> Dict:
-        """Unlocks a vault by vault ID.
-
-        Args:
-            vault_to_lock: Vault ID to lock
-
-        Returns:
-            Response JSON
-        """
-        suffix = 'vault/unlock'
-        params = {'vaultId': vault_to_lock}
-        return self._http_request('POST', suffix, params=params)
-
-    def lock_vault(self, vault_to_lock: AnyStr) -> Dict:
-        """Locks vault by vault ID.
-
-        Args:
-            vault_to_lock: Vault ID to lock.
-
-        Returns:
-            Response JSON
-        """
-        suffix = 'vault/lock'
-        params = {'vaultId': vault_to_lock}
-        return self._http_request('POST', suffix, params=params)
-
-    def list_vaults(self, max_results: int) -> Dict:
-        """Return all vaults from API.
-
-        Args:
-            max_results: Maximum results to fetch.
-
-        Returns:
-            Response JSON
-        """
-        suffix = 'vault'
-        values_to_ignore = [0]
-        params = assign_params(limit=max_results, values_to_ignore=values_to_ignore)
-        return self._http_request('GET', suffix, params=params)
-
 
 ''' HELPER FUNCTIONS '''
 
 
-def parse_demisto_exception(self, error: DemistoException, field_in_error: str):
-    infoblox_err = error.args[0].split('\n')[1].replace('\\', '')
-    infoblox_json = json.loads(infoblox_err)
-    return infoblox_json.get(field_in_error, 'text')
-
-
-def account_response_to_context(credentials: Union[Dict, List]) -> Union[Dict, List]:
-    """Formats the API response to Demisto context.
-
-    Args:
-        credentials: The raw response from the API call. Can be a List or Dict.
-
-    Returns:
-        The formatted Dict or List.
-
-    Examples:
-        >>> account_response_to_context([{'username': 'user', 'name': 'demisto', 'isLocked': False}])
-        [{'Username': 'user', 'Name': 'demisto', 'IsLocked': False}]
-    """
-    if isinstance(credentials, list):
-        return [account_response_to_context(credential) for credential in credentials]
-    return {
-        'Username': credentials.get('username'),
-        'Name': credentials.get('name'),
-        'IsLocked': credentials.get('isLocked')
-    }
-
-
-def build_credentials_fetch(credentials: Union[Dict, List]) -> Union[Dict, List]:
-    """Formats the API response to Demisto context.
-
-    Args:
-        credentials: The raw response from the API call. Can be a List or Dict.
-
-    Returns:
-        The formatted Dict or List.
-
-    Examples:
-        >>> build_credentials_fetch([{'username': 'user1', 'name': 'name1', 'password': 'password'}])
-        [{'user': 'user1', 'name': 'name1', 'password': 'password'}]
-    """
-    if isinstance(credentials, list):
-        return [build_credentials_fetch(credential) for credential in credentials]
-    return {
-        'user': credentials.get('username'),
-        'name': credentials.get('name'),
-        'password': credentials.get('password')
-    }
-
-
-def build_vaults_context(vaults: Union[List, Dict]) -> Union[List[Dict], Dict]:
-    if isinstance(vaults, list):
-        return [build_vaults_context(vault_entry) for vault_entry in vaults]
-    return {
-        'ID': vaults.get('vaultId'),
-        'IsLocked': vaults.get('isLocked')
-    }
+def parse_demisto_exception(error: DemistoException, field_in_error: str):
+    err_string = error.args[0]
+    if 'Error in API call' in err_string:
+        infoblox_err = err_string.split('\n')[1].replace('\\', '')
+        infoblox_json = json.loads(infoblox_err)
+        return DemistoException(infoblox_json.get(field_in_error, 'text'))
+    return error
 
 
 ''' COMMANDS '''
@@ -451,7 +332,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
         fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
         fixed_keys_rule_list.append(fixed_keys_rule)
-    zone_name = {zone.capitalize()}
+    zone_name = zone.capitalize()
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)':
@@ -460,20 +341,31 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     return human_readable, context, raw_response
 
 
-def list_vaults_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Lists all vaults.
+def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
     """
-    max_results = int(args.get('max_results', 0))
-    raw_response = client.list_vaults(max_results)
-    vaults = raw_response.get('vault')
-    if vaults:
-        title = f'{INTEGRATION_NAME} - Total of {len(vaults)} has been found.'
-        context_entry = build_vaults_context(vaults)
-        context = {f'{INTEGRATION_CONTEXT_NAME}.Vault(val.ID && val.ID === obj.ID)': context_entry}
-        human_readable = tableToMarkdown(title, context_entry)
-        return human_readable, context, raw_response
-    else:
-        return f'{INTEGRATION_NAME} - No vaults found.', {}, {}
+    max_results = args.get('max_results', 50)
+    raw_response = client.list_response_policy_zones(max_results)
+    zones_list = raw_response['result']
+    if not zones_list:
+        return f'{INTEGRATION_NAME} - No Response Policy Zones were found', {}, {}
+    fixed_keys_zone_list = []
+    for zone in zones_list:
+        fixed_keys_zone = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           zone.items()}
+        fixed_keys_zone_list.append(fixed_keys_zone)
+    display_first_x_results = f'( first {max_results} results)' if max_results else ''
+    title = f'{INTEGRATION_NAME} - Response Policy Zones list{display_first_x_results}:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': fixed_keys_zone_list}
+    human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -499,6 +391,7 @@ def main():  # pragma: no cover
         'test-module': test_module_command,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zones': list_response_policy_zones_command,
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
     }
     try:
