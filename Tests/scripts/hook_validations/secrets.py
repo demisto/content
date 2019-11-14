@@ -12,7 +12,7 @@ from Tests.test_utils import run_command, print_error
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
 ENTROPY_THRESHOLD = 4.0
-ACCEPTED_FILE_STATUSES = ['M', 'A']
+ACCEPTED_FILE_STATUSES = ['m', 'a']
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore'}
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
@@ -49,13 +49,12 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 
 def get_secrets(branch_name, is_circle):
     secrets_found = {}
-    secrets_found_string = ''
     # make sure not in middle of merge
     if not run_command('git rev-parse -q --verify MERGE_HEAD'):
         secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
         secrets_found = search_potential_secrets(secrets_file_paths)
         if secrets_found:
-            secrets_found_string += 'Secrets were found in the following files:\n'
+            secrets_found_string = 'Secrets were found in the following files:\n'
             for file_name in secrets_found:
                 secrets_found_string += ('\nFile Name: ' + file_name)
                 secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
@@ -127,6 +126,7 @@ def search_potential_secrets(secrets_file_paths):
         if file_path in files_white_list:
             print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
             continue
+
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
@@ -320,6 +320,7 @@ def extract_text_from_pdf(file_path):
         pdf_page = pdf_reader.getPage(page_num)
         page_num += 1
         file_contents += pdf_page.extractText()
+
     return file_contents
 
 
