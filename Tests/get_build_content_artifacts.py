@@ -6,6 +6,8 @@ from Tests.test_utils import print_error
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility to upload new content')
     parser.add_argument('-b', '--branch', help='The branch to get the latest successful build content from')
+    parser.add_argument('-p', '--prefix', help='Prefix to prepend to the content artifact '
+                        'filenames. Default is "prev_"')
 
     options = parser.parse_args()
 
@@ -45,7 +47,7 @@ def download_artifact(url, file_name=''):
 
         if not file_name:
             file_name = artifact
-        
+
         print('Writing artifact to local storage')
 
         with open(file_name, 'wb') as f:
@@ -61,11 +63,13 @@ def main():
     options = options_handler()
     branch = options.branch
     branch = branch if branch else 'master'
+    prefix = options.prefix
+    prefix = prefix if prefix else 'prev_'
     resp = get_latest_artifacts(branch)
     for artifact in resp.json():
         file_name = artifact.get('path', '').split('/')[-1]
         if file_name in ['content_new.zip', 'content_test.zip']:
-            new_file_name = 'prev_' + file_name
+            new_file_name = prefix + file_name
             dl_url = artifact.get('url', '')
             download_artifact(dl_url, new_file_name)
 
