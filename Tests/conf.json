@@ -1919,6 +1919,7 @@
         }
     ],
     "skipped_tests": {
+        "Symantec Data Loss Prevention - Test": "Issue 20134",
         "urlscan_malicious_Test": "Issue 19727",
         "VxStream Test": "Issue 19439",
         "SentinelOne V2 - test": "Issue 19361",
