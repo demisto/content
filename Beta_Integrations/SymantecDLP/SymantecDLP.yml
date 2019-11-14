@@ -43,7 +43,7 @@ configuration:
   required: false
   type: 0
 description: Symantec Data Loss Prevention Incident Reporting and Update
-display: Symantec Data Loss Prevention
+display: Symantec Data Loss Prevention (Beta)
 name: Symantec Data Loss Prevention
 script:
   commands:
@@ -452,3 +452,4 @@ script:
   script: ''
   subtype: python3
   type: python
+  beta: true
