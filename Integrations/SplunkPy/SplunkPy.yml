@@ -2,9 +2,6 @@ category: Analytics & SIEM
 commonfields:
   id: SplunkPy
   version: -1
-description: Run queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
 configuration:
 - display: Host - ip (x.x.x.x)
   name: host
@@ -86,15 +83,9 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Relevant data for labels (the data which will be added to the labels of
-    fetched events. Note - choosing "All" may slow down events fetching).
-  name: relevant_data_for_labels
-  defaultvalue: ""
-  type: 16
-  required: false
-  options:
-  - Raw
-  - All
+description: Run queries on Splunk servers.
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:
