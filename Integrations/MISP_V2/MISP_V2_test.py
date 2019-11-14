@@ -131,7 +131,7 @@ def test_build_misp_complex_filter(mocker):
     assert actual == expected
 
     complex_query_AND_NOT = "AND:tag1,tag2;NOT:tag3,tag4"
-    expected = {'AND': ['tag1', 'tag2'], 'NOT': ['tag3','tag4']}
+    expected = {'AND': ['tag1', 'tag2'], 'NOT': ['tag3', 'tag4']}
     actual = build_misp_complex_filter(complex_query_AND_NOT)
     assert actual == expected
 
