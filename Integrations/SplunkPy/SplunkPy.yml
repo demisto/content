@@ -83,9 +83,15 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-description: Run queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+- display: Relevant data for labels (the data which will be added to the labels of
+    fetched events. Note - choosing "All" may slow down events fetching).
+  name: relevant_data_for_labels
+  defaultvalue: ""
+  type: 16
+  required: false
+  options:
+  - Raw
+  - All
 script:
   commands:
   - arguments:
