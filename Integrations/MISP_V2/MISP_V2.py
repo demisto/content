@@ -785,9 +785,8 @@ def build_misp_complex_filter(demisto_query: str) -> dict:
         misp_query_params['not_parameters'] = match_not.group(2).split(',')
         is_complex_search = True
 
-
     if is_complex_search:
-        misp_complex_query = MISP.build_complex_query(or_parameters = or_list, and_parameters = and_list, not_parameters = not_list)
+        misp_complex_query = MISP.build_complex_query(**misp_query_params)
         return misp_complex_query
 
     return demisto_query
