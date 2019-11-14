@@ -1,0 +1,40 @@
+args:
+- default: false
+  description: The string or dictionary value to check if empty.
+  isArray: false
+  name: value
+  required: false
+  secret: false
+- default: false
+  description: The new value to return if the original value was empty.
+  isArray: false
+  name: defaultValue
+  predefined:
+  - ''
+  required: true
+  secret: false
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'true'
+  description: If set to true, empty strings and dictionaries will be identified as
+    invalid values and the default value will be returned. True by default.
+  isArray: false
+  name: applyIfEmpty
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+comment: Todo
+commonfields:
+  id: 6debcb35-368b-4003-9d1e-445a16553735
+  version: -1
+enabled: false
+name: SetIfEmpty
+script: '-'
+subtype: python3
+system: false
+tags:
+- transformer
+timeout: '0'
+type: python
