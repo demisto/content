@@ -1,3 +1,5 @@
+from mock import patch
+
 
 def test_parse_docker_image():
     from Tests.scripts.hook_validations.docker import parse_docker_image
@@ -6,9 +8,9 @@ def test_parse_docker_image():
     assert ('', '') == parse_docker_image('demisto/python/1.2.3.4')
 
 
-def test_is_docker_image_latest_tag(mocker):
+def test_is_docker_image_latest_tag():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    with mocker.patch.object(DockerImageValidator, "__init__", lambda x, y, z: None):
+    with patch.object(DockerImageValidator, '__init__', lambda x, y, z: None):
         docker_image_validator = DockerImageValidator(None, None)
         docker_image_validator.yml_file = {}
         docker_image_validator.docker_image_latest_tag = 'latest_tag'
