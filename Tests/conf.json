@@ -1940,9 +1940,14 @@
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
+        "Extract Indicators From File - Generic v2": "Issue 20143",
+        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -2008,7 +2013,6 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Microsoft Graph": "Issue 20096",
         "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
