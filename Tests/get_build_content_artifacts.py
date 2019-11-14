@@ -14,6 +14,7 @@ def options_handler():
 
 def get_latest_artifacts(branch):
     try:
+        print('Making request to get the artifacts from the latest successful build on branch "{}"'.format(branch))
         params = {
             'branch': branch,
             'filter': 'successful'
@@ -24,6 +25,7 @@ def get_latest_artifacts(branch):
             msg = 'requests exception: [{}] - ' \
                   '{}\n{}'.format(res.status_code, res.reason, res.text)
             raise Exception(msg)
+        print('Request for latest artifacts successful')
         return res
     except Exception as e:
         print_error(str(e))
@@ -31,19 +33,26 @@ def get_latest_artifacts(branch):
 
 def download_artifact(url, file_name=''):
     try:
+        artifact = url.split('/')[-1]
+        print('Making request to download the "{}" artifact'.format(artifact))
         res = requests.get(url, stream=True)
         if res.status_code < 200 or res.status_code >= 300:
             msg = 'requests exception: [{}] - ' \
                   '{}\n{}'.format(res.status_code, res.reason, res.text)
             raise Exception(msg)
+        else:
+            print('Request to download the "{}" artifact successful'.format(artifact))
 
         if not file_name:
-            file_name = url.split('/')[-1]
+            file_name = artifact
+        
+        print('Writing artifact to local storage')
 
         with open(file_name, 'wb') as f:
             for chunk in res.iter_content(chunk_size=1024):
                 if chunk:
                     f.write(chunk)
+        print('Artifact successfully saved to local storage as "{}"'.format(file_name))
     except Exception as e:
         print_error(str(e))
 
@@ -53,7 +62,7 @@ def main():
     branch = options.branch
     branch = branch if branch else 'master'
     resp = get_latest_artifacts(branch)
-    for artifact in resp:
+    for artifact in resp.json():
         file_name = artifact.get('path', '').split('/')[-1]
         if file_name in ['content_new.zip', 'content_test.zip']:
             new_file_name = 'prev_' + file_name
