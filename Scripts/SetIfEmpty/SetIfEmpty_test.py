@@ -1,4 +1,4 @@
-# If applyIfEmpty default is changed to false the script will bug BUT THE TESTS WON'T BREAK
+
 from SetIfEmpty import getValueToSet
 
 def test_WhenValueIsAValidString_ShouldReturnValue():
@@ -17,7 +17,7 @@ def test_WhenValueIsADictionary_ShouldReturnValue():
 
 def test_WhenValueIsEmptyString_ShouldReturnDefaultValue():
     expectedOutput = "defaultValue"
-    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
+    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'True'})
 
     assert expectedOutput == result
 
@@ -35,7 +35,7 @@ def test_WhenValueIsNone_ShouldReturnDefaultValue():
 
 def test_WhenValueIsEmptyString_AndApplyIfEmptyIsFalse_ShouldReturnEmptyString():
     expectedOutput = ""
-    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'false'})
+    result = getValueToSet({'value': '', 'defaultValue': 'defaultValue', 'applyIfEmpty': 'False'})
 
     assert expectedOutput == result
 

@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The string or dictionary value to check if empty.
+  description: The object value to check if empty.
   isArray: false
   name: value
   required: false
@@ -16,8 +16,8 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings and dictionaries will be identified as
-    invalid values and the default value will be returned. True by default.
+  description: If set to true, empty strings and dictionaries will be handled as 'None'
+    values values and the default value will be returned.
   isArray: false
   name: applyIfEmpty
   predefined:
@@ -25,9 +25,10 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Todo
+comment: Checks an object for a None or empty value and returns a pre-set default
+  value.
 commonfields:
-  id: 6debcb35-368b-4003-9d1e-445a16553735
+  id: SetIfEmpty
   version: -1
 enabled: false
 name: SetIfEmpty
