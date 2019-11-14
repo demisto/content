@@ -1940,6 +1940,9 @@
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
@@ -2010,7 +2013,6 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Microsoft Graph": "Issue 20096",
         "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
@@ -2070,7 +2072,7 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
-    "nigthly_integrations": [
+    "nightly_integrations": [
         "Lastline",
         "TruSTAR",
         "SlackV2"
