@@ -1,7 +1,7 @@
-id: d4dcf130-a805-4345-8988-d47aa1b53e35
+id: IronDefense - Test
 version: -1
-name: Default IronDefense Example
-description: Default playbook, Enrich indicators in incident using one or more integrations
+name: IronDefense Test
+description: Playbook to test the IronDefense Integration.
 starttaskid: "0"
 tasks:
   "0":
