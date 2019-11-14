@@ -208,7 +208,6 @@ tasks:
       expired: false
       totalanswers: 0
   "15":
-    description: ""
     id: "15"
     taskid: fa4f2594-9cc6-42af-8746-65f6395e8815
     type: regular
@@ -448,7 +447,6 @@ tasks:
           information in the comments.
       title: Set IronDefense Alert Status
       description: Set the status of ${incident.name}
-      description: ""
       sender: Your SOC team
       expired: false
       totalanswers: 0
