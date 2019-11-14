@@ -41,7 +41,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Symantec Data Loss Prevention Incident Reporting and Update
+description: Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention (Beta)
 name: Symantec Data Loss Prevention
 script:
