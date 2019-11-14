@@ -79,6 +79,7 @@ def test_build_misp_complex_filter(mocker):
 
     old_query = "tag1"
     old_query_with_ampersand = "tag1&&tag2"
+    old_query_with_not = "!tag1"
 
     actual = build_misp_complex_filter(old_query)
     assert actual == old_query
@@ -86,12 +87,15 @@ def test_build_misp_complex_filter(mocker):
     actual = build_misp_complex_filter(old_query_with_ampersand)
     assert actual == old_query_with_ampersand
 
-    complex_query_AND_single = "AND:tag1;"
+    actual = build_misp_complex_filter(old_query_with_not)
+    assert actual == old_query_with_not
+
+    complex_query_AND_single = "AND:tag1"
     expected = {'AND': ['tag1']}
     actual = build_misp_complex_filter(complex_query_AND_single)
     assert actual == expected
 
-    complex_query_OR_single = "OR:tag1;"
+    complex_query_OR_single = "OR:tag1"
     expected = {'OR': ['tag1']}
     actual = build_misp_complex_filter(complex_query_OR_single)
     assert actual == expected
@@ -101,47 +105,47 @@ def test_build_misp_complex_filter(mocker):
     actual = build_misp_complex_filter(complex_query_NOT_single)
     assert actual == expected
 
-    complex_query_AND = "AND:tag1,tag2;"
-    expected = {'AND': ['tag1','tag2']}
+    complex_query_AND = "AND:tag1,tag2"
+    expected = {'AND': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_AND)
     assert actual == expected
 
-    complex_query_OR = "OR:tag1,tag2;"
+    complex_query_OR = "OR:tag1,tag2"
     expected = {'OR': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_OR)
     assert actual == expected
 
-    complex_query_NOT = "NOT:tag1,tag2;"
+    complex_query_NOT = "NOT:tag1,tag2"
     expected = {'NOT': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_NOT)
     assert actual == expected
 
-    complex_query_AND_OR = "AND:tag1,tag2;OR:tag3,tag4;"
-    expected = {'AND': ['tag1', 'tag2'],'OR': ['tag3', 'tag4']}
+    complex_query_AND_OR = "AND:tag1,tag2;OR:tag3,tag4"
+    expected = {'AND': ['tag1', 'tag2'], 'OR': ['tag3', 'tag4']}
     actual = build_misp_complex_filter(complex_query_AND_OR)
     assert actual == expected
 
-    complex_query_OR_AND = "OR:tag3,tag4;AND:tag1,tag2;"
-    expected = {'OR': ['tag3', 'tag4'],'AND': ['tag1', 'tag2']}
+    complex_query_OR_AND = "OR:tag3,tag4;AND:tag1,tag2"
+    expected = {'OR': ['tag3', 'tag4'], 'AND': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_OR_AND)
     assert actual == expected
 
-    complex_query_AND_NOT = "AND:tag1,tag2;NOT:tag3,tag4;"
+    complex_query_AND_NOT = "AND:tag1,tag2;NOT:tag3,tag4"
     expected = {'AND': ['tag1', 'tag2'], 'NOT': ['tag3','tag4']}
     actual = build_misp_complex_filter(complex_query_AND_NOT)
     assert actual == expected
 
-    complex_query_NOT_AND = "NOT:tag3,tag4;AND:tag1,tag2;"
+    complex_query_NOT_AND = "NOT:tag3,tag4;AND:tag1,tag2"
     expected = {'NOT': ['tag3', 'tag4'], 'AND': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_NOT_AND)
     assert actual == expected
 
-    complex_query_OR_NOT= "OR:tag1,tag2;NOT:tag3,tag4;"
+    complex_query_OR_NOT = "OR:tag1,tag2;NOT:tag3,tag4"
     expected = {'OR': ['tag1', 'tag2'], 'NOT': ['tag3', 'tag4']}
     actual = build_misp_complex_filter(complex_query_OR_NOT)
     assert actual == expected
 
-    complex_query_NOT_OR = "NOT:tag3,tag4;OR:tag1,tag2;"
+    complex_query_NOT_OR = "NOT:tag3,tag4;OR:tag1,tag2"
     expected = {'NOT': ['tag3', 'tag4'], 'OR': ['tag1', 'tag2']}
     actual = build_misp_complex_filter(complex_query_NOT_OR)
     assert actual == expected

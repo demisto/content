@@ -744,7 +744,7 @@ def check_url():
         demisto.results(f'No events found in MISP for URL: {url}')
 
 
-def build_misp_complex_filter(demisto_query: str):
+def build_misp_complex_filter(demisto_query: str) -> dict: 
     """
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
@@ -764,31 +764,31 @@ def build_misp_complex_filter(demisto_query: str):
             example 3 (simple syntax): "param1,param2"
     """
 
-    regexAnd = r"(AND:)([^\;]+)(;)"
-    regexOr = r"(OR:)([^\;]+)(;)"
-    regexNot = r"(NOT:)([^\;]+)(;)"
-    andList = None
-    orList = None
-    notList = None
-    isComplexSearch = False
-    matchAnd = re.search(regexAnd, demisto_query, re.MULTILINE)
-    matchOr = re.search(regexOr, demisto_query, re.MULTILINE)
-    matchNot = re.search(regexNot, demisto_query, re.MULTILINE)
+    regex_and = r'(AND:)([^\;]+)(;)?'
+    regex_or = r'(OR:)([^\;]+)(;)?'
+    regex_not = r'(NOT:)([^\;]+)(;)?'
+    and_list = None
+    or_list = None
+    not_list = None
+    is_complex_search = False
+    match_and = re.search(regex_and, demisto_query, re.MULTILINE)
+    match_or = re.search(regex_or, demisto_query, re.MULTILINE)
+    match_not = re.search(regex_not, demisto_query, re.MULTILINE)
 
-    if matchAnd is not None:
-        andList = matchAnd.group(2).split(',')
-        isComplexSearch = True
+    if match_and is not None:
+        and_list = match_and.group(2).split(',')
+        is_complex_search = True
 
-    if matchOr is not None:
-        orList = matchOr.group(2).split(',')
-        isComplexSearch = True
+    if match_or is not None:
+        or_list = match_or.group(2).split(',')
+        is_complex_search = True
 
-    if matchNot is not None:
-        notList = matchNot.group(2).split(',')
-        isComplexSearch = True
+    if match_not is not None:
+        not_list = match_not.group(2).split(',')
+        is_complex_search = True
 
-    if isComplexSearch:
-        misp_complex_query = MISP.build_complex_query(or_parameters = orList, and_parameters = andList, not_parameters = notList)
+    if is_complex_search:
+        misp_complex_query = MISP.build_complex_query(or_parameters = or_list, and_parameters = and_list, not_parameters = not_list)
         return misp_complex_query
 
     return demisto_query
