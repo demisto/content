@@ -167,15 +167,6 @@ def notable_to_incident(event):
             rawDict = rawToDict(event['_raw'])
             for rawKey in rawDict:
                 labels.append({'type': rawKey, 'value': rawDict[rawKey]})
-    if demisto.args().get("relevant_data_for_labels", "Raw") == "All":
-        for field in event:
-            if isinstance(event[field], list):
-                # Transforming the value to a string, since labels cannot be lists.
-                list_to_string = ''.join(str(element) for element in event[field])
-                labels.append({'type': field, 'value': list_to_string})
-            # Avoiding replacing the current value of "_raw", which is parsed above using rawToDict.
-            elif field != "_raw":
-                labels.append({'type': field, 'value': event[field]})
     if demisto.get(event, 'security_domain'):
         labels.append({'type': 'security_domain', 'value': event["security_domain"]})
     incident['labels'] = labels
