@@ -1,5 +1,5 @@
 ## [Unreleased]
-- New playbook outputs.
+New playbook outputs.
 
 ## [19.10.1] - 2019-10-15
 #### New Playbook
