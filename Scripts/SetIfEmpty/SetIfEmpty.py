@@ -8,7 +8,7 @@ def main(args):
 
 def getValueToSet(args):
     value = args.get('value')
-    applyIfEmpty = True if args.get('applyIfEmpty') == 'true' else False
+    applyIfEmpty = True if args.get('applyIfEmpty', '').lower() == 'true' else False
 
     if value is None or (applyIfEmpty and len(value) < 1):
         value = args.get('defaultValue')
