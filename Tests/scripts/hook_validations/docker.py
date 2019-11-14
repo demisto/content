@@ -19,7 +19,7 @@ TIMEOUT = 10
 DEFAULT_REGISTRY = "registry-1.docker.io"
 
 
-def parse_www_auth(www_auth) -> list:
+def parse_www_auth(www_auth):
     """Parse realm and service from www-authenticate string of the form:
     Bearer realm="https://auth.docker.io/token",service="registry.docker.io"
 
