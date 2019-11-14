@@ -1,6 +1,4 @@
-category: Endpoint
-fromversion: 4.5.0
-beta: true
+category: Network Security
 commonfields:
   id: Symantec Data Loss Prevention
   version: -1
@@ -92,13 +90,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: TBD
+      description: 'A list of custom attributes names / custom attribute group names.
+        List should be comma seperated. For example: item1,item2,item3'
       isArray: false
-      name: custom_values
+      name: custom_data
       required: false
       secret: false
     deprecated: false
-    description: Returns the details of a specified incident
+    description: Returns the details of the specified incident.
     execution: false
     name: symantec-dlp-get-incident-details
     outputs:
@@ -121,67 +120,69 @@ script:
       description: The severity of the incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageSource
-      description: TBD
+      description: The localized label that corresponds to the Symantec DLP product that generated the incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageSourceType
-      description: TBD
+      description: 'Indicates the Symantec DLP product that generated
+        the incident. Can be: NETWORK, DISCOVER, ENDPOINT, DIM, DAR.'
       type: String
     - contextPath: SymantecDLP.Incident.MessageType
-      description: TBD
+      description: Indicates the Symantec DLP product component that
+        generated the incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageTypeID
-      description: TBD
+      description: The ID of the Message Type.
       type: Number
     - contextPath: SymantecDLP.Incident.Policy.Name
-      description: TBD
+      description: The name of the policy.
       type: String
     - contextPath: SymantecDLP.Incident.Policy.Version
-      description: TBD
+      description: The version of the policy.
       type: String
     - contextPath: SymantecDLP.Incident.Policy.Label
-      description: TBD
+      description: The label of the policy.
       type: String
     - contextPath: SymantecDLP.Incident.Policy.ID
-      description: TBD
+      description: The ID of the policy.
       type: Number
     - contextPath: SymantecDLP.Incident.BlockedStatus
-      description: TBD
+      description: Indicates whether the message was blocked or not.
       type: String
     - contextPath: SymantecDLP.Incident.MatchCount
-      description: TBD
+      description: Indicates the number of detection rule matches in the incident.
       type: Number
     - contextPath: SymantecDLP.Incident.RuleViolationCount
-      description: TBD
+      description: Indicates the number of policy rules that were violated.
       type: Number
     - contextPath: SymantecDLP.Incident.DetectionServer
-      description: TBD
+      description: The name of the detection server that created the incident.
       type: String
     - contextPath: SymantecDLP.Incident.DataOwner.Name
-      description: TBD
+      description: The name of the data owner.
       type: String
     - contextPath: SymantecDLP.Incident.DataOwner.Email
-      description: TBD
+      description: The email of the data owner.
       type: String
     - contextPath: SymantecDLP.Incident.EventDate
-      description: TBD
+      description: The date and time at which the violation event occurred.
       type: Date
     - contextPath: SymantecDLP.Incident.ViolatedPolicyRule.Name
-      description: TBD
+      description: The name of the rule within the policy that the message violated.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatedPolicyRule.ID
-      description: TBD
+      description: The ID of the rule within the policy that the message violated.
       type: Number
     - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Name
-      description: TBD
+      description: The name of any additional policies that the message violated.
       type: String
     - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Version
-      description: TBD
+      description: The version of any additional policies that the message violated.
       type: String
     - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.Label
-      description: TBD
+      description: The label of any additional policies that the message violated.
       type: String
     - contextPath: SymantecDLP.Incident.OtherViolatedPolicy.ID
-      description: TBD
+      description: The ID of any additional policies that the message violated.
       type: Number
     - contextPath: SymantecDLP.Incident.CustomAttribute.Name
       description: The custom attribute name.
@@ -265,25 +266,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: The custom attribute's name.
+      description: The custom attribute name.
       isArray: false
       name: custom_attribute_name
       required: false
       secret: false
     - default: false
-      description: The custom attribute's value.
+      description: The custom attribute value.
       isArray: false
       name: custom_attribute_value
       required: false
       secret: false
     - default: false
-      description: The data owner's name.
+      description: The data owner name.
       isArray: false
       name: data_owner_name
       required: false
       secret: false
     - default: false
-      description: The data owner's email.
+      description: The data owner email.
       isArray: false
       name: data_owner_email
       required: false
@@ -301,7 +302,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: TBD
+    description: Updates the details of a specific incident.
     execution: false
     name: symantec-dlp-update-incident
   - arguments:
@@ -315,7 +316,7 @@ script:
       default: false
       defaultValue: 'True'
       description: Indicates whether the Web Service should include the original message
-        in the response document.
+        in the response document or not.
       isArray: false
       name: include_original_message
       predefined:
@@ -327,7 +328,7 @@ script:
       default: false
       defaultValue: 'True'
       description: Indicates whether the Web Service should include all message components
-        (for example, headers and file attachments) in the response document.
+        (for example, headers and file attachments) in the response document or not.
       isArray: false
       name: include_all_components
       predefined:
@@ -336,7 +337,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: TBD
+    description: |-
+      Retrieves additional components of the message that generated the
+      incident, might include binary files.
     execution: true
     name: symantec-dlp-incident-binaries
     outputs:
@@ -389,7 +392,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Specifies whether image violations should be included in the Incident
+      description: Indicates whether image violations should be included in the Incident
         Violations Response.
       isArray: false
       name: include_image_violations
@@ -399,7 +402,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns the highlighted matches for a specific incident.
+    description: Returns the highlighted matches of a specific incident.
     execution: false
     name: symantec-dlp-incident-violations
     outputs:
@@ -413,43 +416,45 @@ script:
       description: The status code of the incident.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.Name
-      description: TBD
+      description: The name of the violationg component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.DocumentFormat
-      description: TBD
+      description: The document format of the violationg component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.Type
-      description: TBD
+      description: The type of the violationg component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.TypeID
-      description: TBD
+      description: The type ID of the violationg component.
       type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingCount
-      description: TBD
+      description: Indicates the number of policy rules that were violated.
       type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.DocumentViolation
-      description: TBD
+      description: Details about the document violation.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.FileSizeViolation
-      description: TBD
-      type: Unknown
+      description: Details about the file size violation.
+      type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.Data
-      description: TBD
+      description: The data that triggered the violation.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.Type
-      description: TBD
+      description: The type of data that triggered the violation.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleID
-      description: TBD
+      description: The rule ID which triggered the violation.
       type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleName
-      description: TBD
+      description: The rule name which triggered the violation.
       type: String
   dockerimage: demisto/zeep:1.0.0.1281
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
+fromversion: 4.5.0
+beta: true
