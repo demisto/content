@@ -408,7 +408,7 @@ def remediate_detection(_id, remediation_state, comment):
                      data={
                          'remediation_state': remediation_state,
                          'comment': comment,
-                     })
+    })
     return res
 
 
@@ -511,7 +511,7 @@ def execute_playbook(playbook_id, detection_id):
                     params={
                         'resource_type': 'Detection',
                         'resource_id': detection_id,
-                    })
+    })
 
     return res
 
