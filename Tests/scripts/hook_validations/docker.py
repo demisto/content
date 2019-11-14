@@ -206,7 +206,7 @@ class DockerImageValidator(object):
             if self.is_modified_file and server_version_compare(self.from_version, '5.0.0') >= 0:
                 # If docker image name are different and if the docker image isn't the default one
                 if self.docker_image_latest_tag != self.docker_image_tag and not \
-                        'demisto/python:1.3-alpine' == f'{self.docker_image_name}:{self.docker_image_tag}':
+                        'demisto/python:1.3-alpine' == '{}:{}'.format(self.docker_image_name, self.docker_image_tag):
                     self.is_latest_tag = False
             # Case of an added file
             elif not self.is_modified_file:
