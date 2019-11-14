@@ -1,5 +1,6 @@
 category: Endpoint
 fromversion: 4.5.0
+beta: true
 commonfields:
   id: Symantec Data Loss Prevention
   version: -1
@@ -445,7 +446,6 @@ script:
       description: TBD
       type: String
   dockerimage: demisto/zeep:1.0.0.1281
-  beta: true
   isfetch: true
   longRunning: false
   longRunningPort: false
