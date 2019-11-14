@@ -150,10 +150,10 @@ inputs:
   description: Endpoint ID to isolate using Traps.
 outputs:
 - contextPath: CbResponse.Sensors.CbSensorID
-  description: Carbon Black Response Sensors ids that has been isolated
+  description: Carbon Black Response Sensors ids that has been isolated.
   type: string
 - contextPath: Endpoint
-  description: The isolated enpoint
+  description: The isolated enpoint.
   type: string
 - contextPath: Traps.Isolate.EndpointID
   description: The ID of the endpoint.
