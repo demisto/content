@@ -81,6 +81,7 @@ PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(
 PACKS_INTEGRATION_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/([^.]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
+PACKS_INTEGRATION_REGEX = r'{}/([^/]+)/{}/([^/]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.yml'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(PACKS_DIR, SCRIPTS_DIR)
