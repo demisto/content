@@ -273,7 +273,6 @@ class IntegrationValidator(object):
     def _has_beta_param(self):
         """Checks that integration has 'beta' field with value set to true"""
         beta = self.current_integration.get('beta', False)
-        print_error(beta)
         if not beta:
             print_error("Beta integration yml file should have the field \"beta: true\", but was not found"
                         " in the file {}".format(self.file_path))
