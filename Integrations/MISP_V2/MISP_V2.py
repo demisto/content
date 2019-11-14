@@ -744,7 +744,7 @@ def check_url():
         demisto.results(f'No events found in MISP for URL: {url}')
 
 
-def build_misp_complex_filter(demisto_query: str) -> dict: 
+def build_misp_complex_filter(demisto_query: str) -> dict:
     """
     Args:
         demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
@@ -767,25 +767,24 @@ def build_misp_complex_filter(demisto_query: str) -> dict:
     regex_and = r'(AND:)([^\;]+)(;)?'
     regex_or = r'(OR:)([^\;]+)(;)?'
     regex_not = r'(NOT:)([^\;]+)(;)?'
-    and_list = None
-    or_list = None
-    not_list = None
+    misp_query_params = dict()
     is_complex_search = False
     match_and = re.search(regex_and, demisto_query, re.MULTILINE)
     match_or = re.search(regex_or, demisto_query, re.MULTILINE)
     match_not = re.search(regex_not, demisto_query, re.MULTILINE)
 
     if match_and is not None:
-        and_list = match_and.group(2).split(',')
+        misp_query_params['and_parameters'] = match_and.group(2).split(',')
         is_complex_search = True
 
     if match_or is not None:
-        or_list = match_or.group(2).split(',')
+        misp_query_params['or_parameters'] = match_or.group(2).split(',')
         is_complex_search = True
 
     if match_not is not None:
-        not_list = match_not.group(2).split(',')
+        misp_query_params['not_parameters'] = match_not.group(2).split(',')
         is_complex_search = True
+
 
     if is_complex_search:
         misp_complex_query = MISP.build_complex_query(or_parameters = or_list, and_parameters = and_list, not_parameters = not_list)
