@@ -593,9 +593,17 @@ script:
             }
             //if query has select and where statements
             else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
-                args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
+                //if query also have group by statement
+                if(args[QUERY].toLowerCase().indexOf('group by') > -1)
+                    args[QUERY] = args[QUERY].toLowerCase().split('group by')[0] + ' && time = "' + buildDateFormat() + ' group by ' + args[QUERY].toLowerCase().split('group by')[1];
+                else
+                  args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
             }
-            //id query contains just select
+            //if query contains has select and group by statements
+            else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('group by') > -1) {
+                  args[QUERY] = args[QUERY].toLowerCase().split('group by')[0] + ' where time = "' + buildDateFormat() + ' group by ' + args[QUERY].toLowerCase().split('group by')[1];
+            }
+            //if query contains just select
             else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
                 args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
             }
