@@ -6,8 +6,10 @@ from urlparse import urlparse, parse_qs
 from urllib import unquote
 import re
 
+# ============================================================================================================== #
 # This script is highly similar to 'ExtractFQDNFromUrlAndEmail', they are not unified due to run time performance.
 # Please change both scripts respectively.
+# ============================================================================================================== #
 
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url='
