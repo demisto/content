@@ -1940,6 +1940,9 @@
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
