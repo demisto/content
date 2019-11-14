@@ -243,7 +243,7 @@ def pwned_domain_command():
     domain_list = argToList(demisto.args().get('domain', ''))
     for domain in domain_list:
         suffix = PWNED_DOMAIN_SUFFIX + domain + DOMAIN_TRUNCATE_VERIFIED_SUFFIX
-        pwned_domain (domain, suffix)
+        pwned_domain(domain, suffix)
 
 
 def pwned_domain(domain, suffix):

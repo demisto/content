@@ -40,7 +40,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The email address to check.
+      description: The email address to check (CSV supported).
       isArray: true
       name: email
       required: true
@@ -81,7 +81,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The domain to check.
+      description: The domain to check (CSV supported).
       isArray: true
       name: domain
       required: true
@@ -121,7 +121,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The email address to check.
+      description: The email address to check (CSV supported).
       isArray: true
       name: email
       required: true
@@ -162,7 +162,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: The domain to check.
+      description: The domain to check (CSV supported).
       isArray: true
       name: domain
       required: true
