@@ -1873,7 +1873,7 @@
         {
             "integrations": "IronDefense",
             "playbookID": "IronDefense - Test"
-        },
+        }
     ],
     "skipped_tests": {
         "SentinelOne V2 - test": "Failing test (Issue 19361)",
@@ -1935,7 +1935,7 @@
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Old test - need to check if relevant",
         "PAN-OS DAG Configuration Test": "Test failing on permission denied error #19205",
         "AlphaSOC-Wisdom-Test": "Test is unstable. #19235",
-        "IronDefense Test": "Test depends on making requests to a non-public API"
+        "IronDefense - Test": "Test depends on making requests to a non-public API"
     },
     "skipped_integrations": {
       "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
