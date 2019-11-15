@@ -21,10 +21,10 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-description:
-  The IronDefense Integration for Demisto allows users to interact with IronDefense alerts within Demisto. The
-  Integration provides the ability to rate alerts, update alert statuses, add comments to alerts, and to report
-  observed bad activity.
+description: The IronDefense Integration for Demisto allows users to interact with
+  IronDefense alerts within Demisto. The Integration provides the ability to rate
+  alerts, update alert statuses, add comments to alerts, and to report observed bad
+  activity.
 display: IronDefense
 name: IronDefense
 script:
@@ -186,11 +186,11 @@ script:
       Intelligence Rules (TIR).
     execution: false
     name: irondefense-report-observed-bad-activity
+  dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.7.4.1900
 tests:
 - No tests

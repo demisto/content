@@ -315,7 +315,7 @@ LOG_PREFIX = 'IronDefense Integration: '
 
 '''EXECUTION'''
 
-if __name__ == '__builtin__':
+if __name__ == 'builtins':
     try:
         # Globals
         PARAMS = demisto.params()
