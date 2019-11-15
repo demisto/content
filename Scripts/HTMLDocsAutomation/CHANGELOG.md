@@ -1,6 +1,10 @@
 ## [Unreleased]
 
 
+## [19.11.0] - 2019-11-12
+- Fixed an issue where commands in the top part were in the format **name:name** instead of **description:name**.
+- Added links for the list of commands to each command.
+
 ## [19.10.0] - 2019-10-03
 Added support for commands that have only headlines and no text in the human readable output.
 
