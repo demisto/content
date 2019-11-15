@@ -1,22 +1,30 @@
 import demistomock as demisto
 from CommonServerPython import *
-''' IMPORTS '''
 import requests
 import json
 import socket
 import struct
 import signal
 import math
+import re
 from datetime import datetime, tzinfo, timedelta
+# from typing import List, Dict, Any    # throwing error: "ImportError: No module named typing"
 
-''' GLOBAL VARS '''
 # Params:
 API_TOKEN = demisto.params().get('apiToken')
 INCIDENT_VULN_MIN_SEVERITY = demisto.params().get('incidentSeverity')
 INCIDENT_FREQUENCY = demisto.params().get('incidentFrequency')
 
+
+def get_base_url():
+    ''' Removes forward slash from end of input '''
+    url = demisto.params().get('frontlineURL')
+    url = re.sub(r'\/$', '', url)
+    return url
+
+
 # Endpoints:
-BASE_URL = "https://vm.frontline.cloud"
+BASE_URL = get_base_url()
 VULN_ENDPOINT = BASE_URL + "/api/scanresults/active/vulnerabilities/"
 HOST_ENDPOINT = BASE_URL + "/api/scanresults/active/hosts/"
 SCAN_ENDPOINT = BASE_URL + "/api/scans/"
@@ -25,7 +33,7 @@ SCAN_ENDPOINT = BASE_URL + "/api/scans/"
 FVM_HEADER = {'Authorization': 'Token ' + str(API_TOKEN)}
 
 # Minimum time to timeout functions (5 mins)
-MIN_TIMEOUT = 300
+MIN_TIMEOUT = 300   # seconds
 
 # HEADERS:
 VULN_DATA_HEADERS = ['vuln-id',
@@ -50,9 +58,7 @@ HOST_HEADERS = ['ID',
 
 
 class EndOfTime(Exception):
-    '''
-    Exception to catch timeout for functions
-    '''
+    ''' Raised when functions timeout '''
     pass
 
 
@@ -76,12 +82,12 @@ def get_function_timeout_time(data_count):
 
 def get_all_data(first_page):
     '''
-    Retrieves all data if multiple pages of data from API request.
+    Retrieves all data if multiple pages are present in API request.
     '''
     request_url = first_page.get('next')
     have_all_data = False
     current_data = {}   # type: Dict[str, Any]
-    all_data = []   # type: List[Dict]
+    all_data = []       # type: List[Dict]
     while not have_all_data:
         resp = requests.get(url=request_url, headers=FVM_HEADER, timeout=30)
         if not resp.ok:
@@ -144,21 +150,17 @@ def get_query_date_param(day_input):
     return query_date
 
 
-''' FETCH INCIDENT FUNCTIONS '''
-
-
 def get_fetch_frequency_td():
     ''' Returns the INCIDENT_FREQUENCY as a datetime.timedelta object    '''
     fetch_frequency = INCIDENT_FREQUENCY.split()
     demisto.debug("FrontlineVM get_fetch_incident_td -- using frequency: " + str(fetch_frequency))
     if "min" in str(fetch_frequency[1]):
         return timedelta(minutes=int(fetch_frequency[0]))
-    else:
-        return timedelta(hours=int(fetch_frequency[0]))
+    return timedelta(hours=int(fetch_frequency[0]))
 
 
 def create_vuln_event_object(vuln):
-    ''' creates a vulnerability event object given a vulnerability  '''
+    ''' Creates a vulnerability event object given raw vulnerability data.  '''
     vuln_event = {}
     vuln_event['vuln-id'] = vuln.get('id')
     vuln_event['hostname'] = vuln.get('hostname')
@@ -173,14 +175,18 @@ def create_vuln_event_object(vuln):
 
 
 def vulns_to_incident(vulns, start_time_dt):
+    '''
+        Iterate through vulnerabilities and create incident if
+        vulnerability has been created since last start_time.
+    '''
     incidents = []
     for vuln in vulns:
-        # get vuln active view (av) date created values:
+        # get vulnerability active view (av) date created values:
         av_date_created_str = vuln.get('active_view_date_created')
         av_date_created_dt = datetime.strptime(av_date_created_str, "%Y-%m-%dT%H:%M:%S.%fZ")
 
         # Skip if vuln created before current start_time:
-        if (av_date_created_dt < start_time_dt):
+        if av_date_created_dt < start_time_dt:
             continue
         vuln_event = create_vuln_event_object(vuln)
         incident = {
@@ -194,6 +200,7 @@ def vulns_to_incident(vulns, start_time_dt):
 
 
 def fetch_incidents():
+    ''' Method to fetch Demisto incidents by pulling any new vulnerabilities found.   '''
     try:
         last_run = demisto.getLastRun()
         # Check if last_run exists and has a start_time, else create new start_time timestamp:
@@ -201,15 +208,14 @@ def fetch_incidents():
             start_time = last_run.get('start_time')
             # Check if user selected fetch frequency is within last_run[start_time]:
             fetch_frequency_td = get_fetch_frequency_td()
-            if ((datetime.utcnow() - datetime.utcfromtimestamp(int(start_time))) < fetch_frequency_td):
+            if (datetime.utcnow() - datetime.utcfromtimestamp(int(start_time))) < fetch_frequency_td:
                 debug_msg = "frequency (" + str(fetch_frequency_td) + ") is within last start_time, sending empty incidents."
                 demisto.debug("FrontlineVM fetch_incidents -- " + debug_msg)
                 demisto.setLastRun({'start_time': last_run.get('start_time')})
                 demisto.incidents([])
                 return
-            else:
-                debug_msg = "frequency (" + str(fetch_frequency_td) + ") exceeds last start_time, getting incident events."
-                demisto.debug("FrontlineVM fetch_incident -- " + debug_msg)
+            debug_msg = "frequency (" + str(fetch_frequency_td) + ") exceeds last start_time, getting incident events."
+            demisto.debug("FrontlineVM fetch_incident -- " + debug_msg)
         else:
             now = datetime.utcnow()
             start_time = now.strftime("%s")
@@ -241,9 +247,6 @@ def fetch_incidents():
         return_error("Error: FrontlineVM fetching_incidents -- " + str(err))
 
 
-''' COMMAND FUNCTIONS   '''
-
-
 def get_hosts(ip_address, hostname, label_name, max_days_since_scan):
     ''' Returns a list of hosts from Frontline.Cloud based on user input from Arguments    '''
     # Prepare parameters for Frontline API request:
@@ -268,7 +271,7 @@ def get_hosts(ip_address, hostname, label_name, max_days_since_scan):
 
 
 def get_assets_command():
-    ''' Pulls host information from FrontlineVM '''
+    ''' Pulls host information from Frontline.Cloud '''
     # Get Arguments:
     ip_address = demisto.args().get('ip_address')
     hostname = demisto.args().get('hostname')
@@ -300,7 +303,7 @@ def get_assets_command():
     asset_output['Hosts'] = host_list
     asset_output['IPList'] = ip_list
 
-    ec = {'FrontlineVM(val.Hosts && val.Hosts == obj.Hosts)': asset_output}
+    entry_context = {'FrontlineVM(val.Hosts && val.Hosts == obj.Hosts)': asset_output}
 
     output = {
         # indicates entry type to the War room
@@ -319,12 +322,13 @@ def get_assets_command():
         'ReadableContentsFormat': formats['markdown'],
 
         # Data added to the investigation context (Output Context), which you can use in playbooks
-        'EntryContext': ec
+        'EntryContext': entry_context
     }
     demisto.results(output)
 
 
 def get_vulns(severity, min_severity, max_days_since_created, min_days_since_created, host_id):
+    ''' Pull vulnerability data based upon user inputted parameters.    '''
     # Prepare parameters for Frontline API request:
     req_params = {}
     if min_severity and severity:
@@ -351,15 +355,16 @@ def get_vulns(severity, min_severity, max_days_since_created, min_days_since_cre
             demisto.debug("FrontlineVM get_vulns -- " + debug_msg)
             return_error("Error: min_days_since_created value should be a number representing days.")
     if host_id:
-        VulnEndpoint = HOST_ENDPOINT + str(host_id) + "/vulnerabilities/"
+        vuln_endpoint = HOST_ENDPOINT + str(host_id) + "/vulnerabilities/"
     else:
-        VulnEndpoint = VULN_ENDPOINT
+        vuln_endpoint = VULN_ENDPOINT
     req_params = parse_params(req_params)
-    vulns = get_fvm_data(VulnEndpoint, params=req_params)
+    vulns = get_fvm_data(vuln_endpoint, params=req_params)
     return vulns
 
 
 def create_vuln_obj(vuln):
+    ''' Create condensed vulnerability object from raw vulnerability data.  '''
     vuln_obj = {}
     vuln_obj['vuln-id'] = vuln.get('id')
     vuln_obj['hostname'] = vuln.get('hostname')
@@ -372,12 +377,10 @@ def create_vuln_obj(vuln):
 
 
 def format_vuln_data_output(vuln_data_output, vuln_list, vuln_data_list):
-    # FrontlineVM Vulnerability Data Output:
+    ''' Format vulnerability data output for Demisto. '''
     vuln_data_ec = {
         'FrontlineVM(val.Vulns && val.Vulns == obj.Vulns)': vuln_data_output
     }
-
-    # To decrease line number length:
     table_name = "FrontlineVM: Vulnerabilities Found"
     return {
         'Type': entryTypes['note'],
@@ -390,6 +393,7 @@ def format_vuln_data_output(vuln_data_output, vuln_list, vuln_data_list):
 
 
 def format_vuln_stat_output(vuln_stat_output, vuln_stat_headers):
+    ''' Format vulnerability statistical output for Demisto. '''
     # Vulnerability statistics output:
     vuln_stat_ec = {
         'FrontlineVM(val.Object && val.Object == obj.Object)': vuln_stat_output
@@ -404,6 +408,7 @@ def format_vuln_stat_output(vuln_stat_output, vuln_stat_headers):
 
 
 def get_vuln_outputs(vuln_list):
+    ''' Get and prepare output from list of raw vulnerability data '''
     output = []
     vuln_data_output = {}   # type: Dict
     vuln_stat_output = {}   # type: Dict
@@ -436,11 +441,11 @@ def get_vuln_outputs(vuln_list):
 
     # Include severity in vulnerability statistic header if severity exists:
     vuln_stat_headers = ['vulnerability-count']
-    for k, v in vuln_severity_count.items():
+    for severity_key, count_value in vuln_severity_count.items():
         # Include severity level (critical, high, medium, etc...) in output header if vulnerability exists for that severity.
-        if v > 0:
-            vuln_stat_headers.append(str(k) + "-severity-count")
-            vuln_stat_output[str(k) + "-severity-count"] = v
+        if count_value > 0:
+            vuln_stat_headers.append(str(severity_key) + "-severity-count")
+            vuln_stat_output[str(severity_key) + "-severity-count"] = count_value
 
     vuln_data_output['Vulns'] = vuln_data_list
     vuln_data_output['IPList'] = ip_list
@@ -454,18 +459,21 @@ def get_vuln_outputs(vuln_list):
     return output
 
 
-def get_hostID_from_ip_address(ip_address):
+def get_host_id_from_ip_address(ip_address):
+    '''
+        Get host ID within Frontline.Cloud given IP address.
+        Host ID used to pull vulnerability data for that specific host.
+    '''
     host = get_fvm_data(HOST_ENDPOINT, params={'_0_eq_host_ip_address': str(ip_address)})
-    if len(host) >= 1:
-        return host[0].get('id')
-    else:
+    if len(host) < 1:
         msg = 'Host not found within Frontline.Cloud given host IP Address.'
-        demisto.debug('Frontline.Cloud get_hostID_from_ip_address -- ' + msg)
+        demisto.debug('Frontline.Cloud get_host_id_from_ip_address -- ' + msg)
         return_error("Error: " + msg)
+    return host[0].get('id')
 
 
 def get_vulns_command():
-    ''' Pulls vulnerability information from FrontlineVM    '''
+    ''' Pulls vulnerability information from Frontline.Cloud    '''
     # Get Arugments:
     severity = demisto.args().get('severity')
     min_severity = demisto.args().get('min_severity')
@@ -476,24 +484,24 @@ def get_vulns_command():
 
     vulns = []  # type: List
     if ip_address:
-        host_id = get_hostID_from_ip_address(ip_address)
+        host_id = get_host_id_from_ip_address(ip_address)
     vulns = get_vulns(severity, min_severity, max_days_since_created, min_days_since_created, host_id)
     output = get_vuln_outputs(vulns)
     demisto.results(output)
 
 
-#########################
-# CREATING SCAN METHODS:
-#########################
-class _tz_UTC(tzinfo):
-    ''' UTC '''
+class TimezoneUTC(tzinfo):
+    ''' tzinfo subclass to set correct scan time format '''
     def utcoffset(self, dt):
+        ''' offset  '''
         return timedelta(0)
 
     def tzname(self, dt):
+        ''' timezone name '''
         return 'UTC'
 
     def dst(self, dt):
+        ''' dst '''
         return timedelta(0)
 
 
@@ -514,6 +522,7 @@ def long2ip(ip_address):
 
 
 def get_network_data():
+    ''' Get network data. Used to perform scan. '''
     try:
         url = BASE_URL + "/api/networkprofiles/?_0_eq_networkprofile_internal=True"
         resp = requests.get(url, headers=FVM_HEADER)
@@ -525,6 +534,7 @@ def get_network_data():
 
 
 def get_scan_data(network_data, low_ip, high_ip):
+    ''' Iterate through network data to find appropriate scanner profile to use to perform scan.'''
     for profile in network_data:
         # If there is no scanner using this profile, then continue to the next profile
         if len(profile.get('scanner_names', "")) == 0:
@@ -544,7 +554,7 @@ def get_scan_data(network_data, low_ip, high_ip):
                 resp.raise_for_status()
                 current_data = json.loads(resp.text)
                 profile_data.extend(current_data.get('results', []))
-                if (current_data.get('next', None)):
+                if current_data.get('next', None):
                     url = current_data.get('next')
                 else:
                     have_all_data = True
@@ -556,9 +566,11 @@ def get_scan_data(network_data, low_ip, high_ip):
                     if (rule_high_ip_num >= high_ip) and (rule_low_ip_num <= low_ip):
                         return json.dumps({'profile_id': profile['id']})
     return_error("Error: no scan data found.")
+    return {}   # placed to satisfy pylint (inconsistent-return-statements error)
 
 
 def get_business_group():
+    ''' Get bisness group data if user account allows businessgroups setting. '''
     demisto.debug('FrontlineVM get_business_group -- checking if user allows business groups.')
     url = BASE_URL + "/api/session/"
     resp = requests.get(url, headers={'Authorization': 'Token ' + str(API_TOKEN)})
@@ -574,7 +586,7 @@ def get_business_group():
 
 
 def get_correct_ip_order(low_ip_address, high_ip_address):
-    ''' Checks if user inputed ip address in correct order from low to high (used for range of assets to scan) '''
+    ''' Checks if user input ip address is in correct order (low-high). '''
     low_ip_number = ip2long(low_ip_address)
     high_ip_number = ip2long(high_ip_address)
 
@@ -591,7 +603,7 @@ def get_correct_ip_order(low_ip_address, high_ip_address):
 
 
 def build_scan(low_ip_address, high_ip_address, scan_policy):
-    """ Prepare scan data for POST request  """
+    ''' Prepare scan data payload for POST request. '''
 
     # check order of given ip address and assign accordingly
     asset_ips = get_correct_ip_order(low_ip_address, high_ip_address)
@@ -606,8 +618,8 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
     scanner_data = json.loads(get_scan_data(network_data, low_ip_number, high_ip_number))
 
     # Set time for scan:
-    now = datetime.now(_tz_UTC())
-    tz = "UTC"
+    now = datetime.now(TimezoneUTC())
+    time_zone = "UTC"
     tzoffset = 0
     scan = {}   # type: Dict[str, Any]
 
@@ -628,7 +640,7 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
         "start_date": now.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "recurring": False,
         "recurrence_rules": [],
-        "timezone": tz,
+        "timezone": time_zone,
         "timezone_offset": tzoffset
     }
     scan['workflow'] = "va_workflow"
@@ -667,6 +679,7 @@ def build_scan(low_ip_address, high_ip_address, scan_policy):
 
 
 def scan_asset(ip_address, scan_policy):
+    ''' Build scan payload and make POST request to perform scan. '''
     # Check if user inputs either a range of addresses to scan or a single asset to scan:
     if "-" in ip_address:
         low_ip_address = ip_address.split("-")[0].strip()
@@ -685,6 +698,7 @@ def scan_asset(ip_address, scan_policy):
 
 
 def scan_policy_exists(policy_selected):
+    ''' Check whether user input scan policy exists within their Frontline.Cloud account. '''
     policy_url = SCAN_ENDPOINT + "policies/"
     demisto.debug("FrontlineVM scan_policy_exists -- checking if user defined policy exists within Frontline.Cloud")
     try:
@@ -700,6 +714,7 @@ def scan_policy_exists(policy_selected):
 
 
 def scan_asset_command():
+    ''' Peform scan on Frontline.Cloud '''
     ip_address = demisto.args().get('ip_address')
     policy_name = str(demisto.args().get('scan_policy'))
     if not scan_policy_exists(policy_name):
@@ -727,7 +742,7 @@ def scan_asset_command():
         scan_output['Policy'] = scan_response.get('scan_policy')
 
         # Linking Context
-        ec = {
+        entry_context = {
             'FrontlineVM(val.ID && val.ID == obj.ID)': {
                 'Scan': scan_output
             }
@@ -738,7 +753,7 @@ def scan_asset_command():
             'ContentsFormat': formats['json'],
             'ReadableContentsFormat': formats['markdown'],
             'HumanReadable': tableToMarkdown('FrontlineVM: Performing Scan', scan_output, headers=scan_headers, removeNull=True),
-            'EntryContext': ec
+            'EntryContext': entry_context
         }
         demisto.results(output)
     except Exception as err:
@@ -746,6 +761,7 @@ def scan_asset_command():
 
 
 def test_module():
+    ''' Test integration method '''
     session_url = BASE_URL + "/api/session/"
     resp = requests.get(session_url, headers=FVM_HEADER)
     if resp.ok:
@@ -754,10 +770,8 @@ def test_module():
         return_error("Error: Test method failed. Invalid API Token.")
 
 
-''' EXECUTION CODE  '''
-
-
 def main():
+    ''' Integration main method '''
     LOG('command is %s' % (demisto.command(), ))
     try:
         if demisto.command() == 'test-module':
@@ -770,10 +784,10 @@ def main():
             scan_asset_command()
         if demisto.command() == 'fetch-incidents':
             fetch_incidents()
-    except Exception as e:
-        LOG(e)
+    except Exception as err:
+        LOG(err)
         LOG.print_log(verbose=False)
-        return_error("Error: " + str(e))
+        return_error("Error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

@@ -10,7 +10,12 @@ description: Digital Defense Inc.'s Frontline Vulnerability Management solution 
   Now residing entirely in Amazon Web Services (AWS), Frontline VM easily addresses
   the security compliance requirements of organizations around the globe.
 configuration:
-- display: API Token to access Frontline.Cloud
+- display: FrontlineVM URL
+  name: frontlineURL
+  defaultvalue: https://vm.frontline.cloud
+  type: 0
+  required: true
+- display: API Token to access FrontlineVM
   name: apiToken
   defaultvalue: ""
   type: 0
