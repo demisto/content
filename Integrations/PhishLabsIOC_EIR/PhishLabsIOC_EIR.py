@@ -33,7 +33,7 @@ class Client(BaseClient):
         Returns:
             Response json
         """
-        return self.get_incident_by_id(incident_id='INC0660932')
+        return self.get_incidents(limit=2)
 
     def get_incidents(self, status: Optional[str] = None, created_after: Optional[str] = None,
                       created_before: Optional[str] = None, closed_before: Optional[str] = None,
