@@ -605,10 +605,9 @@ inputs:
   description: Array of malicious IPs to block.
 outputs:
 - contextPath: CheckpointFWRule.Destination
-  description: Collection of Network objects identified by the name or UID. The level of detail returned depends on the details-level field of the request. This table
-    shows the level of detail shown when details-level is set to standard.
+  description: Rule Destination.
 - contextPath: CheckpointFWRule.DestinationNegate
-  description: True if negate is set for destination.
+  description: Rule destination negate status (True/False).
 - contextPath: PanoramaRule.Direction
   description: Direction of the Panorama rule. Can be 'to','from', 'both'
   type: string
@@ -616,57 +615,53 @@ outputs:
   description: The IP the Panorama rule blocks
   type: string
 - contextPath: CheckpointFWRule.Name
-  description: Object name. Should be unique in domain.
+  description: Rule name.
 - contextPath: PanoramaRule.Name
   description: Name of the Panorama rule
   type: string
 - contextPath: CheckpointFWRule.UID
-  description: Object unique identifier.
+  description: Rule UID.
 - contextPath: PanoramaRule
   description: List of Panorama rules
 - contextPath: CheckpointFWRule.Type
-  description: Type of the object.
+  description: Rule Type.
 - contextPath: CheckpointFWRule.Action
-  description: Accept, Drop, Apply Layer, Ask, Info. The level of detail returned
-    depends on the details-level field of the request. This table shows the level
-    of detail shown when details-level is set to standard.
+  description: 'Rule action (Valid values are: Accept, Drop, Apply Layer, Ask, Info).'
 - contextPath: CheckpointFWRule.ActionSetting
-  description: Action settings.
+  description: Rule action settings.
 - contextPath: CheckpointFWRule.CustomFields
-  description: Custom fields.
+  description: Rule custom fields.
 - contextPath: CheckpointFWRule.Data
-  description: The level of detail returned depends on the details-level field of
-    the request. This table shows the level of detail shown when details-level is
-    set to standard.
+  description: Rule data.
 - contextPath: CheckpointFWRule.DataDirection
-  description: On which direction the file types processing is applied.
+  description: Rule data direction.
 - contextPath: CheckpointFWRule.DataNegate
-  description: True if negate is set for data.
+  description: Rule data negate status (True/False).
 - contextPath: CheckpointFWRule.Domain
-  description: Information about the domain the object belongs to.
+  description: Rule domain.
 - contextPath: CheckpointFWRule.Enabled
-  description: Indicates if the rule is enabled or disabled.
+  description: Rule status.
 - contextPath: CheckpointFWRule.Hits
-  description: Hits count object.
+  description: Rule hits count.
 - contextPath: CheckpointFWRule.Data.Name
-  description: Object name. Should be unique in domain.
+  description: Rule data object name.
 - contextPath: CheckpointFWRule.Data.Domain
-  description: Information about the domain the object belongs to.
+  description: Information about the domain the data object belongs to.
 - contextPath: CheckpointFWRule.Domain.Name
-  description: Object name. Should be unique in domain.
+  description: Rule domain name.
 - contextPath: CheckpointFWRule.Domain.UID
-  description: Object unique identifier.
+  description: Rule domain UID.
 - contextPath: CheckpointFWRule.Domain.Type
-  description: Domain type.
+  description: Rule domain type.
 - contextPath: CheckpointFWRule.Hits.FirstDate
-  description: First of hits.
+  description: The date of the first hit for the rule.
 - contextPath: CheckpointFWRule.Hits.LastDate
-  description: Last date of hits.
+  description: The date of the last hit for the rule.
 - contextPath: CheckpointFWRule.Hits.Level
-  description: Level of hits.
+  description: Level of rule hits.
 - contextPath: CheckpointFWRule.Hits.Percentage
-  description: Percentage of hits.
+  description: Percentage of rule hits.
 - contextPath: CheckpointFWRule.Hits.Value
-  description: Value of hits.
+  description: Value of rule hits.
 tests:
   - block_indicators_-_generic_-_test
