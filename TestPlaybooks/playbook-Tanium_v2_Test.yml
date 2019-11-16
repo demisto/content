@@ -43,8 +43,8 @@ tasks:
     nexttasks:
       '#none#':
       - "14"
-      - "30"
       - "31"
+      - "36"
     scriptarguments:
       all:
         simple: "yes"
@@ -83,7 +83,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 515
+          "y": 895
         }
       }
     note: false
@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 515
+          "y": 545
         }
       }
     note: false
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 690
+          "y": 720
         }
       }
     note: false
@@ -167,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 865
+          "y": 895
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1040
+          "y": 1070
         }
       }
     note: false
@@ -223,7 +223,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1215
+          "y": 1245
         }
       }
     note: false
@@ -251,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1390
+          "y": 1420
         }
       }
     note: false
@@ -281,7 +281,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 690
+          "y": 1070
         }
       }
     note: false
@@ -311,7 +311,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1245
         }
       }
     note: false
@@ -341,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1040
+          "y": 1420
         }
       }
     note: false
@@ -371,7 +371,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1215
+          "y": 1595
         }
       }
     note: false
@@ -391,7 +391,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       id:
         simple: "87"
@@ -400,7 +400,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1770
         }
       }
     note: false
@@ -425,7 +425,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 370
+          "y": 385
         }
       }
     note: false
@@ -445,16 +445,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "2"
     scriptarguments:
       question-id:
-        simple: "20750"
+        complex:
+          root: Tanium
+          accessor: Question.ID
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1565
+          "y": 720
         }
       }
     note: false
@@ -484,7 +486,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1740
+          "y": 1945
         }
       }
     note: false
@@ -514,7 +516,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1915
+          "y": 2120
         }
       }
     note: false
@@ -544,7 +546,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2090
+          "y": 2295
         }
       }
     note: false
@@ -574,7 +576,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2265
+          "y": 2470
         }
       }
     note: false
@@ -596,7 +598,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2790
+          "y": 2995
         }
       }
     note: false
@@ -637,7 +639,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 690
+          "y": 720
         }
       }
     note: false
@@ -650,8 +652,8 @@ tasks:
     task:
       id: bf1680a0-85ca-4f05-84f9-4c2f49f69494
       version: -1
-      name: Tanium - Get Saved Question Result
-      playbookName: Tanium - Get Saved Question Result
+      name: Tanium - Get saved question result
+      playbookName: Tanium - Get saved question result
       type: playbook
       iscommand: false
       brand: ""
@@ -670,7 +672,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 515
+          "y": 545
         }
       }
     note: false
@@ -698,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1565
+          "y": 1595
         }
       }
     note: false
@@ -729,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2440
+          "y": 2645
         }
       }
     note: false
@@ -760,7 +762,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2615
+          "y": 2820
         }
       }
     note: false
@@ -779,13 +781,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "16"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 560
         }
       }
     note: false
@@ -810,7 +812,7 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 370
+          "y": 385
         }
       }
     note: false
@@ -832,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1755
+          "y": 1785
         }
       }
     note: false
@@ -854,7 +856,41 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 880
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 48d1476e-22f5-44cf-8b6d-de1b3619429f
+    type: playbook
+    task:
+      id: 48d1476e-22f5-44cf-8b6d-de1b3619429f
+      version: -1
+      name: Tanium - Ask question
+      playbookName: Tanium - Ask question
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      parameters: {}
+      question-text:
+        simple: Get IP Address from all machines
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -865,7 +901,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2805,
+        "height": 3010,
         "width": 1240,
         "x": 50,
         "y": 50
