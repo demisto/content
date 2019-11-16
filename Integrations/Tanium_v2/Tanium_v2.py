@@ -5,11 +5,13 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import json
-
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBALS/PARAMS '''
 GROUP_TYPES = {0: 'Filter-based group', 1: 'Action group', 2: 'Action policy pair group', 3: 'Ad hoc group',
                4: 'Manual group'}
+DEMISTO_API_ACTION_NAME = 'via Demisto API'
 
 
 class Client(BaseClient):
@@ -149,6 +151,80 @@ class Client(BaseClient):
             del obj['id']
             return obj
         return obj
+
+    def build_create_action_body(self, by_host, action_name, package_id, package_name,
+                                 action_group_id, action_group_name, target_group_id,
+                                 target_group_name, hostname, ip_address, parameters):
+
+        if not package_id and not package_name:
+            raise ValueError('package id and package name are missing, Please specify one of them.')
+        if not action_group_id and not action_group_name:
+            raise ValueError('action group id and action group name are missing, Please specify one of them.')
+
+        if action_name:
+            action_name = f'{action_name} {DEMISTO_API_ACTION_NAME}'
+        else:
+            action_name = DEMISTO_API_ACTION_NAME
+
+        if package_id:
+            get_package_res = self.do_request('GET', 'packages/' + str(package_id))
+        elif package_name:
+            get_package_res = self.do_request('GET', 'packages/by-name/' + package_name)
+            package_id = get_package_res.get('data').get('id')
+
+        expire_seconds = get_package_res.get('data').get('expire_seconds', 0)
+
+        target_group = {}  # type: ignore
+        if by_host:
+            if not ip_address and not hostname:
+                raise ValueError('hostname and ip address are missing, Please specify one of them.')
+
+            if ip_address:
+                group_question = f'Get Computer Name from all machines with ip address equals {ip_address}'
+            if hostname:
+                group_question = f'Get Computer Name from all machines with Computer Name equals {hostname}'
+
+            group_res = self.parse_question(group_question, None)
+            target_group = group_res.get('group')
+
+            if not target_group:
+                raise ValueError('Failed to parse target group question')
+        else:
+            if not target_group_id and not target_group_name:
+                raise ValueError('target group id and target group name are missing, Please specify one of them.')
+
+            if target_group_id:
+                target_group = {'id': target_group_id}
+            if target_group_name:
+                target_group = {'name': target_group_name}
+
+        action_group = {}  # type: ignore
+        if action_group_id:
+            action_group = {'id': action_group_id}
+        if action_group_name:
+            action_group = {'name': action_group_name}
+
+        parameters_condition = []  # type: ignore
+        if parameters:
+            try:
+                parameters_condition = self.parse_action_parameters(parameters)
+            except Exception:
+                raise ValueError('Failed to parse action parameters.')
+
+        # crete the body of the response
+        body = {'package_spec': {'source_id': package_id}}
+
+        if parameters_condition:
+            body['package_spec']['parameters'] = []
+            for param in parameters_condition:
+                body['package_spec']['parameters'].append(param)
+
+        body['name'] = action_name
+        body['target_group'] = target_group
+        body['action_group'] = action_group
+        body['expire_seconds'] = expire_seconds
+
+        return body
 
     def get_package_item(self, package):
         item = {
@@ -635,6 +711,7 @@ def get_saved_questions(client, data_args):
 
 
 def create_action(client, data_args):
+    action_name = data_args.get('action-name')
     package_id = data_args.get('package-id')
     package_name = data_args.get('package-name')
     target_group_id = data_args.get('target-group-id')
@@ -642,51 +719,30 @@ def create_action(client, data_args):
     action_group_id = data_args.get('action-group-id')
     action_group_name = data_args.get('action-group-name')
     parameters = data_args.get('parameters')
-    parameters_condition = []  # type: ignore
 
-    if not package_id and not package_name:
-        raise ValueError('package id and package name are missing, Please specify one of them.')
+    body = client.build_create_action_body(False, action_name, package_id, package_name, action_group_id,
+                                           action_group_name, target_group_id, target_group_name, '', '', parameters)
+    raw_response = client.do_request('POST', 'actions', body)
+    action = client.get_action_item(raw_response.get('data'))
 
-    if not target_group_id and not target_group_name:
-        raise ValueError('target group id and target group name are missing, Please specify one of them.')
+    context = createContext(action, removeNull=True)
+    outputs = {'Tanium.Action(val.ID && val.ID === obj.ID)': context}
+    human_readable = tableToMarkdown('Action created', action)
+    return human_readable, outputs, raw_response
 
-    if not action_group_id and not action_group_name:
-        raise ValueError('action group id and action group name are missing, Please specify one of them.')
 
-    if package_name:
-        get_package_res = client.do_request('GET', 'packages/by-name/' + package_name)
-        package_id = get_package_res.get('data').get('id')
+def create_action_by_host(client, data_args):
+    action_name = data_args.get('action-name')
+    package_id = data_args.get('package-id')
+    package_name = data_args.get('package-name')
+    action_group_id = data_args.get('action-group-id')
+    action_group_name = data_args.get('action-group-name')
+    parameters = data_args.get('parameters')
+    ip_address = data_args.get('ip-address')
+    hostname = data_args.get('hostname')
 
-    if parameters:
-        try:
-            parameters_condition = client.parse_action_parameters(parameters)
-        except Exception:
-            raise ValueError('Failed to parse action parameters.')
-
-    body = {'package_spec': {'source_id': package_id}}
-
-    if parameters_condition:
-        body['package_spec']['parameters'] = []
-        for param in parameters_condition:
-            body['package_spec']['parameters'].append(param)
-
-    target_group = {}  # type: ignore
-    if target_group_id:
-        target_group = {'id': target_group_id}
-    if target_group_name:
-        target_group = {'name': target_group_name}
-
-    body['target_group'] = target_group
-
-    action_group = {}  # type: ignore
-    if action_group_id:
-        action_group = {'id': action_group_id}
-    if action_group_name:
-        action_group = {'name': action_group_name}
-
-    body['target_group'] = target_group
-    body['action_group'] = action_group
-
+    body = client.build_create_action_body(True, action_name, package_id, package_name, action_group_id,
+                                           action_group_name, '', '', hostname, ip_address, parameters)
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
 
@@ -925,6 +981,7 @@ def main():
         f'tn-get-saved-question-result': get_saved_question_result,
         f'tn-list-saved-questions': get_saved_questions,
         f'tn-create-action': create_action,
+        f'tn-create-action-by-host': create_action_by_host,
         f'tn-get-action': get_action,
         f'tn-list-actions': get_actions,
         f'tn-create-saved-action': create_saved_action,
