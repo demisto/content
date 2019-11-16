@@ -1,4 +1,4 @@
-id: Frontline.Cloud - PAN-OS block assets with critical vulns from threat logs
+id: 06449cfd-0a90-434c-80b6-5ba44e888a59
 version: -1
 name: Frontline.Cloud - PAN-OS block assets with critical vulns from threat logs
 description: This playbook will pull threat logs from Panorama query logs and check
