@@ -1022,18 +1022,20 @@ script:
       description: The action group ID to deploy the package.
       isArray: false
       name: action-group-id
-      required: false
+      required: true
       secret: false
     - default: false
-      description: The action group name to deploy the package.
+      defaultValue: via Demisto API
+      description: The action name.
       isArray: false
-      name: action-group-name
+      name: action-name
       required: false
       secret: false
     deprecated: false
     description: Create action object based on package name or package ID. Tagret
-      group and action group are required and can passed by name or ID, when both
-      of them are exists- it takes the ID.
+      group and action group ID are required, Target group can passed by name or ID,
+      when both of them are exists- it takes the ID. Note that target group should
+      be different than "All Computers" or "Default".
     execution: false
     name: tn-create-action
     outputs:
@@ -1410,6 +1412,125 @@ script:
     description: Delete a group object.
     execution: false
     name: tn-delete-group
+  - arguments:
+    - default: false
+      description: The package ID.
+      isArray: false
+      name: package-id
+      required: false
+      secret: false
+    - default: false
+      description: The package name.
+      isArray: false
+      name: package-name
+      required: false
+      secret: false
+    - default: false
+      description: Package parameters. For example - $1=Value1;$2=Value2;$3=Value3
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    - default: false
+      description: The action group ID to deploy the package.
+      isArray: false
+      name: action-group-id
+      required: true
+      secret: false
+    - default: false
+      description: The hostname to deploy the package.
+      isArray: false
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: The IP address of the host to deploy the package.
+      isArray: false
+      name: ip-address
+      required: false
+      secret: false
+    - default: false
+      defaultValue: via Demisto API
+      description: The action name.
+      isArray: false
+      name: action-name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create action object based on package name or package ID. Hostname
+      or ip address are required, Tagret group is required and can passed by name
+      or ID, when both of them are exists- it takes the ID. Note that target group
+      should be different than "All Computers" or "Default".
+    execution: false
+    name: tn-create-action-by-host
+    outputs:
+    - contextPath: Tanium.Action.ActionGroupId
+      description: The id of the parent group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.ActionGroupName
+      description: The name of the parent group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.ApproverId
+      description: The id of the approver of this action.
+      type: Number
+    - contextPath: Tanium.Action.ApproverName
+      description: The name of the approver of this action.
+      type: String
+    - contextPath: Tanium.Action.CreationTime
+      description: The date and time when this object was created in the database.
+      type: Date
+    - contextPath: Tanium.Action.ExpirationTime
+      description: The date and time when the action expires.
+      type: Date
+    - contextPath: Tanium.Action.ExpireSeconds
+      description: How long from the start time before the action expires. If you
+        create an action without specifying this field, the action expires immediately
+      type: Number
+    - contextPath: Tanium.Action.HistorySavedQuestionId
+      description: The id of the saved question that tracks the results of the action.
+      type: Number
+    - contextPath: Tanium.Action.ID
+      description: The unique ID of the action object.
+      type: Number
+    - contextPath: Tanium.Action.Name
+      description: The action name.
+      type: String
+    - contextPath: Tanium.Action.PackageId
+      description: The id of the package deployed by this action
+      type: Number
+    - contextPath: Tanium.Action.PackageName
+      description: The name of the package deployed by this action
+      type: String
+    - contextPath: Tanium.Action.SavedActionId
+      description: The id of the saved action that this action was issued from, if
+        any.
+      type: Number
+    - contextPath: Tanium.Action.StartTime
+      description: The date and time when the action became active.
+      type: String
+    - contextPath: Tanium.Action.Status
+      description: The status of the action. Valid values are Pending, Active, Stopped,
+        or Expired.
+      type: String
+    - contextPath: Tanium.Action.StoppedFlag
+      description: Whether an action stop has been issued for this action. A value
+        of true indicates an action stop was issued.
+      type: Boolean
+    - contextPath: Tanium.Action.TargetGroupId
+      description: The id of the group of machines to target.
+      type: Number
+    - contextPath: Tanium.Action.TargetGroupName
+      description: The name of the group of machines to target.
+      type: String
+    - contextPath: Tanium.Action.UserDomain
+      description: The domain of the user who issued this action.
+      type: String
+    - contextPath: Tanium.Action.UserId
+      description: The id of the user who issued this action
+      type: Number
+    - contextPath: Tanium.Action.UserName
+      description: The name of the user who issued this action
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: false
   longRunning: false
