@@ -10,6 +10,7 @@ description: |-
   - Carbon Black Enterprise Response v2
   - Cylance Protect v2
   - CrowdStrike Falcon Host
+  - ExtraHop Reveal(x)
 starttaskid: "0"
 tasks:
   "0":
@@ -55,11 +56,12 @@ tasks:
       - "18"
       - "19"
       - "20"
+      - "30"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1060,
+          "x": 1280,
           "y": 440
         }
       }
@@ -75,7 +77,6 @@ tasks:
       version: -1
       name: Is McAfee ePolicy Orchestrator enabled?
       description: Checks if there is an active instance of the McAfee ePolicy Orchestrator integration enabled.
-        integration enabled.
       scriptName: Exists
       type: condition
       iscommand: false
@@ -349,8 +350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 750
+          "x": 2150,
+          "y": 770
         }
       }
     note: false
@@ -453,7 +454,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
+          "x": 2150,
           "y": 605
         }
       }
@@ -656,8 +657,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1740,
-          "y": 1086
+          "x": 2250,
+          "y": 1070
         }
       }
     note: false
@@ -694,8 +695,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 1260
+          "x": 2250,
+          "y": 1220
         }
       }
     note: false
@@ -703,10 +704,10 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 477738d4-3629-410f-86bb-84181caeacd2
+    taskid: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
     type: regular
     task:
-      id: 477738d4-3629-410f-86bb-84181caeacd2
+      id: 9681a79e-1d5e-462c-8e65-ec0bfe1bb7d8
       version: -1
       name: Get host information from Crowdstrike Falcon Host
       description: Gets details for one or more devices, according to device ID.
@@ -728,8 +729,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2080,
-          "y": 1460
+          "x": 2460,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: ec344482-77f7-42b5-8ee4-34317afd1179
+    type: title
+    task:
+      id: ec344482-77f7-42b5-8ee4-34317afd1179
+      version: -1
+      name: ExtraHop Reveal(x)
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
+    type: condition
+    task:
+      id: 58c8b4be-657c-45f6-8eca-5a01da85f1f3
+      version: -1
+      name: Is ExtraHop Reveal(x) enabled?
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "32"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: ExtraHop v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 344e1330-e5f8-4292-83df-7a4fba147ebf
+    type: regular
+    task:
+      id: 344e1330-e5f8-4292-83df-7a4fba147ebf
+      version: -1
+      name: Get host information from ExtraHop Reveal(x)
+      description: Get host information from ExtraHop Reveal(x).
+      script: '|||extrahop-device-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      active_from: {}
+      active_until: {}
+      activity: {}
+      discover_time: {}
+      ip: {}
+      l3_only: {}
+      limit: {}
+      mac: {}
+      match_type: {}
+      name:
+        simple: ${inputs.Hostname}
+      operator: {}
+      role: {}
+      software: {}
+      tag: {}
+      vendor: {}
+      vlan: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 1086
         }
       }
     note: false
@@ -742,10 +866,12 @@ view: |-
       "10_4_#default#": 0.1,
       "22_23_yes": 0.54,
       "22_4_#default#": 0.15,
-      "28_29_yes": 0.5,
+      "28_29_yes": 0.4,
       "28_4_#default#": 0.1,
       "2_4_#default#": 0.21,
       "2_5_yes": 0.64,
+      "31_32_yes": 0.64,
+      "31_4_#default#": 0.1,
       "3_1_yes": 0.3,
       "3_24_yes": 0.41,
       "3_4_#default#": 0.12,
@@ -755,7 +881,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1645,
-        "width": 3076,
+        "width": 3456,
         "x": -616,
         "y": 50
       }
@@ -792,5 +918,85 @@ outputs:
   description: The device information about the hostname that was enriched using Cylance
     Protect v2.
   type: unknown
+- contextPath: ExtraHop.Device.Macaddr
+  description: The MAC Address of the device.
+  type: String
+- contextPath: ExtraHop.Device.DeviceClass
+  description: The class of the device.
+  type: String
+- contextPath: ExtraHop.Device.UserModTime
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.AutoRole
+  description: The role automatically detected by the ExtraHop.
+  type: String
+- contextPath: ExtraHop.Device.ParentId
+  description: The ID of the parent device.
+  type: Number
+- contextPath: ExtraHop.Device.Vendor
+  description: The device vendor.
+  type: String
+- contextPath: ExtraHop.Device.Analysis
+  description: The level of analysis preformed on the device.
+  type: string
+- contextPath: ExtraHop.Device.DiscoveryId
+  description: The UUID given by the Discover appliance.
+  type: String
+- contextPath: ExtraHop.Device.DefaultName
+  description: The default name of the device.
+  type: String
+- contextPath: ExtraHop.Device.DisplayName
+  description: The display name of device.
+  type: String
+- contextPath: ExtraHop.Device.OnWatchlist
+  description: Whether the device is on the advanced analysis whitelist.
+  type: Boolean
+- contextPath: ExtraHop.Device.ModTime
+  description: The time of the most recent update, expressed in milliseconds since
+    the epoch.
+  type: Number
+- contextPath: ExtraHop.Device.IsL3
+  description: Indicates whether the device is a Layer 3 device.
+  type: Boolean
+- contextPath: ExtraHop.Device.Role
+  description: The role of the device.
+  type: String
+- contextPath: ExtraHop.Device.DiscoverTime
+  description: The time that the device was discovered.
+  type: Number
+- contextPath: ExtraHop.Device.Id
+  description: The ID of the device.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr4
+  description: The IPv4 address of the device.
+  type: String
+- contextPath: ExtraHop.Device.Vlanid
+  description: The ID of VLan.
+  type: Number
+- contextPath: ExtraHop.Device.Ipaddr6
+  description: The IPv6 address of the device.
+  type: string
+- contextPath: ExtraHop.Device.NodeId
+  description: The Node ID of the Discover appliance.
+  type: number
+- contextPath: ExtraHop.Device.Description
+  description: A user customizable description of the device.
+  type: string
+- contextPath: ExtraHop.Device.DnsName
+  description: The DNS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.DhcpName
+  description: The DHCP name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.CdpName
+  description: The Cisco Discovery Protocol name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.NetbiosName
+  description: The NetBIOS name associated with the device.
+  type: string
+- contextPath: ExtraHop.Device.Url
+  description: Link to the device details page in ExtraHop.
+  type: string
 tests:
   - Endpoint Enrichment - Generic v2.1 - Test
