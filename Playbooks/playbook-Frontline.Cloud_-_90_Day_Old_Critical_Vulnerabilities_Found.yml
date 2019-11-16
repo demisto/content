@@ -1,0 +1,177 @@
+id: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
+version: -1
+name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
+description: This will query Frontline.Cloud's active view for any critical level
+  vulnerabilities found to be older than 90 days.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ee129af-486b-4c38-8a49-9320f10ce172
+    type: start
+    task:
+      id: 5ee129af-486b-4c38-8a49-9320f10ce172
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 4f0bc3c1-b2a1-407b-8fe6-2e4360a4b276
+    type: regular
+    task:
+      id: 4f0bc3c1-b2a1-407b-8fe6-2e4360a4b276
+      version: -1
+      name: Frontline-get-vulns (critical vulns older than 90 days)
+      description: This will query Frontline's active view for any vulnerabilities
+        found to be critical and older than 90 days.
+      script: Digital Defense FrontlineVM|||frontline-get-vulns
+      type: regular
+      iscommand: true
+      brand: Digital Defense FrontlineVM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      host_id: {}
+      ip_address: {}
+      max_days_since_created:
+        simple: "90"
+      min_days_since_created: {}
+      min_severity: {}
+      severity:
+        simple: critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a0774faa-738e-477d-8f27-879e5d628e17
+    type: condition
+    task:
+      id: a0774faa-738e-477d-8f27-879e5d628e17
+      version: -1
+      name: Were vulnerabilities found?
+      description: Checks results of previous task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FrontlineVM.IPList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 90751ddc-d35b-4060-8092-f9a0e93bb254
+    type: regular
+    task:
+      id: 90751ddc-d35b-4060-8092-f9a0e93bb254
+      version: -1
+      name: Critical vulnerabilities found existing older than 90 days.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        complex:
+          root: FrontlineVM
+          accessor: Vulns
+          transformers:
+          - operator: count
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: eec94249-178b-4b33-8055-83afc4777dc8
+    type: regular
+    task:
+      id: eec94249-178b-4b33-8055-83afc4777dc8
+      version: -1
+      name: No critical vulnerabilities were found older than 90 days.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: No critical vulnerabilities older than 90 days were found within Frontline.Cloud's
+          active view.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
