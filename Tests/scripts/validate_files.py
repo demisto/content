@@ -210,6 +210,8 @@ class FilesValidator(object):
         """
         for file_path in modified_files:
             old_file_path = None
+            integration_dict = get_yaml(file_path)
+            programming_language = integration_dict.get('type', '')
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
 
@@ -240,9 +242,10 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
-                docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
-                if not docker_image_validator.is_docker_image_latest_tag():
-                    self._is_valid = False
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
@@ -252,6 +255,10 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
@@ -260,12 +267,11 @@ class FilesValidator(object):
                 if not script_validator.is_valid_script():
                     self._is_valid = False
 
-                # TODO: Check here what about JS script
-                docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
-                if not docker_image_validator.is_docker_image_latest_tag():
-                    self._is_valid = False
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
-            # TODO: Check here only for py files
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
@@ -274,6 +280,11 @@ class FilesValidator(object):
                 script_validator = ScriptValidator(yml_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
+
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
@@ -288,7 +299,6 @@ class FilesValidator(object):
                 if is_backward_check and not incident_field_validator.is_backward_compatible():
                     self._is_valid = False
 
-    # TODO: Check here for all cases
     def validate_added_files(self, added_files):
         """Validate the added files from your branch.
 
@@ -298,6 +308,8 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
+            integration_dict = get_yaml(file_path)
+            programming_language = integration_dict.get('type', '')
             print('Validating {}'.format(file_path))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
@@ -330,6 +342,20 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
+
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -339,6 +365,12 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path)
                 if not integration_validator.is_valid_beta_integration(is_new=True):
                     self._is_valid = False
+
+                if programming_language and not programming_language == 'javascript':
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
@@ -391,7 +423,6 @@ class FilesValidator(object):
                 schema_changed = True
         # Ensure schema change did not break BC
         if schema_changed:
-            # TODO: Check if needs to edit here also
             self.validate_all_files()
         else:
             self.validate_no_secrets_found(branch_name)
