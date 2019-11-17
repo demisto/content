@@ -1,6 +1,9 @@
 ## [Unreleased]
-  - Support as array the job_id argument in the ***panorama-query-logs*** , ***panorama-check-logs-status*** commands.
+  - Added support for a list of *job_id* in the following commands: ***panorama-query-logs***, ***panorama-check-logs-status***.
   - Add the ip argument in the ***panorama-query-logs*** command.
+
+
+## [19.11.0] - 2019-11-12
   - Fixed an issue where the ***panorama-custom-block-rule*** failed when trying to block an EDL or an address group object.
   - Changed the *url* argument from equals to contains in the ***panorama-log-query*** command.
   - Improved descriptions in the ***panorama-move-rule*** command.
