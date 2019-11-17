@@ -211,6 +211,309 @@ script:
     description: Create response policy rule
     execution: false
     name: infoblox-create-rpz-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv4 address of the substitute rule.
+      isArray: false
+      name: ipv4addr
+      required: false
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (A Record) Rule'.
+    execution: false
+    name: infoblox-create-a-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 address of the substitute rule.
+      isArray: false
+      name: ip64addr
+      required: false
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (AAAA Record) Rule'.
+    execution: false
+    name: infoblox-create-aaaa-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Mail exchanger name in FQDN format. This value can be in unicode format.
+      isArray: false
+      name: mail_exchanger
+      required: true
+      secret: false
+    - default: false
+      description: Preference value, 0 to 65535 (inclusive).
+      isArray: false
+      name: preference
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (MX Record) Rule'.
+    execution: false
+    name: infoblox-create-mx-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The order parameter of the Substitute (NAPTR Record) Rule records. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Valid values are from 0 to 65535 (inclusive).
+      isArray: false
+      name: order
+      required: true
+      secret: false
+    - default: false
+      description: Preference value, 0 to 65535 (inclusive).
+      isArray: false
+      name: preference
+      required: true
+      secret: false
+    - default: false
+      description: The replacement field of the Substitute (NAPTR Record) Rule object. For nonterminal NAPTR records, this field specifies the next domain name to look up.
+      isArray: false
+      name: replacement
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (NAPTR Record) Rule'.
+    execution: false
+    name: infoblox-create-naptr-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The domain name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: ptrdname
+      required: true
+      secret: false
+    - default: false
+      description: The IPv4/IPv6 Address of the substitute rule.
+      isArray: false
+      name: ip_addr
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (PTR Record) Rule'.
+    execution: false
+    name: infoblox-create-ptr-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The port of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      isArray: false
+      name: port
+      required: true
+      secret: false
+    - default: false
+      description: The priority of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      isArray: false
+      name: priority
+      required: true
+      secret: false
+    - default: false
+      description: The target of the Substitute (SRV Record) Rule in FQDN format. This value can be in unicode format.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    - default: false
+      description: The weight of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      isArray: false
+      name: weight
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (SRV Record) Rule'.
+    execution: false
+    name: infoblox-create-srv-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces.
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (txt Record) Rule'.
+    execution: false
+    name: infoblox-create-txt-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv4 Address of the substitute rule.
+      isArray: false
+      name: ipv4addr
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (ipv4 Record) Rule'.
+    execution: false
+    name: infoblox-create-ipv4-substitute-record-rule
+  - arguments:
+    - default: false
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 Address of the substitute rule.
+      isArray: false
+      name: ipv6addr
+      required: true
+      secret: false
+    deprecated: false
+    description: Create 'Substitute (ipv6 Record) Rule'.
+    execution: false
+    name: infoblox-create-ipv6-substitute-record-rule
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
