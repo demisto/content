@@ -7,12 +7,9 @@ import string
 import PyPDF2
 import argparse
 
-from Tests.test_utils import str2bool, print_color, LOG_COLORS  # noqa: E402
-
-
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
-from Tests.test_utils import run_command, print_error
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
