@@ -26,7 +26,6 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
-from Tests.scripts.hook_validations.secrets import get_secrets  # noqa: E402
 from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
 from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
 from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
