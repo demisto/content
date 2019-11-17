@@ -1,5 +1,5 @@
 ## [Unreleased]
- - Now able to run '-sn' flag for ping scan.
+Fixed an issue in nmap scans with '-sn' flag.
 
 
 ## [19.10.0] - 2019-10-03
