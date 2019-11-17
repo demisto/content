@@ -197,7 +197,23 @@ class Client(BaseClient):
             'description': description,
             'items': items
         }
-        response = self.http_request('POST', '/uba/api/watchlist', params)
+        response = self.http_request('POST', '/uba/api/watchlist', params=params)
+        return response.json()
+
+    def watchlist_add_user_request(self, user_id: str = None, watchlist_id: str = None):
+        """
+        Args:
+            user_id: user id
+            watchlist_id: watchlist id
+
+        Returns:
+            all updated watchlist
+        """
+        params = {
+            'itemId': user_id,
+            'watchListId': watchlist_id
+        }
+        response = self.http_request('PUT', 'f/uba/api/watchlist/user/{user_id}/add', params=params)
         return response.json()
 
 
@@ -281,10 +297,10 @@ def get_notable_users(client: Client, args: Dict):
         user_info = user_.get('info', {})
         contents = contents_append_notable_user_info(contents, user, user_, user_info)
 
-    context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
+    entry_context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
     human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers=headers, removeNull=True)
 
-    return human_readable, context, users
+    return human_readable, entry_context, users
 
 
 def contents_user_info(user, user_info):
@@ -316,7 +332,7 @@ def contents_user_info(user, user_info):
 
 
 def get_user_info(client: Client, args: Dict):
-    """  Returns User info data for the given username
+    """Returns User info data for the given username
     Args:
         client: Client
         args: Dict
@@ -341,7 +357,7 @@ def get_user_info(client: Client, args: Dict):
 
 
 def get_user_sessions(client: Client, args: Dict):
-    """ Returns sessions for the given username and time range
+    """Returns sessions for the given username and time range
 
     Args:
         client: Client
@@ -358,6 +374,9 @@ def get_user_sessions(client: Client, args: Dict):
 
     user = client.user_sequence_request(username, parse_start_time, parse_end_time)
     session = user.get('sessions')
+    if not session:
+        return f'The user {username} was not found.', {}, {}
+
     for session_ in session:
         contents.append({
             'SessionID': session_.get('sessionId'),
@@ -369,22 +388,19 @@ def get_user_sessions(client: Client, args: Dict):
             'Label': session_.get('label')
         })
 
-    context = {
+    entry_context = {
         'Exabeam.User(val.SessionID && val.SessionID === obj.SessionID)': {
             'Username': username,
             'Session': contents
         }
     }
+    human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
 
-    if session:
-        human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
-        return human_readable, context, user
-
-    return f'The user {username} was not found.', {}, {}
+    return human_readable, entry_context, user
 
 
 def get_peer_groups(client: Client, *_):
-    """ Returns all peer groups
+    """Returns all peer groups
 
     Args:
         client: Client
@@ -395,10 +411,10 @@ def get_peer_groups(client: Client, *_):
     for group in groups:
         contents.append({'Name': group})
 
-    context = {'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents}
+    entry_context = {'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents}
     human_readable = tableToMarkdown('Exabeam Peer Groups', contents)
 
-    return human_readable, context, groups
+    return human_readable, entry_context, groups
 
 
 def get_user_labels(client: Client, *_):
@@ -413,10 +429,10 @@ def get_user_labels(client: Client, *_):
     for label in labels:
         contents.append({'Label': label})
 
-    context = {'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents}
+    entry_context = {'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents}
     human_readable = tableToMarkdown('Exabeam User Labels:', contents)
 
-    return human_readable, context, labels
+    return human_readable, entry_context, labels
 
 
 def get_watchlist(client: Client, *_):
@@ -436,10 +452,10 @@ def get_watchlist(client: Client, *_):
             'Category': list_.get('category')
         })
 
-    context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
+    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
     human_readable = tableToMarkdown('Exabeam Watchlists:', contents, headers=['WatchlistID', 'Title', 'Category'])
 
-    return human_readable, context, watchlist
+    return human_readable, entry_context, watchlist
 
 
 def create_watchlist(client: Client, args: Dict):
@@ -456,16 +472,43 @@ def create_watchlist(client: Client, args: Dict):
     items = argToList(args.get('items'))
 
     watchlist = client.create_watchlist_request(title, category, description, items)
-    if watchlist:
-        contents = {
-            'WatchlistID': watchlist.get('watchlistId'),
-            'Title': watchlist.get('title'),
-            'Category': watchlist.get('category')
-        }
-    context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
+    if not watchlist:
+        raise Exception(f'The watchlist was not created.')
+
+    contents = {
+        'WatchlistID': watchlist.get('watchlistId'),
+        'Title': watchlist.get('title'),
+        'Category': watchlist.get('category')
+    }
+    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
     human_readable = tableToMarkdown('New watchlist has been created', t=contents,
                                      headers=['WatchlistID', 'Title', 'Category'])
-    return human_readable, context, watchlist
+    return human_readable, entry_context, watchlist
+
+
+def watchlist_add_user(client, args: Dict):
+    """Add user to a watchlist
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    user_id = args.get('user_id')
+    watchlist_id = args.get('watchlist_id')
+
+    response = client.watchlist_add_user_request(user_id, watchlist_id)
+    if not response:
+        raise Exception(f'The user {user_id} was not added to the watchlist {watchlist_id}.')
+
+    contents = {
+        'UserID': response.get('item'),
+        'WatchlistID': response.get('watchlistId')
+    }
+    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
+    human_readable = tableToMarkdown('The user was added successfully to the watchlist.', contents)
+
+    return human_readable, entry_context, response
 
 
 def main():
