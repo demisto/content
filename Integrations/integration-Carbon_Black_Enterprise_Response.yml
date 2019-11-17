@@ -1455,6 +1455,7 @@ script:
       type: string
     description: Deprecated - please use cb-binary-download instead. Retrieve a binary
       from CarbonBlack based on hash. Returned file will be places in the war room.
+    deprecated: true
   - name: cb-block-hash
     arguments:
     - name: md5hash
