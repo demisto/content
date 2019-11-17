@@ -14,8 +14,8 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings and dictionaries will be handled as 'None'
-    values values and the default value will be returned.
+  description: If set to true, empty strings, arrays and dictionaries will be considered empty
+    entities and the default value will be returned.
   isArray: false
   name: applyIfEmpty
   predefined:
@@ -23,8 +23,7 @@ args:
   - 'false'
   required: false
   secret: false
-comment: Checks an object for a None or empty value and returns a pre-set default
-  value.
+comment: Checks an object for an empty value and returns a pre-set default value.
 commonfields:
   id: SetIfEmpty
   version: -1
@@ -34,6 +33,6 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- transformer
+- transformer general entirelist
 timeout: '0'
 type: python
