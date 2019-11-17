@@ -501,8 +501,8 @@ def create_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         'Category': watchlist.get('category')
     }
     entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
-    human_readable = tableToMarkdown('New watchlist has been created', t=contents,
-                                     headers=['WatchlistID', 'Title', 'Category'])
+    human_readable = tableToMarkdown('New watchlist has been created.', t=contents,
+                                     headers=['WatchlistID', 'Title', 'Category'], removeNull=True)
     return human_readable, entry_context, watchlist
 
 

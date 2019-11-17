@@ -27,7 +27,8 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -82,7 +83,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -393,13 +395,114 @@ script:
     - contextPath: Exabeam.User.Username
       description: The username of the session.
       type: String
+  - arguments:
+    - default: false
+      description: Watchlist title.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: Watchlist category.
+      isArray: false
+      name: category
+      required: true
+      secret: false
+    - default: false
+      description: Watchlist description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Usernames or asset names to add to the watchlist.
+      isArray: true
+      name: items
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a watchlist.
+    execution: false
+    name: exabeam-create-watchlist
+    outputs:
+    - contextPath: Exabeam.Watchlist.WatchlistID
+      description: Watchlist ID.
+      type: String
+    - contextPath: Exabeam.Watchlist.Title
+      description: Watchlist title.
+      type: String
+    - contextPath: Exabeam.Watchlist.Category
+      description: Watchlist category.
+      type: String
+  - arguments:
+    - default: false
+      description: User ID.
+      isArray: false
+      name: user_id
+      required: true
+      secret: false
+    - default: false
+      description: Watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add user to a watchlist.
+    execution: false
+    name: exabeam-watchlist-add-user
+    outputs:
+    - contextPath: Exabeam.Watchlist.WatchlistID
+      description: Watchlist ID.
+      type: String
+    - contextPath: Exabeam.Watchlist.UserID
+      description: User ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a watchlist.
+    execution: false
+    name: exabeam-delete-watchlist
+  - arguments:
+    - default: false
+      description: Asset ID.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get asset data.
+    execution: false
+    name: exabeam-get-asset-data
+    outputs:
+    - contextPath: Exabeam.Asset.HostName
+      description: Asset hostname.
+      type: String
+    - contextPath: Exabeam.Asset.IPAddress
+      description: Asset IP address.
+      type: String
+    - contextPath: Exabeam.Asset.AssetType
+      description: Asset type.
+      type: String
+    - contextPath: Exabeam.Asset.FirstSeen
+      description: The date the asset was first seen.
+      type: Date
+    - contextPath: Exabeam.Asset.LastSeen
+      description: The date the asset was last seen.
+      type: String
   dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
+  type: python
 tests:
-  - Exabeam - Test
+- Exabeam - Test
