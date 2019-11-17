@@ -5,9 +5,9 @@ jobs:
       - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
     resource_class: medium+
     environment:
-      CONTENT_VERSION: "19.10.2"
+      CONTENT_VERSION: "19.11.0"
       SERVER_VERSION: "5.0.0"
-      GIT_SHA1: "c71c44b82996fdb0886bd667021b37b9bbd91d21" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "93fab15da3ae0b427e63510836018f8efd6b7b5e" # guardrails-disable-line disable-secrets-detection
     steps:
       - checkout
       - setup_remote_docker
@@ -59,8 +59,16 @@ jobs:
           when: always
           command: |
             python -m pytest ./Tests/scripts/hook_validations/tests/ -v
-            python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+            # after moving to all to python3, run the tests by folder
+            # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
+
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -70,6 +78,7 @@ jobs:
               find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
 
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
           name: Configure Test Filter
@@ -99,7 +108,7 @@ jobs:
       - run:
           name: Create Content Artifacts
           when: always
-          command: python content_creator.py $CIRCLE_ARTIFACTS
+          command: python3 content_creator.py $CIRCLE_ARTIFACTS
       - store_artifacts:
           path: artifacts
           destination: artifacts
@@ -107,6 +116,14 @@ jobs:
           name: Run Unit Testing and Lint
           when: always
           command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+      - run:
+          name: Verify Base Branch for Contirbution
+          when: always
+          command: |
+            if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]] ;
+              then
+                python ./Tests/scripts/verify_base_branch_for_contribution.py $CIRCLE_BRANCH
+            fi
       - run:
           name: Download Artifacts
           when: always
@@ -237,11 +254,17 @@ jobs:
             if ./Tests/scripts/is_ami.sh ;
               then
                 ./Tests/scripts/run_tests.sh "Server Master"
+                export RETVAL=$?
+                cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+                exit $RETVAL
 
-              else
+            else
                 echo "Not AMI run, can't run on this version"
             fi
-            cp ./Tests/failed_tests.txt $CIRCLE_ARTIFACTS/failed_tests.txt
+      - store_artifacts:
+          path: artifacts
+          destination: artifacts
+          when: always
       - run:
           name: Slack Notifier
           shell: /bin/bash
