@@ -33,11 +33,6 @@ URL_DICT = {
     'sample': '/get/sample'
 }
 
-if not URL.endswith('/publicapi'):
-    if URL[-1] != '/':
-        URL += '/'
-    URL += 'publicapi'
-
 ERROR_DICT = {
     '401': 'Unauthorized, API key invalid',
     '404': 'Not Found, The report was not found',
