@@ -245,7 +245,7 @@ tasks:
         simple: "10"
       fullResponse: {}
       ip:
-        simple: ' 178.62.60.225,8.8.8.8'
+        simple: '178.62.60.225,8.8.8.8'
       long: {}
       retries: {}
       sampleSize: {}
