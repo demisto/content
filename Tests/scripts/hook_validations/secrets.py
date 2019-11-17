@@ -1,9 +1,14 @@
 import io
 import os
+import sys
 import math
 import json
 import string
 import PyPDF2
+import argparse
+
+from Tests.test_utils import str2bool  # noqa: E402
+
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
@@ -361,3 +366,31 @@ def ignore_base64(file_contents):
         if len(base64_string) > 500:
             file_contents = file_contents.replace(base64_string, '')
     return file_contents
+
+
+def get_branch_name():
+    branches = run_command('git branch')
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+    return branch_name
+
+
+def parse_script_arguments():
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
+    options = parser.parse_args()
+    return options
+
+
+def main():
+    options = parse_script_arguments()
+    is_circle = options.circle
+    branch_name = get_branch_name()
+    secrets_found = get_secrets(branch_name, is_circle)
+    if secrets_found:
+        sys.exit(1)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
