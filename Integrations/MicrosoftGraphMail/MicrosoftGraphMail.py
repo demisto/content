@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Union, Optional
 
-
 ''' IMPORTS '''
 import requests
 import base64
@@ -39,6 +38,18 @@ if not PARAMS.get('proxy'):
     os.environ.pop('http_proxy', '')
     os.environ.pop('https_proxy', '')
 
+CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID == obj.ID)'
+CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID == obj.ID)'
+
+FOLDER_MAPPING = {
+    'id': 'ID',
+    'displayName': 'DisplayName',
+    'parentFolderId': 'ParentFolderID',
+    'childFolderCount': 'ChildFolderCount',
+    'unreadItemCount': 'UnreadItemCount',
+    'totalItemCount': 'TotalItemCount'
+}
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -67,6 +78,7 @@ def get_encrypted(content: str, key: str) -> str:
     Returns:
         encrypted timestamp:content
     """
+
     def create_nonce() -> bytes:
         return os.urandom(12)
 
@@ -90,6 +102,7 @@ def get_encrypted(content: str, key: str) -> str:
         data = string.encode()
         ct = aes_gcm.encrypt(nonce, data, None)
         return base64.b64encode(nonce + ct)
+
     now = epoch_seconds()
     encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
     return encrypted
@@ -178,7 +191,7 @@ def error_parser(resp_err: requests.Response) -> str:
 
 
 def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
-                 url: str = None) -> dict:
+                 url: str = None, resp_type: str = 'json', json_data: dict = None):
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
@@ -188,6 +201,8 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         url_suffix (str): suffix to add to BASE_URL
         params (str): http params
         data (dict): http body
+        resp_type (str): response type, json or text
+        json_data (dict) : http json
         odata (str): odata query format
         url (str): url to replace if need a new api call
 
@@ -209,15 +224,18 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         verify=USE_SSL,
         params=params,
         data=data,
-        headers=headers
+        headers=headers,
+        json=json_data
     )
     # Handle error responses gracefully
     if not (199 < res.status_code < 299):
         error = error_parser(res)
         return_error(f'Error in API call to Microsoft Graph Mail Integration [{res.status_code}] - {error}')
     try:
-        if method.lower() != 'delete':  # the DELETE request returns nothing in response
+        if method.lower() != 'delete' and resp_type == 'json':  # the DELETE request returns nothing in response
             return res.json()
+        elif resp_type == 'text':
+            return res.text  # noqa
         return {}
     except ValueError:
         return_error('Could not decode response from API')
@@ -321,7 +339,11 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Categories': 'categories',
             'HasAttachments': 'hasAttachments',
             'Subject': 'subject',
-            'IsDraft': 'isDraft'
+            'IsDraft': 'isDraft',
+            'Headers': 'internetMessageHeaders',
+            'Body': 'body',
+            'Flag': 'flag',
+            'Importance': 'importance'
         }
 
         contact_properties = {
@@ -402,6 +424,17 @@ def file_result_creator(raw_response: dict) -> dict:
         return {}  # return_error will exit
 
 
+def parse_folders_list(folders_list):
+    if isinstance(folders_list, dict):
+        folders_list = [folders_list]
+
+    return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
+
+
+def parse_folder_response():
+    pass
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -418,7 +451,7 @@ def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str
         dict or list:
     """
     no_folder = f'/users/{user_id}/messages/'
-    with_folder = f'users/{user_id}/{build_folders_path(folder_id)}/messages/'
+    with_folder = f'/users/{user_id}/{build_folders_path(folder_id)}/messages/'
     pages_to_pull = demisto.args().get('pages_to_pull', 1)
 
     if search:
@@ -428,11 +461,11 @@ def list_mails(user_id: str, folder_id: str = '', search: str = None, odata: str
     return pages_puller(response, assert_pages(pages_to_pull))
 
 
-def list_mails_command():
-    search = demisto.args().get('search')
-    user_id = demisto.args().get('user_id')
-    folder_id = demisto.args().get('folder_id')
-    odata = demisto.args().get('odata')
+def list_mails_command(args):
+    search = args.get('search')
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+    odata = args.get('odata')
 
     raw_response = list_mails(user_id, folder_id=folder_id, search=search, odata=odata)
     mail_context = build_mail_object(raw_response, user_id)
@@ -465,10 +498,10 @@ def delete_mail(user_id: str, message_id: str, folder_id: str = None) -> bool:
     return True
 
 
-def delete_mail_command():
-    user_id = demisto.args().get('user_id')
-    folder_id = demisto.args().get('folder_id')
-    message_id = demisto.args().get('message_id')
+def delete_mail_command(args):
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+    message_id = args.get('message_id')
     delete_mail(user_id, message_id, folder_id)
 
     human_readable = tableToMarkdown(
@@ -507,11 +540,11 @@ def get_attachment(message_id: str, user_id: str, attachment_id: str, folder_id:
     return response
 
 
-def get_attachment_command():
-    message_id = demisto.args().get('message_id')
-    user_id = demisto.args().get('user_id')
-    folder_id = demisto.args().get('folder_id')
-    attachment_id = demisto.args().get('attachment_id')
+def get_attachment_command(args):
+    message_id = args.get('message_id')
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+    attachment_id = args.get('attachment_id')
     raw_response = get_attachment(message_id, user_id, folder_id=folder_id, attachment_id=attachment_id)
     entry_context = file_result_creator(raw_response)
     demisto.results(entry_context)
@@ -541,12 +574,12 @@ def get_message(user_id: str, message_id: str, folder_id: str = None, odata: str
     return response
 
 
-def get_message_command():
-    user_id = demisto.args().get('user_id')
-    folder_id = demisto.args().get('folder_id')
-    message_id = demisto.args().get('message_id')
-    get_body = demisto.args().get('get_body') == 'true'
-    odata = demisto.args().get('odata')
+def get_message_command(args):
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+    message_id = args.get('message_id')
+    get_body = args.get('get_body') == 'true'
+    odata = args.get('odata')
     raw_response = get_message(user_id, message_id, folder_id, odata=odata)
     mail_context = build_mail_object(raw_response, user_id=user_id, get_body=get_body)
     entry_context = {'MSGraphMail(val.ID === obj.ID)': mail_context}
@@ -579,10 +612,10 @@ def list_attachments(user_id: str, message_id: str, folder_id: str) -> dict:
     return http_request('GET', suffix)
 
 
-def list_attachments_command():
-    user_id = demisto.args().get('user_id')
-    message_id = demisto.args().get('message_id')
-    folder_id = demisto.args().get('folder_id')
+def list_attachments_command(args):
+    user_id = args.get('user_id')
+    message_id = args.get('message_id')
+    folder_id = args.get('folder_id')
     raw_response = list_attachments(user_id, message_id, folder_id)
     attachments = raw_response.get('value')
     if attachments:
@@ -607,9 +640,148 @@ def list_attachments_command():
         return_outputs(human_readable, dict(), raw_response)
 
 
+def list_folders(user_id, limit='20'):
+    suffix = f'/users/{user_id}/mailFolders?$top={limit}'
+    return http_request('GET', suffix)
+
+
+def list_folders_command(args):
+    user_id = args.get('user_id')
+    limit = args.get('limit', '20')
+
+    raw_response = list_folders(user_id, limit)
+    parsed_folder_result = parse_folders_list(raw_response.get('value', []))
+    human_readable = tableToMarkdown(f'Mail Folder collection under root folder for user {user_id}',
+                                     parsed_folder_result)
+    entry_context = {CONTEXT_FOLDER_PATH: parsed_folder_result}
+
+    return_outputs(human_readable, entry_context, raw_response)
+
+
+def list_child_folders(user_id, parent_folder_id, limit='20'):
+    suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
+    return http_request('GET', suffix)
+
+
+def list_child_folders_command(args):
+    user_id = args.get('user_id')
+    parent_folder_id = args.get('parent_folder_id')
+    limit = args.get('limit', '20')
+
+    raw_response = list_child_folders(user_id, parent_folder_id, limit)
+    parsed_child_folders_result = parse_folders_list(raw_response.get('value', []))
+    human_readable = tableToMarkdown(f'Mail Folder collection under {parent_folder_id} folder for user {user_id}',
+                                     parsed_child_folders_result)
+    entry_context = {CONTEXT_FOLDER_PATH: parsed_child_folders_result}
+
+    return_outputs(human_readable, entry_context, raw_response)
+
+
+def create_folder(user_id, new_folder_name, parent_folder_id=None):
+    suffix = f'/users/{user_id}/mailFolders'
+    if parent_folder_id:
+        suffix += f'/{parent_folder_id}/childFolders'
+
+    json_data = {'displayName': new_folder_name}
+    return http_request('POST', suffix, json_data=json_data)
+
+
+def create_folder_command(args):
+    user_id = args.get('user_id')
+    new_folder_name = args.get('new_folder_name')
+    parent_folder_id = args.get('parent_folder_id')
+
+    raw_response = create_folder(user_id, new_folder_name, parent_folder_id)
+    parsed_created_folder = parse_folders_list(raw_response)
+    human_readable = tableToMarkdown(
+        f'Mail folder was created with display name: {new_folder_name}',
+        parsed_created_folder)
+    entry_context = {CONTEXT_FOLDER_PATH: parsed_created_folder}
+
+    return_outputs(human_readable, entry_context, raw_response)
+
+
+def update_folder(user_id, folder_id, new_display_name):
+    suffix = f'/users/{user_id}/mailFolders/{folder_id}'
+    json_data = {'displayName': new_display_name}
+    return http_request('PATCH', suffix, json_data=json_data)
+
+
+def update_folder_command(args):
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+    new_display_name = args.get('new_display_name')
+
+    raw_response = update_folder(user_id, folder_id, new_display_name)
+    parsed_updated_folder = parse_folders_list(raw_response)
+    human_readable = tableToMarkdown(f'Mail folder {folder_id} was with display name: {new_display_name}',
+                                     parsed_updated_folder)
+    entry_context = {CONTEXT_FOLDER_PATH: parsed_updated_folder}
+
+    return_outputs(human_readable, entry_context, raw_response)
+
+
+def delete_folder(user_id, folder_id):
+    suffix = f'/users/{user_id}/mailFolders/{folder_id}'
+    return http_request('DELETE', suffix)
+
+
+def delete_folder_command(args):
+    user_id = args.get('user_id')
+    folder_id = args.get('folder_id')
+
+    delete_folder(user_id, folder_id)
+    return_outputs(f'The folder {folder_id} was deleted successfully')
+
+
+def copy_email(user_id, message_id, destination_folder_id):
+    suffix = f'/users/{user_id}/messages/{message_id}/move'
+    json_data = {'destinationId': destination_folder_id}
+    return http_request('POST', suffix, json_data=json_data)
+
+
+def copy_email_command(args):
+    user_id = args.get('user_id')
+    message_id = args.get('message_id')
+    destination_folder_id = args.get('destination_folder_id')
+
+    raw_response = copy_email(user_id, message_id, destination_folder_id)
+    new_message_id = raw_response.get('id')
+    human_readable = f'### The email was moved successfully. The new ID of the email is: {new_message_id}'
+    entry_context = {
+        CONTEXT_COPIED_EMAIL: {
+            'ID': new_message_id,
+            'DestinationFolderID': destination_folder_id,
+            'UserID': user_id
+        }
+    }
+
+    return_outputs(human_readable, entry_context, raw_response)
+
+
+def get_email_as_eml(user_id, message_id):
+    suffix = f'/users/{user_id}/messages/{message_id}/$value'
+    return http_request('GET', suffix, resp_type='text')
+
+
+def get_email_as_eml_command(args):
+    user_id = args.get('user_id')
+    message_id = args.get('message_id')
+
+    eml_content = get_email_as_eml(user_id, message_id)
+    file_result = fileResult(f'{message_id}.eml', eml_content)
+
+    if is_error(file_result):
+        demisto.error(file_result['Contents'])
+        raise Exception(file_result['Contents'])
+
+    demisto.results(file_result)
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     command = demisto.command()
+    args = demisto.args()
     LOG(f'Command being called is {command}')
 
     try:
@@ -617,19 +789,33 @@ def main():
             get_access_token()
             demisto.results('ok')
         elif command in ('msgraph-mail-list-emails', 'msgraph-mail-search-email'):
-            list_mails_command()
+            list_mails_command(args)
         elif command == 'msgraph-mail-get-email':
-            get_message_command()
+            get_message_command(args)
         elif command == 'msgraph-mail-delete-email':
-            delete_mail_command()
+            delete_mail_command(args)
         elif command == 'msgraph-mail-list-attachments':
-            list_attachments_command()
+            list_attachments_command(args)
         elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command()
+            get_attachment_command(args)
+        elif command == 'msgraph-mail-list-folders':
+            list_folders_command(args)
+        elif command == 'msgraph-mail-list-child-folders':
+            list_child_folders_command(args)
+        elif command == 'msgraph-mail-create-folder':
+            create_folder_command(args)
+        elif command == 'msgraph-mail-update-folder':
+            update_folder_command(args)
+        elif command == 'msgraph-mail-delete-folder':
+            delete_folder_command(args)
+        elif command == 'msgraph-mail-move-email':
+            copy_email_command(args)
+        elif command == 'msgraph-mail-get-email-as-eml':
+            get_email_as_eml_command(args)
     # Log exceptions
     except Exception as e:
         return_error(str(e))
 
 
-if __name__ == "builtins":
+if __name__ in ["builtins", "__main__"]:
     main()
