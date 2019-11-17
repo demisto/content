@@ -349,7 +349,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if programming_language and not programming_language == 'javascript':
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -358,7 +358,7 @@ class FilesValidator(object):
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
 
                 if programming_language and not programming_language == 'javascript':
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -373,7 +373,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if programming_language and not programming_language == 'javascript':
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
