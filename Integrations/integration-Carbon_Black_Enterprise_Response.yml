@@ -722,7 +722,7 @@ script:
                 Type: entryTypes.file,
                 FileID: fileEntryId,
                 File: 'results.zip',
-                Contents:  ""
+                Contents: ""
             };
         }
 
@@ -734,12 +734,46 @@ script:
                     Type: fileEntry.Type,
                     FileID: fileEntry.FileID,
                     File: fileEntry.File,
-                    Contents: ""
+                    Contents: ''
                 });
             });
         }
 
         return entries;
+    }
+
+    function getBinaryZip() {
+        let entries = [];
+
+        if (args.summary && args.summary === 'yes') {
+            let result = getBinarySummaryRequest(args.md5);
+            let title = 'CB Response - Binary Summary';
+            let dataMap = binaryData;
+            let headers = dataMap.map(cn => cn.to);
+            let translatedData = mapObjFunction(dataMap)(result);
+            let humanReadable = tableToMarkdown(title, translatedData, headers, undefined, dotToSpace);
+            let context = {
+                'File(val.MD5==obj.MD5)': createContext(translatedData)
+            };
+            entries.push({
+                Type: entryTypes.note,
+                Contents: result,
+                ContentsType: formats.json,
+                ReadableContentsFormat: formats.markdown,
+                HumanReadable: humanReadable,
+                EntryContext: context,
+            });
+        }
+
+        let res = getBinaryRequest(args.md5);
+        let fileEntryId = saveFile(res.Bytes);
+
+        return {
+            Type: entryTypes.file,
+            FileID: fileEntryId,
+            File: 'results.zip',
+            Contents: ""
+        };
     }
 
     function getSensorsRequest(sensorId, hostname, ip, groupId) {
@@ -1166,6 +1200,8 @@ script:
                 return setWatchlist(); // Tested
             case 'cb-watchlist-del':
                 return deleteWatch(); // Tested
+            case 'cb-binary-download':
+                return getBinaryZip();
             default:
                 throw `Unknown Command: ${command}`;
         }
@@ -1365,9 +1401,8 @@ script:
       predefined:
       - "yes"
       - "no"
+      description: Whether to decompress results
       defaultValue: "yes"
-      description: "Whether to decompress results.\n
-      **Note: This argument should be 'no' - currently the extracted files are empty**"
     outputs:
     - contextPath: File.DigSig.Publisher
       description: The publisher of the Digital Signature
@@ -1419,7 +1454,7 @@ script:
       description: Description of the signature.
       type: string
     description: Retrieve a binary from CarbonBlack based on hash. Returned file will
-      be places in the war room.
+      be places in the war room. Deprecated - please use cb-binary-download instead.
   - name: cb-block-hash
     arguments:
     - name: md5hash
@@ -1902,5 +1937,58 @@ script:
     - contextPath: CbResponse.Watchlists.CbWatchlistID
       description: Watchlist ID
     description: Retrieve watchlist in Carbon black Response.
+  - name: cb-binary-download
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: MD5 File Hash
+    - name: summary
+      description: Whether to include summary
+    outputs:
+    - contextPath: File.DigSig.Publisher
+      description: The publisher of the Digital Signature
+    - contextPath: File.InternalName
+      description: The Internal Name
+    - contextPath: File.ServerAddedTimestamp
+      description: The server added timestamp
+    - contextPath: File.Name
+      description: Binary Name
+    - contextPath: File.Extension
+      description: Binary Extension
+    - contextPath: File.Timestamp
+      description: Binary Timestamp
+    - contextPath: File.Hostname
+      description: Binary Hostname
+    - contextPath: File.Description
+      description: The description
+    - contextPath: File.DigSig.Result
+      description: Cb's decision after checking this binary's Digital Signature
+    - contextPath: File.LastSeen
+      description: Last time binary was seen
+    - contextPath: File.Path
+      description: Binary Path
+    - contextPath: File.ProductName
+      description: The Product Name
+    - contextPath: File.OS
+      description: The OS
+    - contextPath: File.MD5
+      description: Binary MD5
+    - contextPath: File.Company
+      description: Name of the company that released a binary
+    - contextPath: File.DigitalSignature.Publisher
+      description: Publisher of the digital signature for the file.
+    - contextPath: File.Name
+      description: Full Filename e.g. data.xls.
+    - contextPath: File.Signature.OriginalName
+      description: File's original name.
+    - contextPath: File.Signature.InternalName
+      description: File's internal name.
+    - contextPath: File.Signature.FileVersion
+      description: File version.
+    - contextPath: File.Signature.Description
+      description: Description of the signature.
+    description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
+      file containing the requested file and it's metadata.
   isfetch: true
   runonce: false
