@@ -136,17 +136,25 @@ class Client(BaseClient):
         if access_token and valid_until:
             if epoch_seconds() < valid_until:
                 return access_token
-
-        dbot_response = requests.post(
-            self.token_retrieval_url,
-            headers={'Accept': 'application/json'},
-            data=json.dumps({
-                'app_name': APP_NAME,
-                'registration_id': self.auth_id,
-                'encrypted_token': get_encrypted(self.tenant, self.enc_key)
-            }),
-            verify=self._verify
-        )
+        try:
+            dbot_response = requests.post(
+                self.token_retrieval_url,
+                headers={'Accept': 'application/json'},
+                data=json.dumps({
+                    'app_name': APP_NAME,
+                    'registration_id': self.auth_id,
+                    'encrypted_token': get_encrypted(self.tenant, self.enc_key)
+                }),
+                verify=self._verify
+            )
+        except requests.exceptions.SSLError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your not secure parameter.\n\n{err}')
+        except requests.ConnectionError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your Server URL parameter.\n\n{err}')
         if dbot_response.status_code not in {200, 201}:
             msg = 'Error in authentication. Try checking the credentials you entered.'
             try:
@@ -210,11 +218,14 @@ class Client(BaseClient):
                 data=body,
                 verify=self._verify,
             )
+        except requests.exceptions.SSLError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your not secure parameter.\n\n{err}')
         except requests.ConnectionError as err:
             demisto.debug(str(err))
             raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
                             f'Check your Server URL parameter.\n\n{err}')
-
         try:
             data = response.json() if response.text else {}
             if not response.ok:
