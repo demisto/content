@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -57,7 +57,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 515
         }
       }
@@ -66,10 +66,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: e15a844e-27c2-473b-8ce3-0d9818feec18
+    taskid: 0b910e9d-65c5-488e-8abf-63f0f1c98d3a
     type: regular
     task:
-      id: e15a844e-27c2-473b-8ce3-0d9818feec18
+      id: 0b910e9d-65c5-488e-8abf-63f0f1c98d3a
       version: -1
       name: Get "Graph Groups Test - DELETE" group
       description: Get a group.
@@ -82,6 +82,10 @@ tasks:
       - "8"
     scriptarguments:
       group_id:
+        complex:
+          root: MSGraphGroups
+          accessor: ID
+      id:
         complex:
           root: MSGraphGroups
           filters:
@@ -98,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 690
         }
       }
@@ -121,6 +125,7 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
+      - "20"
     scriptarguments:
       group_id:
         complex:
@@ -139,7 +144,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 865
         }
       }
@@ -162,7 +167,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1885
         }
       }
@@ -196,7 +201,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -227,7 +232,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1710
         }
       }
@@ -273,7 +278,6 @@ tasks:
       version: -1
       name: GROUPS
       type: title
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -283,7 +287,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -299,7 +303,6 @@ tasks:
       version: -1
       name: MEMBERS
       type: title
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -309,7 +312,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1215
         }
       }
@@ -341,7 +344,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1360
         }
       }
@@ -373,8 +376,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 321e26d7-c603-4b26-87ef-784aeb3664c3
+    type: regular
+    task:
+      id: 321e26d7-c603-4b26-87ef-784aeb3664c3
+      version: -1
+      name: List groups with filter and top
+      description: List groups.
+      script: '|||msgraph-groups-list-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filter:
+        simple: startswith(displayName,'T')
+      next_link: {}
+      order_by: {}
+      top:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
         }
       }
     note: false
@@ -386,7 +423,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1900,
-        "width": 380,
+        "width": 810,
         "x": 50,
         "y": 50
       }
