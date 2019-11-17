@@ -133,6 +133,14 @@ def find_latest_tag_by_date(tags):
 
 
 def get_docker_image_latest_tag(docker_image_name):
+    """Returns the docker image latest tag of the given docker image
+
+    Args:
+        docker_image_name: The name of the docker image
+
+    Returns:
+        The last updated docker image tag
+    """
     try:
         tag = ''
         auth_token = docker_auth(docker_image_name, False, DEFAULT_REGISTRY)
@@ -173,6 +181,14 @@ def get_docker_image_latest_tag(docker_image_name):
 
 
 def parse_docker_image(docker_image):
+    """Verify that the docker image is of demisto format & parse the name and tag
+
+    Args:
+        docker_image: String representation of the docker image name and tag
+
+    Returns:
+        The name and the tag of the docker image
+    """
     if docker_image:
         try:
             tag = re.findall(r'(demisto\/.+):.+', docker_image, re.IGNORECASE)[0]
