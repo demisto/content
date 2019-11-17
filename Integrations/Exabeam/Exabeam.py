@@ -267,12 +267,12 @@ def contents_append_notable_user_info(contents, user, user_, user_info):
     contents.append({
         'UserName': user_.get('username'),
         'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
-        'FirstSeen': convert_unix_to_date(user_.get('firstSeen')),
-        'LastSeen': convert_unix_to_date(user_.get('lastSeen')),
+        'FirstSeen': convert_unix_to_date(user_.get('firstSeen')) if 'firstSeen' in user_ else None,
+        'LastSeen': convert_unix_to_date(user_.get('lastSeen')) if 'lastSeen' in user_ else None,
         'LastActivity': user_.get('lastActivityType'),
         'Labels': user_.get('labels'),
         'UserFullName': user.get('userFullName'),
-        'Location': user_.get('info')['location'],
+        'Location': user_info.get('location'),
         'NotableSessionIds': user.get('notableSessionIds'),
         'NotableUser': True,
         'HighestRiskSession': user.get('highestRiskSession'),
@@ -305,7 +305,7 @@ def get_notable_users(client: Client, args: Dict):
     if api_unit not in {'d', 'y', 'M', 'h'}:
         raise Exception('The time unit is incorrect - can be hours, days, months, years.')
 
-    contents = []
+    contents: list = []
     headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
     users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
@@ -576,7 +576,7 @@ def get_asset_data(client: Client, args: Dict):
     asset_id = args.get('asset_id')
     asset_data = client.get_asset_data_request(asset_id)
 
-    if not asset_data or not 'asset' in asset_data:
+    if not asset_data or 'asset' not in asset_data:
         raise Exception(f'The asset {asset_id} have no data. Please verify that the asset id is valid.')
 
     asset_data = asset_data.get('asset', None)
@@ -598,8 +598,8 @@ def main():
     headers = {'Accept': 'application/json'}
     proxies = handle_proxy()
 
-    client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username, password=password, proxies=proxies,
-                    headers=headers)
+    client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
+                    password=password, proxies=proxies, headers=headers)
     commands = {
         'test-module': test_module,
         'get-notable-users': get_notable_users,
