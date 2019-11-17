@@ -1,13 +1,15 @@
 import io
 import os
+import sys
 import math
 import json
 import string
 import PyPDF2
+import argparse
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
-from Tests.test_utils import run_command, print_error
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -361,3 +363,35 @@ def ignore_base64(file_contents):
         if len(base64_string) > 500:
             file_contents = file_contents.replace(base64_string, '')
     return file_contents
+
+
+def get_branch_name():
+    branches = run_command('git branch')
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+    return branch_name
+
+
+def parse_script_arguments():
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
+    options = parser.parse_args()
+    return options
+
+
+def main():
+    options = parse_script_arguments()
+    is_circle = options.circle
+    branch_name = get_branch_name()
+    is_forked = re.match(EXTERNAL_PR_REGEX, branch_name) is not None
+    if not is_forked:
+        secrets_found = get_secrets(branch_name, is_circle)
+        if secrets_found:
+            sys.exit(1)
+        else:
+            print_color('Finished validating secrets, no secrets were found.', LOG_COLORS.GREEN)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()
