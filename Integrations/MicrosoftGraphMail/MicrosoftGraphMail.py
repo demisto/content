@@ -431,10 +431,6 @@ def parse_folders_list(folders_list):
     return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
 
 
-def parse_folder_response():
-    pass
-
-
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
