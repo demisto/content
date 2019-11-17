@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue with the presentation of users display names.
+
+## [19.11.0] - 2019-11-12
 - Fixed an issue in the Archer fetch incidents offset.
 - Fixed an issue in the fetched incidents details.
 - Improved errors and added debug logs.
