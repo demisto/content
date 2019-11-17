@@ -213,7 +213,7 @@ def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
     entry_list = []
     for current_ip in ip_list:
         params = {
-            "ipAddress": corrent_ip,
+            "ipAddress": current_ip,
             "maxAgeInDays": days
         }
         if verbose:
