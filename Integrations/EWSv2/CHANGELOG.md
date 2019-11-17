@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Logging improvement.
 
 ## [19.11.0] - 2019-11-12
   - Improved implementation of the ***ews-move-item-between-mailboxes*** command.
