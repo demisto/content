@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 Fixed an issue where the **XDRSyncScript** script executed the ***xdr-update-incident*** command when required arguments were empty.
 
 ## [19.10.2] - 2019-10-29
