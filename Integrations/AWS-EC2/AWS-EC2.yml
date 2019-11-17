@@ -44,11 +44,11 @@ configuration:
   name: secret_key
   required: false
   type: 4
-- display: Use System Proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- display: Trust any certificate (Not Secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
