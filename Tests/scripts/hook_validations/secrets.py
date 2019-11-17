@@ -386,9 +386,11 @@ def main():
     options = parse_script_arguments()
     is_circle = options.circle
     branch_name = get_branch_name()
-    secrets_found = get_secrets(branch_name, is_circle)
-    if secrets_found:
-        sys.exit(1)
+    is_forked = re.match(EXTERNAL_PR_REGEX, branch_name) is not None
+    if not is_forked:
+        secrets_found = get_secrets(branch_name, is_circle)
+        if secrets_found:
+            sys.exit(1)
     sys.exit(0)
 
 
