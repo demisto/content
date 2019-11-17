@@ -341,7 +341,6 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Subject': 'subject',
             'IsDraft': 'isDraft',
             'Headers': 'internetMessageHeaders',
-            'Body': 'body',
             'Flag': 'flag',
             'Importance': 'importance'
         }
