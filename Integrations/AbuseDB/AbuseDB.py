@@ -208,14 +208,12 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tit
 
 
 def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
-
+    params = {}
     ip_list = argToList(ip)
     entry_list = []
     for current_ip in ip_list:
-        params = {
-            "ipAddress": current_ip,
-            "maxAgeInDays": days
-        }
+        params["ipAddress"] = current_ip,
+        params["maxAgeInDays"] = days
         if verbose:
             params['verbose'] = "verbose"
         analysis = http_request("GET", url_suffix=CHECK_CMD, params=params).get("data")
