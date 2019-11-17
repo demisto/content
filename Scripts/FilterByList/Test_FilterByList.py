@@ -138,31 +138,31 @@ test_yes_yes_packages = [
 ]
 
 
-@pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result', empty_list_package)
-def test_empty_list(lst, items, ignore_case, match_exact, expected_result):
-    result = filter_list(lst, items, ignore_case, match_exact)
+@pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result, list_name', empty_list_package)
+def test_empty_list(lst, items, ignore_case, match_exact, expected_result, list_name):
+    result = filter_list(lst, items, ignore_case, match_exact, list_name)
     assert result['Contents'] == expected_result
 
 
 @pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result', test_no_no_packages)
-def test_no_ignore_no_match(lst, items, ignore_case, match_exact, expected_result):
-    result = filter_list(lst, items, ignore_case, match_exact)
+def test_no_ignore_no_match(lst, items, ignore_case, match_exact, expected_result, list_name):
+    result = filter_list(lst, items, ignore_case, match_exact, list_name)
     assert result['HumanReadable'] == expected_result
 
 
 @pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result', test_yes_no_packages)
-def test_yes_ignore_no_match(lst, items, ignore_case, match_exact, expected_result):
-    result = filter_list(lst, items, ignore_case, match_exact)
+def test_yes_ignore_no_match(lst, items, ignore_case, match_exact, expected_result, list_name):
+    result = filter_list(lst, items, ignore_case, match_exact, list_name)
     assert result['HumanReadable'] == expected_result
 
 
 @pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result', test_no_yes_packages)
-def test_no_ignore_yes_match(lst, items, ignore_case, match_exact, expected_result):
-    result = filter_list(lst, items, ignore_case, match_exact)
+def test_no_ignore_yes_match(lst, items, ignore_case, match_exact, expected_result, list_name):
+    result = filter_list(lst, items, ignore_case, match_exact, list_name)
     assert result['HumanReadable'] == expected_result
 
 
 @pytest.mark.parametrize('lst, items, ignore_case, match_exact, expected_result', test_yes_yes_packages)
-def test_yes_ignore_yes_match(lst, items, ignore_case, match_exact, expected_result):
-    result = filter_list(lst, items, ignore_case, match_exact)
+def test_yes_ignore_yes_match(lst, items, ignore_case, match_exact, expected_result, list_name):
+    result = filter_list(lst, items, ignore_case, match_exact, list_name)
     assert result['HumanReadable'] == expected_result
