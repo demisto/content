@@ -7,7 +7,7 @@ from FilterByList import filter_list
 raw_list_only_lower_case = ['demisto', 'paloalto', 'foo', 'boo', 'bar']
 raw_list_only_caps = ['DEMISTO', 'PALOALTO', 'FOO', 'BOO', 'BAR']
 raw_list_lower_and_caps = ['Demisto', 'paloAlto', 'FoO', 'boo', 'baR']
-raw_empty_list = []
+raw_empty_list = []  # type: list
 
 raw_string_only_lower_case = 'demisto,paloalto,foo,boo,bar'
 raw_string_only_caps = 'DEMISTO,PALOALTO,FOO,BOO,BAR'
