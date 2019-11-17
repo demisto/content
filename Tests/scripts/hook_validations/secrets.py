@@ -146,7 +146,7 @@ def search_potential_secrets(secrets_file_paths):
 
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-        # We don't have IOC only white list for packs, in packs regard all items as regex as well
+        # in packs regard all items as regex as well, reset whitelist in order to avoid repetition later
         if is_pack:
             file_contents = remove_white_list_regexs(file_contents, secrets_white_list)
             secrets_white_list = set()
@@ -291,8 +291,8 @@ def get_white_listed_items(is_pack, pack_name):
         whitelist_path = packs_whitelist_path
     else:
         whitelist_path = WHITELIST_PATH
-    final_white_list, ioc_white_list, files_while_list = get_generic_white_list(whitelist_path) if \
-        not is_pack else get_packs_white_list(whitelist_path)
+    final_white_list, ioc_white_list, files_while_list = get_packs_white_list(whitelist_path) if is_pack else\
+        get_generic_white_list(whitelist_path)
     return set(final_white_list), set(ioc_white_list), set(files_while_list)
 
 
