@@ -16,7 +16,7 @@ from Tests.test_utils import print_error, print_color, LOG_COLORS
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-MAX_TRIES = 20
+MAX_TRIES = 30
 SLEEP_TIME = 45
 
 
