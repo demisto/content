@@ -216,13 +216,25 @@ class Client(BaseClient):
         response = self.http_request('PUT', 'f/uba/api/watchlist/user/{user_id}/add', params=params)
         return response.json()
 
-    def delete_watchlist_request(self, watchlist_id: str):
+    def delete_watchlist_request(self, watchlist_id: str = None):
         """
         Args:
             watchlist_id: watchlist id
 
         """
         self.http_request('DELETE', f'watchlist/{watchlist_id}')
+
+    def get_asset_data_request(self, asset_id: str = None):
+        """
+
+        Args:
+            asset_id: asser ud
+
+        Returns:
+            asset data
+        """
+        response = self.http_request('GET', f'asset/{asset_id}/data')
+        return response.json()
 
 
 def test_module(client: Client, *_):
@@ -534,6 +546,47 @@ def delete_watchlist(client: Client, args: Dict):
     return f'The watchlist {watchlist_id} was deleted successfully.', {}, {}
 
 
+def contents_asset_data(asset_data):
+    """create a content obj for the asset
+
+    Args:
+        asset_data: asset data
+    Returns:
+        A contents dict with the relevant asset data
+    """
+    contents = {
+        'HostName': asset_data.get('hostName'),
+        'IPAddress': asset_data.get('ipAddress'),
+        'AssetType': asset_data.get('assetType'),
+        'FirstSeen': convert_unix_to_date(asset_data.get('firstSeen')),
+        'LastSeen': convert_unix_to_date(asset_data.get('lastSeen')),
+        'Labels': asset_data.get('labels')
+    }
+    return contents
+
+
+def get_asset_data(client: Client, args: Dict):
+    """  Return asset data for given asset ID (hostname or IP address)
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    asset_id = args.get('asset_id')
+    asset_data = client.get_asset_data_request(asset_id)
+
+    if not asset_data or not 'asset' in asset_data:
+        raise Exception(f'The asset {asset_id} have no data. Please verify that the asset id is valid.')
+
+    asset_data = asset_data.get('asset', None)
+    contents = contents_asset_data(asset_data)
+    entry_context = {'Exabeam.Asset(val.IPAddress && val.IPAddress === obj.IPAddress)': contents}
+    human_readable = tableToMarkdown('Exabeam Asset Data:', contents, removeNull=True)
+
+    return human_readable, entry_context, asset_data
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -564,7 +617,7 @@ def main():
         'exabeam-create-watchlist': create_watchlist,
         'exabeam-watchlist-add-user': watchlist_add_user,
         'exabeam-delete-watchlist': delete_watchlist,
-        # 'exabeam-get-asset-data': get_asset_data
+        'exabeam-get-asset-data': get_asset_data
     }
 
     try:
