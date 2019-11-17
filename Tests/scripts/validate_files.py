@@ -359,7 +359,7 @@ class FilesValidator(object):
                         'The files are:\n{}'.format('\n'.join(list(invalid_files))))
             self._is_valid = False
 
-    def validate_committed_files(self, branch_name, is_backward_check=True, is_forked=False):
+    def validate_committed_files(self, branch_name, is_backward_check=True):
         """Validate that all the committed files in your branch are valid
 
         Args:
@@ -408,7 +408,7 @@ class FilesValidator(object):
                         if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
-    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None, is_forked=False):
+    def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
         """Check if the structure is valid for the case we are in, master - all files, branch - changed files.
 
         Args:
@@ -423,7 +423,7 @@ class FilesValidator(object):
 
         if branch_name != 'master' and not branch_name.startswith('19.') and not branch_name.startswith('20.'):
             # validates only committed files
-            self.validate_committed_files(branch_name, is_backward_check=is_backward_check, is_forked=is_forked)
+            self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
             if not prev_ver:
                 # validate against master if no version was provided
                 prev_ver = 'origin/master'
@@ -482,7 +482,7 @@ def main():
     print_color('Starting validating files structure', LOG_COLORS.GREEN)
     files_validator = FilesValidator(is_circle, print_ignored_files=True)
     if not files_validator.is_valid_structure(branch_name, is_backward_check=is_backward_check,
-                                              prev_ver=options.prev_ver, is_forked=is_forked):
+                                              prev_ver=options.prev_ver):
         sys.exit(1)
     if options.test_filter:
         try:
