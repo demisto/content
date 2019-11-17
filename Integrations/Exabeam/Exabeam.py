@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict, Optional, MutableMapping
+from typing import Tuple, Dict, Optional, MutableMapping
 import requests
 import urllib3
 
@@ -109,7 +109,7 @@ class Client(BaseClient):
         """
         self.http_request('GET', '/uba/api/ping', resp_type='text')
 
-    def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None):
+    def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None) -> Dict:
         """
         Args:
             api_unit:
@@ -127,7 +127,7 @@ class Client(BaseClient):
         response = self.http_request('GET', '/uba/api/users/notable', params=params)
         return response
 
-    def get_user_info_request(self, username: str):
+    def get_user_info_request(self, username: str) -> Dict:
         """
         Args:
             username: the username
@@ -138,7 +138,7 @@ class Client(BaseClient):
         response = self.http_request('GET', f'/uba/api/user/{username}/info')
         return response
 
-    def get_peergroups_request(self):
+    def get_peergroups_request(self) -> Dict:
         """
         Returns:
             peer groups
@@ -146,7 +146,7 @@ class Client(BaseClient):
         response = self.http_request('GET', '/uba/api/peerGroup')
         return response
 
-    def get_user_labels_request(self):
+    def get_user_labels_request(self) -> Dict:
         """
         Returns:
             user labels
@@ -154,7 +154,7 @@ class Client(BaseClient):
         response = self.http_request('GET', '/uba/api/userLabel')
         return response
 
-    def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None):
+    def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None) -> Dict:
         """
         Args:
             username:
@@ -180,7 +180,7 @@ class Client(BaseClient):
         response = self.http_request('GET', '/uba/api/watchlist')
         return response
 
-    def create_watchlist_request(self, title=None, category=None, description=None, items=None):
+    def create_watchlist_request(self, title=None, category=None, description=None, items=None) -> Dict:
         """
         Args:
             title: watchlist title
@@ -200,7 +200,7 @@ class Client(BaseClient):
         response = self.http_request('POST', '/uba/api/watchlist', params=params)
         return response.json()
 
-    def watchlist_add_user_request(self, user_id: str = None, watchlist_id: str = None):
+    def watchlist_add_user_request(self, user_id: str = None, watchlist_id: str = None) -> Dict:
         """
         Args:
             user_id: user id
@@ -224,7 +224,7 @@ class Client(BaseClient):
         """
         self.http_request('DELETE', f'watchlist/{watchlist_id}')
 
-    def get_asset_data_request(self, asset_id: str = None):
+    def get_asset_data_request(self, asset_id: str = None) -> Dict:
         """
 
         Args:
@@ -252,7 +252,7 @@ def test_module(client: Client, *_):
     return '', None, None
 
 
-def contents_append_notable_user_info(contents, user, user_, user_info):
+def contents_append_notable_user_info(contents, user, user_, user_info) -> Dict:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -283,7 +283,7 @@ def contents_append_notable_user_info(contents, user, user_, user_info):
     return contents
 
 
-def get_notable_users(client: Client, args: Dict):
+def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """ Get notable users in a period of time
 
     Args:
@@ -323,7 +323,7 @@ def get_notable_users(client: Client, args: Dict):
     return human_readable, entry_context, users
 
 
-def contents_user_info(user, user_info):
+def contents_user_info(user, user_info) -> Dict:
     """create a content obj for the user
 
     Args:
@@ -351,7 +351,7 @@ def contents_user_info(user, user_info):
     return contents
 
 
-def get_user_info(client: Client, args: Dict):
+def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Returns User info data for the given username
     Args:
         client: Client
@@ -376,7 +376,7 @@ def get_user_info(client: Client, args: Dict):
     return human_readable, context, user
 
 
-def get_user_sessions(client: Client, args: Dict):
+def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Returns sessions for the given username and time range
 
     Args:
@@ -419,7 +419,7 @@ def get_user_sessions(client: Client, args: Dict):
     return human_readable, entry_context, user
 
 
-def get_peer_groups(client: Client, *_):
+def get_peer_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """Returns all peer groups
 
     Args:
@@ -437,7 +437,7 @@ def get_peer_groups(client: Client, *_):
     return human_readable, entry_context, groups
 
 
-def get_user_labels(client: Client, *_):
+def get_user_labels(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """ Returns all user Labels
 
     Args:
@@ -455,7 +455,7 @@ def get_user_labels(client: Client, *_):
     return human_readable, entry_context, labels
 
 
-def get_watchlist(client: Client, *_):
+def get_watchlist(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """  Returns all watchlist ids and titles.
 
     Args:
@@ -478,7 +478,7 @@ def get_watchlist(client: Client, *_):
     return human_readable, entry_context, watchlist
 
 
-def create_watchlist(client: Client, args: Dict):
+def create_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Create a new watchlist
 
     Args:
@@ -506,7 +506,7 @@ def create_watchlist(client: Client, args: Dict):
     return human_readable, entry_context, watchlist
 
 
-def watchlist_add_user(client, args: Dict):
+def watchlist_add_user(client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Add user to a watchlist
 
     Args:
@@ -531,7 +531,7 @@ def watchlist_add_user(client, args: Dict):
     return human_readable, entry_context, response
 
 
-def delete_watchlist(client: Client, args: Dict):
+def delete_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a watchlist
 
     Args:
@@ -546,7 +546,7 @@ def delete_watchlist(client: Client, args: Dict):
     return f'The watchlist {watchlist_id} was deleted successfully.', {}, {}
 
 
-def contents_asset_data(asset_data):
+def contents_asset_data(asset_data) -> Dict:
     """create a content obj for the asset
 
     Args:
@@ -565,7 +565,7 @@ def contents_asset_data(asset_data):
     return contents
 
 
-def get_asset_data(client: Client, args: Dict):
+def get_asset_data(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """  Return asset data for given asset ID (hostname or IP address)
 
     Args:
