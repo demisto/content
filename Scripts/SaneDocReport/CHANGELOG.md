@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
   - Fixed table and list functions.
   - Fixed an issue where trends have long floating point values.
   - Fixed an issue where line charts with more than 40 columns were not readable.
