@@ -102,10 +102,115 @@ script:
     description: List all response policy zones
     execution: false
     name: infoblox-list-response-policy-zones
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The name of this DNS zone in FQDN format.
+      isArray: false
+      name: FQDN
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The response policy zone override policy.
+      isArray: false
+      name: rpz_policy
+      predefined:
+      - DISABLED
+      - GIVEN
+      - NODATA
+      - NXDOMAIN
+      - PASSTHRU
+      - SUBSTITUTE
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: MAJOR
+      description: The severity of this response policy zone.
+      isArray: false
+      name: rpz_severity
+      predefined:
+      - CRITICAL
+      - MAJOR
+      - WARNING
+      - INFORMATIONAL
+      required: true
+      secret: false
+    - default: false
+      description: The canonical name of redirect target in substitute policy of response
+        policy zone.
+      isArray: false
+      name: substitute_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: LOCAL
+      description: The type of rpz zone.
+      isArray: false
+      name: rpz_type
+      predefined:
+      - FEED
+      - FIREEYE
+      - LOCAL
+      required: false
+      secret: false
+    deprecated: false
     description: Create response policy zone.
     execution: false
     name: infoblox-create-response-policy-zone
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Type of rule to create.
+      isArray: false
+      name: rule_type
+      predefined:
+      - Passthru
+      - Block (No such domain)
+      - Block (No data)
+      - Substitute (domain name)
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of object to assign the rule on.
+      isArray: false
+      name: object_type
+      predefined:
+      - Domain Name
+      - IP address
+      - Client IP address
+      required: true
+      secret: false
+    - default: false
+      description: Rule name.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The zone to assign the rule.
+      isArray: false
+      name: rp_zone
+      required: true
+      secret: false
+    - default: false
+      description: Add a comment for this rule.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: The substitute name to assign (In case of substitute domain only)
+      isArray: false
+      name: substitute_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Create response policy rule
+    execution: false
+    name: infoblox-create-rpz-rule
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false

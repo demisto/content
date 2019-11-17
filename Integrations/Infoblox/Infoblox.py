@@ -25,10 +25,58 @@ INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
 REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
     '_ref': 'ReferenceID'
+}
+
+RPZ_RULES_DICT = {
+    'Passthru': {
+        'Domain Name': {
+            'infoblox_object_type': 'record:rpz:cname'
+        },
+        'IP address': {
+            'infoblox_object_type': 'record:rpz:a:ipaddress'
+        },
+        'Client IP address': {
+            'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+        }
+    },
+    'Block (No such domain)': {
+        'Domain Name': {
+            'infoblox_object_type': 'record:rpz:cname'
+        },
+        'IP address': {
+            'infoblox_object_type': 'record:rpz:cname:ipaddress'
+        },
+        'Client IP address': {
+            'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+        }
+    },
+    'Block (No data)': {
+        'Domain Name': {
+            'infoblox_object_type': 'record:rpz:cname'
+        },
+        'IP address': {
+            'infoblox_object_type': 'record:rpz:cname:ipaddress'
+        },
+        'Client IP address': {
+            'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+        }
+    },
+    'Substitute (domain name)': {
+        'Domain Name': {
+            'infoblox_object_type': 'record:rpz:cname'
+        },
+        'IP address': {
+            'infoblox_object_type': 'record:rpz:a:ipaddress'
+        },
+        'Client IP address': {
+            'infoblox_object_type': 'record:rpz:cname:clientipaddressdn'
+        }
+    }
 }
 
 
@@ -115,6 +163,47 @@ class Client(BaseClient):
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
         return self._http_request('GET', suffix, params=request_params)
 
+    def create_response_policy_zone(self, fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type):
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        Args:
+                fqdn: The name of this DNS zone.
+                rpz_policy: The response policy zone override policy.
+                rpz_severity: The severity of this response policy zone.
+                substitute_name: The canonical name of redirect target in substitute policy.
+                rpz_type: The type of rpz zone.
+        Returns:
+            Response JSON
+        """
+
+        data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
+                             substitute_name=substitute_name, rpz_type=rpz_type)
+        suffix = 'zone_rp'
+        return self._http_request('POST', suffix, data=json.dumps(data))
+
+    def create_rpz_rule(self, rule_type, object_type, name, rp_zone, substitute_name, comment=None):
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        Args:
+                rule_type: Type of rule to create.
+                object_type: Type of object to assign the rule on.
+                name: Rule name.
+                rp_zone:  The zone to assign the rule.
+                substitute_name: The substitute name to assign (In case of substitute domain only)
+                comment: A comment for this rule.
+        Returns:
+            Response JSON
+        """
+        if rule_type == 'Passthru':
+            canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
+        elif rule_type == 'Block (No data)':
+            canonical = '*'
+        elif rule_type == 'Substitute (domain name)':
+            canonical = substitute_name
+
+        data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
+        request_params = REQUEST_PARAM_CREATE_RULE
+        suffix = demisto.get(RPZ_RULES_DICT, 'rule_type.object_type')
+
+        return self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
 
 ''' HELPER FUNCTIONS '''
 
@@ -368,6 +457,55 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     return human_readable, context, raw_response
 
 
+def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    fqdn = args.get('FQDN')
+    rpz_policy = args.get('rpz_policy')
+    rpz_severity = args.get('rpz_severity')
+    substitute_name = args.get('substitute_name')
+    rpz_type = args.get('rpz_type')
+    if rpz_policy == 'SUBSTITUTE' and not substitute_name:
+        raise parse_demisto_exception(f'Response policy zone with policy SUBSTITUTE requires a substitute name')
+    raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
+    title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': raw_response}
+    human_readable = tableToMarkdown(title, raw_response, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    rule_type = args.get('rule_type')
+    object_type = args.get('object_type')
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    substitute_name = args.get('substitute_name')
+    if rule_type == 'Substitute (domain name)' and not substitute_name:
+        raise parse_demisto_exception(f'Substitute (domain name) rules requires a substitute name argument')
+    raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
+    title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has benn created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': raw_response}
+    human_readable = tableToMarkdown(title, raw_response, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -382,7 +520,6 @@ def main():  # pragma: no cover
         '_return_as_object': '1'
     }
     client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
-
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
@@ -393,6 +530,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zones': list_response_policy_zones_command,
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-response-policy-zone': create_response_policy_zone_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-rpz-rule': create_rpz_rule_command,
     }
     try:
         if command in commands:
