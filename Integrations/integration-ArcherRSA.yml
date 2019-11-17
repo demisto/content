@@ -1926,10 +1926,20 @@ script:
             var user = usersField['User'];
             if (Array.isArray(usersField['User'])){
                 usersField['User'].forEach(function (user){
-                    users += user['-firstName'] + " , " + user['-lastName'] + " " + user['-middleName'];
+                    if (user['-middleName'] !== undefined && user['-middleName'].length > 0) {
+                        users += user['-firstName'] + " " + user['-middleName'] + " " + user['-lastName'];
+                    }
+                    else {
+                        users += user['-firstName'] + " " + user['-lastName'];
+                    }
                 })
             } else{
-                users = user['-firstName'] + " , " + user['-lastName'] + " " + user['-middleName'];
+                if (user['-middleName'] !== undefined && user['-middleName'].length > 0) {
+                    users = user['-firstName'] + " " + user['-middleName'] + " " + user['-lastName'];
+                }
+                else {
+                    users = user['-firstName'] + " " + user['-lastName'];
+                }
             }
 
 
