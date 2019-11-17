@@ -311,9 +311,10 @@ def __delete_integrations_instances(client, module_instances):
 
 def __print_investigation_error(client, playbook_id, investigation_id, color=LOG_COLORS.RED):
     try:
+        empty_json = {"pageSize": 1}
         res = demisto_client.generic_request_func(self=client, method='POST',
                                                   path='/investigation/' + urllib.quote(
-                                                      investigation_id))
+                                                      investigation_id), body=empty_json)
     except requests.exceptions.RequestException as conn_err:
         print_error(
             'Failed to print investigation error, error trying to communicate with demisto '

@@ -8,7 +8,8 @@
         },
         {
             "integrations": "nmap",
-            "playbookID": "Nmap - Test"
+            "playbookID": "Nmap - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -1946,6 +1947,9 @@
         }
     ],
     "skipped_tests": {
+        "Create Phishing Classifier V2 ML Test": "Issue 20174",
+        "Extract Indicators From File - Generic v2": "Issue 20143",
+        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
@@ -2010,7 +2014,6 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Microsoft Graph": "Issue 20096",
         "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
