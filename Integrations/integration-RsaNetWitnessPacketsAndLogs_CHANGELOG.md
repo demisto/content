@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed query builder to follow the required template.
+Fixed an issue in time parameters within the query builder.
