@@ -1,4 +1,4 @@
-from Exabeam import contents_append_notable_user_info
+from Exabeam import contents_append_notable_user_info, contents_user_info
 
 
 def test_contents_append_notable_user_info():
@@ -38,5 +38,42 @@ def test_contents_append_notable_user_info():
         "Department": 'my_dept',
         "Title": 'my_title'
     }]
+
+    assert outputs == expected_outputs
+
+
+def test_contents_user_info():
+    user = {
+        "username": 'my_user',
+        "accountNames": 'my_account',
+        "peerGroupFieldName": 'my_peer_group',
+        "peerGroupFieldValue": 'peer51',
+        "peerGroupDisplayName": 'PEER51',
+        "peerGroupType": 'secret'
+    }
+    user_info = {
+        "riskScore": 42,
+        "averageRiskScore": 3,
+        "lastSessionId": '123',
+        "lastActivityType": 'powershell',
+        'labels': 'my_label',
+    }
+    outputs = contents_user_info(user, user_info)
+
+    expected_outputs = {
+        'Username': 'my_user',
+        'RiskScore': 42,
+        'AverageRiskScore': 3,
+        'LastSessionID': '123',
+        'FirstSeen': None,
+        'LastSeen': None,
+        'LastActivityType': 'powershell',
+        'Label': 'my_label',
+        'AccountNames': 'my_account',
+        'PeerGroupFieldName': 'my_peer_group',
+        'PeerGroupFieldValue': 'peer51',
+        'PeerGroupDisplayName': 'PEER51',
+        'PeerGroupType': 'secret'
+    }
 
     assert outputs == expected_outputs

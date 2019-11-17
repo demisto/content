@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Tuple, Dict, Optional, MutableMapping
+from typing import Tuple, Dict, List, Any, Optional, MutableMapping
 import requests
 import urllib3
 
@@ -138,7 +138,7 @@ class Client(BaseClient):
         response = self.http_request('GET', f'/uba/api/user/{username}/info')
         return response
 
-    def get_peergroups_request(self) -> Dict:
+    def get_peer_groups_request(self) -> Dict:
         """
         Returns:
             peer groups
@@ -252,7 +252,7 @@ def test_module(client: Client, *_):
     return '', None, None
 
 
-def contents_append_notable_user_info(contents, user, user_, user_info) -> Dict:
+def contents_append_notable_user_info(contents, user, user_, user_info) -> List[Any]:
     """Appends a dictionary of data to the base list
 
     Args:
@@ -338,8 +338,8 @@ def contents_user_info(user, user_info) -> Dict:
         'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
         'AverageRiskScore': user_info.get('averageRiskScore'),
         'LastSessionID': user_info.get('lastSessionId'),
-        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')),
-        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')),
+        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')) if 'firstSeen' in user_info else None,
+        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')) if 'lastSeen' in user_info else None,
         'LastActivityType': user_info.get('lastActivityType'),
         'Label': user_info.get('labels'),
         'AccountNames': user.get('accountNames'),
@@ -426,7 +426,7 @@ def get_peer_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
         client: Client
 
     """
-    groups = client.get_peergroups_request()
+    groups = client.get_peer_groups_request()
     contents = []
     for group in groups:
         contents.append({'Name': group})
@@ -622,7 +622,7 @@ def main():
 
     try:
         command = demisto.command()
-        LOG(f'Command being called is {command}')
+        LOG(f'Command being called is {command}.')
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
         else:
