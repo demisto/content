@@ -84,7 +84,7 @@ jobs:
           name: Secrets
           when: always
           command: |
-              python ./Tests/scripts/hook_validations/secrets.py -c true
+              python3 ./Tests/scripts/hook_validations/secrets.py -c true
       - run:
           name: Configure Test Filter
           when: always
