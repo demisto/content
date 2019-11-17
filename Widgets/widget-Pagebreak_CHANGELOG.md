@@ -1,5 +1,5 @@
 ## [Unreleased]
-- fixed page break widget for pdf and doc reports
+- fixed an issue in reports with page break widget for pdf and doc files.
 
 ## [19.11.0] - 2019-11-12
 #### New Widget
