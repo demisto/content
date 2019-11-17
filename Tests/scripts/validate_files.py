@@ -343,16 +343,6 @@ class FilesValidator(object):
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
 
-    def validate_no_secrets_found(self, branch_name):
-        """Check if any secrets are found in your change set.
-
-        Args:
-            branch_name (string): The name of the branch you are working on.
-        """
-        secrets_found = get_secrets(branch_name, self.is_circle)
-        if secrets_found:
-            self._is_valid = False
-
     def validate_no_old_format(self, old_format_files):
         """ Validate there are no files in the old format(unified yml file for the code and configuration).
 
@@ -387,8 +377,6 @@ class FilesValidator(object):
         if schema_changed:
             self.validate_all_files()
         else:
-            if not is_forked:
-                self.validate_no_secrets_found(branch_name)
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
@@ -489,7 +477,6 @@ def main():
     options = parser.parse_args()
     is_circle = options.circle
     is_backward_check = options.backwardComp
-    is_forked = re.match(EXTERNAL_PR_REGEX, branch_name) is not None
 
     logging.basicConfig(level=logging.CRITICAL)
 
