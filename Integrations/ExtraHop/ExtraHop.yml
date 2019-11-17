@@ -26,7 +26,7 @@ configuration:
   required: false
 description: Deprecated - We recommend using ExtraHop v2 instead.
   ExtraHop performs real-time stream analysis of the packets that carry data across a network.
-display: ExtraHop
+display: ExtraHop (Deprecated)
 name: ExtraHop
 script:
   commands:
