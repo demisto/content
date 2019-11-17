@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Shadows",
+            "playbookID": "Digital Shadows - Test"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
