@@ -33,7 +33,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'No'
-  description: Whether to match the exact item in the list, ot look for any string
+  description: Whether to match the exact item in the list, or look for any string
     that contains it. Default is "No".
   isArray: false
   name: matchexact
