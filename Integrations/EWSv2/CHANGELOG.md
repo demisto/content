@@ -1,6 +1,6 @@
 ## [Unreleased]
-Added the *Max incidents per fetch* parameter, which specifies the maximum number of incidents to retrieve per fetch. The maximum for this parameter is 50.
-Logging improvement.
+- Logging improvement.
+- Added the *Max incidents per fetch* parameter, which specifies the maximum number of incidents to retrieve per fetch. The maximum for this parameter is 50.
 
 ## [19.11.0] - 2019-11-12
   - Improved implementation of the ***ews-move-item-between-mailboxes*** command.
