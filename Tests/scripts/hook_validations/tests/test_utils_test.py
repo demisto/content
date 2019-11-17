@@ -1,6 +1,16 @@
 from Tests import test_utils
 
 
+class TestGetters:
+    def test_get_yaml(self):
+        zerofox_yml = test_utils.get_yaml('Integrations/ZeroFox/ZeroFox.yml')
+        assert zerofox_yml
+        assert zerofox_yml['commonfields']['id'] == 'ZeroFox'
+        zerofox_py = test_utils.get_yaml('Integrations/ZeroFox/ZeroFox.py')
+        assert not zerofox_py
+        assert zerofox_py == {}
+
+
 class TestGetRemoteFile:
     def test_get_remote_file_sanity(self):
         gmail_yml = test_utils.get_remote_file('Integrations/Gmail/Gmail.yml')
