@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": -740,
-          "y": 1580
+          "y": 1490
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 1580
+          "y": 1490
         }
       }
     note: false
@@ -140,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 3155
+          "y": 3065
         }
       }
     note: false
@@ -174,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 3835
+          "y": 3745
         }
       }
     note: true
@@ -268,8 +268,8 @@ tasks:
       destntdomain: {}
       details:
         simple: A user has logged in from multiple geographical locations in too short
-          an amount of time. The user is an impossible traveler according to the
-          maximum miles per hour allowed.
+          an amount of time. The user is an impossible traveler according to the maximum
+          miles per hour allowed.
       detectedusers: {}
       detectorid: {}
       dpoemailaddress: {}
@@ -434,7 +434,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 3300
+          "y": 3210
         }
       }
     note: false
@@ -478,7 +478,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 4130
+          "y": 4040
         }
       }
     note: false
@@ -518,7 +518,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
+          "x": 1680,
           "y": -90
         }
       }
@@ -541,6 +541,8 @@ tasks:
       '#none#':
       - '49'
       - '80'
+      - '91'
+      - '90'
     separatecontext: false
     view: |-
       {
@@ -655,7 +657,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 940
+          "y": 945
         }
       }
     note: false
@@ -682,8 +684,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 1150
+          "x": 1050,
+          "y": 1130
         }
       }
     note: false
@@ -747,7 +749,7 @@ tasks:
       {
         "position": {
           "x": -40,
-          "y": 1150
+          "y": 1130
         }
       }
     note: false
@@ -812,7 +814,7 @@ tasks:
       {
         "position": {
           "x": -510,
-          "y": 1150
+          "y": 1130
         }
       }
     note: false
@@ -957,7 +959,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1870
+          "y": 1780
         }
       }
     note: false
@@ -1214,7 +1216,7 @@ tasks:
       {
         "position": {
           "x": -940,
-          "y": 3155
+          "y": 3065
         }
       }
     note: false
@@ -1288,7 +1290,7 @@ tasks:
       {
         "position": {
           "x": 10,
-          "y": 2900
+          "y": 2810
         }
       }
     note: false
@@ -1324,7 +1326,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 2690
+          "y": 2600
         }
       }
     note: false
@@ -1583,7 +1585,7 @@ tasks:
       {
         "position": {
           "x": -430,
-          "y": 3155
+          "y": 3065
         }
       }
     note: false
@@ -1620,7 +1622,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 4710
+          "y": 4620
         }
       }
     note: false
@@ -1678,7 +1680,7 @@ tasks:
       {
         "position": {
           "x": 10,
-          "y": 4380
+          "y": 4290
         }
       }
     note: false
@@ -1743,7 +1745,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1560
+          "y": 1470
         }
       }
     note: false
@@ -1771,7 +1773,7 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1350
+          "y": 1300
         }
       }
     note: false
@@ -1813,7 +1815,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 3470
+          "y": 3380
         }
       }
     note: false
@@ -1842,7 +1844,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 3660
+          "y": 3570
         }
       }
     note: false
@@ -1869,7 +1871,7 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 3960
+          "y": 3870
         }
       }
     note: false
@@ -1895,7 +1897,7 @@ tasks:
       {
         "position": {
           "x": 550,
-          "y": 4380
+          "y": 4290
         }
       }
     note: false
@@ -2137,7 +2139,7 @@ tasks:
       {
         "position": {
           "x": 300,
-          "y": 2040
+          "y": 1950
         }
       }
     note: false
@@ -2226,7 +2228,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 2230
+          "y": 2140
         }
       }
     note: false
@@ -2258,7 +2260,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 2410
+          "y": 2320
         }
       }
     note: false
@@ -2515,7 +2517,7 @@ tasks:
       {
         "position": {
           "x": 850,
-          "y": 2690
+          "y": 2600
         }
       }
     note: false
@@ -2555,7 +2557,659 @@ tasks:
       {
         "position": {
           "x": -270,
-          "y": 1700
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '90':
+    id: '90'
+    taskid: ee733667-ac74-4cb8-8aa3-950f460bbfc2
+    type: condition
+    task:
+      id: ee733667-ac74-4cb8-8aa3-950f460bbfc2
+      version: -1
+      name: Is there a country for the source IP?
+      description: Checks if there is a country associated with the source IP address.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '51'
+      'yes':
+      - '92'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Geo.Country
+                      iscontext: true
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.sourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Country
+                - operator: uniq
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: '0'
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '91':
+    id: '91'
+    taskid: 4c280395-25e9-4b15-84b3-b76ce163a46b
+    type: condition
+    task:
+      id: 4c280395-25e9-4b15-84b3-b76ce163a46b
+      version: -1
+      name: Is there a country for the previous source IP?
+      description: Checks if there is a country associated with the previous source
+        IP address.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '51'
+      'yes':
+      - '93'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Geo.Country
+                      iscontext: true
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: incident.previoussourceip
+                      iscontext: true
+                    field:
+                      value:
+                        simple: Address
+                    getField:
+                      value:
+                        simple: Geo
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Country
+                - operator: uniq
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: '0'
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '92':
+    id: '92'
+    taskid: effdb780-8443-4fdb-85a8-2ef4d3cd8e35
+    type: regular
+    task:
+      id: effdb780-8443-4fdb-85a8-2ef4d3cd8e35
+      version: -1
+      name: Update incident details with source country
+      description: Updates the incident details with the country from which the user
+        logged in.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.sourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Country
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '0'
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '93':
+    id: '93'
+    taskid: 2a7891ad-ef6c-4609-8306-25583eec9095
+    type: regular
+    task:
+      id: 2a7891ad-ef6c-4609-8306-25583eec9095
+      version: -1
+      name: Update incident details with previous source country
+      description: Updates the incident details with the country from which the user
+        previously logged in.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '51'
+    scriptarguments:
+      account: {}
+      accountid: {}
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destinationip: {}
+      destntdomain: {}
+      details: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicename: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstseen: {}
+      id: {}
+      infectedhosts: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastseen: {}
+      likelyimpact: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      phase: {}
+      phishingsubtype: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry:
+        complex:
+          root: IP
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: IP.Geo.Country
+                iscontext: true
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: incident.previoussourceip
+                iscontext: true
+              field:
+                value:
+                  simple: Address
+              getField:
+                value:
+                  simple: Geo
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Country
+          - operator: uniq
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '0'
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      rating: {}
+      rawparticipants: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      sectorofaffectedparty: {}
+      severity: {}
+      signature: {}
+      signindatetime: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourceip: {}
+      src: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      systemdefault: {}
+      systems: {}
+      telephoneno: {}
+      terminatedaction: {}
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      urlsslverification: {}
+      user: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 145
         }
       }
     note: false
@@ -2583,12 +3237,16 @@ view: |-
       "82_51_#default#": 0.16,
       "84_86_yes": 0.44,
       "87_68_No": 0.29,
-      "87_88_Yes": 0.34
+      "87_88_Yes": 0.34,
+      "90_51_#default#": 0.21,
+      "90_92_yes": 0.46,
+      "91_51_#default#": 0.1,
+      "91_93_yes": 0.51
     },
     "paper": {
       "dimensions": {
-        "height": 5365,
-        "width": 2380,
+        "height": 5275,
+        "width": 3000,
         "x": -940,
         "y": -560
       }

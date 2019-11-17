@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+The countries from which the user logged in, are now saved in incident fields and are displayed in the layout.
 
 ## [19.11.0] - 2019-11-12
 #### New Playbook
