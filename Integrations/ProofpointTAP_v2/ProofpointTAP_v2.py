@@ -36,7 +36,7 @@ def get_now():
 
 
 def get_fetch_times(last_fetch):
-    """ Get list of every hour since last_fetch
+    """ Get list of every hour since last_fetch. last is now.
     Args:
         last_fetch (datetime or str): last_fetch time
 
@@ -54,6 +54,7 @@ def get_fetch_times(last_fetch):
     while now - last_fetch > timedelta(minutes=59):
         last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
+    times.append(now.strftime(time_format))
     return times
 
 
@@ -174,17 +175,9 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
     if not start_query_time:
         start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
     fetch_times = get_fetch_times(start_query_time)
-    fetch_time_count = len(fetch_times)
-    for index, fetch_time in enumerate(fetch_times):
-        if index < fetch_time_count - 1:
-            # Set interval start/stop
-            start_query_time = fetch_times[index]
-            end_query_time = fetch_times[index + 1]
-        else:
-            # Need to get last interval / now
-            if end_query_time:
-                start_query_time = end_query_time
-            end_query_time = get_now().strftime(DATE_FORMAT)
+    for i in range(len(fetch_times) - 1):
+        start_query_time = fetch_times[i]
+        end_query_time = fetch_times[i + 1]
         raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
                                        event_type_filter=event_type_filter,
                                        threat_status=threat_status, threat_type=threat_type)
