@@ -1,9 +1,15 @@
 {
     "testTimeout": 160,
     "testInterval": 20,
-    "tests": [{
+    "tests": [
+        {
+            "integrations": "JsonWhoIs",
+            "playbookID": "JsonWhoIs-Test"
+        },
+        {
             "integrations": "nmap",
-            "playbookID": "Nmap - Test"
+            "playbookID": "Nmap - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
@@ -1551,7 +1557,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1200
+            "timeout": 1500
         },
         {
             "integrations": "McAfee Active Response",
@@ -1929,15 +1935,20 @@
         },
         {
             "integrations": "SecurityAdvisor",
-            "playbookID": "SecurityAdvisor-Test"
+            "playbookID": "SecurityAdvisor-Test",
+            "fromversion": "4.5.0"
         },
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
-        "PAN-OS Create Or Edit Rule Test": "Issue 20037",
+        "Create Phishing Classifier V2 ML Test": "Issue 20174",
+        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -2003,6 +2014,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
@@ -2061,7 +2073,7 @@
         "Google Resource Manager": "Cannot create projects because have reached alloted quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota."
     },
-    "nigthly_integrations": [
+    "nightly_integrations": [
         "Lastline",
         "TruSTAR",
         "SlackV2"
