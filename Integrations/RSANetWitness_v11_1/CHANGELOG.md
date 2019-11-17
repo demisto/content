@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
   - Added the *Fetch Limit* parameter.
   - Fixed an issue where an unsupported timestamp format caused the integration to fail.
 

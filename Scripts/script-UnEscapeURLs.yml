@@ -60,8 +60,8 @@ script: |-
             var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length);
             var closeIndex = clean.indexOf('__');
             clean = clean.substr(0, closeIndex);
-            bad_url_reg = /((http)s?:)(\/|\/\/)([^\/\s]*)/g;
-            var clean_fixed = clean.replace(bad_url_reg, '$1//$4');
+            var url_reg = /((http)s?:)(\/{1,2})(.*)/g;
+            var clean_fixed = clean.replace(url_reg, '$1//$4');
             return clean_fixed;
         }
 
