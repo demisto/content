@@ -70,7 +70,33 @@ class FilesValidator(object):
 
             return True
 
+        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
+        if re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('script', {}).get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
+        if re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
         if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
+            if file_yml.get('type', 'javascript') != 'python':
+                return False
+
+            return True
+
+        if re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
+                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
             if file_yml.get('type', 'javascript') != 'python':
                 return False
 
@@ -212,8 +238,7 @@ class FilesValidator(object):
         """
         for file_path in modified_files:
             old_file_path = None
-            integration_dict = get_yaml(file_path)
-            programming_language = integration_dict.get('type', '')
+
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
 
@@ -248,7 +273,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -261,7 +286,7 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -273,7 +298,7 @@ class FilesValidator(object):
                 if not script_validator.is_valid_script():
                     self._is_valid = False
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -287,7 +312,7 @@ class FilesValidator(object):
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -314,8 +339,6 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
-            integration_dict = get_yaml(file_path)
-            programming_language = integration_dict.get('type', '')
             print('Validating {}'.format(file_path))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
@@ -348,7 +371,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -357,7 +380,7 @@ class FilesValidator(object):
                     re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
@@ -372,7 +395,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_beta_integration(is_new=True):
                     self._is_valid = False
 
-                if programming_language and not programming_language == 'javascript':
+                if FilesValidator.is_py_script_or_integration(file_path):
                     docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
