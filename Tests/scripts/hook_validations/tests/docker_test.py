@@ -75,8 +75,9 @@ def test_parse_www_auth(www_auth, expected):
     assert expected.sort() == DockerImageValidator.parse_www_auth(www_auth).sort()
 
 
-@pytest.mark.parametrize('input_tags, output_tags', [(['1.2.3', '4.5.6', '7.8.9'], ['4.5.6', '1.2.3', '7.8.9']),
-                                                     (['1.2.3', '4.a.6', '7.8.9'], ['7.8.9', '1.2.3'])])
+@pytest.mark.parametrize('input_tags, output_tags',
+                         [(['1.2.3.0', '4.5.6.0', '7.8.9.0'], ['4.5.6.0', '1.2.3.0', '7.8.9.0']),
+                          (['1.2.3.0', '4.a.6.0', '7.8.9.0'], ['7.8.9.0', '1.2.3.0'])])
 def test_clear_non_numbered_tags(input_tags, output_tags):
     from Tests.scripts.hook_validations.docker import DockerImageValidator
     assert output_tags.sort() == DockerImageValidator.clear_non_numbered_tags(input_tags).sort()
