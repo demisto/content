@@ -71,36 +71,36 @@ search_no_yes_case1_3 = 'demisto is not part of the list\n' \
                         'bo is not part of the list\n'
 
 search_yes_yes_case1 = 'demisto is in the list\n' \
-                         'paloalto is in the list\n' \
-                         'FOO is in the list\n' \
-                         'bar is in the list\n' \
-                         'not_in_list is not part of the list\n' \
-                         'bo is not part of the list\n'
+                       'paloalto is in the list\n' \
+                       'FOO is in the list\n' \
+                       'bar is in the list\n' \
+                       'not_in_list is not part of the list\n' \
+                       'bo is not part of the list\n'
 
 '''Test packages'''
 
 test_yes_no_packages = [
     (raw_string_only_lower_case, search_case1, yes_ignore_case, no_match, search_yes_no_case1, 'list'),
-    (raw_string_only_caps,       search_case1, yes_ignore_case, no_match, search_yes_no_case1, 'list'),
-    (raw_string_lower_and_caps,  search_case1, yes_ignore_case, no_match, search_yes_no_case1, 'list'),
+    (raw_string_only_caps, search_case1, yes_ignore_case, no_match, search_yes_no_case1, 'list'),
+    (raw_string_lower_and_caps, search_case1, yes_ignore_case, no_match, search_yes_no_case1, 'list'),
 ]
 
 test_no_no_packages = [
     (raw_string_only_lower_case, search_case1, no_ignore_case, no_match, search_no_no_case1_1, 'list'),
-    (raw_string_only_caps,       search_case1, no_ignore_case, no_match, search_no_no_case1_2, 'list'),
-    (raw_string_lower_and_caps,  search_case1, no_ignore_case, no_match, search_no_no_case1_3, 'list')
+    (raw_string_only_caps, search_case1, no_ignore_case, no_match, search_no_no_case1_2, 'list'),
+    (raw_string_lower_and_caps, search_case1, no_ignore_case, no_match, search_no_no_case1_3, 'list')
 ]
 
 test_no_yes_packages = [
     (raw_string_only_lower_case, search_case1, no_ignore_case, yes_match, search_no_yes_case1_1, 'list'),
-    (raw_string_only_caps,       search_case1, no_ignore_case, yes_match, search_no_yes_case1_2, 'list'),
-    (raw_string_lower_and_caps,  search_case1, no_ignore_case, yes_match, search_no_yes_case1_3, 'list')
+    (raw_string_only_caps, search_case1, no_ignore_case, yes_match, search_no_yes_case1_2, 'list'),
+    (raw_string_lower_and_caps, search_case1, no_ignore_case, yes_match, search_no_yes_case1_3, 'list')
 ]
 
 test_yes_yes_packages = [
     (raw_string_only_lower_case, search_case1, yes_ignore_case, yes_match, search_yes_yes_case1, 'list'),
-    (raw_string_only_caps,       search_case1, yes_ignore_case, yes_match, search_yes_yes_case1, 'list'),
-    (raw_string_lower_and_caps,  search_case1, yes_ignore_case, yes_match, search_yes_yes_case1, 'list')
+    (raw_string_only_caps, search_case1, yes_ignore_case, yes_match, search_yes_yes_case1, 'list'),
+    (raw_string_lower_and_caps, search_case1, yes_ignore_case, yes_match, search_yes_yes_case1, 'list')
 ]
 
 
