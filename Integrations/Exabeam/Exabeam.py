@@ -216,6 +216,14 @@ class Client(BaseClient):
         response = self.http_request('PUT', 'f/uba/api/watchlist/user/{user_id}/add', params=params)
         return response.json()
 
+    def delete_watchlist_request(self, watchlist_id: str):
+        """
+        Args:
+            watchlist_id: watchlist id
+
+        """
+        self.http_request('DELETE', f'watchlist/{watchlist_id}')
+
 
 def test_module(client: Client, *_):
     """test function
@@ -511,6 +519,21 @@ def watchlist_add_user(client, args: Dict):
     return human_readable, entry_context, response
 
 
+def delete_watchlist(client: Client, args: Dict):
+    """Delete a watchlist
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+
+    watchlist_id = args.get('watchlist_id')
+    client.delete_watchlist_request(watchlist_id)
+
+    return f'The watchlist {watchlist_id} was deleted successfully.', {}, {}
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -539,8 +562,8 @@ def main():
         'get-watchlists': get_watchlist,
         'exabeam-get-watchlists': get_watchlist,
         'exabeam-create-watchlist': create_watchlist,
-        # 'exabeam-watchlist-add-user': watchlist_add_user,
-        # 'exabeam-delete-watchlist': delete_watchlist,
+        'exabeam-watchlist-add-user': watchlist_add_user,
+        'exabeam-delete-watchlist': delete_watchlist,
         # 'exabeam-get-asset-data': get_asset_data
     }
 
