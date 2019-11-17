@@ -24,7 +24,7 @@ configuration:
   type: 4
   required: true
 - display: Trust any certificate (not secure)
-  name: inse
+  name: insecure
   defaultvalue: ""
   type: 8
   required: false
