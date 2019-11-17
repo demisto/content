@@ -7,7 +7,7 @@ import string
 import PyPDF2
 import argparse
 
-from Tests.test_utils import str2bool  # noqa: E402
+from Tests.test_utils import str2bool, print_color, LOG_COLORS  # noqa: E402
 
 
 from bs4 import BeautifulSoup
@@ -391,6 +391,8 @@ def main():
         secrets_found = get_secrets(branch_name, is_circle)
         if secrets_found:
             sys.exit(1)
+        else:
+            print_color('Finished validating secrets, no secrets were found.', LOG_COLORS.GREEN)
     sys.exit(0)
 
 
