@@ -249,13 +249,14 @@ class Client(BaseClient):
         self.http_request('GET', 'groups', params={'$orderby': 'displayName'})
         demisto.results('ok')
 
-    def list_groups(self, order_by: str = None, next_link: str = None) -> Dict:
+    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None) -> Dict:
         """Returns all groups by sending a GET request.
 
         Args:
             order_by: the group fields to order by the response.
             next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
                 docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
+            top: sets the page size of results.
         Returns:
             Response from API.
         """
@@ -263,7 +264,7 @@ class Client(BaseClient):
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
         else:
-            groups = self.http_request('GET', 'groups', params=params)
+            groups = self.http_request('GET', f'groups?$top={top}', params=params)
 
         return groups
 
@@ -301,20 +302,21 @@ class Client(BaseClient):
         #  It does not return anything in the response body.
         self.http_request('DELETE ', f'groups/{group_id}')
 
-    def list_members(self, group_id: str, next_link: str = None) -> Dict:
+    def list_members(self, group_id: str, next_link: str = None, top: int = None) -> Dict:
         """List all group members by sending a GET request.
 
         Args:
             group_id: the group id to list its members.
             next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
                 docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
+            top: sets the page size of results.
         Returns:
             Response from API.
         """
         if next_link:  # pagination
             members = self.http_request('GET', next_link)
         else:
-            members = self.http_request('GET', f'groups/{group_id}/members')
+            members = self.http_request('GET', f'groups/{group_id}/members?$top={top}')
 
         return members
 
@@ -361,7 +363,8 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     order_by = args.get('order_by')
     next_link = args.get('next_link')
-    groups = client.list_groups(order_by, next_link)
+    top = args.get('top')
+    groups = client.list_groups(order_by, next_link, top)
 
     groups_readable, groups_outputs = parse_outputs(groups['value'])
 
@@ -475,7 +478,8 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     group_id = str(args.get('group_id'))
     next_link = args.get('next_link')
-    members = client.list_members(group_id, next_link)
+    top = args.get('top')
+    members = client.list_members(group_id, next_link, top)
 
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'

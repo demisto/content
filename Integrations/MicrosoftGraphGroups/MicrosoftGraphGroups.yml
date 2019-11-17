@@ -48,6 +48,13 @@ script:
       name: next_link
       required: false
       secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the page size of results.
+      isArray: false
+      name: top
+      required: false
+      secret: false
     deprecated: false
     description: List groups.
     execution: false
@@ -332,6 +339,13 @@ script:
       description: URL to the next page of results.
       isArray: false
       name: next_link
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      description: Sets the page size of results.
+      isArray: false
+      name: top
       required: false
       secret: false
     deprecated: false
