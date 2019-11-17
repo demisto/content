@@ -9,6 +9,10 @@ import json
 from datetime import datetime, date
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
+import urllib3.util
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 '''GLOBAL VARIABLES'''
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
