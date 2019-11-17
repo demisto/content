@@ -1,21 +1,19 @@
 import io
 import os
-import re
 import math
 import json
 import string
-from bs4 import BeautifulSoup
 import PyPDF2
 
-from Tests.test_utils import run_command, print_error
+from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
+from Tests.test_utils import run_command, print_error
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 4.2
-
-SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile'}
-ACCEPTED_FILE_STATUSES = ['M', 'A', "R099"]
+ENTROPY_THRESHOLD = 4.0
+ACCEPTED_FILE_STATUSES = ['m', 'a']
+SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore'}
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
@@ -51,12 +49,12 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 
 def get_secrets(branch_name, is_circle):
     secrets_found = {}
-    secrets_found_string = ''
+    # make sure not in middle of merge
     if not run_command('git rev-parse -q --verify MERGE_HEAD'):
         secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
         secrets_found = search_potential_secrets(secrets_file_paths)
         if secrets_found:
-            secrets_found_string += 'Secrets were found in the following files:\n'
+            secrets_found_string = 'Secrets were found in the following files:\n'
             for file_name in secrets_found:
                 secrets_found_string += ('\nFile Name: ' + file_name)
                 secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
@@ -67,10 +65,7 @@ def get_secrets(branch_name, is_circle):
                                         ' remove the files asap and report it.\n'
             secrets_found_string += 'For more information about whitelisting please visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
-
-    if secrets_found:
-        print_error(secrets_found_string)
-
+            print_error(secrets_found_string)
     return secrets_found
 
 
@@ -81,16 +76,9 @@ def get_all_diff_text_files(branch_name, is_circle):
     :param is_circle: boolean to check if being ran from circle
     :return: list: list of text files
     """
-    if is_circle:
-        branch_changed_files_string = \
-            run_command("git diff --name-status origin/master...{}".format(branch_name))
-        text_files_list = get_diff_text_files(branch_changed_files_string)
-
-    else:
-        local_changed_files_string = run_command("git diff --name-status --no-merges HEAD")
-        text_files_list = get_diff_text_files(local_changed_files_string)
-
-    return text_files_list
+    changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name)) if is_circle \
+        else run_command("git diff --name-status --no-merges HEAD")
+    return get_diff_text_files(changed_files_string)
 
 
 def get_diff_text_files(files_string):
@@ -105,23 +93,15 @@ def get_diff_text_files(files_string):
         file_data = file_name.split()
         if not file_data:
             continue
-
         file_status = file_data[0]
-        if file_status.upper() == "R099":
-            # if filename renamed
-            # sometimes the R comes with numbers R099,
-            # the R status file usually will look like:
-            # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
-            # that is why we set index 2 to file_path - the second index is the updated file name
+        if 'r' in file_status.lower():
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # only modified/added file, text readable, exclude white_list file
-        if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path):
+        if (file_status.lower() in ACCEPTED_FILE_STATUSES or 'r' in file_status.lower()) and is_text_file(file_path):
             if not any(skipped_file in file_path for skipped_file in SKIPPED_FILES):
                 text_files_list.add(file_path)
-
     return text_files_list
 
 
@@ -146,6 +126,7 @@ def search_potential_secrets(secrets_file_paths):
         if file_path in files_white_list:
             print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
             continue
+
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
@@ -307,7 +288,6 @@ def get_white_list():
 def get_file_contents(file_path, file_extension):
     try:
         # if pdf or README.md file, parse text
-        file_contents = ''
         integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
                                       string=file_path,
                                       flags=re.IGNORECASE)
@@ -341,6 +321,8 @@ def extract_text_from_pdf(file_path):
         page_num += 1
         file_contents += pdf_page.extractText()
 
+    return file_contents
+
 
 def extract_text_from_md_html(file_path):
     try:
@@ -354,7 +336,7 @@ def extract_text_from_md_html(file_path):
 
 
 def remove_false_positives(line):
-    false_positive = re.search('([^\s]*[(\[{].*[)\]}][^\s]*)', line)
+    false_positive = re.search(r'([^\s]*[(\[{].*[)\]}][^\s]*)', line)
     if false_positive:
         false_positive = false_positive.group(1)
         line = line.replace(false_positive, '')
@@ -367,8 +349,6 @@ def is_secrets_disabled(line, skip_secrets):
     elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
         skip_secrets = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
-        skip_secrets = False
-    elif not skip_secrets:
         skip_secrets = False
 
     return skip_secrets
