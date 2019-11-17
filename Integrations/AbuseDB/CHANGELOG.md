@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Added support for batches for ip.
 
 ## [19.10.1] - 2019-10-15
 -
