@@ -1,13 +1,14 @@
 import argparse
-# import demisto_client
-import requests
-import urllib3
+import demisto_client
+import os
+# import requests
+# import urllib3
 # from Tests.test_content import load_conf_files
 from Tests.test_utils import print_error
 
 SERVER_URL = 'https://{}'
 # Disable insecure warnings
-urllib3.disable_warnings()
+# urllib3.disable_warnings()
 
 
 def options_handler():
@@ -27,19 +28,23 @@ def options_handler():
 
 def upload_content(server, username, password, content_zip_path):
     try:
-        xsrf_token, cookies = get_xsrf_token(server, username, password)
-        updated_cookies = login(server, username, password, xsrf_token, cookies)
+        c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+        file_path = os.path.abspath(content_zip_path)
+        files = {'file': file_path}
+        header_params = {'Content-Type': 'multipart/form-data'}
+
         msg = '\nMaking "POST" request to server - "{}" to upload'.format(server)
         msg += ' the content zip file "{}"'.format(content_zip_path)
         print(msg)
-        headers = {'X-XSRF-TOKEN': xsrf_token, 'Accept': 'application/json', 'Connection': 'keep-alive'}
-        url = server + '/content/upload'
-        file_name = content_zip_path.split('/')[-1]
-        files = {'file': (file_name, open(content_zip_path, 'rb'), 'application/zip')}
-        res = requests.post(url, headers=headers, cookies=updated_cookies, files=files, verify=False)
-        if res.status_code < 200 or res.status_code >= 300:
-            msg = 'requests exception: [{}] - ' \
-                  '{}\n{}'.format(res.status_code, res.reason, res.text)
+        res = c.api_client.call_api(resource_path='/content/upload', method='POST',
+                                    header_params=header_params, files=files)
+
+        if isinstance(res, tuple):
+            status_code = res[1]
+        else:
+            status_code = res.status_code
+        if status_code >= 300 or status_code < 200:
+            msg = "Upload has failed with status code " + str(status_code)
             raise Exception(msg)
         else:
             print('\n"{}" successfully uploaded to server "{}"'.format(content_zip_path, server))
@@ -47,42 +52,42 @@ def upload_content(server, username, password, content_zip_path):
         print_error(str(e))
 
 
-def get_xsrf_token(server, username, password):
-    print('\nMaking request to fetch xsrf-token')
-    base_url = server
-    body = {
-        'user': username,
-        'password': password
-    }
-    res = requests.get(base_url, data=body, verify=False)
-    if res.status_code < 200 or res.status_code >= 300:
-        msg = 'requests exception: [{}] - ' \
-              '{}\n{}'.format(res.status_code, res.reason, res.text)
-        raise Exception(msg)
-    else:
-        print('\nrequest to fetch xsrf-token was successful')
-    set_cookie = res.headers.get('Set-Cookie', '')
-    split_set_cookie = set_cookie.split(';')
-    xsrf_token = split_set_cookie[0].replace('XSRF-TOKEN=', '')
-    return xsrf_token, res.cookies
+# def get_xsrf_token(server, username, password):
+#     print('\nMaking request to fetch xsrf-token')
+#     base_url = server
+#     body = {
+#         'user': username,
+#         'password': password
+#     }
+#     res = requests.get(base_url, data=body, verify=False)
+#     if res.status_code < 200 or res.status_code >= 300:
+#         msg = 'requests exception: [{}] - ' \
+#               '{}\n{}'.format(res.status_code, res.reason, res.text)
+#         raise Exception(msg)
+#     else:
+#         print('\nrequest to fetch xsrf-token was successful')
+#     set_cookie = res.headers.get('Set-Cookie', '')
+#     split_set_cookie = set_cookie.split(';')
+#     xsrf_token = split_set_cookie[0].replace('XSRF-TOKEN=', '')
+#     return xsrf_token, res.cookies
 
 
-def login(server, username, password, xsrf_token, cookies):
-    print('\nMaking request to login to demisto server instance')
-    url = server + '/login'
-    headers = {'X-XSRF-TOKEN': xsrf_token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
-    body = {
-        'user': username,
-        'password': password
-    }
-    res = requests.post(url, headers=headers, cookies=cookies, json=body, verify=False)
-    if res.status_code < 200 or res.status_code >= 300:
-        msg = 'requests exception: [{}] - ' \
-              '{}\n{}'.format(res.status_code, res.reason, res.text)
-        raise Exception(msg)
-    else:
-        print('\nrequest to login was successful')
-    return res.cookies
+# def login(server, username, password, xsrf_token, cookies):
+#     print('\nMaking request to login to demisto server instance')
+#     url = server + '/login'
+#     headers = {'X-XSRF-TOKEN': xsrf_token, 'Accept': 'application/json', 'Content-Type': 'application/json'}
+#     body = {
+#         'user': username,
+#         'password': password
+#     }
+#     res = requests.post(url, headers=headers, cookies=cookies, json=body, verify=False)
+#     if res.status_code < 200 or res.status_code >= 300:
+#         msg = 'requests exception: [{}] - ' \
+#               '{}\n{}'.format(res.status_code, res.reason, res.text)
+#         raise Exception(msg)
+#     else:
+#         print('\nrequest to login was successful')
+#     return res.cookies
 
 
 def main():
