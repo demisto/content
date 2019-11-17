@@ -4,8 +4,8 @@ import sys
 import math
 import json
 import string
-import PyPDF2
 import argparse
+import PyPDF2
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
@@ -276,12 +276,12 @@ def calculate_shannon_entropy(data):
         return 0
     entropy = 0
     # each unicode code representation of all characters which are considered printable
-    for x in (ord(c) for c in string.printable):
+    for char in (ord(c) for c in string.printable):
         # probability of event X
-        px = float(data.count(chr(x))) / len(data)
-        if px > 0:
+        p_x = float(data.count(chr(char))) / len(data)
+        if p_x > 0:
             # the information in every possible news, in bits
-            entropy += - px * math.log(px, 2)
+            entropy += - p_x * math.log(p_x, 2)
     return entropy
 
 
@@ -406,7 +406,7 @@ def is_file_path_in_pack(file_path):
 
 
 def get_pack_name(file_path):
-    match = re.search(r'Packs/([^/]+)/'.format(PACKS_DIR), file_path)
+    match = re.search(r'{}/([^/]+)/'.format(PACKS_DIR), file_path)
     return match.group(1) if match else None
 
 
