@@ -1453,8 +1453,8 @@ script:
     - contextPath: File.Signature.Description
       description: Description of the signature.
       type: string
-    description: Retrieve a binary from CarbonBlack based on hash. Returned file will
-      be places in the war room. Deprecated - please use cb-binary-download instead.
+    description: Deprecated - please use cb-binary-download instead. Retrieve a binary
+      from CarbonBlack based on hash. Returned file will be places in the war room.
   - name: cb-block-hash
     arguments:
     - name: md5hash
@@ -1944,6 +1944,10 @@ script:
       default: true
       description: MD5 File Hash
     - name: summary
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
       description: Whether to include summary
     outputs:
     - contextPath: File.DigSig.Publisher

@@ -1,5 +1,5 @@
 ## [Unreleased]
- - 
+Added new command cb-binary-download which replaces cb-binary-get
 
 ## [19.11.0] - 2019-11-12
 Added the *decompress* argument to the ***cb-binary-get*** command.
