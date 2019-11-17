@@ -132,38 +132,35 @@ def search_potential_secrets(secrets_file_paths):
         pack_name = get_pack_name(file_path)
         # Get generic/ioc/files white list sets based on if pack or not
         secrets_white_list, ioc_white_list, files_white_list = get_white_listed_items(is_pack, pack_name)
-        # Remove white listed files
+        # Skip white listed files
         if file_path in files_white_list:
             print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
             continue
-
+        # Init vars for current loop
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
         yml_file_contents = None
         _, file_extension = os.path.splitext(file_path)
         skip_secrets = False
-
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-        # in packs regard all items as regex as well, reset whitelist in order to avoid repetition later
+        # in packs regard all items as regex as well, reset pack's whitelist in order to avoid repetition later
         if is_pack:
             file_contents = remove_white_list_regexs(file_contents, secrets_white_list)
             secrets_white_list = set()
         # Validate if it is integration documentation file
-        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
-                                      string=file_path,
-                                      flags=re.IGNORECASE)
-        # if py/pwsh/js file, search for yml in order to retrieve temp white list
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX, string=file_path, flags=re.IGNORECASE)
+        # if script file, search for yml in order to retrieve temp white list
         if file_extension in SCRIPT_FILE_TYPES or integration_readme:
             yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
         # Add all context output paths keywords to whitelist temporary
         if file_extension == YML_FILE_EXTENSION or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
-        # Search by lines after strings with high entropy as possibly suspicious
+        # Search by lines after strings with high entropy / IoCs regex as possibly suspicious
         for line in file_contents.split('\n'):
-            # if detected disable-secrets comment, skip the line
+            # if detected disable-secrets comments, skip the line/s
             skip_secrets = is_secrets_disabled(line, skip_secrets)
             if skip_secrets:
                 continue
