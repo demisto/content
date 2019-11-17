@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed the integration's display image.
+Fixed an issue in the integration's display image.
