@@ -249,7 +249,7 @@ class Client(BaseClient):
         self.http_request('GET', 'groups', params={'$orderby': 'displayName'})
         demisto.results('ok')
 
-    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None) -> Dict:
+    def list_groups(self, order_by: str = None, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
         """Returns all groups by sending a GET request.
 
         Args:
@@ -257,12 +257,15 @@ class Client(BaseClient):
             next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
                 docs.microsoft.com/en-us/graph/api/group-list?view=graph-rest-1.0
             top: sets the page size of results.
+            filter_: filters results.
         Returns:
             Response from API.
         """
         params = {'$orderby': order_by} if order_by else {}
         if next_link:  # pagination
             groups = self.http_request('GET', next_link=next_link)
+        elif filter_:
+            groups = self.http_request('GET', f'groups?$filter={filter_}&$top={top}', params=params)
         else:
             groups = self.http_request('GET', f'groups?$top={top}', params=params)
 
@@ -302,7 +305,7 @@ class Client(BaseClient):
         #  It does not return anything in the response body.
         self.http_request('DELETE ', f'groups/{group_id}')
 
-    def list_members(self, group_id: str, next_link: str = None, top: int = None) -> Dict:
+    def list_members(self, group_id: str, next_link: str = None, top: int = None, filter_: str = None) -> Dict:
         """List all group members by sending a GET request.
 
         Args:
@@ -310,11 +313,14 @@ class Client(BaseClient):
             next_link: the link for the next page of results, if exists. see Microsoft documentation for more details.
                 docs.microsoft.com/en-us/graph/api/group-list-members?view=graph-rest-1.0
             top: sets the page size of results.
+            filter_: filters results.
         Returns:
             Response from API.
         """
         if next_link:  # pagination
             members = self.http_request('GET', next_link)
+        elif filter_:
+            members = self.http_request('GET', f'groups/{group_id}/members?$filter={filter_}&$top={top}')
         else:
             members = self.http_request('GET', f'groups/{group_id}/members?$top={top}')
 
@@ -364,7 +370,8 @@ def list_groups_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     order_by = args.get('order_by')
     next_link = args.get('next_link')
     top = args.get('top')
-    groups = client.list_groups(order_by, next_link, top)
+    filter_ = args.get('filter')
+    groups = client.list_groups(order_by, next_link, top, filter_)
 
     groups_readable, groups_outputs = parse_outputs(groups['value'])
 
@@ -479,7 +486,8 @@ def list_members_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     group_id = str(args.get('group_id'))
     next_link = args.get('next_link')
     top = args.get('top')
-    members = client.list_members(group_id, next_link, top)
+    filter_ = args.get('filter')
+    members = client.list_members(group_id, next_link, top, filter_)
 
     if not members['value']:
         human_readable = f'The group {group_id} has no members.'

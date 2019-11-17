@@ -55,6 +55,12 @@ script:
       name: top
       required: false
       secret: false
+    - default: false
+      description: 'Filter groups results. e.g: startswith(displayName,''J''), groupTypes/any(c:c+eq+''Unified'')'
+      isArray: false
+      name: filter
+      required: false
+      secret: false
     deprecated: false
     description: List groups.
     execution: false
@@ -346,6 +352,12 @@ script:
       description: Sets the page size of results.
       isArray: false
       name: top
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters members results. e.g: startswith(displayName,''user'')'
+      isArray: false
+      name: filter
       required: false
       secret: false
     deprecated: false
