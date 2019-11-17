@@ -233,7 +233,7 @@ class DockerImageValidator(object):
                 name = re.findall(r'demisto\/.+:(.+)', docker_image, re.IGNORECASE)[0]
                 return name, tag
             except IndexError:
-                print_error('The docker image is not of format - demisto/image_name:X.X.X')
+                print_error('The docker image is not of format - demisto/image_name:X.X.X.X')
                 return '', ''
         else:
             # If the yml file has no docker image we provide the default one 'demisto/python:1.3-alpine'
