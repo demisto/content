@@ -1,31 +1,35 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-''' IMPORTS '''
-
-import requests
 from typing import Dict, Optional, MutableMapping
+import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-
-''' HELPERS '''
+urllib3.disable_warnings()
 
 
-def convert_unix_to_date(d):
-    """Convert unix timestamp to datetime in iso format"""
-    return datetime.fromtimestamp(int(d) / 1000).isoformat()
+def convert_unix_to_date(date):
+    """Convert unix timestamp to datetime in iso format.
+
+    Args:
+        date: the date in unix to convert.
+
+    Returns:
+        converted date.
+    """
+    return datetime.fromtimestamp(int(date) / 1000).isoformat()
 
 
-class Client:
-    def __init__(self, exabeam_url: str, username: str, password: str, verify: bool,
+class Client(BaseClient):
+    """
+    Client to use in the Exabeam integration. Overrides BaseClient
+    """
+    def __init__(self, base_url: str, username: str, password: str, verify: bool,
                  proxies: Optional[MutableMapping[str, str]], headers):
-        self.server = exabeam_url.rstrip('/')
-        self.base_url = f'{self.server}/uba/api/'
+        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxies)
         self.username = username
         self.password = password
-        self.verify = verify
-        self.proxies = proxies
         self.headers = headers
         self.session = requests.Session()
         self.session.headers = headers
@@ -34,16 +38,19 @@ class Client:
     def __del__(self):
         self._logout()
 
-    def _http_request(self, method: str, suffix_url: str = None, params: dict = None, data: dict = None,
-                      full_url: str = None, resp_type: str = 'json'):
-        full_url = full_url if full_url else f'{self.base_url}{suffix_url}'
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
+                     data: dict = None, resp_type: str = 'json'):
+        """
+        Generic request to Exabeam
+        """
+        full_url = full_url if full_url else f'{self._base_url}{url_suffix}'
         try:
             res = self.session.request(
                 method,
                 full_url,
-                verify=self.verify,
+                verify=self._verify,
                 data=data,
-                proxies=self.proxies,
+                proxies=self._proxies,
                 params=params
             )
             if not res.ok:
@@ -52,8 +59,7 @@ class Client:
             try:
                 if resp_type == 'json':
                     return res.json()
-                else:
-                    return res.text
+                return res.text
             except Exception:
                 raise ValueError(
                     f'Failed to parse http response to JSON format. Original response body: \n{res.text}')
@@ -77,90 +83,168 @@ class Client:
             # Get originating Exception in Exception chain
             error_class = str(exception.__class__)
             err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
-            err_msg = '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                      'Verify that the server URL parameter' \
-                      ' is correct and that you have access to the server from your host.' \
-                .format(err_type, exception.errno, exception.strerror)
+            err_msg = f'\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n ' \
+                      f'Verify that the server URL parameter ' \
+                      f'is correct and that you have access to the server from your host.'
             raise DemistoException(err_msg, exception)
 
     def _login(self):
-        """ Login using the credentials and store the cookie """
-        self._http_request('POST', full_url=f'{self.server}/api/auth/login', data={
+        """
+        Login using the credentials and store the cookie
+        """
+        self.http_request('POST', full_url=f'{self._base_url}/api/auth/login', data={
             'username': self.username,
             'password': self.password
         })
 
     def _logout(self):
-        """ Logout from the session """
-        self._http_request('GET', self._http_request('GET', f'{self.server}/api/auth/logout'))
+        """
+        Logout from the session
+        """
+        self.http_request('GET', self.http_request('GET', f'{self._base_url}/api/auth/logout'))
 
     def test_module_request(self):
         """
         Performs basic get request to check if the server is reachable.
         """
-        suffix_url = 'ping'
-        return self._http_request('GET', suffix_url, resp_type='text')
+        self.http_request('GET', '/uba/api/ping', resp_type='text')
 
     def get_notable_users_request(self, api_unit: str = None, num: str = None, limit: int = None):
+        """
+        Args:
+            api_unit:
+            num: num of notable users
+            limit: limit of notable users
 
-        suffix_url = 'users/notable'
-
+        Returns:
+            notable users
+        """
         params = {
             'unit': api_unit,
             'num': num,
             'numberOfResults': limit
         }
-        response = self._http_request('GET', suffix_url, params)
+        response = self.http_request('GET', '/uba/api/users/notable', params=params)
         return response
 
     def get_user_info_request(self, username: str):
+        """
+        Args:
+            username: the username
 
-        suffix_url = f'user/{username}/info'
-        response = self._http_request('GET', suffix_url)
-        return response
-
-    def get_watchlist_request(self):
-
-        suffix_url = 'watchlist'
-        response = self._http_request('GET', suffix_url)
-
+        Returns:
+            the user info
+        """
+        response = self.http_request('GET', f'/uba/api/user/{username}/info')
         return response
 
     def get_peergroups_request(self):
-
-        suffix_url = 'peerGroup'
-
-        response = self._http_request('GET', suffix_url)
+        """
+        Returns:
+            peer groups
+        """
+        response = self.http_request('GET', '/uba/api/peerGroup')
         return response
 
     def get_user_labels_request(self):
-
-        suffix_url = 'userLabel'
-        response = self._http_request('GET', suffix_url)
-
+        """
+        Returns:
+            user labels
+        """
+        response = self.http_request('GET', '/uba/api/userLabel')
         return response
 
     def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None):
+        """
+        Args:
+            username:
+            parse_start_time: start time
+            parse_end_time: end time
 
-        suffix_url = f'user/{username}/sequences'
+        Returns:
+            user sequence relevant to the time period
+        """
         params = {
             'username': username,
             'startTime': parse_start_time,
             'endTime': parse_end_time
         }
-
-        response = self._http_request('GET', suffix_url, params)
+        response = self.http_request('GET', f'/uba/api/user/{username}/sequences', params=params)
         return response
 
+    def get_watchlist_request(self):
+        """
+        Returns:
+            a watchlist
+        """
+        response = self.http_request('GET', '/uba/api/watchlist')
+        return response
 
-''' COMMANDS + REQUESTS FUNCTIONS '''
+    def create_watchlist_request(self, title=None, category=None, description=None, items=None):
+        """
+        Args:
+            title: watchlist title
+            category: watchlist category
+            description: watchlist description
+            items: watchlist items
+
+        Returns:
+            a watchlist
+        """
+        params = {
+            'title': title,
+            'category': category,
+            'description': description,
+            'items': items
+        }
+        response = self.http_request('POST', '/uba/api/watchlist', params)
+        return response.json()
 
 
 def test_module(client: Client, *_):
+    """test function
 
+    Args:
+        client:
+        *_:
+
+    Returns:
+        ok if successful
+    """
     client.test_module_request()
     demisto.results('ok')
     return '', None, None
+
+
+def contents_append_notable_user_info(contents, user, user_, user_info):
+    """Appends a dictionary of data to the base list
+
+    Args:
+        contents: base list
+        user: user object
+        user_: user object
+        user_info: user info object
+
+    Returns:
+        A contents list with the relevant notable user data
+    """
+    contents.append({
+        'UserName': user_.get('username'),
+        'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
+        'FirstSeen': convert_unix_to_date(user_.get('firstSeen')),
+        'LastSeen': convert_unix_to_date(user_.get('lastSeen')),
+        'LastActivity': user_.get('lastActivityType'),
+        'Labels': user_.get('labels'),
+        'UserFullName': user.get('userFullName'),
+        'Location': user_.get('info')['location'],
+        'NotableSessionIds': user.get('notableSessionIds'),
+        'NotableUser': True,
+        'HighestRiskSession': user.get('highestRiskSession'),
+        'EmployeeType': user_info.get('employeeType'),
+        'Department': user_info.get('department'),
+        'Title': user_info.get('title')
+    })
+    return contents
 
 
 def get_notable_users(client: Client, args: Dict):
@@ -175,7 +259,7 @@ def get_notable_users(client: Client, args: Dict):
     time_period: str = args.get('time_period', '')
     time_ = time_period.split(' ')
     if not len(time_) == 2:
-        return_error('Got invalid time period. Enter the time period number and unit.')
+        raise Exception('Got invalid time period. Enter the time period number and unit.')
     num: str = time_[0]
     unit: str = time_[1]
     api_unit = unit[0]
@@ -183,7 +267,7 @@ def get_notable_users(client: Client, args: Dict):
         api_unit = api_unit.upper()
 
     if api_unit not in {'d', 'y', 'M', 'h'}:
-        return_error('The time unit is incorrect - can be hours, days, months, years')
+        raise Exception('The time unit is incorrect - can be hours, days, months, years.')
 
     contents = []
     headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
@@ -191,33 +275,44 @@ def get_notable_users(client: Client, args: Dict):
     users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
     if not users:
         return 'No users were found in this period of time.', {}, {}
-    else:
-        for user in users:
-            user_ = user.get('user', {})
-            user_info = user_.get('info', {})
-            contents.append({
-                'UserName': user_.get('username'),
-                'RiskScore': round(user_.get('riskScore')),
-                'FirstSeen': convert_unix_to_date(user_.get('firstSeen')),
-                'LastSeen': convert_unix_to_date(user_.get('lastSeen')),
-                'LastActivity': user_.get('lastActivityType'),
-                'Labels': user_.get('labels'),
-                'UserFullName': user.get('userFullName'),
-                'Location': user_.get('info')['location'],
-                'NotableSessionIds': user.get('notableSessionIds'),
-                'NotableUser': True,
-                'HighestRiskSession': user.get('highestRiskSession'),
-                'EmployeeType': user_info.get('employeeType'),
-                'Department': user_info.get('department'),
-                'Title': user_info.get('title')
-            })
 
-        context = {
-            'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
-        }
+    for user in users:
+        user_ = user.get('user', {})
+        user_info = user_.get('info', {})
+        contents = contents_append_notable_user_info(contents, user, user_, user_info)
 
-        human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers, removeNull=True)
-        return human_readable, context, users
+    context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
+    human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers=headers, removeNull=True)
+
+    return human_readable, context, users
+
+
+def contents_user_info(user, user_info):
+    """create a content obj for the user
+
+    Args:
+        user: user object
+        user_info: user info object
+
+    Returns:
+        A contents dict with the relevant user data
+    """
+    contents = {
+        'Username': user.get('username'),
+        'RiskScore': round(user_info.get('riskScore')) if 'riskScore' in user_info else None,
+        'AverageRiskScore': user_info.get('averageRiskScore'),
+        'LastSessionID': user_info.get('lastSessionId'),
+        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')),
+        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')),
+        'LastActivityType': user_info.get('lastActivityType'),
+        'Label': user_info.get('labels'),
+        'AccountNames': user.get('accountNames'),
+        'PeerGroupFieldName': user.get('peerGroupFieldName'),
+        'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
+        'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
+        'PeerGroupType': user.get('peerGroupType')
+    }
+    return contents
 
 
 def get_user_info(client: Client, args: Dict):
@@ -233,31 +328,16 @@ def get_user_info(client: Client, args: Dict):
                'PeerGroupDisplayName', 'PeerGroupType']
     user = client.get_user_info_request(username)
     user_info = user.get('userInfo', {})
-    contents = {
-        'Username': user.get('username'),
-        'RiskScore': round(user_info.get('riskScore')),
-        'AverageRiskScore': user_info.get('averageRiskScore'),
-        'LastSessionID': user_info.get('lastSessionId'),
-        'FirstSeen': convert_unix_to_date(user_info.get('firstSeen')),
-        'LastSeen': convert_unix_to_date(user_info.get('lastSeen')),
-        'LastActivityType': user_info.get('lastActivityType'),
-        'Label': user_info.get('labels'),
-        'AccountNames': user.get('accountNames'),
-        'PeerGroupFieldName': user.get('peerGroupFieldName'),
-        'PeerGroupFieldValue': user.get('peerGroupFieldValue'),
-        'PeerGroupDisplayName': user.get('peerGroupDisplayName'),
-        'PeerGroupType': user.get('peerGroupType')
-    }
-
-    context = {
-        'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents
-    }
+    if not user_info:
+        raise Exception('User has no info. Please check that the username and not the userFullName    was inserted.')
+    contents = contents_user_info(user, user_info)
+    context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
 
     if not user_info.get('firstSeen'):
         return f'The user {username} was not found', {}, {}
-    else:
-        human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
-        return human_readable, context, user
+
+    human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
+    return human_readable, context, user
 
 
 def get_user_sessions(client: Client, args: Dict):
@@ -299,34 +379,8 @@ def get_user_sessions(client: Client, args: Dict):
     if session:
         human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
         return human_readable, context, user
-    else:
-        return f'The user {username} was not found', {}, {}
 
-
-def get_watchlist(client: Client, *_):
-    """  Returns all watchlist ids and titles.
-
-    Args:
-        client: Client
-
-    """
-
-    watchlist = client.get_watchlist_request()
-    contents = []
-    headers = ['WatchlistID', 'Title', 'Category']
-    for list_ in watchlist:
-        contents.append({
-            'WatchlistID': list_.get('watchlistId'),
-            'Title': list_.get('title'),
-            'Category': list_.get('category')
-        })
-
-    context = {
-        'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents
-    }
-
-    human_readable = tableToMarkdown('Exabeam Watchlists', contents, headers)
-    return human_readable, context, watchlist
+    return f'The user {username} was not found.', {}, {}
 
 
 def get_peer_groups(client: Client, *_):
@@ -339,15 +393,11 @@ def get_peer_groups(client: Client, *_):
     groups = client.get_peergroups_request()
     contents = []
     for group in groups:
-        contents.append({
-            'Name': group
-        })
+        contents.append({'Name': group})
 
-    context = {
-        'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents
-    }
-
+    context = {'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents}
     human_readable = tableToMarkdown('Exabeam Peer Groups', contents)
+
     return human_readable, context, groups
 
 
@@ -361,46 +411,106 @@ def get_user_labels(client: Client, *_):
     labels = client.get_user_labels_request()
     contents = []
     for label in labels:
-        contents.append({
-            'Label': label
-        })
+        contents.append({'Label': label})
 
-    context = {
-        'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents
-    }
+    context = {'Exabeam.UserLabel(val.Label && val.Label === obj.Label)': contents}
+    human_readable = tableToMarkdown('Exabeam User Labels:', contents)
 
-    human_readable = tableToMarkdown('Exabeam User Labels', contents)
     return human_readable, context, labels
 
 
+def get_watchlist(client: Client, *_):
+    """  Returns all watchlist ids and titles.
+
+    Args:
+        client: Client
+
+    """
+
+    watchlist = client.get_watchlist_request()
+    contents = []
+    for list_ in watchlist:
+        contents.append({
+            'WatchlistID': list_.get('watchlistId'),
+            'Title': list_.get('title'),
+            'Category': list_.get('category')
+        })
+
+    context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
+    human_readable = tableToMarkdown('Exabeam Watchlists:', contents, headers=['WatchlistID', 'Title', 'Category'])
+
+    return human_readable, context, watchlist
+
+
+def create_watchlist(client: Client, args: Dict):
+    """Create a new watchlist
+
+    Args:
+        client: Client
+        args: Dict
+
+    """
+    title = args.get('title')
+    category = args.get('category')
+    description = args.get('description')
+    items = argToList(args.get('items'))
+
+    watchlist = client.create_watchlist_request(title, category, description, items)
+    if watchlist:
+        contents = {
+            'WatchlistID': watchlist.get('watchlistId'),
+            'Title': watchlist.get('title'),
+            'Category': watchlist.get('category')
+        }
+    context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
+    human_readable = tableToMarkdown('New watchlist has been created', t=contents,
+                                     headers=['WatchlistID', 'Title', 'Category'])
+    return human_readable, context, watchlist
+
+
 def main():
+    """
+    PARSE AND VALIDATE INTEGRATION PARAMS
+    """
     username = demisto.params().get('credentials').get('identifier')
     password = demisto.params().get('credentials').get('password')
-    server_url = demisto.params().get('url')
+    base_url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
-    headers = {
-        'Accept': 'application/json'
-    }
+    headers = {'Accept': 'application/json'}
     proxies = handle_proxy()
-    client = Client(server_url, verify=verify_certificate, username=username, password=password, proxies=proxies,
+
+    client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username, password=password, proxies=proxies,
                     headers=headers)
-    LOG(f'Command being called is demisto.command()')
     commands = {
         'test-module': test_module,
         'get-notable-users': get_notable_users,
-        'get-watchlists': get_watchlist,
+        'exabeam-get-notable-users': get_notable_users,
         'get-peer-groups': get_peer_groups,
+        'exabeam-get-peer-groups': get_peer_groups,
         'get-user-info': get_user_info,
+        'exabeam-get-user-info': get_user_info,
         'get-user-labels': get_user_labels,
-        'get-user-sessions': get_user_sessions
+        'exabeam-get-user-labels': get_user_labels,
+        'get-user-sessions': get_user_sessions,
+        'exabeam-get-user-sessions': get_user_sessions,
+        'get-watchlists': get_watchlist,
+        'exabeam-get-watchlists': get_watchlist,
+        'exabeam-create-watchlist': create_watchlist,
+        # 'exabeam-watchlist-add-user': watchlist_add_user,
+        # 'exabeam-delete-watchlist': delete_watchlist,
+        # 'exabeam-get-asset-data': get_asset_data
     }
+
     try:
         command = demisto.command()
+        LOG(f'Command being called is {command}')
         if command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
-    except Exception as e:
-        return_error(str(e))
+    except Exception as err:
+        return_error(str(err))
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
