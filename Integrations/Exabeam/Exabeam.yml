@@ -39,7 +39,7 @@ script:
       name: limit
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns notable users in a period of time.
     execution: false
     name: get-notable-users
@@ -80,7 +80,62 @@ script:
     - contextPath: Exabeam.User.NotableUser
       description: Whether the user is a notable user.
       type: Boolean
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+      isArray: true
+      name: time_period
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of returned results.
+      isArray: false
+      name: limit
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns notable users in a period of time.
+    execution: false
+    name: exabeam-get-notable-users
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: The risk score of the notable user.
+      type: Number
+    - contextPath: Exabeam.User.UserFullName
+      description: The full name of the user.
+      type: String
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: The average risk score of the user.
+      type: Number
+    - contextPath: Exabeam.User.FirstSeen
+      description: The date the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.NotableSessionIds
+      description: The ID of the notable session.
+      type: String
+    - contextPath: Exabeam.User.AccountsNumber
+      description: The number of accounts.
+      type: Number
+    - contextPath: Exabeam.User.LastSeen
+      description: The date the user was last seen.
+      type: Date
+    - contextPath: Exabeam.User.Location
+      description: The location of the user.
+      type: String
+    - contextPath: Exabeam.User.UserName
+      description: The name of the user.
+      type: String
+    - contextPath: Exabeam.User.Labels
+      description: The labels of the user.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.User.NotableUser
+      description: Whether the user is a notable user.
+      type: Boolean
+  - deprecated: true
     description: Returns all watchlist IDs and titles.
     execution: false
     name: get-watchlists
@@ -95,9 +150,31 @@ script:
       description: The watchlist ID.
       type: String
   - deprecated: false
+    description: Returns all watchlist IDs and titles.
+    execution: false
+    name: exabeam-get-watchlists
+    outputs:
+    - contextPath: Exabeam.Watchlist.Category
+      description: The watchlist category.
+      type: String
+    - contextPath: Exabeam.Watchlist.Title
+      description: The watchlist title.
+      type: String
+    - contextPath: Exabeam.Watchlist.WatchlistID
+      description: The watchlist ID.
+      type: String
+  - deprecated: true
     description: Returns all peer groups.
     execution: false
     name: get-peer-groups
+    outputs:
+    - contextPath: Exabeam.PeerGroup.Name
+      description: The name of the peer group.
+      type: String
+  - deprecated: false
+    description: Returns all peer groups.
+    execution: false
+    name: exabeam-get-peer-groups
     outputs:
     - contextPath: Exabeam.PeerGroup.Name
       description: The name of the peer group.
@@ -109,7 +186,7 @@ script:
       name: username
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns user information data for the username.
     execution: false
     name: get-user-info
@@ -153,10 +230,69 @@ script:
     - contextPath: Exabeam.User.AccountNames
       description: The account name of the user.
       type: String
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The username of the user to fetch.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns user information data for the username.
+    execution: false
+    name: exabeam-get-user-info
+    outputs:
+    - contextPath: Exabeam.User.RiskScore
+      description: The risk score of the user.
+      type: Number
+    - contextPath: Exabeam.User.AverageRiskScore
+      description: The average risk score.
+      type: Number
+    - contextPath: Exabeam.User.PeerGroupFieldName
+      description: The field name of the peer group.
+      type: String
+    - contextPath: Exabeam.User.FirstSeen
+      description: The date when the user was first seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupDisplayName
+      description: The display name of the Peer group.
+      type: String
+    - contextPath: Exabeam.User.LastSeen
+      description: The date the user was last seen.
+      type: Date
+    - contextPath: Exabeam.User.PeerGroupFieldValue
+      description: The field value of the peer group.
+      type: String
+    - contextPath: Exabeam.User.Label
+      description: The labels of the user.
+      type: String
+    - contextPath: Exabeam.User.Username
+      description: The name of the user.
+      type: String
+    - contextPath: Exabeam.User.PeerGroupType
+      description: The type of the peer group.
+      type: String
+    - contextPath: Exabeam.User.LastSessionID
+      description: The last session ID of the user.
+      type: String
+    - contextPath: Exabeam.User.LastActivityType
+      description: The last activity type of the user.
+      type: String
+    - contextPath: Exabeam.User.AccountNames
+      description: The account name of the user.
+      type: String
+  - deprecated: true
     description: Returns all labels of the user.
     execution: false
     name: get-user-labels
+    outputs:
+    - contextPath: Exabeam.UserLabel.Label
+      description: The label of the user.
+      type: String
+  - deprecated: false
+    description: Returns all labels of the user.
+    execution: false
+    name: exabeam-get-user-labels
     outputs:
     - contextPath: Exabeam.UserLabel.Label
       description: The label of the user.
@@ -180,10 +316,58 @@ script:
       name: end_time
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns sessions for the given username and time range.
     execution: false
     name: get-user-sessions
+    outputs:
+    - contextPath: Exabeam.User.Session.EndTime
+      description: The end time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Session.InitialRiskScore
+      description: The initial risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.Label
+      description: The label of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.LoginHost
+      description: The login host.
+      type: String
+    - contextPath: Exabeam.User.Session.RiskScore
+      description: The risk score of the session.
+      type: Number
+    - contextPath: Exabeam.User.Session.SessionID
+      description: The ID of the session.
+      type: String
+    - contextPath: Exabeam.User.Session.StartTime
+      description: The start time of the session.
+      type: Date
+    - contextPath: Exabeam.User.Username
+      description: The username of the session.
+      type: String
+  - arguments:
+    - default: false
+      description: The username for which to fetch data.
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: The Start time of the time range. For example, 2018-08-01T11:50:16).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: The end time of the time range. For example, 2018-08-01T11:50:16.
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns sessions for the given username and time range.
+    execution: false
+    name: exabeam-get-user-sessions
     outputs:
     - contextPath: Exabeam.User.Session.EndTime
       description: The end time of the session.
