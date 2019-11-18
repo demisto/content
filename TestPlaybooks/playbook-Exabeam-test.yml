@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5fa3f81b-f90a-4cda-8a90-55912d62faf6
+    taskid: 24712de6-8daf-48b4-8384-766ce55a91c1
     type: start
     task:
-      id: 5fa3f81b-f90a-4cda-8a90-55912d62faf6
+      id: 24712de6-8daf-48b4-8384-766ce55a91c1
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 1340,
           "y": 50
         }
       }
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 53a78595-20bd-4de1-88be-fba4bbf5eca0
+    taskid: f84330a2-ef17-4831-848e-d2475fe246e9
     type: regular
     task:
-      id: 53a78595-20bd-4de1-88be-fba4bbf5eca0
+      id: f84330a2-ef17-4831-848e-d2475fe246e9
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -45,6 +45,7 @@ tasks:
       - "2"
       - "3"
       - "8"
+      - "17"
     scriptarguments:
       all:
         simple: "yes"
@@ -56,8 +57,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 1340,
+          "y": 195
         }
       }
     note: false
@@ -65,10 +66,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 68a6e726-fec8-4047-8ad7-0e1da72e5d02
+    taskid: d8019d7d-931e-4ee5-8bf0-d8b321021225
     type: title
     task:
-      id: 68a6e726-fec8-4047-8ad7-0e1da72e5d02
+      id: d8019d7d-931e-4ee5-8bf0-d8b321021225
       version: -1
       name: Watchlists
       type: title
@@ -77,12 +78,13 @@ tasks:
     nexttasks:
       '#none#':
       - "4"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 380
+          "x": 265,
+          "y": 705
         }
       }
     note: false
@@ -90,10 +92,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: d7c61026-022c-4985-80ae-4324619898a6
+    taskid: 1062d081-c2dc-4cf7-8db2-84988f220385
     type: title
     task:
-      id: d7c61026-022c-4985-80ae-4324619898a6
+      id: 1062d081-c2dc-4cf7-8db2-84988f220385
       version: -1
       name: Users
       type: title
@@ -107,8 +109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 380
+          "x": 1125,
+          "y": 370
         }
       }
     note: false
@@ -116,14 +118,14 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 0efe5211-d87c-4407-8043-fc517238beb1
+    taskid: 4bf87f11-8d3a-4fc9-8461-68936a55bb94
     type: regular
     task:
-      id: 0efe5211-d87c-4407-8043-fc517238beb1
+      id: 4bf87f11-8d3a-4fc9-8461-68936a55bb94
       version: -1
       name: Get Watchlists
-      description: Get all watchlist ids and titles.
-      script: '|||get-watchlists'
+      description: Returns all watchlist IDs and titles.
+      script: '|||exabeam-get-watchlists'
       type: regular
       iscommand: true
       brand: ""
@@ -134,8 +136,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 520
+          "x": 50,
+          "y": 865
         }
       }
     note: false
@@ -143,14 +145,14 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 01e7ae53-a568-4d53-84f1-9a19e0993eb0
+    taskid: a0651fe6-c99d-41d2-8b27-a6ff5e2e2eaf
     type: regular
     task:
-      id: 01e7ae53-a568-4d53-84f1-9a19e0993eb0
+      id: a0651fe6-c99d-41d2-8b27-a6ff5e2e2eaf
       version: -1
       name: Get Notable Users
-      description: Get notable users in a period of time.
-      script: '|||get-notable-users'
+      description: Returns notable users in a period of time.
+      script: '|||exabeam-get-notable-users'
       type: regular
       iscommand: true
       brand: ""
@@ -166,8 +168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 520
+          "x": 910,
+          "y": 515
         }
       }
     note: false
@@ -175,14 +177,14 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 776fbd6b-9a5c-453f-82e6-1e3d75dbdbb3
+    taskid: be8028ed-e75c-443d-8c33-f36f46b871ad
     type: regular
     task:
-      id: 776fbd6b-9a5c-453f-82e6-1e3d75dbdbb3
+      id: be8028ed-e75c-443d-8c33-f36f46b871ad
       version: -1
       name: Get User Info
-      description: Returns user info data for the given username
-      script: '|||get-user-info'
+      description: Returns user information data for the username.
+      script: '|||exabeam-get-user-info'
       type: regular
       iscommand: true
       brand: ""
@@ -196,8 +198,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 700
+          "x": 910,
+          "y": 690
         }
       }
     note: false
@@ -205,14 +207,14 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 5c2cdf71-1f9c-44f3-890a-0c8909d52938
+    taskid: fdf45308-91fb-4280-8cf4-f1e86a571ed7
     type: regular
     task:
-      id: 5c2cdf71-1f9c-44f3-890a-0c8909d52938
+      id: fdf45308-91fb-4280-8cf4-f1e86a571ed7
       version: -1
       name: Get User Sessions
       description: Returns sessions for the given username and time range.
-      script: '|||get-user-sessions'
+      script: '|||exabeam-get-user-sessions'
       type: regular
       iscommand: true
       brand: ""
@@ -230,8 +232,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 870
+          "x": 910,
+          "y": 865
         }
       }
     note: false
@@ -239,10 +241,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: 32a34bdf-c6bc-4402-815e-4471218359dd
+    taskid: a3c36822-675c-4f4d-8b84-27a5d046c94d
     type: title
     task:
-      id: 32a34bdf-c6bc-4402-815e-4471218359dd
+      id: a3c36822-675c-4f4d-8b84-27a5d046c94d
       version: -1
       name: PeerGroups
       type: title
@@ -255,8 +257,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
-          "y": 380
+          "x": 1770,
+          "y": 705
         }
       }
     note: false
@@ -264,14 +266,14 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: 314ee255-f23d-4b6e-88a7-5a6751cbd94c
+    taskid: 2775ef26-5e51-41d6-8e39-f426ce531ef5
     type: regular
     task:
-      id: 314ee255-f23d-4b6e-88a7-5a6751cbd94c
+      id: 2775ef26-5e51-41d6-8e39-f426ce531ef5
       version: -1
       name: Get Peer Groups
-      description: Get all peer groups.
-      script: '|||get-peer-groups'
+      description: Returns all peer groups.
+      script: '|||exabeam-get-peer-groups'
       type: regular
       iscommand: true
       brand: ""
@@ -282,8 +284,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
-          "y": 530
+          "x": 1770,
+          "y": 865
         }
       }
     note: false
@@ -291,14 +293,14 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 1171469a-9e1c-4a13-8385-1888a6adc062
+    taskid: c762b259-893a-4848-821f-e47a886b07e5
     type: regular
     task:
-      id: 1171469a-9e1c-4a13-8385-1888a6adc062
+      id: c762b259-893a-4848-821f-e47a886b07e5
       version: -1
       name: Get User Labels
-      description: Get all user labels
-      script: '|||get-user-labels'
+      description: Returns all labels of the user.
+      script: '|||exabeam-get-user-labels'
       type: regular
       iscommand: true
       brand: ""
@@ -309,8 +311,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 520
+          "x": 1340,
+          "y": 865
         }
       }
     note: false
@@ -318,10 +320,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 5e93eb3e-8389-4601-8098-5f5f744b01f7
+    taskid: d890a0eb-e982-4942-8f16-e027af612cfd
     type: condition
     task:
-      id: 5e93eb3e-8389-4601-8098-5f5f744b01f7
+      id: d890a0eb-e982-4942-8f16-e027af612cfd
       version: -1
       name: Verify Outputs
       type: condition
@@ -352,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 710
+          "x": 50,
+          "y": 1040
         }
       }
     note: false
@@ -361,10 +363,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 5b877d40-ad09-4d46-8ea7-bc7af6de7cbc
+    taskid: 75b591fb-91c0-4d31-82b8-ac6b828ab4bd
     type: title
     task:
-      id: 5b877d40-ad09-4d46-8ea7-bc7af6de7cbc
+      id: 75b591fb-91c0-4d31-82b8-ac6b828ab4bd
       version: -1
       name: Done
       type: title
@@ -374,8 +376,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 1250
+          "x": 1125,
+          "y": 1215
         }
       }
     note: false
@@ -383,10 +385,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 4b6b3d40-3fe4-4b99-86ab-e2a13349b2b9
+    taskid: 68b8d33a-8a1d-4cde-8cad-9e2f539f175a
     type: condition
     task:
-      id: 4b6b3d40-3fe4-4b99-86ab-e2a13349b2b9
+      id: 68b8d33a-8a1d-4cde-8cad-9e2f539f175a
       version: -1
       name: Verify Outputs
       type: condition
@@ -410,8 +412,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 460,
-          "y": 700
+          "x": 1340,
+          "y": 1040
         }
       }
     note: false
@@ -419,10 +421,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: ed0c533b-871d-47aa-8b60-2833c2c810a9
+    taskid: 81d7977a-acd0-4dcd-846a-650f043ac568
     type: condition
     task:
-      id: ed0c533b-871d-47aa-8b60-2833c2c810a9
+      id: 81d7977a-acd0-4dcd-846a-650f043ac568
       version: -1
       name: Verify Outputs
       type: condition
@@ -430,7 +432,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "12"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -443,30 +445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -500,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 9c6c01eb-5dbf-47da-8d5c-63e014e85d3e
-    type: title
-    task:
-      id: 9c6c01eb-5dbf-47da-8d5c-63e014e85d3e
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -500,
-          "y": 920
+          "x": 1770,
+          "y": 1040
         }
       }
     note: false
@@ -474,10 +454,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 357f60d9-3669-43f7-8aa2-1b7624ba2dce
+    taskid: e235d8cd-0161-48fe-8de2-6802ce7aeba0
     type: condition
     task:
-      id: 357f60d9-3669-43f7-8aa2-1b7624ba2dce
+      id: e235d8cd-0161-48fe-8de2-6802ce7aeba0
       version: -1
       name: Verify Outputs
       type: condition
@@ -506,8 +486,131 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1060
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: f31070ed-df9e-4bdb-8899-bcf736d36a72
+    type: title
+    task:
+      id: f31070ed-df9e-4bdb-8899-bcf736d36a72
+      version: -1
+      name: Assets
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: c45bd566-51bb-48b4-8dd0-f2931087b138
+    type: regular
+    task:
+      id: c45bd566-51bb-48b4-8dd0-f2931087b138
+      version: -1
+      name: Get asset data
+      description: Get asset data.
+      script: '|||exabeam-get-asset-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      asset_name:
+        simple: 10.77.184.232
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 08ca42db-5ba7-4eca-872c-e727dbe9a11c
+    type: regular
+    task:
+      id: 08ca42db-5ba7-4eca-872c-e727dbe9a11c
+      version: -1
+      name: Create watchlist
+      description: Create a watchlist.
+      script: '|||exabeam-create-watchlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      category:
+        simple: Users
+      description:
+        simple: dummy sesc
+      items:
+        simple: bsalazar
+      title:
+        simple: my_tpb_watchlist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 2dba052e-c21f-45d1-8469-f6e853c3b956
+    type: regular
+    task:
+      id: 2dba052e-c21f-45d1-8469-f6e853c3b956
+      version: -1
+      name: Delete watchlist
+      description: Delete a watchlist.
+      script: '|||exabeam-delete-watchlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      watchlist_id:
+        complex:
+          root: Exabeam
+          accessor: Watchlist.WatchlistID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
         }
       }
     note: false
@@ -518,9 +621,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1265,
-        "width": 1760,
-        "x": -500,
+        "height": 1230,
+        "width": 2530,
+        "x": 50,
         "y": 50
       }
     }
