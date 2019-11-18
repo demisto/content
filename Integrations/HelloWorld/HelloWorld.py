@@ -59,7 +59,7 @@ def test_module(client):
         client: HelloWorld client
 
     Returns:
-        'ok' if test passed, anything else will fail the test
+        'ok' if test passed, anything else will fail the test.
     """
 
     result = client.say_hello('DBot')
