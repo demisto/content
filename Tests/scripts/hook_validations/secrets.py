@@ -18,7 +18,6 @@ ACCEPTED_FILE_STATUSES = ['m', 'a']
 SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore'}
 TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html',
                    '.ps1'}
-SCRIPT_FILE_TYPES = {'.ps1', '.py', '.js'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
 PACKS_PATH = './Packs'
@@ -204,18 +203,17 @@ def create_temp_white_list(file_contents):
     return temp_white_list
 
 
-def get_related_yml_contents(file_path, file_extension):
+def get_related_yml_contents(file_path):
     yml_file_contents = ''
     # if script or readme file, search for yml in order to retrieve temp white list
-    if is_allowed_types(file_path, file_extension):
+    if is_allowed_types(file_path):
         yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
     return yml_file_contents
 
 
-def is_allowed_types(file_path, file_extension):
+def is_allowed_types(file_path):
     # Validate if it is integration documentation file or supported file extension
-    if file_extension in SCRIPT_FILE_TYPES or\
-            any(re.match(regex, file_path, re.IGNORECASE) for regex in README_FILE_REGEX):
+    if any(re.match(regex, file_path, re.IGNORECASE) for regex in REQUIRED_YML_FILE_TYPES):
         return True
     return False
 
