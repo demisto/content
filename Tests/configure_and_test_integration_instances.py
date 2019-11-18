@@ -1,7 +1,6 @@
 import argparse
 import uuid
 import demisto_client
-from Tests.test_integration import configure_proxy_unsecure, __enable_integrations_instances
 from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
 from Tests.test_integration import __get_integration_configuration, __test_integration_instance
 from Tests.test_utils import print_error
@@ -52,7 +51,8 @@ def set_integration_params(integrations, secret_params, instance_names):
     return True
 
 
-def set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name, is_byoi):
+def set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name,
+                                        is_byoi):
     '''Set integration module values for integration instance creation
 
     The integration_configuration and integration_params should match, in that
@@ -142,7 +142,6 @@ def main():
     tests = conf['tests']
     nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
-    unmockable_integrations = conf['unmockable_integrations']
 
     skipped_integration = set([])
     all_module_instances = []
@@ -169,7 +168,8 @@ def main():
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf, ]
 
-        has_skipped_integration, integrations, is_nightly_integration = collect_integrations(integrations_conf, skipped_integration, skipped_integrations_conf, nightly_integrations)
+        _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
+                                                  skipped_integrations_conf, nightly_integrations)
         are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
         if not are_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations)))
@@ -184,7 +184,8 @@ def main():
             is_byoi = integration.get('byoi', True)
 
             integration_configuration = __get_integration_configuration(client, integration_name)
-            module_instance = set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name, is_byoi)
+            module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
+                                                                  integration_instance_name, is_byoi)
             module_instances.append(module_instance)
         all_module_instances.extend(module_instances)
 
@@ -195,7 +196,8 @@ def main():
         if not success:
             integration_of_instance = instance.get('brand', '')
             instance_name = instance.get('name', '')
-            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name, integration_of_instance)
+            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name,
+                                                                                               integration_of_instance)
             failure_messages.append(fail_msg)
     # Print out any ("Test" button) failures
     if failure_messages:
@@ -205,7 +207,8 @@ def main():
 
     # Upload current build's content_new.zip to demisto server (aka upload new content)
     content_zip_path = '.content_new.zip'
-    cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server, content_zip_path)
+    cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
+                                                                              content_zip_path)
     run_command(cmd_str, is_silenced=False)
 
     # After content upload has completed - test ("Test" button) integration instances
@@ -216,7 +219,8 @@ def main():
         if not success:
             integration_of_instance = instance.get('brand', '')
             instance_name = instance.get('name', '')
-            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name, integration_of_instance)
+            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name,
+                                                                                               integration_of_instance)
             failure_messages.append(fail_msg)
     # Print out any ("Test" button) failures
     if failure_messages:
