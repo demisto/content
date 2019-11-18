@@ -608,12 +608,11 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
 
     if len(failed_playbooks):
         print("Some tests have failed. Not destroying instances.")
+        sys.exit(1)
     else:
         file_path = "./Tests/is_build_passed_{}.txt".format(server_version.replace(' ', ''))
         with open(file_path, "w") as is_build_passed_file:
             is_build_passed_file.write('Build passed')
-
-        sys.exit(1)
 
 
 def main():
