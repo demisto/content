@@ -25,7 +25,7 @@ class Client(BaseClient):
 
     def say_hello_http_request(self, name):
         """
-        initiates a http request to test url
+        initiates a http request to a test url
         """
         data = self._http_request(
             method='GET',
