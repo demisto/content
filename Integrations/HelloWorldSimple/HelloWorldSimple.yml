@@ -41,7 +41,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Say hello command
+    description: The say hello command.
     execution: false
     name: helloworldsimple-say-hello
   isfetch: false
