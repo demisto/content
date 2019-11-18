@@ -1,5 +1,5 @@
 from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_files, is_text_file, \
-    search_potential_secrets
+    search_potential_secrets, remove_white_list_regex
 
 
 class TestSecrets:
@@ -24,3 +24,13 @@ class TestSecrets:
     def test_search_potential_secrets(self):
         secrets_found = search_potential_secrets([self.TEST_YML_FILE])
         assert not secrets_found
+
+    def test_remove_white_list_regex(self):
+        white_list = '155.165.45.232'
+        file_contents = '''
+        boop
+        shmoop
+        155.165.45.232
+        '''
+        file_contents = remove_white_list_regex(white_list, file_contents)
+        assert white_list not in file_contents
