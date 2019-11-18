@@ -403,7 +403,7 @@ class FilesValidator(object):
 
                     print('Validating ' + file_name)
                     structure_validator = StructureValidator(file_path)
-                    if not structure_validator._is_scheme_valid():
+                    if not structure_validator.is_scheme_valid():
                         self._is_valid = False
 
                 if root in PACKAGE_SUPPORTING_DIRECTORIES:
@@ -411,7 +411,7 @@ class FilesValidator(object):
                         file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
                         print('Validating ' + file_path)
                         structure_validator = StructureValidator(file_path)
-                        if not structure_validator._is_scheme_valid():
+                        if not structure_validator.is_scheme_valid():
                             self._is_valid = False
 
     def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):

@@ -37,7 +37,7 @@ class ScriptValidator(YMLBasedValidator):
             self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
-            self.is_there_duplicate_args(),
+            self.is_there_duplicates(),
             self.is_changed_subtype()
         ]
 
@@ -60,8 +60,8 @@ class ScriptValidator(YMLBasedValidator):
 
         return is_script_valid
 
-    def get_arg_to_required_dict(self, json_object, args='args'):
-        return super(ScriptValidator, self).get_arg_to_required_dict(json_object, args)
+    def get_arg_to_required_dict(self, json_object, **kwargs):
+        return super(ScriptValidator, self).get_arg_to_required_dict(json_object, json_object['args'])
 
     def is_changed_subtype(self):
         """Validate that the subtype was not changed."""
@@ -104,11 +104,11 @@ class ScriptValidator(YMLBasedValidator):
     def is_there_duplicate_args(self):
         """Check if there are duplicated arguments."""
         args = [arg['name'] for arg in self.current_file.get('args', [])]
-        duplicates = self.find_duplicates(args)
+        duplicates = self.is_there_duplicates(args)
         if duplicates:
-            print_error(Errors.duplicate_arg_in_script(duplicates, self.file_path))
-            return True
-        return False
+            self.is_valid = False
+            print_error(Errors.duplicate_arg_in_file(duplicates, self.file_path))
+        return bool(duplicates)
 
     def is_arg_changed(self):
         """Check if the argument has been changed."""
@@ -135,4 +135,4 @@ class ScriptValidator(YMLBasedValidator):
         return super(ScriptValidator, self).is_docker_image_changed()
 
     def is_valid_scheme(self):
-        super(ScriptValidator, self)._is_scheme_valid(self.scheme_name)
+        super(ScriptValidator, self).is_scheme_valid(self.scheme_name)

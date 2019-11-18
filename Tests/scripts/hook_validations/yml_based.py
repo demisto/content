@@ -50,7 +50,7 @@ class YMLBasedValidator(StructureValidator):
         self.is_docker_image_changed()
         self.is_added_required_fields()
         self.is_changed_command_name_or_arg()
-        self.is_there_duplicate_args()
+        self.is_there_duplicates_args()
         self.is_there_duplicate_params()
         self.is_changed_subtype()
 
@@ -71,19 +71,17 @@ class YMLBasedValidator(StructureValidator):
         pass
 
     @classmethod
-    def get_arg_to_required_dict(cls, json_object, args_to_get):
+    def get_arg_to_required_dict(cls, args_obj, *args, **kwargs):
         """Get a dictionary arg name to its required status.
 
         Args:
-            json_object (dict): Dictionary of the examined script.
-            args_to_get (str): Field in json_object
+            args_obj (list): args to process
 
         Returns:
             dict. arg name to its required status.
         """
         arg_to_required = {}
-        args = json_object.get(args_to_get, [])
-        for arg in args:
+        for arg in args_obj:
             arg_to_required[arg.get('name')] = arg.get('required', False)
         return arg_to_required
 
@@ -121,3 +119,10 @@ class YMLBasedValidator(StructureValidator):
 
     def load_data_from_file(self, load_function=yaml.safe_load):
         return super(YMLBasedValidator, self).load_data_from_file(load_function)
+
+    def is_there_duplicates(self, args_go_check):
+        duplicates = self.find_duplicates(args_go_check)
+        if duplicates:
+            self.is_valid = False
+            return duplicates
+        return False

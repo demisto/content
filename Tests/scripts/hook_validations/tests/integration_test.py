@@ -542,7 +542,7 @@ def test_no_duplicate_args():
         }
     }
 
-    assert validator.is_there_duplicate_args() is False, \
+    assert validator.is_there_duplicates() is False, \
         "The integration validator found duplicated args although there are none"
 
 
@@ -566,7 +566,7 @@ def test_duplicated_argss():
         }
     }
 
-    assert validator.is_there_duplicate_args(), \
+    assert validator.is_there_duplicates(), \
         "The integration validator did not find duplicated args although there are duplicates"
 
 

@@ -43,8 +43,8 @@ class Errors(object):
         return cls.beta_in_str(file_path, 'name')
 
     @staticmethod
-    def duplicate_arg_in_script(arg, script_path):
-        return "The argument '{}' is duplicated in the script {}, " \
+    def duplicate_arg_in_file(arg, script_path):
+        return "The argument '{}' is duplicated in the file {}, " \
                "please remove one of its appearances.".format(str(arg), script_path)
 
     @staticmethod

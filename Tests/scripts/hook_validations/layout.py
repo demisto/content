@@ -31,7 +31,7 @@ class LayoutValidator(JSONBasedValidator):
         layout = json_dict.get('layout')
         return layout.get('version') != -1
 
-    def _is_scheme_valid(self, matching_regex='layout'):
+    def is_scheme_valid(self, matching_regex='layout'):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
@@ -40,4 +40,4 @@ class LayoutValidator(JSONBasedValidator):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
-        super(LayoutValidator, self)._is_scheme_valid(matching_regex)
+        super(LayoutValidator, self).is_scheme_valid(matching_regex)

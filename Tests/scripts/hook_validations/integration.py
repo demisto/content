@@ -1,14 +1,13 @@
 import os
 
 import requests
-import yaml
 
-from Tests.scripts.constants import CONTENT_GITHUB_LINK, PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, INTEGRATION_PY_REGEX, \
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, INTEGRATION_PY_REGEX, \
     INTEGRATION_YML_REGEX, PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATION_YML_REGEX, INTEGRATION_REGEX, \
     BETA_INTEGRATION_REGEX, BETA_INTEGRATION_YML_REGEX
 from Tests.scripts.hook_validations.error_constants import Errors
-from Tests.test_utils import print_error, get_yaml, print_warning, server_version_compare, get_release_notes_file_path, \
-    get_latest_release_notes_text
+from Tests.test_utils import print_error, print_warning, server_version_compare, get_release_notes_file_path, \
+    get_latest_release_notes_text, get_yaml
 from yml_based import YMLBasedValidator
 
 # disable insecure warnings
@@ -44,7 +43,7 @@ class IntegrationValidator(YMLBasedValidator):
     scheme_name = 'integration'
 
     def is_valid_scheme(self):
-        return super(IntegrationValidator, self)._is_scheme_valid(self.scheme_name)
+        return super(IntegrationValidator, self).is_scheme_valid(self.scheme_name)
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
@@ -285,14 +284,15 @@ class IntegrationValidator(YMLBasedValidator):
             bool. True if there are duplicates, False otherwise.
         """
         commands = self.current_file.get('script', {}).get('commands', [])
+        is_dup = False
         for command in commands:
-            duplicates = self.find_duplicates(command.get('arguments', []))
+            maybe_dup = command.get('arguments', [])
+            duplicates = self.is_there_duplicates(maybe_dup)
             if duplicates:
                 self.is_valid = False
-                print_error(
-                    Errors.duplicate_arg_in_integration(duplicates, command['name'],
-                                                        self.current_file.get('name')))
-        return not self.is_valid
+                is_dup = True
+                print_error(Errors.duplicate_arg_in_integration(duplicates, command, self.file_path))
+        return is_dup
 
     def is_there_duplicate_params(self):
         """Check if the integration has the same param more than once
@@ -306,7 +306,7 @@ class IntegrationValidator(YMLBasedValidator):
         if duplicates:
             self.is_valid = False
             print_error(Errors.duplicate_param(duplicates, self.current_file))
-        return not self.is_valid
+        return bool(duplicates)
 
     @staticmethod
     def _get_command_to_args(integration_json):
@@ -344,18 +344,18 @@ class IntegrationValidator(YMLBasedValidator):
 
         return False
 
-    @classmethod
-    def _get_command_to_context_paths(cls, integration_json):
+    def get_command_to_context_paths(self, dict_object=None):
         """Get a dictionary command name to it's context paths.
 
         Args:
-            integration_json (dict): Dictionary of the examined integration.
+            dict_object Optional(dict): dict representing integration
 
         Returns:
             dict. command name to a list of it's context paths.
         """
         command_to_context_list = {}
-        commands = integration_json.get('script', {}).get('commands', [])
+        dict_object = dict_object if dict_object else self.current_file
+        commands = dict_object.get('script', {}).get('commands', [])
         for command in commands:
             context_list = []
             if not command.get('outputs', []):
@@ -378,8 +378,8 @@ class IntegrationValidator(YMLBasedValidator):
         Returns:
             bool. Whether a context path as been changed.
         """
-        current_command_to_context_paths = self._get_command_to_context_paths(self.current_file)
-        old_command_to_context_paths = self._get_command_to_context_paths(self.old_file)
+        current_command_to_context_paths = self.get_command_to_context_paths(self.current_file)
+        old_command_to_context_paths = self.get_command_to_context_paths(self.old_file)
 
         for old_command, old_context_paths in old_command_to_context_paths.items():
             if old_command in current_command_to_context_paths.keys() and \
@@ -391,17 +391,17 @@ class IntegrationValidator(YMLBasedValidator):
 
         return False
 
-    def get_arg_to_required_dict(self, integration_json, args='configuration'):
+    def get_arg_to_required_dict(self, integration_json, **kwargs):
         """Get a dictionary field name to its required status.
 
         Args:
+            **kwargs:
             integration_json (dict): Dictionary of the examined integration.
-            args:
 
         Returns:
             dict. Field name to its required status.
         """
-        return super(IntegrationValidator, self).get_arg_to_required_dict(integration_json, args)
+        return super(IntegrationValidator, self).get_arg_to_required_dict(integration_json['configuration'])
 
     def is_added_required_fields(self):
         """Check if required field were added."""
@@ -429,10 +429,7 @@ class IntegrationValidator(YMLBasedValidator):
 
     def _is_beta_integration(self):
         """Checks if beta field is True"""
-        try:
-            return self.load_data_from_file().get('beta') is True
-        except AttributeError:
-            return False
+        return self.current_file.get('beta') is True
 
     def validate_file_release_notes(self):
         """Validate that the file has proper release notes when modified.

@@ -1,10 +1,9 @@
-import json
+import os
 import os
 import re
 import sys
 from abc import abstractmethod
 
-import yaml
 from pykwalify.errors import CoreError
 
 from Tests.scripts.hook_validations.error_constants import Errors
@@ -35,7 +34,7 @@ class StructureValidator(object):
         self.is_renamed = is_renamed
 
     @abstractmethod
-    def is_file_valid(self, validate_rn=True):
+    def is_file_valid(self, validate_rn=True, *args, **kwargs):
         """Checks if given file is valid
 
         Returns:
@@ -50,7 +49,7 @@ class StructureValidator(object):
             if validate_rn and not self.is_release_branch():
                 self.validate_file_release_notes()
 
-    def _is_scheme_valid(self, schema_name):
+    def is_scheme_valid(self, schema_name):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
@@ -66,7 +65,8 @@ class StructureValidator(object):
         except CoreError as err:
             print_error('Failed: {} failed.\n{}'.format(self.file_path, str(err)))
             self.is_valid = False
-        return self.is_valid
+            return False
+        return True
 
     @staticmethod
     def is_release_branch():
@@ -98,12 +98,6 @@ class StructureValidator(object):
             if arg not in old_dict.keys() and required:
                 return False
         return True
-
-    @abstractmethod
-    def load_data_from_file(self, load_function):
-        with open(self.file_path, 'r') as file_obj:
-            loaded_file_data = load_function(file_obj)
-            return loaded_file_data
 
     @staticmethod
     def get_file_id_from_loaded_file_data(loaded_file_data):
