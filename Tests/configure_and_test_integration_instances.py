@@ -2,7 +2,7 @@ import argparse
 import uuid
 import demisto_client
 from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
-from Tests.test_integration import __get_integration_configuration, __test_integration_instance
+from Tests.test_integration import __get_integration_config, __test_integration_instance
 from Tests.test_utils import print_error
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command
@@ -184,7 +184,7 @@ def main():
             integration_params = integration.get('params', None)
             is_byoi = integration.get('byoi', True)
 
-            integration_configuration = __get_integration_configuration(client, integration_name)
+            integration_configuration = __get_integration_config(client, integration_name)
             module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                                   integration_instance_name, is_byoi)
             module_instances.append(module_instance)
