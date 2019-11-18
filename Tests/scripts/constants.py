@@ -72,6 +72,7 @@ INTEGRATION_YML_REGEX = r'{}/([^\\/]+)/\1.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_REGEX = r'{}/(integration-[^\\/]+)\.yml$'.format(INTEGRATIONS_DIR)
 INTEGRATION_README_REGEX = r'{}/([^\\/]+)/README.md$'.format(INTEGRATIONS_DIR)
 
+PACKS_DIR_REGEX = r'^(?:./)?{}/'.format(PACKS_DIR)
 PACKS_INTEGRATION_JS_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.js'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_SCRIPT_JS_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.js'.format(
