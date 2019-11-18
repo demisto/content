@@ -35,7 +35,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: Name of whom you want to say hello
+      description: The name of whom you want to say hello to.
       isArray: false
       name: name
       required: false
