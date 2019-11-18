@@ -1,126 +1,134 @@
 # Overview
 
-To understand Incident Context, we must first know what an incident is. When we refer to "Incidents" in Demisto, we are talking about events. These events could be malicious files found in an email, someone losing their device, and even abnormal outbound traffic. How an analyst reacts to these incidents depends on the information they have at hand to make an informed decision. It is with the Incident Context, that this is achieved.   
-
 Context is a map (dictionary) /JSON object that is created for each incident and is used to store structured results from the integration commands and automation scripts. The context keys are strings and the values can be strings, numbers, objects, and arrays.
 
-The main use of context is to pass data between playbook tasks. Another usage is to capture the important structured data from automations and display the data in the incident summary.
-
-Since context is used within playbooks, it is critical that the context outputs remain reproducible. Meaning, that the structure of the context does not change. 
+The main use of context is to pass data between playbook tasks, one task stores output in the context and the other task reads that output from the context and uses it.
 
 Let's look at a real world example that can show you how context is used:
 
-## URLScan
+For example **ThreatStream** integration has command **threatstream-analysis-report**. 
+Returns the report of a file or URL that was submitted to the sandbox.
 
-```python
-
-    dbot_score = {
-        'Indicator': 'malware.wicar.org',
-        'Score': 3,
-        'Type': 'url'
-    }
-    
-    url_cont = {
-        'Data': 'malware.wicar.org',
-        'Malicious': {
-            'Description': 'Match found in Urlscan.io database',
-            'Vendor': 'urlscan.io'
-        }
-    }
-    
-    cont = {
-        'ASN': 'AS40630',
-        'Certificates': {
-            'Issuer': 'Google Internet Authority G3',
-            'SubjectName': '*.googleapis.com',
-            'ValidFrom': '2018-12-04 09:33:00',
-            'ValidTo': '2019-02-26 09:33:00'
+#### REST API returns
+```json
+{
+    "Category": "File",
+    "Completed": "2019-05-30 14:06:33",
+    "Duration": 68,
+    "Network": [
+        {
+            "UdpDestination": "8.8.8.8",
+            "UdpPort": 53,
+            "UdpSource": "192.168.2.4"
         },
-        'Country': ['US', 'EU', 'IE', 'DE', 'NL'],
-        'Data': 'malware.wicar.org',
-    }
-
-    ec = {
-        'URLScan(val.URL && val.URL == obj.URL)': cont, # Please see the section on DT below
-        'DBotScore': dbot_score,
-        'URL': url_cont
-    }
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['markdown'],
-        'Contents': response,
-        'HumanReadable': tableToMarkdown('{} - Scan Results'.format(url_query), human_readable),
-        'EntryContext': ec
-    })
-```
-
-In this example, we are pushing three different dictionaries into the context. ```cont``` which contains the context specific to URLScan, ```dbot_score``` which contains the DBot score context, and ```URL``` which is part of the context standard for URLs.
-
-In the Integration settings, we see:
-
-![screen shot 2019-01-09 at 14 54 40](https://user-images.githubusercontent.com/42912128/50900672-90a7c800-141e-11e9-946d-8d5352e279ec.png)
-
-These paths can be seen in the context found in the war room, here:
-
-![screen shot 2019-01-09 at 14 57 17](https://user-images.githubusercontent.com/42912128/50900776-e3817f80-141e-11e9-8263-d75cf6cf2dc0.png)
-
-
-**Please Note:** When improving or replacing an existing integration, verify that the context outputs are backwards compatible. Otherwise, changes can break playbooks and prevent them from running.
-
-# Context
-Context is defined by an integration by adding the following to the results command:
-```
-ec = 'VirusTotal.IP(val.Address==obj.Address)': {
-    'Address': '8.8.8.8'.,
-    'ASN': 'BLA_ASN',
-    'Domain': ['google.com']
+        {
+            "UdpDestination": "192.168.2.4",
+            "UdpPort": 65324,
+            "UdpSource": "8.8.8.8"
+        },
+        {
+            "UdpDestination": "192.168.2.4",
+            "UdpPort": 54896,
+            "UdpSource": "8.8.8.8"
+        }
+    ],
+    "ReportID": "413336",
+    "Started": "2019-05-30 14:05:25",
+    "Verdict": "Benign",
+    "VmID": "",
+    "VmName": ""
 }
-
-demisto.results({
-    'Type': entryTypes['note'],
-    'ContentsFormat': formats['markdown'],
-    'Contents': raw_content_obj,
-    'HumanReadable': human_readable_obj,
-    'EntryContext': ec
-})
 ```
 
-## DT (Demisto Transform Language)
-In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/content/blob/master/docs/code_conventions/README.MD#linking-context).
-
-
-## Adding Context to an Integration
-When adding context to an integration, we must explicitly define what the context paths are so they will be accessible. See below to understand how context should be defined in the Integration Settings.
-
-<img src="https://user-images.githubusercontent.com/42912128/50211819-42089000-0382-11e9-8a7f-421a92a89620.png" width="700" align="middle">
-
-When fully configured, the example above will produce the results shown below:
-
-<img src="https://user-images.githubusercontent.com/42912128/50211940-8431d180-0382-11e9-8e0c-a57672b4fcc1.png" width="250" align="middle">
-
-## Context Code Conventions
-Demisto uses a standardised format for it's context paths and should match the following:
-```
-ProductName.Object.Field
-```
-
-## Examples
-Examples of how other Integrations have defined Context are as follows:
-```
-Panorama.SecurityRule.Name
-Panorama.SecurityRule.IPAddress
-
-AWS.S3.Buckets.Policy.Version
-AWS.S3.Buckets.Policy.PolicyId
-
-
-Centreon.Service.Name
-Centreon.Service.ServiceId
-Centreon.Service.Description
-```
+#### Integration YML
+In Demisto integration yml we will define outputs in the following way:
+**BrandName.Object.PropertyName**
 
 In the context menu, you will see three fields; Context Path, Description and Type. Their uses are as follows:
 * **Context Path** - This is a Dot Notation representation of the path to access the context
 * **Description** - A short description of what the context is
 * **Type** - Indicating the type of value that is located at the path enables Demisto to format the data correctly
+
+
+```buildoutcfg
+outputs:
+- contextPath: ThreatStream.Analysis.ReportID
+  description: The ID of the report submitted to the sandbox.
+  type: String
+- contextPath: ThreatStream.Analysis.Category
+  description: The report category.
+  type: String
+- contextPath: ThreatStream.Analysis.Started
+  description: Detonation start time.
+  type: String
+- contextPath: ThreatStream.Analysis.Completed
+  description: Detonation completion time.
+  type: String
+- contextPath: ThreatStream.Analysis.Duration
+  description: Duration of the detonation (in seconds).
+  type: Number
+- contextPath: ThreatStream.Analysis.VmName
+  description: The name of the VM.
+  type: String
+- contextPath: ThreatStream.Analysis.VmID
+  description: The ID of the VM.
+  type: String
+- contextPath: ThreatStream.Analysis.Network.UdpSource
+  description: The source of UDP.
+  type: String
+- contextPath: ThreatStream.Analysis.Network.UdpDestination
+  description: The destination of UDP.
+  type: String
+- contextPath: ThreatStream.Analysis.Network.UdpPort
+  description: The port of the UDP.
+  type: String
+- contextPath: ThreatStream.Analysis.Verdict
+  description: The verdict of the sandbox detonation.
+  type: String
+```
+
+#### In the code
+```python
+report_id = '413336'
+
+response_from_api = {
+    "Category": "File",
+    "Completed": "2019-05-30 14:06:33",
+    "Duration": 68,
+    "Network": [
+        {
+            "UdpDestination": "8.8.8.8",
+            "UdpPort": 53,
+            "UdpSource": "192.168.2.4"
+        },
+        {
+            "UdpDestination": "192.168.2.4",
+            "UdpPort": 65324,
+            "UdpSource": "8.8.8.8"
+        },
+        {
+            "UdpDestination": "192.168.2.4",
+            "UdpPort": 54896,
+            "UdpSource": "8.8.8.8"
+        }
+    ],
+    "ReportID": "413336",
+    "Started": "2019-05-30 14:05:25",
+    "Verdict": "Benign",
+    "VmID": "",
+    "VmName": ""
+} # assume that we get this response from the service
+
+return_outputs(
+    readable_outputs=tableToMarkdown(f'Analysis Report {report_id}', [response_from_api]),
+    outputs={
+        'ThreatStream.Analysis(val.ReportID == obj.ReportID)': response_from_api
+    },
+    raw_response=response_from_api
+)
+```
+
+**Note**: The code **must** match the yml! The brand name (e.g. `ThreatStream`), the object name (e.g. `Analysis`)
+
+### DT (Demisto Transform Language)
+In the above example, we observe the entry context using ```(val.Address==obj.Address)```. This works to *tie together* related entry context objects. In this instance, we are using the value of the Address key as the unique identifier to search through the existing context and link related objects. This prevents data from being overwritten as well as further enriches an existing entry with more information. Learn more about linking context [here](https://github.com/demisto/content/blob/master/docs/DT).
