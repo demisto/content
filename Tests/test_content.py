@@ -607,11 +607,14 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
-        with open(file_path, "w") as is_build_failed_file:
-            is_build_failed_file.write('Build failed')
+        build_status = 'Build failed'
+    else:
+        build_status = 'Build passed'
+    file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
+    with open(file_path, "w") as is_build_failed_file:
+        is_build_failed_file.write(str(build_status))
 
-        sys.exit(1)
+    sys.exit(1)
 
 
 def main():
