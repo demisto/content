@@ -9,9 +9,6 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
-# get content artifacts from last successful build on master
-python ./Tests/get_build_content_artifacts.py
-
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
