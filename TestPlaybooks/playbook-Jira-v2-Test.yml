@@ -630,7 +630,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: File.Name
+              simple: ${Ticket.attachment}
             iscontext: true
           right:
             value:
