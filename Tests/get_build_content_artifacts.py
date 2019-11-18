@@ -75,7 +75,9 @@ def modify_content_descriptor(content_zipfile_name):
                 print('release number was "{}"'.format(release_num))
                 split_release_num = release_num.split('.')
                 decreased_digit = str(int(split_release_num[0]) - 1)
-                new_release_num = '.'.join([decreased_digit, *split_release_num[1:]])
+                new_release_num_arr = [decreased_digit]
+                new_release_num_arr.extend(split_release_num[1:])
+                new_release_num = '.'.join(new_release_num_arr)
                 print('decreaseing release number to "{}"'.format(new_release_num))
                 desc_json['release'] = new_release_num
             with open(file_path, 'w') as the_file:
