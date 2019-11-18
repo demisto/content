@@ -213,7 +213,8 @@ script:
     name: infoblox-create-rpz-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -242,7 +243,8 @@ script:
     name: infoblox-create-a-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -262,7 +264,7 @@ script:
     - default: false
       description: The IPv6 address of the substitute rule.
       isArray: false
-      name: ip64addr
+      name: ipv6addr
       required: false
       secret: false
     deprecated: false
@@ -271,7 +273,8 @@ script:
     name: infoblox-create-aaaa-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -289,7 +292,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Mail exchanger name in FQDN format. This value can be in unicode format.
+      description: Mail exchanger name in FQDN format. This value can be in unicode
+        format.
       isArray: false
       name: mail_exchanger
       required: true
@@ -306,7 +310,8 @@ script:
     name: infoblox-create-mx-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -324,7 +329,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The order parameter of the Substitute (NAPTR Record) Rule records. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Valid values are from 0 to 65535 (inclusive).
+      description: The order parameter of the Substitute (NAPTR Record) Rule records.
+        This parameter specifies the order in which the NAPTR rules are applied when
+        multiple rules are present. Valid values are from 0 to 65535 (inclusive).
       isArray: false
       name: order
       required: true
@@ -336,7 +343,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The replacement field of the Substitute (NAPTR Record) Rule object. For nonterminal NAPTR records, this field specifies the next domain name to look up.
+      description: The replacement field of the Substitute (NAPTR Record) Rule object.
+        For nonterminal NAPTR records, this field specifies the next domain name to
+        look up.
       isArray: false
       name: replacement
       required: true
@@ -347,7 +356,8 @@ script:
     name: infoblox-create-naptr-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -365,16 +375,23 @@ script:
       required: false
       secret: false
     - default: false
-      description: The domain name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The domain name of the RPZ Substitute (PTR Record) Rule object
+        in FQDN format.
       isArray: false
       name: ptrdname
       required: true
       secret: false
     - default: false
-      description: The IPv4/IPv6 Address of the substitute rule.
+      description: The IPv4 Address of the substitute rule.
       isArray: false
-      name: ip_addr
-      required: true
+      name: ipv4addr
+      required: false
+      secret: false
+    - default: false
+      description: The IPv6 Address of the substitute rule.
+      isArray: false
+      name: ipv6addr
+      required: false
       secret: false
     deprecated: false
     description: Create 'Substitute (PTR Record) Rule'.
@@ -382,7 +399,8 @@ script:
     name: infoblox-create-ptr-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -400,25 +418,29 @@ script:
       required: false
       secret: false
     - default: false
-      description: The port of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      description: The port of the Substitute (SRV Record) Rule. Valid values are
+        from 0 to 65535 (inclusive).
       isArray: false
       name: port
       required: true
       secret: false
     - default: false
-      description: The priority of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      description: The priority of the Substitute (SRV Record) Rule. Valid values
+        are from 0 to 65535 (inclusive).
       isArray: false
       name: priority
       required: true
       secret: false
     - default: false
-      description: The target of the Substitute (SRV Record) Rule in FQDN format. This value can be in unicode format.
+      description: The target of the Substitute (SRV Record) Rule in FQDN format.
+        This value can be in unicode format.
       isArray: false
       name: target
       required: true
       secret: false
     - default: false
-      description: The weight of the Substitute (SRV Record) Rule. Valid values are from 0 to 65535 (inclusive).
+      description: The weight of the Substitute (SRV Record) Rule. Valid values are
+        from 0 to 65535 (inclusive).
       isArray: false
       name: weight
       required: true
@@ -429,7 +451,8 @@ script:
     name: infoblox-create-srv-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -447,7 +470,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces.
+      description: Text associated with the record. To enter leading, trailing, or
+        embedded spaces in the text, add quotes around the text to preserve the spaces.
       isArray: false
       name: text
       required: true
@@ -458,7 +482,8 @@ script:
     name: infoblox-create-txt-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
@@ -487,7 +512,8 @@ script:
     name: infoblox-create-ipv4-substitute-record-rule
   - arguments:
     - default: false
-      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN format.
+      description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
+        format.
       isArray: false
       name: name
       required: true
