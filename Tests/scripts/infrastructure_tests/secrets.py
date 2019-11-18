@@ -1,7 +1,10 @@
-from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_files, is_text_file
+from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_files, is_text_file, \
+    search_potential_secrets
 
 
 class TestSecrets:
+    TEST_YML_FILE = './Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml'
+
     def test_get_secrets(self):
         secrets = get_secrets('master', True)
         assert not secrets
@@ -17,3 +20,7 @@ class TestSecrets:
         changed_files = 'Integrations/Recorded_Future/Recorded_Future.yml'
         is_txt = is_text_file(changed_files)
         assert is_txt is True
+
+    def test_search_potential_secrets(self):
+        secrets_found = search_potential_secrets([self.TEST_YML_FILE])
+        assert not secrets_found
