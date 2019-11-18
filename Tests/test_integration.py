@@ -190,6 +190,30 @@ def __disable_integrations_instances(client, module_instances):
             print_error(pformat(res))
 
 
+def __enable_integrations_instances(client, module_instances):
+    for configured_instance in module_instances:
+        # tested with POSTMAN, this is the minimum required fields for the request.
+        module_instance = {
+            key: configured_instance[key] for key in ['id', 'brand', 'name', 'data', 'isIntegrationScript', ]
+        }
+        module_instance['enable'] = "true"
+        module_instance['version'] = -1
+
+        try:
+            res = demisto_client.generic_request_func(self=client, method='PUT',
+                                                      path='/settings/integration',
+                                                      body=module_instance)
+        except ApiException as conn_err:
+            print_error(
+                'Failed to enable integration instance, error trying to communicate with demisto '
+                'server: {} '.format(
+                    conn_err))
+
+        if res[1] != 200:
+            print_error('enable instance failed with status code ' + str(res[1]))
+            print_error(pformat(res))
+
+
 # create incident with given name & playbook, and then fetch & return the incident
 def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # create incident
