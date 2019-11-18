@@ -31,7 +31,7 @@ def __get_integration_config(client, integration_name):
     }
     try:
         res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
-                                                  method='POST', body=body)
+                                                      method='POST', body=body)
     except ApiException as conn_error:
         print(conn_error)
 
