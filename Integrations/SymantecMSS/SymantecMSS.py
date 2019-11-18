@@ -5,10 +5,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import xml
-import html
 import tempfile
 import contextlib
 import OpenSSL.crypto
+from xml.sax.saxutils import escape
 
 ''' GLOBALS/PARAMS '''
 
@@ -76,8 +76,9 @@ DST = 1 if time.daylight else 0
 
 def api_call(body, headers):
     """ Makes an HTTP Post to the SWS incidents API using the configured certificate """
+    body = body.replace()
     with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
-        res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=html.escape(body), headers=headers)
+        res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=escape(body), headers=headers)
         if res.status_code < 200 or res.status_code >= 300:
             raise Exception(
                 "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
