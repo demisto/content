@@ -5,8 +5,7 @@ from Tests.test_integration import configure_proxy_unsecure, __enable_integratio
 from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
 from Tests.test_integration import __get_integration_configuration, __test_integration_instance
 from Tests.test_utils import print_error
-from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests  # ,organize_tests
-# import subprocess
+from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command
 
 
@@ -17,17 +16,6 @@ def options_handler():
     parser.add_argument('-s', '--server', help='The server URL to connect to')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
-    # parser.add_argument('-n', '--nightly', type=str2bool, help='Run nightly tests')
-    # parser.add_argument('-t', '--slack', help='The token for slack', required=True)
-    # parser.add_argument('-a', '--circleci', help='The token for circleci', required=True)
-    # parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
-    # parser.add_argument('-g', '--buildName', help='The build name', required=True)
-    # parser.add_argument('-i', '--isAMI', type=str2bool, help='is AMI build or not', default=False)
-    # parser.add_argument('-m', '--memCheck', type=str2bool,
-    #                     help='Should trigger memory checks or not. The slack channel to check the data is: '
-    #                          'dmst_content_nightly_memory_data', default=False)
-    # parser.add_argument('-d', '--serverVersion', help='Which server version to run the '
-    #                                                   'tests on(Valid only when using AMI)', default="NonAMI")
 
     options = parser.parse_args()
 
@@ -135,35 +123,6 @@ def set_integration_instance_parameters(integration_configuration, integration_p
     return module_instance
 
 
-# def fetch_integrations_for_configuration():
-#     pass
-
-
-# # Test integrations instances after content upgrade/upload
-# def test_integrations(client, integrations, is_mock_run=False):
-#     module_instances = []
-#     for integration in integrations:
-#         integration_name = integration.get('name', None)
-#         integration_instance_name = integration.get('instance_name', '')
-#         integration_params = integration.get('params', None)
-#         is_byoi = integration.get('byoi', True)
-
-#         if is_mock_run:
-#             configure_proxy_unsecure(integration_params)
-
-#         module_instance = __create_integration_instance(client, integration_name,
-#                                                         integration_instance_name,
-#                                                         integration_params, is_byoi)
-#         if module_instance is None:
-#             print_error('Failed to create instance')
-#             __delete_integrations_instances(client, module_instances)
-#             return False, -1
-
-#         module_instances.append(module_instance)
-#         print('Create integration {} succeed'.format(integration_name, ''))
-#     return module_instance
-
-
 def main():
     options = options_handler()
     username = options.user
@@ -177,20 +136,13 @@ def main():
 
     username = secret_conf.get('username')
     password = secret_conf.get('userPassword')
-    # demisto_api_key = secret_conf.get('temp_apikey')
 
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
     tests = conf['tests']
-    # skipped_tests_conf = conf['skipped_tests']
     nightly_integrations = conf['nightly_integrations']
     skipped_integrations_conf = conf['skipped_integrations']
     unmockable_integrations = conf['unmockable_integrations']
-
-    # These two lines may be superfluous because I think  we get all_tests from `tests = conf['tests']`
-    # mock_tests, mockless_tests = organize_tests(tests, unmockable_integrations, skipped_integrations_conf,
-    #                                             nightly_integrations)
-    # all_tests = mock_tests.extend(mockless_tests)
 
     skipped_integration = set([])
     all_module_instances = []
@@ -211,8 +163,6 @@ def main():
     # of an integration that we want to configure with different configuration values. Look at
     # [conf.json](../conf.json) for examples
     for test in tests_for_iteration:
-        # playbook_id = t['playbookID']
-        # nightly_test = t.get('nightly', False)
         integrations_conf = test.get('integrations', [])
         instance_names_conf = test.get('instance_names', [])
 
@@ -236,7 +186,6 @@ def main():
             integration_configuration = __get_integration_configuration(client, integration_name)
             module_instance = set_integration_instance_parameters(integration_configuration, integration_params, integration_instance_name, is_byoi)
             module_instances.append(module_instance)
-        # module_instances = test_integrations(client, integrations, is_mock_run=False)
         all_module_instances.extend(module_instances)
 
     # Test all module instances pre-updating content
@@ -255,7 +204,6 @@ def main():
             print_error(failure_msg)
 
     # Upload current build's content_new.zip to demisto server (aka upload new content)
-    # subprocess.call(['python', 'update_content_data.py', '-u', username, '-p', password, '-s', server, '-c', conf_path, '-e', secret_conf_path, '-up', './content_new.zip'])
     content_zip_path = '.content_new.zip'
     cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server, content_zip_path)
     run_command(cmd_str, is_silenced=False)
