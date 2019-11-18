@@ -1,5 +1,4 @@
 import sys
-import os
 import json
 import subprocess
 from Tests.test_utils import print_warning, print_error
