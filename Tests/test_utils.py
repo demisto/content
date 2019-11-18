@@ -151,36 +151,26 @@ def get_last_release_version():
     return tags[0]
 
 
-def get_yaml(file_path):
+def get_file(method, file_path, type_of_file):
     data_dictionary = None
     with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".yaml") or file_path.endswith('.yml'):
+        if file_path.endswith(type_of_file):
             try:
-                data_dictionary = yaml.safe_load(f)
+                data_dictionary = method(f)
             except Exception as e:
-                print_error(file_path + " has yml structure issue. Error was: " + str(e))
+                print_error(file_path + " has a structure issue. Error was: " + str(e))
                 return []
-
     if type(data_dictionary) is dict:
         return data_dictionary
-
     return {}
+
+
+def get_yaml(file_path):
+    return get_file(yaml.safe_load, file_path, ('yml', 'yaml'))
 
 
 def get_json(file_path):
-    data_dictionary = None
-    with open(os.path.expanduser(file_path), "r") as f:
-        if file_path.endswith(".json"):
-            try:
-                data_dictionary = json.load(f)
-            except Exception as e:
-                print_error(file_path + " has json structure issue. Error was: " + str(e))
-                return []
-
-    if type(data_dictionary) is dict:
-        return data_dictionary
-
-    return {}
+    return get_file(json.load, file_path, 'json')
 
 
 def get_script_or_integration_id(file_path):
