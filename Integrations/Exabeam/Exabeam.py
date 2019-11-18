@@ -27,10 +27,9 @@ class Client(BaseClient):
     """
     def __init__(self, base_url: str, username: str, password: str, verify: bool,
                  proxies: Optional[MutableMapping[str, str]], headers):
-        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxies)
+        super().__init__(base_url=f'{base_url}', headers=headers, verify=verify, proxy=proxies)
         self.username = username
         self.password = password
-        self.headers = headers
         self.session = requests.Session()
         self.session.headers = headers
         self._login()
@@ -45,9 +44,13 @@ class Client(BaseClient):
         """
         full_url = full_url if full_url else f'{self._base_url}{url_suffix}'
         try:
+            # demisto.log(str(self.session.headers))
+            # demisto.log(str(self.session.cookies))
+            # demisto.log(str(params))
             res = self.session.request(
                 method,
                 full_url,
+                headers=self._headers,
                 verify=self._verify,
                 data=data,
                 proxies=self._proxies,
@@ -101,7 +104,10 @@ class Client(BaseClient):
         """
         Logout from the session
         """
-        self.http_request('GET', self.http_request('GET', f'{self._base_url}/api/auth/logout'))
+        try:
+            self.http_request('GET', self.http_request('GET', f'{self._base_url}/api/auth/logout'))
+        except Exception as err:
+            demisto.debug(str(err))
 
     def test_module_request(self):
         """
@@ -124,7 +130,7 @@ class Client(BaseClient):
             'num': num,
             'numberOfResults': limit
         }
-        response = self.http_request('GET', '/uba/api/users/notable', params=params)
+        response = self.http_request('GET', url_suffix='/uba/api/users/notable', params=params)
         return response
 
     def get_user_info_request(self, username: str) -> Dict:
@@ -135,7 +141,7 @@ class Client(BaseClient):
         Returns:
             the user info
         """
-        response = self.http_request('GET', f'/uba/api/user/{username}/info')
+        response = self.http_request('GET', url_suffix=f'/uba/api/user/{username}/info')
         return response
 
     def get_peer_groups_request(self) -> Dict:
@@ -143,7 +149,7 @@ class Client(BaseClient):
         Returns:
             peer groups
         """
-        response = self.http_request('GET', '/uba/api/peerGroup')
+        response = self.http_request('GET', url_suffix='/uba/api/peerGroup')
         return response
 
     def get_user_labels_request(self) -> Dict:
@@ -151,7 +157,7 @@ class Client(BaseClient):
         Returns:
             user labels
         """
-        response = self.http_request('GET', '/uba/api/userLabel')
+        response = self.http_request('GET', url_suffix='/uba/api/userLabel')
         return response
 
     def user_sequence_request(self, username: str = None, parse_start_time=None, parse_end_time=None) -> Dict:
@@ -169,7 +175,7 @@ class Client(BaseClient):
             'startTime': parse_start_time,
             'endTime': parse_end_time
         }
-        response = self.http_request('GET', f'/uba/api/user/{username}/sequences', params=params)
+        response = self.http_request('GET', url_suffix=f'/uba/api/user/{username}/sequences', params=params)
         return response
 
     def get_watchlist_request(self):
@@ -177,7 +183,7 @@ class Client(BaseClient):
         Returns:
             a watchlist
         """
-        response = self.http_request('GET', '/uba/api/watchlist')
+        response = self.http_request('GET', url_suffix='/uba/api/watchlist')
         return response
 
     def create_watchlist_request(self, title=None, category=None, description=None, items=None) -> Dict:
@@ -186,7 +192,7 @@ class Client(BaseClient):
             title: watchlist title
             category: watchlist category
             description: watchlist description
-            items: watchlist items
+            items: watchlist items. username or asset name
 
         Returns:
             a watchlist
@@ -197,24 +203,26 @@ class Client(BaseClient):
             'description': description,
             'items': items
         }
-        response = self.http_request('POST', '/uba/api/watchlist', params=params)
-        return response.json()
+        self.session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
+        response = self.http_request('POST', url_suffix='/uba/api/watchlist', params=params)
+        return response
 
-    def watchlist_add_user_request(self, user_id: str = None, watchlist_id: str = None) -> Dict:
+    def watchlist_add_user_request(self, username: str = None, watchlist_id: str = None) -> Dict:
         """
         Args:
-            user_id: user id
+            username: user name
             watchlist_id: watchlist id
 
         Returns:
             all updated watchlist
         """
         params = {
-            'itemId': user_id,
+            'itemId': username,
             'watchListId': watchlist_id
         }
-        response = self.http_request('PUT', 'f/uba/api/watchlist/user/{user_id}/add', params=params)
-        return response.json()
+        self.session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
+        response = self.http_request('PUT', url_suffix=f'/uba/api/watchlist/user/{username}/add', params=params)
+        return response
 
     def delete_watchlist_request(self, watchlist_id: str = None):
         """
@@ -222,19 +230,19 @@ class Client(BaseClient):
             watchlist_id: watchlist id
 
         """
-        self.http_request('DELETE', f'watchlist/{watchlist_id}')
+        self.http_request('DELETE', url_suffix=f'/uba/api/watchlist/{watchlist_id}/')
 
-    def get_asset_data_request(self, asset_id: str = None) -> Dict:
+    def get_asset_data_request(self, asset_name: str = None) -> Dict:
         """
 
         Args:
-            asset_id: asser ud
+            asset_name: asser ud
 
         Returns:
             asset data
         """
-        response = self.http_request('GET', f'asset/{asset_id}/data')
-        return response.json()
+        response = self.http_request('GET', url_suffix=f'/uba/api/asset/{asset_name}/data')
+        return response
 
 
 def test_module(client: Client, *_):
@@ -306,7 +314,7 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         raise Exception('The time unit is incorrect - can be hours, days, months, years.')
 
     contents: list = []
-    headers = ['UserFullName', 'UserName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
+    headers = ['UserName', 'UserFullName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
     users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
     if not users:
@@ -318,7 +326,7 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         contents = contents_append_notable_user_info(contents, user, user_, user_info)
 
     entry_context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
-    human_readable = tableToMarkdown('Exabeam Notable Users', contents, headers=headers, removeNull=True)
+    human_readable = tableToMarkdown('Exabeam Notable Users:', contents, headers=headers, removeNull=True)
 
     return human_readable, entry_context, users
 
@@ -372,7 +380,7 @@ def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     if not user_info.get('firstSeen'):
         return f'The user {username} was not found', {}, {}
 
-    human_readable = tableToMarkdown(f'User {username} information', contents, headers, removeNull=True)
+    human_readable = tableToMarkdown(f'User {username} information:', contents, headers, removeNull=True)
     return human_readable, context, user
 
 
@@ -395,7 +403,7 @@ def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     user = client.user_sequence_request(username, parse_start_time, parse_end_time)
     session = user.get('sessions')
     if not session:
-        return f'The user {username} was not found.', {}, {}
+        return f'The user {username} has no sessions in this timeframe.', {}, {}
 
     for session_ in session:
         contents.append({
@@ -414,7 +422,7 @@ def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
             'Session': contents
         }
     }
-    human_readable = tableToMarkdown(f'User {username} sessions information', contents, headers, removeNull=True)
+    human_readable = tableToMarkdown(f'User {username} sessions information:', contents, headers, removeNull=True)
 
     return human_readable, entry_context, user
 
@@ -432,7 +440,7 @@ def get_peer_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
         contents.append({'Name': group})
 
     entry_context = {'Exabeam.PeerGroup(val.Name && val.Name === obj.Name)': contents}
-    human_readable = tableToMarkdown('Exabeam Peer Groups', contents)
+    human_readable = tableToMarkdown('Exabeam Peer Groups:', contents)
 
     return human_readable, entry_context, groups
 
@@ -514,12 +522,12 @@ def watchlist_add_user(client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Dict
 
     """
-    user_id = args.get('user_id')
+    username = args.get('username')
     watchlist_id = args.get('watchlist_id')
 
-    response = client.watchlist_add_user_request(user_id, watchlist_id)
+    response = client.watchlist_add_user_request(username, watchlist_id)
     if not response:
-        raise Exception(f'The user {user_id} was not added to the watchlist {watchlist_id}.')
+        raise Exception(f'The user {username} was not added to the watchlist {watchlist_id}.')
 
     contents = {
         'UserID': response.get('item'),
@@ -565,7 +573,7 @@ def contents_asset_data(asset_data) -> Dict:
     return contents
 
 
-def get_asset_data(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any, Any]], Optional[Any]]:
     """  Return asset data for given asset ID (hostname or IP address)
 
     Args:
@@ -573,13 +581,13 @@ def get_asset_data(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         args: Dict
 
     """
-    asset_id = args.get('asset_id')
-    asset_data = client.get_asset_data_request(asset_id)
+    asset_name = args.get('asset_name')
+    asset_data = client.get_asset_data_request(asset_name)
 
     if not asset_data or 'asset' not in asset_data:
-        raise Exception(f'The asset {asset_id} have no data. Please verify that the asset id is valid.')
+        raise Exception(f'The asset {asset_name} has no data. Please verify that the asset name is valid.')
 
-    asset_data = asset_data.get('asset', None)
+    asset_data = asset_data.get('asset')
     contents = contents_asset_data(asset_data)
     entry_context = {'Exabeam.Asset(val.IPAddress && val.IPAddress === obj.IPAddress)': contents}
     human_readable = tableToMarkdown('Exabeam Asset Data:', contents, removeNull=True)

@@ -471,9 +471,9 @@ script:
     name: exabeam-delete-watchlist
   - arguments:
     - default: false
-      description: Asset ID.
+      description: Asset name.
       isArray: false
-      name: asset_id
+      name: asset_name
       required: true
       secret: false
     deprecated: false
