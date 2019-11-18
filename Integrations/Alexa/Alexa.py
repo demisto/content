@@ -19,50 +19,49 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 def alexa_domain_command():
     domain = demisto.args().get('domain')
-    # resp = requests.request('GET', 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
-    # root = ET.fromstring(str(resp.content))
-    # try:
-    #     rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
-    #     if int(rank) > THRESHOLD:
-    #         dbot_score = 2
-    #         dbot_score_text = 'suspicious'
-    #     else:
-    #         dbot_score = 0
-    #         dbot_score_text = 'unknown'
-    # except AttributeError:
-    #     rank = 'Unknown'
-    #     dbot_score = 2
-    #     dbot_score_text = 'suspicious'
-    # dom_ec = {'Name': domain}
-    # dbot_ec = {
-    #     'Score': dbot_score,
-    #     'Vendor': 'Alexa Rank Indicator',
-    #     'Domain': domain,
-    #     'Type': 'domain'
-    # }
-    # ec = {
-    #     'Domain(val.Name && val.Name == obj.Name)': dom_ec,
-    #     'DBotScore': dbot_ec,
-    #     'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
-    #         'Name': domain,
-    #         'Rank': rank
-    #     }
-    # }
-    # hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
-    #              ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
-    # demisto.results({
-    #     'Type': entryTypes['note'],
-    #     'ContentsFormat': formats['markdown'],
-    #     'Contents': xml2json(resp.content),
-    #     'HumanReadable': hr_string,
-    #     'EntryContext': ec
-    # })
-    demisto.results('BABABOOEY BABABOOEY')
+    resp = requests.request('GET', 'https://data.alexa.com/data'.format(domain), verify=USE_SSL)
+    root = ET.fromstring(str(resp.content))
+    try:
+        rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
+        if int(rank) > THRESHOLD:
+            dbot_score = 2
+            dbot_score_text = 'suspicious'
+        else:
+            dbot_score = 0
+            dbot_score_text = 'unknown'
+    except AttributeError:
+        rank = 'Unknown'
+        dbot_score = 2
+        dbot_score_text = 'suspicious'
+    dom_ec = {'Name': domain}
+    dbot_ec = {
+        'Score': dbot_score,
+        'Vendor': 'Alexa Rank Indicator',
+        'Domain': domain,
+        'Type': 'domain'
+    }
+    ec = {
+        'Domain(val.Name && val.Name == obj.Name)': dom_ec,
+        'DBotScore': dbot_ec,
+        'Alexa.Domain(val.Name && val.Name == obj.Domain.Name)': {
+            'Name': domain,
+            'Rank': rank
+        }
+    }
+    hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
+                 ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': xml2json(resp.content),
+        'HumanReadable': hr_string,
+        'EntryContext': ec
+    })
 
 
 def test_module_command():
     domain = 'google.com'
-    resp = requests.request('GET', 'https://data.alexa.com/data?cli=10&dat=s&url={}'.format(domain), verify=USE_SSL)
+    resp = requests.request('GET', 'https://data.alexa.com/data'.format(domain), verify=USE_SSL)
     root = ET.fromstring(str(resp.content))
     rank = root.find("SD[0]/POPULARITY").attrib['TEXT']  # type: ignore
     if rank == '1':
