@@ -194,6 +194,7 @@ def generate_md_context_get_issue(data):
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
             md_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
+            context_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
 
         get_issue_obj['md'].append(md_obj)
         get_issue_obj['context'].append(context_obj)
