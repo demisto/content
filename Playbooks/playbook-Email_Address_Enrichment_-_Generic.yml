@@ -616,5 +616,3 @@ outputs:
 - contextPath: DBotScore.Score
   description: The DBot score
   type: number
-tests:
-  - email_test

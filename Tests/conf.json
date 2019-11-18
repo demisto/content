@@ -831,18 +831,7 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "instance_names": "virus_total_general",
-            "playbookID": "ip_enrichment_generic_test"
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "OpenPhish",
-            "playbookID": "email_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -1966,8 +1955,6 @@
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "ip_enrichment_generic_test": "Issue 19815",
-        "email_test": "Issue 19816",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",

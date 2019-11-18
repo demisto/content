@@ -632,5 +632,3 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
-tests:
-- ip_enrichment_generic_test
