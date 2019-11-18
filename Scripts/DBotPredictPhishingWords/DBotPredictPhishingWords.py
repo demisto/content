@@ -1,7 +1,6 @@
+from CommonServerPython import *
 # pylint: disable=no-member
 import demisto_ml
-
-from CommonServerPython import *
 
 
 def get_model_data(model_name, store_type):
