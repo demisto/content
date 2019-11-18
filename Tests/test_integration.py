@@ -29,8 +29,11 @@ def __get_integration_config(client, integration_name):
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
-    res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
+    try:
+        res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
                                                   method='POST', body=body)
+    except ApiException as conn_error:
+        print(conn_error)
 
     res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
