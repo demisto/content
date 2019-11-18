@@ -6,7 +6,8 @@ from Tests.test_integration import __delete_integrations_instances, __disable_in
 from Tests.test_integration import __get_integration_configuration, __test_integration_instance
 from Tests.test_utils import print_error
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests  # ,organize_tests
-import subprocess
+# import subprocess
+from Tests.test_utils import run_command
 
 
 def options_handler():
@@ -254,7 +255,10 @@ def main():
             print_error(failure_msg)
 
     # Upload current build's content_new.zip to demisto server (aka upload new content)
-    subprocess.call(['python', 'update_content_data.py', '-u', username, '-p', password, '-s', server, '-c', conf_path, '-e', secret_conf_path, '-up', './content_new.zip'])
+    # subprocess.call(['python', 'update_content_data.py', '-u', username, '-p', password, '-s', server, '-c', conf_path, '-e', secret_conf_path, '-up', './content_new.zip'])
+    content_zip_path = './content_new.zip'
+    cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server, content_zip_path)
+    run_command(cmd_str, is_silenced=False)
 
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances post-updating content
