@@ -89,8 +89,7 @@ def upload_content(server, username, password, content_zip_path):
 def main():
     options = options_handler()
     server_url = 'https://{}'
-    server = options.server
-    server = server_url.format(server)
+    server = options.server if options.server.startswith('http') else server_url.format(server)
     # conf_path = options.conf
     # secret_conf_path = options.secret
     username = options.user
