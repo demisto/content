@@ -8,7 +8,7 @@ import json
 
 def test_module():
     """
-    returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+    returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
     """
     return 'ok'
 
