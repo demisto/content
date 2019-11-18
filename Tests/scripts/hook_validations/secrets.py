@@ -292,11 +292,7 @@ def calculate_shannon_entropy(data):
 
 
 def get_white_listed_items(is_pack, pack_name):
-    if is_pack:
-        packs_whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_RELATIVE_PATH)
-        whitelist_path = packs_whitelist_path
-    else:
-        whitelist_path = WHITELIST_PATH
+    whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_RELATIVE_PATH) if is_pack else WHITELIST_PATH
     final_white_list, ioc_white_list, files_while_list = get_packs_white_list(whitelist_path) if is_pack else\
         get_generic_white_list(whitelist_path)
     return set(final_white_list), set(ioc_white_list), set(files_while_list)
