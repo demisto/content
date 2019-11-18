@@ -1,5 +1,5 @@
 from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_files, is_text_file, \
-    search_potential_secrets, remove_white_list_regex
+    search_potential_secrets, remove_white_list_regex, create_temp_white_list, get_file_contents
 
 
 class TestSecrets:
@@ -34,3 +34,8 @@ class TestSecrets:
         '''
         file_contents = remove_white_list_regex(white_list, file_contents)
         assert white_list not in file_contents
+
+    def test_temp_white_list(self):
+        file_contents = get_file_contents(self.TEST_YML_FILE, '.yml')
+        temp_white_list = create_temp_white_list(file_contents)
+        assert 'sha256' in temp_white_list
