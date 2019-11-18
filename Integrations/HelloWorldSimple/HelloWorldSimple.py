@@ -15,7 +15,7 @@ def test_module():
 
 def fetch_incidents(last_run):
     """
-    This function will execute each 1 minute.
+    This function will execute every 1 minute.
 
     :return: next_run, list of incidents that will be created in Demisto
     """
