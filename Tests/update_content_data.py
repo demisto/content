@@ -1,21 +1,18 @@
 import argparse
 import demisto_client
 import os
+import ast
 # import requests
 # import urllib3
 # from Tests.test_content import load_conf_files
 from Tests.test_utils import print_error
-
-SERVER_URL = 'https://{}'
-# Disable insecure warnings
-# urllib3.disable_warnings()
 
 
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility to upload new content')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    parser.add_argument('-s', '--server', help='The server URL to connect to (leaving out the protocol e.g.'
+    parser.add_argument('-s', '--server', help='The server to connect to (leaving out the protocol e.g.'
                         ' without \'https://\')', required=True)
     parser.add_argument('-c', '--conf', help='Path to conf file')
     parser.add_argument('-e', '--secret', help='Path to secret conf file')
@@ -28,6 +25,7 @@ def options_handler():
 
 def upload_content(server, username, password, content_zip_path):
     try:
+        # Configure Demisto Client and make request to upload content zip file
         c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
         file_path = os.path.abspath(content_zip_path)
         files = {'file': file_path}
@@ -36,15 +34,13 @@ def upload_content(server, username, password, content_zip_path):
         msg = '\nMaking "POST" request to server - "{}" to upload'.format(server)
         msg += ' the content zip file "{}"'.format(content_zip_path)
         print(msg)
-        res = c.api_client.call_api(resource_path='/content/upload', method='POST',
-                                    header_params=header_params, files=files)
+        response_data, status_code, _ = c.api_client.call_api(resource_path='/content/upload', method='POST',
+                                                              header_params=header_params, files=files)
 
-        if isinstance(res, tuple):
-            status_code = res[1]
-        else:
-            status_code = res.status_code
         if status_code >= 300 or status_code < 200:
-            msg = "Upload has failed with status code " + str(status_code)
+            result_object = ast.literal_eval(response_data)
+            message = result_object['message']
+            msg = "Upload has failed with status code " + str(status_code) + '\n' + message
             raise Exception(msg)
         else:
             print('\n"{}" successfully uploaded to server "{}"'.format(content_zip_path, server))
@@ -92,8 +88,9 @@ def upload_content(server, username, password, content_zip_path):
 
 def main():
     options = options_handler()
+    server_url = 'https://{}'
     server = options.server
-    server = SERVER_URL.format(server)
+    server = server_url.format(server)
     # conf_path = options.conf
     # secret_conf_path = options.secret
     username = options.user
