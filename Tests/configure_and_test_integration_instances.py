@@ -6,6 +6,7 @@ from Tests.test_integration import __get_integration_configuration, __test_integ
 from Tests.test_utils import print_error
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command
+from time import sleep
 
 
 def options_handler():
@@ -210,6 +211,9 @@ def main():
     cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
                                                                               content_zip_path)
     run_command(cmd_str, is_silenced=False)
+    # ideally would replace this sleep with actually checking if content has finished installing
+    # by hitting the https://{{DEMISTO_INSTANCE_IP}}/content/updating endpoint
+    sleep(30)
 
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances post-updating content
