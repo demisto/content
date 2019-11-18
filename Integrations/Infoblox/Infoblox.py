@@ -530,10 +530,13 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise parse_demisto_exception(f'Substitute (domain name) rules requires a substitute name argument')
     raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': raw_response}
-    human_readable = tableToMarkdown(title, raw_response, headerTransform=pascalToSpace)
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
