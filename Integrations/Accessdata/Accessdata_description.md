@@ -1,4 +1,4 @@
-To use Quin-C integration you should specify domain or IP of Quin-C instance and EnterpriseAPI Key as token.
+To use Accessdata integration you should specify domain or IP of Quin-C instance and EnterpriseAPI Key as token.
   To get token follow these steps:
   1. Open Quin-C UI
   2. Log in to the Quin-C

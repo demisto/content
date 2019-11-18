@@ -1,10 +1,10 @@
 commonfields:
-  id: Quinc
+  id: Accessdata
   version: -1
-name: Quinc
-display: Quinc
+name: Accessdata
+display: Accessdata
 category: Forensics & Malware Analysis
-description: Use the Quinc integration to protect against and provide additional
+description: Use the Accessdata integration to protect against and provide additional
   visibility into phishing and other malicious email attacks.
 configuration:
 - display: Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)

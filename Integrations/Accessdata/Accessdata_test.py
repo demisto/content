@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from QuinC import Client, create_jobstate_context, create_contents, wrap_jobstate_context, main
+from Accessdata import Client, create_jobstate_context, create_contents, wrap_jobstate_context, main
 from test_data.constants import MOCK_URL, FAKE_SITESERVER_TOKEN, JOB_JUST_WITHOUT_CASEJOBID, JOB_JUST_WITH_CASEJOBID, \
     MOCK_PARAMS, MOCK_TEST_MODULE_RESPONSE, MOCK_GET_STATUS_ARGS, MOCK_GET_JOBSTATUS_PROCESSLIST_RESPONSE, MOCK_BASE_URL, \
     MOCK_GET_JOBSTATUS_MEMORYDUMP_RESPONSE, MOCK_ADD_JOB_ARGS, MOCK_READ_CASEFILE_ARGS, MOCK_READ_CASEFILE_RESPONSE

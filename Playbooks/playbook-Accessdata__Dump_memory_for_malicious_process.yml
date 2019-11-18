@@ -92,10 +92,10 @@ tasks:
       name: Read snapshot file from case folder
       description: Reads a file from case folder and saves its content in current
         context
-      script: Quinc|||accessdata-read-casefile
+      script: Accessdata|||accessdata-read-casefile
       type: regular
       iscommand: true
-      brand: Quinc
+      brand: Accessdata
     nexttasks:
       '#none#':
       - "11"
@@ -191,10 +191,10 @@ tasks:
       version: -1
       name: Create memory dump job
       description: Creates legacy agent memory dump
-      script: Quinc|||accessdata-legacyagent-get-memorydump
+      script: Accessdata|||accessdata-legacyagent-get-memorydump
       type: regular
       iscommand: true
-      brand: Quinc
+      brand: Accessdata
     nexttasks:
       '#none#':
       - "17"
@@ -324,10 +324,10 @@ tasks:
       version: -1
       name: Get process list job result
       description: Get snapshot path from result of the process list job
-      script: Quinc|||accessdata-get-jobstatus-processlist
+      script: Accessdata|||accessdata-get-jobstatus-processlist
       type: regular
       iscommand: true
-      brand: Quinc
+      brand: Accessdata
     nexttasks:
       '#none#':
       - "10"
@@ -355,10 +355,10 @@ tasks:
       version: -1
       name: Get memory dump job result
       description: Get memory dump path from result of the memory dump job
-      script: Quinc|||accessdata-get-jobstatus-memorydump
+      script: Accessdata|||accessdata-get-jobstatus-memorydump
       type: regular
       iscommand: true
-      brand: Quinc
+      brand: Accessdata
     nexttasks:
       '#none#':
       - "24"

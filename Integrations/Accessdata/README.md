@@ -1,15 +1,15 @@
 ## Overview
 ---
-Use the QuinC integration to protect against and provide additional visibility into phishing and other malicious email attacks.
+Use the Accessdata integration to protect against and provide additional visibility into phishing and other malicious email attacks.
 This integration was integrated and tested with version 20190926 of QuinC
-## QuinC Playbook
+## Accessdata Playbook
 ---
 For example, you can look at "Accessdata: Dump memory for malicious process" playbook to understand how to use this integration.
-## Configure QuinC on Demisto
+## Configure Accessdata on Demisto
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for QuinC.
+2. Search for Accessdata.
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Server URL with scheme (FQDN or IP address in X.X.X.X format with scheme specified)__
