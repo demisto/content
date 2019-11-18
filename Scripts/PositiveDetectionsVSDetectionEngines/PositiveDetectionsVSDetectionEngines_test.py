@@ -116,8 +116,8 @@ positive_zero = {
     'version': 3
 }
 
-no_engines_data = {  # type: dict[any: any]
-    'CustomFields': {},
+no_engines_data = {
+    'CustomFields': {},  # type: dict[any: any]
     'ManuallyEditedFields': None,
     'account': '',
     'calculatedTime': '2019-11-11T14:25:28.922329+02:00',
