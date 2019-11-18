@@ -21,7 +21,7 @@ TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml',
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
 PACKS_PATH = './Packs'
-PACKS_WHITELIST_RELATIVE_PATH = '.secrets-ignore'
+PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
 WHITELIST_PATH = './Tests/secrets_white_list.json'
 YML_FILE_EXTENSION = '.yml'
 
@@ -292,7 +292,7 @@ def calculate_shannon_entropy(data):
 
 
 def get_white_listed_items(is_pack, pack_name):
-    whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_RELATIVE_PATH) if is_pack else WHITELIST_PATH
+    whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_FILE_NAME) if is_pack else WHITELIST_PATH
     final_white_list, ioc_white_list, files_while_list = get_packs_white_list(whitelist_path) if is_pack else\
         get_generic_white_list(whitelist_path)
     return set(final_white_list), set(ioc_white_list), set(files_while_list)
@@ -384,12 +384,12 @@ def remove_false_positives(line):
 
 
 def is_secrets_disabled(line, skip_secrets):
-    if bool(re.findall(r'(disable-secrets-detection)', line)):
-        skip_secrets = True
-    elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
+    if bool(re.findall(r'(disable-secrets-detection-start)', line)):
         skip_secrets = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
         skip_secrets = False
+    elif bool(re.findall(r'(disable-secrets-detection)', line)):
+        skip_secrets = True
 
     return skip_secrets
 
