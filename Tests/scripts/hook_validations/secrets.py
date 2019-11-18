@@ -21,8 +21,8 @@ TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml',
 SCRIPT_FILE_TYPES = {'.ps1', '.py', '.js'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
-PACKS_PATH = './Packs/'
-PACKS_WHITELIST_RELATIVE_PATH = '/.secrets-ignore'
+PACKS_PATH = './Packs'
+PACKS_WHITELIST_RELATIVE_PATH = '.secrets-ignore'
 WHITELIST_PATH = './Tests/secrets_white_list.json'
 YML_FILE_EXTENSION = '.yml'
 
@@ -284,7 +284,7 @@ def calculate_shannon_entropy(data):
 
 def get_white_listed_items(is_pack, pack_name):
     if is_pack:
-        packs_whitelist_path = PACKS_PATH + pack_name + PACKS_WHITELIST_RELATIVE_PATH
+        packs_whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_RELATIVE_PATH)
         whitelist_path = packs_whitelist_path
     else:
         whitelist_path = WHITELIST_PATH
@@ -399,7 +399,7 @@ def ignore_base64(file_contents):
 
 
 def is_file_path_in_pack(file_path):
-    return bool(re.findall(r'^(?:./)?{}/'.format(PACKS_DIR), file_path))
+    return bool(re.findall(PACKS_DIR_REGEX, file_path))
 
 
 def get_pack_name(file_path):
