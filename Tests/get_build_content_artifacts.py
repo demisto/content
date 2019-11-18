@@ -78,7 +78,7 @@ def modify_content_descriptor(content_zipfile_name):
                 new_release_num_arr = [decreased_digit]
                 new_release_num_arr.extend(split_release_num[1:])
                 new_release_num = '.'.join(new_release_num_arr)
-                print('decreaseing release number to "{}"'.format(new_release_num))
+                print('decreasing release number to "{}"'.format(new_release_num))
                 desc_json['release'] = new_release_num
             with open(file_path, 'w') as the_file:
                 the_file.write(json.dumps(desc_json))
@@ -87,8 +87,10 @@ def modify_content_descriptor(content_zipfile_name):
     os.chdir(prev_dir)
     # remove original content zipfile
     os.remove(zipfile_name)
+    print('original zipfile "{}" successfully deleted'.format(zipfile_name))
     # rename modified content zipfile to original content zipfile name
     os.rename(zipfile_write, zipfile_name)
+    print('modified zipfile "{}" renamed to "{}"'.format(zipfile_write, zipfile_name))
     return zipfile_name
 
 
