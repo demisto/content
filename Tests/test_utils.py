@@ -158,7 +158,8 @@ def get_file(method, file_path, type_of_file):
             try:
                 data_dictionary = method(f)
             except Exception as e:
-                print_error(file_path + " has a structure issue. Error was: " + str(e))
+                print_error(
+                    "{} has a structure issue of file type{}. Error was: {}".format(file_path, type_of_file, str(e)))
                 return []
     if type(data_dictionary) is dict:
         return data_dictionary
