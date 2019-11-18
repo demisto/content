@@ -42,7 +42,7 @@ def modify_content_descriptor(content_zipfile_name):
     Arguments:
         content_zipfile_name: (str)
             The name of the content zipfile whose content-descriptor.json file needs modification
-    
+
     Returns:
         (str)
         The name of the (updated) content zipfile
