@@ -9,12 +9,16 @@ USER="ec2-user"
 echo "[`date`] ${PUBLIC_IP}: add instance to known hosts"
 ssh-keyscan -H ${PUBLIC_IP} >> ~/.ssh/known_hosts
 
+# get content artifacts from last successful build on master
+python ./Tests/get_build_content_artifacts.py
+
 # copy content files
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/content'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/TestPlaybooks'
 ssh ${USER}@${PUBLIC_IP} 'mkdir ~/Beta_Integrations'
 
-scp content_new.zip ${USER}@${PUBLIC_IP}:~/content
+# copy content artifacts from last successful build on master
+scp prev_content_new.zip ${USER}@${PUBLIC_IP}:~/content
 scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
 scp $(find ./Beta_Integrations/ -maxdepth 1 -type f) ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
@@ -25,7 +29,7 @@ COPY_CONTENT_COMMAND="sudo rm -f /usr/local/demisto/res/playbook-Test Playbook T
   /usr/local/demisto/res/script-CommonServerPython_4_1.yml \
   /usr/local/demisto/res/integration-Windows_Defender_Advanced_Threat_Protection.yml /usr/local/demisto/res/integration-Microsoft_Graph.yml \
   /usr/local/demisto/res/integration-Awake_Security.yml /usr/local/demisto/res/integration-WhatsMyBrowser.yml \
-  && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res && sudo unzip -q -o ~/content/content_new.zip -d /usr/local/demisto/res \
+  && sudo cp -r ~/Beta_Integrations/* /usr/local/demisto/res && sudo unzip -q -o ~/content/prev_content_new.zip -d /usr/local/demisto/res \
   && sudo unzip -q -o ~/content/content_test.zip -d /usr/local/demisto/res"
 ssh -t ${USER}@${PUBLIC_IP} ${COPY_CONTENT_COMMAND}
 
