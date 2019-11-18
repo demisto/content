@@ -1,10 +1,13 @@
-from Tests.scripts.hook_validations.error_constants import Errors
-from structure import StructureValidator
 from Tests.scripts.constants import LAYOUT_REGEX, PACKS_LAYOUTS_REGEX
+from Tests.scripts.hook_validations.error_constants import Errors
+from Tests.scripts.hook_validations.json_based import JSONBasedValidator
 from Tests.test_utils import checked_type, get_json
 
 
-class LayoutValidator(StructureValidator):
+class LayoutValidator(JSONBasedValidator):
+    def is_valid_version(self):
+        pass
+
     regexes = [
         LAYOUT_REGEX,
         PACKS_LAYOUTS_REGEX
@@ -28,7 +31,7 @@ class LayoutValidator(StructureValidator):
         layout = json_dict.get('layout')
         return layout.get('version') != -1
 
-    def _is_valid_scheme(self):
+    def _is_scheme_valid(self, matching_regex='layout'):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
@@ -37,3 +40,4 @@ class LayoutValidator(StructureValidator):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
+        super(LayoutValidator, self)._is_scheme_valid(matching_regex)

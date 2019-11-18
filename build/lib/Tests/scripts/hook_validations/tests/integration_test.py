@@ -3,12 +3,12 @@ from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 def test_removed_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "dockerimage": "test"
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "no": "dockerimage"
         }
@@ -20,12 +20,12 @@ def test_removed_docker_image_on_existing_integration():
 def test_updated_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
 
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "dockerimage": "test"
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "dockerimage": "test1"
         }
@@ -36,8 +36,8 @@ def test_updated_docker_image_on_existing_integration():
 
 def test_not_changed_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {}
-    validator.current_integration = {}
+    validator.old_file = {}
+    validator.current_file = {}
 
     assert validator.is_docker_image_changed() is False, "The script validator couldn't find the docker "\
         "image as changed"
@@ -46,8 +46,8 @@ def test_not_changed_docker_image_on_existing_integration():
 def test_added_docker_image_on_existing_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
 
-    validator.old_integration = {}
-    validator.current_integration = {
+    validator.old_file = {}
+    validator.current_file = {
         "script": {
             "dockerimage": "test1"
         }
@@ -58,7 +58,7 @@ def test_added_docker_image_on_existing_integration():
 
 def test_added_required_field_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "configuration": [
             {
                 "name": "test",
@@ -66,7 +66,7 @@ def test_added_required_field_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test",
@@ -80,7 +80,7 @@ def test_added_required_field_in_integration():
 
 def test_changed_required_field_to_not_required_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "configuration": [
             {
                 "name": "test",
@@ -88,7 +88,7 @@ def test_changed_required_field_to_not_required_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test",
@@ -103,7 +103,7 @@ def test_changed_required_field_to_not_required_in_integration():
 
 def test_not_changed_required_field_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "configuration": [
             {
                 "name": "test",
@@ -111,7 +111,7 @@ def test_not_changed_required_field_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test",
@@ -126,7 +126,7 @@ def test_not_changed_required_field_in_integration():
 
 def test_not_changed_required_field_scenario2_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "configuration": [
             {
                 "name": "test",
@@ -134,7 +134,7 @@ def test_not_changed_required_field_scenario2_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test",
@@ -172,7 +172,7 @@ def test_configuration_extraction():
 
 def test_not_changed_context_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "commands": [
             {
                 "name": "test",
@@ -184,7 +184,7 @@ def test_not_changed_context_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "commands": [
             {
                 "name": "test",
@@ -203,7 +203,7 @@ def test_not_changed_context_in_integration():
 
 def test_changed_context_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "commands": [
                 {
@@ -217,7 +217,7 @@ def test_changed_context_in_integration():
             ]
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -238,7 +238,7 @@ def test_changed_context_in_integration():
 
 def test_added_context_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "commands": [
             {
                 "name": "test",
@@ -250,7 +250,7 @@ def test_added_context_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "commands": [
             {
                 "name": "test",
@@ -272,7 +272,7 @@ def test_added_context_in_integration():
 
 def test_added_new_command_context_path_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "commands": [
             {
                 "name": "test",
@@ -284,7 +284,7 @@ def test_added_new_command_context_path_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "commands": [
             {
                 "name": "test",
@@ -311,7 +311,7 @@ def test_added_new_command_context_path_in_integration():
 
 def test_changed_required_arg_for_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "commands": [
                 {
@@ -325,7 +325,7 @@ def test_changed_required_arg_for_command_in_integration():
             ]
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -347,7 +347,7 @@ def test_changed_required_arg_for_command_in_integration():
 
 def test_added_required_arg_for_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "commands": [
                 {
@@ -361,7 +361,7 @@ def test_added_required_arg_for_command_in_integration():
             ]
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -386,7 +386,7 @@ def test_added_required_arg_for_command_in_integration():
 
 def test_renamed_arg_in_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "commands": [
                 {
@@ -400,7 +400,7 @@ def test_renamed_arg_in_command_in_integration():
             ]
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -421,7 +421,7 @@ def test_renamed_arg_in_command_in_integration():
 
 def test_not_requires_arg_in_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "commands": [
             {
                 "name": "test",
@@ -433,7 +433,7 @@ def test_not_requires_arg_in_command_in_integration():
             }
         ]
     }
-    validator.current_integration = {
+    validator.current_file = {
         "commands": [
             {
                 "name": "test",
@@ -455,7 +455,7 @@ def test_not_requires_arg_in_command_in_integration():
 
 def test_not_changed_command_in_integration():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
+    validator.old_file = {
         "script": {
             "commands": [
                 {
@@ -469,7 +469,7 @@ def test_not_changed_command_in_integration():
             ]
         }
     }
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -490,7 +490,7 @@ def test_not_changed_command_in_integration():
 
 def test_no_duplicate_params():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test"
@@ -507,7 +507,7 @@ def test_no_duplicate_params():
 
 def test_duplicated_params():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
+    validator.current_file = {
         "configuration": [
             {
                 "name": "test"
@@ -524,7 +524,7 @@ def test_duplicated_params():
 
 def test_no_duplicate_args():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {
@@ -548,7 +548,7 @@ def test_no_duplicate_args():
 
 def test_duplicated_argss():
     validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
+    validator.current_file = {
         "script": {
             "commands": [
                 {

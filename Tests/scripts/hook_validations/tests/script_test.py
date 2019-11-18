@@ -3,10 +3,10 @@ from Tests.scripts.hook_validations.script import ScriptValidator
 
 def test_removed_docker_image_on_existing_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'dockerimage': 'test'
     }
-    validator.current_script = {
+    validator.current_file = {
         'no': 'dockerimage'
     }
 
@@ -15,10 +15,10 @@ def test_removed_docker_image_on_existing_script():
 
 def test_updated_docker_image_on_existing_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'dockerimage': 'test'
     }
-    validator.current_script = {
+    validator.current_file = {
         'dockerimage': 'test_updated'
     }
 
@@ -27,10 +27,10 @@ def test_updated_docker_image_on_existing_script():
 
 def test_not_changed_docker_image_on_existing_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'dockerimage': 'test'
     }
-    validator.current_script = {
+    validator.current_file = {
         'dockerimage': 'test'
     }
 
@@ -40,9 +40,9 @@ def test_not_changed_docker_image_on_existing_script():
 
 def test_added_docker_image_on_existing_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
     }
-    validator.current_script = {
+    validator.current_file = {
         'dockerimage': 'test_updated'
     }
 
@@ -51,10 +51,10 @@ def test_added_docker_image_on_existing_script():
 
 def test_updated_docker_image_on_sane_doc_reports_fail_name():
     validator = ScriptValidator('SaneDocReport.yml', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'dockerimage': '1.0.0'
     }
-    validator.current_script = {
+    validator.current_file = {
         'dockerimage': '1.0.1'
     }
 
@@ -63,11 +63,11 @@ def test_updated_docker_image_on_sane_doc_reports_fail_name():
 
 def test_updated_docker_image_on_sane_doc_reports_fail_subtype():
     validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml', check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         "type": "python",
         "subtype": "python3"
     }
-    validator.old_script = {
+    validator.old_file = {
         "type": "python",
         "subtype": "python2"
     }
@@ -80,10 +80,10 @@ def test_updated_docker_image_on_sane_doc_reports_fail_subtype():
 def test_updated_docker_image_on_sane_doc_reports():
     validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml',
                                 check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'dockerimage': '1.0.0'
     }
-    validator.current_script = {
+    validator.current_file = {
         'dockerimage': '1.0.1'
     }
 
@@ -92,7 +92,7 @@ def test_updated_docker_image_on_sane_doc_reports():
 
 def test_deleted_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
@@ -102,7 +102,7 @@ def test_deleted_context_path():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
@@ -115,14 +115,14 @@ def test_deleted_context_path():
 
 def test_changed_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'outputs': [
             {
                 'contextPath': 'test2'
@@ -135,7 +135,7 @@ def test_changed_context_path():
 
 def test_moved_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
@@ -145,7 +145,7 @@ def test_moved_context_path():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'outputs': [
             {
                 'contextPath': 'test2'
@@ -162,14 +162,14 @@ def test_moved_context_path():
 
 def test_not_changed_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'outputs': [
             {
                 'contextPath': 'test'
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'outputs': [
             {
                 'contextPath': 'test'
@@ -183,14 +183,14 @@ def test_not_changed_context_path():
 
 def test_added_new_context_path():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'outputs': [
             {
                 'contextPath': 'test1'
@@ -207,7 +207,7 @@ def test_added_new_context_path():
 
 def test_deleted_arg_from_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test1'
@@ -217,7 +217,7 @@ def test_deleted_arg_from_script():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test1'
@@ -230,14 +230,14 @@ def test_deleted_arg_from_script():
 
 def test_added_arg_to_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test1'
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test1'
@@ -254,7 +254,7 @@ def test_added_arg_to_script():
 
 def test_moved_arg_in_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test1'
@@ -264,7 +264,7 @@ def test_moved_arg_in_script():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test2'
@@ -281,7 +281,7 @@ def test_moved_arg_in_script():
 
 def test_untouched_arg_list_in_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test1'
@@ -291,7 +291,7 @@ def test_untouched_arg_list_in_script():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test1'
@@ -308,7 +308,7 @@ def test_untouched_arg_list_in_script():
 
 def test_changed_arg_in_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test1'
@@ -318,7 +318,7 @@ def test_changed_arg_in_script():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test2'
@@ -338,7 +338,7 @@ def test_changed_arg_in_script():
 
 def test_duplicate_arg_in_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test1'
@@ -354,7 +354,7 @@ def test_duplicate_arg_in_script():
 
 def test_no_duplicate_arg_in_script():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test1'
@@ -371,7 +371,7 @@ def test_no_duplicate_arg_in_script():
 
 def test_added_required_field_in_integration():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test',
@@ -379,7 +379,7 @@ def test_added_required_field_in_integration():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test',
@@ -393,7 +393,7 @@ def test_added_required_field_in_integration():
 
 def test_changed_required_field_to_not_required_in_integration():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test',
@@ -401,7 +401,7 @@ def test_changed_required_field_to_not_required_in_integration():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test',
@@ -416,7 +416,7 @@ def test_changed_required_field_to_not_required_in_integration():
 
 def test_not_changed_required_field_in_integration():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test',
@@ -424,7 +424,7 @@ def test_not_changed_required_field_in_integration():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test',
@@ -439,7 +439,7 @@ def test_not_changed_required_field_in_integration():
 
 def test_not_changed_required_field_scenario2_in_integration():
     validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    validator.old_file = {
         'args': [
             {
                 'name': 'test',
@@ -447,7 +447,7 @@ def test_not_changed_required_field_scenario2_in_integration():
             }
         ]
     }
-    validator.current_script = {
+    validator.current_file = {
         'args': [
             {
                 'name': 'test',
@@ -485,11 +485,11 @@ def test_configuration_extraction():
 
 def test_is_changed_subtype_python2_to_3():
     validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         "type": "python",
         "subtype": "python3"
     }
-    validator.old_script = {
+    validator.old_file = {
         "type": "python",
         "subtype": "python2"
     }
@@ -500,11 +500,11 @@ def test_is_changed_subtype_python2_to_3():
 
 def test_is_changed_subtype_python3():
     validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         "type": "python",
         "subtype": "python3"
     }
-    validator.old_script = {
+    validator.old_file = {
         "type": "python",
         "subtype": "python3"
     }
@@ -515,11 +515,11 @@ def test_is_changed_subtype_python3():
 
 def test_is_valid_subtype_python2():
     validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         "type": "python",
         "subtype": "python2"
     }
-    validator.old_script = {
+    validator.old_file = {
         "type": "python",
         "subtype": "python2"
     }
@@ -530,11 +530,11 @@ def test_is_valid_subtype_python2():
 
 def test_is_valid_subtype_blabla():
     validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    validator.current_file = {
         "type": "python",
         "subtype": "blabla"
     }
-    validator.old_script = {
+    validator.old_file = {
         "type": "python",
         "subtype": "blabla"
     }

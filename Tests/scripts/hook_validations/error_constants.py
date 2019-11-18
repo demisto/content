@@ -7,8 +7,7 @@ class Errors(object):
 
     @staticmethod
     def wrong_version(file_path, expected="-1"):
-        return "The version for our files should always be -1, please update the file {}.".format(file_path,
-                                                                                                  expected)
+        return "The version for our files should always be {}, please update the file {}.".format(expected, file_path)
 
     @staticmethod
     def missing_outputs(command_name, missing_outputs, context_standard):
@@ -110,3 +109,23 @@ class Errors(object):
     def no_beta_in_display(file_path):
         return "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found" \
                " in the file {}".format(file_path)
+
+    @staticmethod
+    def id_might_changed():
+        return "ID might have changed, please make sure to check you have the correct one."
+
+    @staticmethod
+    def id_changed(file_path):
+        return "You've changed the ID of the file {0} please undo.".format(file_path)
+
+    @staticmethod
+    def file_id_contains_slashes():
+        return "File's ID contains slashes - please remove."
+
+    @staticmethod
+    def missing_release_notes(file_path, rn_path):
+        return 'File {} is missing releaseNotes, Please add it under {}'.format(file_path, rn_path)
+
+    @staticmethod
+    def display_param(param_name, param_display):
+        return 'The display name of the {} parameter should be \'{}\''.format(param_name, param_display)
