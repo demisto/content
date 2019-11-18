@@ -119,7 +119,7 @@ def is_text_file(file_path):
     return False
 
 
-def search_potential_secrets(secrets_file_paths):
+def search_potential_secrets(secrets_file_paths: list):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
     :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
