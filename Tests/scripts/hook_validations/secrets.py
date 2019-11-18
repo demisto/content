@@ -147,7 +147,7 @@ def search_potential_secrets(secrets_file_paths):
         if is_pack:
             file_contents = remove_white_list_regexs(file_contents, secrets_white_list)
             secrets_white_list = set()
-        yml_file_contents = get_related_yml_contents(file_path, file_extension)
+        yml_file_contents = get_related_yml_contents(file_path)
         # Add all context output paths keywords to whitelist temporary
         if file_extension == YML_FILE_EXTENSION or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
