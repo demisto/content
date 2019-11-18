@@ -14,8 +14,8 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings, arrays and dictionaries will be considered empty
-    entities and the default value will be returned.
+  description: If set to true, empty strings, arrays and dictionaries will be considered
+    empty entities and the default value will be returned.
   isArray: false
   name: applyIfEmpty
   predefined:
@@ -33,6 +33,8 @@ script: '-'
 subtype: python3
 system: false
 tags:
-- transformer general entirelist
+- transformer
+- general
+- entirelist
 timeout: '0'
 type: python
