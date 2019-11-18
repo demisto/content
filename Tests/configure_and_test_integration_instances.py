@@ -256,7 +256,7 @@ def main():
 
     # Upload current build's content_new.zip to demisto server (aka upload new content)
     # subprocess.call(['python', 'update_content_data.py', '-u', username, '-p', password, '-s', server, '-c', conf_path, '-e', secret_conf_path, '-up', './content_new.zip'])
-    content_zip_path = './content_new.zip'
+    content_zip_path = '.content_new.zip'
     cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server, content_zip_path)
     run_command(cmd_str, is_silenced=False)
 
