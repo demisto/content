@@ -82,16 +82,19 @@ class TestSecrets:
 
     def test_is_secrets_disabled(self):
         line1 = 'disable-secrets-detection'
-        skip_secrets = False
+        skip_secrets = {'skip_once': False, 'skip_multi': False}
         skip_secrets = is_secrets_disabled(line1, skip_secrets)
-        assert skip_secrets is True
-        skip_secrets = False
+        assert skip_secrets['skip_once'] or skip_secrets['skip_multi']
+        if skip_secrets['skip_once']:
+            skip_secrets['skip_once'] = False
         line2 = 'disable-secrets-detection-start'
         skip_secrets = is_secrets_disabled(line2, skip_secrets)
-        assert skip_secrets is True
+        assert skip_secrets['skip_once'] or skip_secrets['skip_multi']
+        if skip_secrets['skip_once']:
+            skip_secrets['skip_once'] = False
         line3 = 'disable-secrets-detection-end'
         skip_secrets = is_secrets_disabled(line3, skip_secrets)
-        assert skip_secrets is False
+        assert not skip_secrets['skip_once'] and not skip_secrets['skip_multi']
 
     def test_ignore_base64(self):
         file_contents = self.TEST_BASE_64_STRING

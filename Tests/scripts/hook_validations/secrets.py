@@ -141,7 +141,7 @@ def search_potential_secrets(secrets_file_paths: list):
         high_entropy_strings = []
         secrets_found_with_regex = []
         _, file_extension = os.path.splitext(file_path)
-        skip_secrets = False
+        skip_secrets = {'skip_once': False, 'skip_multi': False}
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
         # in packs regard all items as regex as well, reset pack's whitelist in order to avoid repetition later
@@ -157,7 +157,8 @@ def search_potential_secrets(secrets_file_paths: list):
         for line in file_contents.split('\n'):
             # if detected disable-secrets comments, skip the line/s
             skip_secrets = is_secrets_disabled(line, skip_secrets)
-            if skip_secrets:
+            if skip_secrets['skip_once'] or skip_secrets['skip_multi']:
+                skip_secrets['skip_once'] = False
                 continue
             # REGEX scanning for IOCs and false positive groups
             regex_secrets, false_positives = regex_for_secrets(line)
@@ -386,12 +387,11 @@ def remove_false_positives(line):
 
 def is_secrets_disabled(line, skip_secrets):
     if bool(re.findall(r'(disable-secrets-detection-start)', line)):
-        skip_secrets = True
+        skip_secrets['skip_multi'] = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
-        skip_secrets = False
+        skip_secrets['skip_multi'] = False
     elif bool(re.findall(r'(disable-secrets-detection)', line)):
-        skip_secrets = True
-
+        skip_secrets['skip_once'] = True
     return skip_secrets
 
 
