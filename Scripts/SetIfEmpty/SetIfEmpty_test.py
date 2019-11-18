@@ -59,6 +59,7 @@ def test_when_value_is_none_and_apply_if_empty_is_false_should_return_default_va
 
     assert expectedOutput == result
 
+
 def test_when_value_is_empty_array_and_apply_if_empty_is_true_should_return_default_value():
     expectedOutput = "defaultValue"
     result = get_value_to_set({'value': [""], 'defaultValue': 'defaultValue', 'applyIfEmpty': 'true'})
