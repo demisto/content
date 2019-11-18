@@ -145,7 +145,7 @@ def search_potential_secrets(secrets_file_paths: list):
         file_contents = get_file_contents(file_path, file_extension)
         # in packs regard all items as regex as well, reset pack's whitelist in order to avoid repetition later
         if is_pack:
-            file_contents = remove_white_list_regexs(file_contents, secrets_white_list)
+            file_contents = remove_white_list_regex(file_contents, secrets_white_list)
             secrets_white_list = set()
         yml_file_contents = get_related_yml_contents(file_path)
         # Add all context output paths keywords to whitelist temporary
@@ -186,7 +186,7 @@ def search_potential_secrets(secrets_file_paths: list):
     return secrets_found
 
 
-def remove_white_list_regexs(file_contents, secrets_white_list):
+def remove_white_list_regex(file_contents, secrets_white_list):
     for regex in secrets_white_list:
         file_contents = re.sub(regex, '', file_contents)
     return file_contents
