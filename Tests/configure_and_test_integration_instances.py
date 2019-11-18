@@ -135,8 +135,8 @@ def main():
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     secret_params = secret_conf['integrations'] if secret_conf else []
 
-    username = secret_conf.get('username')
-    password = secret_conf.get('userPassword')
+    username = secret_conf.get('username') if not username else username
+    password = secret_conf.get('userPassword') if not password else password
 
     client = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
