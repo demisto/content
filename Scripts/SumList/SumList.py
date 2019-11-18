@@ -22,11 +22,12 @@ def sum_value(value):
 
 
 def main():
-    value, return_type = demisto.args()["value"]
+    value = demisto.args()['value']
+    result, return_type = sum_value(value)
 
     if return_type == 'error':
         return_error('This transformer applies only to list of numbers.')
-    demisto.results(value)
+    demisto.results(result)
 
 
 # python2 uses __builtin__ python3 uses builtins
