@@ -37,12 +37,15 @@ def main():
         except subprocess.CalledProcessError as exc:
             print(exc.output)
 
-        if not os.path.isfile("./Tests/is_build_failed_{}.txt".format(env["Role"].replace(' ', ''))):
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                print_error(rminstance)
-        else:
-            print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
+        with open('./Tests/is_build_failed_{}.txt'.format(env["Role"].replace(' ', ''))) as f:
+            if 'Build passed' in f.read():
+                print("All tests passed. Destroying instances.")
+            if 'Build failed' in f.read():
+                rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
+                if aws_functions.isError(rminstance):
+                    print_error(rminstance)
+                else:
+                    print_warning("Tests failed on {} ,keeping instance alive".format(env["Role"]))
 
 
 if __name__ == "__main__":
