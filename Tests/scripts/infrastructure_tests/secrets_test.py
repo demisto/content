@@ -84,14 +84,11 @@ class TestSecrets:
         line1 = 'disable-secrets-detection'
         skip_secrets = {'skip_once': False, 'skip_multi': False}
         skip_secrets = is_secrets_disabled(line1, skip_secrets)
-        assert skip_secrets['skip_once'] or skip_secrets['skip_multi']
-        if skip_secrets['skip_once']:
-            skip_secrets['skip_once'] = False
+        assert skip_secrets['skip_once'] and not skip_secrets['skip_multi']
+        skip_secrets['skip_once'] = False
         line2 = 'disable-secrets-detection-start'
         skip_secrets = is_secrets_disabled(line2, skip_secrets)
-        assert skip_secrets['skip_once'] or skip_secrets['skip_multi']
-        if skip_secrets['skip_once']:
-            skip_secrets['skip_once'] = False
+        assert not skip_secrets['skip_once'] and skip_secrets['skip_multi']
         line3 = 'disable-secrets-detection-end'
         skip_secrets = is_secrets_disabled(line3, skip_secrets)
         assert not skip_secrets['skip_once'] and not skip_secrets['skip_multi']
