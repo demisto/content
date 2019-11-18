@@ -25,7 +25,8 @@ INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
-REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
+REQUEST_PARAM_CREATE_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
+REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
 REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
@@ -186,12 +187,13 @@ class Client(BaseClient):
                 rule_type: Type of rule to create.
                 object_type: Type of object to assign the rule on.
                 name: Rule name.
-                rp_zone:  The zone to assign the rule.
+                rp_zone: The zone to assign the rule.
                 substitute_name: The substitute name to assign (In case of substitute domain only)
                 comment: A comment for this rule.
         Returns:
             Response JSON
         """
+        canonical = ''
         if rule_type == 'Passthru':
             canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
         elif rule_type == 'Block (No data)':
@@ -204,6 +206,35 @@ class Client(BaseClient):
         suffix = demisto.get(RPZ_RULES_DICT, 'rule_type.object_type')
 
         return self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
+
+    def create_substitute_record_rule(self, suffix, **kwargs):
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+                Args:
+                        suffix: The infoblox object to be used as a url path.
+                        kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                            - name
+                            - rp_zone
+                            - comment
+                            - ipv4addr
+                            - ipv6addr
+                            - mail_exchanger
+                            - preference
+                            - order
+                            - preference
+                            - replacement
+                            - ptrdname
+                            - priority
+                            - target
+                            - weight
+                            - port
+                            - text
+                Returns:
+                    Response JSON
+                """
+        request_data = {key: val for key, val in kwargs.items() if val}
+        request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
+        return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -220,7 +251,7 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str):
 ''' COMMANDS '''
 
 
-def test_module_command(client: Client, *_) -> str:
+def test_module_command(client: Client, *_) -> [str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
     """
     try:
@@ -499,10 +530,266 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     if rule_type == 'Substitute (domain name)' and not substitute_name:
         raise parse_demisto_exception(f'Substitute (domain name) rules requires a substitute name argument')
     raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
-    title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has benn created:'
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': raw_response}
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': raw_response}
     human_readable = tableToMarkdown(title, raw_response, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    ipv4addr = args.get('ipv4addr')
+    infoblox_object_type = 'record:rpz:a'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, ipv4addr=ipv4addr)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    ipv6addr = args.get('ipv6addr')
+    infoblox_object_type = 'record:rpz:aaaa'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, ipv6addr=ipv6addr)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    mail_exchanger = args.get('mail_exchanger')
+    preference = args.get('preference')
+    infoblox_object_type = 'record:rpz:mx'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, mail_exchanger=mail_exchanger,
+                                                        preference=preference)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    order = args.get('order')
+    preference = args.get('preference')
+    replacement = args.get('replacement')
+    infoblox_object_type = 'record:rpz:naptr'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, order=order, preference=preference,
+                                                        replacement=replacement)
+
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    ptrdname = args.get('ptrdname')
+    ipv4addr = args.get('ipv4addr')
+    ipv6addr = args.get('ipv6addr')
+    infoblox_object_type = 'record:rpz:ptr'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, ptrdname=ptrdname, ipv4addr=ipv4addr,
+                                                        ipv6addr=ipv6addr)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    port = args.get('port')
+    priority = args.get('priority')
+    target = args.get('target')
+    weight = args.get('weight')
+    infoblox_object_type = 'record:rpz:srv'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, port=port, priority=priority, target=target,
+                                                        weight=weight)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    text = args.get('text')
+    infoblox_object_type = 'record:rpz:txt'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, text=text)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    ipv4addr = args.get('ipv4addr')
+    infoblox_object_type = 'record:rpz:a:ipaddress'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, ipv4addr=ipv4addr)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    name = args.get('name')
+    rp_zone = args.get('rp_zone')
+    comment = args.get('comment')
+    ipv6addr = args.get('ipv6addr')
+    infoblox_object_type = 'record:rpz:aaaa:ipaddress'
+
+    raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                        comment=comment, ipv6addr=ipv6addr)
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -532,6 +819,15 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
         f'{INTEGRATION_COMMAND_NAME}-create-response-policy-zone': create_response_policy_zone_command,
         f'{INTEGRATION_COMMAND_NAME}-create-rpz-rule': create_rpz_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-a-substitute-record-rule': create_a_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-aaaa-substitute-record-rule': create_aaaa_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-mx-substitute-record-rule': create_mx_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-naptr-substitute-record-rule': create_naptr_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-ptr-substitute-record-rule': create_ptr_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-srv-substitute-record-rule': create_srv_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-txt-substitute-record-rule': create_txt_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
     }
     try:
         if command in commands:
