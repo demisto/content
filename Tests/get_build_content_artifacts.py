@@ -52,7 +52,7 @@ def modify_content_descriptor(content_zipfile_name):
     if os.path.isfile(zipfile_write):
         os.remove(zipfile_write)
     content_descriptor = 'content-descriptor.json'
-    zipwriter = ZipFile(zipfile_write, 'w', compression=ZIP_DEFLATED, compresslevel=9)
+    zipwriter = ZipFile(zipfile_write, 'w', compression=ZIP_DEFLATED)
     directory = './extracted_content'
     print('extracting files from content zipfile "{}" to "{}" directory'.format(zipfile_name, directory))
     with ZipFile(zipfile_name, 'r') as the_zip:
