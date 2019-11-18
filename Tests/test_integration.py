@@ -34,6 +34,7 @@ def __get_integration_config(client, integration_name):
                                                       method='POST', body=body)
     except ApiException as conn_error:
         print(conn_error)
+        return None
 
     res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
