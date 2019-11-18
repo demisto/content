@@ -275,6 +275,12 @@ CONTENT_GITHUB_MASTER_LINK = CONTENT_GITHUB_LINK + '/master'
 RUN_ALL_TESTS_FORMAT = 'Run all tests'
 FILTER_CONF = './Tests/filter_file.txt'
 
+# README files regex
+README_FILE_REGEX = [
+    PACKS_README_REGEX,
+    INTEGRATION_README_REGEX
+]
+
 
 class PB_Status:
     NOT_SUPPORTED_VERSION = 'Not supported version'
