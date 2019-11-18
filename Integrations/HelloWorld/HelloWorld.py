@@ -176,7 +176,7 @@ def main():
 
     verify_certificate = not demisto.params().get('insecure', False)
 
-    # How many time before the first fetch to retrieve incidents
+    # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
     proxy = demisto.params().get('proxy', False)
