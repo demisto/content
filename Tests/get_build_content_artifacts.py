@@ -8,7 +8,7 @@ from Tests.test_utils import print_error
 
 
 def options_handler():
-    parser = argparse.ArgumentParser(description='Utility to upload new content')
+    parser = argparse.ArgumentParser(description='Utility to download content artifacts from previous builds')
     parser.add_argument('-b', '--branch', help='The branch to get the latest successful build content from')
     parser.add_argument('-p', '--prefix', help='Prefix to prepend to the content artifact '
                         'filenames. Default is "prev_"')
