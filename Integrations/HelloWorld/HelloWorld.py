@@ -17,7 +17,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 class Client(BaseClient):
     """
     Client will implement the service API, should not contain Demisto logic.
-    Should do requests and return data
+    Should only do requests and return data.
     """
 
     def say_hello(self, name):
