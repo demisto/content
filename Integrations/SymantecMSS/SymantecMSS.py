@@ -1,14 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
 import tempfile
-import ssl
 import OpenSSL.crypto
 import requests
 import contextlib
 import xml.etree.ElementTree
 import base64
 import re
-import datetime
 import time
 
 if not demisto.params().get('proxy', False):
@@ -21,6 +19,7 @@ if not demisto.params().get('proxy', False):
 SECURITY_INCIDENT_SUMMARY_NODE_XPATH = ".//SecurityIncidentSummary"
 SECURITY_INCIDENT_NODE_XPATH = ".//SecurityIncident"
 FETCH_MAX_INCIDENTS = 500
+
 
 # PREREQUISITES
 @contextlib.contextmanager
@@ -60,7 +59,7 @@ def load_severities():
     severities_list = None
     try:
         severities_list = demisto.params()["severities"].replace(" ", "").split(",")
-    except:
+    except Exception:
         raise Exception("Error parsing severities parameter.")
     for s in severities_list:
         if s not in POSSIBLE_SEVERITIES:
@@ -74,6 +73,7 @@ CERTIFICATE, CERTIFICATE_PASSPHRASE = load_certificate()
 FETCH_SEVERITIES = load_severities()
 DST = 1 if time.daylight else 0
 
+
 # HELPERS
 
 
@@ -82,19 +82,20 @@ def api_call(body, headers):
     with pfx_to_pem(CERTIFICATE, CERTIFICATE_PASSPHRASE) as cert:
         res = requests.post(url=SERVER_URL + "/SWS/incidents.asmx", cert=cert, data=body, headers=headers)
         if res.status_code < 200 or res.status_code >= 300:
-            raise Exception("Got status code " + str(res.status_code) + " with body " +
-                            res.content + " with headers " + str(res.headers))
+            raise Exception(
+                "Got status code " + str(res.status_code) + " with body " + res.content + " with headers " + str(
+                    res.headers))
     return xml.etree.ElementTree.fromstring(res.content)
 
 
 def event_to_incident(event):
     """ Converts a Symantec event to a Demisto incident """
-    incident = {}
+    incident = dict()  # type: Dict[str, Any]
     incident["name"] = "Incident: %s (%s)" % (event["IncidentNumber"], event["Classification"])
     incident["occurred"] = event["TimeCreated"] + "+0%s:00" % DST
     incident["rawJSON"] = json.dumps(event)
 
-    labels = []
+    labels = []  # type: List[str]
     incident["labels"] = labels
     return incident
 
@@ -106,13 +107,13 @@ def isoformat(date):
 
 # FUNCTIONS
 def test():
-    now = datetime.datetime.utcnow()
+    now = datetime.utcnow()
     get_incidents_list_request(isoformat(now), None, None, 1)
     demisto.results("ok")
 
 
 def fetch_incidents():
-    t = datetime.datetime.utcnow()
+    t = datetime.utcnow()
     now = isoformat(t)
 
     lastRun = demisto.getLastRun() and demisto.getLastRun()["time"]
@@ -121,7 +122,8 @@ def fetch_incidents():
         lastRun = isoformat(t)
 
     incidents = []
-    events = get_incidents_list_request(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES, maxIncidents=FETCH_MAX_INCIDENTS)
+    events = get_incidents_list_request(time=lastRun, srcIp=None, severities=FETCH_SEVERITIES,
+                                        maxIncidents=FETCH_MAX_INCIDENTS)
     for event in events:
         inc = event_to_incident(event)
         incidents.append(inc)
@@ -188,7 +190,8 @@ def get_incidents_list_request(time, srcIp, severities, maxIncidents):
     maxIncidents = "<MaxIncidents>%s</MaxIncidents>" % maxIncidents if maxIncidents else ""
 
     body = """<?xml version="1.0" encoding="utf-8"?>
-                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                     <soap12:Body>
                         <IncidentGetList xmlns="https://www.monitoredsecurity.com/">
                         <StartTimeStampGMT>%s</StartTimeStampGMT>
@@ -220,7 +223,8 @@ def update_incident():
     dictQuery = query_incident(num=num, workflowQuery=True)
     dictWorkflowQuery = dictQuery["WorkFlowDetail"]
 
-    # Use the supplied params, filling the missing ones from the existing workflow if possible, if not possible - require from user
+    # Use the supplied params, filling the missing ones from the existing workflow if possible,
+    # if not possible - require from user
     status = demisto.args()["status"] if "status" in demisto.args() else dictWorkflowQuery["Status"]
     if not status:
         raise Exception("No current status, please supply a status parameter")
@@ -275,7 +279,8 @@ def update_incident_request(num, status, resolution, ref, severity, assignToOrg,
     comments = "<Comments>%s</Comments>" % (comments) if comments else ""
 
     body = """<?xml version="1.0" encoding="utf-8"?>
-                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                   <soap12:Body>
                     <UpdateIncidentWorkflow xmlns="https://www.monitoredsecurity.com/">
                       <IncidentNumber>%s</IncidentNumber>
@@ -404,7 +409,8 @@ def query_incident(num, workflowQuery=False):
 
 def query_incident_request(num):
     body = """<?xml version="1.0" encoding="utf-8"?>
-                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                     <soap12:Body>
                         <IncidentQuery xmlns="https://www.monitoredsecurity.com/">
                             <IncidentNumber>%s</IncidentNumber>
@@ -426,7 +432,8 @@ def query_incident_request(num):
 
 def query_incident_workflow_request(num):
     body = """<?xml version="1.0" encoding="utf-8"?>
-                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
+                <soap12:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" \
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://www.w3.org/2003/05/soap-envelope">
                     <soap12:Body>
                         <IncidentWorkflowQuery xmlns="https://www.monitoredsecurity.com/">
                             <IncidentNumber>%s</IncidentNumber>
@@ -464,6 +471,7 @@ if demisto.command() == "symantec-mss-get-incident":
     sys.exit(0)
 
 if demisto.command() == "symantec-mss-incidents-list":
-    time = demisto.args()["time"] if "time" in demisto.args() else isoformat(datetime.datetime.utcnow() - timedelta(hours=24))
+    time = demisto.args()["time"] if "time" in demisto.args() else isoformat(
+        datetime.utcnow() - timedelta(hours=24))
     get_incidents_list(time)
     sys.exit(0)
