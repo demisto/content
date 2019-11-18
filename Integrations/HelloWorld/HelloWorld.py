@@ -16,7 +16,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class Client(BaseClient):
     """
-    Client will implement the service API, should not contain Demisto logic.
+    Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
 
