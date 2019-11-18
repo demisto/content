@@ -28,7 +28,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is Hello World integration for getting started
+description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
 script:
