@@ -1,0 +1,28 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: emailrep.io
+  version: -1
+description: Calls out to emailrep.io to fetch data for an email address
+display: emailrep.io
+name: emailrep.io
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The email address to enrich
+      isArray: false
+      name: email
+      required: true
+      secret: false
+    deprecated: false
+    description: The email address to enrich
+    execution: false
+    name: email
+  dockerimage: demisto/python:latest
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
