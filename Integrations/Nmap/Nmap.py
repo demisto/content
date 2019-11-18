@@ -58,7 +58,7 @@ if demisto.command() == 'nmap-scan':
         'Started': r.started,
         'Ended': r.endtime,
         'CommandLine': r.commandline,
-        'ScanType': scan_type,
+        'ScanType': r._scaninfo.get('type'),
         'Hosts': hosts}
     demisto.results({
         'ContentsFormat': formats['json'],
