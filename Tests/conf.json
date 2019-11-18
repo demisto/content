@@ -1089,6 +1089,7 @@
         {
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
+            "fromversion": "5.0.0",
             "nightly": true
         },
         {
