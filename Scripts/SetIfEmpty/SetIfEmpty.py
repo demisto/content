@@ -24,4 +24,3 @@ def main(args):
 
 if __name__ in ('builtins', '__builtin__'):
     main(demisto.args())
-
