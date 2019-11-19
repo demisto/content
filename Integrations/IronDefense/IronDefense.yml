@@ -21,7 +21,7 @@ configuration:
   name: requestTimeout
   required: false
   type: 0
-description: The IronDefense Integration for Demisto allows users to interact with
+description: The IronDefense Integration allows users to interact with
   IronDefense alerts within Demisto. The Integration provides the ability to rate
   alerts, update alert statuses, add comments to alerts, and to report observed bad
   activity.
@@ -31,14 +31,14 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The ID of the IronDefense alert
+      description: The ID of the IronDefense alert.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The severity rating of this alert
+      description: 'The severity rating of the alert. Can be: "Undecided", "Benign", "Suspicious", "Malicious".'
       isArray: false
       name: severity
       predefined:
@@ -50,7 +50,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Was this rating expected? Use "Unknown" if the rating is undecided
+      description: 'Determines whether the rating was expected. Can be: "Unknown", "Expected", "Unexpected". Use "Unknown" if the rating is undecided.'
       isArray: false
       name: expectation
       predefined:
@@ -60,14 +60,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Explain the rating of this alert
+      description: Explains the rating of the alert.
       isArray: false
       name: comments
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Shares the provided comment with IronDome
+      description: Whether to share the comment with IronDome.
       isArray: false
       name: share_comment_with_irondome
       predefined:
@@ -81,20 +81,20 @@ script:
     name: irondefense-rate-alert
   - arguments:
     - default: false
-      description: The ID of the IronDefense alert
+      description: The ID of the IronDefense alert.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - default: false
-      description: Text of comment
+      description: Explains the rating of the alert.
       isArray: false
       name: comment
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Shares the provided comment with IronDome
+      description: Whether to share the comment with IronDome.
       isArray: false
       name: share_comment_with_irondome
       predefined:
@@ -103,19 +103,19 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adds a comment to an IronDefense alert
+    description: Adds a comment to an IronDefense alert.
     execution: false
     name: irondefense-comment-alert
   - arguments:
     - default: false
-      description: The ID of the IronDefense alert
+      description: The ID of the IronDefense alert.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The alert status to set
+      description: 'The alert status to set. Can be: "Awaiting Review", "Under Review", "Closed".'
       isArray: false
       name: status
       predefined:
@@ -125,14 +125,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: Explain the status of this alert
+      description: Explains the status of the alert.
       isArray: false
       name: comments
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Shares the provided comment with IronDome
+      description: Whether to share the comment with IronDome.
       isArray: false
       name: share_comment_with_irondome
       predefined:
@@ -141,7 +141,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Sets the status of an IronDefense alert
+    description: Sets the status of an IronDefense alert.
     execution: false
     name: irondefense-set-alert-status
   - arguments:
