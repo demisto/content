@@ -7,17 +7,19 @@ def sum_value(value):
 
     if isinstance(value, str):
         try:
-            value = [int(item) for item in value.split(',')]
+            value = [float(item) for item in value.split(',')]
         except ValueError:
             return 'error', 'error'
 
     elif isinstance(value, list):
         try:
-            value = [int(item) for item in value]
+            value = [float(item) for item in value]
         except ValueError:
             return 'error', 'error'
 
     result = sum(value)
+    if result == int(result):
+        result = int(result)
     return result, 'ok'
 
 
