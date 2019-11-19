@@ -182,9 +182,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: Field IDs to display.
+      description: |-
+        Filter specific field names.
+        * Case sensetive.
+        * If one of the names contains a space, add all names in parenthesis (i.e. "Id,Published Revision")
       isArray: true
-      name: field_ids
+      name: field_names
       required: false
       secret: false
     - default: false
