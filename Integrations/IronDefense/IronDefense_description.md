@@ -19,9 +19,9 @@ in a later version of the Integration.
 
 However, you can still create incidents by using the Demisto Add-on for Splunk to create incidents for IronDefense 
 alerts ingested into Splunk. Download the Demisto Add-on for Splunk [here](https://splunkbase.splunk.com/app/3448/).
-## Example Playbook
-An example playbook containing all commands defined by this integration is provided for reference. Search for the 
-**Default IronDefense Example** playbook in your content repository.
+## Test Playbook
+An test playbook containing all commands defined by this integration is provided for reference. Search for the 
+**IronDefense Test** playbook in your content repository.
 ## Troubleshooting
 ### Logging
 Log entries for the integration can be found in **/var/log/demisto/server.log**. All entries are prefixed with "IronDefense Integration:"
