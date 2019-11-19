@@ -1,5 +1,6 @@
 import argparse
 import uuid
+import json
 import demisto_client
 from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
 from Tests.test_integration import __get_integration_config, __test_integration_instance
@@ -13,13 +14,37 @@ def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating and testing integration instances')
     parser.add_argument('-u', '--user', help='The username for the login', required=True)
     parser.add_argument('-p', '--password', help='The password for the login', required=True)
-    parser.add_argument('-s', '--server', help='The server URL to connect to')
+    parser.add_argument('-env', '--ami_env', help='The AMI environment for the current run. Options are '
+                        '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before GA". '
+                        'The server url is determined by the AMI environment.')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
-    parser.add_argument('-e', '--secret', help='Path to secret conf file')
+    parser.add_argument('-s', '--secret', help='Path to secret conf file')
 
     options = parser.parse_args()
 
     return options
+
+
+def determine_server_url(ami_env):
+    '''
+    Use the "env_results.json" file and -env argument passed to the script to determine
+    the demisto server url to connect to
+
+    Arguments:
+        ami_env: (str)
+            The amazon machine image environment whose IP we should connect to.
+
+    Returns:
+        (str): The server url to connect to
+    '''
+    instance_dns = ''
+    with open('./env_results.json', 'r') as json_file:
+        env_results = json.load(json_file)
+        env_to_instance_dns = {env.get('Role'): env.get('InstanceDNS') for env in env_results}
+        instance_dns = env_to_instance_dns.get(ami_env)
+    server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
+                                                                       instance_dns else '')
+    return server_url
 
 
 def set_integration_params(integrations, secret_params, instance_names):
@@ -128,7 +153,8 @@ def main():
     options = options_handler()
     username = options.user
     password = options.password
-    server = options.server
+    ami_env = options.ami_env
+    server = determine_server_url(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
 
