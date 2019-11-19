@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The object value to check if empty.
+  description: The object value to check, if empty.
   isArray: false
   name: value
   required: false
@@ -14,8 +14,8 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'true'
-  description: If set to true, empty strings, arrays and dictionaries will be considered
-    empty entities and the default value will be returned.
+  description: If set to true, empty strings, arrays and dictionaries are considered
+    empty entities and the default value is returned.
   isArray: false
   name: applyIfEmpty
   predefined:
