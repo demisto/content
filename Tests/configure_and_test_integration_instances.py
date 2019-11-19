@@ -3,8 +3,8 @@ import uuid
 import json
 import ast
 import demisto_client
-from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
 from Tests.test_integration import __get_integration_config, __test_integration_instance
+from Tests.test_integration import __disable_integrations_instances
 from Tests.test_utils import print_error, print_color, LOG_COLORS
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command
@@ -50,27 +50,24 @@ def determine_server_url(ami_env):
 
 def is_content_updating(server, username, password):
     '''Configure Demisto Client and make request to check if content is updating'''
-    try:
-        # Configure Demisto Client
-        c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    # Configure Demisto Client
+    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
 
-        msg = '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(server)
-        print(msg)
+    msg = '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(server)
+    print(msg)
 
-        # make request to check if content is updating
-        response_data, status_code, _ = demisto_client.generic_request_func(self=c, path='/content/updating',
-                                                                            method='GET', accept='application/json')
+    # make request to check if content is updating
+    response_data, status_code, _ = demisto_client.generic_request_func(self=c, path='/content/updating',
+                                                                        method='GET', accept='application/json')
 
-        if status_code >= 300 or status_code < 200:
-            result_object = ast.literal_eval(response_data)
-            message = result_object.get('message', '')
-            msg = "Failed to check if content is installing - with status code " + str(status_code) + '\n' + message
-            raise Exception(msg)
-            return 'request unsuccessful'
-        else:
-            return response_data
-    except Exception as e:
-        print_error(str(e))
+    if status_code >= 300 or status_code < 200:
+        result_object = ast.literal_eval(response_data)
+        message = result_object.get('message', '')
+        msg = "Failed to check if content is installing - with status code " + str(status_code) + '\n' + message
+        print_error(msg)
+        return 'request unsuccessful'
+    else:
+        return response_data
 
 
 def set_integration_params(integrations, secret_params, instance_names):
@@ -294,7 +291,7 @@ def main():
     updating_content = is_content_updating(server, username, password)
     while updating_content.lower() == 'true':
         sleep(sleep_interval)
-        updating_content = is_content_updating(server)
+        updating_content = is_content_updating(server, username, password)
 
     if updating_content.lower() == 'request unsuccessful':
         # since the request to check if content update installation finished didn't work, can't use that mechanism
