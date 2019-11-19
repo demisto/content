@@ -1949,6 +1949,7 @@
     "skipped_tests": {
         "Create Phishing Classifier V2 ML Test": "Issue 20174",
         "Extract Indicators From File - Generic v2": "Issue 20143",
+        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -1981,11 +1982,9 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
-        "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
-        "CarbonBlackResponseTest": "Issue #19180",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
@@ -2015,7 +2014,6 @@
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "iDefense": "Issue 20095",
-        "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
@@ -2053,6 +2051,7 @@
         "QRadar": "Issue 17794",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
+        "McAfee ESM-v10": "Issue 20225",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2111,7 +2110,6 @@
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
-        "carbonblackliveresponse": "Issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
