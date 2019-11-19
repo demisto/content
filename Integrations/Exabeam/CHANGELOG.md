@@ -1,9 +1,7 @@
 ## [Unreleased]
   - Improve error handling
   - Prefixed all commands with *exabeam-*
-  - Added 4 new commands:
-    - ***exabeam-create-watchlist***
-    - ***exabeam-watchlist-add-user***
+  - Added 2 new commands:
     - ***exabeam-delete-watchlist***
     - ***exabeam-get-asset-data***
 

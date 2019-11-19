@@ -186,44 +186,6 @@ class Client(BaseClient):
         response = self.http_request('GET', url_suffix='/uba/api/watchlist')
         return response
 
-    def create_watchlist_request(self, title=None, category=None, description=None, items=None) -> Dict:
-        """
-        Args:
-            title: watchlist title
-            category: watchlist category
-            description: watchlist description
-            items: watchlist items. username or asset name
-
-        Returns:
-            a watchlist
-        """
-        params = {
-            'title': title,
-            'category': category,
-            'description': description,
-            'items': items
-        }
-        self.session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-        response = self.http_request('POST', url_suffix='/uba/api/watchlist', params=params)
-        return response
-
-    def watchlist_add_user_request(self, username: str = None, watchlist_id: str = None) -> Dict:
-        """
-        Args:
-            username: user name
-            watchlist_id: watchlist id
-
-        Returns:
-            all updated watchlist
-        """
-        params = {
-            'itemId': username,
-            'watchListId': watchlist_id
-        }
-        self.session.headers.update({'Content-Type': 'application/x-www-form-urlencoded'})
-        response = self.http_request('PUT', url_suffix=f'/uba/api/watchlist/user/{username}/add', params=params)
-        return response
-
     def delete_watchlist_request(self, watchlist_id: str = None):
         """
         Args:
@@ -316,7 +278,8 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     contents: list = []
     headers = ['UserName', 'UserFullName', 'Title', 'Department', 'RiskScore', 'Labels', 'NotableSessionIds',
                'EmployeeType', 'FirstSeen', 'LastSeen', 'LastActivity', 'Location']
-    users = client.get_notable_users_request(api_unit, num, limit).get('users', [])
+    raw_users = client.get_notable_users_request(api_unit, num, limit)
+    users = raw_users.get('users', [])
     if not users:
         return 'No users were found in this period of time.', {}, {}
 
@@ -328,7 +291,7 @@ def get_notable_users(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     entry_context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
     human_readable = tableToMarkdown('Exabeam Notable Users:', contents, headers=headers, removeNull=True)
 
-    return human_readable, entry_context, users
+    return human_readable, entry_context, raw_users
 
 
 def contents_user_info(user, user_info) -> Dict:
@@ -486,59 +449,6 @@ def get_watchlist(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, watchlist
 
 
-def create_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Create a new watchlist
-
-    Args:
-        client: Client
-        args: Dict
-
-    """
-    title = args.get('title')
-    category = args.get('category')
-    description = args.get('description')
-    items = argToList(args.get('items'))
-
-    watchlist = client.create_watchlist_request(title, category, description, items)
-    if not watchlist:
-        raise Exception(f'The watchlist was not created.')
-
-    contents = {
-        'WatchlistID': watchlist.get('watchlistId'),
-        'Title': watchlist.get('title'),
-        'Category': watchlist.get('category')
-    }
-    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
-    human_readable = tableToMarkdown('New watchlist has been created.', t=contents,
-                                     headers=['WatchlistID', 'Title', 'Category'], removeNull=True)
-    return human_readable, entry_context, watchlist
-
-
-def watchlist_add_user(client, args: Dict) -> Tuple[str, Dict, Dict]:
-    """Add user to a watchlist
-
-    Args:
-        client: Client
-        args: Dict
-
-    """
-    username = args.get('username')
-    watchlist_id = args.get('watchlist_id')
-
-    response = client.watchlist_add_user_request(username, watchlist_id)
-    if not response:
-        raise Exception(f'The user {username} was not added to the watchlist {watchlist_id}.')
-
-    contents = {
-        'UserID': response.get('item'),
-        'WatchlistID': response.get('watchlistId')
-    }
-    entry_context = {'Exabeam.Watchlist(val.WatchlistID && val.WatchlistID === obj.WatchlistID)': contents}
-    human_readable = tableToMarkdown('The user was added successfully to the watchlist.', contents)
-
-    return human_readable, entry_context, response
-
-
 def delete_watchlist(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """Delete a watchlist
 
@@ -582,17 +492,17 @@ def get_asset_data(client: Client, args: Dict) -> Tuple[Any, Dict[str, Dict[Any,
 
     """
     asset_name = args.get('asset_name')
-    asset_data = client.get_asset_data_request(asset_name)
+    asset_raw_data = client.get_asset_data_request(asset_name)
 
-    if not asset_data or 'asset' not in asset_data:
+    if not asset_raw_data or 'asset' not in asset_raw_data:
         raise Exception(f'The asset {asset_name} has no data. Please verify that the asset name is valid.')
 
-    asset_data = asset_data.get('asset')
+    asset_data = asset_raw_data.get('asset')
     contents = contents_asset_data(asset_data)
     entry_context = {'Exabeam.Asset(val.IPAddress && val.IPAddress === obj.IPAddress)': contents}
     human_readable = tableToMarkdown('Exabeam Asset Data:', contents, removeNull=True)
 
-    return human_readable, entry_context, asset_data
+    return human_readable, entry_context, asset_raw_data
 
 
 def main():
@@ -622,8 +532,6 @@ def main():
         'exabeam-get-user-sessions': get_user_sessions,
         'get-watchlists': get_watchlist,
         'exabeam-get-watchlists': get_watchlist,
-        'exabeam-create-watchlist': create_watchlist,
-        'exabeam-watchlist-add-user': watchlist_add_user,
         'exabeam-delete-watchlist': delete_watchlist,
         'exabeam-get-asset-data': get_asset_data
     }

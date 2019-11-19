@@ -1,4 +1,10 @@
-from Exabeam import contents_append_notable_user_info, contents_user_info
+import pytest
+from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
+    get_user_labels, get_watchlist, get_asset_data
+from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
+    RESPONSE_ASSET_DATA
+from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABELS, EXPECTED_WATCHLISTS, \
+    EXPECTED_ASSET_DATA
 
 
 def test_contents_append_notable_user_info():
@@ -77,3 +83,19 @@ def test_contents_user_info():
     }
 
     assert outputs == expected_outputs
+
+
+@pytest.mark.parametrize('command, args, response, expected_result', [
+    (get_peer_groups, {}, RESPONSE_PEER_GROUPS, EXPECTED_PEER_GROUPS),
+    (get_user_labels, {}, RESPONSE_USER_LABELS, EXPECTED_USER_LABELS),
+    (get_watchlist, {}, RESPONSE_WATCHLISTS, EXPECTED_WATCHLISTS),
+    (get_asset_data, {'asset_name': 'dummmy'}, RESPONSE_ASSET_DATA, EXPECTED_ASSET_DATA)
+])  # noqa: E124
+def test_commands(command, args, response, expected_result, mocker):
+    mocker.patch.object(Client, '_login')
+    client = Client('http://exabeam.com/api/auth/login', verify=True, username='user',
+                    password='1234', proxies={}, headers={})
+
+    mocker.patch.object(client, 'http_request', return_value=response)
+    result = command(client, args)
+    assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
