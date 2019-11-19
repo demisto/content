@@ -81,6 +81,11 @@ jobs:
 
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
       - run:
+          name: Secrets
+          when: always
+          command: |
+              python3 ./Tests/scripts/hook_validations/secrets.py -c true
+      - run:
           name: Configure Test Filter
           when: always
           command: |
