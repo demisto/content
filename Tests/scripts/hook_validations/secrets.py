@@ -9,7 +9,7 @@ import PyPDF2
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
-from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS, checked_type
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -206,15 +206,16 @@ def create_temp_white_list(file_contents):
 
 
 def get_related_yml_contents(file_path):
-    yml_file_contents = ''
     # if script or readme file, search for yml in order to retrieve temp white list
-    if is_allowed_types(file_path):
+    yml_file_contents = ''
+    # Validate if it is integration documentation file or supported file extension
+    if checked_type(file_path, REQUIRED_YML_FILE_TYPES):
         yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
     return yml_file_contents
 
 
 def is_allowed_types(file_path):
-    # Validate if it is integration documentation file or supported file extension
+
     if any(re.match(regex, file_path, re.IGNORECASE) for regex in REQUIRED_YML_FILE_TYPES):
         return True
     return False
