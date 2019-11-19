@@ -19,7 +19,7 @@ def options_handler():
 
 
 def get_all_file_paths(directory):
-
+    '''Return list of all file paths under a given directory'''
     # initializing empty file paths list
     file_paths = []
 
@@ -114,9 +114,18 @@ def get_latest_artifacts(branch):
 
 
 def download_artifact(url, file_name=''):
-    try:
-        artifact = url.split('/')[-1]
-        print('Making request to download the "{}" artifact'.format(artifact))
+    '''Download the artifact from the download url
+
+    The name of the artifact is derived from the path ending of the download url. If file_name is
+    provided, then the artifact is saved to the file system with this value instead of the artifact
+    name.
+
+    Arguments:
+        url: (str)
+            The link to download the artifact
+        file_name: (str)
+            If non-empty string, then the artifact is saved to the local file system with this file name
+    '''
         res = requests.get(url, stream=True)
         if res.status_code < 200 or res.status_code >= 300:
             msg = 'requests exception: [{}] - ' \
