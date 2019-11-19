@@ -28,7 +28,8 @@ class StructureValidator(object):
     SCHEMAS_PATH = "Tests/schemas/"
 
     def __init__(self, file_path, is_added_file=False, is_renamed=False):
-        self.is_valid = self.is_file_valid()
+        self.current_file = self.load_data_from_file()
+        self.is_valid = True
         self.file_path = file_path
         self.is_added_file = is_added_file
         self.is_renamed = is_renamed
@@ -49,7 +50,7 @@ class StructureValidator(object):
             if validate_rn and not self.is_release_branch():
                 self.validate_file_release_notes()
 
-    def is_scheme_valid(self, schema_name):
+    def is_valid_scheme(self, schema_name):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
@@ -120,8 +121,7 @@ class StructureValidator(object):
         Returns:
             bool. Whether the file's ID contains slashes or not.
         """
-        loaded_file_data = self.load_data_from_file()
-        file_id = self.get_file_id_from_loaded_file_data(loaded_file_data)
+        file_id = self.get_file_id_from_loaded_file_data(self.current_file)
         if file_id and '/' in file_id:
             self.is_valid = False
             print_error(Errors.file_id_contains_slashes())
@@ -188,3 +188,8 @@ class StructureValidator(object):
             if rn is None:
                 print_error(Errors.missing_release_notes(self.file_path, rn_path))
                 self.is_valid = False
+
+    @abstractmethod
+    def load_data_from_file(self):
+        """Returns dict"""
+        pass

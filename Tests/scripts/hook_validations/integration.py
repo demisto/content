@@ -43,7 +43,7 @@ class IntegrationValidator(YMLBasedValidator):
     scheme_name = 'integration'
 
     def is_valid_scheme(self):
-        return super(IntegrationValidator, self).is_scheme_valid(self.scheme_name)
+        return super(IntegrationValidator, self).is_valid_scheme(self.scheme_name)
 
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""

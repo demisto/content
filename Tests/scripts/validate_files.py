@@ -12,6 +12,7 @@ for that task.
 """
 from __future__ import print_function
 import os
+import re
 import sys
 import glob
 import logging
@@ -25,7 +26,6 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
-from Tests.scripts.hook_validations.secrets import get_secrets  # noqa: E402
 from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
 from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
 from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
@@ -89,53 +89,54 @@ class FilesValidator(object):
             (modified_files_list, added_files_list, deleted_files). Tuple of sets.
         """
         all_files = files_string.split('\n')
-        deleted_files = set()
-        added_files_list = set()
-        modified_files_list = set()
-        old_format_files = set()
+        deleted_files = set([])
+        added_files_list = set([])
+        modified_files_list = set([])
+        old_format_files = set([])
         for f in all_files:
             file_data = f.split()
-            if file_data:
-                file_status = file_data[0]
-                file_path = file_data[1]
+            if not file_data:
+                continue
 
-                if file_status.lower().startswith('r'):
-                    file_status = 'r'
-                    file_path = file_data[2]
+            file_status = file_data[0]
+            file_path = file_data[1]
 
-                if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
-                        and not file_path.endswith('_test.py'):
-                    # naming convention - code file and yml file in packages must have same name.
-                    file_path = os.path.splitext(file_path)[0] + '.yml'
-                elif file_path.endswith('.js') or file_path.endswith('.py'):
-                    continue
+            if file_status.lower().startswith('r'):
+                file_status = 'r'
+                file_path = file_data[2]
 
-                if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
-                        FilesValidator.is_py_script_or_integration(file_path):
-                    old_format_files.add(file_path)
-                elif file_status.lower() in KNOWN_FILE_STATUSES:
-                    if checked_type(file_path):
-                        if file_status.lower().startswith('r'):  # Renamed
-                            # if a code file changed, take the associated yml file.
-                            if checked_type(file_data[2], CODE_FILES_REGEX):
-                                modified_files_list.add(file_path)
-                            else:
-                                modified_files_list.add((file_data[1], file_data[2]))
-                        elif not file_path.startswith('.'):
-                            if file_status.lower() == 'm':
-                                modified_files_list.add(file_path)
-                            elif file_status.lower() == 'a':
-                                added_files_list.add(file_path)
-                            elif file_status.lower() == 'd':
-                                deleted_files.add(file_path)
-                elif checked_type(file_path, [SCHEMA_REGEX]):
+            if checked_type(file_path, CODE_FILES_REGEX) and file_status.lower() != 'd' \
+                    and not file_path.endswith('_test.py'):
+                # naming convention - code file and yml file in packages must have same name.
+                file_path = os.path.splitext(file_path)[0] + '.yml'
+            elif file_path.endswith('.js') or file_path.endswith('.py'):
+                continue
+
+            if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
+                    FilesValidator.is_py_script_or_integration(file_path):
+                old_format_files.add(file_path)
+            elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
+                modified_files_list.add(file_path)
+            elif file_status.lower() == 'a' and checked_type(file_path) and not file_path.startswith('.'):
+                added_files_list.add(file_path)
+            elif file_status.lower() == 'd' and checked_type(file_path) and not file_path.startswith('.'):
+                deleted_files.add(file_path)
+            elif file_status.lower().startswith('r') and checked_type(file_path):
+                # if a code file changed, take the associated yml file.
+                if checked_type(file_data[2], CODE_FILES_REGEX):
                     modified_files_list.add(file_path)
-                elif file_status.lower() not in KNOWN_FILE_STATUSES:
-                    print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
-                        file_path, file_status))
+                else:
+                    modified_files_list.add((file_data[1], file_data[2]))
 
-                elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
-                    print_warning('Ignoring file path: {}'.format(file_path))
+            elif checked_type(file_path, [SCHEMA_REGEX]):
+                modified_files_list.add(file_path)
+
+            elif file_status.lower() not in KNOWN_FILE_STATUSES:
+                print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
+                    file_path, file_status))
+
+            elif print_ignored_files and not checked_type(file_path, IGNORED_TYPES_REGEXES):
+                print_warning('Ignoring file path: {}'.format(file_path))
 
         modified_files_list, added_files_list, deleted_files = filter_packagify_changes(
             modified_files_list,
@@ -154,7 +155,7 @@ class FilesValidator(object):
             tag (string): String of git tag used to update modified files
 
         Returns:
-            (modified_files, added_files, old_format_files). Tuple of sets.
+            (modified_files, added_files). Tuple of sets.
         """
         # Two dots is the default in git diff, it will compare with the last known commit as the base
         # Three dots will compare with the last known shared commit as the base
@@ -171,8 +172,8 @@ class FilesValidator(object):
         if not is_circle:
             files_string = run_command('git diff --name-status --no-merges HEAD')
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-            non_committed_old_format_files = self.get_modified_files(files_string,
-                                                                     print_ignored_files=self.print_ignored_files)
+                non_committed_old_format_files = self.get_modified_files(files_string,
+                                                                         print_ignored_files=self.print_ignored_files)
 
             all_changed_files_string = run_command('git diff --name-status {}'.format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
@@ -187,6 +188,13 @@ class FilesValidator(object):
 
             modified_files = modified_files - set(non_committed_deleted_files)
             added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
+
+            # new_added_files = set([])
+            # for added_file in added_files:
+            #     if added_file in non_committed_added_files:
+            #         new_added_files.add(added_file)
+
+            # added_files = new_added_files
 
         return modified_files, added_files, old_format_files
 
@@ -206,6 +214,10 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print('Validating {}'.format(file_path))
+            if not checked_type(file_path):
+                print_warning('- Skipping validation of non-content entity file.')
+                continue
+
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
@@ -214,7 +226,6 @@ class FilesValidator(object):
             if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
-            # If integration
             elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
 
@@ -230,10 +241,9 @@ class FilesValidator(object):
                                                              old_git_branch=old_branch)
                 if is_backward_check and not integration_validator.is_backward_compatible():
                     self._is_valid = False
-                if not integration_validator.is_file_valid():
+                if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
-            # If beta integration
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -243,7 +253,6 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
 
-            # If script
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
@@ -251,7 +260,6 @@ class FilesValidator(object):
                 if not script_validator.is_valid_script():
                     self._is_valid = False
 
-            # If script YML
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
@@ -261,13 +269,11 @@ class FilesValidator(object):
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
-            # If image
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            # If incident field
             elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
                 incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
                                                                   old_git_branch=old_branch)
@@ -314,7 +320,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
-                if not integration_validator.is_file_valid():
+                if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
@@ -335,16 +341,6 @@ class FilesValidator(object):
                 incident_field_validator = IncidentFieldValidator(file_path)
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
-
-    def validate_no_secrets_found(self, branch_name):
-        """Check if any secrets are found in your change set.
-
-        Args:
-            branch_name (string): The name of the branch you are working on.
-        """
-        secrets_found = get_secrets(branch_name, self.is_circle)
-        if secrets_found:
-            self._is_valid = False
 
     def validate_no_old_format(self, old_format_files):
         """ Validate there are no files in the old format(unified yml file for the code and configuration).
@@ -368,7 +364,6 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch you are working on.
-            is_backward_check (bool): Should check backwards
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
         schema_changed = False
@@ -381,7 +376,6 @@ class FilesValidator(object):
         if schema_changed:
             self.validate_all_files()
         else:
-            self.validate_no_secrets_found(branch_name)
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
@@ -403,7 +397,7 @@ class FilesValidator(object):
 
                     print('Validating ' + file_name)
                     structure_validator = StructureValidator(file_path)
-                    if not structure_validator.is_scheme_valid():
+                    if not structure_validator.is_valid_scheme():
                         self._is_valid = False
 
                 if root in PACKAGE_SUPPORTING_DIRECTORIES:
@@ -411,7 +405,7 @@ class FilesValidator(object):
                         file_path = glob.glob(os.path.join(root, inner_dir, '*.yml'))[0]
                         print('Validating ' + file_path)
                         structure_validator = StructureValidator(file_path)
-                        if not structure_validator.is_scheme_valid():
+                        if not structure_validator.is_valid_scheme():
                             self._is_valid = False
 
     def is_valid_structure(self, branch_name, is_backward_check=True, prev_ver=None):
@@ -419,7 +413,6 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch we are working on.
-            is_backward_check (bool): Should check BC
             prev_ver (string): The name or SHA1 of the previous content version, which will be validated against.
 
         Returns:
@@ -433,7 +426,7 @@ class FilesValidator(object):
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
             if not prev_ver:
                 # validate against master if no version was provided
-                prev_ver = 'master'
+                prev_ver = 'origin/master'
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
         else:
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)

@@ -26,6 +26,7 @@ class ScriptValidator(YMLBasedValidator):
 
     def is_file_valid(self, **kwargs):
         super(ScriptValidator, self).is_file_valid()
+        self.is_backward_compatible()
 
     def is_backward_compatible(self):
         """Check if the script is backward compatible."""
@@ -37,7 +38,7 @@ class ScriptValidator(YMLBasedValidator):
             self.is_context_path_changed(),
             self.is_added_required_args(),
             self.is_arg_changed(),
-            self.is_there_duplicates(),
+            self.is_there_duplicate_args(),
             self.is_changed_subtype()
         ]
 
@@ -57,7 +58,6 @@ class ScriptValidator(YMLBasedValidator):
         is_script_valid = any([
             self.is_valid_subtype()
         ])
-
         return is_script_valid
 
     def get_arg_to_required_dict(self, json_object, **kwargs):
@@ -70,7 +70,9 @@ class ScriptValidator(YMLBasedValidator):
             subtype = self.current_file.get('subtype')
             if self.old_file:
                 old_subtype = self.old_file.get('subtype', "")
+                # If no old subtype, it's fine the have a new one
                 if old_subtype and old_subtype != subtype:
+                    self.is_valid = False
                     print_error(Errors.breaking_backwards_subtype(self.file_path))
                     return True
         return False
@@ -81,8 +83,7 @@ class ScriptValidator(YMLBasedValidator):
         if type_ == 'python':
             subtype = self.current_file.get('subtype')
             if subtype not in PYTHON_SUBTYPES:
-                print_error("The subtype for our yml files should be either python2 or python3, "
-                            "please update the file {}.".format(self.file_path))
+                print_error(Errors.wrong_subtype(self.file_path))
                 return False
         return True
 
@@ -135,4 +136,4 @@ class ScriptValidator(YMLBasedValidator):
         return super(ScriptValidator, self).is_docker_image_changed()
 
     def is_valid_scheme(self):
-        super(ScriptValidator, self).is_scheme_valid(self.scheme_name)
+        super(ScriptValidator, self).is_valid_scheme(self.scheme_name)

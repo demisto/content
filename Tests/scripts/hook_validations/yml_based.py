@@ -15,13 +15,11 @@ class YMLBasedValidator(StructureValidator):
 
     Attributes:
         file_path (str): the path to the file we are examining at the moment.
-       current_file (dict): Json representation of the current script from the branch.
        old_file (dict): Json representation of the current script from master.
     """
     def __init__(self, file_path, is_added_file=False, is_renamed=False, check_git=True, old_file_path=None, old_git_branch='master'):
-        self.current_file = get_yaml(file_path)
+        super(YMLBasedValidator, self).__init__(file_path, is_added_file, is_renamed)
         self.old_file = {}
-
         # Gets old file
         if check_git:
             # The replace in the end is for Windows support
@@ -37,26 +35,11 @@ class YMLBasedValidator(StructureValidator):
                 self.old_file = yaml.safe_load(res.content)
             except Exception as e:
                 print_warning(Errors.breaking_backwards_no_old_script(e))
-        super(YMLBasedValidator, self).__init__(file_path, is_added_file, is_renamed)
-        self.is_valid_version()
 
     @abstractmethod
     def is_backward_compatible(self):
         """Check whether the Integration is backward compatible or not, update the _is_valid field to determine that"""
-        if not self.old_file:
-            return True
-
-        self.is_context_path_changed()
-        self.is_docker_image_changed()
-        self.is_added_required_fields()
-        self.is_changed_command_name_or_arg()
-        self.is_there_duplicates_args()
-        self.is_there_duplicate_params()
-        self.is_changed_subtype()
-
-        # will move to is_valid_integration after https://github.com/demisto/etc/issues/17949
-        self.is_outputs_for_reputations_commands_valid()
-        return self.is_valid
+        pass
 
     @abstractmethod
     def is_docker_image_changed(self):
@@ -117,8 +100,8 @@ class YMLBasedValidator(StructureValidator):
 
         return self.is_valid
 
-    def load_data_from_file(self, load_function=yaml.safe_load):
-        return super(YMLBasedValidator, self).load_data_from_file(load_function)
+    def load_data_from_file(self):
+        return get_yaml(self.file_path)
 
     def is_there_duplicates(self, args_go_check):
         duplicates = self.find_duplicates(args_go_check)

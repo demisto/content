@@ -9,7 +9,7 @@ class ReputationValidator(JSONBasedValidator):
     scheme_name = 'reputation'
 
     def is_valid_scheme(self):
-        super(ReputationValidator, self).is_scheme_valid(self.scheme_name)
+        super(ReputationValidator, self).is_valid_scheme(self.scheme_name)
 
     def is_file_valid(self, validate_rn=True):
         super(ReputationValidator, self).is_file_valid(validate_rn=validate_rn)
