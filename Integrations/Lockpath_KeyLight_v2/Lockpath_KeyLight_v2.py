@@ -103,19 +103,17 @@ class Client(BaseClient):
                              res, ['ID', 'Name', 'SystemName', 'ShortName', 'ReadOnly', 'Required'])
         return_outputs(hr, ec, res)
 
-    def return_records(self, component_id: str, record_id: str, field_ids: str,
+    def return_records(self, component_id: str, record_id: str, field_names: str,
                        suffix: str) -> None:
         params = {'componentID': component_id,
                   'recordId': record_id}
         res = self._http_request('GET', suffix, params=params)
-        field_ids = argToList(field_ids)
-        fields = []
-        for field in res.get('FieldValues', []):
-            if str(field.get('Key', '')) in field_ids:
-                fields.append(field)
-        if not field_ids:
-            fields = res.get('FieldValues', [])
-        fields = field_output_to_hr_fields(fields, component_id, self)
+        field_names = argToList(field_names)
+        all_fields = field_output_to_hr_fields(res.get('FieldValues', []), component_id, self)
+        if field_names:
+            fields = {k: all_fields[k] for k in field_names if k in all_fields}
+        if not field_names:
+            fields = all_fields
         record = {'ID': res.get('Id'),
                   'ComponentID': component_id,
                   'DisplayName': res.get('DisplayName', '')
@@ -174,24 +172,24 @@ class Client(BaseClient):
 
         '''
         field_map = demisto.getIntegrationContext()
-        if field_map.get(component_id):
-            field_map.pop(component_id)
+        if field_map.get(str(component_id)):
+            field_map.pop(str(component_id))
         params = {'componentId':component_id}
         fields = self._http_request('GET', '/ComponentService/GetFieldList', params=params)
         field_names = {}
         for field in fields:
-            field_names[field.get('Id')] = field.get('Name')
+            field_names[str(field.get('Id'))] = field.get('Name')
         update = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         if len(field_map) == 7:
             min_time = update
             min_component = ''
             for component in field_map.keys():
-                updated = field_map.get('component').get('updated')
+                updated = field_map.get(component).get('updated')
                 if parse_date_string(updated) < parse_date_string(min_time):
                     min_time = updated
                     min_component = component
             field_map.pop(min_component)
-        field_map[component_id] = {'fields': field_names,
+        field_map[str(component_id)] = {'fields': field_names,
                                    'updated': update
                                    }
         demisto.setIntegrationContext(field_map)
@@ -226,6 +224,8 @@ def field_output_to_hr_fields(field_output: dict, component_id: str, client: Cli
             client.update_field_integration_context(component_id)
             fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
         field_name = fields.get(str(field_key))
+        if type(field_val) == dict and field_val.get('DisplayName'):
+            field_val = field_val.get('DisplayName')
         final_fields[field_name] = field_val
     return final_fields
 
@@ -286,7 +286,7 @@ def get_field_command(client: Client, args: dict) -> None:
 def get_record_command(client: Client, args: dict) -> None:
     path = '/ComponentService/GetDetailRecord' if args.get('detailed', "False") == "True" \
         else '/ComponentService/GetRecord'
-    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_ids', ''), path)
+    client.return_records(args.get('component_id', ''), args.get('record_id', ''), args.get('field_names', ''), path)
 
 
 def get_filtered_records_command(client: Client, args: dict) -> None:
