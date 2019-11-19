@@ -35,7 +35,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -94,59 +94,66 @@ script:
 
 
     function doFile(hash, longFormat) {
-        var res = doReq('GET', 'malware/' + hash);
-        if (res.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + hash};
+        hash_list = argToList(hash);
+        entry_list = new Array(hash_list.length);
+        for (i = 0; i<hash_list.length; i++)
+        {
+            hash = hash_list[i];
+            var res = doReq('GET', 'malware/' + hash);
+            if (res.statusCode === 404) {
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + hash};
+            }
+            var o = res.obj.malware;
+            var ec = {};
+            var dbotScore = 0;
+            if (o && o.family) {
+                dbotScore = 3;
+            } else if (o && o.risk === 'high') {
+                dbotScore = 3;
+            } else if (o && o.risk === 'medium') {
+                dbotScore = 2;
+            } else if (o) {
+                dbotScore = 1;
+            }
+            ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE', Score: dbotScore};
+            if (dbotScore === 3) {
+                var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
+                malFile[o.type.toUpperCase()] = hash;
+                addMalicious(ec, outputPaths.file, malFile);
+            }
+            var md = '## X-Force Hash Reputation for: ' + hash + '\n';
+            md += 'Type: **' + o.type + '**\n';
+            md += 'Risk: **' + o.risk + '**\n';
+            md += 'Created: **' + o.created + '**\n';
+            md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\n';
+            md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr) {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A') + '**\n';
+            md += 'XFE Link: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
+            if (longFormat === 'true' && o.origins) {
+                if (o.origins.CnCServers && o.origins.CnCServers.rows) {
+                    md += '### CNC Servers\n';
+                    md += arrToMd(o.origins.CnCServers.rows) + '\n';
+                }
+                if (o.origins.downloadServers && o.origins.downloadServers.rows) {
+                    md += '### Download Servers\n';
+                    md += arrToMd(o.origins.downloadServers.rows) + '\n';
+                }
+                if (o.origins.emails && o.origins.emails.rows) {
+                    md += '### Emails\n';
+                    md += arrToMd(o.origins.emails.rows) + '\n';
+                }
+                if (o.origins.subjects && o.origins.subjects.rows) {
+                    md += '### Subjects\n';
+                    md += arrToMd(o.origins.subjects.rows) + '\n';
+                }
+                if (o.origins.external) {
+                    md += '### External\n';
+                    md += objToMd(o.origins.external) + '\n';
+                }
+            }
+            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        var o = res.obj.malware;
-        var ec = {};
-        var dbotScore = 0;
-        if (o && o.family) {
-            dbotScore = 3;
-        } else if (o && o.risk === 'high') {
-            dbotScore = 3;
-        } else if (o && o.risk === 'medium') {
-            dbotScore = 2;
-        } else if (o) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: hash, Type: 'hash', Vendor: 'XFE', Score: dbotScore};
-        if (dbotScore === 3) {
-            var malFile = {Malicious: {Vendor: 'XFE', Description: 'Risk: ' + o.risk + ' Family: ' + o.family, Score: o.risk}};
-            malFile[o.type.toUpperCase()] = hash;
-            addMalicious(ec, outputPaths.file, malFile);
-        }
-        var md = '## X-Force Hash Reputation for: ' + hash + '\n';
-        md += 'Type: **' + o.type + '**\n';
-        md += 'Risk: **' + o.risk + '**\n';
-        md += 'Created: **' + o.created + '**\n';
-        md += 'Family: **' + (o.family ? o.family.join(', ') : 'N/A') + '**\n';
-        md += 'Family members: **' + (o.familyMembers ? Object.keys(o.familyMembers).map(function(curr) {return curr + ' (' + o.familyMembers[curr].count + ')';}).join(', ') : 'N/A') + '**\n';
-        md += 'XFE Link: [' + hash + '](https://exchange.xforce.ibmcloud.com/malware/' + hash + ')\n';
-        if (longFormat === 'true' && o.origins) {
-            if (o.origins.CnCServers && o.origins.CnCServers.rows) {
-                md += '### CNC Servers\n';
-                md += arrToMd(o.origins.CnCServers.rows) + '\n';
-            }
-            if (o.origins.downloadServers && o.origins.downloadServers.rows) {
-                md += '### Download Servers\n';
-                md += arrToMd(o.origins.downloadServers.rows) + '\n';
-            }
-            if (o.origins.emails && o.origins.emails.rows) {
-                md += '### Emails\n';
-                md += arrToMd(o.origins.emails.rows) + '\n';
-            }
-            if (o.origins.subjects && o.origins.subjects.rows) {
-                md += '### Subjects\n';
-                md += arrToMd(o.origins.subjects.rows) + '\n';
-            }
-            if (o.origins.external) {
-                md += '### External\n';
-                md += objToMd(o.origins.external) + '\n';
-            }
-        }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return entry_list;
     }
 
 
@@ -156,121 +163,147 @@ script:
         }
         threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
-        var res = {};
-        var ipRes = doReq('GET', 'ipr/' + ip);
-        if (ipRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + ip};
-        }
-        var malwareRes = doReq('GET', 'ipr/malware/' + ip);
-        res.reputation = ipRes.obj;
-        res.malware = malwareRes.obj;
-        var o = res.reputation;
-        var ec = {};
-        var dbotScore = 0;
-        if (o.score && o.score >= threshold) {
-            dbotScore = 3;
-            addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.score}});
-        } else if (o.score && o.score >= threshold / 2) {
-            dbotScore = 2;
-        } else if (o.score) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force IP Reputation for: ' + ip + '\n';
-        md += 'Score: **' + o.score + '**\n';
-        md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
-        md += 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\n';
-        md += 'Reason: **' + o.reason + '**\n';
-        md += 'Reason description: **' + o.reasonDescription + '**\n';
-        md += 'XFE Link: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
-        if (o.subnets) {
-            md += '### Subnets\n';
-            md += arrToMd(o.subnets) + '\n';
-        }
-        if (longFormat === 'true') {
-            if (o.history) {
-                md += '### History\n';
-                md += arrToMd(o.history) + '\n';
+
+        ip_list = argToList(ip);
+        entry_list = new Array(ip_list.length);
+        for (i = 0; i<ip_list.length; i++)
+        {
+            ip = ip_list[i];
+            var res = {};
+            var ipRes = doReq('GET', 'ipr/' + ip);
+            if (ipRes.statusCode === 404) {
+                return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + ip};
             }
-            if (res.malware.malware) {
-                md += '### Malware\n';
-                md += arrToMd(res.malware.malware) + '\n';
+            var malwareRes = doReq('GET', 'ipr/malware/' + ip);
+            res.reputation = ipRes.obj;
+            res.malware = malwareRes.obj;
+            var o = res.reputation;
+            var ec = {};
+            var dbotScore = 0;
+            if (o.score && o.score >= threshold) {
+                dbotScore = 3;
+                addMalicious(ec, outputPaths.ip, {Address: ip, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.score}});
+            } else if (o.score && o.score >= threshold / 2) {
+                dbotScore = 2;
+            } else if (o.score) {
+                dbotScore = 1;
             }
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
+            var md = '## X-Force IP Reputation for: ' + ip + '\n';
+            md += 'Score: **' + o.score + '**\n';
+            md += 'Categories: **' + Object.keys(o.cats).map(function(curr) {return curr + ' (' + o.cats[curr] + ')';}).join(', ') + '**\n';
+            md += 'Country: **' + (o.geo && o.geo.country ? o.geo.country : 'N/A') + '**\n';
+            md += 'Reason: **' + o.reason + '**\n';
+            md += 'Reason description: **' + o.reasonDescription + '**\n';
+            md += 'XFE Link: [' + ip + '](https://exchange.xforce.ibmcloud.com/ip/' + ip + ')\n';
+            if (o.subnets) {
+                md += '### Subnets\n';
+                md += arrToMd(o.subnets) + '\n';
+            }
+            if (longFormat === 'true') {
+                if (o.history) {
+                    md += '### History\n';
+                    md += arrToMd(o.history) + '\n';
+                }
+                if (res.malware.malware) {
+                    md += '### Malware\n';
+                    md += arrToMd(res.malware.malware) + '\n';
+                }
+            }
+            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return entry_list;
     };
 
-    var doURL = function(url, longFormat, threshold) {
+    var doURL = function(url, longFormat, threshold, isURL) {
         if (!threshold) {
             threshold = params.urlThreshold || 7;
         }
+
         threshold = parseInt(threshold);
-        // Need to make sure to be backwards compatible with the JSON
-        var res = {};
-        var resolutionRes = doReq('GET', 'resolve/' + url);
-        if (resolutionRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + url};
-        }
-        var urlRes = doReq('GET', 'url/' + url);
-        if (urlRes.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + url};
-        }
-        var malwareRes = doReq('GET', 'url/malware/' + url);
-        res.resolution = resolutionRes.obj;
-        res.url = urlRes.obj;
-        res.malware = malwareRes.obj;
-        if (res.resolution && res.resolution.A) {
-            var countryRes = doReq('GET', 'ipr/' + res.resolution.A[0]);
-            if (countryRes.obj.geo) {
-                res.country = countryRes.obj.geo.country;
+
+        url_list = argToList(url);
+        entry_list = new Array(url_list.length);
+        for (i = 0; i<url_list.length; i++)
+        {
+            url = url_list[i];
+            // Need to make sure to be backwards compatible with the JSON
+            var res = {};
+            var resolutionRes = doReq('GET', 'resolve/' + url);
+            if (resolutionRes.statusCode === 404) {
+                return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + url};
             }
-        }
-        var o = res.url;
-        var ec = {};
-        var dbotScore = 0;
-        if (o.result && o.result.score && o.result.score >= threshold) {
-            addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
-            dbotScore = 3;
-        } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
-            dbotScore = 2;
-        } else if (o.result && o.result.score) {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
-        var md = '## X-Force URL Reputation for: ' + url + '\n';
-        if (o.result) {
-            md += 'Score: **' + o.result.score + '**\n';
-            md += 'Categories: **' + Object.keys(o.result.cats).join(', ') + '**\n';
-            md += 'XFE Link: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(url) + ')\n';
-        } else {
-            md += 'No result found';
-        }
-        if (res.resolution) {
-            md += '### Resolution\n';
-            if (res.country) {
-                md += 'Country: **' + res.country + '**\n';
+            var urlRes = doReq('GET', 'url/' + url);
+            if (urlRes.statusCode === 404) {
+                return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + url};
             }
-            md += objToMd(res.resolution) + '\n';
-        }
-        if (longFormat === 'true') {
-            if (o.result && o.result.associated) {
-                md += '### Associated\n';
-                md += arrToMd(o.result.associated.map(function(curr) {
-                    return {URL: curr.url, Score: curr.score, Categories: Object.keys(curr.result.cats).join(', ')};
-                })) + '\n';
+            var malwareRes = doReq('GET', 'url/malware/' + url);
+            res.resolution = resolutionRes.obj;
+            res.url = urlRes.obj;
+            res.malware = malwareRes.obj;
+            if (res.resolution && res.resolution.A) {
+                var countryRes = doReq('GET', 'ipr/' + res.resolution.A[0]);
+                if (countryRes.obj.geo) {
+                    res.country = countryRes.obj.geo.country;
+                }
             }
-            // Retrieve malware on the URL
-            if (res.malware.malware) {
-                md += '### Malware\n';
-                md += 'Count: **' + res.malware.count + '**\n';
-                md += arrToMd(res.malware.malware);
+            var o = res.url;
+            var ec = {};
+            var dbotScore = 0;
+            if (o.result && o.result.score && o.result.score >= threshold) {
+                if (isURL) {
+                  addMalicious(ec, outputPaths.url, {Data: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
+                } else {
+                  addMalicious(ec, outputPaths.domain, {Name: url, Malicious: {Vendor: 'XFE', Description: 'Score above ' + threshold, Score: o.result.score}});
+                }
+                dbotScore = 3;
+            } else if (o.result && o.result.score && o.result.score >= threshold / 2) {
+                dbotScore = 2;
+            } else if (o.result && o.result.score) {
+                dbotScore = 1;
             }
+            var indicatorType = 'domain';
+            if (isURL) {
+              indicatorType = 'url';
+            }
+            ec.DBotScore = {Indicator: url, Type: indicatorType, Vendor: 'XFE', Score: dbotScore};
+            var md = '## X-Force URL Reputation for: ' + url + '\n';
+            if (o.result) {
+                md += 'Score: **' + o.result.score + '**\n';
+                md += 'Categories: **' + Object.keys(o.result.cats).join(', ') + '**\n';
+                md += 'XFE Link: [' + url + '](https://exchange.xforce.ibmcloud.com/url/' + encodeURIComponent(url) + ')\n';
+            } else {
+                md += 'No result found';
+            }
+            if (res.resolution) {
+                md += '### Resolution\n';
+                if (res.country) {
+                    md += 'Country: **' + res.country + '**\n';
+                }
+                md += objToMd(res.resolution) + '\n';
+            }
+            if (longFormat === 'true') {
+                if (o.result && o.result.associated) {
+                    md += '### Associated\n';
+                    md += arrToMd(o.result.associated.map(function(curr) {
+                        return {URL: curr.url, Score: curr.score, Categories: Object.keys(curr.result.cats).join(', ')};
+                    })) + '\n';
+                }
+                // Retrieve malware on the URL
+                if (res.malware.malware) {
+                    md += '### Malware\n';
+                    md += 'Count: **' + res.malware.count + '**\n';
+                    md += arrToMd(res.malware.malware);
+                }
+            }
+            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return {Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return entry_list;
     };
+
 
     function cveToMd(o) {
         var cve = 'Unknown';
@@ -320,27 +353,34 @@ script:
 
 
     function doCVE(cve) {
-        var res = doReq('GET', 'vulnerabilities/search/' + cve);
-        if (res.statusCode === 404) {
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                HumanReadable: 'XFE does not have details about ' + cve};
-        }
-        var o = res.obj;
-        var md = '## X-Force CVE Search for: ' + cve + '\n';
-        var context = {};
-        var ec = [];
-        if (o && Array.isArray(o)) {
-            for (var i=0; i<o.length; i++) {
-                md += cveToMd(o[i]) + '\n';
-                ec.push(cveToContext(o[i]));
+        cve_list = argToList(cve);
+        entry_list = new Array(cve_list.length);
+        for (i = 0; i<cve_list.length; i++)
+        {
+            cve = cve_list[i];
+            var res = doReq('GET', 'vulnerabilities/search/' + cve);
+            if (res.statusCode === 404) {
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + cve};
             }
-            if (ec.length > 0) {
-                context[outputPaths.cve] = ec;
+            var o = res.obj;
+            var md = '## X-Force CVE Search for: ' + cve + '\n';
+            var context = {};
+            var ec = [];
+            if (o && Array.isArray(o)) {
+                for (var i=0; i<o.length; i++) {
+                    md += cveToMd(o[i]) + '\n';
+                    ec.push(cveToContext(o[i]));
+                }
+                if (ec.length > 0) {
+                    context[outputPaths.cve] = ec;
+                }
+            } else {
+                md += 'No result found.';
             }
-        } else {
-            md += 'No result found.';
+            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
         }
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context};
+        return entry_list;
     }
 
 
@@ -382,9 +422,9 @@ script:
         case 'ip':
             return doIP(args.ip, args.long, args.threshold);
         case 'url':
-            return doURL(args.url, args.long, args.threshold);
+            return doURL(args.url, args.long, args.threshold, true);
         case 'domain':
-            return doURL(args.domain, args.long, args.threshold);
+            return doURL(args.domain, args.long, args.threshold, false);
         case 'cve-search':
             return doCVE(args.cveId);
         case 'cve-latest':
@@ -400,6 +440,7 @@ script:
       required: true
       default: true
       description: URL to be checked
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
@@ -421,13 +462,13 @@ script:
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check the given URL reputation
   - name: file
     arguments:
@@ -435,6 +476,7 @@ script:
       required: true
       default: true
       description: The file hash md5/sha1/sha256 to check
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
@@ -456,13 +498,13 @@ script:
     - contextPath: File.Malicious.Score
       description: For malicious files, the score from the vendor
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check file reputation
   - name: ip
     arguments:
@@ -470,6 +512,7 @@ script:
       required: true
       default: true
       description: IP to check
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
@@ -491,13 +534,13 @@ script:
     - contextPath: IP.Malicious.Score
       description: For malicious IPs, the score from the vendor
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
     description: Check IP reputation
   - name: domain
     arguments:
@@ -505,6 +548,7 @@ script:
       required: true
       default: true
       description: The domain to check
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
@@ -525,14 +569,20 @@ script:
       description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: URL.Malicious.Score
       description: For malicious URLs, the score from the vendor
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
-      description: The actual score
+      description: The actual score.
+    - contextPath: Domain.Name
+      description: 'The domain name, for example: "google.com".'
     description: Check domain reputation
   - name: cve-search
     arguments:
@@ -540,6 +590,7 @@ script:
       required: true
       default: true
       description: The cve to search for
+      isArray: true
     outputs:
     - contextPath: CVE.ID
       description: The ID of the CVE
@@ -570,6 +621,3 @@ script:
       description: The CVE description
     description: Return the latest vulnerabilities found
   runonce: false
-fromversion: 2.5.0
-tests:
-  - XFE Test

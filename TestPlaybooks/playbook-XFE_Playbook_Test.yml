@@ -1,15 +1,17 @@
 id: XFE Test
-version: 10
+version: -1
+contentitemfields:
+  propagationLabels: []
 name: XFE Test
 description: Test XFE commands via playbook.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bc16f811-666d-4675-8f31-91dd505b3f0b
+    taskid: ea0ddbe5-9668-4268-89f8-175743333c6e
     type: start
     task:
-      id: bc16f811-666d-4675-8f31-91dd505b3f0b
+      id: ea0ddbe5-9668-4268-89f8-175743333c6e
       version: -1
       name: ""
       iscommand: false
@@ -25,12 +27,15 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
-    taskid: 765e219e-d970-4e40-85e3-7a4d1a51737a
+    taskid: a721deab-d6dc-4f57-8282-50b0c83b077d
     type: regular
     task:
-      id: 765e219e-d970-4e40-85e3-7a4d1a51737a
+      id: a721deab-d6dc-4f57-8282-50b0c83b077d
       version: -1
       name: url
       description: Check the given URL reputation
@@ -54,12 +59,15 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
-    taskid: eabfa049-5bba-412f-85c4-4e238d2f0da5
+    taskid: bade4211-79b1-498c-85bd-9b3a155738c8
     type: condition
     task:
-      id: eabfa049-5bba-412f-85c4-4e238d2f0da5
+      id: bade4211-79b1-498c-85bd-9b3a155738c8
       version: -1
       name: AreValuesEqual
       description: |-
@@ -80,7 +88,7 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Vendor
@@ -88,7 +96,7 @@ tasks:
               right:
                 value:
                   simple: XFE
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Indicator
@@ -109,12 +117,15 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
-    taskid: 93edb301-ce27-4b2f-8650-d3979b029afd
+    taskid: dafb0577-db25-4244-894a-9440a30a0d75
     type: regular
     task:
-      id: 93edb301-ce27-4b2f-8650-d3979b029afd
+      id: dafb0577-db25-4244-894a-9440a30a0d75
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -137,12 +148,15 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
-    taskid: f6657238-012d-4f1f-846a-ec82b8c96005
+    taskid: db865e0f-1fd2-4fae-8937-59548a071d49
     type: regular
     task:
-      id: f6657238-012d-4f1f-846a-ec82b8c96005
+      id: db865e0f-1fd2-4fae-8937-59548a071d49
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -165,12 +179,15 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
-    taskid: 9b30665b-d93b-4617-82ba-9a5954bd2142
+    taskid: a920bfa2-26d2-490e-853d-818a6d34eec7
     type: regular
     task:
-      id: 9b30665b-d93b-4617-82ba-9a5954bd2142
+      id: a920bfa2-26d2-490e-853d-818a6d34eec7
       version: -1
       name: ip
       description: Check the given URL reputation
@@ -194,12 +211,15 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "6":
     id: "6"
-    taskid: 2cc6d6eb-a168-4023-8506-94ccc243c442
+    taskid: de3ebaf0-897a-4c65-85eb-3d8a3e876fd8
     type: regular
     task:
-      id: 2cc6d6eb-a168-4023-8506-94ccc243c442
+      id: de3ebaf0-897a-4c65-85eb-3d8a3e876fd8
       version: -1
       name: VerifyContext
       description: |-
@@ -230,12 +250,15 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
-    taskid: 2e44786a-9527-4e34-850d-6a6109204ee7
+    taskid: ad6089c2-1787-4a82-8e90-ec2046e89295
     type: regular
     task:
-      id: 2e44786a-9527-4e34-850d-6a6109204ee7
+      id: ad6089c2-1787-4a82-8e90-ec2046e89295
       version: -1
       name: domain
       description: Check domain reputation
@@ -260,12 +283,15 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
-    taskid: 44e05ef5-c22c-4c70-8870-56a17ec53509
+    taskid: 44b53a91-8c10-4941-8a02-a191c0f73aa1
     type: condition
     task:
-      id: 44e05ef5-c22c-4c70-8870-56a17ec53509
+      id: 44b53a91-8c10-4941-8a02-a191c0f73aa1
       version: -1
       name: AreValuesEqual
       description: |-
@@ -286,7 +312,7 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Vendor
@@ -294,7 +320,7 @@ tasks:
               right:
                 value:
                   simple: XFE
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Indicator
@@ -315,12 +341,15 @@ tasks:
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
-    taskid: 24419001-1034-4471-8c26-c9b85b85ad5f
+    taskid: a99a7f10-0431-4c5f-8bda-20dd4ae6a227
     type: regular
     task:
-      id: 24419001-1034-4471-8c26-c9b85b85ad5f
+      id: a99a7f10-0431-4c5f-8bda-20dd4ae6a227
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -343,12 +372,15 @@ tasks:
           "y": 1975
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
-    taskid: 8078ae4b-e637-4230-86a6-6aa8d77fbef3
+    taskid: 7072466a-35de-4b8b-8233-96cd173761f3
     type: condition
     task:
-      id: 8078ae4b-e637-4230-86a6-6aa8d77fbef3
+      id: 7072466a-35de-4b8b-8233-96cd173761f3
       version: -1
       name: Check No Malicious found
       scriptName: Exists
@@ -363,7 +395,7 @@ tasks:
         complex:
           root: URL
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: URL.Data
@@ -380,12 +412,15 @@ tasks:
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
-    taskid: b5ffdbc1-840b-48ee-815a-944403c9487d
+    taskid: dbf7db5a-f73e-4785-8481-e76697cc465d
     type: regular
     task:
-      id: b5ffdbc1-840b-48ee-815a-944403c9487d
+      id: dbf7db5a-f73e-4785-8481-e76697cc465d
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -408,12 +443,15 @@ tasks:
           "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
-    taskid: 71ed45de-c953-4854-8145-2a0efe6cea40
+    taskid: 569af901-b21b-4279-82fb-f04a2e846c6d
     type: regular
     task:
-      id: 71ed45de-c953-4854-8145-2a0efe6cea40
+      id: 569af901-b21b-4279-82fb-f04a2e846c6d
       version: -1
       name: cve-latest
       description: Return the latest vulnerabilities found
@@ -435,12 +473,15 @@ tasks:
           "y": 2645
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
-    taskid: e68ca2ce-3dc5-4239-8b7b-fc63eb1f04b7
+    taskid: 3a0a52cd-b2ab-4d19-807f-669740f5c7bc
     type: regular
     task:
-      id: e68ca2ce-3dc5-4239-8b7b-fc63eb1f04b7
+      id: 3a0a52cd-b2ab-4d19-807f-669740f5c7bc
       version: -1
       name: cve-search
       description: Search for details about the given CVE
@@ -448,23 +489,30 @@ tasks:
       type: regular
       iscommand: true
       brand: XFE
+    nexttasks:
+      '#none#':
+      - "23"
     scriptarguments:
       cveId:
         simple: ${CVE.ID}
+    continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2995
+          "y": 3000
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
-    taskid: 74889031-2b1d-42db-8cd6-4922e31a8a82
+    taskid: 3ce6456e-382b-46cc-8a2b-8aaa876ce6f8
     type: condition
     task:
-      id: 74889031-2b1d-42db-8cd6-4922e31a8a82
+      id: 3ce6456e-382b-46cc-8a2b-8aaa876ce6f8
       version: -1
       name: VerifyContext
       description: |-
@@ -499,12 +547,15 @@ tasks:
           "y": 2820
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
-    taskid: a347e578-be56-446f-8be4-3e0faa5236ab
+    taskid: 54f1e021-c69f-457d-8078-807855546e9c
     type: condition
     task:
-      id: a347e578-be56-446f-8be4-3e0faa5236ab
+      id: 54f1e021-c69f-457d-8078-807855546e9c
       version: -1
       name: AreValuesEqual
       description: |-
@@ -525,7 +576,7 @@ tasks:
         complex:
           root: URL
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: URL.Malicious.Score
@@ -546,12 +597,15 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "18":
     id: "18"
-    taskid: 8f03df06-05d0-4d9e-8f64-c3dabc66a4da
+    taskid: 8bb2101f-a99c-4e61-893e-9c54ed8deee0
     type: regular
     task:
-      id: 8f03df06-05d0-4d9e-8f64-c3dabc66a4da
+      id: 8bb2101f-a99c-4e61-893e-9c54ed8deee0
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
@@ -573,12 +627,15 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
-    taskid: fcdfb086-afc6-4c93-871f-313e7ae60d66
+    taskid: 65f2b02b-b9ce-462d-8644-86a9fc9f68b6
     type: regular
     task:
-      id: fcdfb086-afc6-4c93-871f-313e7ae60d66
+      id: 65f2b02b-b9ce-462d-8644-86a9fc9f68b6
       version: -1
       name: file
       description: Check file reputation
@@ -603,12 +660,15 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
-    taskid: 6b3a1cc8-b924-4899-8043-27318dd66ce9
+    taskid: 291e9a0f-33aa-40a4-8aae-918cf2cef505
     type: condition
     task:
-      id: 6b3a1cc8-b924-4899-8043-27318dd66ce9
+      id: 291e9a0f-33aa-40a4-8aae-918cf2cef505
       version: -1
       name: AreValuesEqual
       description: |-
@@ -629,7 +689,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: File.Malicious.Score
@@ -650,12 +710,15 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "21":
     id: "21"
-    taskid: 6d56941b-1503-4065-8d2a-f641a4dcad48
+    taskid: 5e2b1131-6d56-4ce9-8f19-0805ccf69371
     type: condition
     task:
-      id: 6d56941b-1503-4065-8d2a-f641a4dcad48
+      id: 5e2b1131-6d56-4ce9-8f19-0805ccf69371
       version: -1
       name: AreValuesEqual
       description: |-
@@ -676,7 +739,7 @@ tasks:
         complex:
           root: DBotScore
           filters:
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Indicator
@@ -684,7 +747,7 @@ tasks:
               right:
                 value:
                   simple: 37c919f28798a886ec7202cc39818b8ce641ae83
-          - - operator: string.isEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Vendor
@@ -705,12 +768,15 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
-    taskid: 66e7b4f6-bd51-4ef8-8b4c-426d651d472d
+    taskid: e107d910-570c-4071-8c1b-bfb929b5c649
     type: regular
     task:
-      id: 66e7b4f6-bd51-4ef8-8b4c-426d651d472d
+      id: e107d910-570c-4071-8c1b-bfb929b5c649
       version: -1
       name: VerifyContext
       description: |-
@@ -740,6 +806,318 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 88ad8f75-1a91-4cc1-8841-1a2de8fa19ed
+    type: regular
+    task:
+      id: 88ad8f75-1a91-4cc1-8841-1a2de8fa19ed
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 553f0c08-57ec-42c0-82ee-cd9be5ff859c
+    type: regular
+    task:
+      id: 553f0c08-57ec-42c0-82ee-cd9be5ff859c
+      version: -1
+      name: check URL with CSV
+      description: Check the given URL reputation
+      script: XFE|||url
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      long: {}
+      threshold: {}
+      url:
+        simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/,https://exchange.xforce.ibmcloud.com/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: e7bc889c-aafb-4717-8143-75c0ae6de9b2
+    type: regular
+    task:
+      id: e7bc889c-aafb-4717-8143-75c0ae6de9b2
+      version: -1
+      name: check IP with CSV
+      description: Check the given URL reputation
+      script: XFE|||ip
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      ip:
+        simple: 103.225.52.112,8.8.8.8
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 6c2d1340-a3f3-41a3-88f6-b74dd0f76861
+    type: regular
+    task:
+      id: 6c2d1340-a3f3-41a3-88f6-b74dd0f76861
+      version: -1
+      name: check file with CSV
+      description: Check file reputation
+      script: XFE|||file
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      file:
+        simple: 37c919f28798a886ec7202cc39818b8ce641ae83,4b41a3475132bd861b30a878e30aa56a
+      long: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 39f82492-e240-4af3-85e6-6ec6a357a3dc
+    type: condition
+    task:
+      id: 39f82492-e240-4af3-85e6-6ec6a357a3dc
+      version: -1
+      name: verifyCSV
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: http://www.iuqerfsodp9ifjaposdfjhgosurijfaewrwergwea.com/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: https://exchange.xforce.ibmcloud.com/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 103.225.52.112
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: https://www.demisto.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: https://www.google.com/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 4b41a3475132bd861b30a878e30aa56a
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 37c919f28798a886ec7202cc39818b8ce641ae83
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 77126f76-4940-4fab-8bcd-868fbe30b4f0
+    type: regular
+    task:
+      id: 77126f76-4940-4fab-8bcd-868fbe30b4f0
+      version: -1
+      name: check domain with CSV
+      description: Check domain reputation
+      script: XFE|||domain
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      domain:
+        simple: https://www.demisto.com,https://www.google.com/
+      long: {}
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 3124e08b-aee9-49d3-8c0e-555af22187db
+    type: regular
+    task:
+      id: 3124e08b-aee9-49d3-8c0e-555af22187db
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: e9924646-add2-46b0-84f7-ba5599bbb70b
+    type: regular
+    task:
+      id: e9924646-add2-46b0-84f7-ba5599bbb70b
+      version: -1
+      name: cve-search with CSV
+      description: Search for details about the given CVE
+      script: XFE|||cve-search
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      cveId:
+        simple: CVE-2019-7312,${CVE.ID}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -747,7 +1125,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3040,
+        "height": 4450,
         "width": 1240,
         "x": 50,
         "y": 50
