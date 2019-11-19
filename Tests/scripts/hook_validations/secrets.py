@@ -214,13 +214,6 @@ def get_related_yml_contents(file_path):
     return yml_file_contents
 
 
-def is_allowed_types(file_path):
-
-    if any(re.match(regex, file_path, re.IGNORECASE) for regex in REQUIRED_YML_FILE_TYPES):
-        return True
-    return False
-
-
 def retrieve_related_yml(integration_path):
     matching_yml_file_contents = None
     yml_file = os.path.join(integration_path, os.path.basename(integration_path) + '.yml')
