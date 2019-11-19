@@ -1,4 +1,10 @@
 ## [Unreleased]
+Improved handling of error messages.
+
+## [19.11.0] - 2019-11-12
+-
+
+## [19.10.1] - 2019-10-15
 Added support for **debug-mode**, which logs extended information when enabled.
 
 ## [19.9.1] - 2019-09-18

@@ -591,13 +591,17 @@ script:
             if(!args || !args[QUERY]) {
                 args[QUERY] = 'select * where time = "' + buildDateFormat();
             }
-            //if query has select and where statements
-            else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1 && args[QUERY].toLowerCase().indexOf('where') > -1) {
-                args[QUERY] = args[QUERY] + ' && time = "' + buildDateFormat();
-            }
-            //id query contains just select
-            else if(args[QUERY] && args[QUERY].toLowerCase().indexOf('select') > -1) {
-                args[QUERY] = args[QUERY] + ' where time = "' + buildDateFormat();
+            //query must have select statement
+            else if(args[QUERY].toLowerCase().indexOf('select') > -1) {
+                args[QUERY] = args[QUERY].toLowerCase().split('group by')[0];
+
+                if (args[QUERY].toLowerCase().indexOf('where') > -1)
+                    args[QUERY] += ' && time = "' + buildDateFormat();
+                else
+                    args[QUERY] += ' where time = "' + buildDateFormat();
+
+                if (args[QUERY].toLowerCase().indexOf('group by') > -1)
+                    args[QUERY] += ' group by ' + args[QUERY].toLowerCase().split('group by')[1];
             }
         }
     }
