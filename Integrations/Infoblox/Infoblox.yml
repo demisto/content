@@ -540,6 +540,10 @@ script:
     description: Create 'Substitute (ipv6 Record) Rule'.
     execution: false
     name: infoblox-create-ipv6-substitute-record-rule
+  - deprecated: false
+    description: Enable
+    execution: false
+    name: infoblox-enable-rule
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false

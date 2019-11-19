@@ -179,7 +179,7 @@ class Client(BaseClient):
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
         suffix = 'zone_rp'
-        return self._http_request('POST', suffix, data=json.dumps(data))
+        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_ZONE)
 
     def create_rpz_rule(self, rule_type, object_type, name, rp_zone, substitute_name, comment=None):
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
@@ -203,7 +203,7 @@ class Client(BaseClient):
 
         data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
         request_params = REQUEST_PARAM_CREATE_RULE
-        suffix = demisto.get(RPZ_RULES_DICT, 'rule_type.object_type')
+        suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
         return self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
 
@@ -245,6 +245,8 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str):
         infoblox_err = err_string.split('\n')[1].replace('\\', '')
         infoblox_json = json.loads(infoblox_err)
         return DemistoException(infoblox_json.get(field_in_error, 'text'))
+    elif 'Failed to parse json object' in err_string:
+        return DemistoException('Cannot connect to Infoblox server, check your proxy and connection')
     return error
 
 
@@ -455,8 +457,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     zone_name = zone.capitalize()
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)':
-            {'Name': zone_name, 'Rules': fixed_keys_rule_list}}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_list}
     human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -505,10 +506,13 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     if rpz_policy == 'SUBSTITUTE' and not substitute_name:
         raise parse_demisto_exception(f'Response policy zone with policy SUBSTITUTE requires a substitute name')
     raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
+    zone = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           zone.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': raw_response}
-    human_readable = tableToMarkdown(title, raw_response, headerTransform=pascalToSpace)
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -535,7 +539,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -562,7 +566,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -589,7 +593,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -618,7 +622,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -649,7 +653,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -679,7 +683,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -710,7 +714,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -737,7 +741,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -764,7 +768,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -791,7 +795,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.Rules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
