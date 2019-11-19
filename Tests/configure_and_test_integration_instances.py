@@ -1,10 +1,11 @@
 import argparse
 import uuid
 import json
+import ast
 import demisto_client
 from Tests.test_integration import __delete_integrations_instances, __disable_integrations_instances
 from Tests.test_integration import __get_integration_config, __test_integration_instance
-from Tests.test_utils import print_error
+from Tests.test_utils import print_error, print_color, LOG_COLORS
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
 from Tests.test_utils import run_command
 from time import sleep
@@ -47,12 +48,65 @@ def determine_server_url(ami_env):
     return server_url
 
 
+def is_content_updating(server, username, password):
+    '''Configure Demisto Client and make request to check if content is updating'''
+    try:
+        # Configure Demisto Client
+        c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+
+        msg = '\nMaking "Get" request to server - "{}" to check if content is installing.'.format(server)
+        print(msg)
+
+        # make request to check if content is updating
+        response_data, status_code, _ = demisto_client.generic_request_func(self=c, path='/content/updating',
+                                                                            method='GET', accept='application/json')
+
+        if status_code >= 300 or status_code < 200:
+            result_object = ast.literal_eval(response_data)
+            message = result_object.get('message', '')
+            msg = "Failed to check if content is installing - with status code " + str(status_code) + '\n' + message
+            raise Exception(msg)
+            return 'request unsuccessful'
+        else:
+            return response_data
+    except Exception as e:
+        print_error(str(e))
+
+
 def set_integration_params(integrations, secret_params, instance_names):
+    '''
+    For each integration object, fill in the parameter values needed to configure an instance from
+    the secret_params taken from our secret configuration file. Because there may be a number of
+    configurations for a single integration (if there are values provided in our secret conf for
+    multiple different instances of the same integration) then selects the parameter values for the
+    configuration of the instance whose instance is in 'instance_names' (will take the last one listed
+    in 'secret_params'). Note that this function does not explicitly return the modified 'integrations'
+    object but rather it modifies the 'integrations' object since it is passed by reference and not by
+    value, so the 'integrations' object that was passed to this function will have been changed once
+    this function has completed execution and gone out of scope.
+
+    Arguments:
+        integrations: (list of dicts)
+            List of integration objects whose 'params' attribute will be populated in this function.
+        secret_params: (list of dicts)
+            List of secret configuration values for all of our integrations (as well as specific
+            instances of said integrations).
+        instance_names: (list)
+            The names of particular instances of an integration to use the secret_params of as the
+            configuration values.
+
+    Returns:
+        (bool): True if integrations params were filled with secret configuration values, otherwise false
+    '''
     for integration in integrations:
         integration_params = [item for item in secret_params if item['name'] == integration['name']]
 
         if integration_params:
             matched_integration_params = integration_params[0]
+            # if there are more than one integration params, it means that there are configuration
+            # values in our secret conf for multiple instances of the given integration and now we
+            # need to match the configuration values to the proper instance as specified in the
+            # 'instance_names' list argument
             if len(integration_params) != 1:
                 found_matching_instance = False
                 for item in integration_params:
@@ -142,7 +196,8 @@ def set_integration_instance_parameters(integration_configuration, integration_p
             param_conf['value'] = param_value
             param_conf['hasvalue'] = True
         elif param_conf['defaultValue']:
-            # param is required - take default value
+            # if the parameter doesn't have a value provided in the integration's configuration values
+            # but does have a default value then assign it to the parameter for the module instance
             param_conf['value'] = param_conf['defaultValue']
         module_instance['data'].append(param_conf)
 
@@ -159,7 +214,7 @@ def main():
     secret_conf_path = options.secret
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
-    secret_params = secret_conf['integrations'] if secret_conf else []
+    secret_params = secret_conf.get('integrations', []) if secret_conf else []
 
     username = secret_conf.get('username') if not username else username
     password = secret_conf.get('userPassword') if not password else password
@@ -193,7 +248,7 @@ def main():
         instance_names_conf = test.get('instance_names', [])
 
         if not isinstance(instance_names_conf, list):
-            instance_names_conf = [instance_names_conf, ]
+            instance_names_conf = [instance_names_conf]
 
         _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
                                                   skipped_integrations_conf, nightly_integrations)
@@ -217,49 +272,48 @@ def main():
         all_module_instances.extend(module_instances)
 
     # Test all module instances pre-updating content
-    failure_messages = []
+    print_color('Start of Instance Testing ("Test" button) prior to Content Update:', color=LOG_COLORS.YELLOW)
     for instance in all_module_instances:
-        success = __test_integration_instance(client, instance)
-        if not success:
-            integration_of_instance = instance.get('brand', '')
-            instance_name = instance.get('name', '')
-            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name,
-                                                                                               integration_of_instance)
-            failure_messages.append(fail_msg)
-    # Print out any ("Test" button) failures
-    if failure_messages:
-        print_error('Instance "Test" button failures prior to Content Update:')
-        for failure_msg in failure_messages:
-            print_error(failure_msg)
+        integration_of_instance = instance.get('brand', '')
+        instance_name = instance.get('name', '')
+        msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
+                                                                                       integration_of_instance)
+        print(msg)
+        # If there is a failure, __test_integration_instance will print it
+        __test_integration_instance(client, instance)
 
+    # TODO: need to add support for content packs
     # Upload current build's content_new.zip to demisto server (aka upload new content)
     content_zip_path = '.content_new.zip'
     cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
                                                                               content_zip_path)
     run_command(cmd_str, is_silenced=False)
-    # ideally would replace this sleep with actually checking if content has finished installing
-    # by hitting the https://{{DEMISTO_INSTANCE_IP}}/content/updating endpoint
-    sleep(30)
+
+    # Check if content update has finished installing
+    sleep_interval = 1
+    updating_content = is_content_updating(server, username, password)
+    while updating_content.lower() == 'true':
+        sleep(sleep_interval)
+        updating_content = is_content_updating(server)
+
+    if updating_content.lower() == 'request unsuccessful':
+        # since the request to check if content update installation finished didn't work, can't use that mechanism
+        # to check and just try sleeping for 30 seconds isntead to allow for content update installation to complete
+        sleep(30)
 
     # After content upload has completed - test ("Test" button) integration instances
     # Test all module instances post-updating content
-    failure_messages = []
+    print_color('Start of Instance Testing ("Test" button) after the Content Update:', color=LOG_COLORS.YELLOW)
     for instance in all_module_instances:
-        success = __test_integration_instance(client, instance)
-        if not success:
-            integration_of_instance = instance.get('brand', '')
-            instance_name = instance.get('name', '')
-            fail_msg = 'Instance "{}" of integration "{}" test ("Test" button) failed.'.format(instance_name,
-                                                                                               integration_of_instance)
-            failure_messages.append(fail_msg)
-    # Print out any ("Test" button) failures
-    if failure_messages:
-        print_error('Instance "Test" button failures after the Content Update:')
-        for failure_msg in failure_messages:
-            print_error(failure_msg)
+        integration_of_instance = instance.get('brand', '')
+        instance_name = instance.get('name', '')
+        msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
+                                                                                       integration_of_instance)
+        print(msg)
+        # If there is a failue, __test_integration_instance will print it
+        __test_integration_instance(client, instance)
 
     __disable_integrations_instances(client, all_module_instances)
-    __delete_integrations_instances(client, all_module_instances)
 
 
 if __name__ == '__main__':
