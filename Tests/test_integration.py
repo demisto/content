@@ -210,8 +210,7 @@ def __enable_integrations_instances(client, module_instances):
                     conn_err))
 
         if res[1] != 200:
-            print_error('enable instance failed with status code ' + str(res[1]))
-            print_error(pformat(res))
+            print_error('enable instance failed with status code ' + str(res[1]) + '\n' + pformat(res))
 
 
 # create incident with given name & playbook, and then fetch & return the incident
