@@ -81,6 +81,7 @@ PACKS_INTEGRATION_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(
 PACKS_INTEGRATION_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(
     PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_INTEGRATION_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/([^.]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
+PACKS_INTEGRATION_REGEX = r'{}/([^/]+)/{}/([^/]+)\.yml'.format(PACKS_DIR, INTEGRATIONS_DIR)
 PACKS_SCRIPT_YML_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.yml'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2\.py'.format(PACKS_DIR, SCRIPTS_DIR)
 PACKS_SCRIPT_TEST_PY_REGEX = r'{}/([^/]+)/{}/([^/]+)/\2_test\.py'.format(PACKS_DIR, SCRIPTS_DIR)
@@ -154,14 +155,29 @@ YML_SCRIPT_REGEXES = [
     SCRIPT_YML_REGEX
 ]
 
+YML_PLAYBOOKS_NO_TESTS_REGEXES = [
+    PACKS_PLAYBOOK_YML_REGEX,
+    PLAYBOOK_REGEX,
+]
+
+YML_TEST_PLAYBOOKS_REGEXES = [
+    PACKS_TEST_PLAYBOOKS_REGEX,
+    TEST_PLAYBOOK_REGEX
+]
+
+YML_ALL_PLAYBOOKS_REGEX = sum(
+    [
+        YML_PLAYBOOKS_NO_TESTS_REGEXES,
+        YML_TEST_PLAYBOOKS_REGEXES,
+    ], []
+)
+
 YML_ALL_REGEXES = sum(
     [
         YML_INTEGRATION_REGEXES,
         YML_SCRIPT_REGEXES,
-        [
-            PACKS_PLAYBOOK_YML_REGEX,
-            PLAYBOOK_REGEX
-        ],
+        YML_PLAYBOOKS_NO_TESTS_REGEXES,
+        YML_TEST_PLAYBOOKS_REGEXES
     ], []
 )
 CHECKED_TYPES_REGEXES = [
