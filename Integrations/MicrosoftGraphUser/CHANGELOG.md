@@ -1,2 +1,2 @@
 ## [Unreleased]
- - Added pagination to **msgraph-user-list** command.
+ - Added pagination to the ***msgraph-user-list*** command.
