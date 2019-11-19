@@ -9,7 +9,6 @@ import uuid
 import json
 import requests
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -886,7 +885,8 @@ def panorama_list_address_groups_command():
         'Contents': address_groups_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Address groups:', address_groups_output,
-                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'], removeNull=True),
+                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'],
+                                         removeNull=True),
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_groups_output
         }
@@ -2682,7 +2682,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -3071,13 +3071,9 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
         edl_output['DeviceGroup'] = DEVICE_GROUP
-    params = {
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
-
-    params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+    params = {'action': 'edit', 'type': 'config', 'key': API_KEY,
+              'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/"
+                        + edl_type + "/" + element_to_change}
 
     if element_to_change == 'url':
         params['element'] = add_argument_open(element_value, 'url', False)
@@ -3619,7 +3615,7 @@ def build_logs_query(address_src=None, address_dst=None,
     if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += build_array_query(query, url, 'url', 'eq')
+        query += build_array_query(query, url, 'url', 'contains')
     if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3904,6 +3900,140 @@ def panorama_get_logs_command():
             })
 
 
+''' Security Policy Match'''
+
+
+def build_policy_match_query(application=None, category=None,
+                             destination=None, destination_port=None, from_=None, to_=None,
+                             protocol=None, source=None, source_user=None):
+    query = '<test><security-policy-match>'
+    if from_:
+        query += f'<from>{from_}</from>'
+    if to_:
+        query += f'<to>{to_}</to>'
+    if source:
+        query += f'<source>{source}</source>'
+    if destination:
+        query += f'<destination>{destination}</destination>'
+    if destination_port:
+        query += f'<destination-port>{destination_port}</destination-port>'
+    if protocol:
+        query += f'<protocol>{protocol}</protocol>'
+    if source_user:
+        query += f'<source-user>{source_user}</source-user>'
+    if application:
+        query += f'<application>{application}</application>'
+    if category:
+        query += f'<category>{category}</category>'
+    query += '</security-policy-match></test>'
+
+    return query
+
+
+def panorama_security_policy_match(application=None, category=None, destination=None,
+                                   destination_port=None, from_=None, to_=None,
+                                   protocol=None, source=None, source_user=None):
+    params = {'type': 'op', 'key': API_KEY,
+              'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
+                                              protocol, source, source_user)}
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result['response']['result']
+
+
+def prettify_matching_rule(matching_rule):
+    pretty_matching_rule = {}
+
+    if '@name' in matching_rule:
+        pretty_matching_rule['Name'] = matching_rule['@name']
+    if 'from' in matching_rule:
+        pretty_matching_rule['From'] = matching_rule['from']
+    if 'source' in matching_rule:
+        pretty_matching_rule['Source'] = matching_rule['source']
+    if 'to' in matching_rule:
+        pretty_matching_rule['To'] = matching_rule['to']
+    if 'destination' in matching_rule:
+        pretty_matching_rule['Destination'] = matching_rule['destination']
+    if 'category' in matching_rule:
+        pretty_matching_rule['Category'] = matching_rule['category']
+    if 'action' in matching_rule:
+        pretty_matching_rule['Action'] = matching_rule['action']
+
+    return pretty_matching_rule
+
+
+def prettify_matching_rules(matching_rules):
+    if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
+        return prettify_matching_rule(matching_rules)
+
+    pretty_matching_rules_arr = []
+    for matching_rule in matching_rules:
+        pretty_matching_rule = prettify_matching_rule(matching_rule)
+        pretty_matching_rules_arr.append(pretty_matching_rule)
+
+    return pretty_matching_rules_arr
+
+
+def prettify_query_fields(application=None, category=None,
+                          destination=None, destination_port=None, from_=None, to_=None,
+                          protocol=None, source=None, source_user=None):
+    pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
+    if application:
+        pretty_query_fields['Application'] = application
+    if category:
+        pretty_query_fields['Category'] = category
+    if destination_port:
+        pretty_query_fields['DestinationPort'] = destination_port
+    if from_:
+        pretty_query_fields['From'] = from_
+    if to_:
+        pretty_query_fields['To'] = to_
+    if source_user:
+        pretty_query_fields['SourceUser'] = source_user
+    return pretty_query_fields
+
+
+def panorama_security_policy_match_command():
+    if not VSYS:
+        return_error("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+
+    application = demisto.args().get('application')
+    category = demisto.args().get('category')
+    destination = demisto.args().get('destination')
+    destination_port = demisto.args().get('destination-port')
+    from_ = demisto.args().get('from')
+    to_ = demisto.args().get('to')
+    protocol = demisto.args().get('protocol')
+    source = demisto.args().get('source')
+    source_user = demisto.args().get('source-user')
+
+    matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
+                                                    protocol, source, source_user)
+    if not matching_rules:
+        demisto.results('The query did not match a Security policy.')
+    else:
+        ec_ = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
+               'QueryFields': prettify_query_fields(application, category, destination, destination_port,
+                                                    from_, to_, protocol, source, source_user),
+               'Query': build_policy_match_query(application, category, destination, destination_port,
+                                                 from_, to_, protocol, source, source_user)}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': matching_rules,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
+                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
+        })
+
+
 ''' EXECUTION '''
 
 
@@ -4098,6 +4228,10 @@ def main():
         # Application
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
+
+        # Test security policy match
+        elif demisto.command() == 'panorama-security-policy-match':
+            panorama_security_policy_match_command()
 
     except Exception as ex:
         return_error(str(ex))
