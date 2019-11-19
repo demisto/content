@@ -1189,6 +1189,42 @@ script:
       type: string
   - arguments:
     - default: false
+      description: URL to check.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: panorama-get-url-category-from-cloud
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+  - arguments:
+    - default: false
+      description: URL to check.
+      isArray: true
+      name: url
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a URL category from URL Filtering.
+    execution: false
+    name: panorama-get-url-category-from-host
+    outputs:
+    - contextPath: Panorama.URLFilter.URL
+      description: URL.
+      type: string
+    - contextPath: Panorama.URLFilter.Category
+      description: URL category.
+      type: string
+  - arguments:
+    - default: false
       description: URL Filter name.
       isArray: false
       name: name
