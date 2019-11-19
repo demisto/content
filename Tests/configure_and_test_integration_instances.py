@@ -153,7 +153,7 @@ def set_integration_instance_parameters(integration_configuration, integration_p
         (dict): The configured module instance to send to the Demisto server for
         instantiation.
     '''
-    module_configuration = integration_configuration['configuration']
+    module_configuration = integration_configuration.get('configuration')
     if not module_configuration:
         module_configuration = []
 
@@ -232,6 +232,11 @@ def main():
         pass
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
+    
+    # if the integration configuration is not found (when calling __get_integration_config) we'll add it
+    # here to configure after the content update because it probably means that the integration is new
+    # and therefore doesn't exist before updating content
+    new_integrations = []
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -263,12 +268,15 @@ def main():
             is_byoi = integration.get('byoi', True)
 
             integration_configuration = __get_integration_config(client, integration_name)
+            if not integration_configuration:
+                new_integrations.append(integration)
+                continue
             module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
                                                                   integration_instance_name, is_byoi)
             module_instances.append(module_instance)
         all_module_instances.extend(module_instances)
 
-    # Test all module instances pre-updating content
+    # Test all module instances (of pre-existing integrations) pre-updating content
     print_color('Start of Instance Testing ("Test" button) prior to Content Update:', color=LOG_COLORS.YELLOW)
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
@@ -298,8 +306,24 @@ def main():
         # to check and just try sleeping for 30 seconds isntead to allow for content update installation to complete
         sleep(30)
 
+    # configure instances for new integrations
+    new_integration_module_instances = []
+    for integration in integrations:
+        integration_name = integration.get('name', None)
+        if integration_name in skipped_integrations_conf.keys():
+            continue
+        integration_instance_name = integration.get('instance_name', '')
+        integration_params = integration.get('params', None)
+        is_byoi = integration.get('byoi', True)
+
+        integration_configuration = __get_integration_config(client, integration_name)
+        module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
+                                                              integration_instance_name, is_byoi)
+        new_integration_module_instances.append(module_instance)
+    all_module_instances.extend(new_integration_module_instances)
+
     # After content upload has completed - test ("Test" button) integration instances
-    # Test all module instances post-updating content
+    # Test all module instances (of pre-existing AND new integrations) post-updating content
     print_color('Start of Instance Testing ("Test" button) after the Content Update:', color=LOG_COLORS.YELLOW)
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
