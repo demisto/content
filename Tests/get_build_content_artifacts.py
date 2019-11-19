@@ -95,22 +95,19 @@ def modify_content_descriptor(content_zipfile_name):
 
 
 def get_latest_artifacts(branch):
-    try:
-        print('Making request to get the artifacts from the latest successful build on branch "{}"'.format(branch))
-        params = {
-            'branch': branch,
-            'filter': 'successful'
-        }
-        res = requests.get('https://circleci.com/api/v1.1/project/github/demisto/content/latest/artifacts',
-                           params=params)
-        if res.status_code < 200 or res.status_code >= 300:
-            msg = 'requests exception: [{}] - ' \
-                  '{}\n{}'.format(res.status_code, res.reason, res.text)
-            raise Exception(msg)
-        print('Request for latest artifacts successful')
-        return res
-    except Exception as e:
-        print_error(str(e))
+    print('Making request to get the artifacts from the latest successful build on branch "{}"'.format(branch))
+    params = {
+        'branch': branch,
+        'filter': 'successful'
+    }
+    res = requests.get('https://circleci.com/api/v1.1/project/github/demisto/content/latest/artifacts',
+                       params=params, verify=False)
+    if res.status_code < 200 or res.status_code >= 300:
+        msg = 'requests exception: [{}] - {}\n{}'.format(res.status_code, res.reason, res.text)
+        print_error(msg)
+        raise Exception(msg)
+    print('Request for latest artifacts successful')
+    return res
 
 
 def download_artifact(url, file_name=''):
@@ -126,26 +123,26 @@ def download_artifact(url, file_name=''):
         file_name: (str)
             If non-empty string, then the artifact is saved to the local file system with this file name
     '''
-        res = requests.get(url, stream=True)
-        if res.status_code < 200 or res.status_code >= 300:
-            msg = 'requests exception: [{}] - ' \
-                  '{}\n{}'.format(res.status_code, res.reason, res.text)
-            raise Exception(msg)
-        else:
-            print('Request to download the "{}" artifact successful'.format(artifact))
+    artifact = url.split('/')[-1]
+    print('Making request to download the "{}" artifact'.format(artifact))
+    res = requests.get(url, stream=True, verify=False)
+    if res.status_code < 200 or res.status_code >= 300:
+        msg = 'requests exception: [{}] - {}\n{}'.format(res.status_code, res.reason, res.text)
+        print_error(msg)
+        raise Exception(msg)
+    else:
+        print('Request to download the "{}" artifact successful'.format(artifact))
 
-        if not file_name:
-            file_name = artifact
+    if not file_name:
+        file_name = artifact
 
-        print('Writing artifact to local storage')
+    print('Writing artifact to local storage')
 
-        with open(file_name, 'wb') as f:
-            for chunk in res.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-        print('Artifact successfully saved to local storage as "{}"'.format(file_name))
-    except Exception as e:
-        print_error(str(e))
+    with open(file_name, 'wb') as f:
+        for chunk in res.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+    print('Artifact successfully saved to local storage as "{}"'.format(file_name))
 
 
 def main():
