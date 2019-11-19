@@ -828,7 +828,6 @@ class TestBaseClient:
         response_json_error = json.loads(message.split('\n')[1])
         assert response_json_error == self.text
 
-
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
