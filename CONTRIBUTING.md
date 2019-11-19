@@ -5,15 +5,14 @@
 Welcome to Demisto content repo! Contributions are welcome and appreciated.
 
 ## How to contribute
+Please read the following guidelines. Following these guidelines will maximize the chances for a fast, easy and effective review process for everyone involved. If something is not clear, please don't hesitate to reach out to us via GitHub, Slack, or email.
 
-To get you started, refer to our [Getting Started article](https://github.com/demisto/content/blob/master/docs)
-
-After you finish developing, there are a few steps left before you can create a pull request:
-
- - Follow code conventions [here](https://github.com/demisto/content/tree/master/docs/code_conventions)
- - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
- - Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes).
- - Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
+* Setup a development environment by following the [Getting Started Guide](docs/getting_started)
+* Use the [Package Directory Structure](docs/package_directory_structure) for all Python code. If working on existing code, beyond trivial changes, we require converting to this structure as it allows running linting, unit tests and provides a clearer review process.
+* Make sure to read and follow [code conventions](docs/code_conventions)
+* Run and verify that the various linters we support pass, as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
+* Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes)
+* Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
  - Make sure you have test playbook [here](https://github.com/demisto/content/tree/master/docs/tests)
  - Make sure you have documentation [here](https://github.com/demisto/content/tree/master/docs/integration_documentation)
  - Circle CI build must be green [here](https://github.com/demisto/content/tree/master/docs/tests/circleci)
@@ -36,7 +35,7 @@ When you contribute a new pull request, a bot will evaluate whether you have sig
 
 If the `license/cla` status check remains on *Pending*, even though all contributors have accepted the CLA, you can recheck the CLA status by visiting the following link (replace **[PRID]** with the ID of your PR): https://cla-assistant.io/check/demisto/content?pullRequest=[PRID] .
 
-
+---
 If you have a suggestion or an opportunity for improvement that you've identified, please feel free to open a PR.
 
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)
