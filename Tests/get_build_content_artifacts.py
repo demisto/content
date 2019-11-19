@@ -48,7 +48,7 @@ def modify_content_descriptor(content_zipfile_name):
         The name of the (updated) content zipfile
     '''
     zipfile_name = content_zipfile_name
-    zipfile_write = '.'.join(zipfile_name.split('.')[:-1]) + 'modded.zip'
+    zipfile_write = '.'.join(zipfile_name.split('.')[:-1]) + '_modded.zip'
     if os.path.isfile(zipfile_write):
         os.remove(zipfile_write)
     content_descriptor = 'content-descriptor.json'
