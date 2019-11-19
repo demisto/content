@@ -8,7 +8,7 @@ from Tests.scripts.constants import PACKS_INTEGRATION_PY_REGEX, PACKS_INTEGRATIO
     PACKS_PACKAGE_META_REGEX, PACKS_WIDGETS_REGEX, PACKS_INCIDENT_FIELDS_REGEX, PACKS_INTEGRATION_TEST_PY_REGEX, \
     PACKS_SCRIPT_TEST_PY_REGEX, PACKS_LAYOUTS_REGEX, SCRIPT_TEST_PY_REGEX, \
     INTEGRATION_TEST_PY_REGEX, PACKS_INTEGRATION_JS_REGEX, PACKS_SCRIPT_JS_REGEX, INDICATOR_FIELDS_REGEX, \
-    INCIDENT_TYPE_REGEX
+    INCIDENT_TYPE_REGEX, PACKS_YML_FILE_REGEX
 from Tests.test_utils import checked_type
 
 
@@ -209,6 +209,8 @@ test_packs_regex_params = [
     (['Integrations/Sade/Sade_test.py'], ['Integrations/Sade/test_Sade.py'], [INTEGRATION_TEST_PY_REGEX]),
     (['IndicatorFields/incidentfield-sade.json'], ['IndicatorFields/incidentfield.json'], [INDICATOR_FIELDS_REGEX]),
     (['IncidentTypes/incidenttype-Cortex_XDR.json'], ['IncidentTypes/incident-Cortex_XDR.json'], [INCIDENT_TYPE_REGEX]),
+    (['Packs/XDR/Scripts/Random/Random.yml', 'Packs/XDR/Integrations/Random/Random.yml'],
+     ['Packs/XDR/Integrations/Random/Random_1.yml'], [PACKS_YML_FILE_REGEX])
 ]
 
 

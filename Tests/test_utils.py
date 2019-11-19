@@ -9,7 +9,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
-    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
+    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_YML_FILE_REGEX
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -233,10 +233,9 @@ def str2bool(v):
 
 def get_release_notes_file_path(file_path):
     dir_name = os.path.dirname(file_path)
-
-    if re.match(PACKAGE_YML_FILE_REGEX, file_path):
-        return os.path.join(dir_name, 'CHANGELOG.md')
-
+    for regex in [PACKAGE_YML_FILE_REGEX, PACKS_YML_FILE_REGEX]:
+        if re.match(regex, file_path):
+            return os.path.join(dir_name, 'CHANGELOG.md')
     # outside of packages, change log file will include the original file name.
     file_name = os.path.basename(file_path)
     return os.path.join(dir_name, os.path.splitext(file_name)[0] + '_CHANGELOG.md')
