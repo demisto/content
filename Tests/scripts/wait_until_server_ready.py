@@ -1,14 +1,21 @@
 """Wait for server to be ready for tests"""
 import sys
 import json
+import ast
 import argparse
 from time import sleep
 import datetime
+import requests
 
-import demisto
+from demisto_client.demisto_api.rest import ApiException
+import demisto_client.demisto_api
 from typing import List, AnyStr
+import urllib3.util
 
 from Tests.test_utils import print_error, print_color, LOG_COLORS
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 MAX_TRIES = 30
 SLEEP_TIME = 45
@@ -31,31 +38,36 @@ def get_username_password():
     return conf['username'], conf['userPassword'], options.contentVersion
 
 
-def is_correct_content_installed(username, password, ips, content_version):
-    # type: (AnyStr, AnyStr, List[List], AnyStr) -> bool
+def is_correct_content_installed(ips, content_version, username, password):
+    # type: (AnyStr, List[List], AnyStr) -> bool
     """ Checks if specific content version is installed on server list
 
     Args:
-        username: for server connection
-        password: for server connection
+        username: Username of the service account
+        password: Password of the service account
         ips: list with lists of [instance_name, instance_ip]
         content_version: content version that should be installed
 
     Returns:
         True: if all tests passed, False if one failure
     """
-    method = "post"
-    suffix = "/content/installed/"
+
     for ami_instance_name, ami_instance_ip in ips:
-        d = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
-        d.Login()
-        resp = d.req(method, suffix, None)
-        resp_json = None
+        host = "https://{}".format(ami_instance_ip)
+
+        client = demisto_client.configure(base_url=host, username=username, password=password, verify_ssl=False)
         try:
-            resp_json = resp.json()
+            resp_json = None
+            try:
+                resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
+                                                           method='POST', accept='application/json',
+                                                           content_type='application/json')
+                resp_json = ast.literal_eval(resp[0])
+            except ApiException as err:
+                print(err)
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
-                                 'Text: {}'.format(type(resp_json), resp.text))
+                                 'Text: {}'.format(type(resp_json), resp_json))
             release = resp_json.get("release")
             notes = resp_json.get("releaseNotes")
             installed = resp_json.get("installed")
@@ -81,7 +93,6 @@ def is_correct_content_installed(username, password, ips, content_version):
 
 def main():
     username, password, content_version = get_username_password()
-
     ready_ami_list = []
     with open('./Tests/instance_ips.txt', 'r') as instance_file:
         instance_ips = instance_file.readlines()
@@ -91,13 +102,15 @@ def main():
         if len(instance_ips) > len(ready_ami_list):
             for ami_instance_name, ami_instance_ip in instance_ips:
                 if ami_instance_name not in ready_ami_list:
-                    c = demisto.DemistoClient(None, "https://{}".format(ami_instance_ip), username, password)
-                    res = c.Login()
+                    host = "https://{}".format(ami_instance_ip)
+                    path = '/health'
+                    method = 'GET'
+                    res = requests.request(method=method, url=(host + path), verify=False)
                     if res.status_code == 200:
-                        print "[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name)
+                        print("[{}] {} is ready to use".format(datetime.datetime.now(), ami_instance_name))
                         ready_ami_list.append(ami_instance_name)
                     elif i % 30 == 0:  # printing the message every 30 seconds
-                        print "{} is not ready yet - waiting for it to start".format(ami_instance_name)
+                        print("{} is not ready yet - waiting for it to start".format(ami_instance_name))
 
             if len(instance_ips) > len(ready_ami_list):
                 sleep(1)
@@ -109,7 +122,7 @@ def main():
         print_error("The server is not ready :(")
         sys.exit(1)
 
-    if not is_correct_content_installed(username, password, instance_ips, content_version):
+    if not is_correct_content_installed(instance_ips, content_version, username=username, password=password):
         sys.exit(1)
 
 
