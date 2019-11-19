@@ -109,10 +109,10 @@ class Client(BaseClient):
                   'recordId': record_id}
         res = self._http_request('GET', suffix, params=params)
         field_names = argToList(field_names)
-        all_fields = field_output_to_hr_fields(res.get('FieldValues', []), component_id, self)
+        all_fields = self.field_output_to_hr_fields(res.get('FieldValues', []), component_id)
         if field_names:
             fields = {k: all_fields[k] for k in field_names if k in all_fields}
-        if not field_names:
+        else:
             fields = all_fields
         record = {'ID': res.get('Id'),
                   'ComponentID': component_id,
@@ -155,6 +155,7 @@ class Client(BaseClient):
                 field_id = field.get('Id')
         return field_id
 
+    '''HELPER CLIENT FUNCTIONS'''
     def update_field_integration_context(self, component_id: str) -> None:
         '''
 
@@ -174,7 +175,7 @@ class Client(BaseClient):
         field_map = demisto.getIntegrationContext()
         if field_map.get(str(component_id)):
             field_map.pop(str(component_id))
-        params = {'componentId':component_id}
+        params = {'componentId': component_id}
         fields = self._http_request('GET', '/ComponentService/GetFieldList', params=params)
         field_names = {}
         for field in fields:
@@ -194,6 +195,43 @@ class Client(BaseClient):
                                    }
         demisto.setIntegrationContext(field_map)
 
+    def field_output_to_hr_fields(self, field_output: dict, component_id: str) -> dict:
+        '''
+
+        Args:
+            field_output: a dictionary of key,values that is the output of FieldValue field
+            component_id: What component the fields are from
+            client:  the client
+
+        Returns:
+        '''
+        field_map = demisto.getIntegrationContext().get(str(component_id))
+        final_fields = {}
+        if not field_map:
+            self.update_field_integration_context(component_id)
+            field_map = demisto.getIntegrationContext().get(str(component_id))
+        fields = field_map.get('fields')
+        for field_dict in field_output:
+            field_key = field_dict.get('Key')
+            field_val = field_dict.get('Value')
+            if not fields.get(str(field_key)):
+                self.update_field_integration_context(component_id)
+                fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
+            field_name = fields.get(str(field_key))
+            if type(field_val) == dict and field_val.get('DisplayName'):
+                field_val = field_val.get('DisplayName')
+            final_fields[field_name] = field_val
+        return final_fields
+
+    def string_to_key_value_fields(self, dict_as_string: str) -> dict:
+         key_value_list = dict_as_string.split(';')
+         for key_value in key_value_list:
+            #TODO add here code
+            print()
+
+
+
+
 
 '''HELPER FUNCTIONS'''
 
@@ -209,25 +247,6 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
     }
     return filter
 
-
-def field_output_to_hr_fields(field_output: dict, component_id: str, client: Client) -> dict:
-    field_map = demisto.getIntegrationContext().get(str(component_id))
-    final_fields = {}
-    if not field_map:
-        client.update_field_integration_context(component_id)
-        field_map = demisto.getIntegrationContext().get(str(component_id))
-    fields = field_map.get('fields')
-    for field_dict in field_output:
-        field_key = field_dict.get('Key')
-        field_val = field_dict.get('Value')
-        if not fields.get(str(field_key)):
-            client.update_field_integration_context(component_id)
-            fields = demisto.getIntegrationContext().get(str(component_id)).get('fields')
-        field_name = fields.get(str(field_key))
-        if type(field_val) == dict and field_val.get('DisplayName'):
-            field_val = field_val.get('DisplayName')
-        final_fields[field_name] = field_val
-    return final_fields
 
 '''COMMAND FUNCTIONS'''
 
@@ -300,6 +319,7 @@ def get_filtered_records_command(client: Client, args: dict) -> None:
         else '/ComponentService/GetRecords'
     res = client.return_filtered_records(component_id, page_size, page_index, detailed,
                                          filter_type, filter_field_id, filter_value)
+    res['Fields'] = client.field_output_to_hr_fields(res.pop('FieldValues'), component_id)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
@@ -322,7 +342,7 @@ def get_record_count_command(client: Client, args: dict) -> None:
 
 
 def get_record_attachments_command(client: Client, args: dict) -> None:
-    field_id = args.get('record_id', '')
+    field_id = args.get('field_id', '')
     record_id = args.get('record_id', '')
     params = {'componentID': args.get('component_id', ''),
               'recordId': record_id,
@@ -349,6 +369,32 @@ def get_record_attachment_command(client: Client, args: dict) -> None:
     res = client._http_request('GET', '/ComponentService/GetRecordAttachment', params=params)
     hr = f'## File {res.get("FileName", "")}:\n{res.get("FileData")}'
     return_outputs(hr)
+
+
+def delete_record_command(client: Client, args: dict) -> None:
+    component_id = args.get('component_id', '')
+    record_id = args.get('record_id', '')
+    json_data = {
+        'componentId': component_id ,
+        'recordId': record_id
+    }
+    client._http_request('DELETE', '/ComponentService/DeleteRecord', json_data=json_data)
+    return_outputs(f'### Record {record_id} of component {component_id} was deleted successfully.')
+
+
+def update_record_command(client: Client, args: dict) -> None:
+    component_id = args.get('component_id', '')
+    record_id = args.get('records_id', '')
+    string_of_fields = args.get('items_to_update', '')
+    json_data = {
+        'componentId': component_id,
+        'dynamicRecord': {
+            'Id': record_id,
+            'FieldValues': [client.string_to_key_value_fields(string_of_fields)]
+        }
+    }
+    client._http_request('POST', '/ComponentService/UpdateRecord', json_data=json_data)
+    return_outputs(f'### Record {record_id} in component {component_id} was updated successfully.')
 
 
 def fetch_incidents(client: Client, args: dict) -> None:
@@ -416,8 +462,10 @@ def main():
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
         'kl-get-filtered-records': get_filtered_records_command,
-        # 'kl-delete-record': 'ComponentService/DeleteRecord',
+         'kl-delete-record': delete_record_command,
         # 'kl-create-record': 'ComponentService/CreateRecord',
+        #TODO add comment:  The Required option for a field is only enforced through the user interface
+
         # 'kl-update-record': 'ComponentService/UpdateRecord',
         # 'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
         'kl-get-record-attachment': get_record_attachment_command,
@@ -426,7 +474,7 @@ def main():
         'fetch-incidents': fetch_incidents
     }
     # TODO delete this (also from yaml):
-    if demisto.command()=='get-integration-context':
+    if demisto.command() == 'get-integration-context':
         get_integration_context()
 
     LOG(f'Command being called is {demisto.command()}')

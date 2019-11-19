@@ -420,6 +420,23 @@ script:
   - deprecated: false
     execution: false
     name: get-integration-context
+  - arguments:
+    - default: false
+      description: The component ID.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The record ID.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a selected record from within a chosen component.
+    execution: false
+    name: kl-delete-record
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
