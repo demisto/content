@@ -652,8 +652,8 @@ tasks:
     task:
       id: bf1680a0-85ca-4f05-84f9-4c2f49f69494
       version: -1
-      name: Tanium - Get saved question result
-      playbookName: Tanium - Get saved question result
+      name: Tanium - Get Saved Question Result
+      playbookName: Tanium - Get Saved Question Result
       type: playbook
       iscommand: false
       brand: ""
@@ -869,8 +869,8 @@ tasks:
     task:
       id: 48d1476e-22f5-44cf-8b6d-de1b3619429f
       version: -1
-      name: Tanium - Ask question
-      playbookName: Tanium - Ask question
+      name: Tanium - Ask Question
+      playbookName: Tanium - Ask Question
       type: playbook
       iscommand: false
       brand: ""
