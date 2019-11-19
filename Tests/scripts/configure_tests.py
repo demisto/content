@@ -463,7 +463,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
         if given_script_id in script_data.get('script_executions', []) and not script_data.get('deprecated') and \
                 script_toversion >= given_version[1]:
             if script_name not in script_names and script_name not in updated_script_names:
-                tests = script_data.get('tests', [])
+                tests = set(script_data.get('tests', []))
                 if tests:
                     catched_scripts.add(script_name)
                     update_test_set(tests, tests_set)
@@ -551,6 +551,7 @@ def get_test_list(files_string, branch_name):
 
     # Adding a unique test for a json file.
     if is_reputations_json:
+        tests.add('FormattingPerformance - Test')
         tests.add('reputations.json Test')
 
     if is_indicator_json:
