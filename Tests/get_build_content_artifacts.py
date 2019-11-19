@@ -140,6 +140,9 @@ def download_artifact(url, file_name=''):
 
 
 def main():
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
     options = options_handler()
     branch = options.branch
     branch = branch if branch else 'master'
