@@ -25,7 +25,7 @@ INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
-REQUEST_PARAM_CREATE_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
+REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
 REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
 REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
@@ -113,6 +113,7 @@ class Client(BaseClient):
         """
         suffix = 'zone_rp'
         request_params = assign_params(_max_results=max_results)
+        request_params.update(REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
     def get_ip(self, ip: str) -> Dict:
@@ -162,6 +163,8 @@ class Client(BaseClient):
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
+        request_params.update(REQUEST_PARAM_CREATE_RULE)
+
         return self._http_request('GET', suffix, params=request_params)
 
     def create_response_policy_zone(self, fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type):
@@ -179,7 +182,7 @@ class Client(BaseClient):
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
         suffix = 'zone_rp'
-        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_ZONE)
+        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_RULE)
 
     def create_rpz_rule(self, rule_type, object_type, name, rp_zone, substitute_name, comment=None):
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
@@ -241,8 +244,10 @@ class Client(BaseClient):
 
 def parse_demisto_exception(error: DemistoException, field_in_error: str):
     err_string = error.args[0]
+    print(error)
     if 'Error in API call' in err_string:
         infoblox_err = err_string.split('\n')[1].replace('\\', '')
+        print('before json load')
         infoblox_json = json.loads(infoblox_err)
         return DemistoException(infoblox_json.get(field_in_error, 'text'))
     elif 'Failed to parse json object' in err_string:
@@ -484,7 +489,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     display_first_x_results = f'( first {max_results} results)' if max_results else ''
     title = f'{INTEGRATION_NAME} - Response Policy Zones list{display_first_x_results}:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.fqdn && val.fqdn ==== obj.fqdn)': fixed_keys_zone_list}
+        f'{INTEGRATION_CONTEXT_NAME}.PolicyZones(val.Fqdn && val.Fqdn ==== obj.Fqdn)': fixed_keys_zone_list}
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 

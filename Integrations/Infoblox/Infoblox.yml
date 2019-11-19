@@ -67,7 +67,7 @@ script:
     name: infoblox-search-related-objects-by-ip
   - arguments:
     - default: false
-      description: Respone policy zone name to list the rules.
+      description: Respone policy zone name to list the rules (FQDN).
       isArray: false
       name: response_policy_zone_name
       required: false
