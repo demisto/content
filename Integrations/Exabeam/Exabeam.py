@@ -44,9 +44,6 @@ class Client(BaseClient):
         """
         full_url = full_url if full_url else f'{self._base_url}{url_suffix}'
         try:
-            # demisto.log(str(self.session.headers))
-            # demisto.log(str(self.session.cookies))
-            # demisto.log(str(params))
             res = self.session.request(
                 method,
                 full_url,
