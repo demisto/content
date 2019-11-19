@@ -1,4 +1,5 @@
 ## [Unreleased]
+The **fetch-incidents** function does not fetch duplicate values.
   - Added **proofpoint-get-forensics** command. 
   - Added context output for **proofpoint-get-events** command.
 

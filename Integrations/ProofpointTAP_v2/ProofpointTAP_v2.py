@@ -21,6 +21,7 @@ DELIVERED_MESSAGES = "Delivered Messages"
 DEFAULT_LIMIT = 50
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+
 """ Helper functions """
 
 
@@ -35,7 +36,7 @@ def get_now():
 
 
 def get_fetch_times(last_fetch):
-    """ Get list of every hour since last_fetch
+    """ Get list of every hour since last_fetch. last is now.
     Args:
         last_fetch (datetime or str): last_fetch time
 
@@ -53,6 +54,7 @@ def get_fetch_times(last_fetch):
     while now - last_fetch > timedelta(minutes=59):
         last_fetch += timedelta(minutes=59)
         times.append(last_fetch.strftime(time_format))
+    times.append(now.strftime(time_format))
     return times
 
 
@@ -367,69 +369,55 @@ def get_events_command(client, args):
     )
 
 
-@logger
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status, limit=50):
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-
-    # Handle first time fetch, fetch incidents retroactively
-    if not last_fetch:
-        last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
+                    limit=DEFAULT_LIMIT, integration_context=None):
     incidents: list = []
-    fetch_times = get_fetch_times(last_fetch)
-    fetch_time_count = len(fetch_times)
-    for index, fetch_time in enumerate(fetch_times):
-        if index < fetch_time_count - 1:
-            raw_events = client.get_events(interval=fetch_time + "/" + fetch_times[index + 1],
-                                           event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
-        else:
-            raw_events = client.get_events(interval=fetch_time + "/" + get_now().strftime(DATE_FORMAT),
-                                           event_type_filter=event_type_filter,
-                                           threat_status=threat_status, threat_type=threat_type)
+    end_query_time = ''
+    # check if there're incidents saved in context
+    if integration_context:
+        remained_incidents = integration_context.get("incidents")
+        # return incidents if exists in context.
+        if remained_incidents:
+            return last_run, remained_incidents[:limit], remained_incidents[limit:]
+    # Get the last fetch time, if exists
+    start_query_time = last_run.get("last_fetch")
+    # Handle first time fetch, fetch incidents retroactively
+    if not start_query_time:
+        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+    fetch_times = get_fetch_times(start_query_time)
+    for i in range(len(fetch_times) - 1):
+        start_query_time = fetch_times[i]
+        end_query_time = fetch_times[i + 1]
+        raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
+                                       event_type_filter=event_type_filter,
+                                       threat_status=threat_status, threat_type=threat_type)
 
         message_delivered = raw_events.get("messagesDelivered", [])
         for raw_event in message_delivered:
             raw_event["type"] = "messages delivered"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event),
+                "occurred": raw_event["messageTime"]
             }
-            last_event_fetch = raw_event["messageTime"]
-
-            threat_info_map = raw_event.get("threatsInfoMap", [])
-            for threat in threat_info_map:
-                if threat["threatTime"] > last_fetch:
-                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                        "threatTime"]
-            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
         for raw_event in message_blocked:
             raw_event["type"] = "messages blocked"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event)
+                "rawJSON": json.dumps(raw_event),
+                "occured": raw_event["messageTime"],
             }
-            last_event_fetch = raw_event["messageTime"]
-
-            threat_info_map = raw_event.get("threatsInfoMap", [])
-            for threat in threat_info_map:
-                if threat["threatTime"] > last_fetch:
-                    last_fetch = threat["threatTime"]
-                    last_event_fetch = last_event_fetch if last_event_fetch > threat["threatTime"] else threat[
-                        "threatTime"]
-
-            incident['occurred'] = last_event_fetch
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
         for raw_event in clicks_permitted:
             raw_event["type"] = "clicks permitted"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
@@ -441,7 +429,7 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         clicks_blocked = raw_events.get("clicksBlocked", [])
         for raw_event in clicks_blocked:
             raw_event["type"] = "clicks blocked"
-            event_guid = raw_events.get("GUID", "")
+            event_guid = raw_event.get("GUID", "")
             incident = {
                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
                 "rawJSON": json.dumps(raw_event),
@@ -450,18 +438,10 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
             }
             incidents.append(incident)
 
-    # limit incidents to the limit given
-    incidents.sort(key=lambda a: a.get('occurred'))
-    if len(incidents) > limit:
-        incidents = incidents[:limit]
-
     # Cut the milliseconds from last fetch if exists
-    last_fetch = incidents[-1].get('occurred')
-    last_fetch = last_fetch[:-5] + 'Z' if last_fetch[-5] == '.' else last_fetch
-    last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    last_fetch = (last_fetch_datetime + timedelta(seconds=1)).strftime(DATE_FORMAT)
-    next_run = {'last_fetch': last_fetch}
-    return next_run, incidents
+    end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
+    next_run = {"last_fetch": end_query_time}
+    return next_run, incidents[:limit], incidents[limit:]
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -506,18 +486,24 @@ def main():
             results = test_module(client, fetch_time, event_type_filter)
             return_outputs(results)
 
-        elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(
+        elif demisto.command() == 'fetch-incidents':
+            integration_context = demisto.getIntegrationContext()
+            next_run, incidents, remained_incidents = fetch_incidents(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=fetch_time,
                 event_type_filter=event_type_filter,
                 threat_status=threat_status,
                 threat_type=threat_type,
-                limit=fetch_limit
+                limit=fetch_limit,
+                integration_context=integration_context
             )
+            # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+            # preserve context dict
+            integration_context['incidents'] = remained_incidents
+            demisto.setIntegrationContext(integration_context)
 
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
