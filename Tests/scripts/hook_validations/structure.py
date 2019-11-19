@@ -112,7 +112,7 @@ class StructureValidator(object):
         return file_id
 
     @abstractmethod
-    def is_valid_version(self):
+    def is_valid_version(self, expected_file_version):
         pass
 
     def is_file_id_without_slashes(self):

@@ -42,7 +42,7 @@ class IntegrationValidator(YMLBasedValidator):
 
     scheme_name = 'integration'
 
-    def is_valid_scheme(self):
+    def is_valid_scheme(self, **kwargs):
         return super(IntegrationValidator, self).is_valid_scheme(self.scheme_name)
 
     def is_backward_compatible(self):
@@ -64,7 +64,7 @@ class IntegrationValidator(YMLBasedValidator):
 
     def is_file_valid(self, **kwargs):
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
-        super(IntegrationValidator, self).is_file_valid(validate_rn=self._is_beta_integration())
+        super(IntegrationValidator, self).is_file_valid(validate_rn=self.is_beta_integration())
 
         self.is_valid_subtype()
         self.is_default_arguments()
@@ -72,13 +72,19 @@ class IntegrationValidator(YMLBasedValidator):
         self.is_insecure_configured_correctly()
         self.is_valid_category()
 
+
         return self.is_valid
 
     def is_valid_beta_integration(self, is_new=False):
         """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
-        self.is_default_arguments()
-        self.is_valid_beta(is_new)
-        return self.is_valid
+        beta_validation_runner = [
+            self.is_default_arguments(),
+            self.is_valid_beta()
+        ]
+        if not all(beta_validation_runner):
+            self.is_valid = False
+            return False
+        return True
 
     def is_valid_param(self, param_name, param_display):
         """Check if the given parameter has the right configuration."""
@@ -139,6 +145,7 @@ class IntegrationValidator(YMLBasedValidator):
             bool. Whether a reputation command hold a valid argument
         """
         commands = self.current_file.get('script', {}).get('commands', [])
+        local_is_valid = True
         for command in commands:
             command_name = command.get('name')
             for arg in command.get('arguments', []):
@@ -150,9 +157,10 @@ class IntegrationValidator(YMLBasedValidator):
                         or (command_name == 'ip' and arg_name == 'ip')):
                     if arg.get('default') is False:
                         self.is_valid = False
+                        local_is_valid = False
                         print_error("The argument '{}' of the command '{}' is not configured as default"
                                     .format(arg_name, command_name))
-        return self.is_valid
+        return local_is_valid
 
     def is_outputs_for_reputations_commands_valid(self):
         """Check if a reputation command (domain/email/file/ip/url)
@@ -232,17 +240,20 @@ class IntegrationValidator(YMLBasedValidator):
                 if old_subtype and old_subtype != subtype:
                     print_error(Errors.breaking_backwards_subtype(self.file_path))
                     self.is_valid = False
+                    return True
+        return True
 
-        return self.is_valid
-
-    def is_valid_beta(self, is_new=False):
+    def is_valid_beta(self):
         """Validate that that beta integration has correct beta attributes"""
-
+        is_valid = True
         if not all([self._is_display_contains_beta(), self._has_beta_param()]):
             self.is_valid = False
-        if is_new:
-            if not all([self._id_has_no_beta_substring(), self._name_has_no_beta_substring()]):
-                self.is_valid = False
+            is_valid = False
+        is_new = self.is_added_file
+        if is_new and not all([self._id_has_no_beta_substring(), self._name_has_no_beta_substring()]):
+            self.is_valid = False
+            is_valid = False
+        return is_valid
 
     def _id_has_no_beta_substring(self):
         """Checks that 'id' field dose not include the substring 'beta'"""
@@ -427,7 +438,7 @@ class IntegrationValidator(YMLBasedValidator):
                 return True
         return False
 
-    def _is_beta_integration(self):
+    def is_beta_integration(self):
         """Checks if beta field is True"""
         return self.current_file.get('beta') is True
 
@@ -446,5 +457,5 @@ class IntegrationValidator(YMLBasedValidator):
 
             # check rn file exists and contain text
             if rn is None:
-                print_error('File {} is missing releaseNotes, Please add it under {}'.format(self.file_path, rn_path))
+                print_error(Errors.missing_release_notes(self.file_path, rn_path))
                 self.is_valid = False
