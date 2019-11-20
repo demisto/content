@@ -10,7 +10,10 @@ from typing import Optional
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, \
     YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
-    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX
+    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, TEST_DATA_REGEX, MISC_REGEX, \
+    IMAGE_REGEX, DESCRIPTION_REGEX, PIPFILE_REGEX, REPORT_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX, \
+    INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, INTEGRATION_PS_REGEX, REPUTATION_REGEX, BETA_INTEGRATION_YML_REGEX, \
+    BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, PATHS_TO_VALIDATE
 from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
@@ -49,10 +52,6 @@ class StructureValidator(object):
         'incidentfield': JSON_ALL_INCIDENT_FIELD_REGEXES,
     }
 
-    SKIPPED_SCHEMES = [
-
-    ]
-
     def __init__(self, file_path, is_added_file=False, is_renamed=False):
         # type: (str, bool, bool) -> None
         self.is_valid = None  # type: Optional[bool]
@@ -74,6 +73,7 @@ class StructureValidator(object):
         """
         answers = list()  # Contains only positive answers (self.is_valid stays true)
         answers.append(self.is_valid_scheme())
+        answers.append(self.is_valid_file_path())
         answers.append(self.is_file_id_without_slashes())
 
         if not self.is_added_file:  # In case the file is modified
@@ -244,3 +244,13 @@ class StructureValidator(object):
         with open(self.file_path, 'r') as file_obj:
             loaded_file_data = load_function(file_obj)
             return loaded_file_data
+
+    def is_valid_file_path(self):
+        # If scheme_name exists, already found that the file is in the right path
+        if self.scheme_name:
+            return True
+        for regex in PATHS_TO_VALIDATE:
+            if re.search(regex, self.file_path, re.IGNORECASE):
+                return True
+        self.is_valid = False
+        return False

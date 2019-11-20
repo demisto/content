@@ -73,7 +73,7 @@ class TestIsFileValid:
 
 class TestIsFileIDWithoutSlashes:
     POSITIVE_ERROR = "Didn't find a slash in the ID even though it contains a slash."
-    NEGATIVE_ERROR = "Didn't find a slash in the ID even though it contains a slash."
+    NEGATIVE_ERROR = "found a slash in the ID even though it not contains a slash."
     INPUTS = [
         (VALID_INTEGRATION_ID_PATH, True, POSITIVE_ERROR),
         (INVALID_INTEGRATION_ID_PATH, False, NEGATIVE_ERROR),
@@ -81,7 +81,23 @@ class TestIsFileIDWithoutSlashes:
         (INVALID_PLAYBOOK_ID_PATH, False, NEGATIVE_ERROR)
 
     ]
+
     @pytest.mark.parametrize('path, answer, error', INPUTS)
     def test_integration_file_with_valid_id(self, path, answer, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_file_id_without_slashes() is answer, error
+
+
+class TestIsValidFilePath:
+    INPUTS = [
+        ("Reports/report-sade.json", True),
+        ("Notinregex/report-sade.json", False),
+        ("Packs/Integrations/Cymon/Cymon.yml", False),
+    ]
+
+    @pytest.mark.parametrize('path, answer', INPUTS)
+    def test_is_valid_file_path(self, path, answer, mocker):
+        mocker.patch.object(StructureValidator, "load_data_from_file", return_value=None)
+        structure = StructureValidator(path)
+        structure.scheme_name = None
+        assert structure.is_valid_file_path() is answer
