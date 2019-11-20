@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added batch support for multiple commands.
+Added batch support for domain and email commands.
 
 ## [19.10.0] - 2019-10-03
   - Added handling for cases where the rate limit is exceeded.
