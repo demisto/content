@@ -4,21 +4,27 @@ import sys
 import math
 import json
 import string
-import PyPDF2
 import argparse
+import PyPDF2
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
-from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS, checked_type
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
 ENTROPY_THRESHOLD = 4.0
 ACCEPTED_FILE_STATUSES = ['m', 'a']
-SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore'}
-TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
+SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore', 'ami_builds.json',
+                 'secrets_test.py', 'secrets.py'}
+TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html',
+                   '.ps1'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
+PACKS_PATH = './Packs'
+PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
+WHITELIST_PATH = './Tests/secrets_white_list.json'
+YML_FILE_EXTENSION = '.yml'
 
 # disable-secrets-detection-start
 # secrets
@@ -61,11 +67,11 @@ def get_secrets(branch_name, is_circle):
                 secrets_found_string += ('\nFile Name: ' + file_name)
                 secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
             if not is_circle:
-                secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
+                secrets_found_string += '\nRemove or whitelist secrets in order to proceed, then re-commit\n'
             else:
                 secrets_found_string += 'The secrets were exposed in public repository,' \
                                         ' remove the files asap and report it.\n'
-            secrets_found_string += 'For more information about whitelisting please visit: ' \
+            secrets_found_string += 'For more information about whitelisting visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
             print_error(secrets_found_string)
     return secrets_found
@@ -114,47 +120,45 @@ def is_text_file(file_path):
     return False
 
 
-def search_potential_secrets(secrets_file_paths):
+def search_potential_secrets(secrets_file_paths: list):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
     :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
     """
     secrets_found = {}
-
-    # Get generic white list set
-    conf_secrets_white_list, ioc_white_list, files_white_list = get_white_list()
-
     for file_path in secrets_file_paths:
+        # Get if file path in pack and pack name
+        is_pack = is_file_path_in_pack(file_path)
+        pack_name = get_pack_name(file_path)
+        # Get generic/ioc/files white list sets based on if pack or not
+        secrets_white_list, ioc_white_list, files_white_list = get_white_listed_items(is_pack, pack_name)
+        # Skip white listed files
         if file_path in files_white_list:
             print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
             continue
-
+        # Init vars for current loop
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
-        yml_file_contents = None
         _, file_extension = os.path.splitext(file_path)
-        skip_secrets = False
-
-        secrets_white_list = set(conf_secrets_white_list)
+        skip_secrets = {'skip_once': False, 'skip_multi': False}
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-        # Validate if it is integration documentation file
-        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
-                                      string=file_path,
-                                      flags=re.IGNORECASE)
-        # if py/js file, search for yml in order to retrieve temp white list
-        if file_extension in {'.py', '.js'} or integration_readme:
-            yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
+        # in packs regard all items as regex as well, reset pack's whitelist in order to avoid repetition later
+        if is_pack:
+            file_contents = remove_white_list_regex(file_contents, secrets_white_list)
+            secrets_white_list = set()
+        yml_file_contents = get_related_yml_contents(file_path)
         # Add all context output paths keywords to whitelist temporary
-        if file_extension == '.yml' or yml_file_contents:
+        if file_extension == YML_FILE_EXTENSION or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
-        # Search by lines after strings with high entropy as possibly suspicious
+        # Search by lines after strings with high entropy / IoCs regex as possibly suspicious
         for line in file_contents.split('\n'):
-            # if detected disable-secrets comment, skip the line
+            # if detected disable-secrets comments, skip the line/s
             skip_secrets = is_secrets_disabled(line, skip_secrets)
-            if skip_secrets:
+            if skip_secrets['skip_once'] or skip_secrets['skip_multi']:
+                skip_secrets['skip_once'] = False
                 continue
             # REGEX scanning for IOCs and false positive groups
             regex_secrets, false_positives = regex_for_secrets(line)
@@ -184,6 +188,12 @@ def search_potential_secrets(secrets_file_paths):
     return secrets_found
 
 
+def remove_white_list_regex(file_contents, secrets_white_list):
+    for regex in secrets_white_list:
+        file_contents = re.sub(regex, '', file_contents)
+    return file_contents
+
+
 def create_temp_white_list(file_contents):
     temp_white_list = set()
     context_paths = re.findall(r'contextPath: (\S+\.+\S+)', file_contents)
@@ -193,6 +203,15 @@ def create_temp_white_list(file_contents):
         temp_white_list = temp_white_list.union(context_path)
 
     return temp_white_list
+
+
+def get_related_yml_contents(file_path):
+    # if script or readme file, search for yml in order to retrieve temp white list
+    yml_file_contents = ''
+    # Validate if it is integration documentation file or supported file extension
+    if checked_type(file_path, REQUIRED_YML_FILE_TYPES):
+        yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
+    return yml_file_contents
 
 
 def retrieve_related_yml(integration_path):
@@ -259,20 +278,27 @@ def calculate_shannon_entropy(data):
         return 0
     entropy = 0
     # each unicode code representation of all characters which are considered printable
-    for x in (ord(c) for c in string.printable):
+    for char in (ord(c) for c in string.printable):
         # probability of event X
-        px = float(data.count(chr(x))) / len(data)
-        if px > 0:
+        p_x = float(data.count(chr(char))) / len(data)
+        if p_x > 0:
             # the information in every possible news, in bits
-            entropy += - px * math.log(px, 2)
+            entropy += - p_x * math.log(p_x, 2)
     return entropy
 
 
-def get_white_list():
-    with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
-        final_white_list = []
-        ioc_white_list = []
-        files_while_list = []
+def get_white_listed_items(is_pack, pack_name):
+    whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_FILE_NAME) if is_pack else WHITELIST_PATH
+    final_white_list, ioc_white_list, files_while_list = get_packs_white_list(whitelist_path) if is_pack else\
+        get_generic_white_list(whitelist_path)
+    return set(final_white_list), set(ioc_white_list), set(files_while_list)
+
+
+def get_generic_white_list(whitelist_path):
+    final_white_list = []
+    ioc_white_list = []
+    files_while_list = []
+    with io.open(whitelist_path, mode="r", encoding="utf-8") as secrets_white_list_file:
         secrets_white_list_file = json.load(secrets_white_list_file)
         for name, white_list in secrets_white_list_file.items():
             if name == 'iocs':
@@ -284,7 +310,15 @@ def get_white_list():
             else:
                 final_white_list += [white_item for white_item in white_list if len(white_item) > 4]
 
-        return set(final_white_list), set(ioc_white_list), set(files_while_list)
+        return final_white_list, ioc_white_list, files_while_list
+
+
+def get_packs_white_list(whitelist_path):
+    final_white_list = []
+    if os.path.isfile(whitelist_path):
+        with io.open(whitelist_path, mode="r", encoding="utf-8") as secrets_white_list_file:
+            final_white_list = secrets_white_list_file.read().split('\n')
+    return final_white_list, [], []
 
 
 def get_file_contents(file_path, file_extension):
@@ -346,13 +380,12 @@ def remove_false_positives(line):
 
 
 def is_secrets_disabled(line, skip_secrets):
-    if bool(re.findall(r'(disable-secrets-detection)', line)):
-        skip_secrets = True
-    elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
-        skip_secrets = True
+    if bool(re.findall(r'(disable-secrets-detection-start)', line)):
+        skip_secrets['skip_multi'] = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
-        skip_secrets = False
-
+        skip_secrets['skip_multi'] = False
+    elif bool(re.findall(r'(disable-secrets-detection)', line)):
+        skip_secrets['skip_once'] = True
     return skip_secrets
 
 
@@ -363,6 +396,15 @@ def ignore_base64(file_contents):
         if len(base64_string) > 500:
             file_contents = file_contents.replace(base64_string, '')
     return file_contents
+
+
+def is_file_path_in_pack(file_path):
+    return bool(re.findall(PACKS_DIR_REGEX, file_path))
+
+
+def get_pack_name(file_path):
+    match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
+    return match.group(1) if match else None
 
 
 def get_branch_name():
