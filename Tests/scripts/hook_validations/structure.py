@@ -12,7 +12,8 @@ from Tests.scripts.constants import TEST_DATA_REGEX, MISC_REGEX, IMAGE_REGEX, DE
     REPORT_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX, INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, \
     INTEGRATION_PS_REGEX, REPUTATION_REGEX, BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, \
     BETA_PLAYBOOK_REGEX, CHECKED_TYPES_REGEXES, YML_INTEGRATION_REGEXES, YML_ALL_PLAYBOOKS_REGEX, \
-    YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, YML_SCRIPT_REGEXES
+    YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
+    JSON_ALL_DASHBOARDS_REGEXES, CONNECTIONS_REGEX
 from Tests.scripts.hook_validations.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
@@ -43,7 +44,9 @@ class StructureValidator(object):
         'playbook': YML_PLAYBOOKS_NO_TESTS_REGEXES ,
         'test-playbook': YML_TEST_PLAYBOOKS_REGEXES,
         'script': YML_SCRIPT_REGEXES,
-        'widget':
+        'widget': JSON_ALL_WIDGETS_REGEXES,
+        'dashboard': JSON_ALL_DASHBOARDS_REGEXES,
+        'canvas-context-connections': [CONNECTIONS_REGEX]
     }
 
     def __init__(self, file_path: str, is_added_file=False, is_renamed=False):
