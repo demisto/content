@@ -313,7 +313,7 @@ script:
         Default is 10 minutes.
       defaultValue: "10"
     - name: headers
-      description: 'A CSV list of table headers that are displayed in order. For example:
+      description: 'A comma-separated list of table headers that are displayed in order. For example:
         "_blockid,_collector,_format".'
     - name: byReceiptTime
       auto: PREDEFINED
