@@ -5,28 +5,30 @@ from shutil import copyfile
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.constants import PLAYBOOK_REGEX
 
+INVALID_PLAYBOOK_PATH = "./Tests/setup/Playbooks.playbook-invalid.yml"
+VALID_TEST_PLAYBOOK_PATH = "./Tests/setup/Playbooks.playbook-test.yml"
 
-def test_scheme_validation_playbook():
+SCHEME_VALIDATION_INPUTS = [
+    (VALID_TEST_PLAYBOOK_PATH, PLAYBOOK_REGEX, True, "Found a problem in the scheme although there is no problem"),
+    (INVALID_PLAYBOOK_PATH, PLAYBOOK_REGEX, False, "Found no problem in the scheme although there is a problem")
+]
+
+
+@pytest.mark.parametrize("path, regex, answer, error", SCHEME_VALIDATION_INPUTS)
+def test_scheme_validation_playbook(path, regex, answer, error):
+    validator = StructureValidator(file_path=path)
+    assert validator.is_valid_scheme(regex) is answer, error
+
+
+VERSION_VALIDATION_INPUTS = [
+    (VALID_TEST_PLAYBOOK_PATH, -1, True, "Found an incorrect version although the version is -1")
+]
+
+
+@pytest.mark.parametrize("path, version, answer, error", VERSION_VALIDATION_INPUTS)
+def test_version_validation(path, version, answer, error):
     validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-test.yml")
-
-    assert validator.is_valid_scheme(matching_regex=PLAYBOOK_REGEX), \
-        "Found a problem in the scheme although there is no problem"
-
-
-def test_scheme_validation_invalid_playbook():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-invalid.yml")
-
-    try:
-        validator.is_valid_scheme(matching_regex=PLAYBOOK_REGEX)
-    except TypeError as exc:
-        pytest.raises(TypeError, exc)
-
-
-def test_version_validation():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-test.yml")
-
-    assert validator.is_valid_version(), \
-        "Found an incorrect version although the version is -1"
+    assert validator.is_valid_version(version) is answer, error
 
 
 def test_incorrect_version_validation():
@@ -60,28 +62,17 @@ def test_fromversion_no_update_validation():
         "Didn't find the fromversion as updated in yml file"
 
 
-def test_updated_id_validation():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-invalid.yml")
-
-    change_string = "+  id: text"
-    assert validator.is_id_not_modified(change_string=change_string) is False, \
-        "Didn't find the id as updated in file"
-
-
-def test_removed_id_validation():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-invalid.yml")
-
-    change_string = "-  id: text"
-    assert validator.is_id_not_modified(change_string=change_string) is False, \
-        "Didn't find the id as updated in file"
+IS_ID_MODIFIED_LIST = [
+    (INVALID_PLAYBOOK_PATH, True, "+  id: text", "Didn't find the id as updated in file"),
+    (INVALID_PLAYBOOK_PATH, True, "-  id: text", "Didn't find the id as updated in file"),
+    (INVALID_PLAYBOOK_PATH, False, "some other text", "Found the ID as changed although it is not")
+]
 
 
-def test_not_touched_id_validation():
-    validator = StructureValidator(file_path="./Tests/setup/Playbooks.playbook-invalid.yml")
-
-    change_string = "some other text"
-    assert validator.is_id_not_modified(change_string=change_string), \
-        "Found the ID as changed although it is not"
+@pytest.mark.parametrize("path, answer, change_string, error", IS_ID_MODIFIED_LIST)
+def test_is_id_modified(path, answer, change_string, error):
+    validator = StructureValidator(file_path=path)
+    assert validator.is_id_modified(change_string=change_string) is answer, error
 
 
 def test_valid_file_examination():
