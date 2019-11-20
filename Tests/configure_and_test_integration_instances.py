@@ -65,6 +65,7 @@ def configure_integration_instance(integration, client):
         (dict): Configured integration instance
     '''
     integration_name = integration.get('name')
+    print('Configuring instance for integration "{}"'.format(integration_name))
     integration_instance_name = integration.get('instance_name', '')
     integration_params = integration.get('params')
     is_byoi = integration.get('byoi', True)
@@ -201,7 +202,7 @@ def set_integration_instance_parameters(integration_configuration, integration_p
         (dict): The configured module instance to send to the Demisto server for
         instantiation.
     '''
-    module_configuration = integration_configuration.get('configuration')
+    module_configuration = integration_configuration.get('configuration', {})
     if not module_configuration:
         module_configuration = []
 
@@ -292,6 +293,7 @@ def main():
         integration.get('name') not in skipped_integrations_conf.keys()
     ]
     new_integrations_names = [integration.get('name') for integration in brand_new_integrations]
+    print_color('New Integrations:\n{}'.format('\n'.join(new_integrations_names)), color=LOG_COLORS.YELLOW)
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -316,6 +318,9 @@ def main():
             (integration.get('name') not in skipped_integrations_conf.keys() and  # noqa: W504
                 integration.get('name') not in new_integrations_names)
         ]
+        modified_integrations_names = [integration.get('name') for integration in modified_integrations]
+        print_color('Modified Integrations:\n{}'.format('\n'.join(modified_integrations_names)), 
+                    color=LOG_COLORS.YELLOW)
         are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
         if not are_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations)))
