@@ -7,13 +7,10 @@ import yaml
 from pykwalify.errors import SchemaError
 from typing import Optional
 
-from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, \
-    YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
+from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
-    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, TEST_DATA_REGEX, MISC_REGEX, \
-    IMAGE_REGEX, DESCRIPTION_REGEX, PIPFILE_REGEX, REPORT_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX, \
-    INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, INTEGRATION_PS_REGEX, REPUTATION_REGEX, BETA_INTEGRATION_YML_REGEX, \
-    BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, BETA_PLAYBOOK_REGEX, PATHS_TO_VALIDATE
+    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, PATHS_TO_VALIDATE, \
+    JSON_ALL_REPORTS_REGEXES, PYTHON_ALL_REGEXES, MISC_REGEX, MISC_REPUTATIONS_REGEX
 from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
@@ -52,6 +49,13 @@ class StructureValidator(object):
         'incidentfield': JSON_ALL_INCIDENT_FIELD_REGEXES,
     }
 
+    PATHS_TO_VALIDATE = {
+        'python-script': PYTHON_ALL_REGEXES,
+        'reports': JSON_ALL_REPORTS_REGEXES,
+        'reputation': [MISC_REGEX],
+        'reputations': [MISC_REPUTATIONS_REGEX]
+    }
+
     def __init__(self, file_path, is_added_file=False, is_renamed=False):
         # type: (str, bool, bool) -> None
         self.is_valid = None  # type: Optional[bool]
@@ -59,6 +63,7 @@ class StructureValidator(object):
         self.is_added_file = is_added_file
         self.is_renamed = is_renamed
         self.scheme_name = self.scheme_of_file_by_path()
+        self.file_type = self.get_file_type()
         self.current_file = self.load_data_from_file()
 
     def is_file_valid(self, validate_rn=True):
@@ -245,12 +250,16 @@ class StructureValidator(object):
             loaded_file_data = load_function(file_obj)
             return loaded_file_data
 
-    def is_valid_file_path(self):
+    def get_file_type(self):
         # If scheme_name exists, already found that the file is in the right path
         if self.scheme_name:
-            return True
-        for regex in PATHS_TO_VALIDATE:
-            if re.search(regex, self.file_path, re.IGNORECASE):
-                return True
+            return self.scheme_name
+        for file_type, regexes in self.PATHS_TO_VALIDATE.items():
+            for regex in regexes:
+                if re.search(regex, self.file_path, re.IGNORECASE):
+                    return file_type
         self.is_valid = False
         return False
+
+    def is_valid_file_path(self):
+        return bool(self.scheme_name or self.file_type)

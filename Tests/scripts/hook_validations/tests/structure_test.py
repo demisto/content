@@ -92,7 +92,7 @@ class TestIsValidFilePath:
     INPUTS = [
         ("Reports/report-sade.json", True),
         ("Notinregex/report-sade.json", False),
-        ("Packs/Integrations/Cymon/Cymon.yml", False),
+        ("Packs/Integrations/Cymon/Cymon.yml", True),
     ]
 
     @pytest.mark.parametrize('path, answer', INPUTS)
