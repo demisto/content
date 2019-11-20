@@ -5,21 +5,22 @@ description: This playbook will pull Panorama queried threat logs and check for 
   correlating assets that are found to have a minimum of high level vulnerabilities.
   If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External
   Dynamic List playbook.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 3af2c27a-a555-4626-80d4-85e692a8263c
     type: start
     task:
       id: 3af2c27a-a555-4626-80d4-85e692a8263c
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -31,8 +32,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 8d0120d0-657c-49ff-8552-ada9b349d9b1
     type: regular
     task:
@@ -46,7 +47,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       action: {}
       addr-dst: {}
@@ -73,8 +74,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: ef885479-a9e0-4725-888f-43c7aab13861
     type: regular
     task:
@@ -88,7 +89,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       job_id:
         simple: ${Panorama.Monitor.JobID}
@@ -103,8 +104,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: b42e2ad6-6bf9-4b68-8871-8cead4050c12
     type: condition
     task:
@@ -114,15 +115,15 @@ tasks:
       description: Query log status is complete.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "4"
+      - '5'
+      'yes':
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -142,8 +143,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 81702d7f-3631-4752-8a6c-0a6239294803
     type: regular
     task:
@@ -157,7 +158,7 @@ tasks:
       brand: Panorama
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       ignore_auto_extract: {}
       job_id:
@@ -173,8 +174,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 0f43ed3d-046f-4a29-8cfa-92444d812941
     type: regular
     task:
@@ -185,7 +186,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: 'Query log status: ${Panorama.Monitor.Status}'
@@ -202,8 +203,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: c3573fa6-14b2-4d52-8bba-81bc68cdd7ca
     type: regular
     task:
@@ -218,7 +219,7 @@ tasks:
       brand: Digital Defense FrontlineVM
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       host_id: {}
       ip_address:
@@ -239,8 +240,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: d2483fcc-2591-4d14-8b50-5c3830c24496
     type: condition
     task:
@@ -250,15 +251,15 @@ tasks:
       description: Check results of previous task.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "8"
+      - '9'
+      'yes':
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:
@@ -275,8 +276,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 2b4e44d3-d2f7-4fa8-8747-d333567a389c
     type: regular
     task:
@@ -288,10 +289,10 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       value:
         simple: 'Asset found to have critical level vulnerabilities within Frontline.Cloud:
@@ -307,8 +308,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: a66a80d3-82d2-4c28-815b-06de2c64525d
     type: regular
     task:
@@ -319,7 +320,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: 'Critical vulnerabilities not found within Frontline.Cloud for given
@@ -335,8 +336,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: a0e11307-329a-44ed-8e1d-3d87f464e7f0
     type: regular
     task:
@@ -347,13 +348,13 @@ tasks:
       scriptName: Sleep
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       seconds:
-        simple: "30"
+        simple: '30'
     separatecontext: false
     view: |-
       {
@@ -365,24 +366,22 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 92380cc5-adee-4bc5-8d15-7b25da58d431
     type: playbook
     task:
       id: 92380cc5-adee-4bc5-8d15-7b25da58d431
       version: -1
       name: PAN-OS - Block IP and URL - External Dynamic List
-      description: |-
-        This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
-        It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists.
+      description: ''
       playbookName: PAN-OS - Block IP and URL - External Dynamic List
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        simple: 'No'
       EDLServerIP: {}
       IP:
         complex:
@@ -399,7 +398,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
     view: |-
       {

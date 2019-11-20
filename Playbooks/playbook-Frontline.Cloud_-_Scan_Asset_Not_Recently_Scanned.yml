@@ -4,21 +4,22 @@ name: Frontline.Cloud - Scan Asset Not Recently Scanned
 description: This playbook will pull the IP address from the details value of an incident
   and check if that asset has been scanned within the past 60 days. If not then it
   will prompt to perform a scan on the asset.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 88b9b394-6c20-4f43-89f0-2577b3b86c16
     type: start
     task:
       id: 88b9b394-6c20-4f43-89f0-2577b3b86c16
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -30,8 +31,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: a09127d0-c096-4b65-80f7-0b05efa3ccb0
     type: regular
     task:
@@ -43,17 +44,17 @@ tasks:
       script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       hostname: {}
       ip_address:
         simple: ${incident.details}
       label_name: {}
       max_days_since_scan:
-        simple: "60"
+        simple: '60'
     separatecontext: false
     view: |-
       {
@@ -65,8 +66,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: d54922c3-f992-4f0b-88e6-e754bd329bc6
     type: condition
     task:
@@ -76,15 +77,15 @@ tasks:
       description: Checks if assets has been scanned within the last 60 days.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      'yes':
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -101,8 +102,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 1c6a8431-2d09-4128-8bae-f4a655a0c303
     type: regular
     task:
@@ -113,7 +114,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: |-
@@ -131,8 +132,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: f74b727d-f10f-4961-8c5a-4d3950117f88
     type: condition
     task:
@@ -143,12 +144,12 @@ tasks:
         of the arguments are missing, no is returned.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       No, do not perform scan:
-      - "5"
+      - '5'
       Yes, perform scan:
-      - "6"
+      - '6'
     separatecontext: false
     view: |-
       {
@@ -166,11 +167,11 @@ tasks:
       subject:
         simple: Perform Scan on asset
       body:
-        simple: "The following asset has not been scanned within the past 60 days.\nPerform
-          scan on asset: \n\n${incident.details}"
+        simple: "The following asset has not been scanned within the past 60 days.\n\
+          Perform scan on asset: \n\n${incident.details}"
       methods:
       - email
-      format: ""
+      format: ''
       bcc: null
       cc: null
       timings:
@@ -180,8 +181,8 @@ tasks:
       replyOptions:
       - Yes, perform scan
       - No, do not perform scan
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 94008e29-1942-4b20-8e4c-ace31eb09de2
     type: regular
     task:
@@ -192,7 +193,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: "Admin chose not to perform a scan on asset: \n\n${incident.details}"
@@ -207,8 +208,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 768c960e-59fe-4595-8b7b-ab7d77c0b332
     type: regular
     task:
@@ -219,7 +220,7 @@ tasks:
       script: '|||frontline-scan-asset'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     scriptarguments:
       ip_address:
         simple: ${incident.details}
