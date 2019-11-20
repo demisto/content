@@ -22,7 +22,6 @@ TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml',
                    '.ps1'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
-PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
 WHITELIST_PATH = './Tests/secrets_white_list.json'
 YML_FILE_EXTENSION = '.yml'
 
