@@ -1947,6 +1947,10 @@
         }
     ],
     "skipped_tests": {
+        "Palo Alto Networks - Malware Remediation Test": "Issue 20265",
+        "Fidelis Elevate Network": "Issue 20263",
+        "rsa_packets_and_logs_test": "Issue 20262",
+        "Cloaken-Test": "Issue 20036",
         "Create Phishing Classifier V2 ML Test": "Issue 20174",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -2014,6 +2018,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
