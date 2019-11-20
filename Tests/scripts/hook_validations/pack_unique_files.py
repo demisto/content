@@ -38,13 +38,13 @@ class PackUniqueFilesValidator(object):
 
     def validate_secrets_file(self):
         """Validate everything related to .secrets-ignore file"""
-        self.is_secrets_file_exists()
+        self._is_secrets_file_exists()
 
-    def is_secrets_file_exists(self):
+    def _is_secrets_file_exists(self):
         """Check if .secrets-ignore exists"""
         pack_path = os.path.join(pack_name_to_path(self.current_pack), PACKS_WHITELIST_FILE_NAME)
         if not os.path.isfile(pack_path):
-            self.add_error('".secrets-ignore" files does not exist, create one in the root of the pack.')
+            self.add_error('".secrets-ignore" file does not exist, create one in the root of the pack.')
 
     def validate_pack_unique_files(self):
         """Main Execution Method"""
