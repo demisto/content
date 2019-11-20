@@ -342,4 +342,3 @@ def get_pack_name(file_path):
 
 def pack_name_to_path(pack_name):
     return os.path.join(PACKS_DIR, pack_name)
-
