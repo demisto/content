@@ -12,7 +12,7 @@ Please read the following guidelines. Following these guidelines will maximize t
 * Make sure to read and follow [code conventions](docs/code_conventions).
 * Run and verify that the various linters we support pass as detailed [here](docs/linting).
 * For Scripts/Integrations written in Python, make sure to create unit tests as documented [here](docs/tests/unit-testing)
-* Create a test playbook as documented [here](docs/tests). **Note**: for small Scripts that have unit tests, a test playbook is optional.
+* Create a test playbook as documented [here](docs/tests). **Note**: for simple Scripts that have unit tests, a test playbook is optional.
 * Validate that our validation hooks pass. If you used `.hooks/bootstrap` as documented in [Getting Started](docs/getting_started) the validation hook will run automatically upon commit. You can also run the validation hooks manually by running `.hooks/pre-commit`.
 * Document your integration as detailed [here](docs/integration_documentation).
 * Document your changes in the relevant changelog file as detailed [here](docs/release_notes).
