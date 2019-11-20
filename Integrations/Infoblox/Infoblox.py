@@ -27,7 +27,8 @@ INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
 REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
 REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
-REQUEST_PARAM_LIST_RULE = {'_return_fields+': 'name,zone,comment,disable,type'}
+REQUEST_PARAM_LIST_RULES = {'_return_fields+': 'name,zone,comment,disable,type'}
+REQUEST_PARAM_SEARCH_RULES = {'_return_fields+': 'name,zone,comment,disable'}
 REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
@@ -165,7 +166,7 @@ class Client(BaseClient):
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
-        request_params.update(REQUEST_PARAM_LIST_RULE)
+        request_params.update(REQUEST_PARAM_LIST_RULES)
 
         return self._http_request('GET', suffix, params=request_params)
 
@@ -242,8 +243,7 @@ class Client(BaseClient):
         request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
         return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
 
-
-    def change_rule_status(self, reference_id: str, disable: str) -> Dict:
+    def change_rule_status(self, reference_id: str, disable: bool) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
                 Args:
                         reference_id: Rule reference ID
@@ -253,7 +253,7 @@ class Client(BaseClient):
                 """
         request_data = assign_params(disable=disable)
         suffix = reference_id
-        return self._http_request('PUT', suffix, data=json.dumps(request_data))
+        return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
 
 
 ''' HELPER FUNCTIONS '''
@@ -832,12 +832,12 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
         Outputs
     """
     reference_id = args.get('reference_id')
-    raw_response = client.change_rule_status(reference_id, disable='false')
+    raw_response = client.change_rule_status(reference_id, disable=False)
 
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
-    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("name")} has been enabled'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
