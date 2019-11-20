@@ -6,7 +6,8 @@ import pytest
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
-    INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH
+    INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH, INVALID_WIDGET_PATH, \
+    VALID_WIDGET_PATH, VALID_DASHBOARD_PATH, INVALID_DASHBOARD_PATH
 
 
 class IsValidScheme:
@@ -107,7 +108,11 @@ class TestDifferentFiles:
     INPUTS_IS_VALID_VERSION = [
         (VALID_REPUTATION_PATH, "./Misc/reputations.json", True),
         (VALID_LAYOUT_PATH, "./Layouts/layout-mock.json", True),
-        (INVALID_LAYOUT_PATH, "./Layouts/layout-mock.json", False)
+        (INVALID_LAYOUT_PATH, "./Layouts/layout-mock.json", False),
+        (INVALID_WIDGET_PATH, "./Widgets/widget-mocks.json", False),
+        (VALID_WIDGET_PATH, "./Widgets/widget-mocks.json", True),
+        (VALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", True),
+        (INVALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", False),
     ]
 
     @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
