@@ -7,7 +7,7 @@ Fixed an issue in nmap scans with '-sn' flag.
 Run nmap scans with the given parameters
 
 
-##[19.11.1] 
-###
-Fix issue with -sn flag and -sV
-Run nmap scan with all the necessary parameters 
+## [19.10.1] 
+### BUG FIX IN nmaplib
+
+Run nmap scan with all the necessary parameters like -sn or -sV
