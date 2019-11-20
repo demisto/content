@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 Added support for the *px* suffix in the _width_ and _height_ parameters.
 
 ## [19.10.2] - 2019-10-29
