@@ -1,0 +1,182 @@
+id: TestHelloWorld
+version: -1
+name: TestHelloWorld
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 27c2ec74-aa4a-4c21-80ed-283895bad162
+    type: start
+    task:
+      id: 27c2ec74-aa4a-4c21-80ed-283895bad162
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: bf0ff5e3-d54d-4839-80e8-85cde70711c8
+    type: regular
+    task:
+      id: bf0ff5e3-d54d-4839-80e8-85cde70711c8
+      version: -1
+      name: helloworld-say-hello
+      description: Hello command - prints hello to anyone
+      script: HelloWorld|||helloworld-say-hello
+      type: regular
+      iscommand: true
+      brand: HelloWorld
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      name:
+        simple: DBot
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: cdb074cc-7d9b-4521-8948-218d5a1bc9ea
+    type: condition
+    task:
+      id: cdb074cc-7d9b-4521-8948-218d5a1bc9ea
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: hello
+            iscontext: true
+          right:
+            value:
+              simple: Hello DBot
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: f44d74e3-70f4-4376-8da4-db69193bfc8e
+    type: title
+    task:
+      id: f44d74e3-70f4-4376-8da4-db69193bfc8e
+      version: -1
+      name: Test Success
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 3351f678-f10e-4ff8-8c7b-6aa96a8fc503
+    type: regular
+    task:
+      id: 3351f678-f10e-4ff8-8c7b-6aa96a8fc503
+      version: -1
+      name: HelloWorldScript
+      description: Hello World Script
+      scriptName: HelloWorldScript
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      name:
+        simple: World
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 8ddcc0ba-a4a8-4041-8593-eac896ba9a67
+    type: regular
+    task:
+      id: 8ddcc0ba-a4a8-4041-8593-eac896ba9a67
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 67819189-10b9-4690-8966-7e33a39d4feb
+    type: condition
+    task:
+      id: 67819189-10b9-4690-8966-7e33a39d4feb
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      'yes':
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HelloWorld.hello
+            iscontext: true
+          right:
+            value:
+              simple: Hello World
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1085,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
