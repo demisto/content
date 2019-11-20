@@ -14,6 +14,10 @@ class Errors(object):
         return "{}: The version for our files should always be {}, please update the file.".format(expected, file_path)
 
     @staticmethod
+    def wrong_version_reputations(file_path, object_id, version):
+        return "{} Reputation object with id {} must have version {}".format(file_path, object_id, version)
+
+    @staticmethod
     def missing_outputs(command_name, missing_outputs, context_standard):
         return "The DBotScore outputs of the reputation command {} aren't valid. Missing: {}. " \
                "Fix according to context standard {} ".format(command_name, missing_outputs, context_standard)

@@ -6,7 +6,7 @@ import pytest
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
-    INVALID_PLAYBOOK_ID_PATH
+    INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH
 
 
 class IsValidScheme:
@@ -101,3 +101,18 @@ class TestIsValidFilePath:
         structure = StructureValidator(path)
         structure.scheme_name = None
         assert structure.is_valid_file_path() is answer
+
+
+class TestDifferentFiles:
+    INPUTS_IS_VALID_VERSION = [
+        (VALID_REPUTATION_PATH, "./Misc/reputations.json", True),
+        (VALID_LAYOUT_PATH, "./Layouts/layout-mock.json", True),
+        (INVALID_LAYOUT_PATH, "./Layouts/layout-mock.json", False)
+    ]
+
+    @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
+    def test_is_valid_reputations(self, source, target, answer):
+        copyfile(source, target)
+        structure = StructureValidator(target)
+        assert structure.is_file_valid(validate_rn=False) is answer
+        os.remove(target)

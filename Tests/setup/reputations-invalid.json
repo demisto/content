@@ -1,0 +1,25 @@
+{
+  "name": "reputations",
+  "version": -1,
+  "reputations": [
+    {
+      "id": "repmock1",
+      "file": true,
+      "version": 123,
+      "regex": "",
+      "details": "File enhancement scripts",
+      "enhancementScriptNames": [
+      ]
+    },
+    {
+      "id": "repmock2",
+      "version": -1,
+      "regex": "rep",
+      "reputationScriptName": "rep",
+      "details": "IP",
+      "enhancementScriptNames": [
+      ],
+      "toVersion": "3.0.1"
+    }
+  ]
+}
