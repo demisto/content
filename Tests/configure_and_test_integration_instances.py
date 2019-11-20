@@ -288,6 +288,7 @@ def main():
     new_integrations_names = get_new_integrations(git_sha1)
     brand_new_integrations = []
     print_color('New Integrations:\n{}'.format('\n'.join(new_integrations_names)), color=LOG_COLORS.YELLOW)
+    print()
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -308,8 +309,9 @@ def main():
         _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
                                                   skipped_integrations_conf, nightly_integrations)
 
-        print_color('All Integrations for test "{}"\n'.format(test.get('playbookID')), color=LOG_COLORS.YELLOW)
+        print_color('All Integrations for test "{}":'.format(test.get('playbookID')), color=LOG_COLORS.YELLOW)
         print_color(integrations, color=LOG_COLORS.YELLOW)
+        print()
 
         new_integrations = []
         modified_integrations = []
@@ -351,8 +353,8 @@ def main():
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
         instance_name = instance.get('name', '')
-        msg = 'Testing ("Test" button) for instance "{}" of integration "{}" .'.format(instance_name,
-                                                                                       integration_of_instance)
+        msg = 'Testing ("Test" button) for instance "{}" of integration "{}".'.format(instance_name,
+                                                                                      integration_of_instance)
         print(msg)
         # If there is a failure, __test_integration_instance will print it
         __test_integration_instance(client, instance)
@@ -360,8 +362,8 @@ def main():
     # TODO: need to add support for content packs
     # Upload current build's content_new.zip to demisto server (aka upload new content)
     content_zip_path = '.content_new.zip'
-    cmd_str = 'python update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
-                                                                              content_zip_path)
+    cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
+                                                                                    content_zip_path)
     run_command(cmd_str, is_silenced=False)
 
     # Check if content update has finished installing
