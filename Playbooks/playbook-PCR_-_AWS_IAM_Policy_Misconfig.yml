@@ -409,6 +409,7 @@ tasks:
       id: ee45afd1-410b-4809-87b7-abc09bfb8146
       version: -1
       name: Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
+      description: ""
       playbookName: Prisma Cloud Remediation - AWS IAM Password Policy Misconfiguration
       type: playbook
       iscommand: false
