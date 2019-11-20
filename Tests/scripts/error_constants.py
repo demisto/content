@@ -115,7 +115,7 @@ class Errors(object):
 
     @staticmethod
     def id_changed(file_path):
-        return "{} }ou've changed the ID of the file, please undo.".format(file_path)
+        return "{}: You've changed the ID of the file, please undo.".format(file_path)
 
     @staticmethod
     def file_id_contains_slashes():
