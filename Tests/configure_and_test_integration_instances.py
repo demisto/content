@@ -300,6 +300,8 @@ def main():
         integrations_conf = test.get('integrations', [])
         instance_names_conf = test.get('instance_names', [])
 
+        if not isinstance(integrations_conf, list):
+            integrations_conf = [integrations_conf]
         if not isinstance(instance_names_conf, list):
             instance_names_conf = [instance_names_conf]
 
