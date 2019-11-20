@@ -112,8 +112,7 @@ class TestDifferentFiles:
         (INVALID_WIDGET_PATH, "./Widgets/widget-mocks.json", False),
         (VALID_WIDGET_PATH, "./Widgets/widget-mocks.json", True),
         (VALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", True),
-        (INVALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", False)
-
+        (INVALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", False),
     ]
 
     @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
