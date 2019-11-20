@@ -1956,6 +1956,9 @@
         }
     ],
     "skipped_tests": {
+        "minemeld_test": "Issue 20265",
+        "rsa_packets_and_logs_test": "Issue 20262",
+        "Cloaken-Test": "Issue 20036",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -2021,6 +2024,8 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Fidelis Elevate Network": "Issue 20263",
+        "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
