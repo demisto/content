@@ -319,7 +319,7 @@ def main():
                 integration.get('name') not in new_integrations_names)
         ]
         modified_integrations_names = [integration.get('name') for integration in modified_integrations]
-        print_color('Modified Integrations:\n{}'.format('\n'.join(modified_integrations_names)), 
+        print_color('Modified Integrations:\n{}'.format('\n'.join(modified_integrations_names)),
                     color=LOG_COLORS.YELLOW)
         are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
         if not are_params_set:
