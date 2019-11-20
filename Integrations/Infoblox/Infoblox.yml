@@ -542,15 +542,30 @@ script:
     name: infoblox-create-ipv6-substitute-record-rule
   - arguments:
     - default: false
-      description: The rule ID
+      description: The rule reference_id ID. (could be exctracted by running the serach
+        rules command)
       isArray: false
-      name: rule_id
-      required: false
+      name: reference_id
+      required: true
       secret: false
     deprecated: false
-    description: Enable a rule.
+    description: Disable a rule by its reference ID (reference ID could be exctracted
+      by running the serach rules command)
     execution: false
     name: infoblox-enable-rule
+  - arguments:
+    - default: false
+      description: The rule reference_id ID. (could be exctracted by running the serach
+        rules command)
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Disable a rule by its reference ID (reference ID could be exctracted
+      by running the serach rules command)
+    execution: false
+    name: infoblox-disable-rule
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
