@@ -1,5 +1,5 @@
 ## [Unreleased]
-Added support for batches.
+Added batch support for multiple commands.
 
 ## [19.10.0] - 2019-10-03
   - Added handling for cases where the rate limit is exceeded.
