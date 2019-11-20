@@ -38,7 +38,7 @@ DEFAULT_PERSON_ATTRIBUTES = [
     'displayName',
     'memberOf',
     'mail',
-    'samAccountName',
+    'sAMAccountName',
     'manager',
     'userAccountControl'
 ]
@@ -91,7 +91,7 @@ def account_entry(person_object, custome_attributes):
         'Type': 'AD',
         'ID': person_object.get('dn'),
         'Email': person_object.get('mail'),
-        'Username': person_object.get('samAccountName'),
+        'Username': person_object.get('sAMAccountName'),
         'DisplayName': person_object.get('displayName'),
         'Managr': person_object.get('manager'),
         'Manager': person_object.get('manager'),
@@ -514,7 +514,7 @@ def create_user():
     password = args.get("password")
     custome_attributes = args.get('custom-attributes')
     attributes = {
-        "samAccountName": username
+        "sAMAccountName": username
     }
 
     # set common user attributes
