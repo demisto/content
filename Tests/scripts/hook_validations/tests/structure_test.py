@@ -1,9 +1,9 @@
 import os
-import pytest
 from shutil import copyfile
 
+import pytest
+
 from Tests.scripts.hook_validations.structure import StructureValidator
-from Tests.scripts.constants import PLAYBOOK_REGEX
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
     INVALID_PLAYBOOK_ID_PATH
