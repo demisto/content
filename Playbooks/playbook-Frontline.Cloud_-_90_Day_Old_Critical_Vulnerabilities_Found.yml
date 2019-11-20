@@ -3,21 +3,22 @@ version: -1
 name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
 description: This will query Frontline.Cloud's active view for any critical level
   vulnerabilities found to be older than 90 days.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 5ee129af-486b-4c38-8a49-9320f10ce172
     type: start
     task:
       id: 5ee129af-486b-4c38-8a49-9320f10ce172
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -29,8 +30,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 4f0bc3c1-b2a1-407b-8fe6-2e4360a4b276
     type: regular
     task:
@@ -45,12 +46,12 @@ tasks:
       brand: Digital Defense FrontlineVM
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       host_id: {}
       ip_address: {}
       max_days_since_created:
-        simple: "90"
+        simple: '90'
       min_days_since_created: {}
       min_severity: {}
       severity:
@@ -66,8 +67,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: a0774faa-738e-477d-8f27-879e5d628e17
     type: condition
     task:
@@ -77,15 +78,15 @@ tasks:
       description: Checks results of previous task.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      'yes':
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -102,8 +103,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 90751ddc-d35b-4060-8092-f9a0e93bb254
     type: regular
     task:
@@ -114,7 +115,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         complex:
@@ -133,8 +134,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: eec94249-178b-4b33-8055-83afc4777dc8
     type: regular
     task:
@@ -145,7 +146,7 @@ tasks:
       scriptName: Print
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       value:
         simple: No critical vulnerabilities older than 90 days were found within Frontline.Cloud's
