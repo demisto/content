@@ -1,21 +1,18 @@
 import json
 import os
-import os
 import re
 import sys
 from abc import abstractmethod
 
 import yaml
 from pykwalify.errors import CoreError
+from typing import Optional
 
-from Tests.scripts.constants import TEST_DATA_REGEX, MISC_REGEX, IMAGE_REGEX, DESCRIPTION_REGEX, PIPFILE_REGEX, \
-    REPORT_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX, INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, \
-    INTEGRATION_PS_REGEX, REPUTATION_REGEX, BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, \
-    BETA_PLAYBOOK_REGEX, CHECKED_TYPES_REGEXES, YML_INTEGRATION_REGEXES, YML_ALL_PLAYBOOKS_REGEX, \
-    YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
-    JSON_ALL_DASHBOARDS_REGEXES, CONNECTIONS_REGEX, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
+from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, \
+    YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
+    JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
     JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES
-from Tests.scripts.hook_validations.error_constants import Errors
+from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
 
@@ -31,7 +28,8 @@ class StructureValidator(object):
 
         Attributes:
             file_path (str): the path to the file we are examining at the moment.
-            is_valid (bool): the attribute which saves the valid/in-valid status of the current file.
+            is_valid (bool): the attribute which saves the valid/in-valid status of the current file. will be bool only
+                             after running is_file_valid.
             is_added_file (bool): whether the file is modified or added.
         """
     SCHEMAS_PATH = "Tests/schemas/"
@@ -42,7 +40,7 @@ class StructureValidator(object):
     }
     SCHEMA_TO_REGEX = {
         'integration': YML_INTEGRATION_REGEXES,
-        'playbook': YML_PLAYBOOKS_NO_TESTS_REGEXES ,
+        'playbook': YML_PLAYBOOKS_NO_TESTS_REGEXES,
         'test-playbook': YML_TEST_PLAYBOOKS_REGEXES,
         'script': YML_SCRIPT_REGEXES,
         'widget': JSON_ALL_WIDGETS_REGEXES,
@@ -53,39 +51,54 @@ class StructureValidator(object):
         'incidentfield': JSON_ALL_INCIDENT_FIELD_REGEXES
     }
 
-    def __init__(self, file_path: str, is_added_file=False, is_renamed=False):
-        self.is_valid = True
+    def __init__(self, file_path, is_added_file=False, is_renamed=False):
+        # type: (str, bool, bool) -> None
+        self.is_valid = None  # type: Optional[bool]
         self.file_path = file_path
-        self.current_file = self.load_data_from_file()
         self.is_added_file = is_added_file
         self.is_renamed = is_renamed
+        self.scheme_name = self.scheme_of_file_by_path()
+        self.current_file = self.load_data_from_file()
 
     def is_file_valid(self, validate_rn=True):
+        # type: (bool) -> Optional[bool]
         """Checks if given file is valid
+
+        Args:
+            validate_rn: If need to validate release notes. For example, beta file shouldn't validate rn
 
         Returns:
             (bool): Is file is valid
         """
-        self.is_file_id_without_slashes()
+        if not self.scheme_name:
+            return None
+        answers = list()  # Contains only positive answers (self.is_valid stays true)
+        answers.append(self.is_valid_scheme())
+        answers.append(self.is_file_id_without_slashes())
 
         if not self.is_added_file:  # In case the file is modified
-            self.is_id_modified()
-            self.is_valid_fromversion_on_modified()
+            answers.append(not self.is_id_modified())
+            answers.append(self.is_valid_fromversion_on_modified())
             # In case of release branch we allow to remove release notes
             if validate_rn and not self.is_release_branch():
-                self.validate_file_release_notes()
+                answers.append(self.is_there_release_notes())
+        return all(answers)
 
-    def type_of_file_by_path(self):
+    def scheme_of_file_by_path(self):
+        # type:  () -> Optional[str]
         """Running on given regexes from `constants` to find out what type of file it is
 
         Returns:
             (str): Type of file by scheme name
         """
+        for schema_name, regex_list in self.SCHEMA_TO_REGEX.items():
+            matching_regex = get_matching_regex(self.file_path, regex_list)
+            if matching_regex:
+                return matching_regex
+        return None
 
-        matching_regex = get_matching_regex(self.file_path, CHECKED_TYPES_REGEXES)
-
-
-    def is_valid_scheme(self, schema_name):
+    def is_valid_scheme(self, schema_name=None):
+        # type: (str) -> bool
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
 
         Args:
@@ -205,16 +218,17 @@ class StructureValidator(object):
         if is_added_from_version or is_added_from_version_secondary:
             print_error(Errors.from_version_modified(self.file_path))
             self.is_valid = False
+            return False
 
         return self.is_valid
 
-    def validate_file_release_notes(self):
+    def is_there_release_notes(self):
         """Validate that the file has proper release notes when modified.
         This function updates the class attribute self._is_valid instead of passing it back and forth.
         """
         if self.is_renamed:
-            print_warning("You might need RN please make sure to check that.")
-            return
+            print_warning(Errors.might_need_release_notes(self.file_path))
+            return True
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
@@ -224,6 +238,8 @@ class StructureValidator(object):
             if rn is None:
                 print_error(Errors.missing_release_notes(self.file_path, rn_path))
                 self.is_valid = False
+                return False
+        return True
 
     def load_data_from_file(self):
         """Returns dict"""

@@ -133,3 +133,7 @@ class Errors(object):
     @staticmethod
     def wrong_file_extension(file_extension, accepted_extensions):
         return "File extension {} is not valid. accepted {}".format(file_extension, accepted_extensions)
+
+    @staticmethod
+    def might_need_release_notes(file_path):
+        return "You might need RN in file {} please make sure to check that.".format(file_path)
