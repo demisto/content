@@ -6,15 +6,17 @@ Welcome to Demisto content repo!
 
 ## How to contribute
 
-To get you started, refer to our [Getting Started article](https://github.com/demisto/content/blob/master/docs/README.md)
+To get you started, refer to our [Getting Started article](https://github.com/demisto/content/blob/master/docs)
 
 After you finish developing, there are two steps left before you can create a pull request:
 
+ - Follow code conventions [here](https://github.com/demisto/content/tree/master/docs/code_conventions)
  - Run linting and test checks as detailed [here](https://github.com/demisto/content/tree/master/docs/linting)
- 
- - Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
-
  - Document your changes in the relevant changelog file as detailed [here](https://github.com/demisto/content/tree/master/docs/release_notes).
+ - Validate files are formatted according correctly, by running from the Content root directory: ```PYTHONPATH="`pwd`:${PYTHONPATH}" python2 Tests/scripts/validate_files.py```
+ - Make sure you have test playbook [here](https://github.com/demisto/content/tree/master/docs/tests)
+ - Make sure you have documentation [here](https://github.com/demisto/content/tree/master/docs/integration_documentation)
+ - Circle CI build must be green [here](https://github.com/demisto/content/tree/master/docs/tests/circleci)
 
 You should now be ready to push your changes to the Content GitHub repository, please do as follows.
 
@@ -32,87 +34,23 @@ Before merging any PRs, we need all contributors to sign a contributor license a
 
 When you contribute a new pull request, a bot will evaluate whether you have signed the CLA. If required, the bot will comment on the pull request, including a link to accept the agreement. The CLA document is available for review as a [PDF](docs/cla.pdf).
 
-## Contributing Playbooks
+If the `license/cla` status check remains on *Pending*, even though all contributors have accepted the CLA, you can recheck the CLA status by visiting the following link (replace **[PRID]** with the ID of your PR): https://cla-assistant.io/check/demisto/content?pullRequest=[PRID] .
 
-You can edit or create playbooks visually inside the Demisto Platform and then export to a yaml file.
-
-To add a new playbook, or modify and enhance an existing playbook - just open a Pull Request in this repo.
-
-Some requirements for playbooks yaml are:
-1. Change playbook version to `-1`
-2. Make sure all tasks (including 'Title' task) have a description
-3. If the playbook is dependant on some sub-playbook not part of this repo, please add it too in same Pull Request
-4. It should be added under the Playbooks folder, using the naming convention starting with prefix `playbook-`
-
-## Contributing Scripts
-
-Each of our scripts comes as a self-contained yaml file that includes the script itself (in Python or Javascript) as well as its description, arguments, and more.
-
-Here is a description of the script yaml format's fields and structure:
-
-``` yaml
-commonfields:
-  id: TextFromHTML
-  version: 1
-name: TextFromHTML
-script: |-
-  import re
-  body = re.search(r'<body.*/body>', demisto.args()['html'], re.M + re.S + re.I)
-  if body and body.group(0):
-      data = re.sub(r'<.*?>', '', body.group(0))
-      entities = {'quot': '"', 'amp': '&', 'apos': "'", 'lt': '<', 'gt': '>', 'nbsp': ' ', 'copy': '(C)', 'reg': '(R)', 'tilde': '~', 'ldquo': '"', 'rdquo': '"', 'hellip': '...'}
-      for e in entities:
-          data = data.replace('&' + e + ';', entities[e])
-      demisto.results(data)
-  else:
-      demisto.results('Could not extract text')
-type: python
-tags:
-- Utility
-comment: Extract regular text from the given HTML
-system: true
-args:
-- name: html
-  required: true
-  default: true
-  description: The HTML to strip tags from
-scripttarget: 0
-dependson: {}
-timeout: 0s
-```
-
-* id: internal id for the script - make sure it doesn't conflict with an existing script
-* name: Name for the script, that will be displayed in the Automation page
-* script: The script itself in Python or Javascript
-* type: `javascript` or `python`
-* tags: array of tags of the script
-* comment: A brief description of the script's purpose and any other important things to know - appears in the Automation page and in the CLI autocomplete.
-* args: array of script arguments
-	* name: argument name
-    * description: argument description - appears in automation page and in the CLI autocomplete
-    * required: Whether the user must provide this argument to run the script - true for mandatory, false for optional
-    * default: (Only one "true" per script) Argument can be provided without its name - e.g. `!whois google.com` instead of `!whois domain=google.com`
-* system: "yes" if the script is provided with the platform and is locked and unmodifiable - set to "false" for scripts user creates from within the product.
-* scriptTarget: 0 for server script, 1 for agent script (to be run by the Demisto d2 dissolvable agent on the endpoint side)
-* dependsOn: The commands required for the script to be used - if these commands are unavailable (e.g. because no integration that implements them has been configured) then the script will not appear in the CLI's autocomplete (it can still be viewed and edited on the Automation page).
-* dockerimage: The Docker image name the automation needs to run on, if empty will use default demisto docker image (demisto/python)
-
-Some requirements for scripts yaml are:
-1. Make sure it has a description
-2. It should be added under the Script folder, using the naming convention starting with prefix `script-`
-3. If the script uses some Docker image, make sure it's publicly available on docker hub
-
-## Contributing Integrations
-
-Integrations are build with BYOI feature inside demisto platform, to be later exported to yaml format.
-
-Some requirements for integrations yaml are:
-1. Change integration version to `-1`
-2. Make sure the integration and each of its commands, inputs and outputs have a description
-3. If the integrations uses some Docker image, make sure it's publicly available on docker hub
-4. It should be added under the Integrations folder, using the naming convention starting with prefix `integration-`
-
-------------
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)
+
+## Pull changes from Demisto
+
+In general, there should be no reason for you to pull changes from the base branch into your forked branch.
+
+In case it is needed, you shouldn't pull from the master branch, but from the Demisto Content branch the Pull Request in based on.
+
+The Demisto Content base branch will have the `contrib/` prefix and your branch name as the suffix.
+In order to pull changes from the base branch, run:
+
+`git pull https://github.com/demisto/content.git <DEMISTO-CONTENT-BASE-BRANCH>`
+
+For example, if the base branch name is `contrib/itay_master`, you should run:
+
+`git pull https://github.com/demisto/content.git contrib/itay_master`

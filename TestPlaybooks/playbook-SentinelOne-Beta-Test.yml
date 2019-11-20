@@ -399,10 +399,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
+    taskid: 2ef96a17-2e6d-4508-8d02-4bf28902641b
     type: regular
     task:
-      id: d91d6ba2-545a-42cb-843e-b3c0c8ce22b4
+      id: 2ef96a17-2e6d-4508-8d02-4bf28902641b
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -416,11 +416,11 @@ tasks:
       - "16"
     scriptarguments:
       from_date:
-        simple: 2019-08-03T04:49:26.257525Z
+        simple: "2019-11-02T04:49:26.257525Z"
       query:
         simple: AgentName Is Not Empty
       to_date:
-        simple: 2019-08-05T04:49:26.257525Z
+        simple: "2019-11-04T04:49:26.257525Z"
     separatecontext: false
     view: |-
       {
@@ -497,10 +497,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: 07ee9ab9-6ede-4e3f-81f6-a48ce326a4c5
+    taskid: 72a29a2e-23d9-43b5-8a58-f3fd0050bf82
     type: regular
     task:
-      id: 07ee9ab9-6ede-4e3f-81f6-a48ce326a4c5
+      id: 72a29a2e-23d9-43b5-8a58-f3fd0050bf82
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -514,7 +514,7 @@ tasks:
       - "15"
     scriptarguments:
       seconds:
-        simple: "2"
+        simple: "3"
     separatecontext: false
     view: |-
       {
