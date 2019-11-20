@@ -1,5 +1,6 @@
 id: Frontline.Cloud - PAN-OS block assets
 version: -1
+fromversion: 5.0.0
 name: Frontline.Cloud - PAN-OS block assets
 description: This playbook will pull Panorama queried threat logs and check for any
   correlating assets that are found to have a minimum of high level vulnerabilities.
