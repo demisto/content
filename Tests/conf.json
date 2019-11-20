@@ -1944,6 +1944,10 @@
         },
         {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
+        },
+        {
+            "integrations": "GetEWSFolder",
+            "playbookID": "GetEWSFolder-￿Test"
         }
     ],
     "skipped_tests": {
