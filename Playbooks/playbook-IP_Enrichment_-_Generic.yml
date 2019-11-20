@@ -632,3 +632,5 @@ outputs:
 - contextPath: Endpoint.Domain
   description: Endpoint domain name
   type: string
+tests:
+  - No test - deprecated. use V2.1 instead.
