@@ -7,6 +7,7 @@ from time import sleep
 import datetime
 import requests
 
+from demisto_client.demisto_api.rest import ApiException
 import demisto_client.demisto_api
 from typing import List, AnyStr
 import urllib3.util
@@ -16,7 +17,7 @@ from Tests.test_utils import print_error, print_color, LOG_COLORS
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-MAX_TRIES = 20
+MAX_TRIES = 30
 SLEEP_TIME = 45
 
 
@@ -56,10 +57,14 @@ def is_correct_content_installed(ips, content_version, username, password):
 
         client = demisto_client.configure(base_url=host, username=username, password=password, verify_ssl=False)
         try:
-            resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
-                                                       method='POST', accept='application/json',
-                                                       content_type='application/json')
-            resp_json = ast.literal_eval(resp[0])
+            resp_json = None
+            try:
+                resp = demisto_client.generic_request_func(self=client, path='/content/installed/',
+                                                           method='POST', accept='application/json',
+                                                           content_type='application/json')
+                resp_json = ast.literal_eval(resp[0])
+            except ApiException as err:
+                print(err)
             if not isinstance(resp_json, dict):
                 raise ValueError('Response from server is not a Dict, got [{}].\n'
                                  'Text: {}'.format(type(resp_json), resp_json))
