@@ -9,4 +9,3 @@ VALID_REPUTATION_PATH = "./Tests/setup/reputations-valid.json"
 INVALID_REPUTATION_PATH = "./Tests/setup/reputations-invalid.json"
 VALID_LAYOUT_PATH = "./Tests/setup/layout-valid.json"
 INVALID_LAYOUT_PATH = "./Tests/setup/layout-invalid.json"
-

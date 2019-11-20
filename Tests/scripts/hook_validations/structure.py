@@ -4,19 +4,19 @@ import re
 import sys
 
 import yaml
-from pykwalify.errors import SchemaError
 from typing import Optional
 
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
-    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, PATHS_TO_VALIDATE, \
-    JSON_ALL_REPORTS_REGEXES, PYTHON_ALL_REGEXES, MISC_REGEX, MISC_REPUTATIONS_REGEX
+    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, JSON_ALL_REPORTS_REGEXES, \
+    PYTHON_ALL_REGEXES, MISC_REGEX, MISC_REPUTATIONS_REGEX
 from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
 
 try:
     from pykwalify.core import Core
+    from pykwalify.errors import SchemaError
 except ImportError:
     print('Please install pykwalify, you can do it by running: `pip install -I pykwalify`')
     sys.exit(1)
