@@ -77,7 +77,7 @@ def configure_integration_instance(integration, client):
 
 
 def get_new_integrations(git_sha1):
-    '''Return list of integration objects that are new since the commit of the git_sha1'''
+    '''Return list of integration names that are new since the commit of the git_sha1'''
     # get changed yaml files (filter only added files)
     tag = get_last_release_version()
     file_validator = FilesValidator()
@@ -88,13 +88,13 @@ def get_new_integrations(git_sha1):
     added_integration_files = [
         file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
     ]
-    integrations = []
+    integrations_names = []
     for integration_file_path in added_integration_files:
         integration_yaml = get_yaml(integration_file_path)
         integration_name = integration_yaml.get('name')
-        integration = {'name': integration_name, 'params': {}}
-        integrations.append(integration)
-    return integrations
+        if integration_name:
+            integrations_names.append(integration_name)
+    return integrations_names
 
 
 def is_content_updating(server, username, password):
@@ -285,14 +285,8 @@ def main():
 
     # get a list of brand new integrations that way we filter them out to only configure instances
     # after updating content
-    brand_new_integrations = get_new_integrations(git_sha1)
-    # filter out integrations that are on the skipped integrations list
-    brand_new_integrations = [
-        integration for
-        integration in brand_new_integrations if
-        integration.get('name') not in skipped_integrations_conf.keys()
-    ]
-    new_integrations_names = [integration.get('name') for integration in brand_new_integrations]
+    new_integrations_names = get_new_integrations(git_sha1)
+    brand_new_integrations = []
     print_color('New Integrations:\n{}'.format('\n'.join(new_integrations_names)), color=LOG_COLORS.YELLOW)
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
@@ -311,20 +305,40 @@ def main():
 
         _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
                                                   skipped_integrations_conf, nightly_integrations)
-        # filter out integrations that are on the skipped list and that are brand new
-        modified_integrations = [
-            integration for
-            integration in integrations if
-            (integration.get('name') not in skipped_integrations_conf.keys() and  # noqa: W504
-                integration.get('name') not in new_integrations_names)
-        ]
+
+        print_color('All Integrations for test "{}"\n'.format(test.get('playbookID')), color=LOG_COLORS.YELLOW)
+        print_color(integrations, color=LOG_COLORS.YELLOW)
+
+        new_integrations = []
+        modified_integrations = []
+
+        # filter integrations into their respective lists - new or modified. if it's on the skip list, then skip
+        for integration in integrations:
+            integration_name = integration.get('name', '')
+            if integration_name in skipped_integrations_conf.keys():
+                continue
+            elif integration_name in new_integrations_names:
+                new_integrations.append(integration)
+            else:
+                modified_integrations.append(integration)
+
         modified_integrations_names = [integration.get('name') for integration in modified_integrations]
         print_color('Modified Integrations:\n{}'.format('\n'.join(modified_integrations_names)),
                     color=LOG_COLORS.YELLOW)
-        are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
-        if not are_params_set:
-            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations)))
+
+        # set params for new integrations and modified integrations, then add the new ones to brand_new_integrations
+        # list for later use
+        ni_params_set = set_integration_params(new_integrations, secret_params, instance_names_conf)
+        mi_params_set = set_integration_params(modified_integrations, secret_params, instance_names_conf)
+        if not ni_params_set:
+            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(new_integrations)))
+        if not mi_params_set:
+            print_error('failed setting parameters for integrations "{}"'.format('\n'.join(modified_integrations)))
+        if not (ni_params_set and mi_params_set):
             continue
+
+        brand_new_integrations.extend(new_integrations)
+
         module_instances = []
         for integration in modified_integrations:
             module_instances.append(configure_integration_instance(integration, client))
