@@ -1947,6 +1947,7 @@
         }
     ],
     "skipped_tests": {
+        "ThreatQ - Test": "Issue 19468",
         "minemeld_test": "Issue 20265",
         "Fidelis Elevate Network": "Issue 20263",
         "rsa_packets_and_logs_test": "Issue 20262",
