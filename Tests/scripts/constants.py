@@ -1,5 +1,4 @@
 import re
-import os
 
 # dirs
 INTEGRATIONS_DIR = 'Integrations'
