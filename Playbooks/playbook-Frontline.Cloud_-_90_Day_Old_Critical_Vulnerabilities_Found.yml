@@ -1,5 +1,6 @@
 id: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
 version: -1
+fromversion: 5.0.0
 name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
 description: This will query Frontline.Cloud's active view for any critical level
   vulnerabilities found to be older than 90 days.

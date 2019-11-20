@@ -1,22 +1,24 @@
 id: Frontline.Cloud-Test
 version: -1
+fromversion: 5.0.0
 name: Frontline.Cloud-Test
 description: This is a test playbook for the Digital Defense Inc. FrontlineVM Integration
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
     type: start
     task:
       id: e86e43e0-38fd-4b62-84c4-f9d4dd6e0d4c
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -28,8 +30,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: fe5cc8f6-95fd-4298-8032-a48d5d4f2a4f
     type: regular
     task:
@@ -40,13 +42,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: 'yes'
       index: {}
       key: {}
       keysToKeep: {}
@@ -62,8 +64,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: d91374ad-a405-4375-89da-51f8fe06e14d
     type: regular
     task:
@@ -74,10 +76,10 @@ tasks:
       script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       hostname: {}
       ip_address:
@@ -95,8 +97,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 10cd7540-7b74-400c-8b00-54f34cd98499
     type: condition
     task:
@@ -107,13 +109,13 @@ tasks:
         that does not exits)'.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "8"
+      'yes':
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isEmpty
           left:
@@ -130,8 +132,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 5f7db6d0-385a-4a55-80eb-71e0f58b29a5
     type: regular
     task:
@@ -162,8 +164,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: e54799b3-b1f9-4f13-8ef5-2705a8127c41
     type: regular
     task:
@@ -174,10 +176,10 @@ tasks:
       script: '|||frontline-get-vulns'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       host_id: {}
       ip_address: {}
@@ -196,8 +198,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 57a0484c-830f-431f-8deb-5722865b31f4
     type: condition
     task:
@@ -207,13 +209,13 @@ tasks:
       description: Verify command results from task 'frontline-get-vulns'.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      'yes':
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -230,8 +232,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: ba3a668c-d982-414f-865d-5d51469e196f
     type: regular
     task:
@@ -242,10 +244,10 @@ tasks:
       script: '|||frontline-get-assets'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       hostname: {}
       ip_address: {}
@@ -262,8 +264,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: bfce8f7a-eb07-4457-891e-57e299bf3526
     type: condition
     task:
@@ -274,13 +276,13 @@ tasks:
         assets)'.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "5"
+      'yes':
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
