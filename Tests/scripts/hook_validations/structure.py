@@ -1,10 +1,14 @@
+"""Structure Validator for Demisto files
+
+Module contains validation of schemas. id's and paths.
+"""
 import json
 import os
 import re
 import sys
+from typing import Optional
 
 import yaml
-from typing import Optional
 
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
@@ -110,10 +114,10 @@ class StructureValidator(object):
         """
         if self.scheme_name is None:
             return True
-        c = Core(source_file=self.file_path,
-                 schema_files=[os.path.join(self.SCHEMAS_PATH, '{}.yml'.format(self.scheme_name))])
+        core = Core(source_file=self.file_path,
+                    schema_files=[os.path.join(self.SCHEMAS_PATH, '{}.yml'.format(self.scheme_name))])
         try:
-            c.validate(raise_exception=True)
+            core.validate(raise_exception=True)
         except SchemaError as err:
             print_error('Failed: {} failed.\n{}'.format(self.file_path, str(err)))
             self.is_valid = False
@@ -122,7 +126,12 @@ class StructureValidator(object):
 
     @staticmethod
     def is_release_branch():
-        """Check if we are working on a release branch."""
+        # type: () -> bool
+        """Check if we are working on a release branch.
+
+        Returns:
+            (bool): is release branch
+        """
         diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
         if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
@@ -130,6 +139,7 @@ class StructureValidator(object):
 
     @staticmethod
     def is_subset_dictionary(new_dict, old_dict):
+        # type: (dict, dict) -> bool
         """Check if the new dictionary is a sub set of the old dictionary.
 
         Args:
@@ -153,6 +163,15 @@ class StructureValidator(object):
 
     @staticmethod
     def get_file_id_from_loaded_file_data(loaded_file_data):
+        # type: (dict) -> Optional[str]
+        """Gets a dict and extracting its `id` field
+
+        Args:
+            loaded_file_data: Data to find dict
+
+        Returns:
+            (str or None): file ID if exists.
+        """
         file_id = loaded_file_data.get('id')
         if not file_id:
             # In integrations/scripts, the id is under 'commonfields'.
@@ -163,6 +182,7 @@ class StructureValidator(object):
         return file_id
 
     def is_file_id_without_slashes(self):
+        # type: () -> bool
         """Check if the ID of the file contains any slashes ('/').
 
         Returns:
@@ -176,13 +196,14 @@ class StructureValidator(object):
         return True
 
     def is_id_modified(self, change_string=None):
+        # type: (Optional[str]) -> bool
         """Check if the ID of the file has been changed.
 
         Args:
             change_string (string): the string that indicates the changes done on the file(git diff)
 
         Returns:
-            bool. Whether the file's ID has been modified or not.
+            (bool): Whether the file's ID has been modified or not.
         """
         if self.is_renamed:
             print_warning(Errors.id_might_changed())
@@ -198,12 +219,15 @@ class StructureValidator(object):
         return False
 
     def is_valid_fromversion_on_modified(self, change_string=None):
+        # type: (Optional[str]) -> bool
         """Check that the fromversion property was not changed on existing Content files.
-                Args:
-                    change_string (string): the string that indicates the changed done on the file(git diff)
-                Returns:
-                    bool. Whether the files' fromversion as been modified or not.
-                """
+
+        Args:
+            change_string (string): the string that indicates the changed done on the file(git diff)
+
+        Returns:
+            (bool): Whether the files' fromversion as been modified or not.
+        """
         if self.is_renamed:
             print_warning(Errors.from_version_modified_after_rename())
             return True
@@ -218,12 +242,14 @@ class StructureValidator(object):
             print_error(Errors.from_version_modified(self.file_path))
             self.is_valid = False
             return False
-
         return True
 
     def is_there_release_notes(self):
         """Validate that the file has proper release notes when modified.
         This function updates the class attribute self._is_valid instead of passing it back and forth.
+
+        Returns:
+            (bool): is there release notes
         """
         if self.is_renamed:
             print_warning(Errors.might_need_release_notes(self.file_path))
@@ -231,17 +257,21 @@ class StructureValidator(object):
 
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
-            rn = get_latest_release_notes_text(rn_path)
+            release_notes = get_latest_release_notes_text(rn_path)
 
-            # check rn file exists and contain text
-            if rn is None:
+            # check release_notes file exists and contain text
+            if release_notes is None:
                 print_error(Errors.missing_release_notes(self.file_path, rn_path))
                 self.is_valid = False
                 return False
         return True
 
     def load_data_from_file(self):
-        """Returns dict"""
+        # type: () -> dict
+        """Loads data according to function defined in FILE_SUFFIX_TO_LOAD_FUNCTION
+        Returns:
+             (dict)
+        """
         file_extension = os.path.splitext(self.file_path)[1]
         if file_extension not in self.FILE_SUFFIX_TO_LOAD_FUNCTION:
             print_error(Errors.wrong_file_extension(file_extension, self.FILE_SUFFIX_TO_LOAD_FUNCTION.keys()))
@@ -251,6 +281,12 @@ class StructureValidator(object):
             return loaded_file_data
 
     def get_file_type(self):
+        # type: () -> Optional[str]
+        """Gets file type based on regex or scheme_name
+
+        Returns:
+            str if valid filepath, else None
+        """
         # If scheme_name exists, already found that the file is in the right path
         if self.scheme_name:
             return self.scheme_name
@@ -259,7 +295,14 @@ class StructureValidator(object):
                 if re.search(regex, self.file_path, re.IGNORECASE):
                     return file_type
         self.is_valid = False
-        return False
+        print_error(Errors.wrong_path(self.file_path))
+        return None
 
     def is_valid_file_path(self):
+        """Returns is valid filepath exists.
+        Can be only if file_type or scheme_name exists (runs from init)
+
+        Returns:
+            True if valid file path else False
+        """
         return bool(self.scheme_name or self.file_type)

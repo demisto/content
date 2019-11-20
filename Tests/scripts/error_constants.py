@@ -6,6 +6,10 @@ class Errors(object):
         return '{} is not a valid {} filename.'.format(filepath, file_type)
 
     @staticmethod
+    def wrong_path(filepath):
+        return "{} is not a valid filepath.".format(filepath)
+
+    @staticmethod
     def wrong_version(file_path, expected="-1"):
         return "{}: The version for our files should always be {}, please update the file.".format(expected, file_path)
 
