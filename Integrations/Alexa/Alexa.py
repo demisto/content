@@ -16,6 +16,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 
 """COMMAND FUNCTIONS"""
 
+# bugfix
 
 def alexa_domain_command():
     domain = demisto.args().get('domain')
