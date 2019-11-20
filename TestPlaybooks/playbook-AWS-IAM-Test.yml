@@ -1,5 +1,5 @@
 id: d5cb69b1-c81c-4f27-8a40-3106c0cb2620
-version: 16
+version: -1
 name: AWS - IAM Test Playbook
 starttaskid: "0"
 tasks:
@@ -24,6 +24,9 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "1":
     id: "1"
     taskid: 6829323a-f753-4a87-831c-619e3369dab7
@@ -57,6 +60,9 @@ tasks:
           "y": 3870
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "2":
     id: "2"
     taskid: d6aac018-d2ba-4cb4-85c5-6a472aa1e721
@@ -89,6 +95,9 @@ tasks:
           "y": 4570
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "3":
     id: "3"
     taskid: b00d1c30-17e6-4c8b-85c9-0784a8d597f2
@@ -118,6 +127,9 @@ tasks:
           "y": 4920
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "4":
     id: "4"
     taskid: 32233c4c-2766-41f7-8a14-856ff54ac66f
@@ -152,6 +164,9 @@ tasks:
           "y": 4220
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "5":
     id: "5"
     taskid: 08a5d4b9-41f4-4e44-8b9f-783bca607e1d
@@ -180,40 +195,9 @@ tasks:
           "y": 8945
         }
       }
-  "6":
-    id: "6"
-    taskid: 54644e77-91b2-4e90-8ad2-da101c8a772f
-    type: regular
-    task:
-      id: 54644e77-91b2-4e90-8ad2-da101c8a772f
-      version: -1
-      name: aws-iam-update-login-profile
-      description: Changes the password for the specified IAM user.
-      script: AWS - IAM|||aws-iam-update-login-profile
-      type: regular
-      iscommand: true
-      brand: AWS - IAM
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      newPassword:
-        simple: '%vm$jY0kpx0s22gY'
-      passwordResetRequired:
-        simple: "False"
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      userName:
-        simple: playbookuser
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 6845
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "7":
     id: "7"
     taskid: b9b6f5a7-b220-4b10-84f4-a5f6b6cf108c
@@ -246,6 +230,9 @@ tasks:
           "y": 7195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "8":
     id: "8"
     taskid: 40828136-0be9-4cae-8578-6f6c583cec75
@@ -275,6 +262,9 @@ tasks:
           "y": 7545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "9":
     id: "9"
     taskid: f56f59ec-149d-4989-88a7-1e7cf9a4aafb
@@ -306,6 +296,9 @@ tasks:
           "y": 8070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "10":
     id: "10"
     taskid: e8ff9cc3-7c83-427a-8de6-d82cb88784ab
@@ -338,6 +331,9 @@ tasks:
           "y": 7895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "11":
     id: "11"
     taskid: 2c3694eb-23e2-43a9-8182-23fff85fecf7
@@ -369,6 +365,9 @@ tasks:
           "y": 5445
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "12":
     id: "12"
     taskid: be24f901-ccba-437e-8496-c17b8708c119
@@ -405,6 +404,9 @@ tasks:
           "y": 5795
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "13":
     id: "13"
     taskid: 8c8256ed-54f2-4ec7-8c55-dd8bea8f3cbc
@@ -436,6 +438,9 @@ tasks:
           "y": 5970
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "14":
     id: "14"
     taskid: d53bf6fa-8bc2-4426-81f4-6042b8c55862
@@ -470,6 +475,9 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "15":
     id: "15"
     taskid: 0759b5fc-2e5c-459e-8097-aef217811138
@@ -499,6 +507,9 @@ tasks:
           "y": 3345
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "16":
     id: "16"
     taskid: fd614b26-589f-4e9b-8489-27471d110328
@@ -530,6 +541,9 @@ tasks:
           "y": 5270
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "17":
     id: "17"
     taskid: 64d6cb68-4451-462d-8e7f-76c2d860ed29
@@ -564,37 +578,9 @@ tasks:
           "y": 8770
         }
       }
-  "18":
-    id: "18"
-    taskid: cffa04b1-1f02-4f3d-8aff-60541a6d078d
-    type: regular
-    task:
-      id: cffa04b1-1f02-4f3d-8aff-60541a6d078d
-      version: -1
-      name: aws-iam-delete-login-profile
-      description: Deletes the password for the specified IAM user, which terminates
-        the user's ability to access AWS services through the AWS Management Console.
-      script: AWS - IAM|||aws-iam-delete-login-profile
-      type: regular
-      iscommand: true
-      brand: AWS - IAM
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      userName:
-        simple: playbookuser
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 7020
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "19":
     id: "19"
     taskid: 5dead601-4abf-468f-874a-1d3064ac0445
@@ -626,6 +612,9 @@ tasks:
           "y": 8595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "20":
     id: "20"
     taskid: 0c24911e-59c3-4ca1-8af5-8ef5daae1760
@@ -658,41 +647,9 @@ tasks:
           "y": 8420
         }
       }
-  "21":
-    id: "21"
-    taskid: 2aa2b9c6-f94b-466e-824b-2cc3063a26bf
-    type: regular
-    task:
-      id: 2aa2b9c6-f94b-466e-824b-2cc3063a26bf
-      version: -1
-      name: aws-iam-create-login-profile
-      description: Creates a password for the specified user, giving the user the
-        ability to access AWS services through the AWS Management Console.
-      script: AWS - IAM|||aws-iam-create-login-profile
-      type: regular
-      iscommand: true
-      brand: AWS - IAM
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      password:
-        simple: irPr@rh7Lh$lhO8m
-      passwordResetRequired:
-        simple: "False"
-      roleArn: {}
-      roleSessionDuration: {}
-      roleSessionName: {}
-      userName:
-        simple: playbookuser
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 6495
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "22":
     id: "22"
     taskid: 98e42481-074d-4dd5-8081-9389f781d42b
@@ -708,7 +665,7 @@ tasks:
       brand: AWS - IAM
     nexttasks:
       '#none#':
-      - "21"
+      - "7"
     scriptarguments:
       AccessKeyId:
         simple: ${AWS.IAM.Users.[1].AccessKeys.AccessKeyId}
@@ -725,6 +682,9 @@ tasks:
           "y": 6320
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "23":
     id: "23"
     taskid: af0f0c50-2e5b-4e6d-8685-dcd415d18005
@@ -757,6 +717,9 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "24":
     id: "24"
     taskid: c5ed5150-346c-4432-86c5-ffbae9766096
@@ -788,6 +751,9 @@ tasks:
           "y": 2820
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "25":
     id: "25"
     taskid: 09cfb140-6caf-48f7-8997-50ffcbe51198
@@ -817,6 +783,9 @@ tasks:
           "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "26":
     id: "26"
     taskid: c2ab6df3-26d8-4582-8c47-9f6646ac979e
@@ -853,6 +822,9 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "27":
     id: "27"
     taskid: 3ef7e750-7ad9-4ad7-88ef-d0149086f74d
@@ -886,6 +858,9 @@ tasks:
           "y": 2645
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "28":
     id: "28"
     taskid: 7ab56f94-4422-46ea-82a8-3e86c20881fa
@@ -918,6 +893,9 @@ tasks:
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "29":
     id: "29"
     taskid: e6873b40-830f-4478-80c3-a900bc913b20
@@ -949,6 +927,9 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "30":
     id: "30"
     taskid: 8912184a-bf7c-4abe-84f9-61f8189aa0b2
@@ -980,6 +961,9 @@ tasks:
           "y": 2995
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "31":
     id: "31"
     taskid: 103d125e-ee64-4866-8324-263d4e23fe45
@@ -1011,6 +995,9 @@ tasks:
           "y": 3695
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "32":
     id: "32"
     taskid: 01f3f26d-58c3-42f9-85f2-354c136f6670
@@ -1059,32 +1046,9 @@ tasks:
           "y": 545
         }
       }
-  "34":
-    id: "34"
-    taskid: c306a42a-a1bb-493a-8919-aeda6ed620c2
-    type: regular
-    task:
-      id: c306a42a-a1bb-493a-8919-aeda6ed620c2
-      version: -1
-      name: wait 30 sec
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      seconds:
-        simple: "30"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 6670
-        }
-      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "35":
     id: "35"
     taskid: 06689984-9e57-40a4-8426-3802e74036d7
@@ -1119,6 +1083,9 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "36":
     id: "36"
     taskid: d0b6f417-50f3-491d-8e18-358825ebd1ea
@@ -1153,6 +1120,9 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "37":
     id: "37"
     taskid: 38614631-103f-4177-8a5f-fa6690f43cbd
@@ -1187,6 +1157,9 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "39":
     id: "39"
     taskid: cf07db63-6a99-48eb-8fe1-b0ef8a713075
@@ -1221,6 +1194,9 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "40":
     id: "40"
     taskid: 503c85f3-ff19-48a4-80a7-5bbdbc783e4e
@@ -1255,6 +1231,9 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "41":
     id: "41"
     taskid: e1697e48-ba06-4a29-8a87-9b62934b7f71
@@ -1289,6 +1268,9 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "42":
     id: "42"
     taskid: 91d2f1d7-a89d-4674-8ac7-ab0227bb72c7
@@ -1323,6 +1305,9 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "43":
     id: "43"
     taskid: 8205d2d8-cebd-487d-8717-4cdc9974fa12
@@ -1357,6 +1342,9 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "44":
     id: "44"
     taskid: fd37dc1a-a275-4325-8c0b-4901205ee719
@@ -1391,6 +1379,9 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "45":
     id: "45"
     taskid: 345347a3-0647-4ea3-8f3e-f23139309213
@@ -1425,6 +1416,9 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "47":
     id: "47"
     taskid: a90a064c-c5da-4d5c-848b-d0628f63ada5
@@ -1459,6 +1453,9 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "49":
     id: "49"
     taskid: a582cfa0-83f4-4150-8e8b-a77bb5012014
@@ -1493,6 +1490,9 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "50":
     id: "50"
     taskid: 97111a54-d50b-47f3-835b-461e633f35c6
@@ -1527,6 +1527,9 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "51":
     id: "51"
     taskid: d1fb370f-f03b-4f99-8f33-40b042a101f0
@@ -1561,6 +1564,9 @@ tasks:
           "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "52":
     id: "52"
     taskid: 8f28ba65-4529-4c5e-8191-c070041ead33
@@ -1595,6 +1601,9 @@ tasks:
           "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "53":
     id: "53"
     taskid: 36cf476d-740f-467e-8800-fe629ea8bb3c
@@ -1629,6 +1638,9 @@ tasks:
           "y": 3170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "54":
     id: "54"
     taskid: 31b57cfb-3494-4bc6-8208-d2dbeeddf919
@@ -1663,6 +1675,9 @@ tasks:
           "y": 3170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "55":
     id: "55"
     taskid: 3515173e-aa8e-417b-861d-dd1572fbae5e
@@ -1697,6 +1712,9 @@ tasks:
           "y": 3520
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "56":
     id: "56"
     taskid: 58268a5f-e7c9-423c-8e2e-ae7f9a965b9d
@@ -1731,6 +1749,9 @@ tasks:
           "y": 3520
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "57":
     id: "57"
     taskid: a3882c70-4d6e-4aaa-880e-fe5cf628d696
@@ -1765,6 +1786,9 @@ tasks:
           "y": 4045
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "58":
     id: "58"
     taskid: 79ca8478-110a-417e-8f89-ff38b3272d18
@@ -1799,6 +1823,9 @@ tasks:
           "y": 4045
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "59":
     id: "59"
     taskid: dec2b67f-d985-4f8d-8129-c06586032d10
@@ -1833,6 +1860,9 @@ tasks:
           "y": 4395
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "60":
     id: "60"
     taskid: ace1e492-5791-4377-8b3f-053a8e9946b4
@@ -1867,6 +1897,9 @@ tasks:
           "y": 4395
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "61":
     id: "61"
     taskid: 2460bb52-f0c3-47d9-8b12-32cb5f14d9cd
@@ -1901,6 +1934,9 @@ tasks:
           "y": 4045
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "62":
     id: "62"
     taskid: 68baf0f7-8eae-4512-85f4-a29bacf48369
@@ -1935,6 +1971,9 @@ tasks:
           "y": 4745
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "63":
     id: "63"
     taskid: 50cd1faf-f9c6-41ea-83b9-c2ce082b052e
@@ -1969,6 +2008,9 @@ tasks:
           "y": 4745
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "64":
     id: "64"
     taskid: 1678e0cc-d020-4406-8ba2-652b4aec9825
@@ -2003,6 +2045,9 @@ tasks:
           "y": 5095
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "65":
     id: "65"
     taskid: 6f0598ae-b760-4461-885a-582960de5ec3
@@ -2037,6 +2082,9 @@ tasks:
           "y": 5095
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "66":
     id: "66"
     taskid: 7e661372-7f41-447a-824d-13ad99035358
@@ -2071,6 +2119,9 @@ tasks:
           "y": 5620
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "67":
     id: "67"
     taskid: dd32d671-1416-41ee-8e55-7c6c117df5f3
@@ -2105,6 +2156,9 @@ tasks:
           "y": 6145
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "68":
     id: "68"
     taskid: 0dbcc6ca-4b4b-4d9a-86d8-1a6a2c6a5617
@@ -2139,6 +2193,9 @@ tasks:
           "y": 7370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "69":
     id: "69"
     taskid: dab4e828-209b-4781-8e32-1c0e817f866d
@@ -2173,6 +2230,9 @@ tasks:
           "y": 7370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "70":
     id: "70"
     taskid: f44f23ff-9a26-4236-8129-2cffabeaf634
@@ -2207,6 +2267,9 @@ tasks:
           "y": 7720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "71":
     id: "71"
     taskid: 35d82c69-6049-47c2-8696-a5388a6e0115
@@ -2241,6 +2304,9 @@ tasks:
           "y": 7720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "72":
     id: "72"
     taskid: 67ba6872-209a-4c68-8c47-0e7c431d6bf5
@@ -2275,6 +2341,9 @@ tasks:
           "y": 8245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
   "73":
     id: "73"
     taskid: 129dc85b-22bd-42b8-8fc6-8d47d9eb85ce
@@ -2309,6 +2378,10 @@ tasks:
           "y": 8245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},

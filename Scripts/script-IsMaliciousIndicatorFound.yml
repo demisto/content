@@ -50,6 +50,15 @@ script: |-
       }
   }
 
+  // Unite into one array
+  maliciousIndicators = []
+  maliciousIndicators = maliciousIndicators.concat(filesIndicators);
+  maliciousIndicators = maliciousIndicators.concat(hashesIndicators);
+  maliciousIndicators = maliciousIndicators.concat(ipsIndicators);
+  maliciousIndicators = maliciousIndicators.concat(urlsIndicators);
+  maliciousIndicators = maliciousIndicators.concat(domainsIndicators);
+  maliciousIndicators = maliciousIndicators.concat(emailsIndicators);
+
   // Remove Manually remidated indicators
   if (args.includeManual == 'yes') {
       manualFiles = dq(invContext, "DBotScore(val.Type.toLowerCase()=='file' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
@@ -60,41 +69,40 @@ script: |-
       manualEmails = dq(invContext, "DBotScore(val.Type.toLowerCase()=='email' && val.Vendor=='Manual' && val.Score<" + minScore + ")");
 
       for (var indicatorObject in manualFiles) {
-          if (manualFiles[indicatorObject] && filesIndicators.indexOf(manualFiles[indicatorObject].Indicator) !== -1) {
-              filesIndicators.splice(filesIndicators.indexOf(manualFiles[indicatorObject].Indicator), 1);
+          if (manualFiles[indicatorObject] && maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator) !== -1) {
+              maliciousIndicators.splice(maliciousIndicators.indexOf(manualFiles[indicatorObject].Indicator), 1);
           }
       }
+
       for (var indicatorObject in manualHashes) {
-          if (manualHashes[indicatorObject] && hashesIndicators.indexOf(manualHashes[indicatorObject].Indicator) !== -1) {
-               hashesIndicators.splice(hashesIndicators.indexOf(manualHashes[indicatorObject].Indicator),1);
+          if (manualHashes[indicatorObject] && maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator) !== -1) {
+               maliciousIndicators.splice(maliciousIndicators.indexOf(manualHashes[indicatorObject].Indicator),1);
           }
       }
       for (var indicatorObject in manualIps) {
-          if (manualIps[indicatorObject] && ipsIndicators.indexOf(manualIps[indicatorObject].Indicator) !== -1) {
-               ipsIndicators.splice(ipsIndicators.indexOf(manualIps[indicatorObject].Indicator),1);
+          if (manualIps[indicatorObject] && maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator) !== -1) {
+               maliciousIndicators.splice(maliciousIndicators.indexOf(manualIps[indicatorObject].Indicator),1);
           }
       }
       for (var indicatorObject in manualUrls) {
-          if (manualUrls[indicatorObject] && urlsIndicators.indexOf(manualUrls[indicatorObject].Indicator) !== -1) {
-               urlsIndicators.splice(urlsIndicators.indexOf(manualUrls[indicatorObject].Indicator),1);
+          if (manualUrls[indicatorObject] && maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator) !== -1) {
+               maliciousIndicators.splice(maliciousIndicators.indexOf(manualUrls[indicatorObject].Indicator),1);
           }
       }
       for (var indicatorObject in manualDomains) {
-          if (manualDomains[indicatorObject] && domainsIndicators.indexOf(manualDomains[indicatorObject].Indicator) !== -1) {
-               domainsIndicators.splice(domainsIndicators.indexOf(manualDomains[indicatorObject].Indicator),1);
+          if (manualDomains[indicatorObject] && maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator) !== -1) {
+               maliciousIndicators.splice(maliciousIndicators.indexOf(manualDomains[indicatorObject].Indicator),1);
           }
       }
       for (var indicatorObject in manualEmails) {
-          if (manualEmails[indicatorObject] && emailsIndicators.indexOf(manualEmails[indicatorObject].Indicator) !== -1) {
-               emailsIndicators.splice(emailsIndicators.indexOf(manualEmails[indicatorObject].Indicator),1);
+          if (manualEmails[indicatorObject] && maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator) !== -1) {
+               maliciousIndicators.splice(maliciousIndicators.indexOf(manualEmails[indicatorObject].Indicator),1);
           }
       }
   }
 
-  if (filesIndicators.length > 0 || hashesIndicators.length > 0 || ipsIndicators.length > 0 ||
-      urlsIndicators.length > 0 || domainsIndicators.length > 0 || emailsIndicators.length > 0) {
-          return 'yes';
-  }
+  if (maliciousIndicators.length > 0)
+      return 'yes';
 
   if (args.queryIndicators == 'yes') {
       var query = "(reputation:Bad"
@@ -119,7 +127,9 @@ type: javascript
 tags:
 - Utility
 - Condition
-comment: Checks if the investigation found any malicious indicators (file, URL, IP address, domain, or email). Returns "yes" if at least one malicious indicator is found.
+comment: Checks if the investigation found any malicious indicators (file, URL, IP
+  address, domain, or email). Returns "yes" if at least one malicious indicator is
+  found.
 enabled: true
 args:
 - name: includeSuspicious
@@ -135,10 +145,12 @@ args:
   predefined:
   - "yes"
   - "no"
-  description: Query all indicators in an investigation (relevant if running in a sub-playbook).
+  description: Query all indicators in an investigation (relevant if running in a
+    sub-playbook).
   defaultValue: "yes"
 - name: maliciousQueryOverride
-  description: Whether to override the default query for malicious indicators in Demisto (Indicators page).
+  description: Whether to override the default query for malicious indicators in Demisto
+    (Indicators page).
 - name: includeManual
   auto: PREDEFINED
   predefined:
