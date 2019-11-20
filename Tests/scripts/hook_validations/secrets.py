@@ -9,7 +9,8 @@ import PyPDF2
 
 from bs4 import BeautifulSoup
 from Tests.scripts.constants import *
-from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS, checked_type
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS, checked_type,\
+    is_file_path_in_pack, get_pack_name
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
@@ -396,15 +397,6 @@ def ignore_base64(file_contents):
         if len(base64_string) > 500:
             file_contents = file_contents.replace(base64_string, '')
     return file_contents
-
-
-def is_file_path_in_pack(file_path):
-    return bool(re.findall(PACKS_DIR_REGEX, file_path))
-
-
-def get_pack_name(file_path):
-    match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
-    return match.group(1) if match else None
 
 
 def get_branch_name():
