@@ -15,7 +15,7 @@ def convert_file(file_path: str, out_format: str, all_files: bool, outdir: str) 
                '--convert-to', out_format, file_path, '--outdir', outdir]
     env = os.environ.copy()
     env['HOME'] = '/tmp/converfile'
-    res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, text=True, env=env)
+    res = subprocess.check_output(run_cmd, stderr=subprocess.STDOUT, universal_newlines=True, env=env)
     demisto.debug("completed running: {}. With result: {}".format(run_cmd, res))
     if all_files:
         return glob.glob(outdir + '/*')
