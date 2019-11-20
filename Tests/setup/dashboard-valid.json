@@ -1,0 +1,275 @@
+{
+	"id": "my-home-dashboard",
+	"version": -1,
+	"fromVersion": "4.0.0",
+	"description": "",
+	"period": {
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 7,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "My Dashboard",
+	"layout": [
+		{
+			"id": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
+			"forceRange": true,
+			"x": 8,
+			"y": 0,
+			"i": "a0e381e0-1c86-11e8-8581-45a91cd24d8e",
+			"w": 4,
+			"h": 4,
+			"widget": {
+				"id": "my-tasks",
+				"version": 1,
+				"modified": "2018-02-28T14:55:09.423998+02:00",
+				"name": "My Tasks",
+				"dataType": "tasks",
+				"widgetType": "list",
+				"query": "assignee:\"{me}\" and (state:Waiting or state:inprogress or state:error)",
+				"sort": [
+					{
+						"field": "dueDate",
+						"asc": true
+					}
+				],
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": null,
+				"size": 10,
+				"category": ""
+			}
+		},
+		{
+			"id": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
+			"forceRange": true,
+			"x": 0,
+			"y": 0,
+			"i": "d9955cc0-1c86-11e8-8581-45a91cd24d8e",
+			"w": 4,
+			"h": 2,
+			"widget": {
+				"id": "my-mentions",
+				"version": 1,
+				"modified": "2018-02-28T14:56:46.359548+02:00",
+				"name": "Mentions",
+				"dataType": "messages",
+				"widgetType": "list",
+				"query": "type:mention*",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": null,
+				"size": 10,
+				"category": "others"
+			}
+		},
+		{
+			"id": "173ed090-1c89-11e8-a678-fdff55233dc8",
+			"forceRange": false,
+			"x": 4,
+			"y": 0,
+			"i": "173ed090-1c89-11e8-a678-fdff55233dc8",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2018-02-28T15:09:00.074192+02:00",
+				"name": "My Incidents",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 1
+							},
+							"#FF1B15": {
+								"value": 5
+							}
+						},
+						"type": "above"
+					}
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
+			"forceRange": false,
+			"x": 6,
+			"y": 0,
+			"i": "51fa5e20-1c89-11e8-a678-fdff55233dc8",
+			"w": 2,
+			"h": 1,
+			"widget": {
+				"id": "",
+				"version": 0,
+				"modified": "2018-02-28T15:14:29.146947+02:00",
+				"name": "Late Incidents",
+				"dataType": "incidents",
+				"widgetType": "number",
+				"query": "-category:job and -status:archived and -status:closed and dueDate:\u003cnow and owner:\"{me}\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 30,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"colors": {
+						"isEnabled": true,
+						"items": {
+							"#00CD33": {
+								"value": -1
+							},
+							"#FAC100": {
+								"value": 5
+							},
+							"#FF1B15": {
+								"value": 10
+							}
+						},
+						"type": "above"
+					}
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
+			"forceRange": false,
+			"x": 0,
+			"y": 2,
+			"i": "f12d1f00-1c8e-11e8-b5cb-47979f799c06",
+			"w": 8,
+			"h": 2,
+			"widget": {
+				"id": "65",
+				"version": 2,
+				"modified": "2018-02-28T15:54:38.768401+02:00",
+				"name": "My Active Incidents by Type",
+				"dataType": "incidents",
+				"widgetType": "line",
+				"query": "-category:job and -status:archived and -status:closed and owner:\"{me}\"",
+				"sort": null,
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "2018-01-17T00:00:00+02:00",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"groupBy": [
+						"occurred(d)",
+						"type"
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		},
+		{
+			"id": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",
+			"forceRange": true,
+			"x": 4,
+			"y": 1,
+			"i": "0cce7c40-1c8f-11e8-b5cb-47979f799c06",
+			"w": 4,
+			"h": 1,
+			"widget": {
+				"id": "my-mean-time-to-resolution",
+				"version": 2,
+				"modified": "2018-02-28T15:55:31.609278+02:00",
+				"name": "My Mean Time to Resolution",
+				"dataType": "incidents",
+				"widgetType": "duration",
+				"query": "-category:job and status:closed and owner:\"{me}\"",
+				"sort": null,
+				"isPredefined": true,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": null,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"keys": [
+						"avg|openDuration",
+						"count|1"
+					]
+				},
+				"size": 0,
+				"category": ""
+			}
+		}
+	],
+	"isPredefined": true
+}
