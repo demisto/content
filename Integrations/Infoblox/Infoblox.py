@@ -27,6 +27,7 @@ INTEGRATION_CONTEXT_NAME = 'Infoblox'
 REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
 REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
 REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
+REQUEST_PARAM_LIST_RULE = {'_return_fields+': 'name,zone,comment,disable,type'}
 REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
@@ -164,6 +165,7 @@ class Client(BaseClient):
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
         request_params.update(REQUEST_PARAM_PAGING_FLAG)
+        request_params.update(REQUEST_PARAM_LIST_RULE)
 
         return self._http_request('GET', suffix, params=request_params)
 
@@ -461,7 +463,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_list}
-    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headers=['Comment', 'Name', 'Type', 'View', 'Zone','Disable'],
+                                     headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
