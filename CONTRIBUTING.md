@@ -30,7 +30,7 @@ If you are a first time GitHub contributor, please look at these links explainin
 **Working on your first Pull Request?** You can learn how from this *free* series [How to Contribute to an Open Source Project on GitHub](https://egghead.io/series/how-to-contribute-to-an-open-source-project-on-github)
 
 ## Review Process
-Once you open a pull request we have a bot (@content-bot) that will assist you and provide comments and reminders about the state of the pull request. Additionally, a member of the team will be assigned to review the pull request. 
+Once you open a pull request we have a bot (`@content-bot`) that will assist you and provide comments and reminders about the state of the pull request. Additionally, a member of the team will be assigned to review the pull request. Comments will be provided by the team member as the review process progresses.
 
 You will see a few [GitHub Status Checks](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-status-checks) that help validate that your pull request is according to our standards:
 
@@ -50,7 +50,7 @@ When you contribute a new pull request, a bot will evaluate whether you have sig
 If the `license/cla` status check remains on *Pending*, even though all contributors have accepted the CLA, you can recheck the CLA status by visiting the following link (replace **[PRID]** with the ID of your PR): https://cla-assistant.io/check/demisto/content?pullRequest=[PRID] .
 
 ## Pull updates from Demisto Content base branch
-When you open a PR, as a first step our @content-bot will change the base branch of your pull request to a new branch named: `contrib/<username>_<your branch name>`.
+When you open a PR, as a first step our `@content-bot` will change the base branch of your pull request to a new branch named: `contrib/<username>_<your branch name>`.
 
 In general, there shouldn't be a reason for you to pull changes from the base branch into your forked branch.
 
