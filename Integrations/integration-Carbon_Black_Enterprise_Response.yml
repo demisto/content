@@ -1453,8 +1453,7 @@ script:
     - contextPath: File.Signature.Description
       description: Description of the signature.
       type: string
-    description: Deprecated - please use cb-binary-download instead. Retrieve a binary
-      from CarbonBlack based on hash. Returned file will be places in the war room.
+    description: Deprecated. Use the cb-binary-download command instead.
     deprecated: true
   - name: cb-block-hash
     arguments:
