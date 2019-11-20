@@ -313,7 +313,7 @@ def main():
         modified_integrations = [
             integration for
             integration in integrations if
-            (integration.get('name') not in skipped_integrations_conf.keys() and
+            (integration.get('name') not in skipped_integrations_conf.keys() and  # noqa: W504
                 integration.get('name') not in new_integrations_names)
         ]
         are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
