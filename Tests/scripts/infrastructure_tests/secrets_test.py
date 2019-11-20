@@ -6,7 +6,7 @@ from Tests.scripts.hook_validations.secrets import get_secrets, get_diff_text_fi
 
 
 class TestSecrets:
-    TEST_BASE_PATH = './Tests/scripts/hook_validations/tests/tests_data/fake_integration/'
+    TEST_BASE_PATH = 'Tests/scripts/hook_validations/tests/tests_data/fake_integration/'
     TEST_YML_FILE = TEST_BASE_PATH + 'fake_integration.yml'
     TEST_PY_FILE = TEST_BASE_PATH + 'fake_integration.py'
     TEST_WHITELIST_FILE_PACKS = TEST_BASE_PATH + 'fake.secrets-ignore'
