@@ -361,7 +361,7 @@ def main():
 
     # TODO: need to add support for content packs
     # Upload current build's content_new.zip to demisto server (aka upload new content)
-    content_zip_path = '.content_new.zip'
+    content_zip_path = 'content_new.zip'
     cmd_str = 'python Tests/update_content_data.py -u {} -p {} -s {} -up {}'.format(username, password, server,
                                                                                     content_zip_path)
     run_command(cmd_str, is_silenced=False)
