@@ -39,3 +39,18 @@ If the `license/cla` status check remains on *Pending*, even though all contribu
 
 If you have a suggestion or an opportunity for improvement that you've identified, please open an issue in this repo.
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](http://go.demisto.com/join-our-slack-community), or at [info@demisto.com](mailto:info@demisto.com)
+
+## Pull changes from Demisto
+
+In general, there should be no reason for you to pull changes from the base branch into your forked branch.
+
+In case it is needed, you shouldn't pull from the master branch, but from the Demisto Content branch the Pull Request in based on.
+
+The Demisto Content base branch will have the `contrib/` prefix and your branch name as the suffix.
+In order to pull changes from the base branch, run:
+
+`git pull https://github.com/demisto/content.git <DEMISTO-CONTENT-BASE-BRANCH>`
+
+For example, if the base branch name is `contrib/itay_master`, you should run:
+
+`git pull https://github.com/demisto/content.git contrib/itay_master`
