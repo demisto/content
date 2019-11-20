@@ -1,8 +1,8 @@
-id: Frontline.Cloud - PAN-OS block assets with critical vulns from threat logs
+id: Frontline.Cloud - PAN-OS block assets
 version: -1
-name: Frontline.Cloud - PAN-OS block assets with critical vulns from threat logs
-description: This playbook will pull threat logs from Panorama query logs and check
-  for any correlating assets are found to have a minimum of high level vulnerabilities.
+name: Frontline.Cloud - PAN-OS block assets
+description: This playbook will pull Panorama queried threat logs and check for any
+  correlating assets that are found to have a minimum of high level vulnerabilities.
   If so, it will block the the IP using Panorama's PAN-OS - Block IP and URL - External
   Dynamic List playbook.
 starttaskid: "0"
