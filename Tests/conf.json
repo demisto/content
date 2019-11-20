@@ -18,6 +18,10 @@
             "timeout": 500
         },
         {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorld"
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test"
         },
@@ -2070,6 +2074,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "HelloWorldSimple": "This is just an example integration - no need for test",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
