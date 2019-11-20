@@ -77,8 +77,7 @@ class StructureValidator(object):
             (bool): Is file is valid
         """
         answers = list()  # Contains only positive answers (self.is_valid stays true)
-        if not self.is_valid_file_path():
-            print_warning(Errors.unknown_file(self.file_path))
+        answers.append(self.is_valid_file_path())
         answers.append(self.is_valid_scheme())
         answers.append(self.is_file_id_without_slashes())
 
