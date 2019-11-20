@@ -1,5 +1,6 @@
 id: Frontline.Cloud - Scan Asset Not Recently Scanned
 version: -1
+fromversion: 5.0.0
 name: Frontline.Cloud - Scan Asset Not Recently Scanned
 description: This playbook will pull the IP address from the details value of an incident
   and check if that asset has been scanned within the past 60 days. If not then it
