@@ -7,7 +7,10 @@ from Tests.test_integration import __get_integration_config, __test_integration_
 from Tests.test_integration import __disable_integrations_instances
 from Tests.test_utils import print_error, print_color, LOG_COLORS
 from Tests.test_content import load_conf_files, collect_integrations, extract_filtered_tests
-from Tests.test_utils import run_command
+from Tests.test_utils import run_command, get_last_release_version, checked_type, get_yaml
+from Tests.scripts.validate_files import FilesValidator
+from Tests.scripts.constants import YML_INTEGRATION_REGEXES, INTEGRATION_REGEX
+from Tests.scripts.constants import PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX
 from time import sleep
 
 
@@ -18,6 +21,7 @@ def options_handler():
     parser.add_argument('-env', '--ami_env', help='The AMI environment for the current run. Options are '
                         '"Server Master", "Demisto GA", "Demisto one before GA", "Demisto two before GA". '
                         'The server url is determined by the AMI environment.')
+    parser.add_argument('-g', '--git_sha1', help='commit sha1 to compare changes with')
     parser.add_argument('-c', '--conf', help='Path to conf file', required=True)
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
 
@@ -46,6 +50,50 @@ def determine_server_url(ami_env):
     server_url = instance_dns if instance_dns.startswith('http') else ('https://{}'.format(instance_dns) if
                                                                        instance_dns else '')
     return server_url
+
+
+def configure_integration_instance(integration, client):
+    '''Configure an instance for an integration
+
+    Arguments:
+        integration: (dict)
+            Integration object whose params key-values are set
+        client: (demisto_client)
+            The client to connect to
+
+    Returns:
+        (dict): Configured integration instance
+    '''
+    integration_name = integration.get('name')
+    integration_instance_name = integration.get('instance_name', '')
+    integration_params = integration.get('params')
+    is_byoi = integration.get('byoi', True)
+
+    integration_configuration = __get_integration_config(client, integration_name)
+    module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
+                                                          integration_instance_name, is_byoi)
+    return module_instance
+
+
+def get_new_integrations(git_sha1):
+    '''Return list of integration objects that are new since the commit of the git_sha1'''
+    # get changed yaml files (filter only added files)
+    tag = get_last_release_version()
+    file_validator = FilesValidator()
+    change_log = run_command('git diff --name-status {}'.format(git_sha1))
+    modified_files, added_files, removed_files, old_format_files = file_validator.get_modified_files(change_log, tag)
+    all_integration_regexes = YML_INTEGRATION_REGEXES
+    all_integration_regexes.extend([INTEGRATION_REGEX, PACKS_INTEGRATION_REGEX, BETA_INTEGRATION_REGEX])
+    added_integration_files = [
+        file_path for file_path in added_files if checked_type(file_path, all_integration_regexes)
+    ]
+    integrations = []
+    for integration_file_path in added_integration_files:
+        integration_yaml = get_yaml(integration_file_path)
+        integration_name = integration_yaml.get('name')
+        integration = {'name': integration_name, 'params': {}}
+        integrations.append(integration)
+    return integrations
 
 
 def is_content_updating(server, username, password):
@@ -206,6 +254,7 @@ def main():
     username = options.user
     password = options.password
     ami_env = options.ami_env
+    git_sha1 = options.git_sha1
     server = determine_server_url(ami_env)
     conf_path = options.conf
     secret_conf_path = options.secret
@@ -232,11 +281,17 @@ def main():
         pass
     elif filter_configured and filtered_tests:
         tests_for_iteration = [test for test in tests if test.get('playbookID', '') in filtered_tests]
-    
-    # if the integration configuration is not found (when calling __get_integration_config) we'll add it
-    # here to configure after the content update because it probably means that the integration is new
-    # and therefore doesn't exist before updating content
-    new_integrations = []
+
+    # get a list of brand new integrations that way we filter them out to only configure instances
+    # after updating content
+    brand_new_integrations = get_new_integrations(git_sha1)
+    # filter out integrations that are on the skipped integrations list
+    brand_new_integrations = [
+        integration for
+        integration in brand_new_integrations if
+        integration.get('name') not in skipped_integrations_conf.keys()
+    ]
+    new_integrations_names = [integration.get('name') for integration in brand_new_integrations]
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -254,29 +309,23 @@ def main():
 
         _, integrations, _ = collect_integrations(integrations_conf, skipped_integration,
                                                   skipped_integrations_conf, nightly_integrations)
+        # filter out integrations that are on the skipped list and that are brand new
+        modified_integrations = [
+            integration for
+            integration in integrations if
+            (integration.get('name') not in skipped_integrations_conf.keys() and
+                integration.get('name') not in new_integrations_names)
+        ]
         are_params_set = set_integration_params(integrations, secret_params, instance_names_conf)
         if not are_params_set:
             print_error('failed setting parameters for integrations "{}"'.format('\n'.join(integrations)))
             continue
         module_instances = []
-        for integration in integrations:
-            integration_name = integration.get('name', None)
-            if integration_name in skipped_integrations_conf.keys():
-                continue
-            integration_instance_name = integration.get('instance_name', '')
-            integration_params = integration.get('params', None)
-            is_byoi = integration.get('byoi', True)
-
-            integration_configuration = __get_integration_config(client, integration_name)
-            if not integration_configuration:
-                new_integrations.append(integration)
-                continue
-            module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                                  integration_instance_name, is_byoi)
-            module_instances.append(module_instance)
+        for integration in modified_integrations:
+            module_instances.append(configure_integration_instance(integration, client))
         all_module_instances.extend(module_instances)
 
-    # Test all module instances (of pre-existing integrations) pre-updating content
+    # Test all module instances (of modified integrations) pre-updating content
     print_color('Start of Instance Testing ("Test" button) prior to Content Update:', color=LOG_COLORS.YELLOW)
     for instance in all_module_instances:
         integration_of_instance = instance.get('brand', '')
@@ -308,18 +357,8 @@ def main():
 
     # configure instances for new integrations
     new_integration_module_instances = []
-    for integration in integrations:
-        integration_name = integration.get('name', None)
-        if integration_name in skipped_integrations_conf.keys():
-            continue
-        integration_instance_name = integration.get('instance_name', '')
-        integration_params = integration.get('params', None)
-        is_byoi = integration.get('byoi', True)
-
-        integration_configuration = __get_integration_config(client, integration_name)
-        module_instance = set_integration_instance_parameters(integration_configuration, integration_params,
-                                                              integration_instance_name, is_byoi)
-        new_integration_module_instances.append(module_instance)
+    for integration in brand_new_integrations:
+        new_integration_module_instances.append(configure_integration_instance(integration, client))
     all_module_instances.extend(new_integration_module_instances)
 
     # After content upload has completed - test ("Test" button) integration instances
