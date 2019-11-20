@@ -5,6 +5,8 @@ import json
 import argparse
 from subprocess import Popen, PIPE
 from distutils.version import LooseVersion
+from typing import Union, Optional
+
 import yaml
 import requests
 
@@ -329,3 +331,21 @@ def get_dockerimage45(script_object):
     if 'dockerimage45' in script_object:
         return script_object['dockerimage45']
     return script_object.get('dockerimage', '')
+
+
+def get_matching_regex(string_to_match, regexes):
+    # type: (str, Union[list, str]) -> Optional[str]
+    """Gets a string and find id the regexes list matches the string. if do, return regex else None.
+
+    Args:
+        string_to_match: String to find matching regex
+        regexes: regexes to check.
+
+    Returns:
+        matching regex if exists, else None
+    """
+    regexes_to_match = regexes if isinstance(regexes, list) else [regexes]
+    for regex in regexes_to_match:
+        if re.search(regex, string_to_match):
+            return regex
+    return None

@@ -1,6 +1,8 @@
 import pytest
 
 from Tests import test_utils
+from Tests.scripts.constants import PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX
+from Tests.test_utils import get_matching_regex
 
 
 class TestGetFile:
@@ -47,3 +49,15 @@ class TestGetRemoteFile:
     def test_get_remote_file_invalid_origin_branch(self):
         invalid_yml = test_utils.get_remote_file('Integrations/Gmail/Gmail.yml', 'origin/NoSuchBranch')
         assert not invalid_yml
+
+
+class TestGetMatchingRegex:
+    INPUTS = [
+        ('Packs/XDR/Playbooks/XDR.yml', [PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX],
+            PACKS_PLAYBOOK_YML_REGEX),
+        ('Packs/XDR/NoMatch/XDR.yml', [PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX], None)
+    ]
+
+    @pytest.mark.parametrize("string_to_match, regexes, answer", INPUTS)
+    def test_get_matching_regex(self, string_to_match, regexes, answer):
+        assert get_matching_regex(string_to_match, regexes) == answer
