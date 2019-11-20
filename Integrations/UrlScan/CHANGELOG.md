@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.0] - 2019-11-12
 Fixed a typo in an error message.
 
 ## [19.10.3] - 2019-10-31
