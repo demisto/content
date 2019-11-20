@@ -3,11 +3,11 @@ class Errors(object):
 
     @staticmethod
     def wrong_filename(filepath, file_type):
-        return '"{}" is not a valid {} filename.'.format(filepath, file_type)
+        return '{} is not a valid {} filename.'.format(filepath, file_type)
 
     @staticmethod
     def wrong_version(file_path, expected="-1"):
-        return "The version for our files should always be {}, please update the file {}.".format(expected, file_path)
+        return "{}: The version for our files should always be {}, please update the file.".format(expected, file_path)
 
     @staticmethod
     def wrong_version_reputations(file_path, object_id, version):
@@ -30,13 +30,13 @@ class Errors(object):
 
     @staticmethod
     def wrong_subtype(file_name):
-        return "The subtype for our yml files should be either python2 or python3, " \
-               "please update the file {}.".format(file_name)
+        return "{}: The subtype for our yml files should be either python2 or python3, " \
+               "please update the file.".format(file_name)
 
     @staticmethod
     def beta_in_str(file_path, field):
-        return "Field '{}' should NOT contain the substring \"beta\" in a new beta integration. " \
-               "please change the id in the file {}".format(field, file_path)
+        return "{}: Field '{}' should NOT contain the substring \"beta\" in a new beta integration. " \
+               "please change the id in the file.".format(field, file_path)
 
     @classmethod
     def beta_in_id(cls, file_path):
@@ -48,7 +48,7 @@ class Errors(object):
 
     @staticmethod
     def duplicate_arg_in_file(arg, script_path):
-        return "The argument '{}' is duplicated in the file {}, " \
+        return "{}: The argument '{}' is duplicated in the file, " \
                "please remove one of its appearances.".format(str(arg), script_path)
 
     @staticmethod
@@ -72,8 +72,8 @@ class Errors(object):
 
     @staticmethod
     def from_version_modified(file_path):
-        return "You've added fromversion to an existing file in the system, this is not allowed, please undo. " \
-               "the file was {}.".format(file_path)
+        return "{}: You've added fromversion to an existing file in the system, this is not allowed, please undo.".format(
+            file_path)
 
     @classmethod
     def breaking_backwards_no_old_script(cls, e):
@@ -81,38 +81,37 @@ class Errors(object):
 
     @classmethod
     def breaking_backwards_subtype(cls, file_path):
-        return "{}, You've changed the subtype " \
-               "of the file {}".format(cls.BACKWARDS, file_path)
+        return "{}: {}, You've changed the subtype, please undo.".format(file_path, cls.BACKWARDS)
 
     @classmethod
     def breaking_backwards_context(cls, file_path):
-        return "{}, You've changed the context in the file {}," \
-               " please undo.".format(cls.BACKWARDS, file_path)
+        return "{}: {}, You've changed the context in the file," \
+               " please undo.".format(file_path, cls.BACKWARDS)
 
     @classmethod
     def breaking_backwards_command(cls, file_path, old_command):
-        return "{}, You've changed the context in the file {} please " \
-               "undo, the command is:\n{}".format(cls.BACKWARDS, file_path, old_command)
+        return "{}: {}, You've changed the context in the file,please " \
+               "undo. the command is:\n{}".format(file_path, cls.BACKWARDS, old_command)
 
     @classmethod
     def breaking_backwards_docker(cls, file_path):
-        return "{}, You've changed the docker for the file {}" \
-               " this is not allowed.".format(cls.BACKWARDS, file_path)
+        return "{}: {}, You've changed the docker for the file," \
+               " this is not allowed.".format(file_path, cls.BACKWARDS)
 
     @classmethod
     def breaking_backwards_arg_changed(cls, file_path):
-        return "{}, You've changed the name of an arg in " \
-               "the file {}, please undo.".format(cls.BACKWARDS, file_path)
+        return "{}: {}, You've changed the name of an arg in " \
+               "the file, please undo.".format(file_path, cls.BACKWARDS)
 
     @classmethod
     def breaking_backwards_command_arg_changed(cls, file_path, command):
-        return "{}, You've changed the name of a command or its arg in" \
-               " the file {} please undo, the command was:\n{}".format(cls.BACKWARDS, file_path, command)
+        return "{}: {}, You've changed the name of a command or its arg in" \
+               " the file, please undo, the command was:\n{}".format(file_path, cls.BACKWARDS, command)
 
     @staticmethod
     def no_beta_in_display(file_path):
-        return "Field 'display' in Beta integration yml file should include the string \"beta\", but was not found" \
-               " in the file {}".format(file_path)
+        return "{} :Field 'display' in Beta integration yml file should include the string \"beta\", but was not found" \
+               " in the file.".format(file_path)
 
     @staticmethod
     def id_might_changed():
@@ -120,7 +119,7 @@ class Errors(object):
 
     @staticmethod
     def id_changed(file_path):
-        return "You've changed the ID of the file {0} please undo.".format(file_path)
+        return "{}: You've changed the ID of the file, please undo.".format(file_path)
 
     @staticmethod
     def file_id_contains_slashes():
@@ -128,7 +127,7 @@ class Errors(object):
 
     @staticmethod
     def missing_release_notes(file_path, rn_path):
-        return 'File {} is missing releaseNotes, Please add it under {}'.format(file_path, rn_path)
+        return '{}:  is missing releaseNotes, Please add it under {}'.format(file_path, rn_path)
 
     @staticmethod
     def display_param(param_name, param_display):
@@ -140,4 +139,8 @@ class Errors(object):
 
     @staticmethod
     def might_need_release_notes(file_path):
-        return "You might need RN in file {} please make sure to check that.".format(file_path)
+        return "{}: You might need RN in file, please make sure to check that.".format(file_path)
+
+    @staticmethod
+    def unknown_file(file_path):
+        return "{}:  File type is unknown, check it out.".format(file_path)
