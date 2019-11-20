@@ -2,10 +2,9 @@ import json
 import os
 import re
 import sys
-from abc import abstractmethod
 
 import yaml
-from pykwalify.errors import CoreError
+from pykwalify.errors import SchemaError
 from typing import Optional
 
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, \
@@ -94,24 +93,21 @@ class StructureValidator(object):
         for schema_name, regex_list in self.SCHEMA_TO_REGEX.items():
             matching_regex = get_matching_regex(self.file_path, regex_list)
             if matching_regex:
-                return matching_regex
+                return schema_name
         return None
 
-    def is_valid_scheme(self, schema_name=None):
-        # type: (str) -> bool
+    def is_valid_scheme(self):
+        # type: () -> bool
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
-
-        Args:
-            schema_name:
 
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
         c = Core(source_file=self.file_path,
-                 schema_files=[os.path.join(self.SCHEMAS_PATH, '{}.yml'.format(schema_name))])
+                 schema_files=[os.path.join(self.SCHEMAS_PATH, '{}.yml'.format(self.scheme_name))])
         try:
             c.validate(raise_exception=True)
-        except CoreError as err:
+        except SchemaError as err:
             print_error('Failed: {} failed.\n{}'.format(self.file_path, str(err)))
             self.is_valid = False
             return False
@@ -158,10 +154,6 @@ class StructureValidator(object):
             # In layout, the id is under 'layout'.
             file_id = loaded_file_data.get('layout', {}).get('id')
         return file_id
-
-    @abstractmethod
-    def is_valid_version(self, expected_file_version):
-        pass
 
     def is_file_id_without_slashes(self):
         """Check if the ID of the file contains any slashes ('/').
@@ -220,7 +212,7 @@ class StructureValidator(object):
             self.is_valid = False
             return False
 
-        return self.is_valid
+        return True
 
     def is_there_release_notes(self):
         """Validate that the file has proper release notes when modified.

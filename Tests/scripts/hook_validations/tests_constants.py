@@ -1,0 +1,7 @@
+INVALID_PLAYBOOK_PATH = "./Tests/setup/Playbooks.playbook-invalid.yml"
+VALID_TEST_PLAYBOOK_PATH = "./Tests/setup/Playbooks.playbook-test.yml"
+VALID_INTEGRATION_TEST_PATH = "./Tests/setup/integration-test.yml"
+VALID_INTEGRATION_ID_PATH = "./Tests/setup/integration-valid-id-test.yml"
+INVALID_INTEGRATION_ID_PATH = "./Tests/setup/integration-invalid-id-test.yml"
+VALID_PLAYBOOK_ID_PATH = "./Tests/setup/playbook-valid-id-test.yml"
+INVALID_PLAYBOOK_ID_PATH = "./Tests/setup/playbook-invalid-id-test.yml"
