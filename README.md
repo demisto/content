@@ -52,7 +52,7 @@ When we are working with data that is generic across all platforms, we format th
 [Learn about our Context Standards here](docs/context_standards)
 
 ### Docker
-We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image form the [Demisto Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More about how to use Docker is available here:
+We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Demisto Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available here:
 
 [Docker Images](docs/docker)
 
