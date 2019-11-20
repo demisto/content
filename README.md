@@ -89,7 +89,7 @@ For information about content release notes conventions, refer to our [release n
 | [CircleCI](docs/tests/circleci) | How we test using CircleCI |
 | [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
 | [GenericPolling Playbook](docs/tests/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
-| [Release Notes](docs/release_notes) | Explanation of how and when to use the GenericPolling playbook |
+| [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
 
 ---
 Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/), or at [info@demisto.com](mailto:info@demisto.com).
