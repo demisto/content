@@ -70,6 +70,7 @@ class StructureValidator(object):
             (bool): Is file is valid
         """
         if not self.scheme_name:
+            self.is_valid = None
             return None
         answers = list()  # Contains only positive answers (self.is_valid stays true)
         answers.append(self.is_valid_scheme())
