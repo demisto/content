@@ -1942,56 +1942,56 @@ script:
     - name: md5
       required: true
       default: true
-      description: MD5 File Hash
+      description: MD5 hash of the file.
     - name: summary
       auto: PREDEFINED
       predefined:
       - "yes"
       - "no"
-      description: Whether to include summary
+      description: Whether to include the summary.
     outputs:
     - contextPath: File.DigSig.Publisher
-      description: The publisher of the Digital Signature
+      description: The publisher of the digital signature.
     - contextPath: File.InternalName
-      description: The Internal Name
+      description: The internal name.
     - contextPath: File.ServerAddedTimestamp
-      description: The server added timestamp
+      description: The timestamp when the server was added.
     - contextPath: File.Name
-      description: Binary Name
+      description: The binary name.
     - contextPath: File.Extension
-      description: Binary Extension
+      description: The binary extension.
     - contextPath: File.Timestamp
-      description: Binary Timestamp
+      description: The binary timestamp.
     - contextPath: File.Hostname
-      description: Binary Hostname
+      description: The binary hostname.
     - contextPath: File.Description
-      description: The description
+      description: The binary description.
     - contextPath: File.DigSig.Result
-      description: Cb's decision after checking this binary's Digital Signature
+      description: The Carbon Black decision after checking this binary's digital signature.
     - contextPath: File.LastSeen
-      description: Last time binary was seen
+      description: LThe lst time the binary was seen.
     - contextPath: File.Path
-      description: Binary Path
+      description: The binary path.
     - contextPath: File.ProductName
-      description: The Product Name
+      description: The product name.
     - contextPath: File.OS
-      description: The OS
+      description: The OS.
     - contextPath: File.MD5
-      description: Binary MD5
+      description: The MD5 hash of the binary.
     - contextPath: File.Company
-      description: Name of the company that released a binary
+      description: Name of the company that released a binary.
     - contextPath: File.DigitalSignature.Publisher
       description: Publisher of the digital signature for the file.
     - contextPath: File.Name
-      description: Full Filename e.g. data.xls.
+      description: Full filename, for example data.xls.
     - contextPath: File.Signature.OriginalName
-      description: File's original name.
+      description: The file's original name.
     - contextPath: File.Signature.InternalName
-      description: File's internal name.
+      description: The file's internal name.
     - contextPath: File.Signature.FileVersion
-      description: File version.
+      description: The file version.
     - contextPath: File.Signature.Description
-      description: Description of the signature.
+      description: The description of the signature.
     description: Retrieve a binary from CarbonBlack based on hash. Returns a .zip
       file containing the requested file and it's metadata.
   isfetch: true
