@@ -218,9 +218,9 @@ script:
       required: false
       secret: false
     deprecated: true
-    description: Deprecated. This command only returns a single page.
+    description: 'Deprecated. This command only returns a single page.
     Use the msgraph-user-list command instead, which gets newly created, updated, or
-    deleted users without performing a full read of the entire user collection.
+    deleted users without performing a full read of the entire user collection.'
     execution: false
     name: msgraph-user-get-delta
     outputs:
