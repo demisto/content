@@ -5,7 +5,7 @@
 Welcome to Demisto content repo! Contributions are welcome and appreciated.
 
 ## How to contribute
-Please read the following guidelines. Following these guidelines will maximize the chances for a fast, easy and effective review process for everyone involved. If something is not clear, please don't hesitate to reach out to us via GitHub, Slack, or email.
+Please read the following guidelines. Following these guidelines will maximize the chances for a fast, easy and effective review process for everyone involved. If something is not clear, please don't hesitate to reach out to us via GitHub, [Slack](http://go.demisto.com/join-our-slack-community), or [email](mailto:info@demisto.com).
 
 * Setup a development environment by following the [Getting Started Guide](docs/getting_started).
 * Use the [Package Directory Structure](docs/package_directory_structure) for all Python code. If working on existing code, beyond trivial changes, we require converting to this structure as it allows running linting, unit tests and provides a clearer review process.
