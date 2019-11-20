@@ -68,6 +68,8 @@ jobs:
             python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
 
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/secrets_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -79,6 +81,11 @@ jobs:
               [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
 
               python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+      - run:
+          name: Secrets
+          when: always
+          command: |
+              python3 ./Tests/scripts/hook_validations/secrets.py -c true
       - run:
           name: Configure Test Filter
           when: always
