@@ -10,7 +10,7 @@ from typing import Optional
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, \
     YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
-    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES
+    JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX
 from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
     get_latest_release_notes_text, get_matching_regex
@@ -39,16 +39,19 @@ class StructureValidator(object):
     }
     SCHEMA_TO_REGEX = {
         'integration': YML_INTEGRATION_REGEXES,
-        'playbook': YML_PLAYBOOKS_NO_TESTS_REGEXES,
-        'test-playbook': YML_TEST_PLAYBOOKS_REGEXES,
+        'playbook': YML_ALL_PLAYBOOKS_REGEX,
         'script': YML_SCRIPT_REGEXES,
         'widget': JSON_ALL_WIDGETS_REGEXES,
         'dashboard': JSON_ALL_DASHBOARDS_REGEXES,
         'canvas-context-connections': JSON_ALL_CONNECTIONS_REGEXES,
         'classifier': JSON_ALL_CLASSIFIER_REGEXES,
         'layout': JSON_ALL_LAYOUT_REGEXES,
-        'incidentfield': JSON_ALL_INCIDENT_FIELD_REGEXES
+        'incidentfield': JSON_ALL_INCIDENT_FIELD_REGEXES,
     }
+
+    SKIPPED_SCHEMES = [
+
+    ]
 
     def __init__(self, file_path, is_added_file=False, is_renamed=False):
         # type: (str, bool, bool) -> None
@@ -69,9 +72,6 @@ class StructureValidator(object):
         Returns:
             (bool): Is file is valid
         """
-        if not self.scheme_name:
-            self.is_valid = None
-            return None
         answers = list()  # Contains only positive answers (self.is_valid stays true)
         answers.append(self.is_valid_scheme())
         answers.append(self.is_file_id_without_slashes())
@@ -91,10 +91,9 @@ class StructureValidator(object):
         Returns:
             (str): Type of file by scheme name
         """
-        for schema_name, regex_list in self.SCHEMA_TO_REGEX.items():
-            matching_regex = get_matching_regex(self.file_path, regex_list)
-            if matching_regex:
-                return schema_name
+        for scheme_name, regex_list in self.SCHEMA_TO_REGEX.items():
+            if get_matching_regex(self.file_path, regex_list):
+                return scheme_name
         return None
 
     def is_valid_scheme(self):
@@ -104,6 +103,8 @@ class StructureValidator(object):
         Returns:
             bool. Whether the scheme is valid on self.file_path.
         """
+        if self.scheme_name is None:
+            return True
         c = Core(source_file=self.file_path,
                  schema_files=[os.path.join(self.SCHEMAS_PATH, '{}.yml'.format(self.scheme_name))])
         try:
