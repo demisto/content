@@ -28,9 +28,6 @@ def main():
     with open('instance_ids', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids_nonami))
 
-    # get content artifacts from last successful build on master
-    run_command('python ./Tests/get_build_content_artifacts.py', is_silenced=False)
-
     print("Waiting 60 Seconds for SSH to start\n")
     sleep(60)
     threads_list = []
