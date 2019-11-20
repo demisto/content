@@ -169,7 +169,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type):
+    def create_response_policy_zone(self, fqdn: str, rpz_policy: str, rpz_severity: str, substitute_name: str,
+                                    rpz_type: str) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
                 fqdn: The name of this DNS zone.
@@ -186,7 +187,8 @@ class Client(BaseClient):
         suffix = 'zone_rp'
         return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_RULE)
 
-    def create_rpz_rule(self, rule_type, object_type, name, rp_zone, substitute_name, comment=None):
+    def create_rpz_rule(self, rule_type: str, object_type: str, name: str, rp_zone: str, substitute_name: str,
+                        comment=None) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
                 rule_type: Type of rule to create.
@@ -212,7 +214,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
 
-    def create_substitute_record_rule(self, suffix, **kwargs):
+    def create_substitute_record_rule(self, suffix: str, **kwargs: dict) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
                 Args:
                         suffix: The infoblox object to be used as a url path.
@@ -239,6 +241,19 @@ class Client(BaseClient):
         request_data = {key: val for key, val in kwargs.items() if val}
         request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
         return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+
+
+    def change_rule_status(self, reference_id: str, disable: str) -> Dict:
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+                Args:
+                        reference_id: Rule reference ID
+                        disable: true or false string
+                Returns:
+                    Response JSON
+                """
+        request_data = assign_params(disable=disable)
+        suffix = reference_id
+        return self._http_request('PUT', suffix, data=json.dumps(request_data))
 
 
 ''' HELPER FUNCTIONS '''
@@ -463,7 +478,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
         f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_list}
-    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headers=['Comment', 'Name', 'Type', 'View', 'Zone','Disable'],
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list,
+                                     headers=['Comment', 'Name', 'Type', 'View', 'Zone', 'Disable'],
                                      headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -806,6 +822,28 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
+def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    reference_id = args.get('reference_id')
+    raw_response = client.change_rule_status(reference_id, disable='false')
+
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -841,6 +879,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-txt-substitute-record-rule': create_txt_substitute_record_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-enable-rule': enable_rule_command,
     }
     try:
         if command in commands:
