@@ -16,8 +16,6 @@ Please read the following guidelines. Following these guidelines will maximize t
 * Validate that our validation hooks pass. If you used `.hooks/bootstrap` as documented in [Getting Started](docs/getting_started) the validation hook will run automatically upon commit. You can also run the validation hooks manually by running `.hooks/pre-commit`.
 * Document your integration as detailed [here](docs/integration_documentation).
 * Document your changes in the relevant changelog file as detailed [here](docs/release_notes).
-  
- - Circle CI build must be green [here](https://github.com/demisto/content/tree/master/docs/tests/circleci)
 
 You should now be ready to create a pull request.
 
