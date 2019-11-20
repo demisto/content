@@ -999,11 +999,11 @@ script:
   - name: hybrid-analysis-get-report-status
     arguments:
     - name: jobID
-      description: The Job ID of the submission
+      description: The Job ID of the submission.
     - name: sha256
-      description: The submission SHA256
+      description: The submission SHA256.
     - name: environmentID
-      description: The environmentID of the submission
+      description: The environmentID of the submission.
     outputs:
     - contextPath: HybridAnalysis.Submit.State
       description: The state of the process.
