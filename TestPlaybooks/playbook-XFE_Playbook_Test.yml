@@ -937,10 +937,10 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 39f82492-e240-4af3-85e6-6ec6a357a3dc
+    taskid: 57721f4c-32fa-4536-8a23-c85698b0321b
     type: condition
     task:
-      id: 39f82492-e240-4af3-85e6-6ec6a357a3dc
+      id: 57721f4c-32fa-4536-8a23-c85698b0321b
       version: -1
       name: verifyCSV
       type: condition
@@ -948,7 +948,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "32"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -992,7 +992,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://www.demisto.com
+              simple: AbuseWith.Us
       - - operator: containsGeneral
           left:
             value:
@@ -1000,7 +1000,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://www.google.com/
+              simple: Acne.org
       - - operator: containsGeneral
           left:
             value:
@@ -1029,10 +1029,10 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: 77126f76-4940-4fab-8bcd-868fbe30b4f0
+    taskid: 7a7bbc28-5546-49a0-8501-3e2c660607fb
     type: regular
     task:
-      id: 77126f76-4940-4fab-8bcd-868fbe30b4f0
+      id: 7a7bbc28-5546-49a0-8501-3e2c660607fb
       version: -1
       name: check domain with CSV
       description: Check domain reputation
@@ -1045,9 +1045,13 @@ tasks:
       - "29"
     scriptarguments:
       domain:
-        simple: https://www.demisto.com,https://www.google.com/
+        simple: AbuseWith.Us,Acne.org
+      fullResponse: {}
       long: {}
+      retries: {}
+      sampleSize: {}
       threshold: {}
+      wait: {}
     separatecontext: false
     view: |-
       {
@@ -1081,7 +1085,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 4405
+          "y": 4535
         }
       }
     note: false
@@ -1089,10 +1093,10 @@ tasks:
     ignoreworker: false
   "33":
     id: "33"
-    taskid: e9924646-add2-46b0-84f7-ba5599bbb70b
+    taskid: 3556ad5d-dc4e-42fa-87fa-d70f74763684
     type: regular
     task:
-      id: e9924646-add2-46b0-84f7-ba5599bbb70b
+      id: 3556ad5d-dc4e-42fa-87fa-d70f74763684
       version: -1
       name: cve-search with CSV
       description: Search for details about the given CVE
@@ -1105,7 +1109,7 @@ tasks:
       - "30"
     scriptarguments:
       cveId:
-        simple: CVE-2019-7312,${CVE.ID}
+        simple: CVE-2019-7312,CVE-2018-20477
     continueonerror: true
     separatecontext: false
     view: |-
@@ -1118,6 +1122,50 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "34":
+    id: "34"
+    taskid: 67524aaa-e94f-4144-8481-a38175d648f4
+    type: condition
+    task:
+      id: 67524aaa-e94f-4144-8481-a38175d648f4
+      version: -1
+      name: verify_CVE_CSV
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2019-7312
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2018-20477
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1125,7 +1173,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4450,
+        "height": 4580,
         "width": 1240,
         "x": 50,
         "y": 50

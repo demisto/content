@@ -94,10 +94,9 @@ script:
 
 
     function doFile(hash, longFormat) {
-        hash_list = argToList(hash);
-        entry_list = new Array(hash_list.length);
-        for (i = 0; i<hash_list.length; i++)
-        {
+        var hash_list = argToList(hash);
+        var entry_list = [];
+        for (i = 0; i < hash_list.length; i++) {
             hash = hash_list[i];
             var res = doReq('GET', 'malware/' + hash);
             if (res.statusCode === 404) {
@@ -164,10 +163,9 @@ script:
         threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
 
-        ip_list = argToList(ip);
-        entry_list = new Array(ip_list.length);
-        for (i = 0; i<ip_list.length; i++)
-        {
+        var ip_list = argToList(ip);
+        var entry_list = [];
+        for (i = 0; i < ip_list.length; i++) {
             ip = ip_list[i];
             var res = {};
             var ipRes = doReq('GET', 'ipr/' + ip);
@@ -189,6 +187,7 @@ script:
             } else if (o.score) {
                 dbotScore = 1;
             }
+            ec.IP = {Address: ip};
             ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'XFE', Score: dbotScore};
             var md = '## X-Force IP Reputation for: ' + ip + '\n';
             md += 'Score: **' + o.score + '**\n';
@@ -216,6 +215,7 @@ script:
         return entry_list;
     };
 
+
     var doURL = function(url, longFormat, threshold, isURL) {
         if (!threshold) {
             threshold = params.urlThreshold || 7;
@@ -223,10 +223,9 @@ script:
 
         threshold = parseInt(threshold);
 
-        url_list = argToList(url);
-        entry_list = new Array(url_list.length);
-        for (i = 0; i<url_list.length; i++)
-        {
+        var url_list = argToList(url);
+        var entry_list = [];
+        for (i = 0; i < url_list.length; i++) {
             url = url_list[i];
             // Need to make sure to be backwards compatible with the JSON
             var res = {};
@@ -265,9 +264,12 @@ script:
             } else if (o.result && o.result.score) {
                 dbotScore = 1;
             }
-            var indicatorType = 'domain';
             if (isURL) {
-              indicatorType = 'url';
+              ec.URL = {Data: url};
+              ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
+            } else {
+              ec.Domain = {Name: url};
+              ec.DBotScore = {Indicator: url, Type: 'domain', Vendor: 'XFE', Score: dbotScore};
             }
             ec.DBotScore = {Indicator: url, Type: indicatorType, Vendor: 'XFE', Score: dbotScore};
             var md = '## X-Force URL Reputation for: ' + url + '\n';
@@ -353,34 +355,33 @@ script:
 
 
     function doCVE(cve) {
-        cve_list = argToList(cve);
-        entry_list = new Array(cve_list.length);
-        for (i = 0; i<cve_list.length; i++)
-        {
-            cve = cve_list[i];
-            var res = doReq('GET', 'vulnerabilities/search/' + cve);
-            if (res.statusCode === 404) {
-                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                    HumanReadable: 'XFE does not have details about ' + cve};
-            }
-            var o = res.obj;
-            var md = '## X-Force CVE Search for: ' + cve + '\n';
-            var context = {};
-            var ec = [];
-            if (o && Array.isArray(o)) {
-                for (var i=0; i<o.length; i++) {
-                    md += cveToMd(o[i]) + '\n';
-                    ec.push(cveToContext(o[i]));
-                }
-                if (ec.length > 0) {
-                    context[outputPaths.cve] = ec;
-                }
-            } else {
-                md += 'No result found.';
-            }
-            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
+      var cve_list = argToList(cve);
+      var entry_list = [];
+      for (i = 0; i < cve_list.length; i++) {
+        cve = cve_list[i];
+        var res = doReq('GET', 'vulnerabilities/search/' + cve);
+        if (res.statusCode === 404) {
+          return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+              HumanReadable: 'XFE does not have details about ' + cve};
         }
-        return entry_list;
+        var o = res.obj;
+        var md = '## X-Force CVE Search for: ' + cve + '\n';
+        var context = {};
+        var ec = [];
+        if (o && Array.isArray(o)) {
+          for (var j=0; j<o.length; j++) {
+            md += cveToMd(o[j]) + '\n';
+            ec.push(cveToContext(o[j]));
+          }
+          if (ec.length > 0) {
+            context[outputPaths.cve] = ec;
+          }
+        } else {
+          md += 'No result found.';
+        }
+        entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
+      }
+      return entry_list;
     }
 
 
@@ -563,12 +564,6 @@ script:
     outputs:
     - contextPath: URL.Data
       description: Bad URLs found
-    - contextPath: URL.Malicious.Vendor
-      description: For malicious URLs, the vendor that made the decision
-    - contextPath: URL.Malicious.Description
-      description: For malicious URLs, the reason for the vendor to make the decision
-    - contextPath: URL.Malicious.Score
-      description: For malicious URLs, the score from the vendor
     - contextPath: Domain.Malicious.Vendor
       description: For malicious URLs, the vendor that made the decision
     - contextPath: Domain.Malicious.Description
