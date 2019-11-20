@@ -1947,7 +1947,7 @@
         }
     ],
     "skipped_tests": {
-        "Palo Alto Networks - Malware Remediation Test": "Issue 20265",
+        "minemeld_test": "Issue 20265",
         "Fidelis Elevate Network": "Issue 20263",
         "rsa_packets_and_logs_test": "Issue 20262",
         "Cloaken-Test": "Issue 20036",
