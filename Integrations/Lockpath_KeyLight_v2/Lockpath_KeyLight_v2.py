@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+
 FILTER_DICT = {'Contains': '1',
                'Excludes': '2',
                'Starts With': '3',
@@ -43,6 +44,7 @@ class Client(BaseClient):
         if json_data:
             log += f'\njson_data:\n{json.dumps(json_print_data, indent=4)}'
         print(log)
+        LOG(log)
 
         # The instance isn't always stable so trying to send http request twice.
         # Not ideal, I know..
@@ -58,6 +60,7 @@ class Client(BaseClient):
             # TODO: Remove print
             print(str(e))
             print('second try')
+
             return super()._http_request(method, url_suffix, full_url, headers,
                                          auth, json_data, params, data, files,
                                          timeout, resp_type, ok_codes, **kwargs)
@@ -138,7 +141,17 @@ class Client(BaseClient):
             result['ComponentID'] = component_id
         return res
 
+    '''HELPER CLIENT FUNCTIONS'''
+
     def component_id_from_name(self, name: str) -> str:
+        '''
+
+        Args:
+            name: Name of component
+
+        Returns:
+            The component ID
+        '''
         component_list = self._http_request('GET', '/ComponentService/GetComponentList')
         component = {}  # type: dict
         for comp in component_list:
@@ -155,7 +168,6 @@ class Client(BaseClient):
                 field_id = field.get('Id')
         return field_id
 
-    '''HELPER CLIENT FUNCTIONS'''
     def update_field_integration_context(self, component_id: str) -> None:
         '''
 
@@ -223,13 +235,6 @@ class Client(BaseClient):
             final_fields[field_name] = field_val
         return final_fields
 
-    def string_to_key_value_fields(self, dict_as_string: str) -> dict:
-         key_value_list = dict_as_string.split(';')
-         for key_value in key_value_list:
-            #TODO add here code
-            print()
-
-
 
 
 
@@ -246,6 +251,32 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
         'Value': filter_value
     }
     return filter
+
+
+def string_to_key_value(string: str) -> lst:
+    key_value_list = string.split('#')
+    key_val_return = []
+    for key_value in key_value_list:
+        if key_value.count(';') == 1:
+            key, value = key_value.split(';')
+            reference = False
+        elif key_value.count(';') == 2:
+            key, value, ref = key_value.split(';')
+            reference = True if ref == '1' else False
+        else:
+            raise ValueError("Input not in the correct format.")
+        if reference:
+            key_val_return.append(
+                {
+                    'Key': key,
+                    'Value': {
+                        'Id': value
+                    }
+                }
+            )
+        else:
+            key_val_return.append({'Key': key, 'Value': value})
+    return key_val_return
 
 
 '''COMMAND FUNCTIONS'''
@@ -314,17 +345,24 @@ def get_filtered_records_command(client: Client, args: dict) -> None:
     page_index = args.get('page_index', "0")
     filter_type = args.get('filter_type')
     filter_value = args.get('filter_value', '')
-    filter_field_id = args.get('filter_field_id', '')
+    field_name = args.get('filter_field_name', '')
+    filter_field_id = client.field_id_from_name(field_name, component_id)
+    if not filter_field_id:
+        raise ValueError(f'Could not find the field "{field_name}" in component {component_id}.')
     detailed = '/ComponentService/GetDetailRecords' if args.get('detailed', "False") == "True" \
         else '/ComponentService/GetRecords'
     res = client.return_filtered_records(component_id, page_size, page_index, detailed,
                                          filter_type, filter_field_id, filter_value)
-    res['Fields'] = client.field_output_to_hr_fields(res.pop('FieldValues'), component_id)
+    for record in res:
+        record['Fields'] = client.field_output_to_hr_fields(record.pop('FieldValues'), component_id)
     ec = {'Keylight.Record(val.ID == obj.ID)': res}
     title = f'Records for component {component_id}'
     if filter_type:
-        title += f' with filter: "{filter_type} {filter_value}" on field {filter_field_id}'
-    hr = tableToMarkdown(title, res)
+        title += f' with filter: "{filter_type} {filter_value}" on field {field_name}'
+    hr = f'# {title}\n'
+    for record in res:
+        hr += tableToMarkdown(f'Record {record.get("DisplayName", "")} (ID: {record.get("ID", "")}):',
+                              record.get("Fields"))
     return_outputs(hr, ec, res)
 
 
@@ -344,21 +382,29 @@ def get_record_count_command(client: Client, args: dict) -> None:
 def get_record_attachments_command(client: Client, args: dict) -> None:
     field_id = args.get('field_id', '')
     record_id = args.get('record_id', '')
-    params = {'componentID': args.get('component_id', ''),
+    component_id = args.get('component_id', '')
+    params = {'componentID': component_id,
               'recordId': record_id,
               'fieldId': field_id
               }
     res = client._http_request('GET', '/ComponentService/GetRecordAttachments', params=params)
+    print(res)
     for doc in res:
         doc['FieldID'] = doc.pop("FieldId")
         doc['DocumentID'] = doc.pop('DocumentId')
+        doc['RecordID'] = record_id
+        doc['ComponentID'] = component_id
+    if not res:
+        hr = f'## Field {field_id} in record {record_id} has no attachments.'
+        return_outputs(hr)
+        return
     hr = tableToMarkdown(f'Field {field_id} in record {record_id} has the following attachments:', res)
     ec = {'Keylight.Attachment(val.FieldID == obj.FieldID && val.DocumentID == obj.DocumentID)': res}
     return_outputs(hr, ec, res)
 
 
 def get_record_attachment_command(client: Client, args: dict) -> None:
-    field_id = args.get('record_id', '')
+    field_id = args.get('field_id', '')
     record_id = args.get('record_id', '')
     doc_id = args.get('document_id', '')
     params = {'componentID': args.get('component_id', ''),
@@ -369,6 +415,31 @@ def get_record_attachment_command(client: Client, args: dict) -> None:
     res = client._http_request('GET', '/ComponentService/GetRecordAttachment', params=params)
     hr = f'## File {res.get("FileName", "")}:\n{res.get("FileData")}'
     return_outputs(hr)
+
+
+def delete_record_attachment_command(client: Client, args: dict) -> None:
+    field_id = args.get('field_id', '')
+    record_id = args.get('record_id', '')
+    doc_id = args.get('document_id', '')
+    component_id = args.get('component_id', '')
+    json_data = {
+                    "componentId": component_id,
+                    "dynamicRecord": {
+                        "Id": record_id,
+                        "FieldValues": [
+                            {
+                                "Key": field_id,
+                                "value": [
+                                    {
+                                        "Id": doc_id
+                                    }
+                                    ]
+                            }
+                        ]
+                    }
+                }
+    client._http_request('POST', '/ComponentService/DeleteRecordAttachments', json_data=json_data)
+    return_outputs("### Attachment was successfully deleted from the Documents field.")
 
 
 def delete_record_command(client: Client, args: dict) -> None:
@@ -397,6 +468,23 @@ def update_record_command(client: Client, args: dict) -> None:
     return_outputs(f'### Record {record_id} in component {component_id} was updated successfully.')
 
 
+def get_lookup_report_column_fields_command(client: Client, args: dict) -> None:
+    field_path_id = args.get('field_path_id', '')
+    lookup_field_id = args.get('lookup_field_id', '')
+    params = {
+        'lookupFieldId': lookup_field_id,
+        'fieldPathId': field_path_id
+    }
+    res = client._http_request('GET', '/ComponentService/GetLookupReportColumnFields', params=params)
+    for rec in res:
+        rec['ID'] = rec.pop("Id")
+        rec['ComponentID'] = rec.pop("ComponentId")
+    ec = {'Keylight.LookupField(val.ID === obj.ID)': res}
+    hr = tableToMarkdown(f'Here is more information about field path {field_path_id}, lookup field {lookup_field_id}:',
+                         res)
+    return_outputs(hr, ec, res)
+
+
 def fetch_incidents(client: Client, args: dict) -> None:
     name = demisto.params().get('component_name', '')
     filter_field = demisto.params().get('filter_field', '')
@@ -412,14 +500,14 @@ def fetch_incidents(client: Client, args: dict) -> None:
     component_id = demisto.getLastRun().get('component', {}).get(filter_field)
     if not component_id:
         component_id = client.component_id_from_name(name)
-    if not component_id:
+    if component_id == 'None':
         raise ValueError("Could not find component name.")
     field_id = demisto.getLastRun().get('field', {}).get(name)
     field_id = client.field_id_from_name(filter_field, component_id)
     if not field_id:
         raise ValueError("Could not find field name.")
     res = client.return_filtered_records(component_id, page_size, '0', '/ComponentService/GetDetailRecords',
-                                         '>=', field_id, last_fetch_time)
+                                         'Greater Equals Than', field_id, last_fetch_time)
     incidents = []
     max_fetch_time = last_fetch_time
     for record in res:
@@ -432,7 +520,8 @@ def fetch_incidents(client: Client, args: dict) -> None:
                     'occurred': occurred_at,
                     'rawJSON': record
                     }
-        if parse_date_string(occurred_at) > parse_date_string(max_fetch_time):
+        if datetime.strptime(occurred_at.split('.')[0], "%Y-%m-%dT%H:%M:%S") > \
+                datetime.strptime(max_fetch_time.split('.')[0], "%Y-%m-%dT%H:%M:%S"):
             max_fetch_time = occurred_at
         incidents.append(incident)
     demisto.setLastRun({'last_fetch_time': max_fetch_time,
@@ -467,10 +556,10 @@ def main():
         #TODO add comment:  The Required option for a field is only enforced through the user interface
 
         # 'kl-update-record': 'ComponentService/UpdateRecord',
-        # 'kl-get-lookup-report-column-fields': 'ComponentService/GetLookupReportColumnFields',
+        'kl-get-lookup-report-column-fields': get_lookup_report_column_fields_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
-        # 'kl-delete-record-attachments': 'ComponentService/DeleteRecordAttachments',
+        'kl-delete-record-attachment': delete_record_attachment_command,
         'fetch-incidents': fetch_incidents
     }
     # TODO delete this (also from yaml):
@@ -490,16 +579,17 @@ def main():
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
+        LOG.print_log()
         if logged_in:
             client.logout()
         if demisto.command() == 'test-module':
             # TODO change to return_error
-            print(f'Could not connect to instance. Error: {str(e)}')
-            # return_error(f'Could not connect to instance. Error: {str(e)}')
+            #print(f'Could not connect to instance. Error: {str(e)}')
+             return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
             # TODO change to return_error
-            print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-            # return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            #print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

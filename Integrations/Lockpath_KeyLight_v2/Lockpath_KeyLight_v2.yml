@@ -269,9 +269,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The field ID to apply the filter on.
+      description: The name of the field to apply the filter on.
       isArray: false
-      name: filter_field_id
+      name: filter_field_name
       required: false
       secret: false
     - default: false
@@ -304,7 +304,7 @@ script:
     - contextPath: Keylight.Record.DisplayName
       description: The display name of the record.
       type: String
-    - contextPath: Keylight.Record.FieldValues
+    - contextPath: Keylight.Record.Fields
       description: The fields in the record.
       type: String
     - contextPath: Keylight.Record.ID
@@ -387,6 +387,12 @@ script:
     - contextPath: Keylight.Attachment.DocumentID
       description: The ID of the document.
       type: String
+    - contextPath: Keylight.Attachment.ComponentID
+      description: The component ID, the document was in.
+      type: String
+    - contextPath: Keylight.Attachment.RecordID
+      description: The record ID the attachment was in.
+      type: String
   - arguments:
     - default: false
       description: The ID of the desired component.
@@ -437,6 +443,68 @@ script:
     description: Delete a selected record from within a chosen component.
     execution: false
     name: kl-delete-record
+  - arguments:
+    - default: false
+      description: The ID of the component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the record to delete.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the field
+      isArray: false
+      name: field_id
+      required: true
+      secret: false
+    - default: false
+      description: The ID of the document to delete.
+      isArray: false
+      name: document_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a specific attachment.
+    execution: false
+    name: kl-delete-record-attachment
+  - arguments:
+    - default: false
+      description: The lookup field ID.
+      isArray: false
+      name: lookup_field_id
+      required: true
+      secret: false
+    - default: false
+      description: The field path ID.
+      isArray: false
+      name: field_path_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the field information of each field in a field path that corresponds
+      to a lookup report column. The lookupFieldId corresponds to a lookup field with
+      a report definition on it and the fieldPathId corresponds to the field path
+      to retrieve fields from, which is obtained from kl-get-record, detailed=True.
+    execution: false
+    name: kl-get-lookup-report-column-fields
+    outputs:
+    - contextPath: Keylight.LookupField.ID
+      description: The lookup field's ID.
+      type: String
+    - contextPath: Keylight.LookupField.Name
+      description: The lookup field's name.
+      type: String
+    - contextPath: Keylight.LookupField.ComponentID
+      description: The lookup field's component ID.
+      type: String
+    - contextPath: Keylight.LookupField.SystemName
+      description: The system name of the lookup field
+      type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   runonce: false
