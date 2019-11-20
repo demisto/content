@@ -338,3 +338,8 @@ def is_file_path_in_pack(file_path):
 def get_pack_name(file_path):
     match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
     return match.group(1) if match else None
+
+
+def pack_name_to_path(pack_name):
+    return os.path.join(PACKS_DIR, pack_name)
+
