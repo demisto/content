@@ -6,7 +6,7 @@ import pytest
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
-    INVALID_PLAYBOOK_ID_PATH
+    INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, INVALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH
 
 
 class IsValidScheme:
@@ -81,7 +81,38 @@ class TestIsFileIDWithoutSlashes:
         (INVALID_PLAYBOOK_ID_PATH, False, NEGATIVE_ERROR)
 
     ]
+
     @pytest.mark.parametrize('path, answer, error', INPUTS)
     def test_integration_file_with_valid_id(self, path, answer, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_file_id_without_slashes() is answer, error
+
+
+class TestValidReputation:
+    TARGET = "./Misc/reputations.json"
+    INPUTS_IS_VALID_VERSION = [
+        (VALID_REPUTATION_PATH, TARGET, True),
+        (INVALID_REPUTATION_PATH, TARGET, False)
+    ]
+
+    @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
+    def test_is_valid_reputations(self, source, target, answer):
+        copyfile(source, target)
+        structure = StructureValidator(target)
+        assert structure.is_file_valid(validate_rn=False) is answer
+        os.remove(target)
+
+
+class TestValidLayout:
+    TARGET = "./Layouts/layout-mock.json"
+    INPUTS_IS_VALID_VERSION = [
+        (VALID_LAYOUT_PATH, TARGET, True),
+        (INVALID_LAYOUT_PATH, TARGET, False)
+    ]
+
+    @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
+    def test_is_valid_version(self, source, target, answer):
+        copyfile(source, target)
+        structure = StructureValidator(target)
+        assert structure.is_file_valid(validate_rn=False) is answer
+        os.remove(target)
