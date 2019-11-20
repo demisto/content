@@ -8,9 +8,14 @@ from abc import abstractmethod
 import yaml
 from pykwalify.errors import CoreError
 
+from Tests.scripts.constants import TEST_DATA_REGEX, MISC_REGEX, IMAGE_REGEX, DESCRIPTION_REGEX, PIPFILE_REGEX, \
+    REPORT_REGEX, SCRIPT_PY_REGEX, SCRIPT_JS_REGEX, SCRIPT_PS_REGEX, INTEGRATION_JS_REGEX, INTEGRATION_PY_REGEX, \
+    INTEGRATION_PS_REGEX, REPUTATION_REGEX, BETA_INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX, BETA_SCRIPT_REGEX, \
+    BETA_PLAYBOOK_REGEX, CHECKED_TYPES_REGEXES, YML_INTEGRATION_REGEXES, YML_ALL_PLAYBOOKS_REGEX, \
+    YML_PLAYBOOKS_NO_TESTS_REGEXES, YML_TEST_PLAYBOOKS_REGEXES, YML_SCRIPT_REGEXES
 from Tests.scripts.hook_validations.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
-    get_latest_release_notes_text
+    get_latest_release_notes_text, get_matching_regex
 
 try:
     from pykwalify.core import Core
@@ -29,6 +34,18 @@ class StructureValidator(object):
         """
     SCHEMAS_PATH = "Tests/schemas/"
 
+    FILE_SUFFIX_TO_LOAD_FUNCTION = {
+        '.yml': yaml.safe_load,
+        '.json': json.load,
+    }
+    SCHEMA_TO_REGEX = {
+        'integration': YML_INTEGRATION_REGEXES,
+        'playbook': YML_PLAYBOOKS_NO_TESTS_REGEXES ,
+        'test-playbook': YML_TEST_PLAYBOOKS_REGEXES,
+        'script': YML_SCRIPT_REGEXES,
+        'widget':
+    }
+
     def __init__(self, file_path: str, is_added_file=False, is_renamed=False):
         self.is_valid = True
         self.file_path = file_path
@@ -36,8 +53,7 @@ class StructureValidator(object):
         self.is_added_file = is_added_file
         self.is_renamed = is_renamed
 
-    @abstractmethod
-    def is_file_valid(self, validate_rn=True, *args, **kwargs):
+    def is_file_valid(self, validate_rn=True):
         """Checks if given file is valid
 
         Returns:
@@ -51,6 +67,16 @@ class StructureValidator(object):
             # In case of release branch we allow to remove release notes
             if validate_rn and not self.is_release_branch():
                 self.validate_file_release_notes()
+
+    def type_of_file_by_path(self):
+        """Running on given regexes from `constants` to find out what type of file it is
+
+        Returns:
+            (str): Type of file by scheme name
+        """
+
+        matching_regex = get_matching_regex(self.file_path, CHECKED_TYPES_REGEXES)
+
 
     def is_valid_scheme(self, schema_name):
         """Validate the file scheme according to the scheme we have saved in SCHEMAS_PATH.
@@ -192,13 +218,12 @@ class StructureValidator(object):
                 print_error(Errors.missing_release_notes(self.file_path, rn_path))
                 self.is_valid = False
 
-    @abstractmethod
     def load_data_from_file(self):
         """Returns dict"""
-        file_type_suffix_to_loading_func = {
-            '.yml': yaml.safe_load,
-            '.json': json.load,
-        }
         file_extension = os.path.splitext(self.file_path)[1]
-        if file_extension not in file_type_suffix_to_loading_func:
-            print_error(Errors.wrong_file_extension(file_extension, file_type_suffix_to_loading_func.keys()))
+        if file_extension not in self.FILE_SUFFIX_TO_LOAD_FUNCTION:
+            print_error(Errors.wrong_file_extension(file_extension, self.FILE_SUFFIX_TO_LOAD_FUNCTION.keys()))
+        load_function = self.FILE_SUFFIX_TO_LOAD_FUNCTION[file_extension]
+        with open(self.file_path, 'r') as file_obj:
+            loaded_file_data = load_function(file_obj)
+            return loaded_file_data
