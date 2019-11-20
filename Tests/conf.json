@@ -1947,9 +1947,7 @@
         }
     ],
     "skipped_tests": {
-        "ThreatQ - Test": "Issue 19468",
         "minemeld_test": "Issue 20265",
-        "Fidelis Elevate Network": "Issue 20263",
         "rsa_packets_and_logs_test": "Issue 20262",
         "Cloaken-Test": "Issue 20036",
         "Create Phishing Classifier V2 ML Test": "Issue 20174",
@@ -2019,6 +2017,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
         "carbonblack-v2": "Issue 19929",
