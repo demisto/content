@@ -156,7 +156,7 @@ class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
 
     Attributes:
-        demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+        demisto_api_key: API key for demisto API.
         public_ip (string): The IP of the AMI instance.
         repo_folder (string): path to the local clone of the content-test-data git repo.
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
@@ -172,9 +172,8 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, client, public_ip,
+    def __init__(self, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.client = client
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
@@ -188,7 +187,9 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, proxy=''):
+    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
+                                          verify_ssl=False)
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
@@ -201,8 +202,10 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return demisto_client.generic_request_func(self=self.client, path='/system/config',
-                                                   method='POST', body=data)
+        response = demisto_client.generic_request_func(self=client, path='/system/config',
+                                                       method='POST', body=data)
+        # client.api_client.pool.close()
+        return response
 
     def get_mock_file_size(self, filepath):
         return self.ami.check_output(['stat', '-c', '%s', filepath]).strip()
