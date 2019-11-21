@@ -527,8 +527,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
     demisto_api_key = secret_conf.get('temp_apikey')
 
-    # c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
-
     default_test_timeout = conf.get('testTimeout', 30)
 
     tests = conf['tests']

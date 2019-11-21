@@ -343,8 +343,8 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
 
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
-    """Copies the intgeration parameters dictionary.
-        Set proxy and unscure integration parameters to true.
+    """Copies the integration parameters dictionary.
+        Set proxy and insecure integration parameters to true.
 
     Args:
         integration_params: dict of the integration parameters.

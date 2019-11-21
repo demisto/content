@@ -156,7 +156,7 @@ class MITMProxy:
     """Manager for MITM Proxy and the mock file structure.
 
     Attributes:
-        demisto_client (demisto.DemistoClient): Wrapper for demisto API.
+        demisto_api_key: API key for demisto API.
         public_ip (string): The IP of the AMI instance.
         repo_folder (string): path to the local clone of the content-test-data git repo.
         tmp_folder (string): path to a temporary folder for log/mock files before pushing to git.
