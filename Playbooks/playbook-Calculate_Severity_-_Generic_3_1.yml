@@ -433,7 +433,6 @@ tasks:
     task:
       id: c4b5f8e7-8133-4122-8e88-ea69e15f0803
       version: -1
-      description: ""
       name: Set severity to "Critical"
       description: Set incident's severity to Critical - Some entity is part of a
         critical group
