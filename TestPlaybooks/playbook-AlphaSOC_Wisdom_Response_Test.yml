@@ -1,5 +1,5 @@
 id: AlphaSOC-Wisdom-Test
-version: 5
+version: -1
 name: AlphaSOC Wisdom Test
 starttaskid: "0"
 tasks:
@@ -43,7 +43,7 @@ tasks:
       - "2"
     scriptarguments:
       domain:
-        simple: google.com
+        simple: facebook.com
     separatecontext: false
     view: |-
       {
