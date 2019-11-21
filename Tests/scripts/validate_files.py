@@ -389,12 +389,13 @@ class FilesValidator(object):
             self.validate_pack_unique_files(packs)
 
     def validate_pack_unique_files(self, packs):
-        pack_unique_files_validator = PackUniqueFilesValidator(packs)
-        pack_unique_files_validator.validate_pack_unique_files()
-        errors = pack_unique_files_validator.get_errors()
-        if errors:
-            print_error(errors)
-            self._is_valid = False
+        for pack in packs:
+            pack_unique_files_validator = PackUniqueFilesValidator(pack)
+            pack_unique_files_validator.validate_pack_unique_files()
+            errors = pack_unique_files_validator.get_errors()
+            if errors:
+                print_error(errors)
+                self._is_valid = False
 
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""
