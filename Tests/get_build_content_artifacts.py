@@ -161,9 +161,6 @@ def main():
             new_file_name = prefix + file_name
             dl_url = artifact.get('url', '')
             download_artifact(dl_url, new_file_name)
-            # update release number of content_new.zip
-            if file_name == 'content_new.zip':
-                modify_content_descriptor(new_file_name)
 
 
 if __name__ == '__main__':
