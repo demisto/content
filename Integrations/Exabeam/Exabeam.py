@@ -333,7 +333,7 @@ def get_user_info(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     user = client.get_user_info_request(username)
     user_info = user.get('userInfo', {})
     if not user_info:
-        raise Exception('User has no info. Please check that the username and not the userFullName    was inserted.')
+        raise Exception('User has no info. Please check that the username and not the userFullName was inserted.')
     contents = contents_user_info(user, user_info)
     context = {'Exabeam.User(val.UserName && val.UserName === obj.UserName)': contents}
 
@@ -363,7 +363,7 @@ def get_user_sessions(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     user = client.user_sequence_request(username, parse_start_time, parse_end_time)
     session = user.get('sessions')
     if not session:
-        return f'The user {username} has no sessions in this timeframe.', {}, {}
+        return f'The user {username} has no sessions in this time frame.', {}, {}
 
     for session_ in session:
         contents.append({
