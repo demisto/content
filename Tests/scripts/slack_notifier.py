@@ -22,7 +22,7 @@ def http_request(url, params_dict=None):
 
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         raise e
 
 
@@ -79,6 +79,11 @@ def get_fields():
         failed_tests = failed_tests_file.readlines()
         failed_tests = [line.strip('\n') for line in failed_tests]
 
+    print('Extracting failed_unittests')
+    with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
+        failed_unittests = failed_unittests_file.readlines()
+        failed_unittests = [line.strip('\n') for line in failed_unittests]
+
     print('Extracting skipped_tests')
     with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
         skipped_tests = skipped_tests_file.readlines()
@@ -101,6 +106,15 @@ def get_fields():
         content_team_fields.append(field_failed_tests)
         content_fields.append(field_failed_tests)
 
+    if failed_unittests:
+        field_failed_unittests = {
+            "title": "Failed tests - ({})".format(len(failed_unittests)),
+            "value": '\n'.join(failed_unittests),
+            "short": False
+        }
+        content_team_fields.append(field_failed_unittests)
+        content_fields.append(field_failed_unittests)
+
     if skipped_tests:
         field_skipped_tests = {
             "title": "Skipped tests - ({})".format(len(skipped_tests)),
@@ -117,7 +131,7 @@ def get_fields():
         }
         content_team_fields.append(field_skipped_integrations)
 
-    return content_team_fields, content_fields, failed_tests
+    return content_team_fields, content_fields, failed_tests, failed_unittests
 
 
 def slack_notifier(build_url, slack_token, env_results_file_name):
@@ -134,7 +148,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="dmst-content-team",
+            channel="dmst-test-slack",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -149,5 +163,6 @@ if __name__ == "__main__":
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
+    os.remove('./Tests/failed_unittests.txt')
     os.remove('./Tests/skipped_tests.txt')
     os.remove('./Tests/skipped_integrations.txt')
