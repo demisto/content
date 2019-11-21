@@ -2,7 +2,7 @@ from CommonServerPython import *
 
 
 def sum_value(value):
-    if isinstance(value, int):
+    if isinstance(value, float):
         return value
 
     if isinstance(value, str):
@@ -18,8 +18,6 @@ def sum_value(value):
             return 'error', 'error'
 
     result = sum(value)
-    if result == int(result):
-        result = int(result)
     return result, 'ok'
 
 
