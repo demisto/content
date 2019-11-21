@@ -61,82 +61,64 @@ parse_question_res = {
     ]
 }
 
-CREATE_ACTION_BY_TARGET_GROUP_RES = {'package_spec': {'source_id': 12345},
-       'name': 'action-name via Demisto API',
-       'target_group': {'name': 'target-group-name'},
-       'action_group': {'id': 1},
-       'expire_seconds': 360}
+CREATE_ACTION_BY_TARGET_GROUP_RES = \
+    {'package_spec': {'source_id': 12345},
+     'name': 'action-name via Demisto API',
+     'target_group': {'name': 'target-group-name'},
+     'action_group': {'id': 1},
+     'expire_seconds': 360}
 
-CREATE_ACTION_BY_HOST_RES = {
-   'package_spec': {
-      'source_id': 20
-   },
-   'name': 'action-name via Demisto API',
-   'target_group': {
-      'and_flag': True,
-      'deleted_flag': True,
-      'filters': [
-         {
-            'all_times_flag': False,
-            'all_values_flag': False,
-            'delimiter': '',
-            'delimiter_index': 0,
-            'ignore_case_flag': True,
-            'max_age_seconds': 0,
-            'not_flag': False,
-            'operator': 'RegexMatch',
-            'sensor': {
-               'hash': 3409330187,
-               'id': 3,
-               'name': 'Computer Name'
-            },
-            'substring_flag': False,
-            'substring_length': 0,
-            'substring_start': 0,
-            'utf8_flag': False,
-            'value': '.*equals.*',
-            'value_type': 'String'
-         }
-      ],
-      'not_flag': False,
-      'sub_groups': [
-
-      ]
-   },
-   'action_group': {
-      'id': 1
-   },
-   'expire_seconds': 360
-}
+CREATE_ACTION_BY_HOST_RES = \
+    {'package_spec':
+     {'source_id': 20},
+        'name': 'action-name via Demisto API',
+        'target_group': {
+        'and_flag': True,
+        'deleted_flag': True,
+        'filters': [
+            {'all_times_flag': False,
+             'all_values_flag': False,
+             'delimiter': '',
+             'delimiter_index': 0,
+             'ignore_case_flag': True,
+             'max_age_seconds': 0,
+             'not_flag': False,
+             'operator': 'RegexMatch',
+             'sensor': {
+                'hash': 3409330187,
+                'id': 3,
+                'name': 'Computer Name'},
+             'substring_flag': False,
+             'substring_length': 0,
+             'substring_start': 0,
+             'utf8_flag': False,
+             'value': '.*equals.*',
+             'value_type': 'String'}],
+         'not_flag': False,
+         'sub_groups': []},
+        'action_group': {
+        'id': 1},
+        'expire_seconds': 360}
 
 
-CREATE_ACTION_WITH_PARAMETERS_RES = {
-   'package_spec': {
-      'source_id': 12345,
-      'parameters': [
-         {
-            'key': '$1',
-            'value': 'true'
-         },
-         {
-            'key': '$2',
-            'value': 'value'
-         },
-         {
-            'key': '$3',
-            'value': 'otherValue'
-         }
-      ]
-   },
-   'name': 'action-name via Demisto API',
-   'target_group': {
-      'name': 'target-group-name'
-   },
-   'action_group': {
-      'id': 1
-   },
-   'expire_seconds': 360
-}
+CREATE_ACTION_WITH_PARAMETERS_RES = \
+    {'package_spec':
+        {'source_id': 12345,
+         'parameters': [{
+             'key': '$1',
+             'value': 'true'
+         }, {
+             'key': '$2',
+             'value': 'value'
+         }, {
+             'key': '$3',
+             'value': 'otherValue'}]},
+        'name': 'action-name via Demisto API',
+        'target_group': {
+            'name': 'target-group-name'},
+        'action_group': {
+            'id': 1},
+        'expire_seconds': 360}
 
 
 def test_create_action_body_by_target_group_name(requests_mock):
@@ -157,7 +139,7 @@ def test_create_action_body_by_target_group_name(requests_mock):
 def test_create_action_body_by_host(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + 'session/login', json={'data':{'session':'session-id'}})
+    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + 'packages/20', json={'data': {'id': 12345, 'expire_seconds': 360}})
     requests_mock.post(BASE_URL + 'parse_question', json=parse_question_res)
 

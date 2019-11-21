@@ -152,7 +152,6 @@ class Client(BaseClient):
             return obj
         return obj
 
-
     def build_create_action_body(self, by_host, action_name,
                                  parameters, package_id='', package_name='', action_group_id='', action_group_name='',
                                  target_group_id='', target_group_name='', hostname='', ip_address=''):
