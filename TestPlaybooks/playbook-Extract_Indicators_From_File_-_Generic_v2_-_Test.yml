@@ -9,14 +9,18 @@ description: |-
   TXT
   HTM, HTML
   DOC, DOCX
+  RTF
+  XLSX
+  PPTX
+  XML
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: acf29053-815f-4e96-8122-4781e4f967d7
+    taskid: 78bf33b4-ff2b-4983-8dce-f7378b58fbe3
     type: start
     task:
-      id: acf29053-815f-4e96-8122-4781e4f967d7
+      id: 78bf33b4-ff2b-4983-8dce-f7378b58fbe3
       version: -1
       name: ""
       iscommand: false
@@ -37,10 +41,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 8d01fbd2-8fe8-49f3-89ea-1c412a1c53a1
+    taskid: 15c5130d-0e87-4e30-8e72-5a055ba0b5d7
     type: regular
     task:
-      id: 8d01fbd2-8fe8-49f3-89ea-1c412a1c53a1
+      id: 15c5130d-0e87-4e30-8e72-5a055ba0b5d7
       version: -1
       name: Download TXT file
       description: Downloads a TXT file using HTTP GET.
@@ -50,7 +54,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -80,10 +84,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 36c14cb2-423d-4d53-8423-2f1a44f4875f
+    taskid: 00fdd3e6-d928-46cc-8ad4-b964c19d6cae
     type: condition
     task:
-      id: 36c14cb2-423d-4d53-8423-2f1a44f4875f
+      id: 00fdd3e6-d928-46cc-8ad4-b964c19d6cae
       version: -1
       name: Were the correct indicators extracted?
       description: Checks whether specific indicators were extracted from each one
@@ -190,10 +194,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 88666eac-de82-43cd-80e7-b7bcbd707c8b
+    taskid: 77036a8e-804e-4b68-8f43-bc45b6209dcb
     type: title
     task:
-      id: 88666eac-de82-43cd-80e7-b7bcbd707c8b
+      id: 77036a8e-804e-4b68-8f43-bc45b6209dcb
       version: -1
       name: Done
       type: title
@@ -212,10 +216,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: a7537367-cc86-4d5c-8179-eb9e3edbf463
+    taskid: b6d1b934-2c67-49cd-8a78-d38a5aeeb3cf
     type: regular
     task:
-      id: a7537367-cc86-4d5c-8179-eb9e3edbf463
+      id: b6d1b934-2c67-49cd-8a78-d38a5aeeb3cf
       version: -1
       name: Make test fail
       description: Causes the test playbook to fail if the correct email addresses
@@ -244,10 +248,10 @@ tasks:
     ignoreworker: false
   "7":
     id: "7"
-    taskid: 69f8a4ec-a422-4067-84d8-c09cf54de4a9
+    taskid: dc6fd48f-81c5-45b7-8591-ba1a1d61ec24
     type: title
     task:
-      id: 69f8a4ec-a422-4067-84d8-c09cf54de4a9
+      id: dc6fd48f-81c5-45b7-8591-ba1a1d61ec24
       version: -1
       name: Download Files
       type: title
@@ -262,6 +266,8 @@ tasks:
       - "15"
       - "18"
       - "20"
+      - "23"
+      - "25"
     separatecontext: false
     view: |-
       {
@@ -275,10 +281,10 @@ tasks:
     ignoreworker: false
   "8":
     id: "8"
-    taskid: d021722f-2461-4b45-863a-d17979a1988e
+    taskid: 96dce868-c3d3-4036-8796-161f10ef1ec2
     type: regular
     task:
-      id: d021722f-2461-4b45-863a-d17979a1988e
+      id: 96dce868-c3d3-4036-8796-161f10ef1ec2
       version: -1
       name: Download DOC file
       description: Downloads a DOC file using HTTP GET.
@@ -288,7 +294,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -318,10 +324,10 @@ tasks:
     ignoreworker: false
   "9":
     id: "9"
-    taskid: d79d8f9b-0d3d-479f-8fe1-1cf0902d8bf2
+    taskid: 9482b4f3-cfff-4572-8177-82425015af71
     type: regular
     task:
-      id: d79d8f9b-0d3d-479f-8fe1-1cf0902d8bf2
+      id: 9482b4f3-cfff-4572-8177-82425015af71
       version: -1
       name: Download DOCX file
       description: Downloads a DOCX file using HTTP GET.
@@ -331,7 +337,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -361,10 +367,10 @@ tasks:
     ignoreworker: false
   "11":
     id: "11"
-    taskid: 2c831b40-0b51-4868-8d07-3452279b8f0b
+    taskid: db1f5f75-c756-4d00-8bd4-316323b8f184
     type: regular
     task:
-      id: 2c831b40-0b51-4868-8d07-3452279b8f0b
+      id: db1f5f75-c756-4d00-8bd4-316323b8f184
       version: -1
       name: Download PDF file
       description: Downloads a PDF file using HTTP GET.
@@ -374,7 +380,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -404,10 +410,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 77764bdf-2752-45c1-845b-9912d826761d
+    taskid: b184ff30-45c2-4ddd-8401-cade5152ff59
     type: regular
     task:
-      id: 77764bdf-2752-45c1-845b-9912d826761d
+      id: b184ff30-45c2-4ddd-8401-cade5152ff59
       version: -1
       name: Delete Context
       description: Delete the context of the incident to start with clear context.
@@ -439,10 +445,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: 6d32259d-a837-4547-82d0-cf883f087d8b
+    taskid: 31115798-08a0-4f95-8d45-51f88b87d1ca
     type: condition
     task:
-      id: 6d32259d-a837-4547-82d0-cf883f087d8b
+      id: 31115798-08a0-4f95-8d45-51f88b87d1ca
       version: -1
       name: Did the PDF file return outputs?
       description: |-
@@ -525,10 +531,10 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 9ac7080d-c4dd-4b94-8fe0-4b182283c074
+    taskid: 79e7cd2d-b448-467f-8514-4869fd39a425
     type: regular
     task:
-      id: 9ac7080d-c4dd-4b94-8fe0-4b182283c074
+      id: 79e7cd2d-b448-467f-8514-4869fd39a425
       version: -1
       name: Download EML file
       description: Downloads an EML file using HTTP GET.
@@ -538,7 +544,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -568,10 +574,10 @@ tasks:
     ignoreworker: false
   "18":
     id: "18"
-    taskid: b24d3e5f-c9a5-4d2a-851a-2e7d7aea1877
+    taskid: 411b835a-4896-4f5a-821a-c317bfdf19c1
     type: regular
     task:
-      id: b24d3e5f-c9a5-4d2a-851a-2e7d7aea1877
+      id: 411b835a-4896-4f5a-821a-c317bfdf19c1
       version: -1
       name: Download XLSX file
       description: Downloads an XLSX file using HTTP GET.
@@ -581,7 +587,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -609,39 +615,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: aaea1865-4ee1-4738-8d3a-794c62b22d03
-    type: playbook
-    task:
-      id: aaea1865-4ee1-4738-8d3a-794c62b22d03
-      version: -1
-      name: Extract Indicators From File - Generic v2
-      playbookName: Extract Indicators From File - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "20":
     id: "20"
-    taskid: 3f9b5e0d-cf2f-4305-8983-856df49f1b50
+    taskid: 8e151e12-588e-4907-8554-e0cebb60daf4
     type: regular
     task:
-      id: 3f9b5e0d-cf2f-4305-8983-856df49f1b50
+      id: 8e151e12-588e-4907-8554-e0cebb60daf4
       version: -1
       name: Download RTF file
       description: Sends http request. Returns the response as json.
@@ -651,7 +630,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "21"
     scriptarguments:
       body: {}
       filename: {}
@@ -678,6 +657,129 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 950f9080-f2b8-427e-8ede-0cec74bf04b8
+    type: playbook
+    task:
+      id: 950f9080-f2b8-427e-8ede-0cec74bf04b8
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "3"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: e940c9e5-3236-42f9-823f-a5ada1ffc259
+    type: regular
+    task:
+      id: e940c9e5-3236-42f9-823f-a5ada1ffc259
+      version: -1
+      name: Download PPTX file
+      description: Downloads an PPTX file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_pptx.pptx
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 9b443dc6-bb8c-4eb4-8da3-f8eb91fd299e
+    type: regular
+    task:
+      id: 9b443dc6-bb8c-4eb4-8da3-f8eb91fd299e
+      version: -1
+      name: Download XML file
+      description: Downloads an XML file using HTTP GET.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_xml.xml
+      username: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -687,7 +789,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1415,
-        "width": 3240,
+        "width": 4160,
         "x": -1380,
         "y": 50
       }
