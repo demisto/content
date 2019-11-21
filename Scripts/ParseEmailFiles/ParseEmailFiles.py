@@ -3572,7 +3572,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
-        email_data = {}
+        email_data = None
         # if we are parsing a signed attachment there can be one of two options:
         # 1. it is a wrapper and we can ignore the outer "email"
         # 2. it is not a wrapper and will not get into recursion, therefore we need the second condition
