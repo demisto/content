@@ -7,12 +7,13 @@ class TestGetFile:
     PATH_TO_HERE = './Tests/scripts/hook_validations/tests/tests_data/'
     FILE_PATHS = [
         ('{}fake_integration.yml'.format(PATH_TO_HERE), test_utils.get_yaml),
-        ('{}fake_json.json'.format(PATH_TO_HERE), test_utils.get_json)
+        ('{}fake_json.json'.format(PATH_TO_HERE), test_utils.get_json),
+        ('{}default_image.png'.format(PATH_TO_HERE), test_utils.get_yaml)
     ]
 
     @pytest.mark.parametrize('file_path, func', FILE_PATHS)
-    def test_get_yaml(self, file_path, func):
-        assert func(file_path)
+    def test_get_file(self, file_path, func):
+        assert func(file_path) or func(file_path) == {}
 
 
 class TestGetRemoteFile:
