@@ -11,7 +11,7 @@ detaileddescription: |-
   To use this integration, you need a VirusTotal API key.
   1. Log in to your VirusTotal console.
   2. Click your username, and select **My API Key**.
-  
+
   ## Indicator Thresholds
   Configure the default threshold for each indicator type in the instance settings.
   You can also specify the threshold as an argument when running relevant commands.
@@ -33,7 +33,7 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
@@ -239,6 +239,7 @@ script:
             threshold = FILE_THRESHOLD || 10;
         }
         threshold = parseInt(threshold);
+
         var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'file/report', {resource: hash});});
         var o = res.obj;
         var ec = {};
@@ -353,13 +354,7 @@ script:
             }
             md += '\n';
         }
-        return {
-            Type: entryTypes.note,
-            Contents: res.body,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: ec
-        };
+       return{Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
     }
     function calcRecentDownloads(checks) {
         var badDownloads = 0;
@@ -379,83 +374,75 @@ script:
         return badDownloads;
     }
     function doIP(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries, fullResponse) {
-        if (!isValidIP(ip)) {
-            return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
-        }
-        if (!threshold) {
-            threshold = IP_THRESHOLD || 10;
-        }
-        threshold = parseInt(threshold);
-        if (!sampleSize) {
-            sampleSize = 10;
-        }
-        var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
-        }
-        full_response = FULL_RESPONSE? 'true': fullResponse;
-        if (fullResponse === 'true'){
-            maxLen = 1000;
-        } else {
-            maxLen = 50;
-        }
-        // Calculate score based on recently found downloads
-        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
-        var dbotScore = 0;
-        if (badDownloads >= threshold) {
-            dbotScore = 3;
-            addMalicious(ec, outputPaths.ip,{
-                Address: ip,
-                ASN: o.asn,
-                Geo: {Country: o.country},
-                Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}
-            });
-        } else if (badDownloads >= threshold / 2) {
-            dbotScore = 2;
-        } else {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
-        var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
-        md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
-        md += 'Country: **' + o.country + '**\n';
-        md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
-        var detectedUrls = o.detected_urls || [];
-        var detectedDownloadedSamples = o.detected_downloaded_samples || [];
-        var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
-        var detectedCommunicatingSamples = o.detected_communicating_samples || [];
-        var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
-        var detectedReferrerSamples = o.detected_referrer_samples || [];
-        var undetectedReferrerSamples = o.undetected_referrer_samples || [];
-        var resolutions = o.resolutions || [];
-        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
-            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
-            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
-            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
-        for (var i = 0; i<arrTitle.length; i++) {
-            if (arrTitle[i].a) {
-                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+
+        var ip_list = argToList(ip);
+        var entry_list = [];
+        for (z = 0; z < ip_list.length; z++) {
+            ip = ip_list[z];
+            if (!isValidIP(ip)) {
+                return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
             }
-        }
-        if (ec[outputPaths.ip]){ // malicious
-            ec[outputPaths.ip]['VirusTotal'] = {
-                'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
-                'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
-                "DetectedURLs": detectedUrls.slice(0,maxLen),
-                'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
-                'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
-                'Resolutions': resolutions.slice(0,maxLen),
-                'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
-                'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-            };
-        } else { // not malicious
-            ec[outputPaths.ip] = {
-                "Address": ip,
-                "VirusTotal": {
+            if (!threshold) {
+                threshold = IP_THRESHOLD || 10;
+            }
+            threshold = parseInt(threshold);
+            if (!sampleSize) {
+                sampleSize = 10;
+            }
+            var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'ip-address/report', {ip: ip});});
+            var o = res.obj;
+            var ec = {};
+            if (o.response_code === 0) {
+                ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
+            }
+            full_response = FULL_RESPONSE? 'true': fullResponse;
+            if (fullResponse === 'true'){
+                maxLen = 1000;
+            } else {
+                maxLen = 50;
+            }
+            // Calculate score based on recently found downloads
+            var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+            var dbotScore = 0;
+            if (badDownloads >= threshold) {
+                dbotScore = 3;
+                addMalicious(ec, outputPaths.ip,{
+                    Address: ip,
+                    ASN: o.asn,
+                    Geo: {Country: o.country},
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}
+                });
+            } else if (badDownloads >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
+            var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
+            md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
+            md += 'Country: **' + o.country + '**\n';
+            md += 'VT Link: [' + ip + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(ip) + ')\n';
+            var detectedUrls = o.detected_urls || [];
+            var detectedDownloadedSamples = o.detected_downloaded_samples || [];
+            var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
+            var detectedCommunicatingSamples = o.detected_communicating_samples || [];
+            var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
+            var detectedReferrerSamples = o.detected_referrer_samples || [];
+            var undetectedReferrerSamples = o.undetected_referrer_samples || [];
+            var resolutions = o.resolutions || [];
+            var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+                {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+                {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+                {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
+            for (var i = 0; i<arrTitle.length; i++) {
+                if (arrTitle[i].a) {
+                    md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+                }
+            }
+            if (ec[outputPaths.ip]){ // malicious
+                ec[outputPaths.ip]['VirusTotal'] = {
                     'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
                     'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
                     "DetectedURLs": detectedUrls.slice(0,maxLen),
@@ -464,146 +451,156 @@ script:
                     'Resolutions': resolutions.slice(0,maxLen),
                     'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
                     'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
-                },
-                'ASN': o.asn,
-                'Geo': {Country: o.country}
-            };
-        }
-        longFormat = FULL_RESPONSE? 'true': longFormat;
-        if (longFormat === 'true') {
-            for (var j=0; j<arrTitle.length; j++) {
-                if (arrTitle[j].a) {
-                    md += '### ' + arrTitle[j].t + '\n';
-                    // Print only the first 10 rows
-                    var curr = [];
-                    for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
-                        curr.push(arrTitle[j].a[k]);
+                };
+            } else { // not malicious
+                ec[outputPaths.ip] = {
+                    "Address": ip,
+                    "VirusTotal": {
+                        'DownloadedHashes': detectedDownloadedSamples.slice(0,maxLen),
+                        'UnAVDetectedDownloadedHashes': undetectedDownloadedSamples.slice(0,maxLen),
+                        "DetectedURLs": detectedUrls.slice(0,maxLen),
+                        'CommunicatingHashes': detectedCommunicatingSamples.slice(0,maxLen),
+                        'UnAVDetectedCommunicatingHashes': undetectedCommunicatingSamples.slice(0,maxLen),
+                        'Resolutions': resolutions.slice(0,maxLen),
+                        'ReferrerHashes': detectedReferrerSamples.slice(0,maxLen),
+                        'UnAVDetectedReferrerHashes': undetectedReferrerSamples.slice(0,maxLen)
+                    },
+                    'ASN': o.asn,
+                    'Geo': {Country: o.country}
+                };
+            }
+            longFormat = FULL_RESPONSE? 'true': longFormat;
+            if (longFormat === 'true') {
+                for (var j=0; j<arrTitle.length; j++) {
+                    if (arrTitle[j].a) {
+                        md += '### ' + arrTitle[j].t + '\n';
+                        // Print only the first 10 rows
+                        var curr = [];
+                        for (var k=0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
+                            curr.push(arrTitle[j].a[k]);
+                        }
+                        md += arrToMd(curr) + '\n';
                     }
-                    md += arrToMd(curr) + '\n';
                 }
             }
+            entry_list.push({Type: entryTypes.note,Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return {
-            Type: entryTypes.note,
-            Contents: res.body,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: ec
-        };
+        return entry_list;
     }
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
-        var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
-        if (protocol !== null) { // if url doesn't start with a protocol, ignore
-          protocol = protocol[0].toLowerCase();
-          var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
-          url = protocol + '://' + not_protocol;
-        }
-        if (!submitWait) {
-            submitWait = 0;
-        }
-        if (!sampleSize) {
-            sampleSize = 10;
-        }
-        if (!threshold) {
-            threshold = URL_THRESHOLD || 10;
-        }
-        threshold = parseInt(threshold);
-        var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
-        }
-        var md = '## VirusTotal URL Reputation for: ' + url + '\n';
-        if (!o.scans && submitWait>0) {
-            wait(parseInt(submitWait));
-            res = doReq('GET', 'url/report', {resource: url});
-            o = res.obj;
-        }
-        if (!o.scans) { // URL doesn't exist in VT
-            md += 'URL submitted for scan. Please retry command later\n';
-            ec[outputPaths.url] = {
-                Data: url,
-                VirusTotal: {
-                    ScanID: o.scan_id
-                },
-                DetectionEngines: 0,
-                PositiveDetections: 0
-            };
-        } else {
-            md += 'Last scan date: *' + o.scan_date + '*\n';
-            md += 'Total scans: **' + o.total + '**\n';
-            md += 'Positive scans: **' + o.positives + '**\n';
-            md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
-            var dbotScore = 0;
-            if (o.positives >= threshold  || isEnoughPreferredVendors(o)) {
-                dbotScore = 3;
-                addMalicious(ec, outputPaths.url, {
-                    Data: url,
-                    Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total},
-                    DetectionEngines: Object.keys(o.scans).length,
-                    PositiveDetections: o.positives
-                });
-            } else if (o.positives >= threshold / 2) {
-                dbotScore = 2;
-            } else {
-                dbotScore = 1;
+
+        var url_list = argToList(url);
+        var entry_list = [];
+        for (z = 0; z < url_list.length; z++) {
+            url = url_list[z];
+            var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
+            if (protocol !== null) { // if url doesn't start with a protocol, ignore
+              protocol = protocol[0].toLowerCase();
+              var not_protocol = url.replace(/(^\w+:|^)\/\//, '');
+              url = protocol + '://' + not_protocol;
             }
-            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
-            longFormat = FULL_RESPONSE? 'true': longFormat;
-            if (longFormat === 'true') { // add scans table
-                scansTable = createScansTable(o.scans);
-                md += tableToMarkdown('Scans', scansTable);
-                if (ec[outputPaths.url]){ // malicious
-                    scans_ec = {
-                        Scans: scansTable,
-                        ScanID: o.scan_id,
-                        vtLink: o.permalink
-                    };
-                    ec[outputPaths.url].VirusTotal = scans_ec;
-                } else { // not malicious
-                    scans_ec = {
+            if (!submitWait) {
+                submitWait = 0;
+            }
+            if (!sampleSize) {
+                sampleSize = 10;
+            }
+            if (!threshold) {
+                threshold = URL_THRESHOLD || 10;
+            }
+            threshold = parseInt(threshold);
+            var res = withRetries(waitForRateLimit, retries, function() {return doReq('POST', 'url/report', {resource: url, scan:1});});
+            var o = res.obj;
+            var ec = {};
+            if (o.response_code === 0) {
+                ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
+            }
+            var md = '## VirusTotal URL Reputation for: ' + url + '\n';
+            if (!o.scans && submitWait>0) {
+                wait(parseInt(submitWait));
+                res = doReq('GET', 'url/report', {resource: url});
+                o = res.obj;
+            }
+            if (!o.scans) { // URL doesn't exist in VT
+                md += 'URL submitted for scan. Please retry command later\n';
+                ec[outputPaths.url] = {
+                    Data: url,
+                    VirusTotal: {
+                        ScanID: o.scan_id
+                    },
+                    DetectionEngines: 0,
+                    PositiveDetections: 0
+                };
+            } else {
+                md += 'Last scan date: *' + o.scan_date + '*\n';
+                md += 'Total scans: **' + o.total + '**\n';
+                md += 'Positive scans: **' + o.positives + '**\n';
+                md += 'VT Link: [' + url + '](' + o.permalink + ')\n';
+                var dbotScore = 0;
+                if (o.positives >= threshold  || isEnoughPreferredVendors(o)) {
+                    dbotScore = 3;
+                    addMalicious(ec, outputPaths.url, {
                         Data: url,
-                        "VirusTotal": {
+                        Malicious: {Vendor: 'VirusTotal', Description: 'Positives / Total: ' + o.positives + ' / ' + o.total},
+                        DetectionEngines: Object.keys(o.scans).length,
+                        PositiveDetections: o.positives
+                    });
+                } else if (o.positives >= threshold / 2) {
+                    dbotScore = 2;
+                } else {
+                    dbotScore = 1;
+                }
+                ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
+                longFormat = FULL_RESPONSE? 'true': longFormat;
+                if (longFormat === 'true') { // add scans table
+                    scansTable = createScansTable(o.scans);
+                    md += tableToMarkdown('Scans', scansTable);
+                    if (ec[outputPaths.url]){ // malicious
+                        scans_ec = {
                             Scans: scansTable,
                             ScanID: o.scan_id,
                             vtLink: o.permalink
-                        },
-                        DetectionEngines: Object.keys(o.scans).length,
-                        PositiveDetections: o.positives
-                    };
-                    ec[outputPaths.url] = scans_ec;
-                }
-            } else { // short format
-                if (ec[outputPaths.url]){ // malicious
-                    ec[outputPaths.url]['VirusTotal'] = {
-                        ScanID: o.scan_id,
-                        vtLink: o.permalink
-                    };
-                } else { // not malicious
-                    ec[outputPaths.url] = {
-                        Data: url,
-                        VirusTotal: {
+                        };
+                        ec[outputPaths.url].VirusTotal = scans_ec;
+                    } else { // not malicious
+                        scans_ec = {
+                            Data: url,
+                            "VirusTotal": {
+                                Scans: scansTable,
+                                ScanID: o.scan_id,
+                                vtLink: o.permalink
+                            },
+                            DetectionEngines: Object.keys(o.scans).length,
+                            PositiveDetections: o.positives
+                        };
+                        ec[outputPaths.url] = scans_ec;
+                    }
+                } else { // short format
+                    if (ec[outputPaths.url]){ // malicious
+                        ec[outputPaths.url]['VirusTotal'] = {
                             ScanID: o.scan_id,
                             vtLink: o.permalink
-                        },
-                        DetectionEngines: Object.keys(o.scans).length,
-                        PositiveDetections: o.positives
-                    };
+                        };
+                    } else { // not malicious
+                        ec[outputPaths.url] = {
+                            Data: url,
+                            VirusTotal: {
+                                ScanID: o.scan_id,
+                                vtLink: o.permalink
+                            },
+                            DetectionEngines: Object.keys(o.scans).length,
+                            PositiveDetections: o.positives
+                        };
+                    }
                 }
             }
+            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
         }
-        return {
-            Type: entryTypes.note,
-            Contents: res.body,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: ec
-        };
+        return entry_list;
     }
     function doDomain(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!sampleSize) {
@@ -613,176 +610,177 @@ script:
             threshold = DOMAIN_THRESHOLD || 10;
         }
         threshold = parseInt(threshold);
-        var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
-        var o = res.obj;
-        var ec = {};
-        if (o.response_code === 0) {
-            ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
-            return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
-        }
-        full_response = FULL_RESPONSE? 'true': fullResponse;
-        if (fullResponse === 'true') {
-            maxLen = 1000;
-        } else {
-            maxLen = 50;
-        }
-        // Calculate score based on recently found downloads
-        var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
-        var dbotScore = 0;
-        if (badDownloads >= threshold) {
-            dbotScore = 3;
-            addMalicious(ec, outputPaths.domain, {Name: domain,
-                Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}});
-        } else if (badDownloads >= threshold / 2) {
-            dbotScore = 2;
-        } else {
-            dbotScore = 1;
-        }
-        ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
-        var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
-        md += '#### Domain categories: *' + o.categories + "*\n";
-        md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
-        var detectedUrls = o.detected_urls || [];
-        var detectedDownloadedSamples = o.detected_downloaded_samples || [];
-        var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
-        var detectedCommunicatingSamples = o.detected_communicating_samples || [];
-        var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
-        var detectedReferrerSamples = o.detected_referrer_samples || [];
-        var undetectedReferrerSamples = o.undetected_referrer_samples || [];
-        var resolutions = o.resolutions || [];
-        var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
-            {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
-            {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
-            {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
-        for (var i = 0; i<arrTitle.length; i++) {
-            if (arrTitle[i].a) {
-                md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+        var domain_list = argToList(domain);
+        var entry_list = [];
+        for (z = 0; z < domain_list.length; z++) {
+            domain = domain_list[z];
+            var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
+            var o = res.obj;
+            var ec = {};
+            if (o.response_code === 0) {
+                ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
             }
-        }
-        longFormat = FULL_RESPONSE? 'true': longFormat;
-        if (longFormat === 'true') {
-            for (var j = 0; j<arrTitle.length; j++) {
-                if (arrTitle[j].a) {
-                    md += '### ' + arrTitle[j].t + '\n';
-                    // Print only the first 10 rows
-                    var curr = [];
-                    for (var k = 0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
-                        curr.push(arrTitle[j].a[k]);
+            full_response = FULL_RESPONSE? 'true': fullResponse;
+            if (fullResponse === 'true') {
+                maxLen = 1000;
+            } else {
+                maxLen = 50;
+            }
+            // Calculate score based on recently found downloads
+            var badDownloads = calcRecentDownloads([o.detected_downloaded_samples, o.undetected_downloaded_samples]);
+            var dbotScore = 0;
+            if (badDownloads >= threshold) {
+                dbotScore = 3;
+                addMalicious(ec, outputPaths.domain, {Name: domain,
+                    Malicious: {Vendor: 'VirusTotal', Description: 'Recent malicious downloads: ' + badDownloads}});
+            } else if (badDownloads >= threshold / 2) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
+            var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
+            md += '#### Domain categories: *' + o.categories + "*\n";
+            md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
+            var detectedUrls = o.detected_urls || [];
+            var detectedDownloadedSamples = o.detected_downloaded_samples || [];
+            var undetectedDownloadedSamples = o.undetected_downloaded_samples || [];
+            var detectedCommunicatingSamples = o.detected_communicating_samples || [];
+            var undetectedCommunicatingSamples = o.undetected_communicating_samples || [];
+            var detectedReferrerSamples = o.detected_referrer_samples || [];
+            var undetectedReferrerSamples = o.undetected_referrer_samples || [];
+            var resolutions = o.resolutions || [];
+            var arrTitle = [{a: detectedUrls, t: 'Detected URL'}, {a: detectedDownloadedSamples, t: 'Detected downloaded sample'},
+                {a: undetectedDownloadedSamples, t: 'Undetected downloaded sample'}, {a: detectedCommunicatingSamples, t: 'Detected communicating sample'},
+                {a: undetectedCommunicatingSamples, t: 'Undetected communicating sample'},{a: detectedReferrerSamples, t: 'Detected referrer sample'},
+                {a: undetectedReferrerSamples, t: 'Undetected referrer sample'}, {a: resolutions, t: 'Resolutions'}];
+            for (var i = 0; i<arrTitle.length; i++) {
+                if (arrTitle[i].a) {
+                    md += arrTitle[i].t + ' count: **' + arrTitle[i].a.length + '**\n';
+                }
+            }
+            longFormat = FULL_RESPONSE? 'true': longFormat;
+            if (longFormat === 'true') {
+                for (var j = 0; j<arrTitle.length; j++) {
+                    if (arrTitle[j].a) {
+                        md += '### ' + arrTitle[j].t + '\n';
+                        // Print only the first 10 rows
+                        var curr = [];
+                        for (var k = 0; k<Math.min(arrTitle[j].a.length, sampleSize); k++) {
+                            curr.push(arrTitle[j].a[k]);
+                        }
+                        md += arrToMd(curr) + '\n';
                     }
-                    md += arrToMd(curr) + '\n';
                 }
             }
-        }
-        if (o.domain_siblings && o.domain_siblings.length > 0) {
-            md += "### Observed subdomains\n";
-            for (i = 0; i < o.domain_siblings.length; i++) {
-                md += "- " + o.domain_siblings[i] + "\n";
-            }
-        }
-        if (o.whois) {
-            var whoIs = o.whois.trim();
-            var lines = whoIs ? whoIs.split("\n") : [];
-            md += '### Whois Lookup\n';
-            for (i = 0; i < lines.length; i++) {
-                var parts = lines[i].split(': ');
-                if (parts[0] && parts[1]) {
-                    md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
+            if (o.domain_siblings && o.domain_siblings.length > 0) {
+                md += "### Observed subdomains\n";
+                for (i = 0; i < o.domain_siblings.length; i++) {
+                    md += "- " + o.domain_siblings[i] + "\n";
                 }
             }
-        }
-        var detected_downloaded_samples = o.detected_downloaded_samples;
-        if (detected_downloaded_samples === undefined) {
-            detected_downloaded_samples = [];
-        } else {
-            detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen);
-        }
-        var undetected_downloaded_samples = o.undetected_downloaded_samples;
-        if (undetected_downloaded_samples === undefined) {
-            undetected_downloaded_samples = [];
-        } else {
-            undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen);
-        }
-        var detected_urls = o.detected_urls;
-        if (detected_urls === undefined) {
-            detected_urls = [];
-        } else {
-            detected_urls = detected_urls.slice(0,maxLen);
-        }
-        var detected_communicating_samples = o.detected_communicating_samples;
-        if (detected_communicating_samples === undefined) {
-            detected_communicating_samples = [];
-        } else {
-            detected_communicating_samples = detected_communicating_samples.slice(0,maxLen);
-        }
-        var undetected_communicating_samples = o.undetected_communicating_samples;
-        if (undetected_communicating_samples === undefined) {
-            undetected_communicating_samples = [];
-        } else {
-            undetected_communicating_samples = undetected_communicating_samples.slice(0,maxLen);
-        }
-        resolutions = o.resolutions;
-        if (resolutions === undefined) {
-            resolutions = [];
-        } else {
-            resolutions = resolutions.slice(0,maxLen);
-        }
-        var detected_referrer_samples = o.detected_referrer_samples;
-        if (detected_referrer_samples === undefined) {
-            detected_referrer_samples = [];
-        } else {
-            detected_referrer_samples = detected_referrer_samples.slice(0,maxLen);
-        }
-        var undetected_referrer_samples = o.undetected_referrer_samples;
-        if (undetected_referrer_samples === undefined) {
-            undetected_referrer_samples = [];
-        } else {
-            undetected_referrer_samples = undetected_referrer_samples.slice(0,maxLen);
-        }
-        var domain_siblings = o.domain_siblings;
-        if (domain_siblings === undefined) {
-            domain_siblings = [];
-        } else {
-            domain_siblings = domain_siblings.slice(0,maxLen);
-        }
-        domain_ec = {
-            "Name": domain,
-            "VirusTotal": {
-                'DownloadedHashes': detected_downloaded_samples,
-                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
-                "DetectedURLs": detected_urls,
-                'CommunicatingHashes': detected_communicating_samples,
-                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
-                'Resolutions': resolutions,
-                'ReferrerHashes': detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': undetected_referrer_samples,
-                'Whois': o.whois,
-                'Subdomains': domain_siblings,
+            if (o.whois) {
+                var whoIs = o.whois.trim();
+                var lines = whoIs ? whoIs.split("\n") : [];
+                md += '### Whois Lookup\n';
+                for (i = 0; i < lines.length; i++) {
+                    var parts = lines[i].split(': ');
+                    if (parts[0] && parts[1]) {
+                        md += "**" + parts[0].trim() + "**: " + parts[1] + "\n";
+                    }
+                }
             }
-        };
-        if (ec[outputPaths.domain]){ // malicious
-            ec[outputPaths.domain].VirusTotal = {
-                'DownloadedHashes': detected_downloaded_samples,
-                'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
-                "DetectedURLs": detected_urls,
-                'CommunicatingHashes': detected_communicating_samples,
-                'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
-                'Resolutions': resolutions,
-                'ReferrerHashes': detected_referrer_samples,
-                'UnAVDetectedReferrerHashes': undetected_referrer_samples,
-                'Whois': o.whois,
-                'Subdomains': domain_siblings,
+            var detected_downloaded_samples = o.detected_downloaded_samples;
+            if (detected_downloaded_samples === undefined) {
+                detected_downloaded_samples = [];
+            } else {
+                detected_downloaded_samples = detected_downloaded_samples.slice(0,maxLen);
+            }
+            var undetected_downloaded_samples = o.undetected_downloaded_samples;
+            if (undetected_downloaded_samples === undefined) {
+                undetected_downloaded_samples = [];
+            } else {
+                undetected_downloaded_samples = undetected_downloaded_samples.slice(0,maxLen);
+            }
+            var detected_urls = o.detected_urls;
+            if (detected_urls === undefined) {
+                detected_urls = [];
+            } else {
+                detected_urls = detected_urls.slice(0,maxLen);
+            }
+            var detected_communicating_samples = o.detected_communicating_samples;
+            if (detected_communicating_samples === undefined) {
+                detected_communicating_samples = [];
+            } else {
+                detected_communicating_samples = detected_communicating_samples.slice(0,maxLen);
+            }
+            var undetected_communicating_samples = o.undetected_communicating_samples;
+            if (undetected_communicating_samples === undefined) {
+                undetected_communicating_samples = [];
+            } else {
+                undetected_communicating_samples = undetected_communicating_samples.slice(0,maxLen);
+            }
+            resolutions = o.resolutions;
+            if (resolutions === undefined) {
+                resolutions = [];
+            } else {
+                resolutions = resolutions.slice(0,maxLen);
+            }
+            var detected_referrer_samples = o.detected_referrer_samples;
+            if (detected_referrer_samples === undefined) {
+                detected_referrer_samples = [];
+            } else {
+                detected_referrer_samples = detected_referrer_samples.slice(0,maxLen);
+            }
+            var undetected_referrer_samples = o.undetected_referrer_samples;
+            if (undetected_referrer_samples === undefined) {
+                undetected_referrer_samples = [];
+            } else {
+                undetected_referrer_samples = undetected_referrer_samples.slice(0,maxLen);
+            }
+            var domain_siblings = o.domain_siblings;
+            if (domain_siblings === undefined) {
+                domain_siblings = [];
+            } else {
+                domain_siblings = domain_siblings.slice(0,maxLen);
+            }
+            domain_ec = {
+                "Name": domain,
+                "VirusTotal": {
+                    'DownloadedHashes': detected_downloaded_samples,
+                    'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                    "DetectedURLs": detected_urls,
+                    'CommunicatingHashes': detected_communicating_samples,
+                    'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                    'Resolutions': resolutions,
+                    'ReferrerHashes': detected_referrer_samples,
+                    'UnAVDetectedReferrerHashes': undetected_referrer_samples,
+                    'Whois': o.whois,
+                    'Subdomains': domain_siblings,
+                }
             };
-        } else { // not malicious
-            ec[outputPaths.domain] = domain_ec;
+            if (ec[outputPaths.domain]){ // malicious
+                ec[outputPaths.domain].VirusTotal = {
+                    'DownloadedHashes': detected_downloaded_samples,
+                    'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
+                    "DetectedURLs": detected_urls,
+                    'CommunicatingHashes': detected_communicating_samples,
+                    'UnAVDetectedCommunicatingHashes': undetected_communicating_samples,
+                    'Resolutions': resolutions,
+                    'ReferrerHashes': detected_referrer_samples,
+                    'UnAVDetectedReferrerHashes': undetected_referrer_samples,
+                    'Whois': o.whois,
+                    'Subdomains': domain_siblings,
+                };
+            } else { // not malicious
+                ec[outputPaths.domain] = domain_ec;
+            }
+
+            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
         }
-        return {
-            Type: entryTypes.note,
-            Contents: res.body,
-            ContentsFormat: formats.json,
-            HumanReadable: md,
-            EntryContext: ec
-        };
+        return entry_list;
     }
     function scanURL(url) {
         var res = doReq('POST', 'url/scan', {url: url});
@@ -966,7 +964,8 @@ script:
     - name: file
       required: true
       default: true
-      description: A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256.
+      description: A CSV list of hashes of the file to query. Supports MD5, SHA1,
+        and SHA256.
     - name: long
       auto: PREDEFINED
       predefined:
@@ -976,10 +975,11 @@ script:
       defaultValue: "false"
     - name: threshold
       description: If the number of positives is higher than the threshold, the file
-        will be considered malicious. If the threshold is not specified, the default file
-        threshold, as configured in the instance settings, will be used.
+        will be considered malicious. If the threshold is not specified, the default
+        file threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for the API rate limit. Default is "0".
@@ -996,13 +996,14 @@ script:
     - contextPath: File.Malicious.Detections
       description: For malicious files, the total number of detections.
     - contextPath: File.Malicious.TotalEngines
-      description: For malicious files, the total number of engines that checked the file hash.
+      description: For malicious files, the total number of engines that checked the
+        file hash.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: File.VirusTotal.Scans.Source
@@ -1030,6 +1031,7 @@ script:
       required: true
       default: true
       description: IP address to check.
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
@@ -1038,15 +1040,16 @@ script:
       description: Whether to return full response for detected URLs. Default is "false".
       defaultValue: "false"
     - name: threshold
-      description: If the number of positives is higher than the threshold, the IP address
-        will be considered malicious. If the threshold is not specified, the default IP
-        threshold, as configured in the instance settings, will be used.
+      description: If the number of positives is higher than the threshold, the IP
+        address will be considered malicious. If the threshold is not specified, the
+        default IP threshold, as configured in the instance settings, will be used.
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format. Default is "10".
       defaultValue: "10"
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -1056,7 +1059,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
+      description: Whether to return all results, which can be thousands. Default
+        is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: IP.Address
@@ -1072,20 +1076,20 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: IP.VirusTotal.DownloadedHashes
       description: Latest files that were detected by at least one antivirus solution,
         and were downloaded by VirusTotal from the IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that were not detected by any antivirus solution, and
-        were downloaded by VirusTotal from the specified IP address.
+      description: Latest files that were not detected by any antivirus solution,
+        and were downloaded by VirusTotal from the specified IP address.
     - contextPath: IP.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this IP address that were detected by at least one
-        URL scanner.
+      description: Latest URLs hosted in this IP address that were detected by at
+        least one URL scanner.
     - contextPath: IP.VirusTotal.CommunicatingHashes
       description: Latest detected files that communicate with this IP address.
     - contextPath: IP.VirusTotal.UnAVDetectedCommunicatingHashes
@@ -1097,13 +1101,15 @@ script:
     - contextPath: IP.VirusTotal.UnAVDetectedReferrerHashes
       description: Latest undetected files that embed this IP address in their strings.
     - contextPath: IP.VirusTotal.Resolutions.last_resolved
-      description: Last resolution times of the domains that resolved to the specified IP address.
+      description: Last resolution times of the domains that resolved to the specified
+        IP address.
     description: Checks the reputation of an IP address.
   - name: url
     arguments:
     - name: url
       required: true
       description: The URL to check.
+      isArray: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
         etc.) to display for long format.
@@ -1117,13 +1123,15 @@ script:
       defaultValue: "false"
     - name: threshold
       description: If the number of positives is higher than the threshold, the URL
-        will be considered malicious. If the threshold is not specified, the default URL
-        threshold, as configured in the instance settings, will be used.
+        will be considered malicious. If the threshold is not specified, the default
+        URL threshold, as configured in the instance settings, will be used.
     - name: submitWait
-      description: Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0".
+      description: Time (in seconds) to wait if the URL does not exist and is submitted
+        for scanning. Default is "0".
       defaultValue: "0"
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -1138,9 +1146,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: URL.VirusTotal.Scans.Source
@@ -1168,12 +1176,14 @@ script:
       required: true
       default: true
       description: Domain name to check.
+      isArray: true
     - name: long
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: Whether to return the full response for detected URLs. Default is "false".
+      description: Whether to return the full response for detected URLs. Default
+        is "false".
       defaultValue: "false"
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
@@ -1181,10 +1191,11 @@ script:
       defaultValue: "10"
     - name: threshold
       description: If the number of positives is higher than the threshold, the domain
-        will be considered malicious. If the threshold is not specified, the default domain
-        threshold, as configured in the instance settings, will be used.
+        will be considered malicious. If the threshold is not specified, the default
+        domain threshold, as configured in the instance settings, will be used.
     - name: wait
-      description: Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60".
+      description: Time (in seconds) to wait between tries if the API rate limit is
+        reached. Default is "60".
       defaultValue: "60"
     - name: retries
       description: Number of retries for API rate limit. Default is "0".
@@ -1194,7 +1205,8 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks.
+      description: Whether to return all results, which can be thousands. Default
+        is "false". We recommend that you don't return full results in playbooks.
       defaultValue: "false"
     outputs:
     - contextPath: Domain.Name
@@ -1206,9 +1218,9 @@ script:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: Indicator type.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: Domain.VirusTotal.DownloadedHashes
@@ -1222,11 +1234,11 @@ script:
     - contextPath: Domain.VirusTotal.Subdomains
       description: Subdomains.
     - contextPath: Domain.VirusTotal.UnAVDetectedDownloadedHashes
-      description: Latest files that were not detected by any antivirus solution, and
-        were downloaded by VirusTotal from the specified IP address.
+      description: Latest files that were not detected by any antivirus solution,
+        and were downloaded by VirusTotal from the specified IP address.
     - contextPath: Domain.VirusTotal.DetectedURLs
-      description: Latest URLs hosted in this domain address that were detected by at least
-        one URL scanner.
+      description: Latest URLs hosted in this domain address that were detected by
+        at least one URL scanner.
     - contextPath: Domain.VirusTotal.ReferrerHashes
       description: Latest detected files that embed this domain address in their strings.
     - contextPath: Domain.VirusTotal.UnAVDetectedReferrerHashes
@@ -1236,7 +1248,8 @@ script:
       description: Latest undetected files that communicated with this domain in a
         sandbox.
     - contextPath: Domain.VirusTotal.Resolutions.last_resolved
-      description: Last resolution times of the IP addresses that resolve to this domain.
+      description: Last resolution times of the IP addresses that resolve to this
+        domain.
     description: Checks the reputation of a domain.
   - name: file-scan
     arguments:
@@ -1245,7 +1258,8 @@ script:
       default: true
       description: The file entry ID to submit.
     - name: uploadURL
-      description: Private API extension. Special upload URL for files larger than 32 MB.
+      description: Private API extension. Special upload URL for files larger than
+        32 MB.
     outputs:
     - contextPath: vtScanID
       description: Scan IDs of the submitted files.
@@ -1265,7 +1279,8 @@ script:
     - contextPath: vtLink
       description: Virus Total permanent link.
       type: string
-    description: Re-scans an already submitted file. This avoids having to upload the file again.
+    description: Re-scans an already submitted file. This avoids having to upload
+      the file again.
   - name: url-scan
     arguments:
     - name: url
@@ -1287,8 +1302,9 @@ script:
       description: The file hash (MD5, SHA1, or SHA256) or URL on which you're commenting.
     - name: comment
       required: true
-      description: 'The actual review, which you can tag by using the "#" twitter-like syntax, for example,
-        #disinfection #zbot, and reference users using the "@" syntax, for example, @VirusTotalTeam).'
+      description: 'The actual review, which you can tag by using the "#" twitter-like
+        syntax, for example, #disinfection #zbot, and reference users using the "@"
+        syntax, for example, @VirusTotalTeam).'
     description: Adds comments to files and URLs.
   - name: vt-file-scan-upload-url
     arguments: []
@@ -1301,10 +1317,10 @@ script:
     - name: resource
       required: true
       default: true
-      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving comments.
+      description: The file hash (MD5, SHA1, orSHA256) or URL from which you're retrieving
+        comments.
     - name: before
-      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for paging.
+      description: Datetime token in the format YYYYMMDDHHMISS. You can use this for
+        paging.
     description: Private API. Retrieves comments for a given resource.
   runonce: false
-tests:
-- virusTotal-test-playbook
