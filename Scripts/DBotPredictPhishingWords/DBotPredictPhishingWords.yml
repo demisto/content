@@ -25,7 +25,8 @@ args:
   secret: false
 - default: false
   defaultValue: '50'
-  description: 'Maximum number of positive/negative words to return for the model decision. '
+  description: 'Maximum number of positive/negative words to return for the model
+    decision. '
   isArray: false
   name: topWordsLimit
   required: false
@@ -80,7 +81,8 @@ outputs:
   description: A list of words in the input text that supports the model decision.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.NegativeWords
-  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  description: A list of words in the input text that do not support the model decision.
+    These words better support a different classification class.
   type: Unknown
 - contextPath: DBotPredictPhishingWords.TextTokensHighlighted
   description: The input text (after pre-processing) with the positive words that
@@ -94,3 +96,5 @@ tags:
 timeout: '0'
 type: python
 dockerimage: demisto/dl:1.3
+tests:
+  - Create Phishing Classifier V2 ML Test

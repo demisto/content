@@ -1,6 +1,11 @@
 ## [Unreleased]
 
 
+## [19.11.0] - 2019-11-12
+  - Fixed table and list functions.
+  - Fixed an issue where trends have long floating point values.
+  - Fixed an issue where line charts with more than 40 columns were not readable.
+
 ## [19.10.1] - 2019-10-15
 - When generatung a DOCX reports fails, users receive an error message.
 - Added the *itemsSection* element to DOCX reports (mainly used for investigation reports).
