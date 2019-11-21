@@ -35,4 +35,3 @@ class BaseValidator(object):
             self.is_valid = False
             return False
         return True
-

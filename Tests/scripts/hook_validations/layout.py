@@ -1,6 +1,4 @@
-from Tests.scripts.error_constants import Errors
 from Tests.scripts.hook_validations.base_validator import BaseValidator
-from Tests.test_utils import print_error
 
 
 class LayoutValidator(BaseValidator):
