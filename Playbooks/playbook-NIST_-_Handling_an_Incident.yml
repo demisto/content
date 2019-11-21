@@ -1,6 +1,6 @@
-id: NIST - Handling an Incident
+id: NIST - Handling an Incident Template
 version: -1
-name: NIST - Handling an Incident
+name: NIST - Handling an Incident Template
 fromversion: 5.0.0
 description: |-
   This playbook contains the phases to handling an incident as described in the 'Handling an Incident' section of NIST - Computer Security Incident Handling Guide.
