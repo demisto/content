@@ -247,7 +247,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         max_records: Union[str, int],
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -274,9 +274,7 @@ def fetch_incidents_command(
     total = 0
     offset = 0
     max_records = int(max_records)
-    max_records_page = 200
-    if max_records <= 200:
-        max_records_page = max_records
+    max_records_page = min(200, max_records)
     raw_response = client.get_cases(begin_date=datetime_new_last_run,
                                     date_field='caseOpen',
                                     offset=offset,
@@ -307,9 +305,9 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(case_raw)
             })
 
-        new_last_run = cases_report[-1].get('occurred')
+        new_last_run = cases_report[0].get('occurred')
     # Return results
-    return cases_report, new_last_run
+    return cases_report, {"latsRun": new_last_run}
 
 
 @logger
@@ -321,7 +319,7 @@ def get_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict, Uni
         kwargs: Usually demisto.args()
 
     Returns:
-        human readable (markdown format), raw response and entry context
+        human readable (markdown format), entry context and raw response
     """
     raw_response: Dict = client.get_cases(**kwargs)  # type: ignore
     if raw_response:
@@ -353,7 +351,7 @@ def get_case_by_id_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
         kwargs: Usually demisto.args()
 
     Returns:
-        human readable (markdown format), raw response and entry context
+        human readable (markdown format), entry context and raw response
     """
     raw_response: Dict = client.get_case_by_id(**kwargs)  # type: ignore
     if raw_response:
@@ -385,7 +383,7 @@ def get_open_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, dict
           kwargs: Usually demisto.args()
 
       Returns:
-          human readable (markdown format), raw response and entry context
+          human readable (markdown format), entry context and raw response
       """
     raw_response: Dict = client.get_cases(**kwargs, query_type='open')  # type: ignore
     if raw_response:
@@ -417,11 +415,11 @@ def get_closed_cases_command(client: Client, **kwargs: Dict) -> Tuple[object, di
           kwargs: Usually demisto.args()
 
       Returns:
-          human readable (markdown format), raw response and entry context
+          human readable (markdown format), entry context and raw response
       """
     raw_response: Dict = client.get_cases(**kwargs, query_type='closed')  # type: ignore
     if raw_response:
-        title = f'{INTEGRATION_NAME} - closed cases'
+        title = f'{INTEGRATION_NAME} - Closed cases'
         phishlabs_ec = raw_response_to_context(raw_response.get('data', []))
         context_entry: Dict = {
             f'{INTEGRATION_CONTEXT_NAME}(val.DRP.CaseID && val.EIR.CaseID === obj.DRP.CaseID && '
@@ -468,7 +466,7 @@ def main():
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun(),
+                                                              last_run=demisto.getLastRun().get('lastRun'),
                                                               max_records=params.get('fetchLimit'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
