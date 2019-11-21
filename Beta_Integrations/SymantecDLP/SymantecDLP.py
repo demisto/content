@@ -601,6 +601,17 @@ def incident_violations_command(client: Client, args: dict) -> Tuple[str, dict, 
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run: dict, saved_report_id: str):
+    """
+    Performs the fetch incidents functionality of Demisto, which means that every minute if fetches incidents
+    from Symantec DLP and uploads them to Demisto server.
+    :param client: Demisto Client
+    :param fetch_time: For the first time the integration is enabled with the fetch incidents functionality, the fetch
+    time indicates from what time to start fetching existing incidents in Symantec DLP system.
+    :param fetch_limit: Indicates how many incidents to fetch every minute
+    :param last_run: Demisto last run object
+    :param saved_report_id: The report ID to retrive the incidents from
+    :return: A list of Demisto incidents
+    """
     # We use parse to get out time in datetime format and not iso, that's what Symantec DLP is expecting to get
     if last_run and last_run.get('last_fetched_event_iso'):
         last_update_time = parse(last_run['last_fetched_event_iso'])
@@ -694,7 +705,7 @@ def main():
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore[operator]
         elif command == 'test-module':
-            test_module(client, saved_report_id)  # type: ignore[operator]
+            test_module(client, saved_report_id)  # type: ignore[arg-type]
         elif command == 'symantec-dlp-list-incidents':
             human_readable, context, raw_response =\
                 commands[command](client, args, saved_report_id)  # type: ignore[operator]
