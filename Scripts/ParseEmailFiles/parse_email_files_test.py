@@ -10,7 +10,7 @@ def exec_command_for_file(file_path, info="RFC 822 mail text, with CRLF line ter
     Return a executeCommand function which will return the passed path as an entry to the call 'getFilePath'
 
     Arguments:
-        file_paht {string} -- file name of file residing in test_data dir
+        file_path {string} -- file name of file residing in test_data dir
 
     Raises:
         ValueError: if call with differed name from getFilePath or getEntry
@@ -108,6 +108,26 @@ def test_eml_smtp_type(mocker):
     assert len(results) == 1
     assert results[0]['Type'] == entryTypes['note']
     assert results[0]['EntryContext']['Email']['Subject'] == 'Test Smtp Email'
+
+
+# this is a test for another version of a multipart signed eml file
+def test_smime2(mocker):
+    multipart_sigened = 'multipart/signed; protocol="application/pkcs7-signature";, ASCII text, with CRLF line terminators'
+
+    mocker.patch.object(demisto, 'args', return_value={'entryid': 'test'})
+    mocker.patch.object(demisto, 'executeCommand',
+                        side_effect=exec_command_for_file('smime2.p7m', info=multipart_sigened))
+    mocker.patch.object(demisto, 'results')
+    # validate our mocks are good
+    assert demisto.args()['entryid'] == 'test'
+    main()
+    # assert demisto.results.call_count == 1
+    # call_args is tuple (args list, kwargs). we only need the first one
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['Type'] == entryTypes['note']
+    # assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
+    assert results[0]['EntryContext']['Email']['Subject'] == 'Testing signed multipart email'
 
 
 def test_eml_contains_eml(mocker):
