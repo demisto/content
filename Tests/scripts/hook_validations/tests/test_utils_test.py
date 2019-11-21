@@ -1,14 +1,18 @@
+import pytest
+
 from Tests import test_utils
 
 
-class TestGetters:
-    def test_get_yaml(self):
-        zerofox_yml = test_utils.get_yaml('Integrations/ZeroFox/ZeroFox.yml')
-        assert zerofox_yml
-        assert zerofox_yml['commonfields']['id'] == 'ZeroFox'
-        zerofox_py = test_utils.get_yaml('Integrations/ZeroFox/ZeroFox.py')
-        assert not zerofox_py
-        assert zerofox_py == {}
+class TestGetFile:
+    PATH_TO_HERE = './Tests/scripts/hook_validations/tests/tests_data/'
+    FILE_PATHS = [
+        ('{}fake_integration.yml'.format(PATH_TO_HERE), test_utils.get_yaml),
+        ('{}fake_json.json'.format(PATH_TO_HERE), test_utils.get_json)
+    ]
+
+    @pytest.mark.parametrize('file_path, func', FILE_PATHS)
+    def test_get_yaml(self, file_path, func):
+        assert func(file_path)
 
 
 class TestGetRemoteFile:
