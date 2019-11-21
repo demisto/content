@@ -68,7 +68,7 @@ class DockerImageValidator(object):
         """
         match = re.match(r'.*realm="(.+)",service="(.+)".*', www_auth, re.IGNORECASE)
         if not match:
-            return []
+            return ()
         return match.groups()
 
     @staticmethod
