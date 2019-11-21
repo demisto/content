@@ -1,0 +1,1827 @@
+commonfields:
+  id: Fidelis Elevate Network - dave2
+  version: -1
+name: Fidelis Elevate Network - dave2
+display: Fidelis Elevate Network - dave2
+category: Network Security
+image: data:image/png;base64,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
+description: Automate Detection and Response to Network Threats and data leakage in
+  your organization with Fidelis Elevate Network Integration.
+configuration:
+- display: Server URL
+  name: server_url
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (unsecure)
+  name: unsecure
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "True"
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3     months,
+    1 year)
+  name: fetch_time
+  defaultvalue: 3 days
+  type: 0
+  required: false
+script:
+  script: |2-
+
+
+
+    ''' IMPORTS '''
+    import json
+    import shutil
+    import requests
+    import random
+    import urllib
+    # disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+
+    ''' GLOBALS / PARAMS '''
+    IS_FETCH = demisto.params().get('isFetch')
+    SERVER_URL = demisto.params().get('server_url', '')
+    CREDENTIALS = demisto.params().get('credentials')
+    INSECURE = demisto.params().get('unsecure')
+    PROXY = demisto.params().get('proxy')
+    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
+    SESSION_ID = None
+    ALERT_UUID_REGEX = re.compile('[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}')
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def http_request(method, url_suffix, params=None, data=None, files=None, is_json=True):
+        # A wrapper for requests lib to send our requests and handle requests and responses better
+        headers = {}  # type: Dict[str, str]
+        if SESSION_ID is not None:
+            headers['x-uid'] = SESSION_ID
+        if files is None:
+            headers['Content-Type'] = 'application/json'
+
+        res = requests.request(
+            method,
+            SERVER_URL + url_suffix,
+            data=None if data is None else json.dumps(data),
+            headers=headers,
+            params=params,
+            files=files,
+            verify=not INSECURE,
+        )
+
+        # Handle error responses gracefully
+        if res.status_code not in {200, 201}:
+            if res.status_code == 500:
+                try:
+                    error = res.json().get('detailMessage', res.content)
+
+                except:  # noqa
+                    error = res.content
+
+                raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, error))
+            else:
+                raise Exception('Error in API call to Fidelis Integration [%d] - %s' % (res.status_code, res.reason))
+
+        if is_json:
+            try:
+                return res.json()
+
+            except ValueError:
+                return_error('failed to parse json object from response: {}'.format(res.content))
+
+        else:
+            return res.content
+
+
+    @logger
+    def login():
+        global SESSION_ID
+
+        data = {
+            'user': CREDENTIALS.get('identifier'),
+            'password': CREDENTIALS.get('password')
+        }
+
+        if SESSION_ID is None:
+            url = '/j/rest/v1/access/login/json/'
+            try:
+                res = http_request('POST', url, data=data)
+                if res.get('error') is not None:
+                    raise requests.HTTPError('Failed to login: {}'.format(res['error']))
+                SESSION_ID = res.get('uid')
+            except requests.exceptions.RequestException as e:  # noqa
+                return_error('Demisto has encounter a connection error, '
+                             'please check the server_url and credentials parameters')
+
+
+    def logout():
+        global SESSION_ID
+        if SESSION_ID is not None:
+            try:
+                url = '/j/rest/v1/access/logout/{}/'.format(SESSION_ID)
+                http_request('GET', url)
+                SESSION_ID = None
+
+            except:  # noqa
+                pass
+
+
+    def generate_pagination():
+        return {
+            'getLast': False,
+            'page': 1,
+            'referenceTime': '',
+            'size': 200,
+            'supportPaging': True,
+        }
+
+
+    def get_ioc_filter(ioc):
+        if re.match(ipv4Regex, ioc):
+            return {'simple': {'column': 'ANY_IP', 'operator': '=', 'value': ioc}}
+        elif md5Regex.match(ioc):
+            return {'simple': {'column': 'MD5', 'operator': '=', 'value': ioc}}
+        elif sha256Regex.match(ioc):
+            return {'simple': {'column': 'SHA256', 'operator': '=', 'value': ioc}}
+        elif sha1Regex.match(ioc):
+            return {'simple': {'column': 'SHA1_HASH', 'operator': '=', 'value': ioc}}
+        elif ALERT_UUID_REGEX.match(ioc):
+            return {'simple': {'column': 'UUID', 'operator': '=', 'value': ioc}}
+        else:
+            return {'simple': {'column': 'ANY_STRING', 'operator': '=~', 'value': ioc}}
+
+
+    def to_fidelis_time_format(t):
+        if isinstance(t, STRING_TYPES):
+            try:
+                t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%SZ')
+            except ValueError:
+                t = datetime.strptime(t, '%Y-%m-%dT%H:%M:%S')
+
+        return datetime.strftime(t, '%Y-%m-%d %H:%M:%S')
+
+
+    def generate_time_settings(time_frame=None, start_time=None, end_time=None):
+        # default value
+        settings = {
+            'from': '',
+            'to': '',
+            'key': 'all',
+            'value': '',
+        }
+
+        if time_frame is None:
+            return settings
+        elif time_frame in ['Today', 'Yesterday']:
+            settings['key'] = time_frame.lower()
+        elif 'Last' in time_frame:
+            settings['key'] = 'last'
+            if time_frame == 'Last 7 Days':
+                settings['value'] = '7:00:00:00'
+            elif time_frame == 'Last 30 Days':
+                settings['value'] = '30:00:00:00'
+            elif time_frame == 'Last Hour':
+                settings['value'] = '1:00:00'
+            elif time_frame == 'Last 24 Hours':
+                settings['value'] = '24:00:00'
+            elif time_frame == 'Last 48 Hours':
+                settings['value'] = '48:00:00'
+            else:
+                raise ValueError('Could not parse time frame: {}'.format(time_frame))
+
+        elif time_frame == 'Custom':
+            settings['key'] = 'custom'
+            if start_time is None and end_time is None:
+                raise ValueError('invalid custom time frame: need to specify one of start_time, end_time')
+            if start_time is not None:
+                settings['from'] = to_fidelis_time_format(start_time)
+            if end_time is not None:
+                settings['to'] = to_fidelis_time_format(end_time)
+
+        return settings
+
+
+    ''' COMMANDS + REQUESTS FUNCTIONS '''
+
+    ##Code added by Dave for additional functionality - Second set of items
+
+    #This section will change the explicit score of an alert - works
+    def update_alertstatus_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+        explicitScore = args['explicitScore']
+
+        # FALSE POSITIVE    - explicitScore = 1
+        # NOT INTERESTING   - explicitScore = 2
+        # INTERESTING       - explicitScore = 3
+        # ACTIONABLE        - explicitScore = 4
+
+        data = {
+            'alertIds': [alert_id],
+            'explicitScore': explicitScore
+        }
+
+        result = update_alertstatus(alert_id, data)
+
+    @logger
+    def update_alertstatus(alert_id, data):
+        #url = '/j/rest/v1/alert/feedback/{}/'.format(alert_id)
+        url = '/j/rest/v1/alert/feedback/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('PUT',url, data=data)
+    #end of explicit score section
+
+    #grabs the decoding path data - works
+    def get_alert_dpath_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = get_alert_dpath(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'dpath': result
+         }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), result, headerTransform=pascalToSpace,
+                                             removeNull=True),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+    @logger
+    def get_alert_dpath(alert_id):
+        result = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+
+        return result
+    # End of decoding path data code block
+
+    #Forces a file to get submited to the sandbox for analysis - works
+    def alert_ef_submission_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = alert_ef_submission(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'sessiondata': result
+         }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), result, headerTransform=pascalToSpace,
+                                             removeNull=True),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+    @logger
+    def alert_ef_submission(alert_id):
+        result = http_request('GET', '/j/rest/v1/alert/efsubmit/{}/'.format(alert_id))
+
+        return result
+    #End of file analysis submission code block
+
+    #This section will add a comment to an alert - works
+    def add_alert_comment_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+        comment = args['comment']
+
+        data = {
+            'type': "byAlertID",
+            'alertIds': [alert_id],
+            'comment': comment
+        }
+
+        result = add_alert_comment(alert_id, data)
+
+    @logger
+    def add_alert_comment(alert_id, data):
+        url = '/j/rest/v1/alert/mgmt/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('PUT',url, data=data)
+    #end of adding a comment section
+
+    #This section will add a label to an alert - works
+    def manage_alert_label_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+        label = args['label']
+        action = args['action']
+        labelAction = args['labelAction']
+
+    #Action Options (LABEL_ADD, REPLACE_ALL, CLEAR, REMOVE)
+    #labelAction Options(LABEL_ADD, ASSIGN, UNASSIGN, LABEL_REMOVE)
+
+        data = {
+            'type': "byAlertID",
+            'alertIds': [alert_id],
+            #'alertIds': ['Console-' + str(alert_id)],
+            'labels': [label],
+            'action': action,
+            'labelAction': labelAction,
+        }
+
+        result = manage_alert_label(alert_id, data)
+
+    @logger
+    def manage_alert_label(alert_id, data):
+        url = '/j/rest/v1/alert/mgmt/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('PUT',url, data=data)
+    #end of adding a label section
+
+    #This section will assign a user, add a comment and change the conclusion status to open (agg_alert_id)
+    def manage_alert_assignuser_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+        assignToUser = args['assignToUser']
+        comment = args['comment']
+
+        data = {
+            'alertIds': ['Console-' + str(alert_id)],
+            'assignToUser': assignToUser,
+            'searchParams':None,
+            'byId': True,
+            'purgeEvents': False,
+            'resolution': None,
+            'comment': comment,
+            'labels': None,
+            'rating': None,
+            'status':'OPEN',
+            'action': "ASSIGN",
+        }
+
+        result = manage_alert_assignuser(alert_id, data)
+
+    @logger
+    def manage_alert_assignuser(alert_id, data):
+        url = '/j/rest/v2/alert/mgmt/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('POST',url, data=data)
+    #end of assigning user section
+
+    #This section will add a comment, assign a user and change status of an conclusion to closed (agg_alert_id)
+    def manage_alert_closealert_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+        assignToUser = args['assignToUser']
+        comment = args['comment']
+        resolution = args['resolution']
+
+        data = {
+            'alertIds': ['Console-' + str(alert_id)],
+            'assignToUser': assignToUser, # This field is not used by Fidelis when closing alerts / So setting it doesn't matter
+            'searchParams':None,
+            'byId': True,
+            'purgeEvents': False,
+            'resolution': resolution,
+            'comment': comment,
+            'labels': None,
+            'rating': None,
+            'status':'CLOSED',
+            'action': "STATUS",
+        }
+
+        result = manage_alert_closealert(alert_id, data)
+
+        demisto.results(
+           data
+
+        )
+
+    @logger
+    def manage_alert_closealert(alert_id, data):
+        url = '/j/rest/v2/alert/mgmt/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('POST',url, data=data)
+    #end of adding a comment, changing stats and assigning user section
+
+
+    #This section will upload a URL - does not work / although it also doesn't return an error
+    def upload_URL_command():
+        args = demisto.args()
+        url = args['url']
+
+        data = {
+            'url': url,
+        }
+
+        result = upload_URL(data)
+
+    @logger
+    def upload_URL(data):
+        url = '/j/rest/malware/submitUrl/'
+        demisto.log(url)
+        demisto.log(str(data))
+        result = http_request('POST',url, data=data)
+    #end of URL upload
+
+    ##end of Dave added code part 2
+
+    #Code added by Dave for additional functionality
+    def get_alert_sessiondata_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = get_alert_sessiondata(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'sessiondata': result
+         }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), result, headerTransform=pascalToSpace,
+                                             removeNull=True),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+    @logger
+    def get_alert_sessiondata(alert_id):
+        result = http_request('GET', '/j/rest/v2/event/sessiondata/{}/'.format(alert_id))
+
+        return result
+
+    def get_alert_ef_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = get_alert_ef(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'ef': result
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), result, headerTransform=pascalToSpace,
+                                             removeNull=True),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+    @logger
+    def get_alert_ef(alert_id):
+        result = http_request('GET', '/j/rest/v1/alert/ef/{}/'.format(alert_id))
+
+        return result
+
+    #Grabs the text version of the forensic data - There are other options so Demisto may want to enhance further
+    def get_alert_forensictext_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = get_alert_forensictext(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'forensictext': result
+
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': str(result),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+    @logger
+    def get_alert_forensictext(alert_id):
+        headers = {}  # type: Dict[str, str]
+        if SESSION_ID is not None:
+            headers['x-uid'] = SESSION_ID
+        headers['Content-Type'] = 'application/json'
+
+        res = requests.request(
+            method='GET',
+            url=SERVER_URL + '/j/rest/v1/alert/file/forensic/text/{}/'.format(alert_id),
+            data=None,
+            headers=headers,
+            params=None,
+            files=None,
+            verify=not INSECURE,
+        )
+
+        return res.text
+    #End of fornesic text code block
+
+    #End of Daves code block
+
+    def get_alert_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        alert = get_alert(alert_id)
+
+        output = {
+            'ID': alert['alertId'],
+            'ThreatScore': alert['fidelisScore'],
+            'Time': alert['time'],
+            'RuleID': alert['ruleId'],
+            'RuleName': alert['rule'],
+            'Summary': alert['summary'],
+            'PolicyName': alert['policy'],
+            'Severity': alert['severity'],
+            'Protocol': alert['protocol'],
+            'Type': alert['alertType'],
+            'AlertUUID': alert['alertUUID'],
+            'AssignedUser': alert['ticket']['assignedUserId'] if alert['ticket'] is not None else None,
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': alert,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {}'.format(alert_id), output, headerTransform=pascalToSpace,
+                                             removeNull=True),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+
+    @logger
+    def get_alert(alert_id):
+        return http_request('GET', '/j/rest/v1/alert/info/{}/'.format(alert_id))
+
+
+    def delete_alert_command():
+        args = demisto.args()
+        alert_id = args['alert_id'].split(',')
+
+        delete_alert(alert_id)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': '\n'.join('Alert ({}) deleted successfully!'.format(_id) for _id in alert_id),
+        })
+
+
+    @logger
+    def delete_alert(alert_id):
+        data = {
+            'type': 'byAlertID',
+            'alertIds': alert_id,
+        }
+        result = http_request('POST', '/j/rest/v1/alert/delete/', data=data)
+
+        return result
+
+
+    def get_malware_data_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        result = get_malware_data(alert_id)
+
+        output = {
+            'ID': alert_id,
+            'Malware': {
+                'Name': result['malwareName'],
+                'Behavior': result['malwareBehavior'],
+                'Description': result['malwareDescription'],
+                'DetailName': result['malwareDetailName'],
+                'Platform': result['malwarePlatform'],
+                'Type': result['malwareType'],
+                'Variant': result['malwareVariant'],
+            }
+        }
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Alert {} Malware:'.format(alert_id), result, headerTransform=pascalToSpace),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+
+    @logger
+    def get_malware_data(alert_id):
+        result = http_request('GET', '/j/rest/v1/alert/malware/{}/'.format(alert_id))
+
+        return result
+
+
+    def get_alert_pcap_command():
+        args = demisto.args()
+        alert_id = args['alert_id']
+
+        results = get_alert_pcap(alert_id)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
+        })
+
+
+    @logger
+    def get_alert_pcap(alert_id):
+        # result = http_request('GET', '/j/rest/v1/alert/pcap/{}/'.format(alert_id), is_json=False)
+        # return result
+        raise NotImplementedError()
+
+
+    def get_alert_report_command():
+        args = demisto.args()
+        alert_id = int(args['alert_id'])
+
+        pdf_content = get_alert_report(alert_id)
+
+        demisto.results(fileResult(
+            'Alert_Details_{}.pdf'.format(alert_id),
+            pdf_content,
+            file_type=entryTypes['entryInfoFile']
+        ))
+
+
+    @logger
+    def get_alert_report(alert_id):
+        result = http_request(
+            'GET',
+            '/j/rest/v1/alert/export/alertdetails/pdf',
+            params={'alertIds': alert_id},
+            is_json=False)
+
+        return result
+
+
+    def sandbox_upload_command():
+        args = demisto.args()
+        upload_item = args['upload_item']
+
+        results = sandbox_upload(upload_item)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('<INSERT TITLE HERE>', results),
+            # 'EntryContext': create_context([indicator]),
+        })
+
+
+    @logger
+    def sandbox_upload(upload_item):
+        raise NotImplementedError()
+
+
+    def list_alerts_command():
+        args = demisto.args()
+        time_frame = args.get('time_frame')
+        start_time = args.get('start_time')
+        end_time = args.get('end_time')
+        severity = args.get('severity')
+        _type = args.get('type')
+        threat_score = args.get('threat_score')
+        ioc = args.get('ioc')
+
+        results = list_alerts(time_frame=time_frame, start_time=start_time, end_time=end_time, severity=severity,
+                              _type=_type, threat_score=threat_score, ioc=ioc)
+        output = [{
+            'ID': alert['ALERT_ID'],
+            'Time': alert['ALERT_TIME'],
+            'Summary': alert['SUMMARY'],
+            'Severity': alert['SEVERITY'],
+            'Type': alert['ALERT_TYPE'],
+        } for alert in results]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Found {} Alerts:'.format(len(output)), output),
+            'EntryContext': {
+                'Fidelis.Alert(val.ID && val.ID == obj.ID)': output,
+            },
+        })
+
+
+    @logger
+    def list_alerts(time_frame=None, start_time=None, end_time=None, severity=None, _type=None,
+                    threat_score=None, ioc=None, additional_columns=None):
+        columns = additional_columns if additional_columns is not None else []
+
+        filters = [{'simple': {'column': 'ACTION', 'operator': '=', 'value': 'alert'}}]
+        if severity is not None:
+            filters.append({'simple': {'column': 'SEVERITY', 'operator': 'IN', 'value': severity}})
+        if _type is not None:
+            filters.append({'simple': {'column': 'ALERT_TYPE', 'operator': 'IN', 'value': _type}})
+        if threat_score is not None:
+            filters.append({'simple': {'column': 'FIDELIS_SCORE', 'operator': '>', 'value': threat_score}})
+        if ioc is not None:
+            filters.append(get_ioc_filter(ioc))
+
+        data = {
+            'columns': columns + ['ALERT_ID', 'ALERT_TIME', 'SUMMARY', 'SEVERITY', 'ALERT_TYPE', ],
+            'filter': {
+                'composite': {
+                    'logic': 'and',
+                    'filters': filters,
+                }
+            },
+            'order': [{'column': 'ALERT_TIME', 'direction': 'DESC'}],
+            'pagination': generate_pagination(),
+            'timeSettings': generate_time_settings(time_frame, start_time, end_time)
+        }
+        res = http_request('POST', '/j/rest/v1/alert/search/', data=data)
+
+        return res['aaData']
+
+
+    def list_alerts_by_ip_request(time_frame=None, start_time=None, end_time=None, src_ip=None, dest_ip=None):
+
+        filters = []
+        if src_ip is not None:
+            filters.append({'simple': {'column': 'SRC_IP', 'operator': 'IN', 'value': src_ip}})
+        if dest_ip is not None:
+            filters.append({'simple': {'column': 'DEST_IP', 'operator': 'IN', 'value': dest_ip}})
+
+        data = {
+            'commandPosts': [],
+            'filter': {
+                'composite': {
+                    'logic': 'or',
+                    'filters': filters
+                }
+            },
+            'order': [
+                {
+                    'column': 'ALERT_TIME',
+                    'direction': 'DESC'
+                }
+            ],
+            'pagination': {
+                'page': 1,
+                'size': 100
+            },
+            'columns': ['ALERT_TIME', 'UUID', 'ALERT_ID', 'DISTRIBUTED_ALERT_ID', 'USER_RATING', 'HOST_IP', 'ASSET_ID',
+                        'ALERT_TYPE', 'DEST_COUNTRY_NAME', 'SRC_COUNTRY_NAME', 'DEST_IP', 'SRC_IP'],
+
+            'timeSettings': generate_time_settings(time_frame, start_time, end_time)
+        }
+
+        res = http_request('POST', '/j/rest/v1/alert/search/', data=data)
+        return res['aaData']
+
+
+    def list_alerts_by_ip():
+        """
+        List alerts by the source IP or destination IP
+        """
+        args = demisto.args()
+        time_frame = args.get('time_frame')
+        start_time = args.get('start_time')
+        end_time = args.get('end_time')
+        src_ip = args.get('src_ip')
+        dest_ip = args.get('dest_ip')
+        headers = ['Time', 'AlertUUID', 'ID', 'DistributedAlertID', 'UserRating', 'HostIP', 'AssetID',
+                   'Type', 'DestinationCountry', 'SourceCountry', 'DestinationIP', 'SourceIP']
+        results = list_alerts_by_ip_request(time_frame=time_frame, start_time=start_time, end_time=end_time, src_ip=src_ip,
+                                            dest_ip=dest_ip)
+        output = [{
+            'ID': alert.get('ALERT_ID'),
+            'Time': alert.get('ALERT_TIME'),
+            'AlertUUID': alert.get('UUID'),
+            'DistributedAlertID': alert.get('DISTRIBUTED_ALERT_ID'),
+            'Type': alert.get('ALERT_TYPE'),
+            'UserRating': alert.get('USER_RATING'),
+            'HostIP': alert.get('HOST_IP'),
+            'AssetID': alert.get('ASSET_ID'),
+            'DestinationCountry': alert.get('DEST_COUNTRY_NAME'),
+            'SourceCountry': alert.get('SRC_COUNTRY_NAME'),
+            'DestinationIP': alert.get('DEST_IP'),
+            'SourceIP': alert.get('SRC_IP')
+        } for alert in results]
+
+        context = {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+        }
+
+        return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output, headers), context, results)
+
+
+    def get_alert_by_uuid():
+
+        alert_uuid = demisto.args().get('alert_uuid')
+
+        results = list_alerts(ioc=alert_uuid)
+
+        output = [{
+            'ID': alert['ALERT_ID'],
+            'Time': alert['ALERT_TIME'],
+            'Summary': alert['SUMMARY'],
+            'Severity': alert['SEVERITY'],
+            'Type': alert['ALERT_TYPE']
+        } for alert in results]
+
+        context = {
+            'Fidelis.Alert(val.ID && val.ID == obj.ID)': output
+        }
+
+        return_outputs(tableToMarkdown('Found {} Alerts:'.format(len(output)), output), context, results)
+
+
+    def upload_pcap_command():
+        args = demisto.args()
+        component_ip = args['component_ip']
+        entry_id = args['entry_id']
+
+        upload_pcap(component_ip, entry_id)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Pcap file uploaded successfully.',
+        })
+
+
+    @logger
+    def upload_pcap(component_ip, entry_id):
+        file_info = demisto.getFilePath(entry_id)
+        shutil.copy(file_info['path'], file_info['name'])
+
+        try:
+            with open(file_info['name'], 'rb') as f:
+                http_request('POST', '/j/rest/policy/pcap/upload/{}/'.format(component_ip),
+                             files={'uploadFile': f}, is_json=False)
+        finally:
+            shutil.rmtree(file_info['name'], ignore_errors=True)
+
+
+    def run_pcap_command():
+        args = demisto.args()
+        component_ip = args['component_ip']
+        file_names = args['files'].split(',')
+
+        run_pcap(component_ip, file_names)
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'Pcap file run submitted.',
+        })
+
+
+    @logger
+    def run_pcap(component_ip, file_names):
+        data = {
+            'component': component_ip,
+            'files': file_names
+        }
+        res = http_request('POST', '/j/rest/policy/pcap/run/', data=data)  # noqa
+
+
+    def list_pcap_components_command():
+        results = list_pcap_components()
+        output = [{
+            'IP': r['ip'],
+            'Name': r['name'],
+        } for r in results]
+
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': results,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('PCAP Components', output, headers=['Name', 'IP']),
+            'EntryContext': {'Fidelis.Component(val.Name && val.Name == obj.Name)': output},
+        })
+
+
+    @logger
+    def list_pcap_components():
+        res = http_request('GET', '/j/rest/policy/pcap/components/')
+
+        return res
+
+
+    def list_metadata_request(time_frame=None, start_time=None, end_time=None, client_ip=None, server_ip=None,
+                              request_direction=None):
+
+        filters = []
+        if client_ip is not None:
+            filters.append({'simple': {'column': 'ClientIP', 'operator': '=', 'value': client_ip}})
+        if server_ip is not None:
+            filters.append({'simple': {'column': 'ServerIP', 'operator': '=', 'value': server_ip}})
+        if request_direction is not None:
+            filters.append({'simple': {'column': 'Direction', 'operator': '=', 'value': request_direction}})
+        search_id = str([random.randint(1, 9) for _ in range(8)])
+
+        data = {
+            'collectors': [],
+            'action': 'new',
+            'allCollectors': True,
+            'timeSettings': generate_time_settings(time_frame, start_time, end_time),
+            'displaySettings': {
+                'pageSize': 1000,
+                'currentPage': 1,
+                'pageNavigation': "",
+                'sorting': {
+                    'column': 'Timestamp',
+                    'sortingOrder': 'D'
+                }
+            },
+            'dataSettings': {
+                'composite': {
+                    'logic': 'and',
+                    'filters': filters
+                }
+            },
+            'searchId': search_id
+        }
+        res = http_request('POST', '/j/rest/metadata/search/', data=data)
+
+        return res.get('aaData')
+
+
+    def list_metadata():
+
+        args = demisto.args()
+        time_frame = args.get('time_frame')
+        start_time = args.get('start_time')
+        end_time = args.get('end_time')
+        client_ip = args.get('client_ip')
+        server_ip = args.get('server_ip')
+        request_direction = args.get('request_direction')
+
+        data = []
+        event_context = []
+
+        results = list_metadata_request(time_frame=time_frame, start_time=start_time, end_time=end_time,
+                                        client_ip=client_ip, server_ip=server_ip, request_direction=request_direction)
+        for event in results:
+            data.append({
+                'Timestamp': event.get('Timestamp'),
+                'ServerIP': event.get('ServerIP'),
+                'ServerPort': event.get('ServerPort'),
+                'ClientIP': event.get('ClientIP'),
+                'ClientPort': event.get('ClientPort')
+            })
+
+            event_context.append({
+                'Timestamp': event.get('Timestamp'),
+                'ServerIP': event.get('ServerIP'),
+                'ServerPort': event.get('ServerPort'),
+                'ServerCountry': event.get('ServerCountry'),
+                'ClientIP': event.get('ClientIP'),
+                'ClientPort': event.get('ClientPort'),
+                'ClientCountry': event.get('ClientCountry'),
+                'Type': event.get('Type'),
+                'SensorUUID': event.get('SensorUUID'),
+                'SessionStart': event.get('SessionStart'),
+                'SessionDuration': event.get('SessionDuration'),
+                'Protocol': event.get('Protocol'),
+                'URL': event.get('URL'),
+                'RequestDirection': event.get('RequestDirection'),
+                'UserAgent': event.get('UserAgent'),
+                'FileName': event.get('FileName'),
+                'FileType': event.get('FileType'),
+                'FileSize': event.get('FileSize'),
+                'MD5': event.get('MD5'),
+                'SHA256': event.get('SHA256'),
+                'MalwareName': event.get('MalwareName'),
+                'MalwareType': event.get('MalwareType'),
+                'MalwareSeverity': event.get('MalwareSeverity'),
+                'PcapFilename': event.get('PcapFilename'),
+                'PcapTimestamp': event.get('PcapTimestamp')
+
+            })
+        context = {
+            'Fidelis.Metadata(val.ID && val.ID == obj.ID)': event_context
+        }
+
+        return_outputs(tableToMarkdown('Found {} Metadata:'.format(len(data)), data), context, results)
+
+
+    def request_dpath(alert_id):
+
+        res = http_request('GET', '/j/rest/v1/alert/dpath/{}/'.format(alert_id))
+        dpath = res.get('decodingPaths')[0]
+        link_path = dpath.get('linkPath')
+        encoded_path = urllib.quote(link_path)
+        return encoded_path
+
+
+    def download_malware_file_request(alert_id):
+
+        dpath = request_dpath(alert_id)
+        query_params = {
+            'uid': SESSION_ID,
+            'alert_id': alert_id,
+            'type': '1',
+            'params': dpath
+        }
+        res = http_request(
+            'GET',
+            '/query/tcpses_getfile.cgi',
+            params=query_params,
+            is_json=False)
+
+        return res
+
+
+    def download_malware_file():
+        """
+        Download specific malware from the alert
+        """
+        alert_id = demisto.args().get('alert_id')
+        file_name = request_dpath(alert_id)
+        decoded_file_name = urllib.unquote(file_name)
+        results = download_malware_file_request(alert_id)
+
+        demisto.results(fileResult(
+            decoded_file_name + '.zip',
+            results,
+            file_type=entryTypes['file']))
+
+
+    def download_pcap_request(alert_id):
+
+        query_params = {
+            'uid': SESSION_ID,
+            'alert_id': alert_id,
+            'commandpost': '127.0.0.1',
+        }
+
+        results = http_request(
+            'GET',
+            '/e.cgi',
+            params=query_params,
+            is_json=False
+        )
+
+        return results
+
+
+    def download_pcap_file():
+        """
+        Download PCAP from an alert
+        """
+        alert_id = demisto.args().get('alert_id')
+
+        results = download_pcap_request(alert_id)
+        demisto.results(fileResult(
+            'Alert ID_' + alert_id + '.pcap',
+            results,
+            file_type=entryTypes['file']))
+
+
+    def test_integration():
+        # the login is executed in the switch panel code
+        if IS_FETCH:
+            # just check the correctness of the parameter
+            parse_date_range(FETCH_TIME)
+        list_pcap_components()
+        demisto.results('ok')
+
+
+    def fetch_incidents():
+        last_run = demisto.getLastRun()
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('time')
+
+        # Handle first time fetch, fetch incidents retroactively
+        if last_fetch is None:
+            last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%S')
+
+        latest = datetime.strptime(last_fetch, '%Y-%m-%dT%H:%M:%S')
+
+        demisto.debug('getting alarms since {}'.format(last_fetch))
+        incidents = []
+        items = list_alerts(time_frame='Custom', start_time=last_fetch)
+        demisto.debug('got {} new alarms'.format(len(items)))
+        for item in items:
+            incident_date = datetime.strptime(item['ALERT_TIME'], '%Y-%m-%d %H:%M:%S')
+            incident = {
+                'Type': 'Fidelis',
+                'name': '{} {}'.format(item['ALERT_ID'], item['SUMMARY']),
+                'occurred': incident_date.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'rawJSON': json.dumps(item),
+            }
+            latest = max(latest, incident_date)
+            incidents.append(incident)
+
+        if latest != last_fetch:
+            last_fetch = (latest + timedelta(seconds=1)).strftime('%Y-%m-%dT%H:%M:%S')
+            demisto.setLastRun({'time': last_fetch})
+
+        demisto.incidents(incidents)
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():
+        try:
+            handle_proxy()
+            command = demisto.command()
+            LOG('Command being called is {}'.format(command))
+            login()
+            if command == 'test-module':
+                test_integration()
+            elif command == 'fetch-incidents':
+                fetch_incidents()
+
+            elif command == 'fidelis-get-alert':
+                get_alert_command()
+
+            elif command == 'fidelis-delete-alert':
+                delete_alert_command()
+
+            elif command == 'fidelis-get-malware-data':
+                get_malware_data_command()
+
+            elif command == 'fidelis-get-alert-pcap':
+                get_alert_pcap_command()
+
+            elif command == 'fidelis-get-alert-report':
+                get_alert_report_command()
+
+            elif command == 'fidelis-sandbox-upload':
+                sandbox_upload_command()
+
+            elif command == 'fidelis-list-alerts':
+                list_alerts_command()
+
+            elif command == 'fidelis-upload-pcap':
+                upload_pcap_command()
+
+            elif command == 'fidelis-run-pcap':
+                run_pcap_command()
+
+            elif command == 'fidelis-list-pcap-components':
+                list_pcap_components_command()
+            elif command == 'fidelis-get-alert-by-uuid':
+                get_alert_by_uuid()
+            elif command == 'fidelis-list-metadata':
+                list_metadata()
+            elif command == 'fidelis-list-alerts-by-ip':
+                list_alerts_by_ip()
+            elif command == 'fidelis-download-malware-file':
+                download_malware_file()
+            elif command == 'fidelis-download-pcap-file':
+                download_pcap_file()
+
+    #Code added by Dave to add additional functionality
+            elif command == 'fidelis-get-alert-sessiondata':
+                get_alert_sessiondata_command()
+            elif command == 'fidelis-get-alert-ef':
+                get_alert_ef_command()
+            elif command == 'fidelis-get-alert-forensictext':
+                get_alert_forensictext_command()
+    #End of added code block
+
+    #Code added by Dave to add additional functionality - part 2
+            elif command == 'fidelis-get-alert-dpath':
+                get_alert_dpath_command()
+            elif command == 'fidelis-update-alertstatus':
+                update_alertstatus_command()
+            elif command == 'fidelis-alert-ef-submission':
+                alert_ef_submission_command()
+            elif command == 'fidelis-add-alert-comment':
+                add_alert_comment_command()
+            elif command == 'fidelis-manage-alert-assignuser':
+                manage_alert_assignuser_command()
+            elif command == 'fidelis-manage-alert-closealert':
+                manage_alert_closealert_command()
+            elif command == 'fidelis-manage-alert-label':
+                manage_alert_label_command()
+            elif command == 'fidelis-upload-URL':
+                upload_URL_command()
+    #End of added code block - part 2
+
+
+        except Exception as e:
+            return_error('error has occurred: {}'.format(str(e)))
+
+        finally:
+            logout()
+
+
+    # python2 uses __builtin__ python3 uses builtins
+    if __name__ == "__builtin__" or __name__ == "builtins":
+        main()
+  type: python
+  commands:
+  - name: fidelis-get-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    - contextPath: Fidelis.Alert.ThreatScore
+      description: Alert threat score.
+      type: number
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time.
+      type: date
+    - contextPath: Fidelis.Alert.RuleID
+      description: Related rule ID.
+      type: string
+    - contextPath: Fidelis.Alert.RuleName
+      description: Related rule name.
+      type: string
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary.
+      type: string
+    - contextPath: Fidelis.Alert.PolicyName
+      description: Related policy name.
+      type: string
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity.
+      type: string
+    - contextPath: Fidelis.Alert.Protocol
+      description: Protocol involved in the alert.
+      type: string
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type.
+      type: string
+    - contextPath: Fidelis.Alert.AssignedUser
+      description: Assigned user ID.
+      type: string
+    description: Gets alert details from Fidelis Elevate.
+  - name: fidelis-delete-alert
+    arguments:
+    - name: alert_id
+      required: true
+      description: ID of the alert to delete.
+      isArray: true
+    description: Deletes an alert from Fidelis Elevate.
+  - name: fidelis-get-malware-data
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID.
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Name
+      description: Malware name.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Type
+      description: Malware type.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Behavior
+      description: Malware behavior.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Platform
+      description: Malware platform.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.DetailName
+      description: Malware detail name from Fidelis Elevate.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Variant
+      description: Malware variant.
+      type: string
+    - contextPath: Fidelis.Alert.Malware.Description
+      description: Malware description from Fidelis Elevate.
+      type: string
+    description: Retrieves malware data related to a "Malware" type alert.
+  - name: fidelis-get-alert-pcap
+    deprecated: true
+    arguments:
+    - name: alert_id
+      required: true
+      description: ID of the alert for which to get the PCAP file.
+    description: Retrieves the alert PCAP from Fidelis Elevate.
+  - name: fidelis-get-alert-report
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID of the alert for which to download a PDF report.
+    description: Downloads a PDF report for a specified alert.
+  - name: fidelis-sandbox-upload
+    arguments:
+    - name: upload_item
+      required: true
+      description: The file or URL to upload to Fidelis Elevate for analysis.
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID generated from the upload.
+      type: string
+    description: Uploads a file or a URL for sandbox analysis in Fidelis Elevate.
+  - name: fidelis-list-alerts
+    arguments:
+    - name: time_frame
+      auto: PREDEFINED
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      description: Filter alerts by time frame, for example, Last 48 Hours.
+    - name: start_time
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
+    - name: end_time
+      description: If the time_frame value is Custom, specify the end time for the
+        time range, for example, 2017-06-01T12:48:16.734.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Critical
+      description: Filter alerts by alert severity.
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - Endpoint
+      - DSI
+      - DPI
+      - DNS
+      - Malware
+      - Mail
+      - File Upload
+      - Collector Feed
+      - Analytics
+      description: Filter alerts by alert type.
+    - name: threat_score
+      description: Filter alerts by alert threat score threshold (higher than).
+    - name: ioc
+      description: Filter alerts that are related to a specified IOC.
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time.
+      type: date
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary.
+      type: string
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity.
+      type: string
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type.
+      type: string
+    description: Returns a list of open alerts from Fidelis Elevate.
+  - name: fidelis-upload-pcap
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP address.
+    - name: entry_id
+      required: true
+      description: War Room entry ID of the PCAP file, for example, "3245@6".
+    description: Uploads a PCAP file to Fidelis Elevate for analysis.
+  - name: fidelis-list-pcap-components
+    arguments: []
+    outputs:
+    - contextPath: Fidelis.Component.Name
+      description: Component name.
+      type: string
+    - contextPath: Fidelis.Component.IP
+      description: Component IP address.
+      type: string
+    description: Gets PCAP components.
+  - name: fidelis-run-pcap
+    arguments:
+    - name: component_ip
+      required: true
+      description: Component IP address. Run the 'fidelis-list-pcap-components' command
+        to get this value.
+    - name: files
+      required: true
+      description: CSV list of PCAP file names in Fidelis Elevate.
+    description: Runs PCAP file analysis in Fidelis Elevate.
+  - name: fidelis-get-alert-by-uuid
+    arguments:
+    - name: alert_uuid
+      required: true
+      description: The UUID of the alert.
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: Number
+    - contextPath: Fidelis.Alert.Severity
+      description: Alert severity.
+      type: String
+    - contextPath: Fidelis.Alert.Summary
+      description: Alert summary.
+      type: String
+    - contextPath: Fidelis.Alert.Time
+      description: Alert time.
+      type: Date
+    - contextPath: Fidelis.Alert.Type
+      description: Alert type.
+      type: String
+    - contextPath: Fidelis.Alert.UUID
+      description: Alert UUID.
+      type: String
+    description: Returns an alert, by UUID.
+  - name: fidelis-list-metadata
+    arguments:
+    - name: time_frame
+      auto: PREDEFINED
+      predefined:
+      - Today
+      - Yesterday
+      - Last 7 Days
+      - Last Hour
+      - Last 24 Hours
+      - Last 48 Hours
+      - Last 30 Days
+      - Custom
+      description: Filter alerts by time frame, for example, Last 48 Hours.
+    - name: start_time
+      auto: PREDEFINED
+      predefined:
+      - ""
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
+    - name: end_time
+      description: If the time_frame value is Custom, specify the end time for the
+        time range, for example,2017-06-01T12:48:16.734.
+    - name: client_ip
+      description: Filter alerts by client IP.
+    - name: server_ip
+      description: Filter alerts by server IP address.
+    - name: request_direction
+      auto: PREDEFINED
+      predefined:
+      - s2c
+      - c2s
+      description: Direction of the request. Can be "s2c" (server to client) or "c2s"
+        (client to server).
+    outputs:
+    - contextPath: Fidelis.Metadata.MalwareName
+      description: Malware name.
+      type: String
+    - contextPath: Fidelis.Metadata.ServerPort
+      description: Server port number.
+      type: Number
+    - contextPath: Fidelis.Metadata.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: Fidelis.Metadata.FileName
+      description: File name.
+      type: String
+    - contextPath: Fidelis.Metadata.PcapFilename
+      description: PCAP file name.
+      type: String
+    - contextPath: Fidelis.Metadata.SessionDuration
+      description: The event session duration.
+      type: String
+    - contextPath: Fidelis.Metadata.ServerIP
+      description: The server IP address.
+      type: String
+    - contextPath: Fidelis.Metadata.ClientCountry
+      description: The client country.
+      type: String
+    - contextPath: Fidelis.Metadata.ClientPort
+      description: The client port number.
+      type: Number
+    - contextPath: Fidelis.Metadata.SessionStart
+      description: The date/time that the session started.
+      type: Date
+    - contextPath: Fidelis.Metadata.MalwareType
+      description: The malware type.
+      type: String
+    - contextPath: Fidelis.Metadata.URL
+      description: Request URL.
+      type: String
+    - contextPath: Fidelis.Metadata.RequestDirection
+      description: 'Request direction (s2c or c2s). '
+      type: String
+    - contextPath: Fidelis.Metadata.MalwareSeverity
+      description: The severity of the malware.
+      type: String
+    - contextPath: Fidelis.Metadata.ClientIP
+      description: The client IP address.
+      type: String
+    - contextPath: Fidelis.Metadata.ServerCountry
+      description: The country of the server.
+      type: String
+    - contextPath: Fidelis.Metadata.PcapTimestamp
+      description: PCAP timestamp.
+      type: Date
+    - contextPath: Fidelis.Metadata.SensorUUID
+      description: Sensor UUID.
+      type: String
+    - contextPath: Fidelis.Metadata.Timestamp
+      description: Timestamp of the event.
+      type: Date
+    - contextPath: Fidelis.Metadata.FileType
+      description: File type.
+      type: String
+    - contextPath: Fidelis.Metadata.Protocol
+      description: Event protocol.
+      type: String
+    - contextPath: Fidelis.Metadata.UserAgent
+      description: User agent of the request.
+      type: String
+    - contextPath: Fidelis.Metadata.Type
+      description: Type of the event.
+      type: String
+    - contextPath: Fidelis.Metadata.FileSize
+      description: The size of the file.
+      type: Number
+    - contextPath: Fidelis.Metadata.MD5
+      description: MD5 hash of the file.
+      type: String
+    description: Returns a metadata list.
+  - name: fidelis-list-alerts-by-ip
+    arguments:
+    - name: time_frame
+      description: Today,Yesterday,Last 7 Days,Last Hour,Last 24 Hours,Last 48 Hours,Last
+        30 Days,Custom
+    - name: start_time
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
+    - name: end_time
+      description: If the time_frame value is Custom, specify the start time for the
+        time range, for example, 2017-06-01T12:48:16.734.
+    - name: src_ip
+      description: Filter alerts by the source IP.
+    - name: dest_ip
+      description: Filter alerts by the destination IP address.
+    outputs:
+    - contextPath: Fidelis.Alert.SourceIP
+      description: 'The alert source IP address. '
+      type: String
+    - contextPath: Fidelis.Alert.UserRating
+      description: User rating.
+      type: String
+    - contextPath: Fidelis.Alert.DestinationCountry
+      description: Destination country of the alert.
+      type: String
+    - contextPath: Fidelis.Alert.AssetID
+      description: The ID of the asset.
+      type: Number
+    - contextPath: Fidelis.Alert.Time
+      description: Date/time that the alert started.
+      type: Date
+    - contextPath: Fidelis.Alert.HostIP
+      description: The host IP address of the alert.
+      type: String
+    - contextPath: Fidelis.Alert.DistributedAlertID
+      description: Alert distributed ID.
+      type: String
+    - contextPath: Fidelis.Alert.DestinationIP
+      description: Alert destination IP address.
+      type: String
+    - contextPath: Fidelis.Alert.AlertUUID
+      description: The alert UUID.
+      type: String
+    - contextPath: Fidelis.Alert.Type
+      description: The alert type.
+      type: String
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: Number
+    - contextPath: Fidelis.Alert.SourceCountry
+      description: Alert source country
+      type: String
+    description: Returns a list of alerts, by source IP address or destination IP
+      address.
+  - name: fidelis-download-malware-file
+    arguments:
+    - name: alert_id
+      required: true
+      description: ID of the alert from which to download the file.
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.Extension
+      description: 'The file extension. '
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: File entry ID.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    description: Downloads a malware file from a specified alert.
+  - name: fidelis-download-pcap-file
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert from which to download the file.
+    outputs:
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Name
+      description: Name of the file.
+      type: String
+    - contextPath: File.Size
+      description: File size
+      type: Number
+    - contextPath: File.Type
+      description: File type.
+      type: String
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: String
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: String
+    description: Downloads the PCAP file from a specified alert.
+  - name: fidelis-get-alert-sessiondata
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    description: Returns the session information related to an alert
+  - name: fidelis-get-alert-ef
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    outputs:
+    - contextPath: Fidelis.Alert.ID
+      description: Alert ID.
+      type: string
+    description: Pulls the exectution forensics for an alert
+  - name: fidelis-get-alert-forensictext
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    description: Pulls the text of the forensic data
+  - name: fidelis-get-alert-dpath
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+  - name: fidelis-update-alertstatus
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - "1"
+      - "2"
+      - "3"
+      - "4"
+      description: status_score (1 False Positive, etc)
+    - name: explicitScore
+      required: true
+      description: explicitScore
+  - name: fidelis-alert-ef-submission
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    description: submits a file to the fidelis sandbox
+  - name: fidelis-add-alert-comment
+    arguments:
+    - name: alert_id
+      description: Alert ID
+    - name: comment
+      required: true
+      description: comment
+    description: adds a comment to an alert
+  - name: fidelis-manage-alert-assignuser
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    - name: comment
+      description: comment
+    - name: assignToUser
+      required: true
+      description: assignToUser
+    description: fidelis-manage-alert-assignuser
+  - name: fidelis-manage-alert-closealert
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    - name: comment
+      description: comment
+    - name: assignToUser
+      description: assignToUser
+    - name: resolution
+      required: true
+      description: resolution
+    description: closes a fidelis alert and can assign a user
+  - name: fidelis-manage-alert-label
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert ID
+    - name: label
+      required: true
+      description: label
+    description: adds a label to an alert
+  - name: fidelis-upload-URL
+    arguments:
+    - name: url
+      required: true
+      description: url
+    description: uploads a URL to Fidelis
+  isfetch: true
+  runonce: false
