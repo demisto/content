@@ -1,53 +1,55 @@
 args:
-- default: false
-  defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
-  description: The ews folders paths, comma seperated
-  isArray: false
-  name: foldersPaths
-  required: true
-  secret: false
-- default: false
-  description: The target mailbox.
-  isArray: false
-  name: targetMailbox
-  required: false
-  secret: false
-- auto: PREDEFINED
-  default: false
-  defaultValue: 'true'
-  description: Is the folder public?
-  isArray: false
-  name: isPublic
-  predefined:
-  - 'true'
-  - 'false'
-  required: false
-  secret: false
-- default: false
-  defaultValue: '1000'
-  description: Limit number of items.
-  isArray: false
-  name: limit
-  required: false
-  secret: false
-- default: false
-  description: Use this hash seed.
-  isArray: false
-  name: hashSeed
-  required: false
-  secret: false
+  - default: false
+    defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
+    description: The ews folders paths, comma seperated
+    isArray: false
+    name: foldersPaths
+    required: true
+    secret: false
+  - default: false
+    description: The target mailbox.
+    isArray: false
+    name: targetMailbox
+    required: false
+    secret: false
+  - auto: PREDEFINED
+    default: false
+    defaultValue: 'true'
+    description: Is the folder public?
+    isArray: false
+    name: isPublic
+    predefined:
+      - 'true'
+      - 'false'
+    required: false
+    secret: false
+  - default: false
+    defaultValue: '1000'
+    description: Limit number of items.
+    isArray: false
+    name: limit
+    required: false
+    secret: false
+  - default: false
+    description: Use this hash seed.
+    isArray: false
+    name: hashSeed
+    required: false
+    secret: false
 commonfields:
-  id: 97007143-0443-4f99-a67b-c2103f39bda9
+  id: GetEWSFolder
   version: -1
 enabled: true
 name: GetEWSFolder
 script: '-'
 subtype: python2
 system: false
-timeout: '0'
+timeout: 6µs
 type: python
 runas: DBotWeakRole
 runonce: false
 tags:
-- ml
+  - ml
 comment: Get emails from multiple folders of an account at once.
+tests:
+  - GetEWSFolder-Test
