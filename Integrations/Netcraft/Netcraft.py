@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import requests
 from requests.auth import HTTPBasicAuth
-from typing import *
 
 
 # Disable insecure warnings
