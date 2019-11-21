@@ -41,7 +41,7 @@ Returns the report of a file or URL that was submitted to the sandbox.
 ```
 
 #### Integration YML
-In Demisto integration yml we will define outputs in the following way:
+In the integration YAML file, the command outputs are defined as such:
 **BrandName.Object.PropertyName**
 
 In the context menu, you will see three fields; Context Path, Description and Type. Their uses are as follows:

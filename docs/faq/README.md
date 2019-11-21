@@ -6,7 +6,7 @@ We support **Demisto Certified** and **Developer Supported**. For more details y
 ### Which IDEs do you support?
 - We have PyCharm plugin [link]()
 - You can develop integrations and scripts in Demisto
-- Playbooks you must develop in Demisto
+- Playbooks can only be developed in Demisto.
 
 ### Which Python version you support?
 Demisto supports both Python2 and Python3, but for contributions we require Python3
