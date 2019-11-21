@@ -398,7 +398,7 @@ def bytes_to_string(obj: Any):
     the object itself
     """
     if isinstance(obj, bytes):
-        return str(obj)
+        return obj.decode('utf-8')
     else:
         return obj
 
