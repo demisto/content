@@ -28,8 +28,11 @@ def main():
     with open('instance_ids', 'w') as instance_file:
         instance_file.write('\n'.join(instance_ids_nonami))
 
-    # get content artifacts from last successful build on master
-    run_command('python ./Tests/get_build_content_artifacts.py', is_silenced=False)
+    # # get content artifacts from last successful build on master
+    # run_command('python ./Tests/get_build_content_artifacts.py', is_silenced=False)
+    run_command('sudo unzip -q -o ./content_test.zip -d ./content_test')
+    run_command('sudo zip -q -j ./content_new.zip ./content_test/*')
+    run_command('sudo rm -rf ./content_test')
 
     print("Waiting 60 Seconds for SSH to start\n")
     sleep(60)
