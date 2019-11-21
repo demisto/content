@@ -69,10 +69,10 @@ def test_find_latest_tag_by_date():
     assert tag == "1.0.0.2876"
 
 
-@pytest.mark.parametrize('www_auth, expected', [('AAArealm="2",service="3"AAA', ['2', '3']), ('bbb', [])])
+@pytest.mark.parametrize('www_auth, expected', [('AAArealm="2",service="3"AAA', ('2', '3')), ('bbb', ())])
 def test_parse_www_auth(www_auth, expected):
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    assert expected.sort() == DockerImageValidator.parse_www_auth(www_auth).sort()
+    assert expected == DockerImageValidator.parse_www_auth(www_auth)
 
 
 @pytest.mark.parametrize('input_tags, output_tags',
