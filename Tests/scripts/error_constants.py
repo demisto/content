@@ -98,9 +98,9 @@ class Errors(object):
                "undo. the command is:\n{}".format(file_path, cls.BACKWARDS, old_command)
 
     @classmethod
-    def breaking_backwards_docker(cls, file_path):
+    def breaking_backwards_docker(cls, file_path, old_docker, new_docker):
         return "{}: {}, You've changed the docker for the file," \
-               " this is not allowed.".format(file_path, cls.BACKWARDS)
+               " this is not allowed. Old: {}, New: {} ".format(file_path, cls.BACKWARDS, old_docker, new_docker)
 
     @classmethod
     def breaking_backwards_arg_changed(cls, file_path):

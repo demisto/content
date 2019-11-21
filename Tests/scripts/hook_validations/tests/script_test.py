@@ -1,196 +1,81 @@
+from mock import patch
+import pytest
+
 from Tests.scripts.hook_validations.script import ScriptValidator
+from Tests.scripts.hook_validations.structure import StructureValidator
 
 
-def test_removed_docker_image_on_existing_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'dockerimage': 'test'
+def get_validator(current_file=None, old_file=None, file_path=""):
+    with patch.object(StructureValidator, '__init__', lambda a, b: None):
+        structure = StructureValidator("")
+        structure.current_file = current_file
+        structure.old_file = old_file
+        structure.file_path = file_path
+        structure.is_valid = True
+        validator = ScriptValidator(structure)
+        validator.old_script = old_file
+        validator.current_script = current_file
+    return validator
+
+
+class TestScriptValidator:
+    BASE_DOCKER_IMAGE = {
+        'dockerimage': '1.0.0'
     }
-    validator.current_script = {
+
+    CHANGED_DOCKER_IMAGE = {
+        'dockerimage': 'test_updated'
+    }
+    NO_DOCKER_IMAGE = {
         'no': 'dockerimage'
     }
 
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_updated_docker_image_on_existing_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'dockerimage': 'test'
-    }
-    validator.current_script = {
-        'dockerimage': 'test_updated'
-    }
-
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_not_changed_docker_image_on_existing_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'dockerimage': 'test'
-    }
-    validator.current_script = {
-        'dockerimage': 'test'
-    }
-
-    assert validator.is_docker_image_changed() is False, "The script validator couldn't find the docker " \
-        'image as changed'
-
-
-def test_added_docker_image_on_existing_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-    }
-    validator.current_script = {
-        'dockerimage': 'test_updated'
-    }
-
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_updated_docker_image_on_sane_doc_reports_fail_name():
-    validator = ScriptValidator('SaneDocReport.yml', check_git=False)
-    validator.old_script = {
-        'dockerimage': '1.0.0'
-    }
-    validator.current_script = {
+    UPDATED_DOCKER_IMAGE = {
         'dockerimage': '1.0.1'
     }
 
-    assert not validator.is_backward_compatible(), "The script validator passed sane-doc-reports eventough it shouldn't"
+    NO_SCRIPT = {}
 
+    INPUTS_DOCKER_IMAGES = [
+        (BASE_DOCKER_IMAGE, NO_DOCKER_IMAGE, True),
+        (BASE_DOCKER_IMAGE, CHANGED_DOCKER_IMAGE, True),
+        (BASE_DOCKER_IMAGE, BASE_DOCKER_IMAGE, False),
+        (NO_DOCKER_IMAGE, CHANGED_DOCKER_IMAGE, True),
+        (BASE_DOCKER_IMAGE, UPDATED_DOCKER_IMAGE, True),
+    ]
 
-def test_updated_docker_image_on_sane_doc_reports_fail_subtype():
-    validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml', check_git=False)
-    validator.current_script = {
+    @pytest.mark.parametrize('current_file, old_file, answer', INPUTS_DOCKER_IMAGES)
+    def test_is_docker_image_changed(self, current_file, old_file, answer):
+        validator = get_validator(current_file, old_file)
+        assert validator.is_docker_image_changed() is answer
+
+    SANE_DOC_PATH = 'Scripts/SaneDocReport/SaneDocReport.yml'
+    SANE_DOC_SUBTYPE = {
         "type": "python",
         "subtype": "python3"
     }
-    validator.old_script = {
+
+    SAND_DOC_CHANGED_SUBTYPE = {
         "type": "python",
         "subtype": "python2"
     }
 
-    assert validator.is_changed_subtype() is True, \
-        "Did not find changed subtype while it was changed"
-    assert validator.is_backward_compatible() is False, "The script validator passed sane-doc-reports"
+    INPUTS_SANE_DOCS_IMAGES = [
+        (SANE_DOC_PATH, SANE_DOC_SUBTYPE, SAND_DOC_CHANGED_SUBTYPE, True, False),
+        (SANE_DOC_PATH, BASE_DOCKER_IMAGE, UPDATED_DOCKER_IMAGE, False, True)
+    ]
 
+    @pytest.mark.parametrize('path, current_file, old_file, answer_subtype, answer_bacwards', INPUTS_SANE_DOCS_IMAGES)
+    def test_sane_docs(self, path, current_file, old_file, answer_subtype, answer_bacwards):
+        structure = StructureValidator(file_path=path)
+        validator = ScriptValidator(structure)
+        validator.current_file = current_file
+        validator.old_file = old_file
 
-def test_updated_docker_image_on_sane_doc_reports():
-    validator = ScriptValidator('Scripts/SaneDocReport/SaneDocReport.yml',
-                                check_git=False)
-    validator.old_script = {
-        'dockerimage': '1.0.0'
-    }
-    validator.current_script = {
-        'dockerimage': '1.0.1'
-    }
+        assert validator.is_changed_subtype() is answer_subtype
+        assert validator.is_backward_compatible() is answer_bacwards
 
-    assert validator.is_backward_compatible(), "The script validator didn't pass sane-doc-reports"
-
-
-def test_deleted_context_path():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'outputs': [
-            {
-                'contextPath': 'test1'
-            },
-            {
-                'contextPath': 'test2'
-            }
-        ]
-    }
-    validator.current_script = {
-        'outputs': [
-            {
-                'contextPath': 'test1'
-            }
-        ]
-    }
-
-    assert validator.is_context_path_changed(), "The script validator couldn't find the context path as deleted"
-
-
-def test_changed_context_path():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'outputs': [
-            {
-                'contextPath': 'test1'
-            }
-        ]
-    }
-    validator.current_script = {
-        'outputs': [
-            {
-                'contextPath': 'test2'
-            }
-        ]
-    }
-
-    assert validator.is_context_path_changed(), "The script validator couldn't find the context path as updated"
-
-
-def test_moved_context_path():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'outputs': [
-            {
-                'contextPath': 'test1'
-            },
-            {
-                'contextPath': 'test2'
-            }
-        ]
-    }
-    validator.current_script = {
-        'outputs': [
-            {
-                'contextPath': 'test2'
-            },
-            {
-                'contextPath': 'test1'
-            }
-        ]
-    }
-
-    assert validator.is_context_path_changed() is False, "The script validator couldn't find the context " \
-        'path as the same'
-
-
-def test_not_changed_context_path():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'outputs': [
-            {
-                'contextPath': 'test'
-            }
-        ]
-    }
-    validator.current_script = {
-        'outputs': [
-            {
-                'contextPath': 'test'
-            }
-        ]
-    }
-
-    assert validator.is_context_path_changed() is False, "The script validator couldn't find the context " \
-        'path as not touched'
-
-
-def test_added_new_context_path():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'outputs': [
-            {
-                'contextPath': 'test1'
-            }
-        ]
-    }
-    validator.current_script = {
+    CONTEXT_OLD = {
         'outputs': [
             {
                 'contextPath': 'test1'
@@ -201,13 +86,66 @@ def test_added_new_context_path():
         ]
     }
 
-    assert validator.is_context_path_changed() is False, 'The script validator found an existing context path as ' \
-        'changed although it is not, but new context path added to a command'
+    CONTEXT_NEW = {
+        'outputs': [
+            {
+                'contextPath': 'test1'
+            }
+        ]
+    }
 
+    CONTEXT_CHANGED = {
+        'outputs': [
+            {
+                'contextPath': 'test2'
+            }
+        ]
+    }
+    CONTEXT_MULTI_OLD = {
+        'outputs': [
+            {
+                'contextPath': 'test1'
+            },
+            {
+                'contextPath': 'test2'
+            }
+        ]
+    }
 
-def test_deleted_arg_from_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    CONTEXT_MULTI_NEW = {
+        'outputs': [
+            {
+                'contextPath': 'test2'
+            },
+            {
+                'contextPath': 'test1'
+            }
+        ]
+    }
+    INPUTS_CONTEXT_PATHS = [
+        (CONTEXT_NEW, CONTEXT_OLD, True),
+        (CONTEXT_OLD, CONTEXT_NEW, False),
+        (CONTEXT_CHANGED, CONTEXT_OLD, True),
+        (CONTEXT_OLD, CONTEXT_CHANGED, False),
+        (CONTEXT_MULTI_NEW, CONTEXT_OLD, False),
+        (CONTEXT_NEW, CONTEXT_NEW, False),
+        (CONTEXT_NEW, CONTEXT_MULTI_NEW, True),
+        (CONTEXT_MULTI_NEW, CONTEXT_NEW, False)
+    ]
+
+    @pytest.mark.parametrize('current_file, old_file, answer', INPUTS_CONTEXT_PATHS)
+    def test_deleted_context_path(self, current_file, old_file, answer):
+        validator = get_validator(current_file, old_file)
+        assert validator.is_context_path_changed() is answer
+
+    OLD_ARGS = {
+        'args': [
+            {
+                'name': 'test1'
+            }
+        ]
+    }
+    CURRENT_ARGS = {
         'args': [
             {
                 'name': 'test1'
@@ -217,54 +155,7 @@ def test_deleted_arg_from_script():
             }
         ]
     }
-    validator.current_script = {
-        'args': [
-            {
-                'name': 'test1'
-            }
-        ]
-    }
-
-    assert validator.is_arg_changed(), "The script validator couldn't find deleted arg name"
-
-
-def test_added_arg_to_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test1'
-            }
-        ]
-    }
-    validator.current_script = {
-        'args': [
-            {
-                'name': 'test1'
-            },
-            {
-                'name': 'test2'
-            }
-        ]
-    }
-
-    assert validator.is_arg_changed() is False, 'The script validator found the arg list has breaking backward ' \
-        'compatibility although just new option was added'
-
-
-def test_moved_arg_in_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test1'
-            },
-            {
-                'name': 'test2'
-            }
-        ]
-    }
-    validator.current_script = {
+    MOVED_ARG = {
         'args': [
             {
                 'name': 'test2'
@@ -274,24 +165,7 @@ def test_moved_arg_in_script():
             }
         ]
     }
-
-    assert validator.is_arg_changed() is False, 'The script validator found the arg list has breaking backward ' \
-        'compatibility although just reordered the existing arg list'
-
-
-def test_untouched_arg_list_in_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test1'
-            },
-            {
-                'name': 'test2'
-            }
-        ]
-    }
-    validator.current_script = {
+    OLD_MULTI_ARGS = {
         'args': [
             {
                 'name': 'test1'
@@ -302,13 +176,7 @@ def test_untouched_arg_list_in_script():
         ]
     }
 
-    assert validator.is_arg_changed() is False, 'The script validator found the arg list has breaking backward ' \
-        'compatibility although it was not touched'
-
-
-def test_changed_arg_in_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    CURRENT_MULTI_ARGS = {
         'args': [
             {
                 'name': 'test1'
@@ -318,7 +186,8 @@ def test_changed_arg_in_script():
             }
         ]
     }
-    validator.current_script = {
+
+    ADDED_MULTI_ARGS = {
         'args': [
             {
                 'name': 'test2'
@@ -331,14 +200,20 @@ def test_changed_arg_in_script():
             }
         ]
     }
+    INPUTS_ARGS_CHANGED = [
+        (CURRENT_ARGS, OLD_ARGS, False),
+        (MOVED_ARG, OLD_ARGS, False),
+        (CURRENT_MULTI_ARGS, OLD_MULTI_ARGS, False),
+        (ADDED_MULTI_ARGS, OLD_MULTI_ARGS, False),
+        (OLD_MULTI_ARGS, ADDED_MULTI_ARGS, True)
+    ]
 
-    assert validator.is_arg_changed() is False, "The script validator didn't found the arg list has breaking " \
-        'backward compatibility although an arg was renamed'
+    @pytest.mark.parametrize('current_file, old_file, answer', INPUTS_ARGS_CHANGED)
+    def test_is_arg_changed(self, current_file, old_file, answer):
+        validator = get_validator(current_file, old_file)
+        assert validator.is_arg_changed() is answer
 
-
-def test_duplicate_arg_in_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.current_script = {
+    DUP_1 = {
         'args': [
             {
                 'name': 'test1'
@@ -348,13 +223,7 @@ def test_duplicate_arg_in_script():
             }
         ]
     }
-
-    assert validator.is_there_duplicates_args(), "The script validator didn't found the duplicate arg"
-
-
-def test_no_duplicate_arg_in_script():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.current_script = {
+    NO_DUP = {
         'args': [
             {
                 'name': 'test1'
@@ -364,44 +233,17 @@ def test_no_duplicate_arg_in_script():
             }
         ]
     }
+    INPUTS_DUPLICATES = [
+        (DUP_1, True),
+        (NO_DUP, False)
+    ]
 
-    assert validator.is_there_duplicates_args() is False, 'The script validator found duplicate arg although ' \
-        'there no such'
+    @pytest.mark.parametrize('current_file, answer', INPUTS_DUPLICATES)
+    def test_is_there_duplicates_args(self, current_file, answer):
+        validator = get_validator(current_file)
+        assert validator.is_there_duplicates_args() is answer
 
-
-def test_added_required_field_in_integration():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': False
-            }
-        ]
-    }
-    validator.current_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': True
-            }
-        ]
-    }
-
-    assert validator.is_added_required_args(), "The script validator couldn't find the new required args"
-
-
-def test_changed_required_field_to_not_required_in_integration():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': True
-            }
-        ]
-    }
-    validator.current_script = {
+    REQUIRED_ARGS_BASE = {
         'args': [
             {
                 'name': 'test',
@@ -410,13 +252,7 @@ def test_changed_required_field_to_not_required_in_integration():
         ]
     }
 
-    assert validator.is_added_required_args() is False, 'The script validator found the change to not required ' \
-        'as a one who breaks backward compatability'
-
-
-def test_not_changed_required_field_in_integration():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
+    REQUIRED_ARGS_TRUE = {
         'args': [
             {
                 'name': 'test',
@@ -424,45 +260,19 @@ def test_not_changed_required_field_in_integration():
             }
         ]
     }
-    validator.current_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': True
-            }
-        ]
-    }
+    INPUTS_REQUIRED_ARGS = [
+        (REQUIRED_ARGS_BASE, REQUIRED_ARGS_BASE, False),
+        (REQUIRED_ARGS_TRUE, REQUIRED_ARGS_BASE, True),
+        (REQUIRED_ARGS_TRUE, REQUIRED_ARGS_TRUE, False),
+        (REQUIRED_ARGS_BASE, REQUIRED_ARGS_TRUE, False)
+    ]
 
-    assert validator.is_added_required_args() is False, 'The script validator found a backward compatibility ' \
-        'change although no such change was done'
+    @pytest.mark.parametrize('current_file, old_file, answer', INPUTS_REQUIRED_ARGS)
+    def test_is_added_required_args(self, current_file, old_file, answer):
+        validator = get_validator(current_file, old_file)
+        assert validator.is_added_required_args() is answer
 
-
-def test_not_changed_required_field_scenario2_in_integration():
-    validator = ScriptValidator('temp_file', check_git=False)
-    validator.old_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': False
-            }
-        ]
-    }
-    validator.current_script = {
-        'args': [
-            {
-                'name': 'test',
-                'required': False
-            }
-        ]
-    }
-
-    assert validator.is_added_required_args() is False, 'The script validator found a backward compatibility ' \
-        'change although no such change was done'
-
-
-def test_configuration_extraction():
-    validator = ScriptValidator('temp_file', check_git=False)
-    script_json = {
+    INPUT_CONFIGURATION_1 = {
         'args': [
             {
                 'name': 'test',
@@ -474,70 +284,53 @@ def test_configuration_extraction():
             }
         ]
     }
-
-    expected = {
+    EXPECTED_CONFIGURATION_1 = {
         'test': False,
         'test1': True
     }
+    INPUTS_CONFIGURATION_EXTRACTION = [
+        (INPUT_CONFIGURATION_1, EXPECTED_CONFIGURATION_1)
+    ]
 
-    assert validator._get_arg_to_required_dict(script_json) == expected, 'Failed to extract configuration'
+    @pytest.mark.parametrize('script, expected', INPUTS_CONFIGURATION_EXTRACTION)
+    def test_configuration_extraction(self, script, expected):
+        assert ScriptValidator._get_arg_to_required_dict(script) == expected, 'Failed to extract configuration'
 
-
-def test_is_changed_subtype_python2_to_3():
-    validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    PYTHON3_SUBTYPE = {
         "type": "python",
         "subtype": "python3"
     }
-    validator.old_script = {
+    PYTHON2_SUBTYPE = {
         "type": "python",
         "subtype": "python2"
     }
 
-    assert validator.is_changed_subtype() is True, \
-        "Did not find changed subtype while it was changed"
-
-
-def test_is_changed_subtype_python3():
-    validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
-        "type": "python",
-        "subtype": "python3"
-    }
-    validator.old_script = {
-        "type": "python",
-        "subtype": "python3"
-    }
-
-    assert validator.is_changed_subtype() is False, \
-        "found changed subtype while it was not changed"
-
-
-def test_is_valid_subtype_python2():
-    validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
-        "type": "python",
-        "subtype": "python2"
-    }
-    validator.old_script = {
-        "type": "python",
-        "subtype": "python2"
-    }
-
-    assert validator.is_valid_subtype() is True, \
-        "found invalid subtype while it is valid - python2"
-
-
-def test_is_valid_subtype_blabla():
-    validator = ScriptValidator("temp_file", check_git=False)
-    validator.current_script = {
+    BLA_BLA_SUBTYPE = {
         "type": "python",
         "subtype": "blabla"
     }
-    validator.old_script = {
-        "type": "python",
-        "subtype": "blabla"
-    }
+    INPUTS_SUBTYPE_TEST = [
+        (PYTHON2_SUBTYPE, PYTHON3_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, PYTHON2_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, PYTHON3_SUBTYPE, False),
+        (PYTHON2_SUBTYPE, PYTHON2_SUBTYPE, False)
+    ]
 
-    assert validator.is_valid_subtype() is False, \
-        "found valid subtype while it is invalid - blabla"
+    @pytest.mark.parametrize('current_file, old_file, answer', INPUTS_SUBTYPE_TEST)
+    def test_is_changed_subtype_python(self, current_file, old_file, answer):
+        validator = get_validator()
+        validator.current_file = current_file
+        validator.old_file = old_file
+        assert validator.is_changed_subtype() is answer
+
+    INPUTS_IS_VALID_SUBTYPE = [
+        (BLA_BLA_SUBTYPE, False),
+        (PYTHON2_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, True)
+    ]
+
+    @pytest.mark.parametrize('current_file, answer', INPUTS_IS_VALID_SUBTYPE)
+    def test_is_valid_subtype(self, current_file, answer):
+        validator = get_validator()
+        validator.current_file = current_file
+        assert validator.is_valid_subtype() is answer
