@@ -187,7 +187,7 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, server, demisto_api_key, proxy=''):
+    def configure_proxy_in_demisto(self, demisto_api_key, server, proxy=''):
         client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
                                           verify_ssl=False)
         http_proxy = https_proxy = proxy
@@ -204,7 +204,7 @@ class MITMProxy:
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                    method='POST', body=data)
-        client.api_client.pool.close()
+        # client.api_client.pool.close()
         return response
 
     def get_mock_file_size(self, filepath):

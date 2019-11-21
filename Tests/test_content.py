@@ -153,7 +153,7 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
 def run_test_logic(c, failed_playbooks, integrations, playbook_id, succeed_playbooks, test_message, test_options, slack,
                    circle_ci, build_number, server_url, build_name, is_mock_run=False):
     status, inc_id = test_integration(c, integrations, playbook_id, test_options, is_mock_run)
-    c.api_client.pool.close()
+    # c.api_client.pool.close()
     if status == PB_Status.COMPLETED:
         print_color('PASS: {} succeed'.format(test_message), LOG_COLORS.GREEN)
         succeed_playbooks.append(playbook_id)
