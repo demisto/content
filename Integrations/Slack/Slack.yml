@@ -63,7 +63,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '60'
-  display: Maximum time to wait for a rate limited call in seconds
+  display: Maximum time to wait for a rate limit call in seconds
   name: max_limit_time
   required: false
   type: 0
