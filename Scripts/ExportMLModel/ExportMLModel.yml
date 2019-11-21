@@ -21,3 +21,4 @@ runas: DBotWeakRole
 runonce: false
 tags:
 - ml
+tests: no
