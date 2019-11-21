@@ -56,8 +56,8 @@ class StructureValidator(object):
     PATHS_TO_VALIDATE = {
         'python-script': PYTHON_ALL_REGEXES,
         'reports': JSON_ALL_REPORTS_REGEXES,
-        'reputation': [MISC_REGEX],
-        'reputations': [MISC_REPUTATIONS_REGEX]
+        'reputation': [MISC_REPUTATIONS_REGEX],
+        'reputations': [MISC_REGEX]
     }
 
     def __init__(self, file_path, is_added_file=False, is_renamed=False):
