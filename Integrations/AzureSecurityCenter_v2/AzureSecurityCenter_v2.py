@@ -150,7 +150,7 @@ def http_request(method, url_suffix, body=None, params=None, add_subscription=Tr
     else:
         url = SERVER + url_suffix
 
-    r = requests.request(method, url, json=body, params=params, headers=headers)
+    r = requests.request(method, url, json=body, params=params, headers=headers, verify=USE_SSL)
     if r.status_code not in {200, 201, 202, 204}:
         if r.status_code in {401, 403}:
             return_error(

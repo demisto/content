@@ -74,8 +74,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -86,22 +86,22 @@ script:
     name: azure-sc-list-alert
     outputs:
     - contextPath: AzureSecurityCenter.Alert.AlertDisplayName
-      description: Alert display name
+      description: The display name of the alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.CompromisedEntity
-      description: The entity on which the incident occurred
+      description: The entity on which the incident occurred.
       type: string
     - contextPath: AzureSecurityCenter.Alert.DetectedTimeUtc
-      description: Time the vendor detected the incident
+      description: The time the vendor detected the incident.
       type: date
     - contextPath: AzureSecurityCenter.Alert.ReportedSeverity
-      description: Estimated severity of this alert
+      description: The estimated severity of this alert.
       type: string
     - contextPath: AzureSecurityCenter.Alert.State
-      description: Alert state (Active, Dismissed, etc.)
+      description: The alert state (Active, Dismissed, etc.).
       type: string
     - contextPath: AzureSecurityCenter.Alert.ID
-      description: Alert ID
+      description: The alert ID.
       type: string
   - arguments:
     - default: false
@@ -118,7 +118,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Storage name in your Azure account
+      description: The storage name in your Azure account.
       isArray: false
       name: storage_account
       required: true
@@ -130,8 +130,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -142,13 +142,13 @@ script:
     name: azure-sc-update-atp
     outputs:
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
-      description: Resource ID
+      description: The resource ID.
       type: string
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.Name
-      description: Resource Name
+      description: The name of the resource.
       type: string
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.IsEnabled
-      description: Indicates whether Advanced Threat Protection is enabled
+      description: Indicates whether the Advanced Threat Protection is enabled.
       type: string
   - arguments:
     - default: false
@@ -159,7 +159,7 @@ script:
       secret: false
     - default: false
       defaultValue: current
-      description: Name of Advanced Threat Detection setting, default setting's name
+      description: Name of the Advanced Threat Detection setting. The default setting's name
         is 'current'.
       isArray: false
       name: setting_name
@@ -172,8 +172,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -184,33 +184,33 @@ script:
     name: azure-sc-get-atp
     outputs:
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.ID
-      description: Resource ID
+      description: The resource ID.
       type: string
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.Name
-      description: Resource name
+      description: The name of the resource.
       type: string
     - contextPath: AzureSecurityCenter.AdvancedThreatProtection.IsEnabled
-      description: Indicates whether Advanced Threat Protection is enabled
+      description: Indicates whether the Advanced Threat Protection is enabled.
       type: string
   - arguments:
     - default: true
       defaultValue: default
-      description: Name of the auto provisioning setting, default setting's name is
-        'default'
+      description: Name of the auto provisioning setting. The default setting's name is
+        'default'.
       isArray: false
       name: setting_name
       required: true
       secret: false
     - default: false
       description: Describes the type of security agent provisioning action to take
-        (On or Off)
+        (On or Off).
       isArray: false
       name: auto_provision
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -221,26 +221,26 @@ script:
     name: azure-sc-update-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
-      description: Setting display name
+      description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
-      description: Setting resource ID
+      description: The setting resource ID.
       type: string
   - arguments:
     - default: false
       defaultValue: default
-      description: Name of the auto provisioning setting
+      description: Name of the auto provisioning setting.
       isArray: false
       name: setting_name
       required: true
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -251,22 +251,22 @@ script:
     name: azure-sc-get-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
-      description: Setting display name
+      description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
-      description: Setting resource ID
+      description: The setting resource ID.
       type: string
-    - description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+    - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       type: Unknown
   - arguments:
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -277,14 +277,14 @@ script:
     name: azure-sc-list-aps
     outputs:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.Name
-      description: Setting display name
+      description: The setting display name.
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.AutoProvision
-      description: Display the type of security agent provisioning action to take
-        (On or Off)
+      description: Displays the type of security agent provisioning action to take
+        (On or Off).
       type: string
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
-      description: Setting resource ID
+      description: The setting resource ID.
       type: string
   - arguments:
     - default: false
@@ -302,8 +302,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -315,22 +315,22 @@ script:
     name: azure-sc-list-jit
     outputs:
     - contextPath: AzureSecurityCenter.JITPolicy.Name
-      description: Poliyc display name
+      description: The display name of the policy.
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Rules
-      description: 'CSV list of access rules for Microsoft.Compute/virtualMachines
+      description: 'A CSV list of access rules for Microsoft.Compute/virtualMachines
         resource, in the format (VMName: allowPort1,...)'
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Location
-      description: Location where the resource is stored
+      description: The location where the resource is stored.
       type: string
     - contextPath: AzureSecurityCenter.JITPolicy.Kind
-      description: Policy resource type
+      description: The resource type of the policy.
       type: string
   - arguments:
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
@@ -341,32 +341,32 @@ script:
     name: azure-sc-list-storage
     outputs:
     - contextPath: AzureSecurityCenter.Storage.Name
-      description: Name of the storage account
+      description: Name of the storage account.
       type: string
     - contextPath: AzureSecurityCenter.Storage.ResourceGroupName
-      description: Names of the attached resource group
+      description: Name of the attached resource group.
       type: string
     - contextPath: AzureSecurityCenter.Storage.Location
-      description: The geo-location where the resource resides
+      description: The geo-location where the resource resides.
       type: string
   - deprecated: false
-    description: List available subscriptions for this application.
+    description: Lists available subscriptions for this application.
     execution: false
     name: azure-list-subscriptions
     outputs:
     - contextPath: Azure.Subscription.ID
-      description: Subscription ID
+      description: The ID of the subscription.
       type: String
     - contextPath: Azure.Subscription.Name
-      description: Subscription Name
+      description: The name of the subscription.
       type: String
     - contextPath: Azure.Subscription.Enabled
-      description: Subscription state
+      description: The state of the subscription.
       type: String
   - arguments:
     - default: false
-      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-        command. If not specified, the default subscripton ID will be used.
+      description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscription ID is used.
       isArray: false
       name: subscription_id
       required: false
