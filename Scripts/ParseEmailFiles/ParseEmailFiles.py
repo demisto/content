@@ -43,6 +43,7 @@ reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=no-member
 
 MAX_DEPTH_CONST = 3
+GOT_INTO_REC = False
 
 """
 https://github.com/vikramarsid/msg_parser
@@ -3416,6 +3417,7 @@ def unfold(s):
 
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3):
     global ENCODINGS_TYPES
+    global GOT_INTO_REC
 
     if max_depth == 0:
         return None, []
@@ -3517,6 +3519,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                         try:
                             f.write(file_content)
                             f.close()
+                            GOT_INTO_REC = True
                             inner_eml, inner_attached_emails = handle_eml(file_path=f.name,
                                                                           file_name=attachment_file_name,
                                                                           max_depth=max_depth - 1)
@@ -3569,10 +3572,12 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
             elif part.get_content_type() == 'text/plain':
                 text = get_utf_string(part.get_payload(decode=True), 'TEXT')
-
-        email_data = None
-        # if we are parsing a singed attachment it is a wrapper and we can ignore the outter "email"
-        if 'multipart/signed' not in eml.get_content_type():
+        email_data = {}
+        # if we are parsing a signed attachment there can be one of two options:
+        # 1. it is a wrapper and we can ignore the outer "email"
+        # 2. it is not a wrapper and will not get into recursion, therefore we need the second condition
+        if 'multipart/signed' not in eml.get_content_type()\
+                or ('multipart/signed' in eml.get_content_type() and GOT_INTO_REC is False):
             email_data = {
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
