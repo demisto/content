@@ -31,7 +31,8 @@ MISP_URL = demisto.params().get('url')
 USE_SSL = not demisto.params().get('insecure')
 proxies = handle_proxy()  # type: ignore
 MISP_PATH = 'MISP.Event(obj.ID === val.ID)'
-MISP = ExpandedPyMISP(MISP_URL, MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
+MISP = ExpandedPyMISP(url=MISP_URL, key=MISP_KEY, ssl=USE_SSL, proxies=proxies)  # type: ExpandedPyMISP
+DATA_KEYS_TO_SAVE = demisto.params().get('context_select', [])
 
 """
 dict format :
@@ -231,6 +232,16 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
     return obj_to_build
 
 
+def remove_unselected_context_keys(context_data):
+    if not DATA_KEYS_TO_SAVE:
+        return
+
+    for attribute in context_data[0]['Attribute']:
+        for key in list(attribute.keys()):
+            if key not in DATA_KEYS_TO_SAVE:
+                del attribute[key]
+
+
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
     """
     Gets a MISP's response and building it to be in context. If missing key, will return the one written.
@@ -306,6 +317,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
     events = replace_keys(events)  # type: ignore
+    remove_unselected_context_keys(events)  # type: ignore
     return events  # type: ignore
 
 
@@ -980,7 +992,7 @@ def add_events_from_feed():
         )
         if not_added_counter:
             human_readable = f'{human_readable}\n' \
-                f'{not_added_counter} events were not added. Might already been added earlier.'
+                             f'{not_added_counter} events were not added. Might already been added earlier.'
 
         return_outputs(human_readable, outputs=entry_context)
     except ValueError:
@@ -1000,9 +1012,9 @@ def add_object(event_id: str, obj: MISPObject):
         error_string = str()
         for err in errors:
             error_string += f'' \
-                f'\n\tError code: {err["code"]} ' \
-                f'\n\tMessage: {err["message"]}' \
-                f'\n\tErrors: {err["errors"]}\n'
+                            f'\n\tError code: {err["code"]} ' \
+                            f'\n\tMessage: {err["message"]}' \
+                            f'\n\tErrors: {err["errors"]}\n'
         return_error(f'Error in `{command}` command: {error_string}')
     for ref in obj.ObjectReference:
         response = MISP.add_object_reference(ref)
