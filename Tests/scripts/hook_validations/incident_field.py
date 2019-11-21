@@ -8,16 +8,22 @@ from Tests.test_utils import print_error
 class IncidentFieldValidator(BaseValidator):
     """IncidentFieldValidator is designed to validate the correctness of the file structure we enter to content repo.
     And also try to catch possible Backward compatibility breaks due to the performed changes.
-
-    Attributes:
-       structure_validator: Previous used validator with needed attribues
     """
+
+    def is_valid_version(self):
+        # type: () -> bool
+        """Nothing to return, no version managed
+
+        Returns:
+            True
+        """
+        return True
 
     def is_backward_compatible(self):
         """Check whether the Incident Field is backward compatible or not, update the _is_valid field to determine that
+        TODO
         """
-        self.structure_validator.file
-        if not self.old_incident_field:
+        if not self.old_file:
             return True
 
         is_bc_broke = any([
@@ -26,8 +32,9 @@ class IncidentFieldValidator(BaseValidator):
 
         return not is_bc_broke
 
-    def is_valid(self):
-        """Check whether the Incident Field is valid or not"""
+    def is_valid_file(self):
+        """Check whether the Incident Field is valid or not
+        """
         is_incident_field_valid = all([
             self.is_valid_name(),
             self.is_valid_content_flag(),
@@ -38,8 +45,8 @@ class IncidentFieldValidator(BaseValidator):
 
     def is_valid_name(self):
         """Validate that the name and cliName does not contain any potential incident synonyms."""
-        name = self.current_incident_field.get('name', '')
-        cli_name = self.current_incident_field.get('cliName', '')
+        name = self.current_file.get('name', '')
+        cli_name = self.current_file.get('cliName', '')
         bad_words = {'incident', 'case', 'alert', 'event', 'play', 'ticket', 'issue'}
         whitelisted_field_names = {
             'XDR Alert Count',
@@ -61,7 +68,7 @@ class IncidentFieldValidator(BaseValidator):
 
     def is_valid_content_flag(self):
         """Validate that field is marked as content."""
-        is_valid_flag = self.current_incident_field.get('content') is True
+        is_valid_flag = self.current_file.get('content') is True
         if not is_valid_flag:
             print_error("The content key must be set to true, please update the file '{}'".format(self.file_path))
 
@@ -69,7 +76,7 @@ class IncidentFieldValidator(BaseValidator):
 
     def is_valid_system_flag(self):
         """Validate that field is not marked as system."""
-        is_valid_flag = self.current_incident_field.get('system', False) is False
+        is_valid_flag = self.current_file.get('system', False) is False
         if not is_valid_flag:
             print_error("The system key must be set to false, please update the file '{}'".format(self.file_path))
 
