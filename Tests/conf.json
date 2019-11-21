@@ -443,7 +443,7 @@
                 "Cylance Protect v2",
                 "Demisto REST API"
             ],
-            "fromversion": "4.5.0",
+            "fromversion": "5.0.0",
             "timeout": 900
         },
         {
