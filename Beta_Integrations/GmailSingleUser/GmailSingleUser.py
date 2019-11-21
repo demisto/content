@@ -99,8 +99,6 @@ class Client:
 
     def get_http_client_with_proxy(self):
         proxies = handle_proxy()
-        if not proxies or not proxies['https']:
-            raise Exception('https proxy value is empty. Check Demisto server configuration')
         https_proxy = proxies['https']
         if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
             https_proxy = 'https://' + https_proxy
