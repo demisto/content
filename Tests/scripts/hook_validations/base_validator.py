@@ -12,10 +12,11 @@ class BaseValidator(object):
         # type: (StructureValidator) -> None
         self.structure_validator = structure_validator
         self.current_file = structure_validator.current_file
+        self.old_file = structure_validator.old_file
         self.file_path = structure_validator.file_path
         self.is_valid = structure_validator.is_valid
 
-    def is_file_valid(self):
+    def is_valid_file(self):
         self.is_valid_version()
 
     @abstractmethod
