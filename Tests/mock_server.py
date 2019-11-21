@@ -172,9 +172,9 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, client, public_ip,
+    def __init__(self, demisto_api_key, server, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.client = client
+        self.client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
