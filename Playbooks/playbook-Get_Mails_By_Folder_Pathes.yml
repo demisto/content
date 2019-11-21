@@ -191,4 +191,4 @@ inputs:
     description: max number of mails to fetch from each folder
 outputs: []
 tests:
-  - GetEWSFolder-Test
+  - Get EWS Folder Test

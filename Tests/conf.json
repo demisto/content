@@ -1947,7 +1947,7 @@
     },
     {
       "integrations": "EWS v2",
-      "playbookID": "GetEWSFolder-￿Test"
+      "playbookID": "Get EWS Folder Test"
     }
   ],
   "skipped_tests": {

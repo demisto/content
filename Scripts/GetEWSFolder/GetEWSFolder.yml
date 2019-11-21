@@ -52,4 +52,4 @@ tags:
   - ml
 comment: Get emails from multiple folders of an account at once.
 tests:
-  - GetEWSFolder-Test
+  - Get EWS Folder Test
