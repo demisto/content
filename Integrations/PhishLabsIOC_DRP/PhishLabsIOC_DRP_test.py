@@ -1,5 +1,8 @@
 import pytest
+import json
+from PhishLabsIOC_DRP import Client
 
+'''Globals - Helper functions'''
 TEST_RAW_RESPONSE_TO_CONTEXT = [
     (
         [
@@ -131,6 +134,105 @@ TEST_RAW_RESPONSE_TO_CONTEXT = [
     )
 ]
 
+'''Globals - Command functions'''
+CLIENT = Client(base_url='https://caseapi.phishlabs.com/v1/data')
+RAW_RESPONSE = {
+    "header": {
+        "id": "d2d9d54e-0c42-11ea-8f4c-0efb1918365c",
+        "queryParams": {
+            "format": "json",
+            "maxRecords": 20
+        },
+        "requestDate": "2019-11-21T09:39:33.308765885Z",
+        "returnResult": 20,
+        "totalResult": 39570,
+        "user": "api.ioc.demisto"
+    },
+    "data": [
+        {
+            "caseId": "1",
+            "title": "Test title",
+            "description": "Description Test",
+            "caseNumber": 1,
+            "createdBy": {
+                "id": "1",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Threat Offline",
+            "caseStatus": "Closed",
+            "dateCreated": "2019-11-21T07:31:01Z",
+            "dateClosed": "2019-11-21T08:15:25Z",
+            "dateModified": "2019-11-21T08:15:25Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "1",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-21T07:31:01Z",
+                    "fileName": "google.com",
+                    "fileURL": "https://google.com"
+                }
+            ],
+            "formReceiver": 'false',
+            "brandAbuseFlag": 'false',
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": 'false'
+        },
+        {
+            "caseId": "2",
+            "title": "Test title",
+            "description": "Description Test",
+            "caseNumber": '2',
+            "createdBy": {
+                "id": "2",
+                "name": "soc.phishlabs",
+                "displayName": "SOC PhishLabs"
+            },
+            "brand": "",
+            "caseType": "Other",
+            "resolutionStatus": "Threat Offline",
+            "caseStatus": "Closed",
+            "dateCreated": "2019-11-21T04:59:01Z",
+            "dateClosed": "2019-11-21T05:06:35Z",
+            "dateModified": "2019-11-21T05:06:35Z",
+            "customer": "PhishLabs",
+            "attachments": [
+                {
+                    "id": "2",
+                    "type": "Email",
+                    "description": "Source Email for case creation",
+                    "dateAdded": "2019-11-21T04:59:02Z",
+                    "fileName": "google.com",
+                    "fileURL": "https://google.com"
+                }
+            ],
+            "formReceiver": 'false',
+            "brandAbuseFlag": 'false',
+            "appDate": "0001-01-01T00:00:00Z",
+            "primaryMarketplace": 'false'
+        }
+    ]
+}
+
+INCIDENTS = [
+    {
+        'name': 'PhishLabs IOC - DRP: 1',
+        'occurred': '2019-11-21T07:31:01Z',
+        'rawJSON': json.dumps(RAW_RESPONSE.get('data', [])[0])
+    },
+    {
+        'name': 'PhishLabs IOC - DRP: 2',
+        'occurred': '2019-11-21T04:59:01Z',
+        'rawJSON': json.dumps(RAW_RESPONSE.get('data', [])[1])
+    }
+]
+
+INCIDENTS_LAST_RUN_TIME = {'latsRun': '2019-11-21T07:31:01Z'}
+
 
 '''Function tests'''
 
@@ -141,3 +243,27 @@ class TestHelperFunctions:
         from PhishLabsIOC_DRP import raw_response_to_context
         out_to_test = raw_response_to_context(cases=input_raw)
         assert output_ec == out_to_test
+
+
+class TestCommandsFunctions(object):
+    def test_fetch_incidents_command(self, requests_mock):
+        from PhishLabsIOC_DRP import fetch_incidents_command
+        requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases',
+                          json=RAW_RESPONSE)
+        incidents, new_last_run = fetch_incidents_command(client=CLIENT,
+                                                          fetch_time="7 days",
+                                                          max_records="20",
+                                                          last_run="2018-10-24T14:13:20+00:00")
+        assert INCIDENTS_LAST_RUN_TIME == new_last_run, "Last run value isn't correct"
+        assert INCIDENTS == incidents, 'incidents parsing isn\'t correct'
+
+    def test_fetch_incidents_no_last_run_command(self, requests_mock):
+        from PhishLabsIOC_DRP import fetch_incidents_command
+        requests_mock.get('https://caseapi.phishlabs.com/v1/data/cases',
+                          json=RAW_RESPONSE)
+        incidents, new_last_run = fetch_incidents_command(client=CLIENT,
+                                                          fetch_time="7 days",
+                                                          max_records="20",
+                                                          last_run="")
+        assert INCIDENTS_LAST_RUN_TIME == new_last_run, "Last run value isn't correct"
+        assert INCIDENTS == incidents, 'incidents parsing isn\'t correct'
