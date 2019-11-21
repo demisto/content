@@ -7,11 +7,6 @@ from Tests.test_utils import print_error, server_version_compare, get_dockerimag
 class ScriptValidator(BaseValidator):
     """ScriptValidator is designed to validate the correctness of the file structure we enter to content repo. And
         also try to catch possible Backward compatibility breaks due to the preformed changes.
-
-    Attributes:
-       file_path (str): the path to the file we are examining at the moment.
-       current_script (dict): Json representation of the current script from the branch.
-       old_script (dict): Json representation of the current script from master.
     """
 
     def is_valid_version(self):
