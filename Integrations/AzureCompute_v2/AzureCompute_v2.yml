@@ -434,13 +434,13 @@ script:
     name: azure-list-subscriptions
     outputs:
     - contextPath: Azure.Subscription.ID
-      description: Subscription ID
+      description: The ID of the subscription.
       type: String
     - contextPath: Azure.Subscription.Name
-      description: Subscription Name
+      description: The name of the subscription.
       type: String
     - contextPath: Azure.Subscription.State
-      description: Subscription State
+      description: The state of the subscription.
       type: String
   dockerimage: demisto/crypto:1.0.0.3008
   isfetch: false
