@@ -1063,3 +1063,9 @@ There are no context output for this command.
  alt="image" width="749" height="412"></a>
  -->
 </p>
+<h2>Troubleshooting</h2>
+<p>When running the command "symantec-get-incident-details' there might be situation you are getting the following error message:</p>
+<img alt="" src="https://user-images.githubusercontent.com/53565845/69337251-19aba480-0c69-11ea-94e6-90a3b6778a91.png"/>
+<br>
+<br>
+<p>If it does happen, please check your Symantec DLP system is configured properly.</p>
