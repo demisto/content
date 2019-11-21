@@ -5,9 +5,13 @@ from Tests.test_utils import print_error
 
 class LayoutValidator(BaseValidator):
     def is_valid_version(self):
-        """Validate that the layout file has version of -1."""
-        layout = self.current_file.get('layout')
-        if layout.get('version') != self.DEFAULT_VERSION:
+        # type: () -> bool
+        """Return if version is valid. uses default method.
+
+        Returns:
+            True if version is valid, else False.
+        """
+        if self.current_file.get('layout', {}).get('version') != self.DEFAULT_VERSION:
             print_error(Errors.wrong_version(self.file_path, self.DEFAULT_VERSION))
             self.is_valid = False
             return False

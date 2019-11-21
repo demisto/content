@@ -10,7 +10,7 @@ from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_P
     VALID_WIDGET_PATH, VALID_DASHBOARD_PATH, INVALID_DASHBOARD_PATH
 
 
-class IsValidScheme:
+class TestStructureValidator:
     SCHEME_VALIDATION_INPUTS = [
         (VALID_TEST_PLAYBOOK_PATH, 'playbook', True, "Found a problem in the scheme although there is no problem"),
         (INVALID_PLAYBOOK_PATH, 'playbook', False, "Found no problem in the scheme although there is a problem")
@@ -22,9 +22,7 @@ class IsValidScheme:
         validator = StructureValidator(file_path=path)
         assert validator.is_valid_scheme() is answer, error
 
-
-class TestIsValidFromversionOnModified:
-    INPUTS = [
+    INPUTS_VALID_FROM_VERSION_MODIFIED = [
         (VALID_TEST_PLAYBOOK_PATH, "+ fromversion: sometext", False,
          "Didn't find the fromversion as updated in yml file"),
         (
@@ -33,49 +31,25 @@ class TestIsValidFromversionOnModified:
         (INVALID_PLAYBOOK_PATH, "some other text", True, "Didn't find the fromversion as updated in yml file")
     ]
 
-    @pytest.mark.parametrize('path, change_string, answer, error', INPUTS)
+    @pytest.mark.parametrize('path, change_string, answer, error', INPUTS_VALID_FROM_VERSION_MODIFIED)
     def test_fromversion_update_validation_yml_structure(self, path, change_string, answer, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_valid_fromversion_on_modified(change_string=change_string) is answer, error
 
-
-class TestIsIDModified:
-    IS_ID_MODIFIED_LIST = [
+    INPUTS_IS_ID_MODIFIED = [
         (INVALID_PLAYBOOK_PATH, True, "+  id: text", "Didn't find the id as updated in file"),
         (INVALID_PLAYBOOK_PATH, True, "-  id: text", "Didn't find the id as updated in file"),
         (INVALID_PLAYBOOK_PATH, False, "some other text", "Found the ID as changed although it is not")
     ]
 
-    @pytest.mark.parametrize("path, answer, change_string, error", IS_ID_MODIFIED_LIST)
+    @pytest.mark.parametrize("path, answer, change_string, error", INPUTS_IS_ID_MODIFIED)
     def test_is_id_modified(self, path, answer, change_string, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_id_modified(change_string=change_string) is answer, error
 
-
-class TestIsFileValid:
-    INPUTS = [
-        (
-            VALID_TEST_PLAYBOOK_PATH, "Playbooks/playbook-test.yml", True, True,
-            "Found a problem in the scheme although there is no problem"
-        ),
-        (
-            VALID_INTEGRATION_TEST_PATH, "Integrations/integration-test.yml", False, False,
-            "Didn't find a problem in the file although it is not valid"
-        ),
-    ]
-
-    @pytest.mark.parametrize('source, target, answer, is_added_file, error', INPUTS)
-    def test_valid_file_examination(self, source, target, answer, is_added_file, error):
-        copyfile(source, target)
-        validator = StructureValidator(file_path=target, is_added_file=is_added_file)
-        assert validator.is_file_valid() is answer, error
-        os.remove(target)
-
-
-class TestIsFileIDWithoutSlashes:
     POSITIVE_ERROR = "Didn't find a slash in the ID even though it contains a slash."
     NEGATIVE_ERROR = "found a slash in the ID even though it not contains a slash."
-    INPUTS = [
+    INPUTS_IS_FILE_WITHOUT_SLASH = [
         (VALID_INTEGRATION_ID_PATH, True, POSITIVE_ERROR),
         (INVALID_INTEGRATION_ID_PATH, False, NEGATIVE_ERROR),
         (VALID_PLAYBOOK_ID_PATH, True, POSITIVE_ERROR),
@@ -83,29 +57,25 @@ class TestIsFileIDWithoutSlashes:
 
     ]
 
-    @pytest.mark.parametrize('path, answer, error', INPUTS)
+    @pytest.mark.parametrize('path, answer, error', INPUTS_IS_FILE_WITHOUT_SLASH)
     def test_integration_file_with_valid_id(self, path, answer, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_file_id_without_slashes() is answer, error
 
-
-class TestIsValidFilePath:
-    INPUTS = [
+    INPUTS_IS_PATH_VALID = [
         ("Reports/report-sade.json", True),
         ("Notinregex/report-sade.json", False),
         ("Packs/Integrations/Cymon/Cymon.yml", True),
     ]
 
-    @pytest.mark.parametrize('path, answer', INPUTS)
+    @pytest.mark.parametrize('path, answer', INPUTS_IS_PATH_VALID)
     def test_is_valid_file_path(self, path, answer, mocker):
         mocker.patch.object(StructureValidator, "load_data_from_file", return_value=None)
         structure = StructureValidator(path)
         structure.scheme_name = None
         assert structure.is_valid_file_path() is answer
 
-
-class TestDifferentFiles:
-    INPUTS_IS_VALID_VERSION = [
+    INPUTS_IS_VALID_FILE = [
         (VALID_REPUTATION_PATH, "./Misc/reputations.json", True),
         (VALID_LAYOUT_PATH, "./Layouts/layout-mock.json", True),
         (INVALID_LAYOUT_PATH, "./Layouts/layout-mock.json", False),
@@ -113,11 +83,16 @@ class TestDifferentFiles:
         (VALID_WIDGET_PATH, "./Widgets/widget-mocks.json", True),
         (VALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", True),
         (INVALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", False),
+        (VALID_TEST_PLAYBOOK_PATH, "Playbooks/playbook-test.yml", True),
+        (VALID_INTEGRATION_TEST_PATH, "Integrations/integration-test.yml", True),
+        (INVALID_PLAYBOOK_PATH, "TestPlaybooks/integration-test.yml", False),
     ]
 
-    @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_VERSION)
-    def test_is_valid_reputations(self, source, target, answer):
-        copyfile(source, target)
-        structure = StructureValidator(target)
-        assert structure.is_file_valid(validate_rn=False) is answer
-        os.remove(target)
+    @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_FILE)
+    def test_is_file_file_valid(self, source, target, answer):
+        try:
+            copyfile(source, target)
+            structure = StructureValidator(target)
+            assert structure.is_valid_file(validate_rn=False) is answer
+        finally:
+            os.remove(target)

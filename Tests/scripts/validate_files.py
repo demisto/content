@@ -220,7 +220,7 @@ class FilesValidator(object):
 
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
-            if not structure_validator.is_file_valid():
+            if not structure_validator.is_valid_file():
                 self._is_valid = False
 
             if not self.id_set_validator.is_file_valid_in_set(file_path):
@@ -294,7 +294,7 @@ class FilesValidator(object):
             print('Validating {}'.format(file_path))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
-            if not structure_validator.is_file_valid():
+            if not structure_validator.is_valid_file():
                 self._is_valid = False
 
             if not self.id_set_validator.is_file_valid_in_set(file_path):
