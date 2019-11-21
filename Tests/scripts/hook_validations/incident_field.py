@@ -1,34 +1,22 @@
 """
 This module is designed to validate the correctness of incident field entities in content.
 """
-from Tests.test_utils import print_error, get_json, get_remote_file
+from Tests.scripts.hook_validations.base_validator import BaseValidator
+from Tests.test_utils import print_error
 
 
-class IncidentFieldValidator(object):
+class IncidentFieldValidator(BaseValidator):
     """IncidentFieldValidator is designed to validate the correctness of the file structure we enter to content repo.
     And also try to catch possible Backward compatibility breaks due to the performed changes.
 
     Attributes:
-       file_path (str): the path to the file we are examining at the moment.
-       current_incident_field (dict): Json representation of the current incident field from the branch.
-       old_incident_field (dict): Json representation of the current incident field from master.
+       structure_validator: Previous used validator with needed attribues
     """
-
-    def __init__(self, file_path, check_git=True, old_file_path=None, old_git_branch='master'):
-        self.file_path = file_path
-        self.current_incident_field = {}
-        self.old_incident_field = {}
-
-        if check_git:
-            self.current_incident_field = get_json(file_path)
-            if old_file_path:
-                self.old_incident_field = get_remote_file(old_file_path, old_git_branch)
-            else:
-                self.old_incident_field = get_remote_file(file_path, old_git_branch)
 
     def is_backward_compatible(self):
         """Check whether the Incident Field is backward compatible or not, update the _is_valid field to determine that
         """
+        self.structure_validator.file
         if not self.old_incident_field:
             return True
 

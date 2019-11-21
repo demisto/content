@@ -16,7 +16,7 @@ from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES,
     PYTHON_ALL_REGEXES, MISC_REGEX, MISC_REPUTATIONS_REGEX
 from Tests.scripts.error_constants import Errors
 from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
-    get_latest_release_notes_text, get_matching_regex
+    get_latest_release_notes_text, get_matching_regex, get_remote_file
 
 try:
     from pykwalify.core import Core
@@ -69,6 +69,7 @@ class StructureValidator(object):
         self.scheme_name = self.scheme_of_file_by_path()
         self.file_type = self.get_file_type()
         self.current_file = self.load_data_from_file()
+        self.old_file = None if (is_renamed or is_added_file) else get_remote_file(self.file_path)
 
     def is_valid_file(self, validate_rn=True):
         # type: (bool) -> Optional[bool]
