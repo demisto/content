@@ -10,26 +10,15 @@ We security folks love to tinker, keep enhancing and sharpening our toolset and 
 
 We invite you to use the playbooks and scripts, modify them to suit your needs and see what works for you, get involved in the community discussion and of course remember to give back and contribute so that others can enjoy and learn from your hard work and build upon it to enhance it even further.
 
+
+## Demisto
+- For more information about Demisto you can visit [here](https://www.paloaltonetworks.com/cortex/demisto)
+- To join our community please visit [Demisto Community](https://go.demisto.com/join-our-slack-community)
+- We have Partners website - visit [here](https://demisto.developers.paloaltonetworks.com/)
+- For Demisto Components, Concepts, and Terminology visit [here](https://support.demisto.com/hc/en-us/articles/360005126713-Demisto-Components-Concepts-and-Terminology)
+
 ## Contributing
 Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](CONTRIBUTING.md).
-
-
-## Playbooks
-The Demisto Platform includes a visual playbook editor - you can add and modify tasks, create control flow according to answers returned by your queries, and automate everything with your existing security tools, services and products. You can also export your work to a file in the COPS format, and import playbooks shared by your peers who have done the same.
-
-We will be releasing more and more playbooks for interesting scenarios, so stay tuned. If you are working on an interesting playbook of your own, feel free to send us a Pull Request and let's build it together.
-
-The spec for our open playbook format, COPS, can be found [here](https://github.com/demisto/COPS).
-
-## Scripts
-These scripts written in Python or Javascript perform Security Operations tasks.
-The scripts are built to run inside the Demisto Platform - they can query or send commands to a long list of existing security products, and react based on the output.
-
-You can take your logic and the way you want to work and write your own scripts, allowing for maximum flexibility.
-The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
-
-## Integrations
-Integrations written in Javascript or Python enable the Demisto Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
 
 ### Creating an Integration
 Let's look at Demisto and get started on your first integration.
@@ -56,9 +45,6 @@ We use docker to run python scripts and integrations in a controlled environment
 
 [Docker Images](docs/docker)
 
-## Reports
-Demisto Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
-
 ## Release Notes
 For information about content release notes conventions, refer to our [release notes documentation](docs/release_notes).
 
@@ -67,7 +53,6 @@ For information about content release notes conventions, refer to our [release n
 
 | Link | Description |
 | --- | ---|
-| [Tutorial Video](docs/tutorial-video) | A step-by-step introduction to creating an integration |
 | [Getting Started](docs/getting_started) | Environment setup and a brief explanation of the Demisto IDE |
 | [Package directory](docs/package_directory_structure) | Explanation of Python integration / automation script package directory structure |
 | [Code Conventions](docs/code_conventions) | Our Code Conventions |
@@ -88,7 +73,7 @@ For information about content release notes conventions, refer to our [release n
 | [Testing](docs/tests) | The Demisto Content Repo Testing Methods |
 | [CircleCI](docs/tests/circleci) | How we test using CircleCI |
 | [Mocks](docs/tests/mocks) | Explanation of how to test using mocked data |
-| [GenericPolling Playbook](docs/tests/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
+| [GenericPolling Playbook](docs/genericpolling) | Explanation of how and when to use the GenericPolling playbook |
 | [Release Notes](docs/release_notes) | Explanation of our content release notes conventions |
 
 ---
