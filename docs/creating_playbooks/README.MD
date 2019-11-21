@@ -4,7 +4,7 @@
 To create a playbook, we begin by navigating to the **Playbooks** tab in Demisto and clicking **New Playbook**. 
 
 ### Adding a Command
-Playbooks run commands that are found inm both an integration as well as scripts. For this example, we will look at the Integration IPInfo. IPInfo accepts only one command called ```!ip```. A search for ipinfo in the Task Library will display the command "ip". Click **Add** to bring up the configuration options. 
+Playbooks run commands that are found in both an integration as well as scripts. For this example, we will look at the Integration IPInfo. IPInfo accepts only one command called ```!ip```. A search for ipinfo in the Task Library will display the command "ip". Click **Add** to bring up the configuration options. 
 
 For this example, will use Google's 8.8.8.8 in the configuration below. You can tell the playbook to accept different values based on the context.
 

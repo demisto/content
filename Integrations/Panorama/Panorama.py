@@ -2682,7 +2682,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -3615,7 +3615,7 @@ def build_logs_query(address_src=None, address_dst=None,
     if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += build_array_query(query, url, 'url', 'eq')
+        query += build_array_query(query, url, 'url', 'contains')
     if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
