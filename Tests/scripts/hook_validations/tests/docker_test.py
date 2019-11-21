@@ -75,10 +75,12 @@ def test_parse_www_auth(www_auth, expected):
     assert expected == DockerImageValidator.parse_www_auth(www_auth)
 
 
+# disable-secrets-detection-start
 @pytest.mark.parametrize('input_tags, output_tags',
                          [(['1.2.3.0', '4.5.6.0', '7.8.9.0'], ['4.5.6.0', '1.2.3.0', '7.8.9.0']),
                           (['1.2.3.0', '4.a.6.0', '7.8.9.0'], ['7.8.9.0', '1.2.3.0']),
                           (['aaa', 'bbb'], []), (['6a.7.6'], []), (['6..4'], [])])
+# disable-secrets-detection-end
 def test_clear_non_numbered_tags(input_tags, output_tags):
     from Tests.scripts.hook_validations.docker import DockerImageValidator
     assert sorted(output_tags) == sorted(DockerImageValidator.clear_non_numbered_tags(input_tags))
