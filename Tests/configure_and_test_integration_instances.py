@@ -65,7 +65,7 @@ def configure_integration_instance(integration, client):
         (dict): Configured integration instance
     '''
     integration_name = integration.get('name')
-    print('Configuring instance for integration "{}"'.format(integration_name))
+    print('Configuring instance for integration "{}"\n'.format(integration_name))
     integration_instance_name = integration.get('instance_name', '')
     integration_params = integration.get('params')
     is_byoi = integration.get('byoi', True)
