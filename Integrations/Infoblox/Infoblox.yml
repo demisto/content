@@ -184,7 +184,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Rule name.
+      description: Rule name in a FQDN format.
       isArray: false
       name: name
       required: true
@@ -555,17 +555,67 @@ script:
     name: infoblox-enable-rule
   - arguments:
     - default: false
-      description: The rule reference_id ID. (could be exctracted by running the serach
-        rules command)
+      description: The rule reference_id ID. (this could be exctracted by running
+        the 'infoblox-search-rule' command)
       isArray: false
       name: reference_id
       required: true
       secret: false
     deprecated: false
-    description: Disable a rule by its reference ID (reference ID could be exctracted
-      by running the serach rules command)
+    description: Disable a rule by its reference ID (this could be exctracted by running
+      the 'infoblox-search-rule' command)
     execution: false
     name: infoblox-disable-rule
+  - arguments:
+    - default: false
+      description: Infoblox object type
+      isArray: false
+      name: object_type
+      required: true
+      secret: false
+    deprecated: false
+    description: Use this command the retreive object field names to be used later
+      in the search rules command.
+    execution: false
+    name: infoblox-get-object-fields
+  - arguments:
+    - default: false
+      description: Infoblox object type (can be retreived by runing the 'infoblox-list-response-policy-zone-rules'
+        command)
+      isArray: false
+      name: object_type
+      required: true
+      secret: false
+    - default: false
+      description: 'Full rule name (usually the rule name followed by its zone. Example:
+        name.domain.com)'
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - default: false
+      description: Fields to include in the return object (supported object fields
+        can be retrieved by running the *infoblox-get-object-fields* command)
+      isArray: false
+      name: output_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: Search a specific rule by its name.
+    execution: false
+    name: infoblox-search-rule
+  - arguments:
+    - default: false
+      description: Rule reference ID (this can be retreived by running the 'infoblox-search-rule'
+        command)
+      isArray: false
+      name: reference_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a rule
+    execution: false
+    name: infoblox-delete-rpz-rule
   dockerimage: demisto/python3:3.7.3.221
   isfetch: false
   runonce: false
