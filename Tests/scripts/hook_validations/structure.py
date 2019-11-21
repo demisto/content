@@ -70,7 +70,7 @@ class StructureValidator(object):
         self.file_type = self.get_file_type()
         self.current_file = self.load_data_from_file()
 
-    def is_file_valid(self, validate_rn=True):
+    def is_valid_file(self, validate_rn=True):
         # type: (bool) -> Optional[bool]
         """Checks if given file is valid
 
@@ -277,7 +277,7 @@ class StructureValidator(object):
             print_error(Errors.wrong_file_extension(file_extension, self.FILE_SUFFIX_TO_LOAD_FUNCTION.keys()))
         load_function = self.FILE_SUFFIX_TO_LOAD_FUNCTION[file_extension]
         with open(self.file_path, 'r') as file_obj:
-            loaded_file_data = load_function(file_obj)
+            loaded_file_data = load_function(file_obj)  # type: ignore
             return loaded_file_data
 
     def get_file_type(self):

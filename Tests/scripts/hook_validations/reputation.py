@@ -8,7 +8,7 @@ class ReputationValidator(BaseValidator):
         # type: () -> bool
         """Validate that the reputations file as version of -1."""
         is_valid = True
-        reputations = self.current_file.get('reputations')
+        reputations = self.current_file.get('reputations', [])
         for reputation in reputations:
             internal_version = reputation.get('version')
             if internal_version != -1:
