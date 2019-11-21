@@ -1953,6 +1953,13 @@
         },
         {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
+        },
+        {
+            "integrations": [
+                "Gmail Single User",
+                "Gmail"
+            ],
+            "playbookID": "Gmail Single User - Test"
         }
     ],
     "skipped_tests": {

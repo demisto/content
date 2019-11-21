@@ -1,0 +1,204 @@
+category: Authentication
+beta: true
+commonfields:
+  id: Gmail Single User
+  version: -1
+configuration:
+- display: Email of user
+  name: email
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 1 days
+  display: First fetch timestamp, in days.
+  name: fetch_time
+  required: false
+  type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: registration_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: token
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
+description: Gmail API based of OAuth 2.0
+display: Gmail Single User Beta
+name: Gmail Single User
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Email addresses of the receiver.
+      isArray: true
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: The contents (body) of the email to be sent in plain text.
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - default: false
+      description: Subject for the email to be sent.
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of War Room entries that contain
+        the files that need be attached to the email.
+      isArray: true
+      name: attachIDs
+      required: false
+      secret: false
+    - default: false
+      description: Additional recipient email address (CC).
+      isArray: true
+      name: cc
+      required: false
+      secret: false
+    - default: false
+      description: Additional recipient email address (BCC).
+      isArray: true
+      name: bcc
+      required: false
+      secret: false
+    - default: false
+      description: The contents (body) of the email to be sent in HTML format.
+      isArray: false
+      name: htmlBody
+      required: false
+      secret: false
+    - default: false
+      description: Address that needs to be used to reply to the message.
+      isArray: false
+      name: replyTo
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of new names to rename attachments corresponding to the order that they were attached to the email.
+                Examples - To rename first and third file attachNames=new_fileName1,,new_fileName3
+                To rename second and fifth files attachNames=,new_fileName2,,,new_fileName5
+      isArray: true
+      name: attachNames
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of CID images to embed attachments inside
+        the email.
+      isArray: true
+      name: attachCIDs
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Textual name for an attached file. Multiple files are supported as a
+                comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFile
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Content for the attached file. Multiple files are supported as a comma-separated
+                list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test
+                2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFileContent
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        CID image for an attached file to include within the email body. Multiple files are
+                supported as comma-separated list. (e.g. transientFile="t1.txt,temp.txt,t3.txt"
+                transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz")
+      isArray: true
+      name: transientFileCID
+      required: false
+      secret: false
+    - default: false
+      description: 'A CSV list of additional headers in the format: headerName=headerValue.
+        For example: "headerName1=headerValue1,headerName2=headerValue2".'
+      isArray: true
+      name: additionalHeader
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        'Replaces {varname} variables with values from this parameter. Expected
+               values are in the form of a JSON document. For example, {"varname" :{"value" "some
+               value", "key": "context key"}}. Each var name can either be provided with
+               the value or a context key to retrieve the value.'
+      isArray: false
+      name: templateParams
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends mail using Gmail.
+    execution: false
+    name: send-mail
+    outputs:
+    - contextPath: Gmail.SentMail.ID
+      description: The immutable ID of the message.
+      type: String
+    - contextPath: Gmail.SentMail.Labels
+      description: List of IDs of labels applied to this message.
+      type: String
+    - contextPath: Gmail.SentMail.ThreadId
+      description: The ID of the thread in which the message belongs.
+      type: String
+    - contextPath: Gmail.SentMail.To
+      description: The recipient of the email.
+      type: String
+    - contextPath: Gmail.SentMail.From
+      description: The sender of the email.
+      type: Unknown
+    - contextPath: Gmail.SentMail.Cc
+      description: Additional recipient email address (CC).
+      type: String
+    - contextPath: Gmail.SentMail.Bcc
+      description: Additional recipient email address (BCC).
+      type: String
+    - contextPath: Gmail.SentMail.Subject
+      description: The subject of the email.
+      type: String
+    - contextPath: Gmail.SentMail.Body
+      description: The plain-text version of the email.
+      type: Unknown
+    - contextPath: Gmail.SentMail.MailBox
+      description: The mailbox from which the mail was sent.
+      type: String
+  dockerimage: demisto/google-api-py3:1.0.0.3905
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  tests:
+  - Gmail Single User - Test
