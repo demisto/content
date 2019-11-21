@@ -1,0 +1,32 @@
+---
+- name: Ensuring pyenv is Installed and set configuration
+  stat:
+    path: /usr/local/bin/pyenv
+  register: "pyenv_check"
+
+- name: Configuring pyenv in ~/.zshrc
+  lineinfile:
+    path: ~/.zshrc
+    state: present
+    line: eval "$(pyenv init -)"
+
+- name: Ensuring python 3.8.0 Installed in pyenv
+  stat:
+    path: ~/.pyenv/versions/3.8.0/bin/python3.8
+  register: "pyenv_python_3_8_0_check"
+
+- name: Install python 3.8.0
+  shell: pyenv install 3.8.0
+  when: not pyenv_python_3_8_0_check.stat.exists
+
+- name: Ensuring python 2.7.17 Installed in pyenv
+  stat:
+    path: ~/.pyenv/versions/2.7.17/
+  register: pyenv_python_2_7_17_check
+
+- name: Install python 2.7.17
+  shell: pyenv install 2.7.17
+  when: not pyenv_python_2_7_17_check.stat.exists
+
+- name: Setup default pyenv as interperter
+  shell: pyenv global 3.8.0 2.7.17 

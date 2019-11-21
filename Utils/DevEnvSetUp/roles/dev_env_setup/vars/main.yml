@@ -1,0 +1,13 @@
+# homebrew vars
+brew_cask_packages:
+    -
+brew_packages:
+    - 'git'
+    - 'pyenv'
+    - 'python2'
+install_homebrew_if_missing: true
+upgrade_homebrew_packages: true
+
+# virtualenv vars
+content: ~/dev/demisto/content
+pyenv_shims: ~/.pyenv/shims 

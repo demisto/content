@@ -1,0 +1,35 @@
+- name: Ensuring Homebrew Is Installed
+  stat:
+    path: "/usr/local/bin/brew"
+  register: homebrew_check
+
+- name: Fail If Homebrew Is Not Installed and install_homebrew_if_missing Is False
+  fail:
+    msg: "Homebrew is missing...Install from http://brew.sh/"
+  when: >
+        not homebrew_check.stat.exists and
+        not install_homebrew_if_missing
+
+- name: Installing Homebrew
+  command: '/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+  when: >
+        not homebrew_check.stat.exists and
+        install_homebrew_if_missing
+
+- name: Updating Homebrew
+  homebrew:
+    update_homebrew: yes
+  when: homebrew_check.stat.exists
+
+- name: Installing Homebrew Packages
+  homebrew:
+    name: '{{ brew_packages }}'
+    state: latest
+  when: homebrew_check.stat.exists
+
+# - name: Installing Homebrew Cask Packages
+#   homebrew_cask:
+#     name: "{{ item }}"
+#     state: "present"
+#   with_items: '{{ brew_cask_packages }}'
+#   when: homebrew_check.stat.exists

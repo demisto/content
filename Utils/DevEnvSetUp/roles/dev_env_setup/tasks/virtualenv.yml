@@ -1,0 +1,48 @@
+- name: Install virtualenv
+  pip:
+    name: virtualenv
+    executable: pip2
+
+- name: Ensuring if content repo cloned
+  stat:
+    path: "{{ content }}"
+  register: content_repo_check
+
+- name: Fail content repo isn't exists
+  fail:
+    msg: "Content repo isn't cloned or not in right path {{ content }}"
+  when: not content_repo_check.stat.exists
+
+- name: Ensuring if content venv exsits
+  stat:
+    path: ~/dev/demisto/content/venv
+  register: venv_exsits_check
+
+- name: Delete exsiting venv
+  file:
+   path: "{{ content }}/venv"
+   state: absent
+
+- name: Create python2 virtualenv for hooks
+  shell: virtualenv -p python2 {{ content }}/venv
+
+- name: Install requirements in virtualenv
+  pip:
+    requirements: "{{ content }}/dev-requirements-py2.txt"
+    virtualenv: "{{ content }}/venv"
+
+- name: Install requirements python2 in site-packages
+  pip:
+    requirements: "{{ content }}/dev-requirements-py2.txt"
+    executable: ~/.pyenv/shims/pip2
+
+- name: Install requirements python3 in site-packages
+  pip:
+    requirements: "{{ content }}/dev-requirements-py3.txt"
+    executable: ~/.pyenv/shims/pip3
+  
+- name: Add hooks running precommit
+  lineinfile:
+    path: ~/.zshrc
+    state: present
+    line: export CONTENT_PRECOMMIT_RUN_DEV_TASKS=1

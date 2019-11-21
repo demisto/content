@@ -1,0 +1,19 @@
+galaxy_info:
+  author: Gal Rabin
+  description: Role for installing Demisto content development enviormet
+  company: Demisto
+  license: license (GPL-2.0-or-later, MIT, etc)
+  min_ansible_version: 2.9
+
+  platforms:
+  - name: MacOSX
+    versions:
+    - 10.14
+
+  galaxy_tags: 
+    - development
+    - system
+    - packaging
+
+
+dependencies: []
