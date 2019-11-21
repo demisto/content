@@ -3,7 +3,6 @@ import json
 from GetEWSFolder import main, convert_mail_to_json
 
 import demistomock as demisto
-from CommonServerPython import entryTypes
 
 
 def mail(subject, body):
