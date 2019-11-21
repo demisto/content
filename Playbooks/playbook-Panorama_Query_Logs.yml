@@ -211,7 +211,7 @@ tasks:
       id: 8c6d8c01-8351-4954-84cf-cbdd684ace09
       version: -1
       name: Panorama Get Logs
-      description: Retrieves logs query data by job ID.
+      description: Retrieves log query data by job ID.
       script: '|||panorama-get-logs'
       type: regular
       iscommand: true
@@ -275,8 +275,8 @@ tasks:
     task:
       id: 3516389a-7392-4907-8336-e3da80e36abb
       version: -1
-      name: Panorama Check Logs Status
-      description: Checks the status of a logs query.
+      name: Panorama Check Log Status
+      description: Checks the status of a log query.
       script: '|||panorama-check-logs-status'
       type: regular
       iscommand: true
@@ -363,7 +363,7 @@ inputs:
 - key: log_type
   value: {}
   required: true
-  description: 'Log type to query. can be: traffic, threat, wildfire, url or data-filtering.'
+  description: 'Log type to query. Can be: traffic, threat, wildfire, url or data-filtering.'
 - key: query
   value: {}
   required: false
@@ -386,7 +386,7 @@ inputs:
 - key: ip
   value: {}
   required: false
-  description: Source or Destination address.
+  description: Source or destination address.
 - key: zone-src
   value: {}
   required: false
@@ -438,7 +438,7 @@ outputs:
   description: Original session destination IP address.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationUser
-  description: Username of the user to which the session was destined.
+  description: Username of the user to which the session was sent.
   type: string
 - contextPath: Panorama.Monitor.Logs.DestinationCountry
   description: Destination country or internal region for private addresses. Maximum
@@ -461,11 +461,11 @@ outputs:
   type: string
 - contextPath: Panorama.Monitor.Logs.FileType
   description: |-
-    Only for the WildFire subtype; all other types do not use this field.
     Specifies the type of file that the firewall forwarded for WildFire analysis.
+    Relevant only for the WildFire subtype; all other types do not use this field.
   type: string
 - contextPath: Panorama.Monitor.Logs.FromZone
-  description: Zone the session was sourced from.
+  description: Zone from which the session originated.
   type: string
 - contextPath: Panorama.Monitor.Logs.URLOrFilename
   description: |-
@@ -491,7 +491,7 @@ outputs:
 - contextPath: Panorama.Monitor.Logs.PCAPid
   description: The packet capture (pcap) ID is a 64 bit unsigned integral denoting
     an ID to correlate threat pcap files with extended pcaps taken as a part of that
-    flow. All threat logs will contain either a pcap_id of 0 (no associated pcap),
+    flow. All threat logs contain either a pcap_id of 0 (no associated pcap),
     or an ID referencing the extended pcap file.
   type: string
 - contextPath: Panorama.Monitor.Logs.IPProtocol
@@ -499,8 +499,8 @@ outputs:
   type: string
 - contextPath: Panorama.Monitor.Logs.Recipient
   description: |-
-    Only for the WildFire subtype; all other types do not use this field.
     Specifies the name of the receiver of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+    Valid only for the WildFire subtype; all other types do not use this field.
   type: string
 - contextPath: Panorama.Monitor.Logs.Rule
   description: Name of the rule that the session matched.
@@ -513,8 +513,8 @@ outputs:
   type: string
 - contextPath: Panorama.Monitor.Logs.Sender
   description: |-
-    Only for the WildFire subtype; all other types do not use this field.
     Specifies the name of the sender of an email that WildFire determined to be malicious when analyzing an email link forwarded by the firewall.
+    Valid only for the WildFire subtype; all other types do not use this field.
   type: string
 - contextPath: Panorama.Monitor.Logs.SessionID
   description: An internal numerical identifier applied to each session.
@@ -547,7 +547,7 @@ outputs:
   description: Palo Alto Networks ID for the threat.
   type: string
 - contextPath: Panorama.Monitor.Logs.ToZone
-  description: The zone to which the session was destined.
+  description: The zone to which the session was sent.
   type: string
 - contextPath: Panorama.Monitor.Logs.TimeGenerated
   description: Time that the log was generated on the dataplane.
@@ -557,10 +557,10 @@ outputs:
     policy.
   type: string
 - contextPath: Panorama.Monitor.JobID
-  description: Job ID of the logs query.
+  description: Job ID of the log query.
 - contextPath: Panorama.Monitor.Status
-  description: Status of the logs query.
+  description: Status of the log query.
   type: string
 - contextPath: Panorama.Monitor.Message
-  description: Message  of the logs query.
+  description: Message  of the log query.
   type: string
