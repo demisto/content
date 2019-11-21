@@ -1,6 +1,6 @@
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
+
+
 # import json
 
 # Python template - reading arguments, calling a command, handling errors and returning results
@@ -16,7 +16,7 @@ def read_file_content(input_entry_or_string):
     return file_content
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+def main():
     entry_id = demisto.args()['entryID']
     model_name = demisto.args()['modelName']
     encoded_file_content = read_file_content(entry_id)
@@ -35,3 +35,7 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
     if is_error(res):
         return_error(get_error(res))
     demisto.results("done")
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
