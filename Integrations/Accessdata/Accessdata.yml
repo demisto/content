@@ -32,145 +32,145 @@ script:
   - name: accessdata-legacyagent-get-processlist
     arguments:
     - name: caseid
-      description: ID of case
+      description: The ID of the case.
     - name: target_ip
       required: true
-      description: IP address of agent
+      description: The IP address of the agent.
       defaultValue: locallhost
     outputs:
     - contextPath: Accessdata.Job.ID
-      description: ID of job
+      description: The ID of the job.
       type: string
     - contextPath: Accessdata.Job.CaseID
-      description: Case ID
+      description: The Case ID.
       type: string
     - contextPath: Accessdata.Job.CaseJobID
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       type: string
     - contextPath: Accessdata.Job.Type
-      description: Job type
+      description: The job type.
       type: string
     - contextPath: Accessdata.Job.State
-      description: Job execution state
+      description: The execution state of the job.
       type: string
-    description: Return list of process from legacy agent
+    description: Returns a list of processes from the legacy agent.
   - name: accessdata-legacyagent-get-memorydump
     arguments:
     - name: caseid
-      description: ID of case
+      description: The ID of the case.
     - name: target_ip
       required: true
-      description: IP address of agent
+      description: The IP address of the agent.
       defaultValue: locallhost
     outputs:
     - contextPath: Accessdata.Job.ID
-      description: ID of job
+      description: The ID of the job.
       type: string
     - contextPath: Accessdata.Job.CaseID
-      description: Case ID
+      description: The ID of the case.
       type: string
     - contextPath: Accessdata.Job.CaseJobID
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       type: string
     - contextPath: Accessdata.Job.Type
-      description: Job type
+      description: The job type.
       type: string
     - contextPath: Accessdata.Job.State
-      description: Job execution state
+      description: The execution state of the job.
       type: string
-    description: Creates legacy agent memory dump
+    description: Creates a legacy agent memory dump.
   - name: accessdata-read-casefile
     arguments:
     - name: filepath
       required: true
-      description: Path to case file
+      description: The path of the case file.
       defaultValue: localhost
     outputs:
     - contextPath: Accessdata.File.Contents
-      description: Contents of the file
+      description: The contents of the file.
       type: string
-    description: Reads file from case folder and puts its contents to current context
+    description: Reads the file from a case folder and returns the contents to the current context.
   - name: accessdata-jobstatus-scan
     arguments:
     - name: caseJobID
       required: true
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       isArray: true
     outputs:
     - contextPath: Accessdata.Job.CaseID
-      description: Case ID
+      description: The case ID.
       type: string
     - contextPath: Accessdata.Job.ID
-      description: Job ID
+      description: The job ID.
       type: string
     - contextPath: Accessdata.Job.CaseJobID
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       type: string
     - contextPath: Accessdata.Job.State
-      description: State of job's execution
+      description: The state of the job's execution.
       type: string
-    description: Checks status of the job
+    description: Checks status of the job.
   - name: accessdata-get-jobstatus-processlist
     arguments:
     - name: caseID
       required: true
-      description: ID of the case
+      description: The ID of the case.
       defaultValue: "1"
     - name: jobID
       required: true
-      description: ID of the job
+      description: The ID of the job.
       defaultValue: "1"
     outputs:
     - contextPath: Accessdata.Job.State
-      description: Job state
+      description: The state of the job.
       type: string
     - contextPath: Accessdata.Job.Result
-      description: Path to snapshot with processes list
+      description: The path to the snapshot with the processes list.
       type: string
     - contextPath: Accessdata.Job.ID
-      description: ID of the job
+      description: The ID of the job.
       type: number
     - contextPath: Accessdata.Job.CaseID
-      description: Case ID of the job
+      description: The case ID of the job.
       type: number
     - contextPath: Accessdata.Job.CaseJobID
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       type: string
-    description: Get snapshot path from result of the process list job
+    description: Returns a snapshot path from the results of the process list job.
   - name: accessdata-get-jobstatus-memorydump
     arguments:
     - name: caseID
       required: true
-      description: ID of the case
+      description: The ID of the case.
       defaultValue: "1"
     - name: jobID
       required: true
-      description: ID of the job
+      description: The ID of the job.
       defaultValue: "1"
     outputs:
     - contextPath: Accessdata.Job.State
-      description: Job state
+      description: The state of the job.
       type: string
     - contextPath: Accessdata.Job.Result
-      description: Path to memory dump
+      description: The path to the memory dump.
       type: string
     - contextPath: Accessdata.Job.ID
-      description: ID of the job
+      description: The ID of the job.
       type: number
     - contextPath: Accessdata.Job.CaseID
-      description: Case ID of the job
+      description: The case ID of the job.
       type: number
     - contextPath: Accessdata.Job.CaseJobID
-      description: Concatenated CaseID and JobID (like "1_800")
+      description: The concatenated CaseID and JobID (such as "1_800").
       type: string
-    description: Get memory dump path from result of the memory dump job
+    description: Returns the memory dump path from the result of the memory dump job.
   - name: accessdata-get-processing-case-id
     arguments: []
     outputs:
     - contextPath: Accessdata.ProcessingCaseId
-      description: ID of Quin-C processing case
+      description: The ID of Quin-C processing case.
       type: string
-    description: Getting ID of Quin-C processing case
+    description: Returns the ID of the Quin-C processing case.
   dockerimage: demisto/python3:3.7.4.977
   runonce: false
   script: '-'
