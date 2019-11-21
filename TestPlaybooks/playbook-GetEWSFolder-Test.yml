@@ -1,6 +1,6 @@
-id: GetEWSFolder-Test
+id: Get EWS Folder Test
 version: -1
-name: GetEWSFolder-Test
+name: Get EWS Folder Test
 starttaskid: "0"
 tasks:
   "0":
@@ -15,7 +15,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+        - "1"
     separatecontext: false
     view: |-
       {
@@ -42,7 +42,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+        - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -76,7 +76,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+        - "4"
     scriptarguments:
       listName:
         simple: testListName
@@ -127,7 +127,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+        - "3"
     scriptarguments:
       foldersPathsGlobal:
         simple: inbox,inbox\TESTATTACH
