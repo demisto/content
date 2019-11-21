@@ -202,8 +202,10 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return demisto_client.generic_request_func(self=client, path='/system/config',
+        response = demisto_client.generic_request_func(self=client, path='/system/config',
                                                    method='POST', body=data)
+        client.api_client.pool.close()
+        return response
 
     def get_mock_file_size(self, filepath):
         return self.ami.check_output(['stat', '-c', '%s', filepath]).strip()
