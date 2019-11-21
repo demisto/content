@@ -18,6 +18,11 @@ FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
+if URL and not URL.endswith('/publicapi'):
+    if URL[-1] != '/':
+        URL += '/'
+    URL += 'publicapi'
+
 URL_DICT = {
     'verdict': '/get/verdict',
     'verdicts': '/get/verdicts',
