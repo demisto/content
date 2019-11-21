@@ -20,8 +20,8 @@ scp content_test.zip ${USER}@${PUBLIC_IP}:~/content
 scp $(find ./Beta_Integrations/ -maxdepth 1 -type f) ${USER}@${PUBLIC_IP}:~/Beta_Integrations
 
 # zip contents of content_test.zip into content_new.zip
-ssh ${USER}@${PUBLIC_IP} "sudo unzip -q -o ~/content/content_test.zip -d ~/content_test"
-ssh ${USER}@${PUBLIC_IP} "sudo zip ~/content/content_new.zip \"~/content_test/*\""
+ssh ${USER}@${PUBLIC_IP} "sudo unzip -q -o ~/content/content_test.zip -d ~/content/content_test"
+ssh ${USER}@${PUBLIC_IP} "sudo zip ~/content/content_new.zip \"~/content/content_test/*\""
 ssh ${USER}@${PUBLIC_IP} "sudo rm -rf ~/content/content_test"
 
 # override exiting content with current
