@@ -9,16 +9,16 @@ import urllib3
 urllib3.disable_warnings()
 
 
-def convert_unix_to_date(date):
+def convert_unix_to_date(timestamp):
     """Convert unix timestamp to datetime in iso format.
 
     Args:
-        date: the date in unix to convert.
+        timestamp: the date in unix to convert.
 
     Returns:
         converted date.
     """
-    return datetime.fromtimestamp(int(date) / 1000).isoformat()
+    return datetime.fromtimestamp(int(timestamp) / 1000).isoformat()
 
 
 class Client(BaseClient):
@@ -104,7 +104,7 @@ class Client(BaseClient):
         try:
             self.http_request('GET', self.http_request('GET', f'{self._base_url}/api/auth/logout'))
         except Exception as err:
-            demisto.debug(str(err))
+            demisto.debug(f'An error occurred during the logout.\n{str(err)}')
 
     def test_module_request(self):
         """
@@ -195,7 +195,7 @@ class Client(BaseClient):
         """
 
         Args:
-            asset_name: asser ud
+            asset_name: asset name
 
         Returns:
             asset data
