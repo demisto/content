@@ -19,10 +19,10 @@ Optionally, macOS users can install via [homebrew](https://docs.brew.sh/Homebrew
 
 
 ### Docker
-Docker is an optional, but highly recommended install. If you would like to write [unit tests](../tests/unit-testing/README.md) and run them, as we do in our CI process (within docker), we recommend installing docker. See: https://docs.docker.com/install/ for install options.
+Docker is an optional, but highly recommended install. If you would like to write [unit tests](../tests/unit-testing) and run them, as we do in our CI process (within docker), we recommend installing docker. See: https://docs.docker.com/install/ for install options.
 
 ## Setting Up a Development Environment
-Clone (Demisto users) or Fork (external contributors) the Demisto Content repository.
+Clone (Demisto users) or [Fork](https://guides.github.com/activities/forking/) (external contributors) the Demisto Content repository.
 ### Install Python virtualenv
 We recommend using [virtualenv](https://github.com/pypa/virtualenv) to create an isolated virtual python development environment. To install virtual env run:
 ```
@@ -39,7 +39,7 @@ After completing, you can activate the newly created virtual env by running:
 ```
 . ./venv/bin/activate
 ```
-**Congratulations!** You now have a fully configured virtual env, where you can run our different validation and utility scripts. For example, to convert an exported yml integration to our [package (directory) format](../package_directory_structure/README.MD), you can use the `package_extractor.py` script. Try:
+**Congratulations!** You now have a fully configured virtual env, where you can run our different validation and utility scripts. For example, to convert an exported yml integration to our [package (directory) format](../package_directory_structure), you can use the `package_extractor.py` script. Try:
 ```
 ./package_extractor.py --help
 ```
@@ -50,7 +50,7 @@ After completing, you can activate the newly created virtual env by running:
 Demisto offers two IDEs for developing: IntelliJ Plugin and built-in platform IDE.
 
 ## Demisto IntelliJ Plugin
-The Demisto Add-on for PyCharm simplifies third-party integration and script development by enabling users to author Python content for Demisto directly in PyCharm. Recommended for developing Python [unit tests](../tests/unit-testing/README.md).
+The Demisto Add-on for PyCharm simplifies third-party integration and script development by enabling users to author Python content for Demisto directly in PyCharm. Recommended for developing Python [unit tests](../tests/unit-testing).
 
 Read more [here](https://plugins.jetbrains.com/plugin/12093-demisto-add-on-for-pycharm)
 
@@ -107,4 +107,4 @@ Arguments are variables for a command that are dynamic and can be changed each t
 * **List Options** - Add options separated by a comma to include a dropdown list of options for the argument.
 
 ### Outputs
-Please [read here](https://github.com/demisto/content/blob/master/docs/context_and_ouputs/README.MD) to learn more about Outputs and Context.
+Please [read here](https://github.com/demisto/content/blob/master/docs/context_and_ouputs) to learn more about Outputs and Context.

@@ -26,7 +26,6 @@ sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
-from Tests.scripts.hook_validations.secrets import get_secrets  # noqa: E402
 from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
 from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
 from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
@@ -128,8 +127,10 @@ class FilesValidator(object):
                     modified_files_list.add(file_path)
                 else:
                     modified_files_list.add((file_data[1], file_data[2]))
+
             elif checked_type(file_path, [SCHEMA_REGEX]):
                 modified_files_list.add(file_path)
+
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
                     file_path, file_status))
@@ -213,6 +214,10 @@ class FilesValidator(object):
                 old_file_path, file_path = file_path
 
             print('Validating {}'.format(file_path))
+            if not checked_type(file_path):
+                print_warning('- Skipping validation of non-content entity file.')
+                continue
+
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
@@ -337,16 +342,6 @@ class FilesValidator(object):
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
 
-    def validate_no_secrets_found(self, branch_name):
-        """Check if any secrets are found in your change set.
-
-        Args:
-            branch_name (string): The name of the branch you are working on.
-        """
-        secrets_found = get_secrets(branch_name, self.is_circle)
-        if secrets_found:
-            self._is_valid = False
-
     def validate_no_old_format(self, old_format_files):
         """ Validate there are no files in the old format(unified yml file for the code and configuration).
 
@@ -381,7 +376,6 @@ class FilesValidator(object):
         if schema_changed:
             self.validate_all_files()
         else:
-            self.validate_no_secrets_found(branch_name)
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
@@ -432,7 +426,7 @@ class FilesValidator(object):
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
             if not prev_ver:
                 # validate against master if no version was provided
-                prev_ver = 'master'
+                prev_ver = 'origin/master'
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
         else:
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
