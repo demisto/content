@@ -160,25 +160,25 @@ script:
     outputs:
     - contextPath: Proofpoint.MessagesDelivered.GUID
       description: The ID of the message within PPS. It can be used to identify the
-        message in PPS and is guaranteed to be unique.
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.QID
       description: The queue ID of the message within PPS. It can be used to identify
-        the message in PPS and is not unique.
+        the message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.ccAddresses
-      description: 'A list of email addresses contained within the CC: header, excluding
+      description: 'A list of email addresses contained within the CC: header, excluding, and
         friendly names.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.clusterId
       description: The name of the PPS cluster which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.fromAddress
-      description: 'The email address contained in the From: header, excluding friendly
+      description: 'The email address contained in the From: header, excluding friendly, and
         name.'
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerCC
-      description: headerCC
+      description: The CC header.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.headerFrom
       description: 'The full content of the From: header, including any friendly name.'
@@ -197,7 +197,7 @@ script:
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.messageId
       description: Message-ID extracted from the headers of the email message. It
-        can be used to look up the associated message in PPS and is not unique.
+        can be used to look up the associated message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threat
       description: The artifact which was condemned by Proofpoint. The malicious URL,
@@ -208,7 +208,7 @@ script:
         to query the forensics and campaign endpoints.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatStatus
-      description: The current state of the threat (active, expired, falsepositive,
+      description: The current state of the threat (active, expired, false-positive,
         cleared).
       type: String
     - contextPath: Proofpoint.MessagesDelivered.threatsInfoMap.threatTime
@@ -230,7 +230,7 @@ script:
       description: The list of PPS modules which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesDelivered.phishScore
-      description: The phish score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher certainty.
       type: Number
     - contextPath: Proofpoint.MessagesDelivered.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -266,11 +266,11 @@ script:
       type: String
     - contextPath: Proofpoint.MessagesBlocked.GUID
       description: The ID of the message within PPS. It can be used to identify the
-        message in PPS and is guaranteed to be unique.
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.QID
       description: The queue ID of the message within PPS. It can be used to identify
-        the message in PPS and is not unique.
+        the message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.ccAddresses
       description: 'A list of email addresses contained within the CC: header, excluding
@@ -284,7 +284,7 @@ script:
         name.'
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerCC
-      description: headerCC
+      description: The CCheader.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.headerFrom
       description: 'The full content of the From: header, including any friendly name.'
@@ -303,7 +303,7 @@ script:
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.messageId
       description: Message-ID extracted from the headers of the email message. It
-        can be used to look up the associated message in PPS and is not unique.
+        can be used to look up the associated message in PPS, which is not unique.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threat
       description: The artifact which was condemned by Proofpoint. The malicious URL,
@@ -314,7 +314,7 @@ script:
         to query the forensics and campaign endpoints.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatStatus
-      description: The current state of the threat (active, expired, falsepositive,
+      description: The current state of the threat (active, expired, false-positive,
         cleared).
       type: String
     - contextPath: Proofpoint.MessagesBlocked.threatsInfoMap.threatTime
@@ -327,7 +327,7 @@ script:
       description: A link to the entry about the threat on the TAP Dashboard.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.messageTime
-      description: When the message was Blocked to the user or quarantined by PPS.
+      description: When the message was blocked to the user or quarantined by PPS.
       type: Date
     - contextPath: Proofpoint.MessagesBlocked.messageTime
       description: The list of PPS modules which processed the message.
@@ -336,7 +336,7 @@ script:
       description: The list of PPS modules which processed the message.
       type: String
     - contextPath: Proofpoint.MessagesBlocked.phishScore
-      description: The phish score of the message. Higher scores indicate higher certainty.
+      description: The phishing score of the message. Higher scores indicate higher certainty.
       type: Number
     - contextPath: Proofpoint.MessagesBlocked.policyRoutes
       description: The policy routes that the message matched during processing by
@@ -372,7 +372,7 @@ script:
       type: String
     - contextPath: Proofpoint.ClicksPermitted.GUID
       description: The ID of the message within PPS. It can be used to identify the
-        message in PPS and is guaranteed to be unique.
+        message in PPS, which is unique.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.campaignId
       description: An identifier for the campaign of which the threat is a member,
@@ -388,10 +388,10 @@ script:
         IP address of the firewall will be shown.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.clickTime
-      description: The time the user clicked on the URL
+      description: The time the user clicked on the URL.
       type: Date
     - contextPath: Proofpoint.ClicksPermitted.messageID
-      description: Message-ID extracted from the headers of the email message. It
+      description: The Message-ID extracted from the headers of the email message. It
         can be used to look up the associated message in PPS and is not unique.
       type: String
     - contextPath: Proofpoint.ClicksPermitted.recipient
@@ -472,43 +472,43 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of threat (must fill threadId or campaignId)
+      description: The ID of the threat (use with either threadId or campaignId).
       isArray: false
       name: threatId
       required: false
       secret: false
     - default: false
-      description: ID of campaign (must fill threadId or campaignId)
+      description: ID of the campaign (use with either threadId or campaignId).
       isArray: false
       name: campaignId
       required: false
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Can be provide only with threatId
+      description: Whether to include forensic evidence for the whole campaign. Can be used with threatId only.
       isArray: false
       name: includeCampaignForensics
       required: false
       secret: false
     deprecated: false
-    description: gets forensics evidence
+    description: Returns forensics evidence.
     execution: false
     name: proofpoint-get-forensics
     outputs:
     - contextPath: Proofpoint.Report.ID
-      description: ID of report
+      description: The ID of the report.
       type: String
     - contextPath: Proofpoint.Report.Type
-      description: 'The threat type: attachment, url, or hybrid'
+      description: 'The threat type. Can be: "attachment", "url", or "hybrid".'
       type: String
     - contextPath: Proofpoint.Report.Scope
-      description: Whether the report scope covers a campaign or an individual threat
+      description: Whether the report scope covers a campaign or an individual threat.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Attachment.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Display
       description: A friendly display string.
@@ -520,34 +520,34 @@ script:
       description: The MD5 hash of the attachment's contents.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Blacklisted
-      description: Optional, whether the file was blacklisted.
+      description: Optional. Whether the file was blacklisted.
       type: Number
     - contextPath: Proofpoint.Report.Attachment.Offset
-      description: Optional, the offset in bytes where the malicious content was found.
+      description: Optional. The offset in bytes where the malicious content was found.
       type: Number
     - contextPath: Proofpoint.Report.Attachment.Size
-      description: Optional, the size in bytes of the attachment's contents.
+      description: Optional. The size in bytes of the attachment's contents.
       type: Number
     - contextPath: Proofpoint.Report.Attachment.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Attachment.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Cookie.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Display
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Action
-      description: Whether the cookie was set or deleted
+      description: Whether the cookie was set or deleted.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Domain
       description: Which domain set the cookie.
@@ -556,22 +556,22 @@ script:
       description: The name of the cookie being set or deleted.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Value
-      description: Optional, content of the cookie being set.
+      description: Optional. The content of the cookie being set.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Platform.Name
       description: Name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Cookie.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.DNS.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.DNS.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.DNS.Display
       description: A friendly display string.
@@ -580,31 +580,31 @@ script:
       description: The hostname being resolved.
       type: String
     - contextPath: Proofpoint.Report.DNS.CNames
-      description: Optional, an array of cnames which were associated with the hostname.
+      description: Optional. An array of CNames, which were associated with the hostname.
       type: String
     - contextPath: Proofpoint.Report.DNS.IP
-      description: Optional, an array of IP addresses which were resolved to the hostname.
+      description: Optional. An array of IP addresses which were resolved to the hostname.
       type: String
     - contextPath: Proofpoint.Report.DNS.NameServers
-      description: Optional, the nameservers responsible for the hostname's domain.
+      description: Optional. The nameservers responsible for the hostname's domain.
       type: String
     - contextPath: Proofpoint.Report.DNS.NameServersList
-      description: Optional, the nameservers responsible for the hostname's.
+      description: Optional. The nameservers responsible for the hostnames.
       type: String
     - contextPath: Proofpoint.Report.DNS.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.DNS.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.DNS.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Dropper.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Display
       description: A friendly display string.
@@ -613,63 +613,63 @@ script:
       description: The location of the dropper file.
       type: String
     - contextPath: Proofpoint.Report.Dropper.URL
-      description: Optional, the name of the static rule inside the sandbox which
+      description: Optional. The name of the static rule inside the sandbox which
         identified the dropper.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Rule
-      description: Optional, the URL the dropper contacted.
+      description: Optional. The URL the dropper contacted.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Dropper.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.File.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.File.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.File.Display
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.File.Path
-      description: Optional, the location of the file operated on.
+      description: Optional. The location of the file operated on.
       type: String
     - contextPath: Proofpoint.Report.File.Action
-      description: Optional, the filesystem call made create (modify, or delete).
+      description: Optional. The filesystem call made create (modify, or delete).
       type: String
     - contextPath: Proofpoint.Report.File.Rule
-      description: Optional, the name of the static rule inside the sandbox which
+      description: Optional. The name of the static rule inside the sandbox which
         identified the suspicious file.
       type: String
     - contextPath: Proofpoint.Report.File.SHA256
-      description: Optional, the SH256 sum of the file's contents.
+      description: Optional. The SH256 sum of the file's contents.
       type: Unknown
     - contextPath: Proofpoint.Report.File.MD5
-      description: Optional, the MD5 sum of the file's contents.
+      description: Optional. The MD5 sum of the file's contents.
       type: String
     - contextPath: Proofpoint.Report.File.Size
-      description: Optional, the size in bytes of the file's contents.
+      description: Optional. The size in bytes of the file's contents.
       type: Number
     - contextPath: Proofpoint.Report.File.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.File.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.File.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.IDS.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.IDS.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.IDS.Display
       description: A friendly display string.
@@ -682,19 +682,19 @@ script:
       description: The identifier of the IDS rule which observed the malicious traffic.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.IDS.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Mutex.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Display
       description: A friendly display string.
@@ -703,28 +703,28 @@ script:
       description: The name of the mutex.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Path
-      description: Optional, the path to the process which spawned the mutex.
+      description: Optional. The path to the process which spawned the mutex.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Mutex.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Network.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Network.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Network.Display
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.Network.Action
-      description: The type of network activity being initated (connect or listen).
+      description: The type of network activity being initiated (connect or listen).
       type: String
     - contextPath: Proofpoint.Report.Network.IP
       description: The remote IP address being contacted.
@@ -736,49 +736,49 @@ script:
       description: The protocol being used (tcp or udp).
       type: String
     - contextPath: Proofpoint.Report.Network.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Network.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Network.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Process.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Process.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Process.Display
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.Process.Action
-      description: The action peformed on the process, current only create is produced.
+      description: The action performed on the process. Relevant when create is produced.
       type: String
     - contextPath: Proofpoint.Report.Process.Path
       description: The location of the executable which spawned the process.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Process.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.Registry.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.Registry.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.Registry.Display
       description: A friendly display string.
       type: String
     - contextPath: Proofpoint.Report.Registry.Name
-      description: Optional, the name of the registry entry being created or set.
+      description: Optional. The name of the registry entry being created or set.
       type: String
     - contextPath: Proofpoint.Report.Registry.Action
       description: The registry change made (create or set).
@@ -787,22 +787,22 @@ script:
       description: The location of the registry key being modified.
       type: String
     - contextPath: Proofpoint.Report.Registry.Value
-      description: Optional, the contents of the key being created or set.
+      description: Optional. The contents of the key being created or set.
       type: String
     - contextPath: Proofpoint.Report.Registry.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.Registry.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.Registry.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
     - contextPath: Proofpoint.Report.URL.Time
       description: The relative time at which the evidence was observed during sandboxing.
       type: Date
     - contextPath: Proofpoint.Report.URL.Malicious
-      description: whether the evidence was used to reach a malicious verdict.
+      description: Whether the evidence was used to reach a malicious verdict.
       type: String
     - contextPath: Proofpoint.Report.URL.Display
       description: A friendly display string.
@@ -811,33 +811,33 @@ script:
       description: The URL which was observed.
       type: String
     - contextPath: Proofpoint.Report.URL.Blacklisted
-      description: Optional, whether the URL was listed on a blacklist.
+      description: Optional. Whether the URL was listed on a blacklist.
       type: Boolean
     - contextPath: Proofpoint.Report.URL.SHA256
-      description: Optional, the sha256 value of the file downloaded from the URL.
+      description: Optional. The sha256 value of the file downloaded from the URL.
       type: String
     - contextPath: Proofpoint.Report.URL.MD5
-      description: Optional, the md5 value of the file downloaded from the URL.
+      description: Optional. The md5 value of the file downloaded from the URL.
       type: String
     - contextPath: Proofpoint.Report.URL.Size
-      description: Optional, the size in bytes of the file retrieved from the URL.
+      description: Optional. The size in bytes of the file retrieved from the URL.
       type: Number
     - contextPath: Proofpoint.Report.URL.HTTPStatus
-      description: Optional, the HTTP status code which was produced when our sandbox
+      description: Optional. The HTTP status code which was produced when our sandbox
         visited the URL.
       type: Number
     - contextPath: Proofpoint.Report.URL.IP
-      description: Optional, the IP address that was resolved to the hostname by the
+      description: Optional. The IP address that was resolved to the hostname by the
         sandbox.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.Name
-      description: Name of the platform.
+      description: The name of the platform.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.OS
-      description: OS of the platform.
+      description: The OS of the platform.
       type: String
     - contextPath: Proofpoint.Report.URL.Platform.Version
-      description: Version of the platform.
+      description: The version of the platform.
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
