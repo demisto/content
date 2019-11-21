@@ -38,7 +38,7 @@ tasks:
       id: 1b11d33b-fb1d-4221-8667-a362933d726c
       version: -1
       name: Get process list from legacy agent
-      description: Call command to get process list from legacy agent
+      description: Calls a command to get the process list from the legacy agent.
       script: '|||accessdata-legacyagent-get-processlist'
       type: regular
       iscommand: true
@@ -90,8 +90,8 @@ tasks:
       id: 0365d043-19bd-4a7d-8b65-d80671d992fa
       version: -1
       name: Read snapshot file from case folder
-      description: Reads a file from case folder and saves its content in current
-        context
+      description: Reads a file from a case folder and saves the content in the current
+        context.
       script: Accessdata|||accessdata-read-casefile
       type: regular
       iscommand: true
@@ -120,8 +120,8 @@ tasks:
       id: fd34f7f1-972f-4e34-8f9b-48e11804b387
       version: -1
       name: Check if process exists in process list
-      description: Reads content of XML file from context, converts it to JSON and
-        checks if given filename exists in process list. Returs yes or no
+      description: Reads the content of an XML file from context, converts it to a JSON file and
+        checks if the given filename exists in the process list. Returns yes or no.
       scriptName: AccessdataCheckProcessExistsInSnapshot
       type: regular
       iscommand: false
@@ -190,7 +190,7 @@ tasks:
       id: 09962146-a8e3-4071-829a-898189f4ac1e
       version: -1
       name: Create memory dump job
-      description: Creates legacy agent memory dump
+      description: Creates a legacy agent memory dump.
       script: Accessdata|||accessdata-legacyagent-get-memorydump
       type: regular
       iscommand: true
@@ -224,7 +224,7 @@ tasks:
       description: |-
         Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
+        The remote action must have the following structure:
 
         1. Initiate the operation.
         2. Poll to check if the operation completed.
@@ -275,7 +275,7 @@ tasks:
       description: |-
         Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
+        The remote action must have the following structure:
 
         1. Initiate the operation.
         2. Poll to check if the operation completed.
@@ -323,7 +323,7 @@ tasks:
       id: 7a1d37fe-21c2-4eea-8c1c-f55044720bff
       version: -1
       name: Get process list job result
-      description: Get snapshot path from result of the process list job
+      description: Returns the snapshot path from a result of the process list job.
       script: Accessdata|||accessdata-get-jobstatus-processlist
       type: regular
       iscommand: true
@@ -354,7 +354,7 @@ tasks:
       id: 19ad4cc8-0740-40f6-8f6e-cf335fd4aad5
       version: -1
       name: Get memory dump job result
-      description: Get memory dump path from result of the memory dump job
+      description: Returns the memory dump path from the result of the memory dump job.
       script: Accessdata|||accessdata-get-jobstatus-memorydump
       type: regular
       iscommand: true
@@ -385,7 +385,7 @@ tasks:
       id: 35cd342f-88f0-495d-8387-5dc6913e8a05
       version: -1
       name: Set playbook output IsProcessDetected
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -417,7 +417,7 @@ tasks:
       id: 9c7fc126-a4e2-46e4-895c-63d249ff5ceb
       version: -1
       name: Init playbook output IsProcessDetected
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -449,7 +449,7 @@ tasks:
       id: 162e9bce-45c4-47c2-880d-455c549a6fb8
       version: -1
       name: Init playbook output MemoryDumpPath
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -481,7 +481,7 @@ tasks:
       id: ee6fd151-a9ce-4908-81a0-245e8dd9b498
       version: -1
       name: Set playbook output MemoryDumpPath
-      description: Sets a value into the context with the given context key
+      description: Sets a value into the context with the given context key.
       scriptName: Set
       type: regular
       iscommand: false
@@ -528,12 +528,12 @@ inputs:
   description: ""
 outputs:
 - contextPath: Accessdata.IsProcessDetected
-  description: Indicates if process with specified name was detected on the agent
-    machine during playbook execution
+  description: Indicates if the process with the specified name was detected on the agent
+    machine during playbook execution.
   type: boolean
 - contextPath: Accessdata.MemoryDumpPath
-  description: Path to created memory dump file (if wasn't created will be an empty
-    string)
+  description: The path for the created memory dump file (if not created, it will be an empty
+    string).
   type: string
 tests:
   - No test
