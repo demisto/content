@@ -646,6 +646,50 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+  - arguments:
+      - default: false
+        description: IP address to check.
+        isArray: false
+        name: ip
+        required: true
+        secret: false
+    deprecated: false
+    description: Checks the reputation of an IP address in Autofocus.
+    execution: false
+    name: ip
+  - arguments:
+      - default: false
+        description: URL to check.
+        isArray: false
+        name: url
+        required: true
+        secret: false
+    deprecated: false
+    description: Checks the reputation of the url in Autofocus.
+    execution: false
+    name: url
+  - arguments:
+      - default: false
+        description: File SHA-256.
+        isArray: false
+        name: file
+        required: true
+        secret: false
+    deprecated: false
+    description: Checks the reputation of a file in Autofocus.
+    execution: false
+    name: file
+  - arguments:
+      - default: false
+        description: domain to check.
+        isArray: false
+        name: domain
+        required: true
+        secret: false
+    deprecated: false
+    description: Checks the reputation of a domain in Autofocus.
+    execution: false
+    name: domain
   dockerimage: demisto/python3:3.7.2.214
   subtype: python3
   isfetch: false
