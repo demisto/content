@@ -203,7 +203,7 @@ class MITMProxy:
             'version': -1
         }
         response = demisto_client.generic_request_func(self=client, path='/system/config',
-                                                   method='POST', body=data)
+                                                       method='POST', body=data)
         # client.api_client.pool.close()
         return response
 
