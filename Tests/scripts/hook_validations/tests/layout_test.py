@@ -19,6 +19,6 @@ class TestLayoutValidator:
     def test_is_valid_version(self, source, target, answer):
         copyfile(source, target)
         structure = StructureValidator(source)
-        reputation_validator = LayoutValidator(structure)
-        assert reputation_validator.is_valid_version() is answer
+        validator = LayoutValidator(structure)
+        assert validator.is_valid_version() is answer
         os.remove(target)
