@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import json
-import sys
 
 
 def convert_mail_to_json(item, folder):
@@ -35,4 +34,3 @@ def main():
 if __name__ == "__builtin__" or __name__ == "builtins":
     entry = main()
     demisto.results(entry)
-
