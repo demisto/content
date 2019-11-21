@@ -5,16 +5,16 @@ name: AccessdataCheckProcessExistsInSnapshot
 script: '-'
 type: python
 tags: []
-comment: Reads contents of Processes list  XML file from context and checks if  given
-  process exists in process list
+comment: Reads the contents of the processes list XML file from context and checks if the given
+  process exists in the process list.
 enabled: true
 args:
 - name: process
   required: true
-  description: Process name that need to be checked
+  description: The process name that needs to be checked.
 - name: filepath
   required: true
-  description: Path to the file with processes
+  description: Path of the file with processes.
 outputs:
 - contextPath: Accessdata.Process.Exists
   description: ""
