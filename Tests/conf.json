@@ -2138,6 +2138,7 @@
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
         "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
-        "RedLock": "SSL Issues"
+        "RedLock": "SSL Issues",
+        "Gmail Single User" : "checking"
     }
 }
