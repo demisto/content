@@ -62,7 +62,7 @@ def get_incident_binaries(client: Client, incident_id: str, include_original_mes
         serialized_incident_binaries: dict = helpers.serialize_object(raw_incident_binaries)
         raw_response = json.loads(json.dumps(serialized_incident_binaries, default=bytes_to_string))
         raw_components = serialized_incident_binaries.get('Component')
-        components: list = parse_component(raw_components)  # type: ignore
+        components: list = parse_component(raw_components)  # type: ignore[arg-type]
 
         incident_binaries: dict = {
             'ID': serialized_incident_binaries.get('incidentId'),
@@ -79,7 +79,7 @@ def get_incident_binaries(client: Client, incident_id: str, include_original_mes
         human_readable = tableToMarkdown(f'Symantec DLP incident {incident_id} binaries', outputs,
                                          headers=headers, removeNull=True)
 
-        for raw_component in raw_components:  # type: ignore
+        for raw_component in raw_components:  # type: ignore[union-attr]
             filename = raw_component.get('name')
             data = raw_component.get('content')
             if isinstance(data, (str, bytes)):
@@ -667,7 +667,6 @@ def main():
     last_run: dict = demisto.getLastRun()
     args: dict = demisto.args()
     verify_ssl = not params.get('insecure', False)
-    # proxy = params.get('proxy')
     wsdl: str = f'{server}/ProtectManager/services/v2011/incidents?wsdl'
     session: Session = Session()
     session.auth = SymantecAuth(username, password, server)
@@ -693,22 +692,24 @@ def main():
     try:
         handle_proxy()
         if command == 'fetch-incidents':
-            fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore
+            fetch_incidents(client, fetch_time, fetch_limit, last_run, saved_report_id)  # type: ignore[operator]
         elif command == 'test-module':
-            test_module(client, saved_report_id)  # type: ignore
+            test_module(client, saved_report_id)  # type: ignore[operator]
         elif command == 'symantec-dlp-list-incidents':
-            human_readable, context, raw_response = commands[command](client, args, saved_report_id)  # type: ignore
+            human_readable, context, raw_response =\
+                commands[command](client, args, saved_report_id)  # type: ignore[operator]
             return_outputs(human_readable, context, raw_response)
         elif command == 'symantec-dlp-list-incident-status' or command == 'symantec-dlp-list-custom-attributes':
-            human_readable, context, raw_response = commands[command](client)  # type: ignore
+            human_readable, context, raw_response = commands[command](client)  # type: ignore[operator]
             return_outputs(human_readable, context, raw_response)
         elif command == 'symantec-dlp-incident-binaries':
-            human_readable, context, file_entries, raw_response = commands[command](client, args)  # type: ignore
+            human_readable, context, file_entries, raw_response =\
+                commands[command](client, args)  # type: ignore[operator]
             return_outputs(human_readable, context, raw_response)
             for file_entry in file_entries:
                 demisto.results(file_entry)
         elif command in commands:
-            human_readable, context, raw_response = commands[command](client, args)  # type: ignore
+            human_readable, context, raw_response = commands[command](client, args)  # type: ignore[operator]
             return_outputs(human_readable, context, raw_response)
     # Log exceptions
     except Exception as e:

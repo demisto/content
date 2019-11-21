@@ -9,7 +9,7 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: false
+  required: true
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
@@ -448,7 +448,7 @@ script:
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleName
       description: The rule name which triggered the violation.
       type: String
-  dockerimage: demisto/zeep:1.0.0.1281
+  dockerimage: demisto/zeep:1.0.0.3833
   isfetch: true
   longRunning: false
   longRunningPort: false
