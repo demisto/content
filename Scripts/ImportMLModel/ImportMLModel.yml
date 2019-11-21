@@ -28,3 +28,4 @@ type: python
 dockerimage: demisto/python3:3.7.5.3471
 runas: DBotWeakRole
 runonce: false
+tests: no

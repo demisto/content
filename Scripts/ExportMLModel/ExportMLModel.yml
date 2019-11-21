@@ -7,7 +7,7 @@ args:
   secret: false
 comment: 'export existing ml model to file '
 commonfields:
-  id: b23d841e-055a-45b9-82a5-d577395b8f64
+  id: ExportMLModel
   version: -1
 enabled: true
 name: ExportMLModel
