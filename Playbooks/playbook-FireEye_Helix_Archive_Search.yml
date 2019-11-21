@@ -2,8 +2,7 @@ id: FireEye Helix Archive Search
 version: -1
 name: FireEye Helix Archive Search
 fromversion: 4.5.0
-description: Create an archive search in FireEye Helix, and fetch the results back
-  as events.
+description: Create an archive search in FireEye Helix, and fetch the results as events.
 starttaskid: "0"
 tasks:
   "0":
@@ -90,8 +89,8 @@ tasks:
     task:
       id: 473a8564-2302-4afc-80cd-405e56e53991
       version: -1
-      name: Are There Searches That Didn't Finish?
-      description: Check status of search
+      name: Check search status
+      description: Verify if there are searches that haven't yet completed. 
       type: condition
       iscommand: false
       brand: ""
@@ -144,8 +143,8 @@ tasks:
     task:
       id: 45a4c9df-a4f0-4dfd-8876-adcd2ac79463
       version: -1
-      name: Get Search Results Without Incomplete Searches
-      description: Fetches archive search results.
+      name: Get search results
+      description: Fetches search results only for searches that were completed.
       script: '|||fireeye-helix-archive-search-get-results'
       type: regular
       iscommand: true
@@ -239,8 +238,8 @@ tasks:
     task:
       id: 97da4134-2fbf-426e-86a8-d1dc791e56a9
       version: -1
-      name: Are There Searches That Weren't Cancelled?
-      description: Checks whether there are searches that weren't cancelled
+      name: Completed searches?
+      description: Checks whether there are searches that weren't cancelled.
       type: condition
       iscommand: false
       brand: ""
@@ -280,7 +279,7 @@ tasks:
     task:
       id: f5a31249-1556-4fc6-82cd-4c8c6ebc7bb9
       version: -1
-      name: FireEye Helix Couldn't Run The Search
+      name: Search could not run
       description: FireEye Helix couldn't run the search
       type: title
       iscommand: false
@@ -325,14 +324,14 @@ inputs:
   value: {}
   required: false
   description: Returns the unique values for the specified field and groups them together
-    based on the specified frequency. e.g. groupby="srcipv4 5 100" will group the
+    based on the specified frequency. For example, groupby="srcipv4 5 100" will group the
     top 5 srcipv4 that have at least 100 occurences. Multiple values can be provided
-    using "," to seperate them.
+    using a comma separated list. 
 - key: Sort_by
   value: {}
   required: false
-  description: 'Sorts results by this field. Default is descending order, to change
-    this add to the command the following: argument sort_order="asc"'
+  description: 'Sorts results by this field. Default is descending order; to change
+    this add the following to the command: argument sort_order="asc"'
 - key: Sort_order
   value: {}
   required: false
@@ -341,22 +340,22 @@ inputs:
 - key: Limit
   value: {}
   required: false
-  description: Number of events to search.
+  description: Number of events for which to search.
 - key: Timeout
   value:
     simple: "10"
   required: true
-  description: Amount of time to poll before declaring a timeout and resuming the
+  description: Amount of time for which to poll before declaring a timeout and resuming the
     playbook (in minutes).
 - key: Interval
   value:
     simple: "1"
   required: true
-  description: Frequency that the polling command will run (minutes).
+  description: Frequency with which the polling command runs (minutes).
 - key: End
   value: {}
   required: false
-  description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+  description: End time of the event, in date format yyyy-mm-dd or yyyy-mm.
 outputs:
 - contextPath: FireEyeHelixSearch.Result.ID
   description: Event ID.
@@ -368,7 +367,7 @@ outputs:
   description: Event result.
   type: string
 - contextPath: FireEyeHelixSearch.Result.MatchedAt
-  description: Time the event was matched at.
+  description: Time at which the the event was matched.
   type: date
 - contextPath: FireEyeHelixSearch.Result.Confidence
   description: Confidence of the event. Can be either low, medium or high.
@@ -377,7 +376,7 @@ outputs:
   description: Status of the event.
   type: string
 - contextPath: FireEyeHelixSearch.Result.EventTime
-  description: Time the event took place.
+  description: Time at which the event took place.
   type: date
 - contextPath: FireEyeHelixSearch.Result.DetectedRuleID
   description: ID of the detected rule.
@@ -395,7 +394,7 @@ outputs:
   description: Name of the file affected by the event.
   type: string
 - contextPath: FireEyeHelixSearch.Result.FilePath
-  description: Path of the the file affected by the event.
+  description: Path of the file affected by the event.
   type: string
 - contextPath: FireEyeHelixSearch.Result.DeviceName
   description: Device name.
@@ -410,7 +409,7 @@ outputs:
   description: Malware type of the virus that was detected.
   type: string
 - contextPath: FireEyeHelixSearch.Result.CreatedTime
-  description: Time the event was created at.
+  description: Time at which the event was created.
   type: date
 - contextPath: FireEyeHelixSearch.Result.Class
   description: Event class.
@@ -419,7 +418,7 @@ outputs:
   description: MD5 hash of the affected file.
   type: string
 - contextPath: FireEyeHelixSearch.Result.SHA1
-  description: SHA1 has of the affected file.
+  description: SHA1 hash of the affected file.
   type: string
 - contextPath: FireEyeHelixSearch.Result.Protocol
   description: Protocol used in the event.
@@ -449,10 +448,10 @@ outputs:
   description: Port of the event destination address.
   type: string
 - contextPath: FireEyeHelixSearch.Result.ReportTime
-  description: Time the event was reported at.
+  description: Time at which the event was reported.
   type: date
 - contextPath: FireEyeHelixSearch.Result.FalsePositive
-  description: Boolean flag - is the event false positive.
+  description: Boolean flag - is the event a false positive.
   type: string
 - contextPath: FireEyeHelixSearch.Result.Domain
   description: Domain of the recepient.
@@ -485,10 +484,10 @@ outputs:
   description: Number of matches for the group.
   type: number
 - contextPath: FireEyeHelixSearch.Result.RcpTo
-  description: Recepeient to email address.
+  description: 'Recipient of' email address.
   type: string
 - contextPath: FireEyeHelixSearch.Result.InReplyTo
-  description: Reply email address.
+  description: 'Reply to' email address.
   type: string
 tests:
   - No test - No instance
