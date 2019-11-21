@@ -1,5 +1,8 @@
 ## [Unreleased]
+Added Reason, EndpointID, and EndpointUserID to detections context.
 
+## [19.11.0] - 2019-11-12
+Fixed an issue where non-Active Directory username caused an "index out of range" exception. 
 
 ## [19.9.1] - 2019-09-18
 -
