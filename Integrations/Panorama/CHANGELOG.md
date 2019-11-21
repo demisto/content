@@ -1,6 +1,6 @@
 ## [Unreleased]
-  - Added support for a list of *job_id* in the following commands: ***panorama-query-logs***, ***panorama-check-logs-status***.
-  - Add the ip argument in the ***panorama-query-logs*** command.
+  - Added support for a list of *job_id* in the ***panorama-query-logs*** and ***panorama-check-logs-status*** commands.
+  - Added the *ip* argument in the ***panorama-query-logs*** command.
 
 
 ## [19.11.0] - 2019-11-12
