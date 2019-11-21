@@ -59,7 +59,7 @@ def test_parse_component():
             'name': 'CCN.txt',
             'componentTypeId': 3,
             'componentType': 'ATTACHMENT_TEXT',
-            'content': b'4386280016300125',
+            'content': '4386280016300125',
             'componentLongId': 69065
         }
     ]
@@ -79,7 +79,7 @@ def test_parse_component():
             'Name': 'CCN.txt',
             'TypeID': 3,
             'Type': 'ATTACHMENT_TEXT',
-            'Content': "b'4386280016300125'",
+            'Content': '4386280016300125',
             'LongID': 69065
         }
     ]
