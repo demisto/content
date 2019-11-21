@@ -549,7 +549,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     if is_ami:
         ami = AMIConnection(server_ip)
         ami.clone_mock_data()
-        proxy = MITMProxy(demisto_api_key, server, server_ip)
+        proxy = MITMProxy(server_ip)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -572,7 +572,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                            'Content CircleCI', 'False')
     # first run the mock tests to avoid mockless side effects in container
     if is_ami and mock_tests:
-        proxy.configure_proxy_in_demisto(proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
+        proxy.configure_proxy_in_demisto(demisto_api_key, server, proxy.ami.docker_ip + ':' + proxy.PROXY_PORT)
         for t in mock_tests:
             run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
@@ -582,7 +582,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
                               build_name, server_numeric_version, demisto_api_key)
 
         print("\nRunning mock-disabled tests")
-        proxy.configure_proxy_in_demisto('')
+        proxy.configure_proxy_in_demisto(demisto_api_key, server, '')
         print("Restarting demisto service")
         restart_demisto_service(ami, demisto_api_key, server)
         print("Demisto service restarted\n")

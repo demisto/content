@@ -172,9 +172,8 @@ class MITMProxy:
     MOCKS_TMP_PATH = '/tmp/Mocks/'
     MOCKS_GIT_PATH = 'content-test-data/'
 
-    def __init__(self, demisto_api_key, server, public_ip,
+    def __init__(self, public_ip,
                  repo_folder=MOCKS_GIT_PATH, tmp_folder=MOCKS_TMP_PATH, debug=False):
-        self.client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
@@ -188,7 +187,9 @@ class MITMProxy:
 
         silence_output(self.ami.call, ['mkdir', '-p', tmp_folder], stderr='null')
 
-    def configure_proxy_in_demisto(self, proxy=''):
+    def configure_proxy_in_demisto(self, server, demisto_api_key, proxy=''):
+        client = demisto_client.configure(base_url=server, api_key=demisto_api_key,
+                                          verify_ssl=False)
         http_proxy = https_proxy = proxy
         if proxy:
             http_proxy = 'http://' + proxy
@@ -201,7 +202,7 @@ class MITMProxy:
                 },
             'version': -1
         }
-        return demisto_client.generic_request_func(self=self.client, path='/system/config',
+        return demisto_client.generic_request_func(self=client, path='/system/config',
                                                    method='POST', body=data)
 
     def get_mock_file_size(self, filepath):
