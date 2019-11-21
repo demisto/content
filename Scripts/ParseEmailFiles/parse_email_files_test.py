@@ -182,8 +182,8 @@ def test_eml_contains_msg(mocker):
                 {
                     'Type': entryTypes['note'],
                     'Contents': {
-                        'path': 'test_data/DONT_OPEN-MALICIOS.eml',
-                        'name': 'DONT_OPEN-MALICIOS.eml'
+                        'path': 'test_data/DONT_OPEN-MALICIOUS.eml',
+                        'name': 'DONT_OPEN-MALICIOUS.eml'
                     }
                 }
             ]
