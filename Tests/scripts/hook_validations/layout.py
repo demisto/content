@@ -1,9 +1,9 @@
 from Tests.scripts.error_constants import Errors
-from Tests.scripts.hook_validations.json_based import JSONBasedValidator
+from Tests.scripts.hook_validations.json_based import BaseValidator
 from Tests.test_utils import print_error
 
 
-class LayoutValidator(JSONBasedValidator):
+class LayoutValidator(BaseValidator):
     def is_valid_version(self):
         """Validate that the layout file has version of -1."""
         layout = self.current_file.get('layout')

@@ -1,9 +1,9 @@
 from Tests.scripts.error_constants import Errors
-from Tests.scripts.hook_validations.json_based import JSONBasedValidator
+from Tests.scripts.hook_validations.json_based import BaseValidator
 from Tests.test_utils import print_error
 
 
-class ReputationValidator(JSONBasedValidator):
+class ReputationValidator(BaseValidator):
     def is_valid_version(self):
         # type: () -> bool
         """Validate that the reputations file as version of -1."""

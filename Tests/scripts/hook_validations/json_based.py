@@ -3,7 +3,7 @@ from abc import abstractmethod
 from Tests.scripts.hook_validations.structure import StructureValidator
 
 
-class JSONBasedValidator(object):
+class BaseValidator(object):
     DEFAULT_VERSION = -1
 
     def __init__(self, structure_validator):
