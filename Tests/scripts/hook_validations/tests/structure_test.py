@@ -10,7 +10,7 @@ from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_P
     VALID_WIDGET_PATH, VALID_DASHBOARD_PATH, INVALID_DASHBOARD_PATH
 
 
-class IsValidScheme:
+class TestStructureValidator:
     SCHEME_VALIDATION_INPUTS = [
         (VALID_TEST_PLAYBOOK_PATH, 'playbook', True, "Found a problem in the scheme although there is no problem"),
         (INVALID_PLAYBOOK_PATH, 'playbook', False, "Found no problem in the scheme although there is a problem")
@@ -36,15 +36,13 @@ class IsValidScheme:
         validator = StructureValidator(file_path=path)
         assert validator.is_valid_fromversion_on_modified(change_string=change_string) is answer, error
 
-
-class TestIsIDModified:
-    IS_ID_MODIFIED_LIST = [
+    INPUTS_IS_ID_MODIFIED = [
         (INVALID_PLAYBOOK_PATH, True, "+  id: text", "Didn't find the id as updated in file"),
         (INVALID_PLAYBOOK_PATH, True, "-  id: text", "Didn't find the id as updated in file"),
         (INVALID_PLAYBOOK_PATH, False, "some other text", "Found the ID as changed although it is not")
     ]
 
-    @pytest.mark.parametrize("path, answer, change_string, error", IS_ID_MODIFIED_LIST)
+    @pytest.mark.parametrize("path, answer, change_string, error", INPUTS_IS_ID_MODIFIED)
     def test_is_id_modified(self, path, answer, change_string, error):
         validator = StructureValidator(file_path=path)
         assert validator.is_id_modified(change_string=change_string) is answer, error
