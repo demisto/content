@@ -7,14 +7,29 @@
             "playbookID": "JsonWhoIs-Test"
         },
         {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
+        },
+        {
             "integrations": "nmap",
-            "playbookID": "Nmap - Test"
+            "playbookID": "Nmap - Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
             "timeout": 500
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorld"
         },
         {
             "integrations": "ThreatQ v2",
@@ -51,16 +66,6 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Cloaken",
@@ -1909,6 +1914,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Test Convert file hash to corresponding hashes",
+            "fromversion": "4.5.0",
+            "integrations": "VirusTotal - Private API"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1940,9 +1950,17 @@
         {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
+        },
+        {
+            "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         }
     ],
     "skipped_tests": {
+        "minemeld_test": "Issue 20265",
+        "rsa_packets_and_logs_test": "Issue 20262",
+        "Cloaken-Test": "Issue 20036",
+        "Extract Indicators From File - Generic v2": "Issue 20143",
+        "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
@@ -1975,15 +1993,12 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
-        "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
-        "CarbonBlackResponseTest": "Issue #19180",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
-        "AlphaSOC-Wisdom-Test": "Issue #19235",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Manual test"
     },
@@ -2008,9 +2023,9 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-        "Microsoft Graph": "Issue 20096",
+        "Fidelis Elevate Network": "Issue 20263",
+        "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
-        "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
@@ -2037,7 +2052,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
-        "RedLock": "Issue 15493",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2048,6 +2062,7 @@
         "QRadar": "Issue 17794",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
+        "McAfee ESM-v10": "Issue 20225",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
@@ -2061,6 +2076,7 @@
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "HelloWorldSimple": "This is just an example integration - no need for test",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
@@ -2106,7 +2122,6 @@
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
-        "carbonblackliveresponse": "Issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
@@ -2115,6 +2130,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "RedLock": "SSL Issues"
     }
 }
