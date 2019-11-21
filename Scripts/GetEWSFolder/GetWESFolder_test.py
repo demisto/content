@@ -1,17 +1,18 @@
 import json
 
+from GetEWSFolder import main, convert_mail_to_json
+
 import demistomock as demisto
-from GetEWSFolder import main,convert_mail_to_json
 from CommonServerPython import entryTypes
 
 
-
 def mail(subject, body):
-    return {'subject': subject, 'body': body }
+    return {'subject': subject, 'body': body}
 
 
-mails_folder_1 = [mail(subject='subject 1', body = 'of folder 1'),  mail(subject='subject 2', body = 'of folder 1')]
-mails_folder_2 = [mail(subject='subject 1', body = 'of folder 2'),  mail(subject='subject 2', body = 'of folder 2')]
+mails_folder_1 = [mail(subject='subject 1', body='of folder 1'), mail(subject='subject 2', body='of folder 1')]
+mails_folder_2 = [mail(subject='subject 1', body='of folder 2'), mail(subject='subject 2', body='of folder 2')]
+
 
 def test_main(mocker):
     def executeCommand(name, args):
@@ -34,14 +35,9 @@ def test_main(mocker):
         data = json.load(json_file)
 
     assert len(data) == len(mails_folder_1) + len(mails_folder_2)
-    for mails_folder, folder in zip ([mails_folder_1, mails_folder_2], ['folder1', 'folder2']):
+    for mails_folder, folder in zip([mails_folder_1, mails_folder_2], ['folder1', 'folder2']):
         for mail in mails_folder:
             formatted_mail = convert_mail_to_json(mail, folder)
-            assert sum(m['subject-body'] ==  formatted_mail['subject-body']  and m['folder'] ==  formatted_mail['folder']  for m in data) == 1
-
-
-
-
-
-
-
+            assert sum(
+                m['subject-body'] == formatted_mail['subject-body'] and m['folder'] == formatted_mail['folder'] for m in
+                data) == 1
