@@ -174,11 +174,11 @@ class Client(BaseClient):
                                     rpz_type: str) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
-                fqdn: The name of this DNS zone.
-                rpz_policy: The response policy zone override policy.
-                rpz_severity: The severity of this response policy zone.
-                substitute_name: The canonical name of redirect target in substitute policy.
-                rpz_type: The type of rpz zone.
+            fqdn: The name of this DNS zone.
+            rpz_policy: The response policy zone override policy.
+            rpz_severity: The severity of this response policy zone.
+            substitute_name: The canonical name of redirect target in substitute policy.
+            rpz_type: The type of rpz zone.
         Returns:
             Response JSON
         """
@@ -192,12 +192,12 @@ class Client(BaseClient):
                         comment=None) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
         Args:
-                rule_type: Type of rule to create.
-                object_type: Type of object to assign the rule on.
-                name: Rule name.
-                rp_zone: The zone to assign the rule.
-                substitute_name: The substitute name to assign (In case of substitute domain only)
-                comment: A comment for this rule.
+            rule_type: Type of rule to create.
+            object_type: Type of object to assign the rule on.
+            name: Rule name.
+            rp_zone: The zone to assign the rule.
+            substitute_name: The substitute name to assign (In case of substitute domain only)
+            comment: A comment for this rule.
         Returns:
             Response JSON
         """
@@ -217,43 +217,69 @@ class Client(BaseClient):
 
     def create_substitute_record_rule(self, suffix: str, **kwargs: dict) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
-                Args:
-                        suffix: The infoblox object to be used as a url path.
-                        kwargs: A dict of arguments to be passed to the rule body. The following may appear:
-                            - name
-                            - rp_zone
-                            - comment
-                            - ipv4addr
-                            - ipv6addr
-                            - mail_exchanger
-                            - preference
-                            - order
-                            - preference
-                            - replacement
-                            - ptrdname
-                            - priority
-                            - target
-                            - weight
-                            - port
-                            - text
-                Returns:
-                    Response JSON
-                """
+        Args:
+            suffix: The infoblox object to be used as a url path.
+            kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                - name
+                - rp_zone
+                - comment
+                - ipv4addr
+                - ipv6addr
+                - mail_exchanger
+                - preference
+                - order
+                - preference
+                - replacement
+                - ptrdname
+                - priority
+                - target
+                - weight
+                - port
+                - text
+        Returns:
+            Response JSON
+        """
         request_data = {key: val for key, val in kwargs.items() if val}
         request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
         return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
 
     def change_rule_status(self, reference_id: str, disable: bool) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
-                Args:
-                        reference_id: Rule reference ID
-                        disable: true or false string
-                Returns:
-                    Response JSON
-                """
+        Args:
+            reference_id: Rule reference ID
+            disable: true or false string
+        Returns:
+            Response JSON
+        """
         request_data = assign_params(disable=disable)
         suffix = reference_id
         return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
+
+    def get_object_fields(self, object_type: str) -> Dict:
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        Args:
+            object_type: Infoblox object type
+        Returns:
+            Response JSON
+        """
+        request_params = {'_schema': object_type}
+        suffix = object_type
+        return self._http_request('GET', suffix, params=request_params)
+
+    def search_rule(self, object_type, rule_name, output_fields) -> Dict:
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        Args:
+            object_type: Infoblox object type
+            rule_name: Full rule name
+            output_fields: Fields to include in the return object
+        Returns:
+            Response JSON
+        """
+        request_params = assign_params(name=rule_name)
+        if output_fields:
+            request_params['_return_fields+'] = output_fields
+        suffix = object_type
+        return self._http_request('GET', suffix, params=request_params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -408,7 +434,7 @@ def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """
     ip = args.get('ip')
     raw_response = client.get_ip(ip)
-    ip_list = raw_response['result']
+    ip_list = raw_response.get('result')
 
     # If no IP object was returned
     if not ip_list:
@@ -417,7 +443,7 @@ def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
                       ip_list[0].items()}
     title = f'{INTEGRATION_NAME} - IP: {ip} info.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID ==== obj.ReferenceID)': fixed_keys_obj}
+        f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
     human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -434,20 +460,20 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     ip = args.get('ip')
     max_results = args.get('max_results')
     raw_response = client.search_related_objects_by_ip(ip, max_results)
-    obj_list = raw_response['result']
+    obj_list = raw_response.get('result')
     if not obj_list:
         return f'{INTEGRATION_NAME} - No objects associated to ip: {ip} were found', {}, {}
-    fixed_keys_obg_list = []
+    fixed_keys_obj_list = []
     for obj in obj_list:
         fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                           obj.items()}
-        fixed_keys_obg_list.append(fixed_keys_obj)
+        fixed_keys_obj_list.append(fixed_keys_obj)
 
     title = f'{INTEGRATION_NAME} - IP: {ip} search results.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.IPSearchObjects(val.ReferenceID && val.ReferenceID ==== obj.ReferenceID)':
-            fixed_keys_obg_list}
-    human_readable = tableToMarkdown(title, fixed_keys_obg_list, headerTransform=pascalToSpace)
+        f'{INTEGRATION_CONTEXT_NAME}.IPSearchObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)':
+            fixed_keys_obj_list}
+    human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -466,20 +492,27 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
     raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
-    rules_list = raw_response['result']
+    next_page_id = raw_response.get('next_page_id')
+
+    if next_page_id:
+        return_outputs('',
+                       {f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules.Pages(val.PageID && val.PageID === obj.PageID)': {'PageID': next_page_id}},
+                       next_page_id)
+
+    rules_list = raw_response.get('result')
     if not rules_list:
         return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
+
     fixed_keys_rule_list = []
     for rule in rules_list:
         fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                           rule.items()}
+                           rule.items() if key != '_ref'}
         fixed_keys_rule_list.append(fixed_keys_rule)
-    zone_name = zone.capitalize()
+    zone_name = zone.capitalize() if zone else fixed_keys_rule_list[0].get('Name')
     title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_list}
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules.List(val.Name && val.Name === obj.Name)': fixed_keys_rule_list}
     human_readable = tableToMarkdown(title, fixed_keys_rule_list,
-                                     headers=['Comment', 'Name', 'Type', 'View', 'Zone', 'Disable'],
                                      headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -495,7 +528,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     """
     max_results = args.get('max_results', 50)
     raw_response = client.list_response_policy_zones(max_results)
-    zones_list = raw_response['result']
+    zones_list = raw_response.get('result')
     if not zones_list:
         return f'{INTEGRATION_NAME} - No Response Policy Zones were found', {}, {}
     fixed_keys_zone_list = []
@@ -506,7 +539,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     display_first_x_results = f'( first {max_results} results)' if max_results else ''
     title = f'{INTEGRATION_NAME} - Response Policy Zones list{display_first_x_results}:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN ==== obj.FQDN)': fixed_keys_zone_list}
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_zone_list}
     human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -533,7 +566,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
                            zone.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN ==== obj.FQDN)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -561,7 +594,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -588,7 +621,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -615,7 +648,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -644,7 +677,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -675,7 +708,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -705,7 +738,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -736,7 +769,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -763,7 +796,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -790,7 +823,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -817,7 +850,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
                            rule.items()}
     title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
@@ -837,10 +870,87 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     rule = raw_response.get('result')
     fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
                            rule.items()}
-    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("name")} has been enabled'
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been enabled'
     context = {
-        f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules(val.Name && val.Name ==== obj.Name)': fixed_keys_rule_res}
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
     human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    reference_id = args.get('reference_id')
+    raw_response = client.change_rule_status(reference_id, disable=True)
+
+    rule = raw_response.get('result')
+    fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+    title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been disabled'
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.NewResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+    human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    object_type = args.get('object_type')
+    raw_response = client.get_object_fields(object_type)
+
+    fields = raw_response.get('result').get('fields')
+    name_list = [field_obj.get('name') for field_obj in fields]
+    title = f'{INTEGRATION_NAME} - Object {object_type} supported fields: '
+    context_entry = {
+        'ObjectType': object_type,
+        'SupportedFields': name_list
+    }
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.ObjectFields(val.ObjectType && val.ObjectType === obj.ObjectType)': context_entry
+    }
+    human_readable = tableToMarkdown(title, name_list, headers=['Field Names'], headerTransform=pascalToSpace)
+    return human_readable, context, raw_response
+
+
+def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    object_type = args.get('object_type')
+    rule_name = args.get('rule_name')
+    output_fields = args.get('output_fields')
+    raw_response = client.search_rule(object_type, rule_name, output_fields)
+    rule_list = raw_response.get('result')
+    if not rule_list:
+        return f'No rules with name: {rule_name} of type: {object_type} were found', {}, raw_response
+    fixed_keys_rule_list = []
+    for rule in rule_list:
+        fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                           rule.items()}
+        fixed_keys_rule_list.append(fixed_keys_rule)
+    title = f'{INTEGRATION_NAME} - Search result for: {rule_name}: '
+    context = {
+        f'{INTEGRATION_CONTEXT_NAME}.RulesSearchResults(val.Name && val.Name === obj.Name)': fixed_keys_rule_list
+    }
+    human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
 
 
@@ -849,7 +959,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.7/"
+    base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.3/"
     verify = not params.get('insecure', False)
     proxy = params.get('proxy') == 'true'
     user = demisto.get(params, 'credentials.identifier')
@@ -880,6 +990,9 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-enable-rule': enable_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-disable-rule': disable_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
+        f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
     }
     try:
         if command in commands:
