@@ -152,10 +152,15 @@ class Client(BaseClient):
             return obj
         return obj
 
-    def build_create_action_body(self, by_host, action_name, package_id, package_name,
-                                 action_group_id, action_group_name, target_group_id,
-                                 target_group_name, hostname, ip_address, parameters):
 
+    def build_create_action_body(self, by_host, action_name,
+                                 parameters, package_id='', package_name='', action_group_id='', action_group_name='',
+                                 target_group_id='', target_group_name='', hostname='', ip_address=''):
+        """
+        This method used to build create_action request body by host or by target group
+        """
+
+        # package and action group are mandatory and can be pass by name or id
         if not package_id and not package_name:
             raise ValueError('package id and package name are missing, Please specify one of them.')
         if not action_group_id and not action_group_name:
@@ -166,6 +171,7 @@ class Client(BaseClient):
         else:
             action_name = DEMISTO_API_ACTION_NAME
 
+        # get package expire_seconds value
         if package_id:
             get_package_res = self.do_request('GET', 'packages/' + str(package_id))
         elif package_name:
@@ -175,7 +181,9 @@ class Client(BaseClient):
         expire_seconds = get_package_res.get('data').get('expire_seconds', 0)
 
         target_group = {}  # type: ignore
+
         if by_host:
+            # use Tanium parse question request to set target group by hostname or ip address
             if not ip_address and not hostname:
                 raise ValueError('hostname and ip address are missing, Please specify one of them.')
 
@@ -190,6 +198,7 @@ class Client(BaseClient):
             if not target_group:
                 raise ValueError('Failed to parse target group question')
         else:
+            # set target group by id or name
             if not target_group_id and not target_group_name:
                 raise ValueError('target group id and target group name are missing, Please specify one of them.')
 
@@ -206,6 +215,7 @@ class Client(BaseClient):
 
         parameters_condition = []  # type: ignore
         if parameters:
+            # build action parameters object
             try:
                 parameters_condition = self.parse_action_parameters(parameters)
             except Exception:
@@ -215,6 +225,7 @@ class Client(BaseClient):
         body = {'package_spec': {'source_id': package_id}}
 
         if parameters_condition:
+            # set the parameters value to request body
             body['package_spec']['parameters'] = []
             for param in parameters_condition:
                 body['package_spec']['parameters'].append(param)
@@ -720,8 +731,11 @@ def create_action(client, data_args):
     action_group_name = data_args.get('action-group-name')
     parameters = data_args.get('parameters')
 
-    body = client.build_create_action_body(False, action_name, package_id, package_name, action_group_id,
-                                           action_group_name, target_group_id, target_group_name, '', '', parameters)
+    body = client.build_create_action_body(False, action_name, parameters, package_id=package_id,
+                                           package_name=package_name, action_group_id=action_group_id,
+                                           action_group_name=action_group_name, target_group_id=target_group_id,
+                                           target_group_name=target_group_name)
+
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
 
@@ -741,8 +755,11 @@ def create_action_by_host(client, data_args):
     ip_address = data_args.get('ip-address')
     hostname = data_args.get('hostname')
 
-    body = client.build_create_action_body(True, action_name, package_id, package_name, action_group_id,
-                                           action_group_name, '', '', hostname, ip_address, parameters)
+    body = client.build_create_action_body(True, action_name, parameters, package_id=package_id,
+                                           package_name=package_name, action_group_id=action_group_id,
+                                           action_group_name=action_group_name,
+                                           hostname=hostname, ip_address=ip_address)
+
     raw_response = client.do_request('POST', 'actions', body)
     action = client.get_action_item(raw_response.get('data'))
 
