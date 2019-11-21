@@ -774,6 +774,37 @@ def validate_no_multiple_indicators_for_search(arg_list):
     return
 
 
+def search_indicator(indicator_type, indicator_value):
+    headers = HEADERS
+    headers['apiKey'] = API_KEY
+
+    res = requests.request(
+        method='GET',
+        url=f'{BASE_URL}/tic?indicatorType={indicator_type}&indicatorValue={indicator_value}&tags=true',
+        verify=USE_SSL,
+        headers=headers
+    )
+
+    try:
+        # Handle error responses gracefully
+        res_json = res.json()
+        res.raise_for_status()
+    # Unexpected errors (where no json object was received)
+    except Exception as err:
+        err_msg = f'{err}'
+        return return_error(err_msg)
+
+    md = tableToMarkdown(f'Search {indicator_value} Results:', res_json, headerTransform=string_to_table_header)
+    context = createContext(res_json, keyTransform=string_to_context_key)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['text'],
+        'Contents': res_json,
+        'EntryContext': context,
+        'HumanReadable': md
+    })
+
+
 ''' COMMANDS'''
 
 
@@ -983,6 +1014,26 @@ def top_tags_results_command():
     })
 
 
+def search_ip_command():
+    ip = demisto.args().get('ip')
+    return search_indicator('ipv4_address', ip)
+
+
+def search_domain_command():
+    domain = demisto.args().get('domain')
+    return search_indicator('domain', domain)
+
+
+def search_url_command():
+    url = demisto.args().get('url')
+    return search_indicator('url', url)
+
+
+def search_file_command():
+    file = demisto.args().get('file')
+    return search_indicator('sha256', file)
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('Command being called is %s' % (demisto.command()))
@@ -1013,6 +1064,14 @@ try:
         top_tags_search_command()
     elif active_command == 'autofocus-top-tags-results':
         top_tags_results_command()
+    elif active_command == 'ip':
+        search_ip_command()
+    elif active_command == 'domain':
+        search_domain_command()
+    elif active_command == 'url':
+        search_url_command()
+    elif active_command == 'file':
+        search_file_command()
 
 
 # Log exceptions
