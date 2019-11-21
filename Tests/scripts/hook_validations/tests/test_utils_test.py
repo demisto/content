@@ -1,19 +1,22 @@
 import pytest
-
+import yaml
 from Tests import test_utils
 
 
 class TestGetFile:
     PATH_TO_HERE = './Tests/scripts/hook_validations/tests/tests_data/'
+    with open('{}fake_integration.yml'.format(PATH_TO_HERE), 'r') as f:
+        data = yaml.safe_load(f)
     FILE_PATHS = [
-        ('{}fake_integration.yml'.format(PATH_TO_HERE), test_utils.get_yaml),
-        ('{}fake_json.json'.format(PATH_TO_HERE), test_utils.get_json),
-        ('{}default_image.png'.format(PATH_TO_HERE), test_utils.get_yaml)
+        ('{}fake_json.json'.format(PATH_TO_HERE), test_utils.get_json, {"im a fake json": ["really!"]}),
+        ('{}default_image.png'.format(PATH_TO_HERE), test_utils.get_yaml, {}),
+        ('{}default_image.png'.format(PATH_TO_HERE), test_utils.get_json, {}),
+        ('{}fake_integration.yml'.format(PATH_TO_HERE), test_utils.get_yaml, data)
     ]
 
-    @pytest.mark.parametrize('file_path, func', FILE_PATHS)
-    def test_get_file(self, file_path, func):
-        assert func(file_path) or func(file_path) == {}
+    @pytest.mark.parametrize('file_path, func, expected', FILE_PATHS)
+    def test_get_file(self, file_path, func, expected):
+        assert func(file_path) == expected
 
 
 class TestGetRemoteFile:
