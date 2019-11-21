@@ -523,12 +523,9 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     build_name = options.buildName
 
     conf, secret_conf = load_conf_files(conf_path, secret_conf_path)
-
-    username = secret_conf.get('username')
-    password = secret_conf.get('userPassword')
     demisto_api_key = secret_conf.get('temp_apikey')
 
-    c = demisto_client.configure(base_url=server, username=username, password=password, verify_ssl=False)
+    c = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
 
     default_test_timeout = conf.get('testTimeout', 30)
 
@@ -607,11 +604,12 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         ami.upload_mock_files(build_name, build_number)
 
     if len(failed_playbooks):
-        file_path = "./Tests/is_build_failed_{}.txt".format(server_version.replace(' ', ''))
-        with open(file_path, "w") as is_build_failed_file:
-            is_build_failed_file.write('Build failed')
-
+        print("Some tests have failed. Not destroying instances.")
         sys.exit(1)
+    else:
+        file_path = "./Tests/is_build_passed_{}.txt".format(server_version.replace(' ', ''))
+        with open(file_path, "w") as is_build_passed_file:
+            is_build_passed_file.write('Build passed')
 
 
 def main():
