@@ -1,4 +1,5 @@
 from Tests.test_utils import get_yaml, print_error, server_version_compare
+from distutils.version import LooseVersion
 from pkg_resources import parse_version
 from datetime import datetime, timedelta
 import re
@@ -41,8 +42,9 @@ class DockerImageValidator(object):
         if not self.docker_image_tag and not self.docker_image_name and not self.docker_image_latest_tag:
             self.is_latest_tag = False
         else:
+            server_version = LooseVersion(self.from_version)
             # Case of a modified file with version >= 5.0.0
-            if self.is_modified_file and server_version_compare(self.from_version, '5.0.0') >= 0:
+            if self.is_modified_file and server_version >= '5.0.0':
                 # If docker image name are different and if the docker image isn't the default one
                 if self.docker_image_latest_tag != self.docker_image_tag and not \
                         'demisto/python:1.3-alpine' == '{}:{}'.format(self.docker_image_name, self.docker_image_tag):
@@ -67,7 +69,7 @@ class DockerImageValidator(object):
         match = re.match(r'.*realm="(.+)",service="(.+)".*', www_auth, re.IGNORECASE)
         if not match:
             return []
-        return [match.group(1), match.group(2)]
+        return match.groups()
 
     @staticmethod
     def docker_auth(image_name, verify_ssl=True, registry=DEFAULT_REGISTRY):
@@ -88,10 +90,15 @@ class DockerImageValidator(object):
             www_auth = res.headers.get('www-authenticate')
             if www_auth:
                 parse_auth = DockerImageValidator.parse_www_auth(www_auth)
-                if parse_auth and len(parse_auth) == 2:
+                if parse_auth:
                     realm, service = parse_auth
+            params = {
+                'scope': 'repository:{}:pull'.format(image_name),
+                'service': service
+            }
             res = requests.get(
-                '{}?scope=repository:{}:pull&service={}'.format(realm, image_name, service),
+                url=realm,
+                params=params,
                 headers=ACCEPT_HEADER,
                 timeout=TIMEOUT,
                 verify=verify_ssl
@@ -113,18 +120,7 @@ class DockerImageValidator(object):
         Returns:
             a tag list with only numbered tags
         """
-        only_numbered_tags = []
-        for tag in tags:
-            number_token = 1
-            split_tag = tag.split('.')
-            for sub_section in split_tag:
-                if not sub_section.isdigit():
-                    number_token = 0
-
-            if number_token:
-                only_numbered_tags.append(tag)
-
-        return only_numbered_tags
+        return [tag for tag in tags if re.match(r'^(?:\d+\.)*\d+$', tag) is not None]
 
     @staticmethod
     def lexical_find_latest_tag(tags):

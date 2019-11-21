@@ -64,43 +64,13 @@ class FilesValidator(object):
     @staticmethod
     def is_py_script_or_integration(file_path):
         file_yml = get_yaml(file_path)
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('script', {}).get('type', '') != 'python':
-                return False
 
-            return True
+        if checked_type(file_path, [INTEGRATION_REGEX, INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX,
+                                    BETA_INTEGRATION_YML_REGEX]):
+            return file_yml.get('script', {}).get('type', '') == 'python'
 
-        if re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', '') != 'python':
-                return False
-
-            return True
-
-        if re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('script', {}).get('type', '') != 'python':
-                return False
-
-            return True
-
-        if re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', '') != 'python':
-                return False
-
-            return True
-
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', '') != 'python':
-                return False
-
-            return True
-
-        if re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
-                re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', '') != 'python':
-                return False
-
-            return True
+        if checked_type(file_path, [SCRIPT_YML_REGEX, SCRIPT_REGEX, SCRIPT_PY_REGEX]):
+            return file_yml.get('type', '') == 'python'
 
         return False
 
