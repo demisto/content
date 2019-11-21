@@ -2,7 +2,7 @@ import os
 from shutil import copyfile
 
 import pytest
-from typing import Any, Generic, Type
+from typing import Any, Type
 
 from Tests.scripts.hook_validations.base_validator import BaseValidator
 from Tests.scripts.hook_validations.dashboard import DashboardValidator
