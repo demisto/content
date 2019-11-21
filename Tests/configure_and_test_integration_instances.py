@@ -287,8 +287,9 @@ def main():
     # after updating content
     new_integrations_names = get_new_integrations(git_sha1)
     brand_new_integrations = []
-    print_color('New Integrations:\n{}'.format('\n'.join(new_integrations_names)), color=LOG_COLORS.YELLOW)
-    print()
+    print_color('New Integrations Since Last Release:\n{}'.format('\n'.join(new_integrations_names)),
+                color=LOG_COLORS.YELLOW)
+    print('')
 
     # Each test is a dictionary from Tests/conf.json which may contain the following fields
     # "playbookID", "integrations", "instance_names", "timeout", "nightly", "fromversion", "toversion"
@@ -311,7 +312,7 @@ def main():
 
         print_color('All Integrations for test "{}":'.format(test.get('playbookID')), color=LOG_COLORS.YELLOW)
         print_color(integrations, color=LOG_COLORS.YELLOW)
-        print()
+        print('')
 
         new_integrations = []
         modified_integrations = []
@@ -327,7 +328,7 @@ def main():
                 modified_integrations.append(integration)
 
         modified_integrations_names = [integration.get('name') for integration in modified_integrations]
-        print_color('Modified Integrations:\n{}'.format('\n'.join(modified_integrations_names)),
+        print_color('Modified OR Randomly Chosen Integrations:\n{}'.format('\n'.join(modified_integrations_names)),
                     color=LOG_COLORS.YELLOW)
 
         # set params for new integrations and modified integrations, then add the new ones to brand_new_integrations
@@ -377,6 +378,8 @@ def main():
         # since the request to check if content update installation finished didn't work, can't use that mechanism
         # to check and just try sleeping for 30 seconds isntead to allow for content update installation to complete
         sleep(30)
+    else:
+        print_color('Content Update Successfully Installed!', color=LOG_COLORS.GREEN)
 
     # configure instances for new integrations
     new_integration_module_instances = []
