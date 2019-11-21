@@ -1,4 +1,4 @@
-from Tests.test_utils import get_yaml, print_error, server_version_compare
+from Tests.test_utils import get_yaml, print_error
 from distutils.version import LooseVersion
 from pkg_resources import parse_version
 from datetime import datetime, timedelta
