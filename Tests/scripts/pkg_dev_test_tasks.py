@@ -262,9 +262,10 @@ def run_mypy(project_dir, py_num):
 
 
 def run_bandit(project_dir):
-    print("========= Running bandit ===============")
+    lint_files = get_lint_files(project_dir)
+    print("========= Running bandit on: {} ===============".format(lint_files))
     sys.stdout.flush()
-    subprocess.check_call(['bash', RUN_BANDIT_SCRIPT, project_dir], cwd=project_dir)
+    subprocess.check_call(['bash', RUN_BANDIT_SCRIPT, lint_files], cwd=project_dir)
     print("bandit completed")
 
 
