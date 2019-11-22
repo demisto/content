@@ -128,6 +128,7 @@ jobs:
 
              else
                echo "Skipped Unit Testing step"
+            fi
       - run:
           name: Verify Base Branch for Contirbution
           when: always
