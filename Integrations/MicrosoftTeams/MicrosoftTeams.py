@@ -1370,6 +1370,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
 def messages() -> Response:
     """
     Main handler for messages sent to the bot
+    :return: Flask response object
     """
     headers: dict = cast(Dict[Any, Any], request.headers)
     if validate_auth_header(headers) is False:
