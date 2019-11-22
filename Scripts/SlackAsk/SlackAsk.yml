@@ -95,7 +95,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: NoReponse
+  defaultValue: NoResponse
   description: Default response in case the question expires.
   isArray: false
   name: defaultResponse
