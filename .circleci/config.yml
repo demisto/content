@@ -121,7 +121,13 @@ jobs:
       - run:
           name: Run Unit Testing and Lint
           when: always
-          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+          command: |
+            if [! -n "${NIGHTLY}" ] ;
+             then
+               SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+
+             else
+               echo "Skipped Unit Testing step"
       - run:
           name: Verify Base Branch for Contirbution
           when: always
