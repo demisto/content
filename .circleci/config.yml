@@ -40,7 +40,6 @@ jobs:
               echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
               python --version
               python3 --version
-              export BANDIT_NO_FAIL=1
       - save_cache:
           paths:
             - venv
