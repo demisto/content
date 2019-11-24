@@ -99,7 +99,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     else:
         output_path = os.path.join(dir_name, output_filename)
 
-    yml_paths = glob.glob(package_path + '*.yml')
+    yml_paths = glob.glob(os.path.join(package_path, '*.yml'))
     yml_path = yml_paths[0]
     for path in yml_paths:
         # The plugin creates a unified YML file for the package.
