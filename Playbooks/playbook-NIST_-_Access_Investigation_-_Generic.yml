@@ -489,7 +489,7 @@ tasks:
     task:
       id: 2d55cd5b-a693-4aad-8ccc-9a647f782104
       version: -1
-      name: Set severity to high, Set Remediation SLA
+      name: Set severity to high and set the Remediation SLA
       description: Set the incident severity to high.
       script: Builtin|||setIncident
       type: regular
@@ -1266,7 +1266,7 @@ tasks:
           accessor: Name
       bcc: {}
       body:
-        simple: An unexpected access attempt was detected in your organization, see
+        simple: An unexpected access attempt was detected in your organization. See
           details in the attached investigation report.
       cc: {}
       htmlBody: {}
@@ -1327,7 +1327,7 @@ tasks:
       version: -1
       name: Generate Investigation Summary Report
       description: |-
-        A script to generate investigation summary report in an automated way
+        A script to generate investigation summary report in an automated way.
         Can be used in post-processing flow as well.
       scriptName: GenerateInvestigationSummaryReport
       type: regular
@@ -1873,7 +1873,7 @@ tasks:
       version: -1
       name: Generate Investigation Summary Report
       description: |-
-        A script to generate investigation summary report in an automated way
+        A script to generate investigation summary report in an automated way.
         Can be used in post-processing flow as well.
       scriptName: GenerateInvestigationSummaryReport
       type: regular
@@ -3313,7 +3313,7 @@ inputs:
 - key: FirstRole
   value: {}
   required: true
-  description: The default role to assign the incident to in the first stage.
+  description: The default role to which to assign the incident in the first stage.
 - key: NotifyEmail
   value:
     simple: mgoldberg@paloaltonetworks.com
@@ -3327,11 +3327,11 @@ inputs:
 - key: SecondRole
   value: {}
   required: false
-  description: The second role to assign the incident to in the escalation stage.
+  description: The second role to which to assign the incident in the escalation stage.
 - key: IPBlacklistMiner
   value: {}
   required: false
-  description: The name of the IP blcacklist miner in MineMeld.
+  description: The name of the IP blacklist miner in MineMeld.
 outputs:
 - contextPath: Account.Email.Address
   description: The email address object associated with the Account
