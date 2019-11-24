@@ -4,9 +4,10 @@ from shutil import copyfile
 from typing import List, Tuple
 
 import pytest
+import yaml
 
 from Tests.scripts.hook_validations.structure import StructureValidator
-from Tests.scripts.hook_validations.tests.json_vaidators_test import TestValidators
+from Tests.scripts.hook_validations.tests.validators_test import TestValidators
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
     INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH, INVALID_WIDGET_PATH, \
@@ -26,29 +27,29 @@ class TestStructureValidator:
         assert validator.is_valid_scheme() is answer, error
 
     INPUTS_VALID_FROM_VERSION_MODIFIED = [
-        (VALID_TEST_PLAYBOOK_PATH, "+ fromversion: sometext", False,
-         "Didn't find the fromversion as updated in yml file"),
-        (
-            INVALID_PLAYBOOK_PATH, "+ \"fromVersion\": \"123", False,
-            "Didn't find the fromVersion as updated in json file"),
-        (INVALID_PLAYBOOK_PATH, "some other text", True, "Didn't find the fromversion as updated in yml file")
+        (VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, False),
+        (INVALID_PLAYBOOK_PATH, VALID_PLAYBOOK_ID_PATH, False),
+        (INVALID_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, True)
     ]
 
-    @pytest.mark.parametrize('path, change_string, answer, error', INPUTS_VALID_FROM_VERSION_MODIFIED)
-    def test_fromversion_update_validation_yml_structure(self, path, change_string, answer, error):
+    @pytest.mark.parametrize('path, old_file_path, answer', INPUTS_VALID_FROM_VERSION_MODIFIED)
+    def test_fromversion_update_validation_yml_structure(self, path, old_file_path, answer):
         validator = StructureValidator(file_path=path)
-        assert validator.is_valid_fromversion_on_modified(change_string=change_string) is answer, error
+        with open(old_file_path) as f:
+            validator.old_file = yaml.safe_load(f)
+            assert validator.is_valid_fromversion_on_modified() is answer
 
     INPUTS_IS_ID_MODIFIED = [
-        (INVALID_PLAYBOOK_PATH, True, "+  id: text", "Didn't find the id as updated in file"),
-        (INVALID_PLAYBOOK_PATH, True, "-  id: text", "Didn't find the id as updated in file"),
-        (INVALID_PLAYBOOK_PATH, False, "some other text", "Found the ID as changed although it is not")
+        (INVALID_PLAYBOOK_PATH, VALID_PLAYBOOK_ID_PATH, True, "Didn't find the id as updated in file"),
+        (VALID_PLAYBOOK_ID_PATH, VALID_PLAYBOOK_ID_PATH, False, "Found the ID as changed although it is not")
     ]
 
-    @pytest.mark.parametrize("path, answer, change_string, error", INPUTS_IS_ID_MODIFIED)
-    def test_is_id_modified(self, path, answer, change_string, error):
-        validator = StructureValidator(file_path=path)
-        assert validator.is_id_modified(change_string=change_string) is answer, error
+    @pytest.mark.parametrize("current_file, old_file, answer, error", INPUTS_IS_ID_MODIFIED)
+    def test_is_id_modified(self, current_file, old_file, answer, error, mocker):
+        validator = StructureValidator(file_path=current_file)
+        with open(old_file) as f:
+            validator.old_file = yaml.safe_load(f)
+            assert validator.is_id_modified() is answer, error
 
     POSITIVE_ERROR = "Didn't find a slash in the ID even though it contains a slash."
     NEGATIVE_ERROR = "found a slash in the ID even though it not contains a slash."
@@ -95,7 +96,7 @@ class TestStructureValidator:
         try:
             copyfile(source, target)
             structure = StructureValidator(target)
-            assert structure.is_valid_file(validate_rn=False) is answer
+            assert structure.is_valid_file() is answer
         finally:
             os.remove(target)
 
@@ -110,7 +111,7 @@ class TestStructureValidator:
         mocker.patch.object(StructureValidator, "is_valid_file_path", return_value=answer)
         structure = StructureValidator(source)
         StructureValidator.scheme_name = scheme_name
-        assert structure.is_valid_file(validate_rn=False) is answer
+        assert structure.is_valid_file() is answer
 
 
 class TestGeneral:
@@ -119,7 +120,8 @@ class TestGeneral:
         TestValidators.DASHBOARD_TARGET,
         TestValidators.WIDGET_TARGET,
         TestValidators.PLAYBOOK_TARGET,
-        TestValidators.INTEGRATION_TARGET
+        TestValidators.INTEGRATION_TARGET,
+        TestValidators.INCIDENT_FIELD_TARGET
     ]
 
     @pytest.mark.parametrize('target', INPUTS)

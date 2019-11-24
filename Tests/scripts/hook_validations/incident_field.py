@@ -10,15 +10,6 @@ class IncidentFieldValidator(BaseValidator):
     And also try to catch possible Backward compatibility breaks due to the performed changes.
     """
 
-    def is_valid_version(self):
-        # type: () -> bool
-        """Nothing to return, no version managed
-
-        Returns:
-            True
-        """
-        return True
-
     def is_backward_compatible(self):
         """Check whether the Incident Field is backward compatible or not, update the _is_valid field to determine that
         TODO
@@ -81,3 +72,7 @@ class IncidentFieldValidator(BaseValidator):
             print_error("The system key must be set to false, please update the file '{}'".format(self.file_path))
 
         return is_valid_flag
+
+    def is_valid_version(self):
+        # type: () -> bool
+        return super(IncidentFieldValidator, self)._is_valid_version()
