@@ -50,7 +50,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Microsoft Graph lets your app get authorized access to a user's Outlook
+description: Microsoft Graph allows Demisto authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail Single User
 name: MicrosoftGraphListener
@@ -58,25 +58,25 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A CSV list of email addresses for the 'to' field.
+      description: A comma separated list of email addresses for the 'to' field.
       isArray: true
       name: to
       required: false
       secret: false
     - default: false
-      description: A CSV list of email addresses for the 'cc' field.
+      description: A comma separated list of email addresses for the 'cc' field.
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
-      description: A CSV list of email addresses for the 'bcc' field.
+      description: A comma separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
       required: false
       secret: false
     - default: false
-      description: Subject for the draft.
+      description: The subject for the draft.
       isArray: false
       name: subject
       required: true
@@ -90,7 +90,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: text
-      description: The type of the draft body
+      description: 'The body type of the email. Can be: "text", or "HTML".'
       isArray: false
       name: body_type
       predefined:
@@ -101,7 +101,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: The flag value that indicates the status for the draft.
+      description: 'The flag value that indicates the status for the draft. Can be: "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -113,7 +113,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: The importance of the draft.
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
       isArray: false
       name: importance
       predefined:
@@ -123,34 +123,34 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional headers in the format: headerName:headerValue.
-        For example: "headerName1:headerValue1,headerName2:headerValue2".'
+      description: 'A comma separated list of additional headers in the format, headerName:headerValue.
+        For example, "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of War Room entry IDs that contain files, and are used
-        to attach files to the draft. For example: attachIDs=15@8,19@8.'
+      description: 'A comma separated list of War Room entry IDs that contain files, which are used
+        to attach files to the draft. For example, attachIDs=15@8,19@8.'
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
-      description: A CSV list of names of attachments to be displayed in the draft.
-        Should be the same number of elements as attachIDs.
+      description: A comma separated list of names of attachments to be displayed in the draft. 
+        Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
-      description: A CSV list of CIDs to embed attachments within the email itself.
+      description: A comma separated list of CIDs to embed attachments within the email itself.
       isArray: true
       name: attach_cids
       required: false
       secret: false
     deprecated: false
-    description: Creates draft message at user mailbox.
+    description: Creates a draft message in a user's mailbox.
     execution: false
     name: msgraph-mail-create-draft
     outputs:
@@ -161,7 +161,7 @@ script:
       description: Is read status of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.Bcc
-      description: Bcc of the draft email.
+      description: The Bcc of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.Body
       description: The body of the draft email.
@@ -170,13 +170,13 @@ script:
       description: The message id of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.SentTime
-      description: Created time of the draft email.
+      description: The created time of the draft email.
       type: Date
     - contextPath: MicrosoftGraph.Draft.Headers
       description: The headers of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.From
-      description: From of the draft email.
+      description: The from of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.Subject
       description: The subject of the draft email.
@@ -188,7 +188,7 @@ script:
       description: The importance status of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.CreatedTime
-      description: The created time of the draft email
+      description: The created time of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.Sender
       description: The sender of the draft email.
@@ -197,54 +197,54 @@ script:
       description: The modified time of the draft email.
       type: Date
     - contextPath: MicrosoftGraph.Draft.IsDraft
-      description: Indicates whether is draft email.
+      description: Indicates whether it is a draft email.
       type: Boolean
     - contextPath: MicrosoftGraph.Draft.ID
-      description: The id of the draft email.
+      description: The ID of the draft email.
       type: String
     - contextPath: MicrosoftGraph.Draft.To
-      description: To recipients of the draft.
+      description: The to recipients of the draft.
       type: String
     - contextPath: MicrosoftGraph.Draft.BodyType
-      description: Body type of the draft email.
+      description: The body type of the draft email.
       type: Unknown
     - contextPath: MicrosoftGraph.Draft.ConversationID
-      description: The conversation id of the draft email.
+      description: The conversation ID of the draft email.
       type: String
   - arguments:
     - default: false
-      description: A CSV list of email addresses for the 'to' field.
+      description: A comma separated list of email addresses for the 'to' field.
       isArray: true
       name: to
       required: false
       secret: false
     - default: false
-      description: A CSV list of email addresses for the 'cc' field.
+      description: A comma separated list of email addresses for the 'cc' field.
       isArray: true
       name: cc
       required: false
       secret: false
     - default: false
-      description: A CSV list of email addresses for the 'bcc' field.
+      description: A comma separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
       required: false
       secret: false
     - default: false
-      description: Subject for the email to send.
+      description: The subject of the email.
       isArray: false
       name: subject
       required: true
       secret: false
     - default: false
-      description: The contents (body) of the email to send.
+      description: The contents (body) of the email.
       isArray: false
       name: body
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The type of the email to send body
+      description: 'The body type of the email. Can be: "text", or "HTML".'
       isArray: false
       name: body_type
       predefined:
@@ -255,7 +255,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: notFlagged
-      description: The flag value that indicates the status for the email to send.
+      description: 'The flag value that indicates the status for the email. Can be: "notFlagged", "complete", or "flagged".'
       isArray: false
       name: flag
       predefined:
@@ -267,7 +267,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: The importance of the email to send.
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
       isArray: false
       name: importance
       predefined:
@@ -277,28 +277,28 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of additional headers in the format: headerName:headerValue.
+      description: 'A comma separated list of additional headers in the format: headerName:headerValue.
         For example: "headerName1:headerValue1,headerName2:headerValue2".'
       isArray: true
       name: headers
       required: false
       secret: false
     - default: false
-      description: 'A CSV list of War Room entry IDs that contain files, and are used
-        to attach files to the email to send. For example: attachIDs=15@8,19@8.'
+      description: 'A comma separated list of War Room entry IDs that contain files, which are used
+        to attach files for the email to send. For example, attachIDs=15@8,19@8.'
       isArray: true
       name: attach_ids
       required: false
       secret: false
     - default: false
-      description: A CSV list of names of attachments to be displayed in the email
-        to send. Should be the same number of elements as attachIDs.
+      description: A comma separated list of names of attachments to be displayed in the email
+        to send. Must be the same number of elements as attachIDs.
       isArray: true
       name: attach_names
       required: false
       secret: false
     - default: false
-      description: A CSV list of CIDs to embed attachments within the email itself.
+      description: A comma separated list of CIDs to embed attachments within the email.
       isArray: true
       name: attach_cids
       required: false
@@ -312,65 +312,65 @@ script:
       description: The email headers.
       type: String
     - contextPath: MicrosoftGraph.Email.body
-      description: The email body.
+      description: The body of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.bodyPreview
-      description: The email body preview.
+      description: The body preview of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.subject
-      description: The email subject.
+      description: The subject of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.flag
-      description: The email flag status
+      description: The flag status of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.importance
-      description: The email importance status.
+      description: The importance status of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.toRecipients
-      description: The email to recipients.
+      description: The to recipients of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.ccRecipients
-      description: The email cc recipients.
+      description: The cc recipients of the email.
       type: String
     - contextPath: MicrosoftGraph.Email.bccRecipients
-      description: The email bcc recipients.
+      description: The bcc recipients of the email.
       type: String
   - arguments:
     - default: false
-      description: The id of the message.
+      description: The ID of the message.
       isArray: false
       name: message_id
       required: true
       secret: false
     - default: false
-      description: The comment of replied message.
+      description: The comment of the replied message.
       isArray: false
       name: comment
       required: true
       secret: false
     - default: false
-      description: A CSV list of email addresses for the 'to' field.
+      description: A comma separated list of email addresses for the 'to' field.
       isArray: true
       name: to
       required: true
       secret: false
     deprecated: false
-    description: Replies to recipients of a message.
+    description: The replies to the recipients of a message.
     execution: false
     name: msgraph-mail-reply-to
   - arguments:
     - default: false
-      description: The id of the draft.
+      description: The ID of the draft email.
       isArray: false
       name: draft_id
       required: true
       secret: false
     deprecated: false
-    description: Sends a draft using Microsoft Graph.
+    description: Sends a draft email using Microsoft Graph.
     execution: false
     name: msgraph-mail-send-draft
   - deprecated: false
-    description: Connectivity test instead of test module button.
+    description: Tests connectivity of the email.
     execution: false
     name: msgraph-mail-test
   dockerimage: demisto/crypto:1.0.0.303
