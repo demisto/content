@@ -927,13 +927,18 @@ class MsGraphClient(BaseClient):
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
+
     # params related to oproxy
-    auth_id = params.get('auth_id')
+    auth_id_and_token_retrieval_url = params.get('auth_id', '').split('@')
+    auth_id = auth_id_and_token_retrieval_url[0]
+    if len(auth_id_and_token_retrieval_url) != 2:
+        token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
+    else:
+        token_retrieval_url = auth_id_and_token_retrieval_url[1]
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
     refresh_token = demisto.getIntegrationContext().get('current_refresh_token') or params.get('refresh_token', '')
     enc_key = params.get('enc_key')
-    token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # disable-secrets-detection
     app_name = 'ms-graph-mail-listener'
 
     # params related to common instance configuration
