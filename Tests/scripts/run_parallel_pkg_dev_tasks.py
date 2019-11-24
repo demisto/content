@@ -1,15 +1,77 @@
 #!/usr/bin/env python3
+import argparse
+import json
 import os
 import sys
 import subprocess
 import concurrent.futures
 from typing import List, Optional, Tuple
+
+from slackclient import SlackClient
 from pkg_dev_test_tasks import get_dev_requirements
+import re
+
+DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/07/Demisto-Icon-Dark.png'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
-from Tests.test_utils import print_color, LOG_COLORS  # noqa: E402
+from Tests.test_utils import print_color, LOG_COLORS, run_command  # noqa: E402
+
+
+def options_handler():
+    parser = argparse.ArgumentParser(description='Parser for slack_notifier args')
+    parser.add_argument('-n', '--nightly', type=str2bool, help='is nightly build?', required=True)
+    parser.add_argument('-u', '--url', help='The url of the current build', required=True)
+    parser.add_argument('-b', '--buildNumber', help='The build number', required=True)
+    parser.add_argument('-s', '--slack', help='The token for slack', required=True)
+    parser.add_argument('-c', '--circleci', help='The token for circleci', required=True)
+    parser.add_argument('-f', '--env_results_file_name', help='The env results file containing the dns address', required=True)
+    options = parser.parse_args()
+
+    return options
+
+
+def get_attachments(build_url, env_results_file_name):
+
+    content_team_fields, content_fields, failed_tests = get_fields()
+    color = 'good' if not failed_tests else 'danger'
+    title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
+
+    with open(env_results_file_name, 'r') as env_results_file_content:
+        env_results = json.load(env_results_file_content)
+        instance_dns = env_results[0]['InstanceDNS']
+
+    content_team_attachment = [{
+        'fallback': title,
+        'color': color,
+        'title': title,
+        'title_link': build_url,
+        "author_name": "Demisto AWS Machine",
+        "author_link": "https://{0}".format(instance_dns),
+        "author_icon": DEMISTO_GREY_ICON,
+        'fields': content_team_fields
+    }]
+
+    return content_team_attachment
+
+
+def get_fields():
+    print('Extracting failed_unittests')
+    with open('./Tests/failed_unittests.txt', 'rw') as failed_unittests_file:
+        failed_unittests = failed_unittests_file.readlines()
+        failed_unittests = [line.strip('\n') for line in failed_unittests]
+
+    content_team_fields = []
+    if failed_unittests:
+        field_failed_unittests = {
+            "title": "Failed tests - ({})".format(len(failed_unittests)),
+            "value": '\n'.join(failed_unittests),
+            "short": False
+        }
+        content_team_fields.append(field_failed_unittests)
+
+    return content_team_fields, failed_unittests
 
 
 def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.CompletedProcess, str]:
@@ -47,9 +109,25 @@ def handle_run_res(res: Tuple[subprocess.CompletedProcess, str], fail_pkgs: list
     print(res[0].stderr)
 
 
-def create_result_file(failed_unittest):
-    with open("./Tests/failed_unittests.txt", "w") as failed_tests_file:
-        failed_tests_file.write('\n'.join(failed_unittest))
+def slack_notifier(build_url, slack_token, env_results_file_name):
+    branches = run_command("git branch")
+    branch_name_reg = re.search("\* (.*)", branches)
+    branch_name = branch_name_reg.group(1)
+
+    if branch_name == 'master':
+        print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
+        print("Extracting build status")
+        content_team_attachments = get_attachments(build_url, env_results_file_name)
+
+        print("Sending Slack messages to #content-team")
+        sc = SlackClient(slack_token)
+        sc.api_call(
+            "chat.postMessage",
+            channel="dmst-test-slack",
+            username="Content CircleCI",
+            as_user="False",
+            attachments=content_team_attachments
+        )
 
 
 def main():
@@ -87,7 +165,6 @@ def main():
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
     if fail_pkgs:
-        create_result_file(fail_pkgs)
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
@@ -97,6 +174,9 @@ def main():
         print_color("\n******* No changed packages found *******\n", LOG_COLORS.YELLOW)
     if fail_pkgs:
         sys.exit(1)
+
+    options = options_handler()
+    slack_notifier(options.url, options.slack, options.env_results_file_name)
 
 
 if __name__ == "__main__":
