@@ -550,6 +550,24 @@ def test_logger_write(mocker):
     assert '<XX_REPLACED>' in args[0]
 
 
+def test_logger_init_key_name(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'key': {'password': 'my_password'},
+        'secret': 'my_secret'
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password and my_secret")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert 'my_secret' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
 def test_logger_replace_strs(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'my_apikey',
@@ -801,6 +819,15 @@ class TestBaseClient:
         requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
         with raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
+
+    def test_http_request_not_ok_with_json_parsing(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException) as exception:
+            self.client._http_request('get', 'event')
+        message = str(exception.value)
+        response_json_error = json.loads(message.split('\n')[1])
+        assert response_json_error == self.text
 
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException

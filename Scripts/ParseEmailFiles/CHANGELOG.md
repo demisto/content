@@ -1,6 +1,9 @@
 ## [Unreleased]
 
 
+## [19.11.0] - 2019-11-12
+-
+
 ## [19.10.0] - 2019-10-03
 Improved handling for smime signed file attachments in MSG emails.
 

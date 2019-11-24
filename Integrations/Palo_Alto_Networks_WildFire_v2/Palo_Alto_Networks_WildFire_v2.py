@@ -18,6 +18,11 @@ FILE_TYPE_SUPPRESS_ERROR = demisto.getParam('suppress_file_type_error')
 DEFAULT_HEADERS = {'Content-Type': 'application/x-www-form-urlencoded'}
 MULTIPART_HEADERS = {'Content-Type': "multipart/form-data; boundary=upload_boundry"}
 
+if URL and not URL.endswith('/publicapi'):
+    if URL[-1] != '/':
+        URL += '/'
+    URL += 'publicapi'
+
 URL_DICT = {
     'verdict': '/get/verdict',
     'verdicts': '/get/verdicts',
@@ -282,14 +287,7 @@ def hash_list_to_file(hash_list):
 
 
 def test_module():
-    test_url = URL + URL_DICT["report"]
-    params = {
-        'apikey': TOKEN,
-        'format': 'xml',
-        'hash': '7f638f13d0797ef9b1a393808dc93b94'  # guardrails-disable-line
-    }
-    json_res = http_request(test_url, 'POST', headers=DEFAULT_HEADERS, params=params)
-    if json_res:
+    if wildfire_upload_url('https://www.demisto.com')[1]:
         demisto.results('ok')
 
 
@@ -415,7 +413,7 @@ def wildfire_get_verdict_command():
         dbot_score = create_dbot_score_from_verdict(pretty_verdict)
         ec = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdict,
-            "DBotScore(val.Indicator == obj.Indicator)": dbot_score
+            "DBotScore": dbot_score
         }
 
         demisto.results({
@@ -470,7 +468,7 @@ def wildfire_get_verdicts_command():
         dbot_score = create_dbot_score_from_verdicts(pretty_verdicts)
         ec = {
             "WildFire.Verdicts(val.SHA256 == obj.SHA256 || val.MD5 == obj.MD5)": pretty_verdicts,
-            "DBotScore(val.Indicator == obj.Indicator)": dbot_score
+            "DBotScore": dbot_score
         }
 
         demisto.results({

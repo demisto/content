@@ -1,28 +1,30 @@
 import io
 import os
-import re
+import sys
 import math
 import json
 import string
+import argparse
+import PyPDF2
 
-try:
-    import PyPDF2
-except ImportError:
-    import pip._internal as pip
-    pip.main(['install', 'PyPDF2'])
-    import PyPDF2
-
-from Tests.test_utils import run_command, print_error
+from bs4 import BeautifulSoup
+from Tests.scripts.constants import *
+from Tests.test_utils import run_command, print_error, str2bool, print_color, LOG_COLORS, checked_type
 
 # secrets settings
 # Entropy score is determined by shanon's entropy algorithm, most English words will score between 1.5 and 3.5
-ENTROPY_THRESHOLD = 4.2
-
-SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile'}
-ACCEPTED_FILE_STATUSES = ['M', 'A', "R099"]
-TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html'}
+ENTROPY_THRESHOLD = 4.0
+ACCEPTED_FILE_STATUSES = ['m', 'a']
+SKIPPED_FILES = {'secrets_white_list', 'id_set.json', 'conf.json', 'Pipfile', 'secrets-ignore', 'ami_builds.json',
+                 'secrets_test.py', 'secrets.py'}
+TEXT_FILE_TYPES = {'.yml', '.py', '.json', '.md', '.txt', '.sh', '.ini', '.eml', '', '.csv', '.js', '.pdf', '.html',
+                   '.ps1'}
 SKIP_FILE_TYPE_ENTROPY_CHECKS = {'.eml'}
 SKIP_DEMISTO_TYPE_ENTROPY_CHECKS = {'playbook-'}
+PACKS_PATH = './Packs'
+PACKS_WHITELIST_FILE_NAME = '.secrets-ignore'
+WHITELIST_PATH = './Tests/secrets_white_list.json'
+YML_FILE_EXTENSION = '.yml'
 
 # disable-secrets-detection-start
 # secrets
@@ -55,26 +57,23 @@ UUID_REGEX = r'([\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{8,12})'
 
 def get_secrets(branch_name, is_circle):
     secrets_found = {}
-    secrets_found_string = ''
+    # make sure not in middle of merge
     if not run_command('git rev-parse -q --verify MERGE_HEAD'):
         secrets_file_paths = get_all_diff_text_files(branch_name, is_circle)
         secrets_found = search_potential_secrets(secrets_file_paths)
         if secrets_found:
-            secrets_found_string += 'Secrets were found in the following files:\n'
+            secrets_found_string = 'Secrets were found in the following files:\n'
             for file_name in secrets_found:
                 secrets_found_string += ('\nFile Name: ' + file_name)
                 secrets_found_string += json.dumps(secrets_found[file_name], indent=4)
             if not is_circle:
-                secrets_found_string += 'Remove or whitelist secrets in order to proceed, then re-commit\n'
+                secrets_found_string += '\nRemove or whitelist secrets in order to proceed, then re-commit\n'
             else:
                 secrets_found_string += 'The secrets were exposed in public repository,' \
                                         ' remove the files asap and report it.\n'
-            secrets_found_string += 'For more information about whitelisting please visit: ' \
+            secrets_found_string += 'For more information about whitelisting visit: ' \
                                     'https://github.com/demisto/internal-content/tree/master/documentation/secrets'
-
-    if secrets_found:
-        print_error(secrets_found_string)
-
+            print_error(secrets_found_string)
     return secrets_found
 
 
@@ -85,16 +84,9 @@ def get_all_diff_text_files(branch_name, is_circle):
     :param is_circle: boolean to check if being ran from circle
     :return: list: list of text files
     """
-    if is_circle:
-        branch_changed_files_string = \
-            run_command("git diff --name-status origin/master...{}".format(branch_name))
-        text_files_list = get_diff_text_files(branch_changed_files_string)
-
-    else:
-        local_changed_files_string = run_command("git diff --name-status --no-merges HEAD")
-        text_files_list = get_diff_text_files(local_changed_files_string)
-
-    return text_files_list
+    changed_files_string = run_command("git diff --name-status origin/master...{}".format(branch_name)) if is_circle \
+        else run_command("git diff --name-status --no-merges HEAD")
+    return get_diff_text_files(changed_files_string)
 
 
 def get_diff_text_files(files_string):
@@ -109,23 +101,15 @@ def get_diff_text_files(files_string):
         file_data = file_name.split()
         if not file_data:
             continue
-
         file_status = file_data[0]
-        if file_status.upper() == "R099":
-            # if filename renamed
-            # sometimes the R comes with numbers R099,
-            # the R status file usually will look like:
-            # R099 TestsPlaybooks/foo.yml TestPlaybooks/playbook-foo.yml
-            # that is why we set index 2 to file_path - the second index is the updated file name
+        if 'r' in file_status.lower():
             file_path = file_data[2]
         else:
             file_path = file_data[1]
-
         # only modified/added file, text readable, exclude white_list file
-        if file_status.upper() in ACCEPTED_FILE_STATUSES and is_text_file(file_path):
+        if (file_status.lower() in ACCEPTED_FILE_STATUSES or 'r' in file_status.lower()) and is_text_file(file_path):
             if not any(skipped_file in file_path for skipped_file in SKIPPED_FILES):
                 text_files_list.add(file_path)
-
     return text_files_list
 
 
@@ -136,42 +120,45 @@ def is_text_file(file_path):
     return False
 
 
-def search_potential_secrets(secrets_file_paths):
+def search_potential_secrets(secrets_file_paths: list):
     """Returns potential secrets(sensitive data) found in committed and added files
     :param secrets_file_paths: paths of files that are being commited to git repo
     :return: dictionary(filename: (list)secrets) of strings sorted by file name for secrets found in files
     """
     secrets_found = {}
-
-    # Get generic white list set
-    conf_secrets_white_list, ioc_white_list, files_white_list = get_white_list()
-
     for file_path in secrets_file_paths:
+        # Get if file path in pack and pack name
+        is_pack = is_file_path_in_pack(file_path)
+        pack_name = get_pack_name(file_path)
+        # Get generic/ioc/files white list sets based on if pack or not
+        secrets_white_list, ioc_white_list, files_white_list = get_white_listed_items(is_pack, pack_name)
+        # Skip white listed files
         if file_path in files_white_list:
             print("Skipping secrets detection for file: {} as it is white listed".format(file_path))
             continue
+        # Init vars for current loop
         file_name = os.path.basename(file_path)
         high_entropy_strings = []
         secrets_found_with_regex = []
-        yml_file_contents = None
-        file_path_temp, file_extension = os.path.splitext(file_path)
-        skip_secrets = False
-
-        secrets_white_list = set(conf_secrets_white_list)
+        _, file_extension = os.path.splitext(file_path)
+        skip_secrets = {'skip_once': False, 'skip_multi': False}
         # get file contents
         file_contents = get_file_contents(file_path, file_extension)
-        # if py/js file, search for yml in order to retrieve temp white list
-        if file_extension in {'.py', '.js'}:
-            yml_file_contents = retrieve_related_yml(file_path_temp)
+        # in packs regard all items as regex as well, reset pack's whitelist in order to avoid repetition later
+        if is_pack:
+            file_contents = remove_white_list_regex(file_contents, secrets_white_list)
+            secrets_white_list = set()
+        yml_file_contents = get_related_yml_contents(file_path)
         # Add all context output paths keywords to whitelist temporary
-        if file_extension == '.yml' or yml_file_contents:
+        if file_extension == YML_FILE_EXTENSION or yml_file_contents:
             temp_white_list = create_temp_white_list(yml_file_contents if yml_file_contents else file_contents)
             secrets_white_list = secrets_white_list.union(temp_white_list)
-        # Search by lines after strings with high entropy as possibly suspicious
+        # Search by lines after strings with high entropy / IoCs regex as possibly suspicious
         for line in file_contents.split('\n'):
-            # if detected disable-secrets comment, skip the line
+            # if detected disable-secrets comments, skip the line/s
             skip_secrets = is_secrets_disabled(line, skip_secrets)
-            if skip_secrets:
+            if skip_secrets['skip_once'] or skip_secrets['skip_multi']:
+                skip_secrets['skip_once'] = False
                 continue
             # REGEX scanning for IOCs and false positive groups
             regex_secrets, false_positives = regex_for_secrets(line)
@@ -201,6 +188,12 @@ def search_potential_secrets(secrets_file_paths):
     return secrets_found
 
 
+def remove_white_list_regex(file_contents, secrets_white_list):
+    for regex in secrets_white_list:
+        file_contents = re.sub(regex, '', file_contents)
+    return file_contents
+
+
 def create_temp_white_list(file_contents):
     temp_white_list = set()
     context_paths = re.findall(r'contextPath: (\S+\.+\S+)', file_contents)
@@ -212,9 +205,18 @@ def create_temp_white_list(file_contents):
     return temp_white_list
 
 
-def retrieve_related_yml(file_path_temp):
+def get_related_yml_contents(file_path):
+    # if script or readme file, search for yml in order to retrieve temp white list
+    yml_file_contents = ''
+    # Validate if it is integration documentation file or supported file extension
+    if checked_type(file_path, REQUIRED_YML_FILE_TYPES):
+        yml_file_contents = retrieve_related_yml(os.path.dirname(file_path))
+    return yml_file_contents
+
+
+def retrieve_related_yml(integration_path):
     matching_yml_file_contents = None
-    yml_file = file_path_temp + '.yml'
+    yml_file = os.path.join(integration_path, os.path.basename(integration_path) + '.yml')
     if os.path.exists(yml_file):
         with io.open('./' + yml_file, mode="r", encoding="utf-8") as matching_yml_file:
             matching_yml_file_contents = matching_yml_file.read()
@@ -276,22 +278,29 @@ def calculate_shannon_entropy(data):
         return 0
     entropy = 0
     # each unicode code representation of all characters which are considered printable
-    for x in (ord(c) for c in string.printable):
+    for char in (ord(c) for c in string.printable):
         # probability of event X
-        px = float(data.count(chr(x))) / len(data)
-        if px > 0:
+        p_x = float(data.count(chr(char))) / len(data)
+        if p_x > 0:
             # the information in every possible news, in bits
-            entropy += - px * math.log(px, 2)
+            entropy += - p_x * math.log(p_x, 2)
     return entropy
 
 
-def get_white_list():
-    with io.open('./Tests/secrets_white_list.json', mode="r", encoding="utf-8") as secrets_white_list_file:
-        final_white_list = []
-        ioc_white_list = []
-        files_while_list = []
+def get_white_listed_items(is_pack, pack_name):
+    whitelist_path = os.path.join(PACKS_PATH, pack_name, PACKS_WHITELIST_FILE_NAME) if is_pack else WHITELIST_PATH
+    final_white_list, ioc_white_list, files_while_list = get_packs_white_list(whitelist_path) if is_pack else\
+        get_generic_white_list(whitelist_path)
+    return set(final_white_list), set(ioc_white_list), set(files_while_list)
+
+
+def get_generic_white_list(whitelist_path):
+    final_white_list = []
+    ioc_white_list = []
+    files_while_list = []
+    with io.open(whitelist_path, mode="r", encoding="utf-8") as secrets_white_list_file:
         secrets_white_list_file = json.load(secrets_white_list_file)
-        for name, white_list in secrets_white_list_file.iteritems():
+        for name, white_list in secrets_white_list_file.items():
             if name == 'iocs':
                 for sublist in white_list:
                     ioc_white_list += [white_item for white_item in white_list[sublist] if len(white_item) > 4]
@@ -301,19 +310,31 @@ def get_white_list():
             else:
                 final_white_list += [white_item for white_item in white_list if len(white_item) > 4]
 
-        return set(final_white_list), set(ioc_white_list), set(files_while_list)
+        return final_white_list, ioc_white_list, files_while_list
+
+
+def get_packs_white_list(whitelist_path):
+    final_white_list = []
+    if os.path.isfile(whitelist_path):
+        with io.open(whitelist_path, mode="r", encoding="utf-8") as secrets_white_list_file:
+            final_white_list = secrets_white_list_file.read().split('\n')
+    return final_white_list, [], []
 
 
 def get_file_contents(file_path, file_extension):
     try:
-        # if pdf file, parse text
+        # if pdf or README.md file, parse text
+        integration_readme = re.match(pattern=INTEGRATION_README_REGEX,
+                                      string=file_path,
+                                      flags=re.IGNORECASE)
         if file_extension == '.pdf':
             file_contents = extract_text_from_pdf(file_path)
+        elif file_extension == '.md' and integration_readme:
+            file_contents = extract_text_from_md_html(file_path)
         else:
             # Open each file, read its contents in UTF-8 encoding to avoid unicode characters
             with io.open('./' + file_path, mode="r", encoding="utf-8", errors='ignore') as commited_file:
                 file_contents = commited_file.read()
-
         file_contents = ignore_base64(file_contents)
         return file_contents
     except Exception as ex:
@@ -339,8 +360,19 @@ def extract_text_from_pdf(file_path):
     return file_contents
 
 
+def extract_text_from_md_html(file_path):
+    try:
+        with open(file_path, mode='r') as html_page:
+            soup = BeautifulSoup(html_page, features="html.parser")
+            file_contents = soup.text
+            return file_contents
+    except Exception as ex:
+        print_error('Unable to parse the following file {} due to error {}'.format(file_path, ex))
+        raise
+
+
 def remove_false_positives(line):
-    false_positive = re.search('([^\s]*[(\[{].*[)\]}][^\s]*)', line)
+    false_positive = re.search(r'([^\s]*[(\[{].*[)\]}][^\s]*)', line)
     if false_positive:
         false_positive = false_positive.group(1)
         line = line.replace(false_positive, '')
@@ -348,15 +380,12 @@ def remove_false_positives(line):
 
 
 def is_secrets_disabled(line, skip_secrets):
-    if bool(re.findall(r'(disable-secrets-detection)', line)):
-        skip_secrets = True
-    elif bool(re.findall(r'(disable-secrets-detection-start)', line)):
-        skip_secrets = True
+    if bool(re.findall(r'(disable-secrets-detection-start)', line)):
+        skip_secrets['skip_multi'] = True
     elif bool(re.findall(r'(disable-secrets-detection-end)', line)):
-        skip_secrets = False
-    elif not skip_secrets:
-        skip_secrets = False
-
+        skip_secrets['skip_multi'] = False
+    elif bool(re.findall(r'(disable-secrets-detection)', line)):
+        skip_secrets['skip_once'] = True
     return skip_secrets
 
 
@@ -367,3 +396,44 @@ def ignore_base64(file_contents):
         if len(base64_string) > 500:
             file_contents = file_contents.replace(base64_string, '')
     return file_contents
+
+
+def is_file_path_in_pack(file_path):
+    return bool(re.findall(PACKS_DIR_REGEX, file_path))
+
+
+def get_pack_name(file_path):
+    match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
+    return match.group(1) if match else None
+
+
+def get_branch_name():
+    branches = run_command('git branch')
+    branch_name_reg = re.search(r'\* (.*)', branches)
+    branch_name = branch_name_reg.group(1)
+    return branch_name
+
+
+def parse_script_arguments():
+    parser = argparse.ArgumentParser(description='Utility CircleCI usage')
+    parser.add_argument('-c', '--circle', type=str2bool, default=False, help='Is CircleCi or not')
+    options = parser.parse_args()
+    return options
+
+
+def main():
+    options = parse_script_arguments()
+    is_circle = options.circle
+    branch_name = get_branch_name()
+    is_forked = re.match(EXTERNAL_PR_REGEX, branch_name) is not None
+    if not is_forked:
+        secrets_found = get_secrets(branch_name, is_circle)
+        if secrets_found:
+            sys.exit(1)
+        else:
+            print_color('Finished validating secrets, no secrets were found.', LOG_COLORS.GREEN)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

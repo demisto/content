@@ -44,8 +44,8 @@ def get_attachments(build_url, env_results_file_name):
     color = 'good' if not failed_tests else 'danger'
     title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
 
-    with open(env_results_file_name, 'r') as env_results_file_name:
-        env_results = json.load(env_results_file_name)
+    with open(env_results_file_name, 'r') as env_results_file_content:
+        env_results = json.load(env_results_file_content)
         instance_dns = env_results[0]['InstanceDNS']
 
     content_team_attachment = [{
@@ -64,7 +64,7 @@ def get_attachments(build_url, env_results_file_name):
         'color': color,
         'title': title,
         "author_name": "Demisto AWS Machine",
-        "author_link": "https://{instance_dns}".format(instance_dns),
+        "author_link": "https://{0}".format(instance_dns),
         "author_icon": DEMISTO_GREY_ICON,
         'title_link': build_url,
         'fields': content_fields

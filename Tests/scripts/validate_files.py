@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 This script is used to validate the files in Content repository. Specifically for each file:
 1) Proper prefix
@@ -19,19 +20,23 @@ import argparse
 import subprocess
 import yaml
 
-from Tests.scripts.constants import *
-from Tests.scripts.hook_validations.id import IDSetValidator
-from Tests.scripts.hook_validations.secrets import get_secrets
-from Tests.scripts.hook_validations.image import ImageValidator
-from Tests.scripts.update_id_set import get_script_package_data
-from Tests.scripts.hook_validations.script import ScriptValidator
-from Tests.scripts.hook_validations.conf_json import ConfJsonValidator
-from Tests.scripts.hook_validations.structure import StructureValidator
-from Tests.scripts.hook_validations.integration import IntegrationValidator
-from Tests.scripts.hook_validations.description import DescriptionValidator
-from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+
+from Tests.scripts.constants import *  # noqa: E402
+from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
+from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
+from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
+from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
+from Tests.scripts.hook_validations.conf_json import ConfJsonValidator  # noqa: E402
+from Tests.scripts.hook_validations.structure import StructureValidator  # noqa: E402
+from Tests.scripts.hook_validations.integration import IntegrationValidator  # noqa: E402
+from Tests.scripts.hook_validations.description import DescriptionValidator  # noqa: E402
+from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator  # noqa: E402
+from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: E402
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    get_yaml, filter_packagify_changes, collect_ids, str2bool
+    get_yaml, filter_packagify_changes, collect_ids, str2bool  # noqa: E402
 
 
 class FilesValidator(object):
@@ -58,17 +63,13 @@ class FilesValidator(object):
     @staticmethod
     def is_py_script_or_integration(file_path):
         file_yml = get_yaml(file_path)
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('script', {}).get('type', 'javascript') != 'python':
-                return False
 
-            return True
+        if checked_type(file_path, [INTEGRATION_REGEX, INTEGRATION_YML_REGEX, BETA_INTEGRATION_REGEX,
+                                    BETA_INTEGRATION_YML_REGEX]):
+            return file_yml.get('script', {}).get('type', '') == 'python'
 
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', 'javascript') != 'python':
-                return False
-
-            return True
+        if checked_type(file_path, [SCRIPT_YML_REGEX, SCRIPT_REGEX, SCRIPT_PY_REGEX]):
+            return file_yml.get('type', '') == 'python'
 
         return False
 
@@ -123,8 +124,10 @@ class FilesValidator(object):
                     modified_files_list.add(file_path)
                 else:
                     modified_files_list.add((file_data[1], file_data[2]))
+
             elif checked_type(file_path, [SCHEMA_REGEX]):
                 modified_files_list.add(file_path)
+
             elif file_status.lower() not in KNOWN_FILE_STATUSES:
                 print_error('{} file status is an unknown known one, please check. File status was: {}'.format(
                     file_path, file_status))
@@ -204,10 +207,17 @@ class FilesValidator(object):
         """
         for file_path in modified_files:
             old_file_path = None
+
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
 
+            is_python_file = FilesValidator.is_py_script_or_integration(file_path)
+
             print('Validating {}'.format(file_path))
+            if not checked_type(file_path):
+                print_warning('- Skipping validation of non-content entity file.')
+                continue
+
             structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
                                                      is_renamed=old_file_path is not None)
             if not structure_validator.is_file_valid():
@@ -234,6 +244,11 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True, is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -242,6 +257,10 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True, is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
                 script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
@@ -249,6 +268,12 @@ class FilesValidator(object):
                     self._is_valid = False
                 if not script_validator.is_valid_script():
                     self._is_valid = False
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
@@ -258,6 +283,12 @@ class FilesValidator(object):
                 script_validator = ScriptValidator(yml_path, old_file_path=old_file_path, old_git_branch=old_branch)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
@@ -281,6 +312,7 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
+            is_python_file = FilesValidator.is_py_script_or_integration(file_path)
             print('Validating {}'.format(file_path))
 
             structure_validator = StructureValidator(file_path, is_added_file=True)
@@ -313,6 +345,22 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_integration():
                     self._is_valid = False
 
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
                 description_validator = DescriptionValidator(file_path)
@@ -322,6 +370,13 @@ class FilesValidator(object):
                 integration_validator = IntegrationValidator(file_path)
                 if not integration_validator.is_valid_beta_integration(is_new=True):
                     self._is_valid = False
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
@@ -331,16 +386,6 @@ class FilesValidator(object):
                 incident_field_validator = IncidentFieldValidator(file_path)
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
-
-    def validate_no_secrets_found(self, branch_name):
-        """Check if any secrets are found in your change set.
-
-        Args:
-            branch_name (string): The name of the branch you are working on.
-        """
-        secrets_found = get_secrets(branch_name, self.is_circle)
-        if secrets_found:
-            self._is_valid = False
 
     def validate_no_old_format(self, old_format_files):
         """ Validate there are no files in the old format(unified yml file for the code and configuration).
@@ -376,7 +421,6 @@ class FilesValidator(object):
         if schema_changed:
             self.validate_all_files()
         else:
-            self.validate_no_secrets_found(branch_name)
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
@@ -427,7 +471,7 @@ class FilesValidator(object):
             self.validate_committed_files(branch_name, is_backward_check=is_backward_check)
             if not prev_ver:
                 # validate against master if no version was provided
-                prev_ver = 'master'
+                prev_ver = 'origin/master'
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)
         else:
             self.validate_against_previous_version(branch_name, prev_ver, no_error=True)

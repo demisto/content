@@ -658,16 +658,17 @@ class IntegrationLogger(object):
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
             # add common params
-            if isinstance(demisto.getParam('credentials'), dict) and demisto.getParam('credentials').get('password'):
-                pswrd = self.encode(demisto.getParam('credentials').get('password'))
-                self.add_replace_strs(pswrd, b64_encode(pswrd))
-            sensitive_params = ('key', 'private', 'password', 'secret', 'token')
+            sensitive_params = ('key', 'private', 'password', 'secret', 'token', 'credentials')
             if demisto.params():
                 for (k, v) in demisto.params().items():
                     k_lower = k.lower()
                     for p in sensitive_params:
-                        if p in k_lower and v:
-                            self.add_replace_strs(v, b64_encode(v))
+                        if p in k_lower:
+                            if isinstance(v, STRING_OBJ_TYPES):
+                                self.add_replace_strs(v, b64_encode(v))
+                            if isinstance(v, dict) and v.get('password'):  # credentials object case
+                                pswrd = v.get('password')
+                                self.add_replace_strs(pswrd, b64_encode(pswrd))
 
     def encode(self, message):
         try:
@@ -2370,6 +2371,7 @@ if 'requests' in sys.modules:
             self._ok_codes = ok_codes
             self._headers = headers
             self._auth = auth
+            self._session = requests.Session()
             if proxy:
                 self._proxies = handle_proxy()
             else:
@@ -2437,7 +2439,7 @@ if 'requests' in sys.modules:
                 headers = headers if headers else self._headers
                 auth = auth if auth else self._auth
                 # Execute
-                res = requests.request(
+                res = self._session.request(
                     method,
                     address,
                     verify=self._verify,
@@ -2458,7 +2460,7 @@ if 'requests' in sys.modules:
                     try:
                         # Try to parse json error response
                         error_entry = res.json()
-                        err_msg += '\n{}'.format(error_entry)
+                        err_msg += '\n{}'.format(json.dumps(error_entry))
                         raise DemistoException(err_msg)
                     except ValueError as exception:
                         raise DemistoException(err_msg, exception)
