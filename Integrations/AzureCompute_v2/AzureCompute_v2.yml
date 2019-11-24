@@ -442,7 +442,7 @@ script:
     - contextPath: Azure.Subscription.State
       description: The state of the subscription.
       type: String
-  dockerimage: demisto/crypto:1.0.0.3008
+  dockerimage: demisto/crypto:1.0.0.4187
   isfetch: false
   longRunning: false
   longRunningPort: false
