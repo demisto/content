@@ -48,6 +48,42 @@ MAX_FILE_NAME = 85
 LONG_FILE_NAMES = []
 
 
+def get_child_directories(directory):
+    '''Return a list of paths of immediate child directories of the 'directory' argument'''
+    child_directories = [
+        os.path.join(directory, path) for
+        path in os.listdir(directory) if os.path.isdir(os.path.join(directory, path))
+    ]
+    return child_directories
+
+
+def create_unifieds_and_copy(package_dir, dest_dir=BUNDLE_POST, skip_dest_dir=BUNDLE_TEST):
+    '''
+    For directories that have packages, aka subdirectories for each integration/script
+    e.g. "Integrations", "Beta_Integrations", "Scripts". Creates a unified yml and writes
+    it to the dest_dir
+
+    Arguments:
+        package_dir: (str)
+            Path to directory in which there are package subdirectories. e.g. "Integrations",
+            "Beta_Integrations", "Scripts"
+        dest_dir: (str)
+            Path to destination directory to which the unified yml for a package should be written
+        skip_dest_dir: (str)
+            Path to the directory to which the unified yml for a package should be written in the
+            case the package is part of the skipped list
+    '''
+    scanned_packages = glob.glob(os.path.join(package_dir, '*/'))
+    for package in scanned_packages:
+        if any(package_to_skip in package for package_to_skip in PACKAGES_TO_SKIP):
+            # there are some packages that we don't want to include in the content zip
+            # for example HelloWorld integration
+            merge_script_package_to_yml(package, package_dir, BUNDLE_TEST)
+            print('skipping {}'.format(package))
+        else:
+            merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
+
+
 def add_tools_to_bundle(bundle):
     for directory in glob.glob(os.path.join('Tools', '*')):
         zipf = zipfile.ZipFile(os.path.join(bundle, f'tools-{os.path.basename(directory)}.zip'), 'w',
