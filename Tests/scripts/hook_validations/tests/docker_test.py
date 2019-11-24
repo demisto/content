@@ -57,6 +57,7 @@ def test_get_docker_image_latest_tag(image):
     assert int(tag.split('.')[3]) >= 2728
 
 
+# disable-secrets-detection-start
 def test_get_docker_image_from_yml():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
     docker_image = DockerImageValidator.get_docker_image_from_yml(
@@ -65,6 +66,7 @@ def test_get_docker_image_from_yml():
     docker_image = DockerImageValidator.get_docker_image_from_yml(
         get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake-script.yml"), is_integration=False)
     assert docker_image == "demisto/stix2:1.0.0.204"
+# disable-secrets-detection-end
 
 
 def test_lexical_find_latest_tag():
