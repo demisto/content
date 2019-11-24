@@ -1,5 +1,6 @@
 from mock import patch
 import pytest
+from Tests.test_utils import get_yaml
 
 RETURN_ERROR_TARGET = 'GetDockerImageLatestTag.return_error'
 
@@ -54,6 +55,16 @@ def test_get_docker_image_latest_tag(image):
     tag = DockerImageValidator.get_docker_image_latest_tag('demisto/' + image)
     # current latest tag is 2.7.16.2728 or 3.7.2.2728 disable-secrets-detection
     assert int(tag.split('.')[3]) >= 2728
+
+
+def test_get_docker_image_from_yml():
+    from Tests.scripts.hook_validations.docker import DockerImageValidator
+    docker_image = DockerImageValidator.get_docker_image_from_yml(
+        get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml"), is_integration=True)
+    assert docker_image == "demisto/pyjwt:1.0"
+    docker_image = DockerImageValidator.get_docker_image_from_yml(
+        get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake-script.yml"), is_integration=False)
+    assert docker_image == "demisto/stix2:1.0.0.204"
 
 
 def test_lexical_find_latest_tag():
