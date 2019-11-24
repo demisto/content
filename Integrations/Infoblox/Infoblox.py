@@ -281,6 +281,16 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
+    def delete_rpz_rule(self, reference_id) -> Dict:
+        """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+        Args:
+            reference_id: Rule reference ID
+        Returns:
+            Response JSON
+        """
+
+        suffix = reference_id
+        return self._http_request('DELETE', suffix)
 
 ''' HELPER FUNCTIONS '''
 
@@ -952,6 +962,22 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     }
     human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
     return human_readable, context, raw_response
+
+
+def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Unlocks a vault by vault ID.
+    Args:
+        client: Client object
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs
+    """
+    reference_id = args.get('reference_id')
+    raw_response = client.delete_rpz_rule(reference_id)
+    rule_reference_id = raw_response.get('result')
+    title = f'{INTEGRATION_NAME} - Rule with id: {rule_reference_id} was deleted'
+    return title, {}, raw_response
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
