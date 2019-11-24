@@ -1,2 +1,2 @@
 ## [Unreleased]
-- Bug Fix: chooses the correct Beta module of the integration
+Fixed an issue in playbooks with choosing the correct Beta module.
