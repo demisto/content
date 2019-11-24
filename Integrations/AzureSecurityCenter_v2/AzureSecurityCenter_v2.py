@@ -2,32 +2,35 @@ from CommonServerPython import *
 
 """ IMPORTS """
 import requests
+import base64
+import os
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 import ast
 from datetime import datetime
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
-# remove proxy if not set to true in params
-if not demisto.params().get("proxy"):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
-
 """ GLOBAL VARS """
-CONTEXT = demisto.getIntegrationContext()
-USE_SSL = not demisto.params().get("unsecure", False)
-DEMISTOBOT = "https://demistobot.demisto.com/azuresc-token"
-SUBSCRIPTION_ID = CONTEXT.get("subscription_id")
-SUBSCRIPTION_URL = "/subscriptions/{}".format(SUBSCRIPTION_ID)
-TOKEN = demisto.params().get("token")
-TENANT_ID = demisto.params().get("tenant_id")
-BASE_URL = demisto.params().get("server_url")
-RESOURCE = "https://management.azure.com/"
-AUTH_GRANT_TYPE = "client_credentials"
+
+PARAMS = demisto.params()
+TENANT_ID = PARAMS.get("tenant_id")
+AUTH_AND_TOKEN_URL = PARAMS.get("auth_id", "").split("@")
+AUTH_ID = AUTH_AND_TOKEN_URL[0]
+ENC_KEY = PARAMS.get("enc_key")
+if len(AUTH_AND_TOKEN_URL) != 2:
+    TOKEN_RETRIEVAL_URL = "https://oproxy.demisto.ninja/obtain-token"  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = AUTH_AND_TOKEN_URL[1]
+# Remove trailing slash to prevent wrong URL path to service
+SERVER = PARAMS.get("server_url", "")
+
+APP_NAME = "ms-azure-sc"
+USE_SSL = not PARAMS.get("unsecure", False)
+SUBSCRIPTION_ID = demisto.args().get("subscription_id") or PARAMS.get("default_sub_id")
 
 # API Versions
+SUBSCRIPTION_API_VERSION = "2015-01-01"
 ALERT_API_VERSION = "2015-06-01-preview"
 LOCATION_API_VERSION = "2015-06-01-preview"
 ATP_API_VERSION = "2017-08-01-preview"
@@ -39,34 +42,6 @@ STORAGE_API_VERSION = "2018-07-01"
 """ HELPER FUNCTIONS """
 
 
-def set_subscription_id():
-    """
-    Setting subscription ID to the context and returning it
-    """
-    headers = {"Authorization": TOKEN, "Accept": "application/json"}
-    params = {"tenant": TENANT_ID, "product": "AzureSecurityCenter"}
-    r = requests.get(DEMISTOBOT, headers=headers, params=params, verify=USE_SSL)
-    try:
-        data = r.json()
-        if r.status_code != requests.codes.ok:
-            return_error(
-                "Error in API call to Azure Security Center [{}] - {}".format(
-                    r.status_code, r.text
-                )
-            )
-        sub_id = data.get("subscription_id")
-        demisto.setIntegrationContext(
-            {
-                "token": data.get("token"),
-                "stored": epoch_seconds(),
-                "subscription_id": sub_id,
-            }
-        )
-        return sub_id
-    except ValueError:
-        return_error("There was problem with your request: {}".format(r.content))
-
-
 def epoch_seconds(d=None):
     """
     Return the number of seconds for given date. If no date, return current.
@@ -76,44 +51,94 @@ def epoch_seconds(d=None):
     return int((d - datetime.utcfromtimestamp(0)).total_seconds())
 
 
-def get_token():
+def get_encrypted(content: str, key: str) -> str:
     """
-    Check if we have a valid token and if not get one
+    Encrypt content using a specified key
     """
-    token = CONTEXT.get("token")
-    stored = CONTEXT.get("stored")
-    if token and stored:
-        if epoch_seconds() - stored < 60 * 60 - 30:
-            return token
-    headers = {"Authorization": TOKEN, "Accept": "application/json"}
-    r = requests.get(
-        DEMISTOBOT,
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct)
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
+
+
+def get_access_token():
+    integration_context = demisto.getIntegrationContext()
+    access_token = integration_context.get('access_token')
+    valid_until = integration_context.get('valid_until')
+    if access_token and valid_until:
+        if epoch_seconds() < valid_until:
+            return access_token
+    headers = {'Accept': 'application/json'}
+
+    dbot_response = requests.post(
+        TOKEN_RETRIEVAL_URL,
         headers=headers,
-        params={"tenant": TENANT_ID, "product": "AzureSecurityCenter"},
-        verify=USE_SSL,
+        data=json.dumps({
+            'app_name': APP_NAME,
+            'registration_id': AUTH_ID,
+            'encrypted_token': get_encrypted(TENANT_ID, ENC_KEY)
+        }),
+        verify=USE_SSL
     )
-    data = r.json()
-    if r.status_code != requests.codes.ok:
-        return_error(
-            "Error in API call to Azure Security Center [{}] - {}".format(
-                r.status_code, r.text
-            )
+    if dbot_response.status_code not in {200, 201}:
+        msg = 'Error in authentication. Try checking the credentials you entered.'
+        try:
+            demisto.info('Authentication failure from server: {} {} {}'.format(
+                dbot_response.status_code, dbot_response.reason, dbot_response.text))
+            err_response = dbot_response.json()
+            server_msg = err_response.get('message')
+            if not server_msg:
+                title = err_response.get('title')
+                detail = err_response.get('detail')
+                if title:
+                    server_msg = f'{title}. {detail}'
+            if server_msg:
+                msg += ' Server message: {}'.format(server_msg)
+        except Exception as ex:
+            demisto.error('Failed parsing error response - Exception: {}'.format(ex))
+        raise Exception(msg)
+    try:
+        gcloud_function_exec_id = dbot_response.headers.get('Function-Execution-Id')
+        demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+        parsed_response = dbot_response.json()
+    except ValueError:
+        raise Exception(
+            'There was a problem in retrieving an updated access token.\n'
+            'The response from the Demistobot server did not contain the expected content.'
         )
-    demisto.setIntegrationContext(
-        {
-            "token": data.get("token"),
-            "stored": epoch_seconds(),
-            "subscription_id": data.get("subscription_id"),
-        }
-    )
-    return data.get("token")
+    access_token = parsed_response.get('access_token')
+    expires_in = parsed_response.get('expires_in', 3595)
+    time_now = epoch_seconds()
+    time_buffer = 5  # seconds by which to shorten the validity period
+    if expires_in - time_buffer > 0:
+        # err on the side of caution with a slightly shorter access token validity period
+        expires_in = expires_in - time_buffer
+
+    demisto.setIntegrationContext({
+        'access_token': access_token,
+        'valid_until': time_now + expires_in
+    })
+    return access_token
 
 
 def http_request(method, url_suffix, body=None, params=None, add_subscription=True):
     """
     Generic request to the graph
     """
-    token = get_token()
+    token = get_access_token()
     headers = {
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json",
@@ -121,12 +146,16 @@ def http_request(method, url_suffix, body=None, params=None, add_subscription=Tr
     }
 
     if add_subscription:
-        url = BASE_URL + SUBSCRIPTION_URL + url_suffix
+        url = "{}subscriptions/{}/{}".format(SERVER, SUBSCRIPTION_ID, url_suffix)
     else:
-        url = BASE_URL + url_suffix
+        url = SERVER + url_suffix
 
-    r = requests.request(method, url, json=body, params=params, headers=headers)
+    r = requests.request(method, url, json=body, params=params, headers=headers, verify=USE_SSL)
     if r.status_code not in {200, 201, 202, 204}:
+        if r.status_code in {401, 403}:
+            return_error(
+                "Permission error in API call to Azure Security Center, make sure the application has access "
+                "to the relevant resources.")
         return_error(
             "Error in API call to Azure Security Center [{}] - {}".format(
                 r.status_code, r.text
@@ -326,6 +355,7 @@ def get_alert(resource_group_name, asc_location, alert_id):
         resource_group_name (str): ResourceGroupName
         asc_location (str): Azure Security Center location
         alert_id (str): Alert ID
+        subscription (str): Subscription ID
 
     Returns:
         response body (dict)
@@ -920,7 +950,7 @@ def list_ipp_command(args):
                     ]
                 )
             else:
-                label_names, information_type_names = None, None
+                label_names, information_type_names = '', ''
             outputs.append(
                 {
                     "Name": policy.get("name"),
@@ -954,7 +984,7 @@ def list_ipp_command(args):
         }
         demisto.results(entry)
     else:
-        demisto.results("no ")
+        demisto.results("No policies found")
 
 
 def list_ipp(management_group=None):
@@ -1526,12 +1556,66 @@ def list_sc_storage():
 
 """ Storage End """
 
-""" Functions start """
-if not SUBSCRIPTION_ID:
-    SUBSCRIPTION_ID = set_subscription_id()
-    SUBSCRIPTION_URL = "/subscriptions/{}".format(SUBSCRIPTION_ID)
+""" Subscriptions Start """
 
+
+def list_sc_subscriptions_command():
+    """Listing Subscriptions for this application
+
+    """
+    subscriptions = list_sc_subscriptions().get("value")
+    outputs = list()
+    for sub in subscriptions:
+        outputs.append(
+            {
+                "Name": sub.get("displayName"),
+                "State": sub.get("state"),
+                "ID": sub.get("id"),
+            }
+        )
+    md = tableToMarkdown(
+        "Azure Security Center - Subscriptions",
+        outputs,
+        ["ID", "Name", "State"],
+        removeNull=True,
+    )
+    ec = {"Azure.Subscription(val.ID && val.ID === obj.ID)": outputs}
+
+    entry = {
+        "Type": entryTypes["note"],
+        "Contents": subscriptions,
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "HumanReadable": md,
+        "EntryContext": ec,
+    }
+    demisto.results(entry)
+
+
+def list_sc_subscriptions():
+    """Building query
+
+    Returns:
+        dict: response body
+
+    """
+    cmd_url = "/subscriptions?api-version={}".format(
+        SUBSCRIPTION_API_VERSION
+    )
+    response = http_request("GET", cmd_url, add_subscription=False)
+    return response
+
+
+""" Subscriptions end """
+
+
+""" Functions start """
 try:
+    handle_proxy()
+
+    if not SUBSCRIPTION_ID:
+        return_error("A subscription ID must be provided.")
+
     if demisto.command() == "test-module":
         # If the command will fail, error will be thrown from the request itself
         list_locations()
@@ -1568,7 +1652,9 @@ try:
         delete_jit_command(demisto.args())
     elif demisto.command() == "azure-sc-list-storage":
         list_sc_storage_command()
-except Exception, e:
-    LOG(e.message)
+    elif demisto.command() == "azure-list-subscriptions":
+        list_sc_subscriptions_command()
+except Exception as e:
+    LOG(str(e))
     LOG.print_log()
-    raise
+    return_error(str(e))
