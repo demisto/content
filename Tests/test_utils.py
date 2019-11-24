@@ -295,6 +295,7 @@ def server_version_compare(v1, v2):
         return 1
     return -1
 
+
 def run_threads_list(threads_list):
     """
     Start a list of threads and wait for completion (join)
