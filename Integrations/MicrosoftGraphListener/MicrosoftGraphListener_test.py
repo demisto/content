@@ -143,7 +143,8 @@ def test_build_message(client):
         'internet_message_headers': None,
         'attach_ids': [],
         'attach_names': [],
-        'attach_cids': []
+        'attach_cids': [],
+        'manual_attachments': []
     }
 
     expected_message = {'toRecipients': [{'emailAddress': {'address': 'dummy@recipient.com'}}],
