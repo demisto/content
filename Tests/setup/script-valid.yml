@@ -1,5 +1,5 @@
 commonfields:
-  id: a18ff76e-c462-4daa-8be2-6a1b5308713f
+  id: TestCreateDuplicates
   version: -1
 name: TestCreateDuplicates
 script: ""
