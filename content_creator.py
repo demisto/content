@@ -36,12 +36,16 @@ PACKAGES_TO_SKIP = [
     'HelloWorldScript'
 ]
 
+PACKS_DIR = 'Packs'
+
 # temp folder names
 BUNDLE_POST = 'bundle_post'
 BUNDLE_TEST = 'bundle_test'
+PACKS_BUNDLE = 'packs_bundle'
 # zip files names (the extension will be added later - shutil demands file name without extension)
 ZIP_POST = 'content_new'
 ZIP_TEST = 'content_test'
+ZIP_PACKS = 'content_packs'
 
 # server can't handle long file names
 MAX_FILE_NAME = 85
