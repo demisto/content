@@ -1,6 +1,6 @@
 category: Email Gateway
 commonfields:
-  id: MicrosoftGraphListener
+  id: Microsoft Graph Mail Single User
   version: -1
 configuration:
 - display: ID (received from the authorization step - see Detailed Instructions (?)
@@ -53,7 +53,7 @@ configuration:
 description: Microsoft Graph allows Demisto authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail Single User
-name: MicrosoftGraphListener
+name: Microsoft Graph Mail Single User
 script:
   commands:
   - arguments:
