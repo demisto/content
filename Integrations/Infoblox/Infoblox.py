@@ -1019,6 +1019,7 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-disable-rule': disable_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
     }
     try:
         if command in commands:
