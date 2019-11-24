@@ -20,7 +20,7 @@ def run_dev_task(pkg_dir: str, params: Optional[List[str]]) -> Tuple[subprocess.
     # color stderr in red and remove the warning about no config file from pylint
     cmd_line += r" 2> >(sed '/No config file found, using default configuration/d' | sed $'s,.*,\x1B[31m&\x1B[0m,'>&1)"
     res = subprocess.run(cmd_line, text=True, capture_output=True, shell=True, executable='/bin/bash')
-    return (res, pkg_dir)
+    return res, pkg_dir
 
 
 def should_run_pkg(pkg_dir: str) -> bool:
@@ -47,6 +47,11 @@ def handle_run_res(res: Tuple[subprocess.CompletedProcess, str], fail_pkgs: list
     print(res[0].stderr)
 
 
+def create_result_file(failed_unittest):
+    with open("./Tests/failed_unittests.txt", "w") as failed_tests_file:
+        failed_tests_file.write('\n'.join(failed_unittest))
+
+
 def main():
     if len(sys.argv) == 2 and (sys.argv[1] == '-h' or sys.argv[1] == '--help'):
         print("Run pkg_dev_test_tasks.py in parallel. Accepts same parameters as pkg_dev_test_tasks.py.\n"
@@ -67,7 +72,7 @@ def main():
     params = sys.argv[1::]
     fail_pkgs = []
     good_pkgs = []
-    if(len(pkgs_to_run) > 1):  # setup pipenv before hand to avoid conflics
+    if len(pkgs_to_run) > 1:  # setup pipenv before hand to avoid conflics
         get_dev_requirements(2.7)
         get_dev_requirements(3.7)
     # run CommonServer non parallel to avoid conflicts
@@ -82,6 +87,7 @@ def main():
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
     if fail_pkgs:
+        create_result_file(fail_pkgs)
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
