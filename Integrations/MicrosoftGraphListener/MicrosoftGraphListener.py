@@ -209,7 +209,8 @@ def prepare_args(command, args):
             'internet_message_headers': argToList(args.get('headers')),
             'attach_ids': argToList(args.get('attach_ids')),
             'attach_names': argToList(args.get('attach_names')),
-            'attach_cids': argToList((args.get('attach_cids')))
+            'attach_cids': argToList((args.get('attach_cids'))),
+            'manual_attachments': args.get('manualAttachObj', [])
         }
 
     elif command == 'msgraph-mail-reply-to':
@@ -656,7 +657,7 @@ class MsGraphClient(BaseClient):
         return file_attachments_result
 
     @staticmethod
-    def _build_file_attachments_input(attach_ids, attach_names, attach_cids):
+    def _build_file_attachments_input(attach_ids, attach_names, attach_cids, manual_attachments):
         """
         Builds both inline and regular attachments.
 
@@ -669,17 +670,25 @@ class MsGraphClient(BaseClient):
         :type attach_cids: ``list``
         :param attach_cids: List of uploaded to War Room inline attachments to send
 
+        :type manual_attachments: ``list``
+        :param manual_attachments: List of manual attachments reports to send
+
         :return: List of both inline and regular attachments of the message
         :rtype: ``list``
         """
         regular_attachments = MsGraphClient._build_attachments_input(ids=attach_ids, attach_names=attach_names)
         inline_attachments = MsGraphClient._build_attachments_input(ids=attach_cids, is_inline=True)
+        # collecting manual attachments info
+        manual_att_ids = [os.path.basename(att['RealFileName']) for att in manual_attachments if 'RealFileName' in att]
+        manual_att_names = [att['FileName'] for att in manual_attachments if 'FileName' in att]
+        manual_report_attachments = MsGraphClient._build_attachments_input(ids=manual_att_ids,
+                                                                           attach_names=manual_att_names)
 
-        return regular_attachments + inline_attachments
+        return regular_attachments + inline_attachments + manual_report_attachments
 
     @staticmethod
     def _build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                       internet_message_headers, attach_ids, attach_names, attach_cids):
+                       internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -693,7 +702,8 @@ class MsGraphClient(BaseClient):
             'bodyPreview': body[:255],
             'importance': importance,
             'flag': MsGraphClient._build_flag_input(flag),
-            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids)
+            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids,
+                                                                       manual_attachments)
         }
 
         if internet_message_headers:
