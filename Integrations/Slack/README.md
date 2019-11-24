@@ -37,6 +37,7 @@
       <li><strong>Bot icon in Slack - Image URL (Demisto icon by default)</strong></li>
       <li><strong>Maximum time to wait for a rate limited call in seconds - 60 by default</strong></li>
       <li><strong>Number of objects to return in each paginated call - 200 by default</strong></li>
+      <li><strong>Proxy URL to use in Slack API calls</strong></li>
     </ul>
   </li>
 </ol>
