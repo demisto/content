@@ -30,4 +30,3 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results', side_effect=results)
 
     main()
-import
