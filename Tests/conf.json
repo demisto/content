@@ -3,8 +3,43 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Test",
+            "instance_names": "ms_azure_compute_dev"
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Test",
+            "instance_names": "ms_azure_compute_prod"
+        },
+        {
+            "integrations": "Symantec Data Loss Prevention",
+            "playbookID": "Symantec Data Loss Prevention - Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "nmap",
@@ -50,22 +85,13 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
+            "timeout" : 2400,
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Cloaken",
@@ -835,18 +861,7 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "instance_names": "virus_total_general",
-            "playbookID": "ip_enrichment_generic_test"
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "OpenPhish",
-            "playbookID": "email_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -1956,6 +1971,7 @@
         }
     ],
     "skipped_tests": {
+        "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
         "LogRhythm-Test-Playbook": "Issue 20331",
         "minemeld_test": "Issue 20265",
@@ -1980,8 +1996,6 @@
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "ip_enrichment_generic_test": "Issue 19815",
-        "email_test": "Issue 19816",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -2001,7 +2015,6 @@
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
-        "AlphaSOC-Wisdom-Test": "Issue #19235",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Manual test"
     },
@@ -2061,7 +2074,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
-        "RedLock": "Issue 15493",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2079,7 +2091,6 @@
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
-        "SlackV2": "Issue 19558",
 
         "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
@@ -2140,6 +2151,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "RedLock": "SSL Issues"
     }
 }
