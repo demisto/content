@@ -122,6 +122,16 @@ def convert_incident_fields_to_array(incident_fields_dir=INCIDENT_FIELDS_DIR):
                 file_.truncate()
 
 
+def copy_playbook_yml(path, out_path, *args):
+    '''Add "playbook-" prefix to playbook file's copy destination filename if it wasn't already present'''
+    dest_dir_path = os.path.dirname(out_path)
+    dest_file_name = os.path.basename(out_path)
+    if not dest_file_name.startswith('playbook-'):
+        new_name = '{}{}'.format('playbook-', dest_file_name)
+        out_path = os.path.join(dest_dir_path, new_name)
+    shutil.copyfile(path, out_path)
+
+
 def copy_yaml_post(path, out_path, yml_info):
     parent_dir_name = os.path.basename(os.path.dirname(path))
     if parent_dir_name in DIR_TO_PREFIX.keys() and not os.path.basename(path).startswith('playbook-'):
@@ -141,6 +151,8 @@ def copy_yaml_post(path, out_path, yml_info):
 def copy_dir_yml(dir_path, bundle_post):
     scan_files = glob.glob(os.path.join(dir_path, '*.yml'))
     post_files = 0
+    dir_name = os.path.basename(dir_path)
+    copy_func = copy_playbook_yml if dir_name in ['Playbooks', 'TestPlaybooks'] else copy_yaml_post
     for path in scan_files:
         if len(os.path.basename(path)) >= MAX_FILE_NAME:
             LONG_FILE_NAMES.append(path)
@@ -150,7 +162,7 @@ def copy_dir_yml(dir_path, bundle_post):
 
         ver = yml_info.get('fromversion', '0')
         print(f' - processing: {ver} ({path})')
-        copy_yaml_post(path, os.path.join(bundle_post, os.path.basename(path)), yml_info)
+        copy_func(path, os.path.join(bundle_post, os.path.basename(path)), yml_info)
         post_files += 1
     print(f' - total files: {post_files}')
 
