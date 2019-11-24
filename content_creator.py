@@ -52,12 +52,24 @@ MAX_FILE_NAME = 85
 LONG_FILE_NAMES = []
 
 
+def get_parent_directory(path):
+    pass
+
+
 def get_child_directories(directory):
     '''Return a list of paths of immediate child directories of the 'directory' argument'''
     child_directories = [
         os.path.join(directory, path) for
         path in os.listdir(directory) if os.path.isdir(os.path.join(directory, path))
     ]
+    # # make sure that directory paths end in '/'
+    # directories = []
+    # for directory in child_directories:
+    #     if not directory.endswith('/'):
+    #         directories.append(directory + '/')
+    #     else:
+    #         directories.append(directory)
+    # return directories
     return child_directories
 
 
@@ -277,7 +289,7 @@ def main(circle_artifacts):
                         for file_path in package_files if ('CHANGELOG' in file_path and file_path.endswith('.md'))
                     ]
                     for md_file_path in changelog_files:
-                        shutil.copyfile(md_file_path, dest_package_dir)
+                        shutil.copyfile(md_file_path, os.path.join(dest_package_dir, os.path.basename(md_file_path)))
             else:
                 if dir_name == INCIDENT_FIELDS_DIR:
                     convert_incident_fields_to_array(content_dir)
