@@ -5,15 +5,6 @@ fromversion: 5.0.0
 description: |-
   This playbook contains the phases to handling an incident as described in the 'Handling an Incident' section of NIST - Computer Security Incident Handling Guide.
 
-  "
-  The incident response process has several phases. The initial phase involves establishing and training an
-  incident response team, and acquiring the necessary tools and resources. During preparation, the
-  organization also attempts to limit the number of incidents that will occur by selecting and implementing
-  a set of controls based on the results of risk assessments. However, residual risk will inevitably persist
-  after controls are implemented. Detection of security breaches is thus necessary to alert the organization
-  whenever incidents occur.
-  "
-
   Handling an incident - Computer Security Incident Handling Guide
   https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-61r2.pdf
 starttaskid: "0"
@@ -248,7 +239,6 @@ tasks:
       description: |-
         3.2.4 - Incident Analysis:
         Finding the real security incidents that occurred out of all the indicators.
-
         Determining whether a particular event is actually an incident is sometimes a matter of judgment. It may be necessary to collaborate with other technical and information security personnel to make a decision.
       type: regular
       iscommand: false
@@ -334,7 +324,7 @@ tasks:
       name: Incident Notification
       description: |-
         3.2.7 - Incident Notification:
-        When an incident is analyzed and prioritized, the incident response team needs to notify the appropriate individuals so that all who need to be involved will play their roles.
+        When an incident is analyzed and prioritized, the incident response team needs to notify the appropriate individuals so that all who need to be involved can play their roles.
       type: regular
       iscommand: false
       brand: ""
@@ -440,7 +430,7 @@ tasks:
       name: Choosing a Containment Strategy
       description: "3.3.1 - Choosing a Containment Strategy:\nContainment is important
         before an incident overwhelms resources or increases damage. Most incidents
-        require containment, so that is an important consideration early in the course
+        require containment, which is an important consideration early in the course
         of handling each incident.\nContainment provides time for developing a tailored
         remediation strategy. "
       type: regular
