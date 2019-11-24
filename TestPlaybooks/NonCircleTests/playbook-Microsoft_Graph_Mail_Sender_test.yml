@@ -36,10 +36,10 @@ tasks:
       version: -1
       name: Send Email
       description: Sends an email using Microsoft Graph.
-      script: MicrosoftGraphListener|||send-mail
+      script: Microsoft Graph Mail Single User|||send-mail
       type: regular
       iscommand: true
-      brand: MicrosoftGraphListener
+      brand: Microsoft Graph Mail Single User
     scriptarguments:
       attach_cids: {}
       attach_ids:
