@@ -87,14 +87,15 @@ def create_unifieds_and_copy(package_dir, dest_dir=BUNDLE_POST, skip_dest_dir=BU
             case the package is part of the skipped list
     '''
     scanned_packages = glob.glob(os.path.join(package_dir, '*/'))
+    package_dir_name = os.path.basename(package_dir)
     for package in scanned_packages:
         if any(package_to_skip in package for package_to_skip in PACKAGES_TO_SKIP):
             # there are some packages that we don't want to include in the content zip
             # for example HelloWorld integration
-            merge_script_package_to_yml(package, package_dir, BUNDLE_TEST)
+            merge_script_package_to_yml(package, package_dir_name, BUNDLE_TEST)
             print('skipping {}'.format(package))
         else:
-            merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
+            merge_script_package_to_yml(package, package_dir_name, BUNDLE_POST)
 
 
 def add_tools_to_bundle(bundle):
