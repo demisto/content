@@ -2,8 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from Scripts.CommonServerPython.CommonServerPython import *
-
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
 ''' IMPORTS '''
 
@@ -11,17 +10,14 @@ import json
 import requests
 from distutils.util import strtobool
 from urllib.parse import urlencode, urlparse, parse_qs
-import datetime
-
+from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 
-
 # Service base URL
-
 
 
 # Headers to be sent in requests
@@ -36,6 +32,51 @@ INTEGRATION_NAME = 'MicrosoftGraphFilesAdmin1'
 HEADERS = {
     'Content-Type': 'application/x-www-form-urlencoded',
 }
+APP_NAME = 'ms-graph-files'
+
+
+def epoch_seconds() -> int:
+    """
+    Return the number of seconds for return current date.
+    """
+    return int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds())
+
+
+def get_encrypted(content: str, key: str) -> str:
+    """
+    Args:
+        content (str): content to encrypt. For a request to Demistobot for a new access token, content should be
+            the tenant id
+        key (str): encryption key from Demistobot
+    Returns:
+        encrypted timestamp:content
+    """
+
+    def create_nonce() -> bytes:
+        return os.urandom(12)
+
+    def encrypt(string: str, enc_key: str) -> bytes:
+        """
+        Args:
+            enc_key (str):
+            string (str):
+        Returns:
+            bytes:
+        """
+        # String to bytes
+        enc_key = base64.b64decode(enc_key)
+        # Create key
+        aes_gcm = AESGCM(enc_key)
+        # Create nonce
+        nonce = create_nonce()
+        # Create ciphered data
+        data = string.encode()
+        ct_ = aes_gcm.encrypt(nonce, data, None)
+        return base64.b64encode(nonce + ct_)
+
+    now = epoch_seconds()
+    encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+    return encrypted
 
 
 class Client(BaseClient):
@@ -43,16 +84,17 @@ class Client(BaseClient):
     Client will implement the service API, should not contain Demisto logic.
     Should do requests and return data
     """
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.client_id = demisto.params().get('client_id')  # TODO: remove to const
-        self.client_secret = demisto.params().get('client_secret')  # TODO: remove to const
+        self.auth_id = demisto.params().get('auth_id')  # TODO: remove to const
+        self.tenant_id = demisto.params().get('tenant_id')  # TODO: remove to const
+        self.enc_key = demisto.params().get('enc_key')
+        self.host = demisto.params().get('host')
         self.auto_url = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}/oauth2/v2.0/token"  # TODO: remove to const
         self.tenant_domain = demisto.params().get('share_point_domain')
-        self.access_token = self.get_api_token()  # TODO: there are two tokens - for work account and for user account. need to think about it when working on auth proxy
-        self.headers = {'Authorization': f'Bearer {self.access_token}'}  # TODO: remove to const
-
-
+        # self.access_token = self.get_api_token()  # TODO: there are two tokens - for work account and for user account. need to think about it when working on auth proxy
+        # self.headers = {'Authorization': f'Bearer {self.access_token}'}  # TODO: remove to const
 
     def _http_request(self, method, url, params=None, data=None, json=None, headers=None, files=None):
         # A wrapper for requests lib to send our requests and handle requests and responses better
@@ -80,6 +122,71 @@ class Client(BaseClient):
             demisto.log('Response content is not in JSON format.')  # in DELETE the response returns as text
             return res.status_code
 
+    def return_valid_access_token_if_exist_in_context(self):
+        integration_context = demisto.getIntegrationContext()
+        access_token = integration_context.get('access_token')
+        valid_until = integration_context.get('valid_until')
+        if access_token and valid_until:
+            if epoch_seconds() < valid_until:
+                return access_token
+
+    def return_token_and_save_it_in_context(self, access_token_response):
+        access_token = access_token_response.get('access_token')
+        if not access_token:
+            return demisto.error('Access Token returned empty')
+        expires_in = access_token_response.get('expires_in', 3595)
+        time_buffer = 5  # seconds by which to shorten the validity period
+        if expires_in - time_buffer > 0:
+            # err on the side of caution with a slightly shorter access token validity period
+            expires_in = expires_in - time_buffer
+
+        demisto.setIntegrationContext({
+            'access_token': access_token,
+            'valid_until': epoch_seconds() + expires_in
+        })
+        return {'access_token': access_token}
+
+    def get_access_token(self):
+        context_access_token = self.return_valid_access_token_if_exist_in_context()
+        if context_access_token:
+            return context_access_token
+        try:
+            access_token_res = requests.post(
+                self.host,
+                headers={'Accept': 'application/json'},
+                data=json.dumps({
+                    'app_name': APP_NAME,
+                    'registration_id': self.auth_id,
+                    'encrypted_token': get_encrypted(self.tenant_id, self.enc_key)
+                }),
+                verify=self._verify)
+        except requests.exceptions.SSLError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your not secure parameter.\n\n{err}')
+        except requests.ConnectionError as err:
+            demisto.debug(str(err))
+            raise Exception(f'Connection error in the API call to Microsoft Graph.\n'
+                            f'Check your Server URL parameter.\n\n{err}')
+        if access_token_res.status_code not in {200, 201}:
+            msg = 'Error in authentication. Try checking the credentials you entered.'
+            try:
+                demisto.info(f'Authentication failure from server: {access_token_res.status_code}'
+                             f' {access_token_res.reason} {access_token_res.text}')
+                err_response = access_token_res.json()
+                server_msg = err_response.get('message')
+                if not server_msg:
+                    title = err_response.get('title')
+                    detail = err_response.get('detail')
+                    if title:
+                        server_msg = f'{title}. {detail}'
+                if server_msg:
+                    msg += f' Server message: {server_msg}'
+            except Exception as err:
+                demisto.error(f'Failed parsing error response - Exception: {err}')
+            raise Exception(msg)
+        else:
+            return self.return_token_and_save_it_in_context(access_token_res.json())
 
     def get_api_token(self):
         res = self._http_request('POST', self.auto_url, data=urlencode({
@@ -98,22 +205,22 @@ class Client(BaseClient):
 
     def get_items_request(self, item_ids, is_active):
         # # The service endpoint to request from
-    #         # endpoint_url = 'items'
-    #         # # Dictionary of params for the request
-    #         # params = {
-    #         #     'ids': item_ids,
-    #         #     'isActive': is_active
-    #         # }
-    #         # # Send a request using our http_request wrapper
-    #         # response = self._http_request('GET', endpoint_url, params)
-    #         # # Check if response contains errors
-    #         # if response.get('errors'):
-    #         #     return_error(response.get('errors'))
-    #         # # Check if response contains any data to parse
-    #         # if 'data' in response:
-    #         #     return response.get('data')
-    #         # # If neither was found, return back empty results
-    #         # return {}
+        #         # endpoint_url = 'items'
+        #         # # Dictionary of params for the request
+        #         # params = {
+        #         #     'ids': item_ids,
+        #         #     'isActive': is_active
+        #         # }
+        #         # # Send a request using our http_request wrapper
+        #         # response = self._http_request('GET', endpoint_url, params)
+        #         # # Check if response contains errors
+        #         # if response.get('errors'):
+        #         #     return_error(response.get('errors'))
+        #         # # Check if response contains any data to parse
+        #         # if 'data' in response:
+        #         #     return response.get('data')
+        #         # # If neither was found, return back empty results
+        #         # return {}
         pass
 
     def convert_site_name_to_site_id(self, site_name):
@@ -254,7 +361,7 @@ class Client(BaseClient):
 
     def replace_an_existing_file(self, object_type, item_id, entry_id, object_type_id):
 
-        file_path = r'/Users/gberger/Desktop/Untitled.txt' #  TODO: remove when finish to debug
+        file_path = r'/Users/gberger/Desktop/Untitled.txt'  # TODO: remove when finish to debug
         # file_path = demisto.getFilePath(entry_id).get(‘path’) # TODO: change it to the file_path
 
         if object_type == 'drives':
@@ -291,7 +398,7 @@ class Client(BaseClient):
         :param entry_id:
         :return:
         """
-        file_path = r'/Users/gberger/Desktop/Untitled.txt' #  TODO: remove when finish to debug
+        file_path = r'/Users/gberger/Desktop/Untitled.txt'  # TODO: remove when finish to debug
         # file_path = demisto.getFilePath(entry_id).get(‘path’) # TODO: change it to the file_path
 
         if 'drives' == object_type:
@@ -330,12 +437,11 @@ class Client(BaseClient):
 
         payload = {
             'name': folder_name,  # TODO: need to add type validation.
-            'folder': { },
+            'folder': {},
             '@microsoft.graph.conflictBehavior': 'rename'
         }
         self.headers['Content-Type'] = 'application/json'
         return self._http_request('POST', url, json=payload, headers=self.headers)
-
 
     def delete_item_from_documents(self, path_to_item, site_name):
         site_id = self.convert_site_name_to_site_id(site_name)
@@ -356,7 +462,7 @@ def download_file_command(client, args):
 
     result = client.download_file(object_type=object_type, object_type_id=object_type_id, item_id=item_id)
 
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -373,6 +479,7 @@ def download_file_command(client, args):
         result
     )
 
+
 def list_drive_children_command(client, args):
     object_type = args.get('object_type')
     object_type_id = args.get('object_type_id')
@@ -380,9 +487,10 @@ def list_drive_children_command(client, args):
     limit = args.get('limit')
     next_page_url = args.get('next_page_url')
 
-    result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id, limit=limit, next_page_url=next_page_url)
+    result = client.list_drive_children(object_type=object_type, object_type_id=object_type_id, item_id=item_id,
+                                        limit=limit, next_page_url=next_page_url)
 
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - drivesItems information:'
     # Creating human readable for War room
@@ -399,10 +507,11 @@ def list_drive_children_command(client, args):
         result
     )
 
+
 def list_tenant_sites_command(client, args):
     result = client.list_tenant_sites()
 
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - Sites information:'
     # Creating human readable for War room
@@ -427,7 +536,7 @@ def list_drives_in_site_command(client, args):
 
     result = client.list_drives_in_site(site_id=site_id, limit=limit, next_page_url=next_page_url)
 
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - Drives information:'
     # Creating human readable for War room
@@ -453,8 +562,7 @@ def replace_an_existing_file_command(client, args):
 
     result = client.replace_an_existing_file(object_type, item_id, entry_id, object_type_id)
 
-
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -470,8 +578,9 @@ def replace_an_existing_file_command(client, args):
         context,
         result
     )
-def upload_new_file_command(client, args):
 
+
+def upload_new_file_command(client, args):
     object_type = args.get('object_type')
     entry_id = args.get('entry_id')
     parent_id = args.get('parent_id')
@@ -480,8 +589,7 @@ def upload_new_file_command(client, args):
 
     result = client.upload_new_file(object_type, parent_id, file_name, entry_id, object_type_id)
 
-
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -498,8 +606,8 @@ def upload_new_file_command(client, args):
         result
     )
 
-def create_new_folder_command(client, args):
 
+def create_new_folder_command(client, args):
     object_type = args.get('object_type')
     entry_id = args.get('entry_id')
     parent_id = args.get('parent_id')
@@ -508,8 +616,7 @@ def create_new_folder_command(client, args):
 
     result = client.create_new_folder(object_type, object_type_id, parent_id, folder_name)
 
-
-    context_entry = result # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
+    context_entry = result  # TODO: think about what I want to return to the user: file name ? location? date_of_creation ?
 
     title = f'{INTEGRATION_NAME} - File information:'
     # Creating human readable for War room
@@ -528,7 +635,6 @@ def create_new_folder_command(client, args):
 
 
 def delete_file_command(client, args):
-
     object_type = args.get('object_type')
     item_id = args.get('item_id')
     object_type_id = args.get('object_type_id')
@@ -551,9 +657,11 @@ def delete_file_command(client, args):
         context,
         result  # == raw response
     )
+
+
 def main():
-    CLIENT_ID = demisto.params().get('client_id')
-    CLIENT_SECRET = demisto.params().get('client_secret')
+    # CLIENT_ID = demisto.params().get('client_id')
+    # CLIENT_SECRET = demisto.params().get('client_secret')
     # Remove trailing slash to prevent wrong URL path to service
     # SERVER = f"https://login.microsoftonline.com/{demisto.params().get('tenant_id')}"
 
@@ -561,16 +669,13 @@ def main():
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
-
     # How many time before the first fetch to retrieve incidents
     SHARE_POINT_DOMAIN = demisto.params().get('share_point_domain')
-
 
     LOG(f'Command being called is {demisto.command()}')
     try:
         # client = Client(BASE_URL, proxy=proxy, verify=verify_certificate)
         client = Client(base_url=BASE_URL, verify=verify_certificate, proxy=proxy)
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
@@ -617,8 +722,8 @@ def test_module(client):
     Performs basic get request to get item samples
     """
 
-    result = client.get_api_token()
-    if 'Hello DBot' == result:
+    result = client.get_access_token()
+    if result.get('access_token', False):
         return 'ok'
     else:
         return 'Test failed because could not get access token'
