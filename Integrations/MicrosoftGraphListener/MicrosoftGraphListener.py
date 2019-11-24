@@ -765,7 +765,7 @@ class MsGraphClient(BaseClient):
                 attachment_id = attachment.get('id', '')
                 attachment_content = self._get_attachment_mime(message_id, attachment_id)
                 attachment_name = f'{attachment_name}.eml'
-            # upload the item/file attachent to War Room
+            # upload the item/file attachment to War Room
             upload_file(attachment_name, attachment_content, attachment_results)
 
         return attachment_results
