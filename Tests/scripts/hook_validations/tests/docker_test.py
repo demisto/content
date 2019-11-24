@@ -60,12 +60,18 @@ def test_get_docker_image_latest_tag(image):
 # disable-secrets-detection-start
 def test_get_docker_image_from_yml():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    docker_image = DockerImageValidator.get_docker_image_from_yml(
-        get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml"), is_integration=True)
-    assert docker_image == "demisto/pyjwt:1.0"
-    docker_image = DockerImageValidator.get_docker_image_from_yml(
-        get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake-script.yml"), is_integration=False)
-    assert docker_image == "demisto/stix2:1.0.0.204"
+    with patch.object(DockerImageValidator, '__init__', lambda x, y, z, w: None):
+        # Test integration case
+        docker_validator = DockerImageValidator(None, None, None)
+        docker_validator.yml_file = get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml")
+        docker_validator.is_integration = True
+        docker_image = docker_validator.get_docker_image_from_yml()
+        assert docker_image == "demisto/pyjwt:1.0"
+        # Test script case
+        docker_validator.yml_file = get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake-script.yml")
+        docker_validator.is_integration = False
+        docker_image = docker_validator.get_docker_image_from_yml()
+        assert docker_image == "demisto/stix2:1.0.0.204"
 # disable-secrets-detection-end
 
 
