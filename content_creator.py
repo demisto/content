@@ -61,6 +61,15 @@ def get_child_directories(directory):
     return child_directories
 
 
+def get_child_files(directory):
+    '''Return a list of paths of immediate child files of the 'directory' argument'''
+    child_files = [
+        os.path.join(directory, path) for
+        path in os.listdir(directory) if os.path.isfile(os.path.join(directory, path))
+    ]
+    return child_files
+
+
 def create_unifieds_and_copy(package_dir, dest_dir=BUNDLE_POST, skip_dest_dir=BUNDLE_TEST):
     '''
     For directories that have packages, aka subdirectories for each integration/script
