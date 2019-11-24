@@ -2015,7 +2015,7 @@ tasks:
     task:
       id: 64637398-912d-40de-8602-718b1faf4649
       version: -1
-      name: is there a configured manager for the user?
+      name: is there a manager configured for the user?
       description: Checks if a manager was configured for the offending user in Active
         Directory.
       type: condition
