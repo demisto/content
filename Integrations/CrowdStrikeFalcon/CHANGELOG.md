@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed and issue in incident duplication.
+Fixed and issue with duplicated incidents.
