@@ -52,7 +52,7 @@ configuration:
   type: 0
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
-display: Microsoft Graph Mail Listener And Sender
+display: Microsoft Graph Mail Single User
 name: MicrosoftGraphListener
 script:
   commands:
