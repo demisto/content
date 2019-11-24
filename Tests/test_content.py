@@ -560,7 +560,6 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         proxy = MITMProxy(server_ip)
 
     failed_playbooks = []
-    failed_unittest = []
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
@@ -586,7 +585,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
             run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks, failed_unittest,
+                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version, demisto_api_key)
 
@@ -598,15 +597,15 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     for t in mockless_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                          is_filter_configured, failed_unittest,
+                          is_filter_configured,
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key, is_ami)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy, is_ami, failed_unittest)
+                       proxy, is_ami)
 
-    create_result_files(failed_playbooks, skipped_integration, skipped_tests, failed_unittest)
+    create_result_files(failed_playbooks, skipped_integration, skipped_tests)
 
     if is_ami and build_name == 'master':
         print("Pushing new/updated mock files to mock git repo.")
