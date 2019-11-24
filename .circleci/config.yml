@@ -361,7 +361,10 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-
+parameters:
+  NIGHTLY:
+    type: string
+    default: "false"
 workflows:
   version: 2
   commit:
