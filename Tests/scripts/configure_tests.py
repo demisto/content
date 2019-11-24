@@ -441,7 +441,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
                 playbook_toversion >= given_version[1]:
 
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                tests = playbook_data.get('tests', [])
+                tests = set(playbook_data.get('tests', []))
                 if tests:
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
