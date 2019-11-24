@@ -1,5 +1,91 @@
 version: 2
 jobs:
+  infrastructure_testing:
+    docker:
+      - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
+    resource_class: medium+
+    environment:
+      CONTENT_VERSION: "19.11.0"
+      SERVER_VERSION: "5.0.0"
+      GIT_SHA1: "93fab15da3ae0b427e63510836018f8efd6b7b5e" # guardrails-disable-line disable-secrets-detection
+    steps:
+      - checkout
+      - setup_remote_docker
+      - restore_cache:
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+      - run:
+          name: Prepare Environment
+          when: always
+          command: |
+            echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
+            echo 'export PATH="/home/circleci/.local/bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
+            echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
+            echo "=== sourcing $BASH_ENV ==="
+            source $BASH_ENV
+            sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS
+            chmod +x ./Tests/scripts/*
+            chmod +x ./Tests/lastest_server_build_scripts/*
+            echo "Parameters: NIGHTLY: $NIGHTLY, NON_AMI_RUN: $NON_AMI_RUN, SERVER_BRANCH_NAME: $SERVER_BRANCH_NAME"
+            if [ ! -e "venv" ]; then
+              echo "installing venv"
+              NO_HOOKS=1 .hooks/bootstrap
+              source ./venv/bin/activate
+              pip install -r .circleci/build-requirements.txt
+              pip3 install -r .circleci/build-requirements.txt
+            else
+              echo "venv exists (from cache). activating"
+              source ./venv/bin/activate
+            fi
+            # store in bash env so we load our venv in each step
+            echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+            python --version
+            python3 --version
+      - save_cache:
+          paths:
+            - venv
+          key: venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}
+
+      - add_ssh_keys:
+          fingerprints:
+            - "02:df:a5:6a:53:9a:f5:5d:bd:a6:fc:b2:db:9b:c9:47" # disable-secrets-detection
+            - "f5:25:6a:e5:ac:4b:84:fb:60:54:14:82:f1:e9:6c:f9" # disable-secrets-detection
+      - run:
+          name: Create ID Set
+          when: always
+          command: |
+            python ./Tests/scripts/update_id_set.py -r
+      - run:
+          name: Infrastucture testing
+          when: always
+          command: |
+            python -m pytest ./Tests/scripts/hook_validations/tests/ -v
+            # after moving to all to python3, run the tests by folder
+            # python -m pytest ./Tests/scripts/infrastructure_tests/ -v
+
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/constants_regex_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/mock_unit_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/release_notes_test.py -v
+            python -m pytest ./Tests/scripts/infrastructure_tests/validate_files_test.py -v
+
+            python -m pytest ./Tests/scripts/test_configure_tests.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/secrets_test.py -v
+      - run:
+          name: Validate Files and Yaml
+          when: always
+          command: |
+            # Run flake8 on all excluding Integraions and Scripts (they will be handled in linting)
+            ./Tests/scripts/pyflake.sh *.py
+            find . -maxdepth 1 -type d -not \( -path . -o -path ./Integrations -o -path ./Scripts -o -path ./Beta_Integrations -o -path ./venv \) | xargs ./Tests/scripts/pyflake.sh
+
+            [ -n "${BACKWARD_COMPATIBILITY}" ] && CHECK_BACKWARD=false || CHECK_BACKWARD=true
+
+            python ./Tests/scripts/validate_files.py -c true -b $CHECK_BACKWARD
+      - run:
+          name: Secrets
+          when: always
+          command: |
+            python3 ./Tests/scripts/hook_validations/secrets.py -c true
   build:
     docker:
       - image: devdemisto/content-build:3.0.0.3368  # disable-secrets-detection
@@ -317,4 +403,5 @@ workflows:
   version: 2
   commit:
     jobs:
+      - infrastructure_testing
       - build
