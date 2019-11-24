@@ -16,8 +16,7 @@ configuration:
   name: api_token
   required: true
   type: 4
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -304,3 +303,5 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+  - No tests
