@@ -95,8 +95,8 @@ def test_parse_docker_image():
 
 def test_is_docker_image_latest_tag():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    with patch.object(DockerImageValidator, '__init__', lambda x, y, z: None):
-        docker_image_validator = DockerImageValidator(None, None)
+    with patch.object(DockerImageValidator, '__init__', lambda x, y, z, w: None):
+        docker_image_validator = DockerImageValidator(None, None, None)
         docker_image_validator.yml_file = {}
         docker_image_validator.docker_image_latest_tag = 'latest_tag'
         docker_image_validator.docker_image_name = 'demisto/python'
