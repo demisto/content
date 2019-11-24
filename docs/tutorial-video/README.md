@@ -495,6 +495,8 @@ You also need to select which playbook to attach to the incident. In this case, 
 >Click “Create new Incident” and select the incident we just created. Navigate to “work plan” and we can see that our playbook worked!
 
 ![screen shot 2019-01-08 at 16 09 53](https://user-images.githubusercontent.com/42912128/50835627-e49fa780-135f-11e9-8c96-8c3e138d6a9b.png)
+
 ## Resources
 
-[YodaSpeak Tutorial Pack.zip](https://github.com/demisto/etc/files/2737100/YodaSpeak.Tutorial.Pack.zip)
+* [YodaSpeak Integration](integration-Yoda_Speak.yml)
+* [YodaSpeak Playbook](playbook-Yoda_Speak.yml)

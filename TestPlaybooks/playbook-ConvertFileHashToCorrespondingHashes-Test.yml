@@ -1,6 +1,7 @@
 id: Test Convert file hash to corresponding hashes
 version: -1
 name: Test Convert file hash to corresponding hashes
+fromversion: 4.5.0
 description: Test playbook for the "Convert file hash to corresponding hashes" playbook
 starttaskid: "0"
 tasks:

@@ -2,6 +2,7 @@
 import MailSenderNew
 import demistomock as demisto
 import pytest
+import hmac
 
 RETURN_ERROR_TARGET = 'MailSenderNew.return_error'
 
@@ -45,8 +46,22 @@ def test_debug_smtp(mocker):
         'port': '2025'
     })
     mocker.patch.object(demisto, 'command', return_value='test-module')
+    demisto_error = mocker.patch.object(demisto, 'error')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     MailSenderNew.main()
     assert return_error_mock.call_count == 1
+    assert demisto_error.call_count == 1
     # LOG should at least contain: "connect: " with port
     assert MailSenderNew.LOG.messages and '2025' in MailSenderNew.LOG.messages[0]
+
+
+def test_hmac(mocker):
+    '''
+    Test that hmac is able to handle unicode user/pass
+    '''
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'identifier': unicode('user'), 'password': unicode('pass')}
+    })
+    user, password = MailSenderNew.get_user_pass()
+    res = user + hmac.HMAC(password, 'test').hexdigest()
+    assert len(res) > 0
