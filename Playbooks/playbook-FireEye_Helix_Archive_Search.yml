@@ -484,10 +484,10 @@ outputs:
   description: Number of matches for the group.
   type: number
 - contextPath: FireEyeHelixSearch.Result.RcpTo
-  description: 'Recipient of' email address.
+  description: \'Recipient of\' email address.
   type: string
 - contextPath: FireEyeHelixSearch.Result.InReplyTo
-  description: 'Reply to' email address.
+  description: \'Reply to\' email address.
   type: string
 tests:
   - No test - No instance
