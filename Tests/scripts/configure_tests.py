@@ -441,7 +441,7 @@ def enrich_for_playbook_id(given_playbook_id, given_version, playbook_names, scr
                 playbook_toversion >= given_version[1]:
 
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                tests = playbook_data.get('tests', [])
+                tests = set(playbook_data.get('tests', []))
                 if tests:
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
@@ -486,7 +486,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
         playbook_toversion = playbook_data.get('toversion', '99.99.99')
         if given_script_id in playbook_data.get('implementing_scripts', []) and playbook_toversion >= given_version[1]:
             if playbook_name not in playbook_names and playbook_name not in updated_playbook_names:
-                tests = playbook_data.get('tests', [])
+                tests = set(playbook_data.get('tests', []))
                 if tests:
                     catched_playbooks.add(playbook_name)
                     update_test_set(tests, tests_set)
@@ -497,7 +497,7 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
                                        updated_playbook_names, catched_playbooks, tests_set)
 
 
-def update_test_set(tests, tests_set):
+def update_test_set(tests_set, tests):
     for test in tests:
         tests_set.add(test)
 
