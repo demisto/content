@@ -499,7 +499,11 @@ def enrich_for_script_id(given_script_id, given_version, script_names, script_se
 
 def update_test_set(tests_set, tests):
     for test in tests:
-        tests_set.add(test)
+        try:
+            tests_set.add(test)
+        except AttributeError: # tests_set is a list
+            tests_set.append(test)
+
 
 
 def get_test_from_conf(branch_name):
