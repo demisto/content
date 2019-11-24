@@ -41,7 +41,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Symantec Data Loss Prevention let's you discover, monitor and protect your sensitive corporate information.
+description: Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.
 display: Symantec Data Loss Prevention (Beta)
 name: Symantec Data Loss Prevention
 script:
@@ -49,8 +49,8 @@ script:
   - arguments:
     - default: false
       defaultValue: 1 day
-      description: Get incidents with creation date later than specified. Given in
-        free text (e.g. '2 days')
+      description: Returns incidents with a creation date later than specified. Given in
+        free text. For example, 2 days.
       isArray: false
       name: creation_date
       required: false
@@ -61,11 +61,11 @@ script:
     name: symantec-dlp-list-incidents
     outputs:
     - contextPath: SymantecDLP.Incident.ID
-      description: The ID of the Incident
+      description: The ID of the Incident.
       type: Number
   - arguments:
     - default: false
-      description: Incident ID to get details of.
+      description: The Incident ID for which to return details.
       isArray: false
       name: incident_id
       required: true
@@ -74,12 +74,12 @@ script:
       default: true
       defaultValue: none
       description: |-
-        This argument can get the following values:
-        all - If all custom attributes are needed
-        none - If none of the custom attributes are needed
-        specific attributes - A list of custom attributes names, seperated by comma. For example: ca1,ca2,ca3
-        custom attribute group name - A list of custom attributes group names, seperated by comma. For example: cag1, cag2, cag3. This value will retrive all custom attributes in the mentioned group.
-        The value "none" is default.
+        Adds additional information to an incident. The following values can be used:
+        all - All custom attributes are needed.
+        none - None of the custom attributes are needed.
+        specific attributes - A comma separated list of custom attributes names. For example, ca1,ca2,ca3.
+        custom attribute group name - A comma separated list of custom attributes group names. For example, cag1, cag2, cag3. This value retrieves all custom attributes in the relevant group.
+        Default is none.
       isArray: false
       name: custom_attributes
       predefined:
@@ -90,8 +90,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of custom attributes names / custom attribute group names.
-        List should be comma seperated. For example: item1,item2,item3'
+      description: 'A comma separated list of custom attributes names or group names.
+        For example, item1,item2,item3.'
       isArray: false
       name: custom_data
       required: false
@@ -124,7 +124,7 @@ script:
       type: String
     - contextPath: SymantecDLP.Incident.MessageSourceType
       description: 'Indicates the Symantec DLP product that generated
-        the incident. Can be: NETWORK, DISCOVER, ENDPOINT, DIM, DAR.'
+        the incident. Can be: "NETWORK", "DISCOVER", "ENDPOINT", "DIM", and "DAR".'
       type: String
     - contextPath: SymantecDLP.Incident.MessageType
       description: Indicates the Symantec DLP product component that
@@ -146,7 +146,7 @@ script:
       description: The ID of the policy.
       type: Number
     - contextPath: SymantecDLP.Incident.BlockedStatus
-      description: Indicates whether the message was blocked or not.
+      description: Indicates whether the message was blocked.
       type: String
     - contextPath: SymantecDLP.Incident.MatchCount
       description: Indicates the number of detection rule matches in the incident.
@@ -199,7 +199,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Represents the severity level of the incident.
+      description: 'Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info".'
       isArray: false
       name: severity
       predefined:
@@ -212,7 +212,7 @@ script:
     - default: false
       description: |-
         Represents the status value of the incident.
-        You define incident status values using the
+        Define incident status values using the
         Enforce Server administration console.
       isArray: false
       name: status
@@ -307,7 +307,7 @@ script:
     name: symantec-dlp-update-incident
   - arguments:
     - default: false
-      description: Incident ID to get binaries of.
+      description: The Incident ID for which to get binaries.
       isArray: false
       name: incident_id
       required: false
@@ -315,8 +315,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Indicates whether the Web Service should include the original message
-        in the response document or not.
+      description: Whether the Web Service includes the original message
+        in the response document.
       isArray: false
       name: include_original_message
       predefined:
@@ -327,8 +327,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Indicates whether the Web Service should include all message components
-        (for example, headers and file attachments) in the response document or not.
+      description: Whether the Web Service includes all message components
+        (such as, headers and file attachments) in the response document.
       isArray: false
       name: include_all_components
       predefined:
@@ -339,7 +339,7 @@ script:
     deprecated: false
     description: |-
       Retrieves additional components of the message that generated the
-      incident, might include binary files.
+      incident. May include binary files.
     execution: true
     name: symantec-dlp-incident-binaries
     outputs:
@@ -353,7 +353,7 @@ script:
       description: The original message of the incident.
       type: String
     - contextPath: SymantecDLP.Component.ID
-      description: The ID of the component
+      description: The ID of the component.
       type: Number
     - contextPath: SymantecDLP.Component.Name
       description: The name of the component.
@@ -362,10 +362,10 @@ script:
       description: The ID of the type of the component.
       type: Number
     - contextPath: SymantecDLP.Component.Type
-      description: The type of the component
+      description: The type of the component.
       type: String
     - contextPath: SymantecDLP.Component.Content
-      description: The content of the component
+      description: The content of the component.
       type: String
     - contextPath: SymantecDLP.Component.LongID
       description: The long ID of the component.
@@ -392,7 +392,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Indicates whether image violations should be included in the Incident
+      description: Whether image violations should be included in the Incident
         Violations Response.
       isArray: false
       name: include_image_violations
@@ -416,19 +416,19 @@ script:
       description: The status code of the incident.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.Name
-      description: The name of the violationg component.
+      description: The name of the violating component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.DocumentFormat
-      description: The document format of the violationg component.
+      description: The document format of the violating component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.Type
-      description: The type of the violationg component.
+      description: The type of the violating component.
       type: String
     - contextPath: SymantecDLP.Incident.ViolatingComponent.TypeID
-      description: The type ID of the violationg component.
+      description: The type ID of the violating component.
       type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingCount
-      description: Indicates the number of policy rules that were violated.
+      description: The number of policy rules that were violated.
       type: Number
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.DocumentViolation
       description: Details about the document violation.
