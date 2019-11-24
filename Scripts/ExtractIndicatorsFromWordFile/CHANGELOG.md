@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed errors for unsupported file formats.
+Fixed an issue with unsupported file format errors.
