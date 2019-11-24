@@ -120,30 +120,6 @@ class StructureValidator(object):
         return True
 
     @staticmethod
-    def is_subset_dictionary(new_dict, old_dict):
-        # type: (dict, dict) -> bool
-        """Check if the new dictionary is a sub set of the old dictionary.
-
-        Args:
-            new_dict (dict): current branch result from _get_command_to_args
-            old_dict (dict): master branch result from _get_command_to_args
-
-        Returns:
-            bool. Whether the new dictionary is a sub set of the old dictionary.
-        """
-        for arg, required in old_dict.items():
-            if arg not in new_dict.keys():
-                return False
-
-            if required != new_dict[arg] and new_dict[arg]:
-                return False
-
-        for arg, required in new_dict.items():
-            if arg not in old_dict.keys() and required:
-                return False
-        return True
-
-    @staticmethod
     def get_file_id_from_loaded_file_data(loaded_file_data):
         # type: (dict) -> Optional[str]
         """Gets a dict and extracting its `id` field

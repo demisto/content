@@ -18,19 +18,21 @@ class Errors(object):
         return "{} Reputation object with id {} must have version {}".format(file_path, object_id, version)
 
     @staticmethod
-    def missing_outputs(command_name, missing_outputs, context_standard):
-        return "The DBotScore outputs of the reputation command {} aren't valid. Missing: {}. " \
-               "Fix according to context standard {} ".format(command_name, missing_outputs, context_standard)
+    def dbot_invalid_output(file_path, command_name, missing_outputs, context_standard):
+        return "{}: The DBotScore outputs of the reputation command {} aren't valid. Missing: {}. " \
+               "Fix according to context standard {} ".format(file_path, command_name, missing_outputs, context_standard)
 
     @staticmethod
-    def missing_dbot_description(command_name, missing_descriptions, context_standard):
-        return "The DBotScore description of the reputation command {} aren't valid. Missing: {}. " \
-               "Fix according to context standard {} ".format(command_name, missing_descriptions, context_standard)
+    def dbot_invalid_description(file_path, command_name, missing_descriptions, context_standard):
+        return "{}: The DBotScore description of the reputation command {} aren't valid. Missing: {}. " \
+               "Fix according to context standard {} "\
+            .format(file_path, command_name, missing_descriptions, context_standard)
 
     @staticmethod
-    def missing_reputation(command_name, reputation_output, context_standard):
-        return "The outputs of the reputation command {} aren't valid. The {} outputs is missing. " \
-               "Fix according to context standard {} ".format(command_name, reputation_output, context_standard)
+    def missing_reputation(file_path, command_name, reputation_output, context_standard):
+        return "{}: The outputs of the reputation command {} aren't valid. The {} outputs is missing. " \
+               "Fix according to context standard {} "\
+            .format(file_path, command_name, reputation_output, context_standard)
 
     @staticmethod
     def wrong_subtype(file_name):
@@ -51,20 +53,17 @@ class Errors(object):
         return cls.beta_in_str(file_path, 'name')
 
     @staticmethod
-    def duplicate_arg_in_file(arg, script_path):
-        return "{}: The argument '{}' is duplicated in the file, " \
-               "please remove one of its appearances.".format(str(arg), script_path)
+    def duplicate_arg_in_file(script_path, arg, command_name=None):
+        err_msg = "{}: The argument '{}' is duplicated".format(script_path, arg)
+        if command_name:
+            err_msg += " in '{}'.format(command_name)".format(command_name)
+        err_msg += ", please remove one of its appearances."
+        return err_msg
 
     @staticmethod
-    def duplicate_arg_in_integration(arg, command, integration_name):
-        return "The argument '{}' of the command '{}' is duplicated in the integration '{}', " \
-               "please remove one of its appearances.".format(str(arg), command, integration_name)
-
-    @staticmethod
-    def duplicate_param(param_name, current_integration):
-        return "The parameter '{}' of the " \
-               "integration '{}' is duplicated, please remove one of its appearances as we do not " \
-               "allow duplicated parameters".format(param_name, current_integration)
+    def duplicate_param(param_name, file_path):
+        return "{}: The parameter '{}' of the " \
+               "file is duplicated, please remove one of its appearances.".format(file_path, param_name)
 
     @staticmethod
     def added_required_fields(file_path, field):
@@ -148,3 +147,33 @@ class Errors(object):
     @staticmethod
     def unknown_file(file_path):
         return "{}:  File type is unknown, check it out.".format(file_path)
+
+    @staticmethod
+    def wrong_default_argument(file_path, arg_name, command_name):
+        return "{}: The argument '{}' of the command '{}' is not configured as default" \
+            .format(file_path, arg_name, command_name)
+
+    @staticmethod
+    def wrong_display_name(param_name, param_display):
+        return 'The display name of the {} parameter should be \'{}\''.format(param_name, param_display)
+
+    @staticmethod
+    def wrong_default_parameter(param_name):
+        return 'The default value of the {} parameter should be \'\''.format(param_name)
+
+    @staticmethod
+    def wrong_required_value(param_name):
+        return 'The required field of the {} parameter should be False'.format(param_name)
+
+    @staticmethod
+    def wrong_required_type(param_name):
+        return 'The type field of the {} parameter should be 8'.format(param_name)
+
+    @staticmethod
+    def beta_field_not_found(file_path):
+        return "{}: Beta integration yml file should have the field \"beta: true\", but was not found in the file." \
+            .format(file_path)
+
+    @staticmethod
+    def no_default_arg(file_path, command_name):
+        return "{}: Could not find default argument {} in command {}".format(file_path, command_name, command_name)

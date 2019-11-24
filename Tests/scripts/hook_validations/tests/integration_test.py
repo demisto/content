@@ -1,679 +1,202 @@
+import pytest
+from mock import patch
+from typing import Optional
+from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.integration import IntegrationValidator
 
 
-def test_removed_docker_image_on_existing_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "dockerimage": "test"
-        }
+def mock_structure(file_path=None, current_file=None, old_file=None):
+    # type: (Optional[str], Optional[dict], Optional[dict]) -> StructureValidator
+    with patch.object(StructureValidator, '__init__', lambda a, b: None):
+        structure = StructureValidator(file_path)
+        structure.is_valid = True
+        structure.scheme_name = 'integration'
+        structure.file_path = file_path
+        structure.current_file = current_file
+        structure.old_file = old_file
+        return structure
+
+
+class TestIntegrationValidator:
+    SCRIPT_WITH_DOCKER_IMAGE_1 = {"script": {"dockerimage": "test"}}
+    SCRIPT_WITH_DOCKER_IMAGE_2 = {"script": {"dockerimage": "test1"}}
+    SCRIPT_WITH_NO_DOCKER_IMAGE = {"script": {"no": "dockerimage"}}
+    EMPTY_CASE = {}
+    IS_DOCKER_IMAGE_CHANGED = [
+        (SCRIPT_WITH_DOCKER_IMAGE_1, SCRIPT_WITH_NO_DOCKER_IMAGE, True),
+        (SCRIPT_WITH_DOCKER_IMAGE_1, SCRIPT_WITH_DOCKER_IMAGE_2, True),
+        (EMPTY_CASE, EMPTY_CASE, False),
+        (EMPTY_CASE, SCRIPT_WITH_DOCKER_IMAGE_1, True),
+        (SCRIPT_WITH_DOCKER_IMAGE_1, EMPTY_CASE, True)
+    ]
+
+    @pytest.mark.parametrize("current_file, old_file, answer", IS_DOCKER_IMAGE_CHANGED)
+    def test_is_docker_image_changed(self, current_file, old_file, answer):
+        structure = mock_structure("", current_file, old_file)
+        validator = IntegrationValidator(structure)
+        assert validator.is_docker_image_changed() is answer
+
+    REQUIED_FIELDS_FALSE = {"configuration": [{"name": "test", "required": False}]}
+    REQUIED_FIELDS_TRUE = {"configuration": [{"name": "test", "required": True}]}
+    IS_ADDED_REQUIRED_FIELDS_INPUTS = [
+        (REQUIED_FIELDS_FALSE, REQUIED_FIELDS_TRUE, False),
+        (REQUIED_FIELDS_TRUE, REQUIED_FIELDS_FALSE, True),
+        (REQUIED_FIELDS_TRUE, REQUIED_FIELDS_TRUE, False),
+        (REQUIED_FIELDS_FALSE, REQUIED_FIELDS_FALSE, False)
+    ]
+
+    @pytest.mark.parametrize("current_file, old_file, answer", IS_ADDED_REQUIRED_FIELDS_INPUTS)
+    def test_is_added_required_fields(self, current_file, old_file, answer):
+        structure = mock_structure("", current_file, old_file)
+        validator = IntegrationValidator(structure)
+        assert validator.is_added_required_fields() is answer
+
+    CONFIGURATION_JSON_1 = {"configuration": [{"name": "test", "required": False}, {"name": "test1", "required": True}]}
+    EXPECTED_JSON_1 = {"test": False, "test1": True}
+    FIELD_TO_REQUIRED_INPUTS = [
+        (CONFIGURATION_JSON_1, EXPECTED_JSON_1),
+    ]
+
+    @pytest.mark.parametrize("input_json, expected", FIELD_TO_REQUIRED_INPUTS)
+    def test_get_field_to_required_dict(self, input_json, expected):
+        assert IntegrationValidator._get_field_to_required_dict(input_json) == expected
+
+    IS_CONTEXT_CHANGED_OLD = [{"name": "test", "outputs": [{"contextPath": "test"}]}]
+    IS_CONTEXT_CHANGED_NEW = [{"name": "test", "outputs": [{"contextPath": "test2"}]}]
+    IS_CONTEXT_CHANGED_ADDED_PATH = [{"name": "test", "outputs": [{"contextPath": "test"}, {"contextPath": "test2"}]}]
+    IS_CONTEXT_CHANGED_ADDED_COMMAND = [{"name": "test", "outputs": [{"contextPath": "test"}]},
+                                        {"name": "test2", "outputs": [{"contextPath": "new command"}]}]
+    IS_CHANGED_CONTEXT_INPUTS = [
+        (IS_CONTEXT_CHANGED_OLD, IS_CONTEXT_CHANGED_OLD, False),
+        (IS_CONTEXT_CHANGED_NEW, IS_CONTEXT_CHANGED_OLD, True),
+        (IS_CONTEXT_CHANGED_NEW, IS_CONTEXT_CHANGED_ADDED_PATH, True),
+        (IS_CONTEXT_CHANGED_ADDED_PATH, IS_CONTEXT_CHANGED_NEW, False),
+        (IS_CONTEXT_CHANGED_ADDED_COMMAND, IS_CONTEXT_CHANGED_OLD, False),
+        (IS_CONTEXT_CHANGED_ADDED_COMMAND, IS_CONTEXT_CHANGED_NEW, True)
+    ]
+
+    @pytest.mark.parametrize("current, old, answer", IS_CHANGED_CONTEXT_INPUTS)
+    def test_is_changed_context_path(self, current, old, answer):
+        current = {'script': {'commands': current}}
+        old = {'script': {'commands': old}}
+        structure = mock_structure("", current, old)
+        validator = IntegrationValidator(structure)
+        assert validator.is_changed_context_path() is answer
+
+    CHANGED_COMMAND_INPUT_1 = [{"name": "test", "arguments": [{"name": "test"}]}]
+    CHANGED_COMMAND_INPUT_2 = [{"name": "test", "arguments": [{"name": "test1"}]}]
+    CHANGED_COMMAND_NAME_INPUT = [{"name": "test1", "arguments": [{"name": "test1"}]}]
+    CHANGED_COMMAND_INPUT_ADDED_ARG = [{"name": "test", "arguments": [{"name": "test"}, {"name": "test1"}]}]
+    CHANGED_COMMAND_INPUT_REQUIRED = [{"name": "test", "arguments": [{"name": "test", "required": True}]}]
+    CHANGED_COMMAND_INPUT_ADDED_REQUIRED = [
+        {"name": "test", "arguments": [{"name": "test"}, {"name": "test1", "required": True}]}]
+    CHANGED_COMMAND_OR_ARG_INPUTS = [
+        (CHANGED_COMMAND_INPUT_1, CHANGED_COMMAND_INPUT_REQUIRED, False),
+        (CHANGED_COMMAND_INPUT_ADDED_REQUIRED, CHANGED_COMMAND_INPUT_1, True),
+        (CHANGED_COMMAND_INPUT_1, CHANGED_COMMAND_INPUT_ADDED_REQUIRED, True),
+        (CHANGED_COMMAND_INPUT_ADDED_ARG, CHANGED_COMMAND_INPUT_1, False),
+        (CHANGED_COMMAND_INPUT_1, CHANGED_COMMAND_INPUT_ADDED_ARG, True),
+        (CHANGED_COMMAND_INPUT_1, CHANGED_COMMAND_INPUT_2, True),
+        (CHANGED_COMMAND_NAME_INPUT, CHANGED_COMMAND_INPUT_1, True),
+        (CHANGED_COMMAND_NAME_INPUT, CHANGED_COMMAND_NAME_INPUT, False),
+    ]
+
+    @pytest.mark.parametrize("current, old, answer", CHANGED_COMMAND_OR_ARG_INPUTS)
+    def test_is_changed_command_name_or_arg(self, current, old, answer):
+        current = {'script': {'commands': current}}
+        old = {'script': {'commands': old}}
+        structure = mock_structure("", current, old)
+        validator = IntegrationValidator(structure)
+        assert validator.is_changed_command_name_or_arg() is answer
+
+    WITH_DUP = [{"name": "test"}, {"name": "test"}]
+    WITHOUT_DUP = [{"name": "test"}, {"name": "test1"}]
+    DUPLICATE_PARAMS_INPUTS = [
+        (WITH_DUP, True),
+        (WITHOUT_DUP, False)
+    ]
+
+    @pytest.mark.parametrize("current, answer", DUPLICATE_PARAMS_INPUTS)
+    def test_no_duplicate_params(self, current, answer):
+        current = {'configuration': current}
+        structure = mock_structure("", current)
+        validator = IntegrationValidator(structure)
+        assert validator.is_there_duplicate_params() is answer
+
+    WITHOUT_DUP_ARGS = [{"name": "testing", "arguments": [{"name": "test1"}, {"name": "test2"}]}]
+    WITH_DUP_ARGS = [{"name": "testing", "arguments": [{"name": "test1"}, {"name": "test1"}]}]
+    DUPLICATE_ARGS_INPUTS = [
+        (WITHOUT_DUP_ARGS, False),
+        (WITH_DUP_ARGS, True)
+    ]
+
+    @pytest.mark.parametrize("current, answer", DUPLICATE_ARGS_INPUTS)
+    def test_is_there_duplicate_args(self, current, answer):
+        current = {'script': {'commands': current}}
+        structure = mock_structure("", current)
+        validator = IntegrationValidator(structure)
+        assert validator.is_there_duplicate_args() is answer
+
+    PYTHON3_SUBTYPE = {
+        "type": "python",
+        "subtype": "python3"
     }
-    validator.current_integration = {
-        "script": {
-            "no": "dockerimage"
-        }
-    }
-
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_updated_docker_image_on_existing_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-
-    validator.old_integration = {
-        "script": {
-            "dockerimage": "test"
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "dockerimage": "test1"
-        }
-    }
-
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_not_changed_docker_image_on_existing_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {}
-    validator.current_integration = {}
-
-    assert validator.is_docker_image_changed() is False, "The script validator couldn't find the docker "\
-        "image as changed"
-
-
-def test_added_docker_image_on_existing_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-
-    validator.old_integration = {}
-    validator.current_integration = {
-        "script": {
-            "dockerimage": "test1"
-        }
-    }
-
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
-
-
-def test_added_required_field_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": False
-            }
-        ]
-    }
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": True
-            }
-        ]
-    }
-
-    assert validator.is_added_required_fields(), "The script validator couldn't find the new required fields"
-
-
-def test_changed_required_field_to_not_required_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": True
-            }
-        ]
-    }
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": False
-            }
-        ]
-    }
-
-    assert validator.is_added_required_fields() is False, "The script validator found the change to not reuquired " \
-        "as a one who breaks backward compatability"
-
-
-def test_not_changed_required_field_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": True
-            }
-        ]
-    }
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": True
-            }
-        ]
-    }
-
-    assert validator.is_added_required_fields() is False, "The script validator found a backward compatability " \
-        "change although no such change was done"
-
-
-def test_not_changed_required_field_scenario2_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": False
-            }
-        ]
-    }
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": False
-            }
-        ]
-    }
-
-    assert validator.is_added_required_fields() is False, "The script validator found a backward compatability " \
-        "change although no such change was done"
-
-
-def test_configuration_extraction():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    integration_json = {
-        "configuration": [
-            {
-                "name": "test",
-                "required": False
-            },
-            {
-                "name": "test1",
-                "required": True
-            }
-        ]
+    PYTHON2_SUBTYPE = {
+        "type": "python",
+        "subtype": "python2"
     }
 
-    expected = {
-        "test": False,
-        "test1": True
+    BLA_BLA_SUBTYPE = {
+        "type": "python",
+        "subtype": "blabla"
     }
+    INPUTS_SUBTYPE_TEST = [
+        (PYTHON2_SUBTYPE, PYTHON3_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, PYTHON2_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, PYTHON3_SUBTYPE, False),
+        (PYTHON2_SUBTYPE, PYTHON2_SUBTYPE, False)
+    ]
 
-    assert validator._get_field_to_required_dict(integration_json) == expected, "Failed to extract configuration"
+    @pytest.mark.parametrize("current, old, answer", INPUTS_SUBTYPE_TEST)
+    def test_is_changed_subtype(self, current, old, answer):
+        current, old = {'script': current}, {'script': old}
+        structure = mock_structure("", current, old)
+        validator = IntegrationValidator(structure)
+        assert validator.is_changed_subtype() is answer
 
+    INPUTS_VALID_SUBTYPE_TEST = [
+        (PYTHON2_SUBTYPE, True),
+        (PYTHON3_SUBTYPE, True),
+        ({"type": "python", "subtype": "lies"}, False)
+    ]
 
-def test_not_changed_context_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            }
-        ]
-    }
-    validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            }
-        ]
-    }
+    @pytest.mark.parametrize("current, answer", INPUTS_VALID_SUBTYPE_TEST)
+    def test_id_valid_subtype(self, current, answer):
+        current = {'script': current}
+        structure = mock_structure("", current)
+        validator = IntegrationValidator(structure)
+        assert validator.is_valid_subtype() is answer
 
-    assert validator.is_changed_context_path() is False, "The script validator found a backward compatability " \
-        "change although no such change was done"
+    DEFUALT_ARGS_2 = [
+        {"name": "email", "arguments": [{"name": "email", "required": False, "default": True}, {"name": "verbose"}]}]
+    DEFUALT_ARGS_INVALID_1 = [{"name": "file", "required": True, "default": True}, {"name": "verbose"}]
+    DEFUALT_ARGS_INVALID_2 = [
+        {"name": "email", "arguments": [{"name": "email", "required": False, "default": False}, {"name": "verbose"}]}]
+    DEFUALT_ARGS_INVALID_3 = [{"name": "file", "required": True, "default": False}, {"name": "verbose"}]
+    DEFAULT_ARGS_INPUTS = [
+        (DEFUALT_ARGS_2, True),
+        (DEFUALT_ARGS_INVALID_1, False),
+        (DEFUALT_ARGS_INVALID_2, False),
+        (DEFUALT_ARGS_INVALID_3, False),
+    ]
 
-
-def test_changed_context_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "outputs": [
-                        {
-                            "contextPath": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "outputs": [
-                        {
-                            "contextPath": "changed that"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_changed_context_path(), "The script validator didn't find a backward compatability " \
-        "issue although the context path has changed"
-
-
-def test_added_context_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            }
-        ]
-    }
-    validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    },
-                    {
-                        "contextPath": "changed that"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert validator.is_changed_context_path() is False, "The script validator didn't find a backward compatability " \
-        "issue although the context path has changed"
-
-
-def test_added_new_command_context_path_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            }
-        ]
-    }
-    validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "outputs": [
-                    {
-                        "contextPath": "test"
-                    }
-                ]
-            },
-            {
-                "name": "test2",
-                "outputs": [
-                    {
-                        "contextPath": "new command"
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert validator.is_changed_context_path() is False, "The script validator found a backward compatibility " \
-        "issue although the context path has not changed"
-
-
-def test_changed_required_arg_for_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test",
-                            "required": True
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
-        "issue although the command was added with required arg"
-
-
-def test_added_required_arg_for_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test",
-                        },
-                        {
-                            "name": "test1",
-                            "required": True
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
-        "issue although the command was added with required arg"
-
-
-def test_renamed_arg_in_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test1",
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_changed_command_name_or_arg(), "The script validator did not found a backward compatibility " \
-        "issue although the command args were renamed"
-
-
-def test_not_requires_arg_in_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    }
-                ]
-            }
-        ]
-    }
-    validator.current_integration = {
-        "commands": [
-            {
-                "name": "test",
-                "arguments": [
-                    {
-                        "name": "test"
-                    },
-                    {
-                        "name": "test1",
-                    }
-                ]
-            }
-        ]
-    }
-
-    assert validator.is_changed_command_name_or_arg() is False, "The script validator found a backward compatibility " \
-        "issue although a new not required command was added"
-
-
-def test_not_changed_command_in_integration():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.old_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "test",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_changed_command_name_or_arg() is False, "The script validator found a backward compatibility " \
-        "issue although the commands haven't changed"
-
-
-def test_no_duplicate_params():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test"
-            },
-            {
-                "name": "tes1",
-            }
-        ]
-    }
-
-    assert validator.is_there_duplicate_params() is False, \
-        "The integration validator found duplicated params although there are none"
-
-
-def test_duplicated_params():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "configuration": [
-            {
-                "name": "test"
-            },
-            {
-                "name": "test",
-            }
-        ]
-    }
-
-    assert validator.is_there_duplicate_params(), \
-        "The integration validator did not find duplicated params although there are duplicates"
-
-
-def test_no_duplicate_args():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "testing",
-                    "arguments": [
-                        {
-                            "name": "test1"
-                        },
-                        {
-                            "name": "test2"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_there_duplicate_args() is False, \
-        "The integration validator found duplicated args although there are none"
-
-
-def test_duplicated_argss():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "testing",
-                    "arguments": [
-                        {
-                            "name": "test"
-                        },
-                        {
-                            "name": "test"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-
-    assert validator.is_there_duplicate_args(), \
-        "The integration validator did not find duplicated args although there are duplicates"
-
-
-def test_is_changed_subtype_non_changed():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "python3"
-        }
-    }
-    validator.old_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "python3"
-        }
-    }
-
-    assert validator.is_changed_subtype(), \
-        "The integration validator found changed subtype while it is valid"
-
-
-def test_is_changed_subtype_changed():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "python3"
-        }
-    }
-    validator.old_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "python2"
-        }
-    }
-
-    assert validator.is_changed_subtype() is False, \
-        "The integration validator did not find changed subtype while it is changed"
-
-
-def test_valid_subtype_lies():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "type": "python",
-            "subtype": "lies"
-        }
-    }
-    validator.old_integration = None
-
-    assert validator.is_valid_subtype() is False, \
-        "The integration validator found valid subtype while it is invalid"
-
-
-def test_is_default_arguments_non_default():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "file",
-                    "arguments": [
-                        {
-                            "name": "file",
-                            "required": True,
-                            "default": False
-                        },
-                        {
-                            "name": "verbose"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.old_integration = None
-
-    assert validator.is_default_arguments() is False, \
-        "The integration validator did not find invalid arg (needed to be default and not required)"
-
-
-def test_is_default_arguments_ok():
-    validator = IntegrationValidator("temp_file", check_git=False)
-    validator.current_integration = {
-        "script": {
-            "commands": [
-                {
-                    "name": "email",
-                    "arguments": [
-                        {
-                            "name": "email",
-                            "required": False,
-                            "default": True
-                        },
-                        {
-                            "name": "verbose"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    validator.old_integration = None
-
-    assert validator.is_default_arguments() is True, \
-        "The integration validator found an invalid command arg while it is valid"
+    @pytest.mark.parametrize("current, answer", DEFAULT_ARGS_INPUTS)
+    def test_is_valid_default_arguments(self, current, answer):
+        current = {"script": {"commands": current}}
+        structure = mock_structure("", current)
+        validator = IntegrationValidator(structure)
+        validator.current_file = current
+        assert validator.is_valid_default_arguments() is answer
 
 
 def test_is_outputs_for_reputations_commands_valid():
@@ -899,7 +422,7 @@ def test_new_beta_integration_with_beta_substring_in_name():
 
 
 def test_cahnged_beta_integration_with_beta_substring_in_is_and_name():
-    validator = IntegrationValidator("temp_file", check_git=False)
+    validator = IntegrationValidator()
     validator.old_integration = {
         "commonfields": {
             "id": "newIntegration beta"
