@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Data Loss Prevention",
+            "playbookID": "Symantec Data Loss Prevention - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
@@ -835,18 +840,7 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "instance_names": "virus_total_general",
-            "playbookID": "ip_enrichment_generic_test"
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "OpenPhish",
-            "playbookID": "email_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -1956,6 +1950,9 @@
         }
     ],
     "skipped_tests": {
+        "Symantec Data Loss Prevention - Test": "Issue 20134",
+        "urlscan_malicious_Test": "Issue 19727",
+        "VxStream Test": "Issue 19439",
         "minemeld_test": "Issue 20265",
         "rsa_packets_and_logs_test": "Issue 20262",
         "Cloaken-Test": "Issue 20036",
@@ -1978,8 +1975,6 @@
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "ip_enrichment_generic_test": "Issue 19815",
-        "email_test": "Issue 19816",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",

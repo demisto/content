@@ -207,10 +207,11 @@ class FilesValidator(object):
         """
         for file_path in modified_files:
             old_file_path = None
-            is_python_file = FilesValidator.is_py_script_or_integration(file_path)
 
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
+
+            is_python_file = FilesValidator.is_py_script_or_integration(file_path)
 
             print('Validating {}'.format(file_path))
             if not checked_type(file_path):
