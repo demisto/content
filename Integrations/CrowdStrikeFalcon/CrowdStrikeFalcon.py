@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 import json
 import requests
 import base64
+from dateutil.parser import parse
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -219,7 +220,7 @@ def detection_to_incident(detection):
     """
     incident = {
         'name': 'Detection ID: ' + str(detection.get('detection_id')),
-        'occurred': str(detection.get('first_behavior')),
+        'occurred': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
         'severity': severity_string_to_int(detection.get('max_severity_displayname'))
     }
@@ -364,6 +365,31 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
     elif last_behavior_time:
         params['filter'] = "first_behavior:>'{0}'".format(last_behavior_time)
+
+    response = http_request('GET', endpoint_url, params)
+    return response
+
+
+def get_fetch_detections(last_created_timestamp=None, behavior_id=None, filter_arg=None):
+    """
+        Sends detections request. The function will ignore the arguments passed according to priority:
+        filter_arg > behavior_id > last_behavior_time
+
+        :param last_created_timestamp: 3rd priority. The created timestamp of results will be greater than this value
+        :param behavior_id: 2nd priority. The result will only contain the detections with matching behavior id
+        :param filter_arg: 1st priority. The result will be filtered using this argument.
+        :return: Response json of the get detection endpoint (IDs of the detections)
+    """
+    endpoint_url = '/detects/queries/detects/v1'
+    params = {
+        'sort': 'first_behavior.asc'
+    }
+    if filter_arg:
+        params['filter'] = filter_arg
+    elif behavior_id:
+        params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
+    elif last_created_timestamp:
+        params['filter'] = "created_timestamp:>'{0}'".format(last_created_timestamp)
 
     response = http_request('GET', endpoint_url, params)
     return response
@@ -586,6 +612,25 @@ def lift_host_containment(ids):
     return http_request('POST', '/devices/entities/devices-actions/v2', data=data, params=params)
 
 
+def timestamp_length_equalization(timestamp1, timestamp2):
+    """
+        Makes sure the timestamps are of the same length.
+    Args:
+        timestamp1: a timestamp
+        timestamp2: a timestamp
+
+    Returns:
+        the two timestamps in the same length (the shorter one)
+    """
+    if len(str(timestamp1)) > len(str(timestamp2)):
+        timestamp1 = str(timestamp1)[:len(str(timestamp2))]
+
+    else:
+        timestamp2 = str(timestamp2)[:len(str(timestamp1))]
+
+    return int(timestamp1), int(timestamp2)
+
+
 ''' COMMANDS FUNCTIONS '''
 
 
@@ -601,28 +646,51 @@ def fetch_incidents():
     # Handle first time fetch, fetch incidents retroactively
     if last_fetch is None:
         last_fetch, _ = parse_date_range(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-    last_fetch_timestamp = date_to_timestamp(last_fetch, date_format='%Y-%m-%dT%H:%M:%SZ')
-    fetch_query = demisto.params().get('fetch_query')
-    if fetch_query:
-        fetch_query = "first_behavior:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
-        detections_ids = demisto.get(get_detections(filter_arg=fetch_query), 'resources')
+
+    # timestamp creation excepts only '%Y-%m-%dT%H:%M:%SZ' date format
+    if '.' in last_fetch:
+        last_fetch_for_timestamp = last_fetch.split('.')[0] + 'Z'
+
     else:
-        detections_ids = demisto.get(get_detections(last_behavior_time=last_fetch), 'resources')
+        last_fetch_for_timestamp = last_fetch
+
+    last_fetch_timestamp = date_to_timestamp(last_fetch_for_timestamp, date_format='%Y-%m-%dT%H:%M:%SZ')
+
+    fetch_query = demisto.params().get('fetch_query')
+
+    if fetch_query:
+        fetch_query = "created_timestamp:>'{time}'+{query}".format(time=last_fetch, query=fetch_query)
+        detections_ids = demisto.get(get_fetch_detections(filter_arg=fetch_query), 'resources')
+
+    else:
+        detections_ids = demisto.get(get_fetch_detections(last_created_timestamp=last_fetch), 'resources')
     incidents = []
+
     if detections_ids:
         # Limit the results to INCIDENTS_PER_FETCH`z
         detections_ids = detections_ids[0:INCIDENTS_PER_FETCH]
         raw_res = get_detections_entities(detections_ids)
+
         if "resources" in raw_res:
             for detection in demisto.get(raw_res, "resources"):
                 incident = detection_to_incident(detection)
                 incident_date = incident['occurred']
-                incident_date_timestamp = date_to_timestamp(incident_date, date_format='%Y-%m-%dT%H:%M:%SZ')
+                incident_date_timestamp = int(parse(incident_date).timestamp())
+
+                # make sure that the two timestamps are in the same length
+                if len(str(incident_date_timestamp)) != len(str(last_fetch_timestamp)):
+                    incident_date_timestamp, last_fetch_timestamp = timestamp_length_equalization(
+                        incident_date_timestamp, last_fetch_timestamp)
+
                 # Update last run and add incident if the incident is newer than last fetch
                 if incident_date_timestamp > last_fetch_timestamp:
                     last_fetch = incident_date
+                    last_fetch_timestamp = incident_date_timestamp
+
                 incidents.append(incident)
+
         demisto.setLastRun({'first_behavior_time': last_fetch})
+
     return incidents
 
 
