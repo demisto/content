@@ -2,7 +2,7 @@ import os
 import re
 from abc import abstractmethod
 
-from Tests.scripts.error_constants import Errors
+from Tests.scripts.constants import Errors
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.test_utils import print_error, print_warning, get_release_notes_file_path, get_latest_release_notes_text, \
     run_command

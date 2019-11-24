@@ -1,11 +1,7 @@
-from abc import ABC
-from typing import Optional
-
-from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES
-from Tests.scripts.error_constants import Errors
+from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, Errors
 from Tests.scripts.hook_validations.base_validator import BaseValidator
 from Tests.scripts.hook_validations.tests_constants import BANG_COMMAND_NAMES, DBOT_SCORES_DICT, IOC_OUTPUTS_DICT
-from Tests.test_utils import print_error, get_yaml, print_warning, get_remote_file, server_version_compare, \
+from Tests.test_utils import print_error, print_warning, server_version_compare, \
     get_dockerimage45
 
 
@@ -49,12 +45,12 @@ class IntegrationValidator(BaseValidator):
         ]
         return all(answers)
 
-    def is_valid_beta_integration(self, is_new=False):
-        # type: (bool) -> bool
+    def is_valid_beta_integration(self):
+        # type: () -> bool
         """Check whether the beta Integration is valid or not, update the _is_valid field to determine that"""
         answers = [
             self.is_valid_default_arguments(),
-            self.is_valid_beta(is_new)
+            self.is_valid_beta()
         ]
         return all(answers)
 
@@ -102,12 +98,11 @@ class IntegrationValidator(BaseValidator):
         # type: () -> bool
         """Check that the integration category is in the schema."""
         category = self.current_file.get('category', None)
-        if not category or category not in INTEGRATION_CATEGORIES:
+        if category not in INTEGRATION_CATEGORIES:
             self.is_valid = False
-            print_error("The category '{}' is not in the integration schemas, the valid options are:\n{}".format(
-                category, '\n'.join(INTEGRATION_CATEGORIES)))
-
-        return self.is_valid
+            print_error(Errors.wrong_category(self.file_path, category))
+            return False
+        return True
 
     def is_valid_default_arguments(self):
         # type: () -> bool
@@ -151,7 +146,7 @@ class IntegrationValidator(BaseValidator):
         for command in commands:
             command_name = command.get('name')
             # look for reputations commands
-            if command_name in ['domain', 'email', 'file', 'ip', 'url']:
+            if command_name in BANG_COMMAND_NAMES:
                 context_outputs_paths = set()
                 context_outputs_descriptions = set()
                 for output in command.get('outputs', []):
