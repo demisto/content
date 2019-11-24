@@ -58,8 +58,22 @@ configuration:
   name: bot_name
   required: false
   type: 0
-- display: Bot icon in Slack - URL Image (Demisto icon by default)
+- display: Bot icon in Slack - Image URL (Demisto icon by default)
   name: bot_icon
+  required: false
+  type: 0
+- defaultvalue: '60'
+  display: Maximum time to wait for a rate limiting call in seconds
+  name: max_limit_time
+  required: false
+  type: 0
+- defaultvalue: '200'
+  display: Number of objects to return in each paginated call
+  name: paginated_count
+  required: false
+  type: 0
+- display: Proxy URL to use in Slack API calls
+  name: proxy_url
   required: false
   type: 0
 description: Send messages and notifications to your Slack team.
@@ -506,7 +520,7 @@ script:
     - contextPath: Slack.User.Email
       description: The email address of the user.
       type: String
-  dockerimage: demisto/slack:1.0.0.2218
+  dockerimage: demisto/slack:1.0.0.4131
   isfetch: false
   longRunning: true
   longRunningPort: false
