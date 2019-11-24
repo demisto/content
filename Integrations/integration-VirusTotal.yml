@@ -386,7 +386,8 @@ script:
         for (z = 0; z < ipList.length; z++) {
             ip = ipList[z];
             if (!isValidIP(ip)) {
-                return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
+                entryList.push({Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text});
+                continue:
             }
             if (!threshold) {
                 threshold = IP_THRESHOLD || 10;
@@ -400,8 +401,9 @@ script:
             var ec = {};
             if (o.response_code === 0) {
                 ec.DBotScore = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
-                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                    HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
+                entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg});
+                continue;
             }
             full_response = FULL_RESPONSE? 'true': fullResponse;
             if (fullResponse === 'true'){
@@ -522,8 +524,9 @@ script:
             var ec = {};
             if (o.response_code === 0) {
                 ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
-                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                    HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
+                entryList({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg});
+                continue;
             }
             var md = '## VirusTotal URL Reputation for: ' + url + '\n';
             if (!o.scans && submitWait>0) {
@@ -625,8 +628,9 @@ script:
             var ec = {};
             if (o.response_code === 0) {
                 ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
-                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
-                    HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
+                entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
+                    HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg});
+                continue:
             }
             full_response = FULL_RESPONSE? 'true': fullResponse;
             if (fullResponse === 'true') {
