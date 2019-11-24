@@ -244,7 +244,7 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True, is_integration=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -257,7 +257,7 @@ class FilesValidator(object):
                 if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True, is_integration=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -269,7 +269,8 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -283,7 +284,8 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -343,7 +345,8 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -352,7 +355,8 @@ class FilesValidator(object):
                     re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=False)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
@@ -367,7 +371,8 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False)
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
                     if not docker_image_validator.is_docker_image_valid():
                         self._is_valid = False
 
