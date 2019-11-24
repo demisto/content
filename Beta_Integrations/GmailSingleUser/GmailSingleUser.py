@@ -133,7 +133,7 @@ class Client:
                 return access_token
 
         body = json.dumps({'app_name': 'google',
-                          'registration_id': REG_ID,
+                          'registration_id': AUTH_ID,
                            'encrypted_token': self.get_encrypted(REFRESH_TOKEN, ENC_KEY)})
 
         h = httplib2.Http(disable_ssl_certificate_validation=not DISABLE_SSL)
