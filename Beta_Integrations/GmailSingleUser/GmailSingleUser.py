@@ -37,7 +37,7 @@ REG_ID = params.get('registration_id', '').split('@')
 AUTH_ID = REG_ID[0]
 
 if len(REG_ID) != 2:
-    TOKEN_RETRIEVAL_URL = 'oproxy.demisto.ninja/gmail-obtain-token'  # disable-secrets-detection
+    TOKEN_RETRIEVAL_URL = 'https://oproxy.demisto.ninja/gmail-obtain-token'  # disable-secrets-detection
 else:
     TOKEN_RETRIEVAL_URL = REG_ID[1]
 
