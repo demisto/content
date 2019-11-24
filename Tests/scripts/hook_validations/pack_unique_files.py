@@ -56,8 +56,11 @@ class PackUniqueFilesValidator():
     # secrets validation
     def validate_secrets_file(self):
         """Validate everything related to .secrets-ignore file"""
-        if self._is_pack_file_exists(self.secrets_file):
-            self._is_secrets_file_structure_valid()
+        if all([self._is_pack_file_exists(self.secrets_file),
+                self._is_secrets_file_structure_valid()]):
+            return True
+
+        return False
 
     def _is_secrets_file_structure_valid(self):
         """Check if .secrets-ignore structure is parse-able"""
@@ -73,8 +76,11 @@ class PackUniqueFilesValidator():
     # pack ignore validation
     def validate_pack_ignore_file(self):
         """Validate everything related to .pack-ignore file"""
-        if self._is_pack_file_exists(self.pack_ignore_file):
-            self._is_pack_ignore_file_structure_valid()
+        if all([self._is_pack_file_exists(self.pack_ignore_file),
+                self._is_pack_ignore_file_structure_valid()]):
+            return True
+
+        return False
 
     def _is_pack_ignore_file_structure_valid(self):
         """Check if .pack-ignore structure is parse-able & has valid regex"""
@@ -93,8 +99,11 @@ class PackUniqueFilesValidator():
     # pack metadata validation
     def validate_pack_meta_file(self):
         """Validate everything related to pack-metadata.json file"""
-        if self._is_pack_file_exists(self.pack_meta_file):
-            self._is_pack_meta_file_structure_valid()
+        if all([self._is_pack_file_exists(self.pack_meta_file),
+                self._is_pack_meta_file_structure_valid()]):
+            return True
+
+        return False
 
     def _is_pack_meta_file_structure_valid(self):
         """Check if pack-metadata.json structure is json parse-able"""
@@ -110,11 +119,17 @@ class PackUniqueFilesValidator():
     # pack README.md validation
     def validate_readme_file(self):
         """Validate everything related to README.md file"""
-        self._is_pack_file_exists(self.readme_file)
+        if all([self._is_pack_file_exists(self.readme_file)]):
+            return True
+
+        return False
 
     def validate_pack_unique_files(self):
         """Main Execution Method"""
-        self.validate_secrets_file()
-        self.validate_pack_ignore_file()
-        self.validate_pack_meta_file()
-        self.validate_readme_file()
+        if all([self.validate_secrets_file(),
+                self.validate_pack_ignore_file(),
+                self.validate_pack_meta_file(),
+                self.validate_readme_file()]):
+            return True
+
+        return False
