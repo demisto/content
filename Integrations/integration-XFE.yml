@@ -94,10 +94,10 @@ script:
 
 
     function doFile(hash, longFormat) {
-        var hash_list = argToList(hash);
-        var entry_list = [];
-        for (i = 0; i < hash_list.length; i++) {
-            hash = hash_list[i];
+        var hashList = argToList(hash);
+        var entryList = [];
+        for (i = 0; i < hashList.length; i++) {
+            hash = hashList[i];
             var res = doReq('GET', 'malware/' + hash);
             if (res.statusCode === 404) {
                 return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -150,9 +150,9 @@ script:
                     md += objToMd(o.origins.external) + '\n';
                 }
             }
-            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entry_list;
+        return entryList;
     }
 
 
@@ -163,10 +163,10 @@ script:
         threshold = parseInt(threshold);
         // Need to make sure to be backwards compatible with the JSON
 
-        var ip_list = argToList(ip);
-        var entry_list = [];
-        for (i = 0; i < ip_list.length; i++) {
-            ip = ip_list[i];
+        var ipList = argToList(ip);
+        var entryList = [];
+        for (i = 0; i < ipList.length; i++) {
+            ip = ipList[i];
             var res = {};
             var ipRes = doReq('GET', 'ipr/' + ip);
             if (ipRes.statusCode === 404) {
@@ -210,9 +210,9 @@ script:
                     md += arrToMd(res.malware.malware) + '\n';
                 }
             }
-            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entryList.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entry_list;
+        return entryList;
     };
 
 
@@ -223,10 +223,10 @@ script:
 
         threshold = parseInt(threshold);
 
-        var url_list = argToList(url);
-        var entry_list = [];
-        for (i = 0; i < url_list.length; i++) {
-            url = url_list[i];
+        var urlList = argToList(url);
+        var entryList = [];
+        for (i = 0; i < urlList.length; i++) {
+            url = urlList[i];
             // Need to make sure to be backwards compatible with the JSON
             var res = {};
             var resolutionRes = doReq('GET', 'resolve/' + url);
@@ -264,10 +264,10 @@ script:
                 dbotScore = 1;
             }
             ec.URL = {Data: url};
-            ec.DBotScore = {Indicator: url, Type: 'url', Vendor: 'XFE', Score: dbotScore};
+            var indicatorType = 'url';
             if (isDomain) {
               ec.Domain = {Name: url};
-              ec.DBotScore = {Indicator: url, Type: 'domain', Vendor: 'XFE', Score: dbotScore};
+              indicatorType = 'domain';
             }
             ec.DBotScore = {Indicator: url, Type: indicatorType, Vendor: 'XFE', Score: dbotScore};
             var md = '## X-Force URL Reputation for: ' + url + '\n';
@@ -299,9 +299,9 @@ script:
                     md += arrToMd(res.malware.malware);
                 }
             }
-            entry_list.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entryList.push({Type: entryTypes.note, Contents: JSON.stringify(res), ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entry_list;
+        return entryList;
     };
 
 
@@ -353,10 +353,10 @@ script:
 
 
     function doCVE(cve) {
-      var cve_list = argToList(cve);
-      var entry_list = [];
-      for (i = 0; i < cve_list.length; i++) {
-        cve = cve_list[i];
+      var cveList = argToList(cve);
+      var entryList = [];
+      for (i = 0; i < cveList.length; i++) {
+        cve = cveList[i];
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         if (res.statusCode === 404) {
           return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
@@ -377,9 +377,9 @@ script:
         } else {
           md += 'No result found.';
         }
-        entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
+        entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: context});
       }
-      return entry_list;
+      return entryList;
     }
 
 
