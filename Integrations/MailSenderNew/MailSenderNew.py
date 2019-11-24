@@ -17,6 +17,7 @@ import re
 import random
 import string
 import smtplib
+import traceback
 import sys
 
 SERVER = None
@@ -300,6 +301,13 @@ def create_msg():
     return msg.as_string(), to, cc, bcc
 
 
+def get_user_pass():
+    if demisto.getParam('credentials'):
+        return (str(demisto.getParam('credentials').get('identifier', '')),
+                str(demisto.getParam('credentials').get('password', '')))
+    return (None, None)
+
+
 def swap_stderr(new_stderr):
     '''swap value of stderr if given, return old value.
 
@@ -332,12 +340,14 @@ def main():
         # TODO - support for non-valid certs
         if demisto.getParam('tls'):
             SERVER.starttls()
-        if demisto.getParam('credentials') and demisto.getParam('credentials').get('identifier') and demisto.getParam('credentials').get('password'):  # noqa: E501
-            SERVER.login(demisto.getParam('credentials')['identifier'], demisto.getParam('credentials')['password'])
+        user, password = get_user_pass()
+        if user:
+            SERVER.login(user, password)
     except Exception as e:
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore
         smtplib.SMTP.debuglevel = 0
+        demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
