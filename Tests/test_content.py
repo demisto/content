@@ -57,11 +57,12 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, failed_unittest,
                        unmocklable_integrations, proxy, is_ami=True):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
+    failed_unittest_count = len(failed_unittest)
     rerecorded_count = len(proxy.rerecorded_tests) if is_ami else 0
     empty_mocks_count = len(proxy.empty_files) if is_ami else 0
     unmocklable_integrations_count = len(unmocklable_integrations)
@@ -74,6 +75,11 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
+
+    if failed_unittest_count > 0:
+        print_error('\t Number of failed unittests - ' + str(failed_unittest) + ':')
+        for unittest in failed_unittest:
+            print_error('\t - ' + unittest)
 
     if rerecorded_count > 0:
         print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
@@ -302,13 +308,15 @@ def retrieve_id(circle_user_name, sc):
     return user_id
 
 
-def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
+def create_result_files(failed_playbooks, skipped_integration, skipped_tests, failed_unittest):
     with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
         failed_tests_file.write('\n'.join(failed_playbooks))
     with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
         skipped_tests_file.write('\n'.join(skipped_tests))
     with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
         skipped_integrations_file.write('\n'.join(skipped_integration))
+    with open('./Tests/failed_unittest.txt', "w") as failed_unittest_file:
+        failed_unittest_file.write('\n'.join(failed_unittest))
 
 
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
@@ -552,6 +560,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
         proxy = MITMProxy(server_ip)
 
     failed_playbooks = []
+    failed_unittest = []
     succeed_playbooks = []
     skipped_tests = set([])
     skipped_integration = set([])
@@ -577,7 +586,7 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
             run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                               skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
                               is_filter_configured,
-                              filtered_tests, skipped_tests, secret_params, failed_playbooks,
+                              filtered_tests, skipped_tests, secret_params, failed_playbooks, failed_unittest,
                               unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                               build_name, server_numeric_version, demisto_api_key)
 
@@ -589,15 +598,15 @@ def execute_testing(server, server_ip, server_version, server_numeric_version, i
     for t in mockless_tests:
         run_test_scenario(t, proxy, default_test_timeout, skipped_tests_conf, nightly_integrations,
                           skipped_integrations_conf, skipped_integration, is_nightly, run_all_tests,
-                          is_filter_configured,
+                          is_filter_configured, failed_unittest,
                           filtered_tests, skipped_tests, secret_params, failed_playbooks,
                           unmockable_integrations, succeed_playbooks, slack, circle_ci, build_number, server,
                           build_name, server_numeric_version, demisto_api_key, is_ami)
 
     print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, unmockable_integrations,
-                       proxy, is_ami)
+                       proxy, is_ami, failed_unittest)
 
-    create_result_files(failed_playbooks, skipped_integration, skipped_tests)
+    create_result_files(failed_playbooks, skipped_integration, skipped_tests, failed_unittest)
 
     if is_ami and build_name == 'master':
         print("Pushing new/updated mock files to mock git repo.")
