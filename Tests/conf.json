@@ -1956,7 +1956,8 @@
         },
         {
           "integrations": "EWS v2",
-          "playbookID": "Get EWS Folder Test"
+          "playbookID": "Get EWS Folder Test",
+          "fromversion": "4.5.0"
         }
     ],
     "skipped_tests": {
