@@ -65,6 +65,7 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
+            "timeout" : 2400,
             "fromversion": "5.0.0"
         },
         {
@@ -2064,7 +2065,6 @@
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
-        "SlackV2": "Issue 19558",
 
         "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
