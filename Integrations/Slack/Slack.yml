@@ -72,6 +72,10 @@ configuration:
   name: paginated_count
   required: false
   type: 0
+- display: Proxy URL to use in Slack API calls
+  name: proxy_url
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2

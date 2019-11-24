@@ -1671,7 +1671,8 @@ def init_globals():
     BOT_TOKEN = demisto.params().get('bot_token')
     ACCESS_TOKEN = demisto.params().get('access_token')
     PROXIES = handle_proxy()
-    PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
+    proxy_url = demisto.params().get('proxy_url')
+    PROXY_URL = proxy_url or PROXIES.get('http')  # aiohttp only supports http proxy
     DEDICATED_CHANNEL = demisto.params().get('incidentNotificationChannel')
     CLIENT = slack.WebClient(token=BOT_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
     CHANNEL_CLIENT = slack.WebClient(token=ACCESS_TOKEN, proxy=PROXY_URL, ssl=SSL_CONTEXT)
