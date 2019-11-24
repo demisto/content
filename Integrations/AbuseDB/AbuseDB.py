@@ -208,8 +208,9 @@ def createEntry(context_ip, context_ip_generic, human_readable, dbot_scores, tit
 
 
 def check_ip_command(ip, days=MAX_AGE, verbose=VERBOSE, threshold=THRESHOLD):
-    params = {}
-    params["maxAgeInDays"] = days
+    params = {
+        "maxAgeInDays": days
+    }
     if verbose:
         params['verbose'] = "verbose"
     ip_list = argToList(ip)
