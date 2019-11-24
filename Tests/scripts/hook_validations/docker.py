@@ -27,10 +27,6 @@ class DockerImageValidator(object):
         self.is_integration = is_integration
         self.yml_file = get_yaml(yml_file_path)
         self.from_version = self.yml_file.get('fromversion', '0')
-        if is_integration:
-            docker_image = self.yml_file.get('script').get('dockerimage', '')
-        else:
-            docker_image = self.yml_file.get('dockerimage', '')
         self.docker_image_name, self.docker_image_tag = DockerImageValidator.parse_docker_image(
             DockerImageValidator.get_docker_image_from_yml(self.yml_file, self.is_integration))
         self.is_latest_tag = True
