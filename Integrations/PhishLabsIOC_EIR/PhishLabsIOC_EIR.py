@@ -285,7 +285,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Optional[str]]:
+        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -347,7 +347,7 @@ def fetch_incidents_command(
 
         new_last_run = incidents_report[-1].get('occurred')
     # Return results
-    return incidents_report, new_last_run
+    return incidents_report, {'lastRun': new_last_run}
 
 
 @logger
@@ -448,7 +448,7 @@ def main():
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun(),
+                                                              last_run=demisto.getLastRun().get('lastRun'),
                                                               limit=params.get('fetchLimit'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
