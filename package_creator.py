@@ -174,7 +174,7 @@ def insert_description_to_yml(dir_name, package_path, yml_data, yml_text):
 
 
 def get_data(dir_name, package_path, extension):
-    data_path = glob.glob(package_path + extension)
+    data_path = glob.glob(os.path.join(package_path, extension))
     data = None
     found_data_path = None
     if dir_name in ('Integrations', 'Beta_Integrations') and data_path:
