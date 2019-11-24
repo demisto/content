@@ -11,7 +11,7 @@ args:
   isArray: false
   name: modelName
   required: false
-  secret: false
+  secret: FFF
 comment: 'import a file contains a ML model '
 commonfields:
   id: ImportMLModel
@@ -28,4 +28,5 @@ type: python
 dockerimage: demisto/python3:3.7.5.3471
 runas: DBotWeakRole
 runonce: false
-tests: no
+tests:
+  - No tests
