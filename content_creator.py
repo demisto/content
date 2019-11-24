@@ -97,8 +97,8 @@ def add_tools_to_bundle(bundle):
 
 # modify incident fields file to contain only `incidentFields` field (array)
 # from { "incidentFields": [...]} to [...]
-def convert_incident_fields_to_array():
-    scan_files = glob.glob(os.path.join(INCIDENT_FIELDS_DIR, '*.json'))
+def convert_incident_fields_to_array(incident_fields_dir=INCIDENT_FIELDS_DIR):
+    scan_files = glob.glob(os.path.join(incident_fields_dir, '*.json'))
     for path in scan_files:
         with open(path, 'r+') as file_:
             data = json.load(file_)
@@ -110,10 +110,10 @@ def convert_incident_fields_to_array():
 
 
 def copy_yaml_post(path, out_path, yml_info):
-    dirname = os.path.dirname(path)
-    if dirname in DIR_TO_PREFIX.keys() and not os.path.basename(path).startswith('playbook-'):
+    parent_dir_name = os.path.basename(os.path.dirname(path))
+    if parent_dir_name in DIR_TO_PREFIX.keys() and not os.path.basename(path).startswith('playbook-'):
         script_obj = yml_info
-        if dirname != 'Scripts':
+        if parent_dir_name != 'Scripts':
             script_obj = yml_info['script']
         with io.open(path, mode='r', encoding='utf-8') as file_:
             yml_text = file_.read()
@@ -125,8 +125,8 @@ def copy_yaml_post(path, out_path, yml_info):
     shutil.copyfile(path, out_path)
 
 
-def copy_dir_yml(dir_name, bundle_post):
-    scan_files = glob.glob(os.path.join(dir_name, '*.yml'))
+def copy_dir_yml(dir_path, bundle_post):
+    scan_files = glob.glob(os.path.join(dir_path, '*.yml'))
     post_files = 0
     for path in scan_files:
         if len(os.path.basename(path)) >= MAX_FILE_NAME:
@@ -142,9 +142,10 @@ def copy_dir_yml(dir_name, bundle_post):
     print(f' - total files: {post_files}')
 
 
-def copy_dir_json(dir_name, bundle_post):
+def copy_dir_json(dir_path, bundle_post):
     # handle *.json files
-    scan_files = glob.glob(os.path.join(dir_name, '*.json'))
+    dir_name = os.path.basename(dir_path)
+    scan_files = glob.glob(os.path.join(dir_path, '*.json'))
     for path in scan_files:
         dpath = os.path.basename(path)
         # this part is a workaround because server doesn't support indicatorfield-*.json naming
@@ -167,9 +168,9 @@ def copy_dir_files(*args):
     copy_dir_yml(*args)
 
 
-def copy_test_files(bundle_test):
+def copy_test_files(bundle_test, test_playbooks_dir=TEST_PLAYBOOKS_DIR):
     print('Copying test files to test bundle')
-    scan_files = glob.glob(os.path.join(TEST_PLAYBOOKS_DIR, '*'))
+    scan_files = glob.glob(os.path.join(test_playbooks_dir, '*'))
     for path in scan_files:
         if os.path.isdir(path):
             non_circle_tests = glob.glob(os.path.join(path, '*'))
