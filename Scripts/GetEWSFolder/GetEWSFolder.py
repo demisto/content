@@ -3,7 +3,9 @@ from CommonServerPython import *
 
 def convert_mail_to_json(item, folder):
     return {
-        'subject-body': '{} {}'.format(item.get('subject', ''), item.get('textBody') or item.get('body')),
+        'subject': item.get('subject', ''),
+        'textBody': item.get('textBody', ''),
+        'body': item.get('body', ''),
         'folder': folder
     }
 
@@ -17,7 +19,8 @@ def main():
         res = demisto.executeCommand('ews-get-items-from-folder', {
             'folder-path': folder,
             'limit': demisto.args().get('limit'),
-            'target-mailbox': demisto.args().get('targetMailbox')
+            'target-mailbox': demisto.args().get('targetMailbox'),
+            'is-public': 'False' if demisto.args().get('isPublic') == 'false' else 'True'
         })
         if is_error(res):
             return_error(get_error(res))
