@@ -31,6 +31,9 @@ def get_docker_images(script_obj):
     alt_imgs = script_obj.get('alt_dockerimages')
     if alt_imgs:
         imgs.extend(alt_imgs)
+    if 'dockerimage45' in script_obj:
+        img45 = script_obj.get('dockerimage45') or DEF_DOCKER
+        imgs.append(img45)
     return imgs
 
 
@@ -59,8 +62,8 @@ def get_python_version(docker_image):
                                      universal_newlines=True, stderr=stderr_out).strip()
     print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
-    if py_num < 2.7 or (py_num > 3 and py_num < 3.4):  # pylint can only work on python 3.4 and up
-        raise ValueError("Python vesion for docker image: {} is not supported: {}. "
+    if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
+        raise ValueError("Python version for docker image: {} is not supported: {}. "
                          "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
     return py_num
 
@@ -148,7 +151,7 @@ def docker_image_create(docker_base_image, requirements):
     lock_file = ".lock-" + target_image.replace("/", "-")
     try:
         if (time.time() - os.path.getctime(lock_file)) > (60 * 5):
-            print("{}: Deleting old lock file: {}".format(datetime.now(). lock_file))
+            print("{}: Deleting old lock file: {}".format(datetime.now(), lock_file))
             os.remove(lock_file)
     except Exception as ex:
         print_v("Failed check and delete for lock file: {}. Error: {}".format(lock_file, ex))
@@ -160,7 +163,8 @@ def docker_image_create(docker_base_image, requirements):
             print('{}: Using already existing docker image: {}'.format(datetime.now(), target_image))
             return target_image
         if wait_print:
-            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(), target_image))
+            print("{}: Existing image: {} not found will obtain lock file or wait for image".format(datetime.now(),
+                                                                                                    target_image))
             wait_print = False
         print_v("Trying to obtain lock file: " + lock_file)
         try:
@@ -180,7 +184,8 @@ def docker_image_create(docker_base_image, requirements):
             print("Pull succeeded with output: {}".format(pull_res))
             return target_image
         except subprocess.CalledProcessError as cpe:
-            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode, cpe.output))
+            print_v("Failed docker pull (will create image) with status: {}. Output: {}".format(cpe.returncode,
+                                                                                                cpe.output))
         print("{}: Creating docker image: {} (this may take a minute or two...)".format(datetime.now(), target_image))
         container_id = subprocess.check_output(
             ['docker', 'create', '-i', docker_base_image, 'sh', '/' + CONTAINER_SETUP_SCRIPT_NAME],
@@ -225,9 +230,12 @@ def docker_run(project_dir, docker_image, no_test, no_lint, keep_container, use_
     run_params.extend([docker_image, 'sh', './{}'.format(RUN_SH_FILE_NAME)])
     container_id = subprocess.check_output(run_params, universal_newlines=True).strip()
     try:
-        subprocess.check_call(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir])
-        subprocess.check_call(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir])
-        subprocess.check_call(['docker', 'start', '-a', container_id])
+        print(subprocess.check_output(['docker', 'cp', project_dir + '/.', container_id + ':' + workdir],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
+        print(subprocess.check_output(['docker', 'cp', RUN_SH_FILE, container_id + ':' + workdir],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
+        print(subprocess.check_output(['docker', 'start', '-a', container_id],
+                                      universal_newlines=True, stderr=subprocess.STDOUT))
     finally:
         if not keep_container:
             subprocess.check_output(['docker', 'rm', container_id])
@@ -301,34 +309,43 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         script_obj = script_obj.get('script')
     script_type = script_obj.get('type')
     if script_type != 'python':
+        if script_type == 'powershell':
+            # TODO powershell linting
+            return 0
         print('Script is not of type "python". Found type: {}. Nothing to do.'.format(script_type))
         return 1
     dockers = get_docker_images(script_obj)
     for docker in dockers:
-        print_v("Using docker image: {}".format(docker))
-        py_num = get_python_version(docker)
-        setup_dev_files(project_dir)
-        try:
-            if not args.no_flake8:
-                run_flake8(project_dir, py_num)
-            if not args.no_mypy:
-                run_mypy(project_dir, py_num)
-            if not args.no_test or not args.no_pylint:
-                requirements = get_dev_requirements(py_num)
-                docker_image_created = docker_image_create(docker, requirements)
-                docker_run(
-                    project_dir, docker_image_created, args.no_test,
-                    args.no_pylint, args.keep_container, args.root, args.cpu_num
-                )
-        except subprocess.CalledProcessError as ex:
-            sys.stderr.write("[FAILED {}] Error: {}\n".format(project_dir, str(ex)))
-            if not LOG_VERBOSE:
-                sys.stderr.write("Need a more detailed log?"
-                                 " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
-            return 2
-        finally:
-            sys.stdout.flush()
-            sys.stderr.flush()
+        for try_num in (1, 2):
+            print_v("Using docker image: {}".format(docker))
+            py_num = get_python_version(docker)
+            setup_dev_files(project_dir)
+            try:
+                if not args.no_flake8:
+                    run_flake8(project_dir, py_num)
+                if not args.no_mypy:
+                    run_mypy(project_dir, py_num)
+                if not args.no_test or not args.no_pylint:
+                    requirements = get_dev_requirements(py_num)
+                    docker_image_created = docker_image_create(docker, requirements)
+                    docker_run(
+                        project_dir, docker_image_created, args.no_test,
+                        args.no_pylint, args.keep_container, args.root, args.cpu_num
+                    )
+                break  # all is good no need to retry
+            except subprocess.CalledProcessError as ex:
+                sys.stderr.write("[FAILED {}] Error: {} Output: {}\n".format(project_dir, str(ex), ex.output))
+                if not LOG_VERBOSE:
+                    sys.stderr.write("Need a more detailed log?"
+                                     " try running with the -v options as so: \n{} -v\n".format(" ".join(sys.argv[:])))
+                # circle ci docker setup sometimes fails on
+                if try_num > 1 or not ex.output or 'read: connection reset by peer' not in ex.output:
+                    return 2
+                else:
+                    sys.stderr.write("Retrying as failure seems to be docker communication related...\n")
+            finally:
+                sys.stdout.flush()
+                sys.stderr.flush()
     return 0
 
 

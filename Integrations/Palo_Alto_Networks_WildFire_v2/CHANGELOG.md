@@ -1,4 +1,7 @@
 ## [Unreleased]
+Added a validation to the **server** parameter.
+
+## [19.10.2] - 2019-10-29
 Fixed an issue in which testing the integration instance failed.
 
 ## [19.9.1] - 2019-09-18
