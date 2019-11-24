@@ -722,7 +722,7 @@ class MsGraphClient(BaseClient):
             'comment': comment
         }
 
-    def _get_attachment_mime(self, attachment_id):
+    def _get_attachment_mime(self, message_id, attachment_id):
         """
         Gets attachment mime.
 
@@ -732,7 +732,7 @@ class MsGraphClient(BaseClient):
         :return: The MIME of the attachment
         :rtype: ``str``
         """
-        suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{attachment_id}/$value'
+        suffix_endpoint = f'users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/$value'
         mime_content = self._http_request('GET', suffix_endpoint, resp_type='text')
 
         return mime_content
@@ -763,7 +763,7 @@ class MsGraphClient(BaseClient):
                     continue
             elif attachment_type == self.ITEM_ATTACHMENT:
                 attachment_id = attachment.get('id', '')
-                attachment_content = self._get_attachment_mime(attachment_id)
+                attachment_content = self._get_attachment_mime(message_id, attachment_id)
                 attachment_name = f'{attachment_name}.eml'
             # upload the item/file attachent to War Room
             upload_file(attachment_name, attachment_content, attachment_results)
