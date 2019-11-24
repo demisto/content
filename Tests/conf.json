@@ -18,6 +18,16 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
