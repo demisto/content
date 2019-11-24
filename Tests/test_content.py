@@ -57,12 +57,11 @@ def options_handler():
     return options
 
 
-def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration, failed_unittest,
+def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipped_integration,
                        unmocklable_integrations, proxy, is_ami=True):
     succeed_count = len(succeed_playbooks)
     failed_count = len(failed_playbooks)
     skipped_count = len(skipped_tests)
-    failed_unittest_count = len(failed_unittest)
     rerecorded_count = len(proxy.rerecorded_tests) if is_ami else 0
     empty_mocks_count = len(proxy.empty_files) if is_ami else 0
     unmocklable_integrations_count = len(unmocklable_integrations)
@@ -75,11 +74,6 @@ def print_test_summary(succeed_playbooks, failed_playbooks, skipped_tests, skipp
         print_error('\t Number of failed tests - ' + str(failed_count) + ':')
         for playbook_id in failed_playbooks:
             print_error('\t - ' + playbook_id)
-
-    if failed_unittest_count > 0:
-        print_error('\t Number of failed unittests - ' + str(failed_unittest) + ':')
-        for unittest in failed_unittest:
-            print_error('\t - ' + unittest)
 
     if rerecorded_count > 0:
         print_warning('\t Tests with failed playback and successful re-recording - ' + str(rerecorded_count) + ':')
@@ -308,15 +302,13 @@ def retrieve_id(circle_user_name, sc):
     return user_id
 
 
-def create_result_files(failed_playbooks, skipped_integration, skipped_tests, failed_unittest):
+def create_result_files(failed_playbooks, skipped_integration, skipped_tests):
     with open("./Tests/failed_tests.txt", "w") as failed_tests_file:
         failed_tests_file.write('\n'.join(failed_playbooks))
     with open('./Tests/skipped_tests.txt', "w") as skipped_tests_file:
         skipped_tests_file.write('\n'.join(skipped_tests))
     with open('./Tests/skipped_integrations.txt', "w") as skipped_integrations_file:
         skipped_integrations_file.write('\n'.join(skipped_integration))
-    with open('./Tests/failed_unittest.txt', "w") as failed_unittest_file:
-        failed_unittest_file.write('\n'.join(failed_unittest))
 
 
 def set_integration_params(demisto_api_key, integrations, secret_params, instance_names, playbook_id):
