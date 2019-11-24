@@ -30,7 +30,7 @@ def main():
         return_error(get_error(res))
     confusion_matrix = file_content['model']['evaluation']['confusionMatrix']
     res = demisto.executeCommand('evaluateMLModel',
-                                 {'modelConfusionMatrix': confusion_matrix,
+                                 {'modelConfusionMatrix': confusion_matrix,  # disable-secrets-detection
                                   'modelName': model_name})
     if is_error(res):
         return_error(get_error(res))
