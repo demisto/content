@@ -580,6 +580,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -806,6 +809,9 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+    nexttasks:
+      "yes":
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2499,10 +2505,10 @@ tasks:
     ignoreworker: false
   "86":
     id: "86"
-    taskid: a39e6ea3-1078-4b7b-81e8-9908fd5137f0
+    taskid: 43e8424e-6a56-49db-844d-c12ce401ed47
     type: regular
     task:
-      id: a39e6ea3-1078-4b7b-81e8-9908fd5137f0
+      id: 43e8424e-6a56-49db-844d-c12ce401ed47
       version: -1
       name: ip_with_CSV
       description: Check IP Reputation
@@ -2516,7 +2522,7 @@ tasks:
     scriptarguments:
       fullResponse: {}
       ip:
-        simple: 8.8.8.8,8.8.8.4
+        simple: 103.225.52.112,8.8.8.8
       long: {}
       retries: {}
       sampleSize: {}
@@ -2536,10 +2542,10 @@ tasks:
     ignoreworker: false
   "87":
     id: "87"
-    taskid: babf0a93-6e31-4fa4-89ec-645cd1c94588
+    taskid: 38a95076-e8ba-43b8-89d5-4c6fd9fa88e5
     type: condition
     task:
-      id: babf0a93-6e31-4fa4-89ec-645cd1c94588
+      id: 38a95076-e8ba-43b8-89d5-4c6fd9fa88e5
       version: -1
       name: verify_ip_csv
       type: condition
@@ -2567,7 +2573,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 8.8.8.4
+              simple: 103.225.52.112
     view: |-
       {
         "position": {
@@ -2580,10 +2586,10 @@ tasks:
     ignoreworker: false
   "88":
     id: "88"
-    taskid: 1beb140c-79e7-4a3f-8ca3-ac34e3cc4282
+    taskid: 6b941e4d-528a-4dc7-8e6c-e4404b6a3ee9
     type: regular
     task:
-      id: 1beb140c-79e7-4a3f-8ca3-ac34e3cc4282
+      id: 6b941e4d-528a-4dc7-8e6c-e4404b6a3ee9
       version: -1
       name: url_with_csv
       description: Checks the reputation of a URL.
@@ -2601,7 +2607,7 @@ tasks:
       submitWait: {}
       threshold: {}
       url:
-        simple: https://webmaster.org.il/articles/js-first-steps/,https://mail.google.com/mail/u/0/?pli=1#inbox
+        simple: https://demisto.com,https://mail.google.com/mail/u/0/?pli=1#inbox
       wait: {}
     separatecontext: false
     view: |-
@@ -2616,10 +2622,10 @@ tasks:
     ignoreworker: false
   "89":
     id: "89"
-    taskid: 96474a1f-acac-4dd3-84e2-8e44499aff12
+    taskid: da12b530-fedd-4e4c-8e53-2b772e38fcce
     type: condition
     task:
-      id: 96474a1f-acac-4dd3-84e2-8e44499aff12
+      id: da12b530-fedd-4e4c-8e53-2b772e38fcce
       version: -1
       name: verify_url_csv
       type: condition
@@ -2627,7 +2633,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "90"
+      - "94"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2639,7 +2645,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: https://webmaster.org.il/articles/js-first-steps/
+              simple: https://demisto.com
       - - operator: containsGeneral
           left:
             value:
@@ -2688,7 +2694,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10550
+          "y": 10700
         }
       }
     note: false
@@ -2732,7 +2738,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10730
+          "y": 10880
         }
       }
     note: false
@@ -2761,7 +2767,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10915
+          "y": 11065
         }
       }
     note: false
@@ -2797,12 +2803,42 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "94":
+    id: "94"
+    taskid: 97b8e28f-46b0-4efd-8b34-17aca844a665
+    type: regular
+    task:
+      id: 97b8e28f-46b0-4efd-8b34-17aca844a665
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      seconds:
+        simple: "61"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10960,
+        "height": 11110,
         "width": 810,
         "x": 50,
         "y": 50
