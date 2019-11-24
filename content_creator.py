@@ -191,7 +191,7 @@ def main(circle_artifacts):
     print('Starting to create content artifact...')
 
     print('creating dir for bundles...')
-    for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
+    for bundle_dir in [BUNDLE_POST, BUNDLE_TEST, PACKS_BUNDLE]:
         os.mkdir(bundle_dir)
 
     add_tools_to_bundle(BUNDLE_POST)
@@ -199,21 +199,31 @@ def main(circle_artifacts):
     convert_incident_fields_to_array()
 
     for package_dir in DIR_TO_PREFIX:
-        scanned_packages = glob.glob(os.path.join(package_dir, '*/'))
-        for package in scanned_packages:
-            if any(package_to_skip in package for package_to_skip in PACKAGES_TO_SKIP):
-                # there are some packages that we don't want to include in the content zip
-                # for example HelloWorld integration
-                merge_script_package_to_yml(package, package_dir, BUNDLE_TEST)
-                print('skipping {}'.format(package))
-            else:
-                merge_script_package_to_yml(package, package_dir, BUNDLE_POST)
+        # handles nested package directories
+        create_unifieds_and_copy(package_dir)
 
     for content_dir in CONTENT_DIRS:
         print(f'Copying dir {content_dir} to bundles...')
         copy_dir_files(content_dir, BUNDLE_POST)
 
     copy_test_files(BUNDLE_TEST)
+
+    # handle copying packs content to content_new.zip and content_test.zip
+    packs = get_child_directories(PACKS_DIR)
+    for pack in packs:
+        # each pack directory has it's own content subdirs, 'Integrations', 'Scripts', 'TestPlaybooks', 'Layouts' etc.
+        sub_dirs_paths = get_child_directories(pack)
+        for sub_dir_path in sub_dirs_paths:
+            dir_name = os.path.basename(sub_dir_path)
+            if dir_name == 'TestPlaybooks':
+                copy_test_files(BUNDLE_TEST, sub_dir_path)
+            else:
+                # handle one-level deep content
+                copy_dir_files(sub_dir_path, BUNDLE_POST)
+                if dir_name in DIR_TO_PREFIX.keys():
+                    # then it's a directory with nested packages that need to be handled
+                    # handle nested packages
+                    create_unifieds_and_copy(sub_dir_path)
 
     print('Copying content descriptor to bundles')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
