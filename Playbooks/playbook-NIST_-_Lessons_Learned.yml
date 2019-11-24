@@ -3,14 +3,7 @@ version: -1
 name: NIST - Lessons Learned
 fromversion: 5.0.0
 description: |-
-  One of the most important parts of incident response is also the most often omitted: learning and
-  improving. Each incident response team should evolve to reflect new threats, improved technology, and
-  lessons learned. Holding a “lessons learned” meeting with all involved parties after a major incident, and
-  optionally periodically after lesser incidents as resources permit, can be extremely helpful in improving
-  security measures and the incident handling process itself. Multiple incidents can be covered in a single
-  lessons learned meeting. This meeting provides a chance to achieve closure with respect to an incident by
-  reviewing what occurred, what was done to intervene, and how well intervention worked. The meeting
-  should be held within several days of the end of the incident.
+  This playbook assists in processing an incident after it occurs and facilitates the lessons learned stage.
 starttaskid: "0"
 tasks:
   "0":
@@ -349,14 +342,14 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Use data collection task to answer lessons learned questions based
+  description: Use a data collection task to answer lessons learned questions based
     on NIST. Specify 'True' to automatically send the communication task, and 'False'  to
     prevent it.
 - key: Email
   value:
     simple: mgoldberg@paloaltonetworks.com
   required: false
-  description: Email address to send the questions to.
+  description: Email address to which to send the questions.
 outputs:
 - contextPath: NIST - Lessons Learned.Answers.0
   type: shortText
@@ -386,6 +379,6 @@ outputs:
   type: shortText
   description: Answer to communication task.
 - contextPath: NIST - Lessons Learned.Answers.name
-  description: answered username or email address
+  description: Provided username or email address
 tests:
   - No test
