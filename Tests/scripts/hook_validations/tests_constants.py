@@ -15,4 +15,6 @@ VALID_DASHBOARD_PATH = "./Tests/scripts/hook_validations/tests/tests_data/dashbo
 INVALID_DASHBOARD_PATH = "./Tests/scripts/hook_validations/tests/tests_data/dashboard-invalid.json"
 VALID_INCIDENT_FIELD_PATH = "./Tests/scripts/hook_validations/tests/tests_data/incidentfield-valid.json"
 INVALID_INCIDENT_FIELD_PATH = "./Tests/scripts/hook_validations/tests/tests_data/incidentfield-invalid.json"
-INVALID_WIDGET_VERSION_PATH = "Tests/scripts/hook_validations/tests/tests_data/widget-invalid-version.json"
+INVALID_WIDGET_VERSION_PATH = "./Tests/scripts/hook_validations/tests/tests_data/widget-invalid-version.json"
+VALID_SCRIPT_PATH = "./Tests/scripts/hook_validations/tests/tests_data/script-valid.yml"
+INVALID_SCRIPT_PATH = "./Tests/scripts/hook_validations/tests/tests_data/script-invalid.yml"

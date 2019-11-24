@@ -1,0 +1,15 @@
+commonfields:
+  id: TestCreateDuplicates
+  version: -1
+name: TestCreateDuplicates
+script: ""
+type: python
+tags: []
+comment: Create a duplicate incident to the current.
+enabled: true
+args:
+- name: hoursDiff
+  description: Hours different between the original incident and created incident.
+  defaultValue: "6"
+scripttarget: 0
+runonce: false

@@ -1,18 +1,20 @@
 import os
 from shutil import copyfile
+from typing import Any, Type
 
 import pytest
-from typing import Any, Type
 
 from Tests.scripts.hook_validations.base_validator import BaseValidator
 from Tests.scripts.hook_validations.dashboard import DashboardValidator
 from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator
 from Tests.scripts.hook_validations.layout import LayoutValidator
 from Tests.scripts.hook_validations.reputation import ReputationValidator
+from Tests.scripts.hook_validations.script import ScriptValidator
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.scripts.hook_validations.tests_constants import VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH, \
     VALID_REPUTATION_PATH, INVALID_REPUTATION_PATH, VALID_WIDGET_PATH, INVALID_WIDGET_PATH, VALID_DASHBOARD_PATH, \
-    INVALID_DASHBOARD_PATH, VALID_INCIDENT_FIELD_PATH, INVALID_INCIDENT_FIELD_PATH
+    VALID_SCRIPT_PATH, INVALID_SCRIPT_PATH, INVALID_DASHBOARD_PATH, VALID_INCIDENT_FIELD_PATH, \
+    INVALID_INCIDENT_FIELD_PATH
 from Tests.scripts.hook_validations.widget import WidgetValidator
 
 
@@ -24,6 +26,8 @@ class TestValidators:
     PLAYBOOK_TARGET = "Playbooks/playbook-test.yml"
     INTEGRATION_TARGET = "TestPlaybooks/integration-test.yml"
     INCIDENT_FIELD_TARGET = "IncidentFields/incidentfield-test.json"
+    PLAYBOOK_TARGET = "./Playbooks/playbook-test.yml"
+    SCRIPT_TARGET = "./Scripts/script-test.yml"
     INPUTS_IS_VALID_VERSION = [
         (VALID_LAYOUT_PATH, LAYOUT_TARGET, True, LayoutValidator),
         (INVALID_LAYOUT_PATH, LAYOUT_TARGET, False, LayoutValidator),
@@ -32,7 +36,10 @@ class TestValidators:
         (VALID_DASHBOARD_PATH, DASHBOARD_TARGET, True, DashboardValidator),
         (INVALID_DASHBOARD_PATH, DASHBOARD_TARGET, False, DashboardValidator),
         (VALID_INCIDENT_FIELD_PATH, INCIDENT_FIELD_TARGET, True, IncidentFieldValidator),
-        (INVALID_INCIDENT_FIELD_PATH, INCIDENT_FIELD_TARGET, False, IncidentFieldValidator)
+        (INVALID_INCIDENT_FIELD_PATH, INCIDENT_FIELD_TARGET, False, IncidentFieldValidator),
+        (INVALID_DASHBOARD_PATH, DASHBOARD_TARGET, False, DashboardValidator),
+        (VALID_SCRIPT_PATH, SCRIPT_TARGET, True, ScriptValidator),
+        (INVALID_SCRIPT_PATH, SCRIPT_TARGET, False, ScriptValidator),
     ]
 
     @pytest.mark.parametrize('source, target, answer, validator', INPUTS_IS_VALID_VERSION)

@@ -288,23 +288,12 @@ def server_version_compare(v1, v2):
         negative if v2 later version than v1.
     """
 
-    v1 = re.sub('[\'\"]', '', v1)
-    v2 = re.sub('[\'\"]', '', v2)
-
-    if v1 == "" or v2 == "":
+    _v1, _v2 = LooseVersion(v1), LooseVersion(v2)
+    if _v1 == _v2:
         return 0
-
-    v1_nums = [int(d) for d in v1.split(".")]
-    v2_nums = [int(d) for d in v2.split(".")]
-
-    for i in range(min(len(v1_nums), len(v2_nums))):
-        if v1_nums[i] != v2_nums[i]:
-            return v1_nums[i] - v2_nums[i]
-
-    # versions are equal to the i th number
-
-    # versions are equal
-    return 0
+    if _v1 > _v2:
+        return 1
+    return -1
 
 
 def run_threads_list(threads_list):
