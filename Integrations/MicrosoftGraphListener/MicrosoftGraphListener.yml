@@ -18,14 +18,6 @@ configuration:
   name: enc_key
   required: true
   type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -50,6 +42,14 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Microsoft Graph allows Demisto authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: Microsoft Graph Mail Single User
