@@ -61,7 +61,7 @@ class StructureValidator(object):
     }
 
     def __init__(self, file_path, old_file_path=None):
-        # type: (str, bool) -> None
+        # type: (str, Optional[str]) -> None
         self.is_valid = None  # type: Optional[bool]
         self.file_path = file_path
         self.scheme_name = self.scheme_of_file_by_path()
@@ -70,7 +70,7 @@ class StructureValidator(object):
         self.old_file = get_remote_file(old_file_path) if old_file_path else None
 
     def is_valid_file(self):
-        # type: () -> Optional[bool]
+        # type: () -> bool
         """Checks if given file is valid
 
         Returns:
