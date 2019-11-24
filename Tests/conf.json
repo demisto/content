@@ -3,6 +3,11 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Symantec Data Loss Prevention",
+            "playbookID": "Symantec Data Loss Prevention - Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
         },
@@ -1961,6 +1966,9 @@
         }
     ],
     "skipped_tests": {
+        "Symantec Data Loss Prevention - Test": "Issue 20134",
+        "urlscan_malicious_Test": "Issue 19727",
+        "VxStream Test": "Issue 19439",
         "minemeld_test": "Issue 20265",
         "rsa_packets_and_logs_test": "Issue 20262",
         "Cloaken-Test": "Issue 20036",
