@@ -630,7 +630,7 @@ script:
                 ec.DBotScore = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
                 entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                     HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg});
-                continue:
+                continue;
             }
             full_response = FULL_RESPONSE? 'true': fullResponse;
             if (fullResponse === 'true') {
