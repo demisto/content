@@ -30,7 +30,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- display: Email address from which to fetch incidents  (e.g. "from:example@demisto.com")
+- display: Email address from which to fetch incidents  (e.g. "example@demisto.com")
   name: mailbox_to_fetch
   required: true
   type: 0
