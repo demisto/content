@@ -1,6 +1,12 @@
 ## [Unreleased]
 
 
+## [19.11.0] - 2019-11-12
+Updated the Docker image ***demisto/pykafka*** to version 1.0.0.3321 (requires Demisto 5.0).
+
+## [19.10.2] - 2019-10-29
+-
+
 ## [19.10.1] - 2019-10-15
   - Added partitions outputs to the ***kafka-print-topic*** command.
   - Added the *Max number of messages to fetch* parameter.
