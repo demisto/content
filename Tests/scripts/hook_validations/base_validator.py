@@ -2,7 +2,7 @@ import os
 import re
 from abc import abstractmethod
 
-from Tests.scripts.error_constants import Errors
+from Tests.scripts.constants import Errors
 from Tests.scripts.hook_validations.structure import StructureValidator
 from Tests.test_utils import print_error, print_warning, get_release_notes_file_path, get_latest_release_notes_text, \
     run_command
@@ -80,3 +80,27 @@ class BaseValidator(object):
         if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
             return True
         return False
+
+    @staticmethod
+    def is_subset_dictionary(new_dict, old_dict):
+        # type: (dict, dict) -> bool
+        """Check if the new dictionary is a sub set of the old dictionary.
+
+        Args:
+            new_dict (dict): current branch result from _get_command_to_args
+            old_dict (dict): master branch result from _get_command_to_args
+
+        Returns:
+            bool. Whether the new dictionary is a sub set of the old dictionary.
+        """
+        for arg, required in old_dict.items():
+            if arg not in new_dict.keys():
+                return False
+
+            if required != new_dict[arg] and new_dict[arg]:
+                return False
+
+        for arg, required in new_dict.items():
+            if arg not in old_dict.keys() and required:
+                return False
+        return True

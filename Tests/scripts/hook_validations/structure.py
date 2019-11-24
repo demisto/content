@@ -13,8 +13,7 @@ import yaml
 from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES, JSON_ALL_WIDGETS_REGEXES, \
     JSON_ALL_DASHBOARDS_REGEXES, JSON_ALL_CONNECTIONS_REGEXES, JSON_ALL_CLASSIFIER_REGEXES, \
     JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, JSON_ALL_REPORTS_REGEXES, \
-    MISC_REGEX, MISC_REPUTATIONS_REGEX
-from Tests.scripts.error_constants import Errors
+    MISC_REGEX, MISC_REPUTATIONS_REGEX, Errors
 from Tests.test_utils import print_error, get_matching_regex, get_remote_file
 
 try:
@@ -117,30 +116,6 @@ class StructureValidator(object):
             print_error('Failed: {} failed.\n{}'.format(self.file_path, str(err)))
             self.is_valid = False
             return False
-        return True
-
-    @staticmethod
-    def is_subset_dictionary(new_dict, old_dict):
-        # type: (dict, dict) -> bool
-        """Check if the new dictionary is a sub set of the old dictionary.
-
-        Args:
-            new_dict (dict): current branch result from _get_command_to_args
-            old_dict (dict): master branch result from _get_command_to_args
-
-        Returns:
-            bool. Whether the new dictionary is a sub set of the old dictionary.
-        """
-        for arg, required in old_dict.items():
-            if arg not in new_dict.keys():
-                return False
-
-            if required != new_dict[arg] and new_dict[arg]:
-                return False
-
-        for arg, required in new_dict.items():
-            if arg not in old_dict.keys() and required:
-                return False
         return True
 
     @staticmethod

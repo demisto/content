@@ -1,5 +1,4 @@
-from Tests.scripts.constants import PYTHON_SUBTYPES
-from Tests.scripts.error_constants import Errors
+from Tests.scripts.constants import PYTHON_SUBTYPES, Errors
 from Tests.scripts.hook_validations.base_validator import BaseValidator
 from Tests.test_utils import print_error, server_version_compare, get_dockerimage45
 
