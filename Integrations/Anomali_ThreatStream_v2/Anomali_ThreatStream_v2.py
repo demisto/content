@@ -395,7 +395,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     threat_ip_context = get_threat_generic_context(indicator)
 
     ec = {
-        'DBotScore(val.Indicator == obj.Indicator)': dbot_context,
+        'DBotScore': dbot_context,
         'IP(val.Address == obj.Address)': ip_context,
         'ThreatStream.IP(val.Address == obj.Address)': threat_ip_context
     }
@@ -417,7 +417,7 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     threat_domain_context = get_threat_generic_context(indicator)
 
     ec = {
-        'DBotScore(val.Indicator == obj.Indicator)': dbot_context,
+        'DBotScore': dbot_context,
         'Domain(val.Name == obj.Name)': domain_context,
         'ThreatStream.Domain(val.Address == obj.Address)': threat_domain_context
     }
@@ -443,7 +443,7 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     threat_file_context.pop("Country", None)
 
     ec = {
-        'DBotScore(val.Indicator == obj.Indicator)': dbot_context,
+        'DBotScore': dbot_context,
         'File(val.MD5 == obj.MD5)': file_context,
         'ThreatStream.File(val.MD5 == obj.MD5)': threat_file_context
     }
@@ -466,7 +466,7 @@ def get_url_reputation(url, threshold=None, status="active,inactive"):
     del threat_url_context['ASN']
 
     ec = {
-        'DBotScore(val.Indicator == obj.Indicator)': dbot_context,
+        'DBotScore': dbot_context,
         'URL(val.Data == obj.Data)': domain_context,
         'ThreatStream.URL(val.Address == obj.Address)': threat_url_context
     }
@@ -491,7 +491,7 @@ def get_email_reputation(email, threshold=None, status="active,inactive"):
     threat_email_context.pop("Country", None)
 
     ec = {
-        'DBotScore(val.Indicator == obj.Indicator)': dbot_context,
+        'DBotScore': dbot_context,
         'ThreatStream.EmailReputation(val.Email == obj.Email)': threat_email_context
     }
     human_readable = tableToMarkdown(F"Email reputation for: {email}", threat_email_context)
