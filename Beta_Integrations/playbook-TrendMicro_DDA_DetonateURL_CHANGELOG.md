@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed an issue in playbooks with choosing the correct Beta module.
+Fixed an issue in the playbook with choosing the correct Beta module.
