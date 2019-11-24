@@ -1,13 +1,16 @@
 import os
+from os.path import isfile
 from shutil import copyfile
+from typing import List, Tuple
 
 import pytest
 
 from Tests.scripts.hook_validations.structure import StructureValidator
+from Tests.scripts.hook_validations.tests.json_vaidators_test import TestValidators
 from Tests.scripts.hook_validations.tests_constants import VALID_TEST_PLAYBOOK_PATH, INVALID_PLAYBOOK_PATH, \
     VALID_INTEGRATION_TEST_PATH, VALID_INTEGRATION_ID_PATH, INVALID_INTEGRATION_ID_PATH, VALID_PLAYBOOK_ID_PATH, \
     INVALID_PLAYBOOK_ID_PATH, VALID_REPUTATION_PATH, VALID_LAYOUT_PATH, INVALID_LAYOUT_PATH, INVALID_WIDGET_PATH, \
-    VALID_WIDGET_PATH, VALID_DASHBOARD_PATH, INVALID_DASHBOARD_PATH
+    VALID_WIDGET_PATH, VALID_DASHBOARD_PATH, INVALID_DASHBOARD_PATH, INVALID_REPUTATION_PATH
 
 
 class TestStructureValidator:
@@ -76,23 +79,50 @@ class TestStructureValidator:
         assert structure.is_valid_file_path() is answer
 
     INPUTS_IS_VALID_FILE = [
-        (VALID_REPUTATION_PATH, "./Misc/reputations.json", True),
-        (VALID_LAYOUT_PATH, "./Layouts/layout-mock.json", True),
-        (INVALID_LAYOUT_PATH, "./Layouts/layout-mock.json", False),
-        (INVALID_WIDGET_PATH, "./Widgets/widget-mocks.json", False),
-        (VALID_WIDGET_PATH, "./Widgets/widget-mocks.json", True),
-        (VALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", True),
-        (INVALID_DASHBOARD_PATH, "./Dashboards/dashboard-mock.json", False),
-        (VALID_TEST_PLAYBOOK_PATH, "Playbooks/playbook-test.yml", True),
+        (VALID_LAYOUT_PATH, TestValidators.LAYOUT_TARGET, True),
+        (INVALID_LAYOUT_PATH, TestValidators.LAYOUT_TARGET, False),
+        (INVALID_WIDGET_PATH, TestValidators.WIDGET_TARGET, False),
+        (VALID_WIDGET_PATH, TestValidators.WIDGET_TARGET, True),
+        (VALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, True),
+        (INVALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, False),
+        (VALID_TEST_PLAYBOOK_PATH, TestValidators.PLAYBOOK_TARGET, True),
         (VALID_INTEGRATION_TEST_PATH, "Integrations/integration-test.yml", True),
-        (INVALID_PLAYBOOK_PATH, "TestPlaybooks/integration-test.yml", False),
-    ]
+        (INVALID_PLAYBOOK_PATH, TestValidators.INTEGRATION_TARGET, False),
+    ]  # type: List[Tuple[str, str, bool]]
 
     @pytest.mark.parametrize('source, target, answer', INPUTS_IS_VALID_FILE)
-    def test_is_file_file_valid(self, source, target, answer):
+    def test_is_file_valid(self, source, target, answer):
         try:
             copyfile(source, target)
             structure = StructureValidator(target)
             assert structure.is_valid_file(validate_rn=False) is answer
         finally:
             os.remove(target)
+
+    INPUTS_LOCKED_PATHS = [
+        (VALID_REPUTATION_PATH, "reputations", True),
+        (INVALID_REPUTATION_PATH, "reputations", False),
+    ]
+
+    @pytest.mark.parametrize('source, scheme_name, answer', INPUTS_LOCKED_PATHS)
+    def test_is_file_valid_locked_paths(self, source, scheme_name, answer, mocker):
+        """Tests locked path (as reputations.json) so we won't override the file"""
+        mocker.patch.object(StructureValidator, "is_valid_file_path", return_value=answer)
+        structure = StructureValidator(source)
+        StructureValidator.scheme_name = scheme_name
+        assert structure.is_valid_file(validate_rn=False) is answer
+
+
+class TestGeneral:
+    INPUTS = [
+        TestValidators.LAYOUT_TARGET,
+        TestValidators.DASHBOARD_TARGET,
+        TestValidators.WIDGET_TARGET,
+        TestValidators.PLAYBOOK_TARGET,
+        TestValidators.INTEGRATION_TARGET
+    ]
+
+    @pytest.mark.parametrize('target', INPUTS)
+    def test_file_not_exists_on_test_path(self, target):
+        """Check that all the paths used for tests are'nt exists so we won't break builds #MakesSadeHappy"""
+        assert isfile(target) is False

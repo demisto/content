@@ -20,11 +20,11 @@ class TestValidators:
     REPUTATION_TARGET = "./Misc/reputations.json"
     WIDGET_TARGET = "./Widgets/widget-mocks.json"
     DASHBOARD_TARGET = "./Dashboards/dashboard-mocks.json"
+    PLAYBOOK_TARGET = "Playbooks/playbook-test.yml"
+    INTEGRATION_TARGET = "TestPlaybooks/integration-test.yml"
     INPUTS_IS_VALID_VERSION = [
         (VALID_LAYOUT_PATH, LAYOUT_TARGET, True, LayoutValidator),
         (INVALID_LAYOUT_PATH, LAYOUT_TARGET, False, LayoutValidator),
-        (VALID_REPUTATION_PATH, REPUTATION_TARGET, True, ReputationValidator),
-        (INVALID_REPUTATION_PATH, REPUTATION_TARGET, False, ReputationValidator),
         (VALID_WIDGET_PATH, WIDGET_TARGET, True, WidgetValidator),
         (INVALID_WIDGET_PATH, WIDGET_TARGET, False, WidgetValidator),
         (VALID_DASHBOARD_PATH, DASHBOARD_TARGET, True, DashboardValidator),
@@ -41,3 +41,15 @@ class TestValidators:
             assert validator.is_valid_version() is answer
         finally:
             os.remove(target)
+
+    INPUTS_LOCKED_PATHS = [
+        (VALID_REPUTATION_PATH, True, ReputationValidator),
+        (INVALID_REPUTATION_PATH, False, ReputationValidator),
+    ]
+
+    @pytest.mark.parametrize('source, answer, validator', INPUTS_LOCKED_PATHS)
+    def test_is_valid_version_locked_paths(self, source, answer, validator):
+        """Tests locked path (as reputations.json) so we won't override the file"""
+        structure = StructureValidator(source)
+        validator = validator(structure)
+        assert validator.is_valid_version() is answer
