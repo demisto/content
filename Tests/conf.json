@@ -1921,7 +1921,8 @@
         {
             "playbookID": "Panorama Query Logs For Indicators Test",
             "fromversion": "4.5.0",
-            "integrations": "Panorama"
+            "integrations": "Panorama",
+            "instance_names": "palo_alto_panorama"
         },
         {
             "integrations": "Hybrid Analysis",
