@@ -246,6 +246,42 @@ def main(circle_artifacts):
                     # handle nested packages
                     create_unifieds_and_copy(sub_dir_path)
 
+    # handle copying packs content to packs_bundle for zipping to `content_packs.zip`
+    for pack in packs:
+        pack_name = os.path.basename(pack)
+        pack_dst = os.path.join(PACKS_BUNDLE, pack_name)
+        os.mkdir(pack_dst)
+        pack_dirs = get_child_directories(pack)
+        pack_files = get_child_files(pack)
+        # copy first level pack files over
+        for file_path in pack_files:
+            shutil.copy(file_path, os.path.join(pack_dst, os.path.basename(file_path)))
+        # handle content directories in the pack
+        for content_dir in pack_dirs:
+            dir_name = os.path.basename(content_dir)
+            dest_dir = os.path.join(pack_dst, dir_name)
+            os.mkdir(dest_dir)
+            if dir_name in DIR_TO_PREFIX.keys():
+                packages_dirs = get_child_directories(content_dir)
+                for package_dir in packages_dirs:
+                    package_dir_name = os.path.basename(package_dir)
+                    dest_package_dir = os.path.join(dest_dir, package_dir_name)
+                    os.mkdir(dest_package_dir)
+                    merge_script_package_to_yml(package_dir, dir_name, dest_path=dest_package_dir)
+
+                    # also copy CHANGELOG markdown files over
+                    package_files = get_child_files(package_dir)
+                    changelog_files = [
+                        file_path
+                        for file_path in package_files if ('CHANGELOG' in file_path and file_path.endswith('.md'))
+                    ]
+                    for md_file_path in changelog_files:
+                        shutil.copyfile(md_file_path, dest_package_dir)
+            else:
+                if dir_name == INCIDENT_FIELDS_DIR:
+                    convert_incident_fields_to_array(content_dir)
+                copy_dir_files(content_dir, dest_dir)
+
     print('Copying content descriptor to bundles')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
         shutil.copyfile('content-descriptor.json', os.path.join(bundle_dir, 'content-descriptor.json'))
@@ -256,8 +292,10 @@ def main(circle_artifacts):
     print('Compressing bundles...')
     shutil.make_archive(ZIP_POST, 'zip', BUNDLE_POST)
     shutil.make_archive(ZIP_TEST, 'zip', BUNDLE_TEST)
+    shutil.make_archive(ZIP_PACKS, 'zip', PACKS_BUNDLE)
     shutil.copyfile(ZIP_POST + '.zip', os.path.join(circle_artifacts, ZIP_POST + '.zip'))
     shutil.copyfile(ZIP_TEST + '.zip', os.path.join(circle_artifacts, ZIP_TEST + '.zip'))
+    shutil.copyfile(ZIP_PACKS + '.zip', os.path.join(circle_artifacts, ZIP_PACKS + '.zip'))
     shutil.copyfile("./Tests/id_set.json", os.path.join(circle_artifacts, "id_set.json"))
 
     shutil.copyfile('release-notes.md', os.path.join(circle_artifacts, 'release-notes.md'))
