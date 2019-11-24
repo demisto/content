@@ -819,6 +819,15 @@ class TestBaseClient:
         with raises(DemistoException, match="Error in API call"):
             self.client._http_request('get', 'event')
 
+    def test_http_request_not_ok_with_json_parsing(self, requests_mock):
+        from CommonServerPython import DemistoException
+        requests_mock.get('http://example.com/api/v2/event', status_code=500, content=str.encode(json.dumps(self.text)))
+        with raises(DemistoException) as exception:
+            self.client._http_request('get', 'event')
+        message = str(exception.value)
+        response_json_error = json.loads(message.split('\n')[1])
+        assert response_json_error == self.text
+
     def test_http_request_timeout(self, requests_mock):
         from CommonServerPython import DemistoException
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.ConnectTimeout)
