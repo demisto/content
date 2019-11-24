@@ -1,4 +1,4 @@
-category: Authentication
+category: Network Security
 commonfields:
   id: Infoblox
   version: -1
