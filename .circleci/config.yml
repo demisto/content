@@ -1,4 +1,8 @@
-version: 2
+version: 2.1
+parameters:
+  NIGHTLY:
+    type: string
+    default: "false"
 jobs:
   infrastructure_testing:
     docker:
@@ -361,10 +365,6 @@ jobs:
           path: artifacts
           destination: artifacts
           when: always
-parameters:
-  NIGHTLY:
-    type: string
-    default: "false"
 workflows:
   version: 2
   commit:
