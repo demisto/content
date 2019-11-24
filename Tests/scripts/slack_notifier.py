@@ -144,7 +144,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         print("Extracting build status")
         content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
 
-        print("Sending Slack messages to #content and #content-team")
+        print("Sending Slack messages to #content-team")
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
@@ -157,10 +157,10 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
 
 if __name__ == "__main__":
     options = options_handler()
-    if options.nightly:
-        slack_notifier(options.url, options.slack, options.env_results_file_name)
-    else:
-        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
+    # if options.nightly:
+    slack_notifier(options.url, options.slack, options.env_results_file_name)
+    # else:
+    #     print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
     os.remove('./Tests/failed_unittests.txt')
