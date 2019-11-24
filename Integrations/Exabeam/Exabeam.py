@@ -88,6 +88,9 @@ class Client(BaseClient):
                       f'is correct and that you have access to the server from your host.'
             raise DemistoException(err_msg, exception)
 
+        except Exception as exception:
+            raise Exception(str(exception))
+
     def _login(self):
         """
         Login using the credentials and store the cookie
@@ -513,8 +516,6 @@ def main():
     headers = {'Accept': 'application/json'}
     proxies = handle_proxy()
 
-    client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
-                    password=password, proxies=proxies, headers=headers)
     commands = {
         'test-module': test_module,
         'get-notable-users': get_notable_users,
@@ -534,6 +535,8 @@ def main():
     }
 
     try:
+        client = Client(base_url.rstrip('/'), verify=verify_certificate, username=username,
+                        password=password, proxies=proxies, headers=headers)
         command = demisto.command()
         LOG(f'Command being called is {command}.')
         if command in commands:
