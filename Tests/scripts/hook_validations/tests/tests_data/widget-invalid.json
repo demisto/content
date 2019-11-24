@@ -1,0 +1,26 @@
+{
+  "version": 15,
+  "fromVersion": "4.1.0",
+  "name": "Detection SLA by Status",
+  "dataType": "incidents",
+  "widgetType": "pie",
+  "query": "-category:job and -detectionsla.runStatus:idle",
+  "isPredefined": true,
+  "dateRange": {
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+      "byTo": "",
+      "byFrom": "days",
+      "toValue": null,
+      "fromValue": 30,
+      "field": ""
+    }
+  },
+  "params":{
+     "groupBy":[
+        "detectionsla.slaStatus"
+     ]
+  },
+  "description": "I can also play single player..."
+}

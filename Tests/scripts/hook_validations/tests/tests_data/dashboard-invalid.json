@@ -1,6 +1,5 @@
 {
-	"id": "my-home-dashboard",
-	"version": "no",
+	"version": 15,
 	"fromVersion": "4.0.0",
 	"description": "",
 	"period": {

@@ -1,6 +1,6 @@
 """Structure Validator for Demisto files
 
-Module contains validation of schemas. id's and paths.
+Module contains validation of schemas, ids and paths.
 """
 import json
 import os
@@ -15,8 +15,7 @@ from Tests.scripts.constants import YML_INTEGRATION_REGEXES, YML_SCRIPT_REGEXES,
     JSON_ALL_LAYOUT_REGEXES, JSON_ALL_INCIDENT_FIELD_REGEXES, YML_ALL_PLAYBOOKS_REGEX, JSON_ALL_REPORTS_REGEXES, \
     PYTHON_ALL_REGEXES, MISC_REGEX, MISC_REPUTATIONS_REGEX
 from Tests.scripts.error_constants import Errors
-from Tests.test_utils import run_command, print_error, print_warning, get_release_notes_file_path, \
-    get_latest_release_notes_text, get_matching_regex, get_remote_file
+from Tests.test_utils import print_error, print_warning, get_matching_regex, get_remote_file
 
 try:
     from pykwalify.core import Core
@@ -33,7 +32,10 @@ class StructureValidator(object):
             file_path (str): the path to the file we are examining at the moment.
             is_valid (bool): the attribute which saves the valid/in-valid status of the current file. will be bool only
                              after running is_file_valid.
-            is_added_file (bool): whether the file is modified or added.
+            scheme_name (str): Name of the yaml scheme need to validate.
+            file_type (str): equal to scheme_name if there's a scheme.
+            current_file (dict): loaded json.
+            old_file: (dict) loaded file from git.
         """
     SCHEMAS_PATH = "Tests/schemas/"
 
@@ -54,44 +56,36 @@ class StructureValidator(object):
     }
 
     PATHS_TO_VALIDATE = {
-        'python-script': PYTHON_ALL_REGEXES,
         'reports': JSON_ALL_REPORTS_REGEXES,
         'reputation': [MISC_REPUTATIONS_REGEX],
         'reputations': [MISC_REGEX]
     }
 
-    def __init__(self, file_path, is_added_file=False, is_renamed=False):
-        # type: (str, bool, bool) -> None
+    def __init__(self, file_path, old_file_path=None):
+        # type: (str, bool) -> None
         self.is_valid = None  # type: Optional[bool]
         self.file_path = file_path
-        self.is_added_file = is_added_file
-        self.is_renamed = is_renamed
         self.scheme_name = self.scheme_of_file_by_path()
         self.file_type = self.get_file_type()
         self.current_file = self.load_data_from_file()
-        self.old_file = None if (is_renamed or is_added_file) else get_remote_file(self.file_path)
+        self.old_file = get_remote_file(old_file_path) if old_file_path else None
 
-    def is_valid_file(self, validate_rn=True):
-        # type: (bool) -> Optional[bool]
+    def is_valid_file(self):
+        # type: () -> Optional[bool]
         """Checks if given file is valid
-
-        Args:
-            validate_rn: If need to validate release notes. For example, beta file shouldn't validate rn
 
         Returns:
             (bool): Is file is valid
         """
-        answers = list()  # Contains only positive answers (self.is_valid stays true)
-        answers.append(self.is_valid_file_path())
-        answers.append(self.is_valid_scheme())
-        answers.append(self.is_file_id_without_slashes())
+        answers = [
+            self.is_valid_file_path(),
+            self.is_valid_scheme(),
+            self.is_file_id_without_slashes(),
+        ]
 
-        if not self.is_added_file:  # In case the file is modified
+        if not self.old_file:  # In case the file is modified
             answers.append(not self.is_id_modified())
             answers.append(self.is_valid_fromversion_on_modified())
-            # In case of release branch we allow to remove release notes
-            if validate_rn and not self.is_release_branch():
-                answers.append(self.is_there_release_notes())
         return all(answers)
 
     def scheme_of_file_by_path(self):
@@ -124,19 +118,6 @@ class StructureValidator(object):
             self.is_valid = False
             return False
         return True
-
-    @staticmethod
-    def is_release_branch():
-        # type: () -> bool
-        """Check if we are working on a release branch.
-
-        Returns:
-            (bool): is release branch
-        """
-        diff_string_config_yml = run_command("git diff origin/master .circleci/config.yml")
-        if re.search(r'[+-][ ]+CONTENT_VERSION: ".*', diff_string_config_yml):
-            return True
-        return False
 
     @staticmethod
     def is_subset_dictionary(new_dict, old_dict):
@@ -173,14 +154,17 @@ class StructureValidator(object):
         Returns:
             (str or None): file ID if exists.
         """
-        file_id = loaded_file_data.get('id')
-        if not file_id:
-            # In integrations/scripts, the id is under 'commonfields'.
-            file_id = loaded_file_data.get('commonfields', {}).get('id')
-        if not file_id:
-            # In layout, the id is under 'layout'.
-            file_id = loaded_file_data.get('layout', {}).get('id')
-        return file_id
+        try:
+            file_id = loaded_file_data.get('id')
+            if not file_id:
+                # In integrations/scripts, the id is under 'commonfields'.
+                file_id = loaded_file_data.get('commonfields', {}).get('id')
+            if not file_id:
+                # In layout, the id is under 'layout'.
+                file_id = loaded_file_data.get('layout', {}).get('id')
+            return file_id
+        except AttributeError:
+            return None
 
     def is_file_id_without_slashes(self):
         # type: () -> bool
@@ -196,75 +180,38 @@ class StructureValidator(object):
             return False
         return True
 
-    def is_id_modified(self, change_string=None):
-        # type: (Optional[str]) -> bool
+    def is_id_modified(self):
+        # type: () -> bool
         """Check if the ID of the file has been changed.
 
-        Args:
-            change_string (string): the string that indicates the changes done on the file(git diff)
 
         Returns:
             (bool): Whether the file's ID has been modified or not.
         """
-        if self.is_renamed:
-            print_warning(Errors.id_might_changed())
+        if not self.old_file:
             return False
 
-        if not change_string:
-            change_string = run_command("git diff HEAD {}".format(self.file_path))
+        old_version_id = self.get_file_id_from_loaded_file_data(self.old_file)
+        new_file_id = self.get_file_id_from_loaded_file_data(self.current_file)
+        return not (new_file_id == old_version_id)
 
-        if re.search("[+-]( {2})?id: .*", change_string):
-            print_error(Errors.id_changed(self.file_path))
-            self.is_valid = False
-            return True
-        return False
-
-    def is_valid_fromversion_on_modified(self, change_string=None):
-        # type: (Optional[str]) -> bool
+    def is_valid_fromversion_on_modified(self):
+        # type: () -> bool
         """Check that the fromversion property was not changed on existing Content files.
-
-        Args:
-            change_string (string): the string that indicates the changed done on the file(git diff)
 
         Returns:
             (bool): Whether the files' fromversion as been modified or not.
         """
-        if self.is_renamed:
-            print_warning(Errors.from_version_modified_after_rename())
+        if not self.old_file:
             return True
 
-        if not change_string:
-            change_string = run_command("git diff HEAD {0}".format(self.file_path))
+        from_version_new = self.current_file.get("fromversion") or self.current_file.get("fromVersion")
+        from_version_old = self.old_file.get("fromversion") or self.old_file.get("fromVersion")
 
-        is_added_from_version = re.search(r"\+([ ]+)?fromversion: .*", change_string)
-        is_added_from_version_secondary = re.search(r"\+([ ]+)?\"fromVersion\": .*", change_string)
-
-        if is_added_from_version or is_added_from_version_secondary:
+        if from_version_old != from_version_new:
             print_error(Errors.from_version_modified(self.file_path))
             self.is_valid = False
             return False
-        return True
-
-    def is_there_release_notes(self):
-        """Validate that the file has proper release notes when modified.
-        This function updates the class attribute self._is_valid instead of passing it back and forth.
-
-        Returns:
-            (bool): is there release notes
-        """
-        if self.is_renamed:
-            print_warning(Errors.might_need_release_notes(self.file_path))
-            return True
-
-        if os.path.isfile(self.file_path):
-            rn_path = get_release_notes_file_path(self.file_path)
-            release_notes = get_latest_release_notes_text(rn_path)
-
-            # check release_notes file exists and contain text
-            if release_notes is None:
-                print_error(Errors.missing_release_notes(self.file_path, rn_path))
-                self.is_valid = False
-                return False
         return True
 
     def load_data_from_file(self):

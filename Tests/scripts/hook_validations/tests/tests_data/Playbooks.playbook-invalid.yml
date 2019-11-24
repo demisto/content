@@ -1,6 +1,6 @@
 version: 123
 name: Account Enrichment
-fromversion: 3.5.0
+fromversion: 4.5.0
 description: Enrich the accounts under the Account context key with details from relevant
   integrations such as AD.
 starttaskid: "0"

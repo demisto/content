@@ -1,6 +1,6 @@
 {
   "id": "detection-sla-by-status",
-  "version": "Not working",
+  "version": 15,
   "fromVersion": "4.1.0",
   "name": "Detection SLA by Status",
   "dataType": "incidents",
