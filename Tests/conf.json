@@ -2039,7 +2039,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
-      "McAfee Active Response": "Issue 20320",
+        "McAfee Active Response": "Issue 20320",
         "McAfee NSM": "Issue 20336",
         "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
