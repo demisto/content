@@ -354,7 +354,13 @@ script:
             }
             md += '\n';
         }
-       return{Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        return {
+            Type: entryTypes.note,
+            Contents: res.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
     }
     function calcRecentDownloads(checks) {
         var badDownloads = 0;
@@ -375,10 +381,10 @@ script:
     }
     function doIP(ip, longFormat, threshold, sampleSize, waitForRateLimit, retries, fullResponse) {
 
-        var ip_list = argToList(ip);
-        var entry_list = [];
-        for (z = 0; z < ip_list.length; z++) {
-            ip = ip_list[z];
+        var ipList = argToList(ip);
+        var entryList = [];
+        for (z = 0; z < ipList.length; z++) {
+            ip = ipList[z];
             if (!isValidIP(ip)) {
                 return {Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text};
             }
@@ -483,18 +489,18 @@ script:
                     }
                 }
             }
-            entry_list.push({Type: entryTypes.note,Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entryList.push({Type: entryTypes.note,Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
         }
-        return entry_list;
+        return entryList;
     }
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
 
-        var url_list = argToList(url);
-        var entry_list = [];
-        for (z = 0; z < url_list.length; z++) {
-            url = url_list[z];
+        var urlList = argToList(url);
+        var entryList = [];
+        for (z = 0; z < urlList.length; z++) {
+            url = urlList[z];
             var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
             if (protocol !== null) { // if url doesn't start with a protocol, ignore
               protocol = protocol[0].toLowerCase();
@@ -598,9 +604,9 @@ script:
                     }
                 }
             }
-            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
+            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
         }
-        return entry_list;
+        return entryList;
     }
     function doDomain(domain, threshold, longFormat, sampleSize, waitForRateLimit, retries, fullResponse) {
         if (!sampleSize) {
@@ -610,10 +616,10 @@ script:
             threshold = DOMAIN_THRESHOLD || 10;
         }
         threshold = parseInt(threshold);
-        var domain_list = argToList(domain);
-        var entry_list = [];
-        for (z = 0; z < domain_list.length; z++) {
-            domain = domain_list[z];
+        var domainList = argToList(domain);
+        var entryList = [];
+        for (z = 0; z < domainList.length; z++) {
+            domain = domainList[z];
             var res = withRetries(waitForRateLimit, retries, function() {return doReq('GET', 'domain/report', {domain: domain});});
             var o = res.obj;
             var ec = {};
@@ -778,9 +784,9 @@ script:
                 ec[outputPaths.domain] = domain_ec;
             }
 
-            entry_list.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
+            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
         }
-        return entry_list;
+        return entryList;
     }
     function scanURL(url) {
         var res = doReq('POST', 'url/scan', {url: url});
