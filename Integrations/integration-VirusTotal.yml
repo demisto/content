@@ -387,7 +387,7 @@ script:
             ip = ipList[z];
             if (!isValidIP(ip)) {
                 entryList.push({Type: entryTypes.error, Contents: 'IP - ' + ip + ' is not valid IP', ContentsFormat: formats.text});
-                continue:
+                continue;
             }
             if (!threshold) {
                 threshold = IP_THRESHOLD || 10;
