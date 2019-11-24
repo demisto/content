@@ -42,7 +42,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Filter incidents that are opened or closed.
+      description: Filter incidents by status. Can be "open" or "closed".
       isArray: false
       name: status
       predefined:
@@ -52,39 +52,39 @@ script:
       secret: false
     - default: false
       description: |-
-        Return Incidents created on or after the given timestamp
-        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+        Return incidents created on or after this timestamp.
+        The timestamp is in RFC3339 format (2019-04-12T23:20:50Z).
       isArray: false
       name: created_after
       required: false
       secret: false
     - default: false
       description: |-
-        Return Incidents created on or before the given timestamp
-        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+        Return Incidents created on or before this timestamp.
+        The timestamp is in RFC3339 format (2019-04-12T23:20:50Z).
       isArray: false
       name: created_before
       required: false
       secret: false
     - default: false
       description: |-
-        Return Incidents closed on or after the given timestamp
-        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+        Return Incidents closed on or after this timestamp.
+        The timestamp is in RFC3339 format (2019-04-12T23:20:50Z).
       isArray: false
       name: closed_after
       required: false
       secret: false
     - default: false
       description: |-
-        Return Incidents closed on or before the given timestamp
-        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z)
+        Returns Incidents closed on or before the given timestamp
+        Timestamp is in RFC3339 format(2019-04-12T23:20:50Z).
       isArray: false
       name: closed_before
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Return Incidents sorted by the given column.
+      description: Returns incidents sorted by a column. Can be "created_at" or "closed_at".
       isArray: false
       name: sort
       predefined:
@@ -94,8 +94,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Return Incidents sorted by the given order. This will be applied
-        to the given sort parameter.
+      description: How to sort returned incidents. This will be applied
+        to the given sort parameter. Can be "asc" (ascending) or "desc" (descending).
       isArray: false
       name: direction
       predefined:
@@ -105,98 +105,97 @@ script:
       secret: false
     - default: false
       defaultValue: '25'
-      description: Limit amounts of incidents  (0-50, default 25)
+      description: The maximum number of incidents to return (0-50). Default is 25.
       isArray: false
       name: limit
       required: true
       secret: false
     - default: false
       defaultValue: '0'
-      description: Offset from last incident
+      description: Offset from last incident.
       isArray: false
       name: offset
       required: true
       secret: false
     deprecated: false
-    description: Get EIR incidents from PhishLabs-IOC EIR service (dafault limit 25
-      incidents)
+    description: Returns EIR incidents from PhishLabs-IOC EIR service. The default number of incidents returned is 25.
     execution: false
     name: phishlabs-ioc-eir-get-incidents
     outputs:
     - contextPath: PhishLabsIOC.EIR.CaseType
-      description: Incident reason type
+      description: Incident reason type.
       type: String
     - contextPath: PhishLabsIOC.EIR.Classification
-      description: Incident classification
+      description: Incident classification.
       type: String
     - contextPath: PhishLabsIOC.EIR.SubClassification
-      description: Detailed classification
+      description: Detailed classification.
       type: String
     - contextPath: PhishLabsIOC.EIR.Severity
-      description: Incident severity
+      description: Incident severity.
       type: String
     - contextPath: PhishLabsIOC.EIR.SubmissionMethod
-      description: Email submission method
+      description: Email submission method.
       type: String
     - contextPath: PhishLabsIOC.EIR.FurtherReviewReason
-      description: Incident further review reason
+      description: Incident further review reason.
       type: String
     - contextPath: PhishLabsIOC.EIR.ID
-      description: Id of incident
+      description: ID of the incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Title
-      description: Title of reported incident
+      description: Title of the reported incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Description
-      description: Description of reporeted incident
+      description: Description of the reported incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Status
-      description: Status of reported incident
+      description: Status of the reported incident.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Created
-      description: Date of incident creation
+      description: Date that the incident was created.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Modified
-      description: Date of incident last modified
+      description: Date that the incident was last modified.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Closed
-      description: Date of incident closing
+      description: Date that the incident was closed.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Duration
-      description: Duration until closing incident in seconds
+      description: Time until the incident will be closed (in seconds).
       type: Number
     - contextPath: PhishLabsIOC.EIR.EmailReportedBy
-      description: User who reported the incident
+      description: User who reported the incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.EmailBody
-      description: Email body
+      description: Email body.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Sender
-      description: Email sender
+      description: Email sender.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.URL.URL
-      description: Url found in body
+      description: URL found in the email body.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.URL.Malicious
-      description: Is the url malicious?
+      description: Whether the URL is malicious.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Email.URL.MaliciousDomain
-      description: Is the url domain malicious?
+      description: Whether the URL domain is malicious.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.FileName
-      description: Name of the attached file
+      description: Name of the attached file.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.MimeType
-      description: Attachemt mime type
+      description: Attachment MIME type.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.MD5
-      description: Attachemt md5 hash
+      description: MD5 hash of the attachment.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.SHA256
-      description: Attachemt sha256 hash
+      description: SHA256 hash of the attachment.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.Malicious
-      description: Is the file malicious?
+      description: Whether the file is malicious.
       type: Boolean
     - contextPath: Email.To
       description: The recipient of the email.
@@ -223,7 +222,7 @@ script:
       description: A description explaining why the file was determined to be malicious.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
@@ -245,7 +244,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of Incident
+      description: The ID of the incident.
       isArray: false
       name: incident_id
       required: true
@@ -256,79 +255,79 @@ script:
     name: phishlabs-ioc-eir-get-incident-by-id
     outputs:
     - contextPath: PhishLabsIOC.EIR.CaseType
-      description: Incident reason type
+      description: Incident reason type.
       type: String
     - contextPath: PhishLabsIOC.EIR.Classification
-      description: Incident classification
+      description: Incident classification.
       type: String
     - contextPath: PhishLabsIOC.EIR.SubClassification
-      description: Detailed classification
+      description: Detailed classification..
       type: String
     - contextPath: PhishLabsIOC.EIR.Severity
       description: Incident severity
       type: String
     - contextPath: PhishLabsIOC.EIR.SubmissionMethod
-      description: Email submission method
+      description: Email submission method.
       type: String
     - contextPath: PhishLabsIOC.EIR.FurtherReviewReason
-      description: Incident further review reason
+      description: Incident further review reason.
       type: String
     - contextPath: PhishLabsIOC.EIR.ID
-      description: Id of incident
+      description: ID of the incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Title
-      description: Title of reported incident
+      description: Title of the reported incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Description
-      description: Description of reporeted incident
+      description: Description of the reported incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Status
-      description: Status of reported incident
+      description: Status of the reported incident.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Created
-      description: Date of incident creation
+      description: Date that the incident was created.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Modified
-      description: Date of incident last modified
+      description: Date that the incident was last modified.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Closed
-      description: Date of incident closing
+      description: Date that the incident was closed.
       type: Date
     - contextPath: PhishLabsIOC.EIR.Duration
-      description: Duration until closing incident in seconds
+      description: Time until the incident will be closed (in seconds).
       type: Number
     - contextPath: PhishLabsIOC.EIR.EmailReportedBy
-      description: User who reported the incident
+      description: User who reported the incident.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.EmailBody
-      description: Email body
+      description: Email body.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Sender
-      description: Email sender
+      description: Email sender.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.URL.URL
-      description: Url found in body
+      description: URL found in the email body.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.URL.Malicious
-      description: Is the url malicious?
+      description: Whether the URL is malicious.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Email.URL.MaliciousDomain
-      description: Is the url domain malicious?
+      description: Whether the URL domain is malicious.
       type: Boolean
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.FileName
-      description: Name of the attached file
+      description: Name of the attached file.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.MimeType
-      description: Attachemt mime type
+      description: Attachment MIME type.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.MD5
-      description: Attachemt md5 hash
+      description: MD5 hash of the attachment.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.SHA256
-      description: Attachemt sha256 hash
+      description: SHA256 hash of the attachment.
       type: String
     - contextPath: PhishLabsIOC.EIR.Email.Attachment.Malicious
-      description: Is the file malicious?
+      description: Whether the file is malicious.
       type: Boolean
     - contextPath: Email.To
       description: The recipient of the email.
@@ -355,7 +354,7 @@ script:
       description: A description explaining why the file was determined to be malicious.
       type: String
     - contextPath: URL.Data
-      description: The URL
+      description: The URL.
       type: String
     - contextPath: URL.Malicious.Vendor
       description: The vendor reporting the URL as malicious.
