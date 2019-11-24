@@ -32,7 +32,7 @@ def test_build_list_from_dict(mocker):
     mock_misp(mocker)
     from MISP_V2 import build_list_from_dict
     lst = build_list_from_dict({'ip': '8.8.8.8', 'domain': 'google.com'})
-    assert lst == [{'ip': '8.8.8.8'}, {'domain': 'google.com'}]
+    assert lst == [{'ip': '8.8.8.8'}, {'domain': 'google.co'}]
 
 
 def test_extract_error(mocker):
