@@ -31,11 +31,16 @@ EMAIL = params.get('email', '')
 PROXY = params.get('proxy')
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
-OPROXY_URL = 'https://us-central1-oproxy-dev.cloudfunctions.net'  # disable-secrets-detection
-TOKEN_RETRIEVAL_URL = f'{OPROXY_URL}/google-oauth2_ProvideGoogleTokenFunction'  # disable-secrets-detection
 ENC_KEY = params.get('enc_key')
 REFRESH_TOKEN = params.get('token')
-REG_ID = params.get('registration_id')
+REG_ID = params.get('registration_id', '').split('@')
+AUTH_ID = REG_ID[0]
+
+if len(REG_ID) != 2:
+    TOKEN_RETRIEVAL_URL = 'oproxy.demisto.ninja/gmail-obtain-token'  # disable-secrets-detection
+else:
+    TOKEN_RETRIEVAL_URL = REG_ID[1]
+
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 
 
