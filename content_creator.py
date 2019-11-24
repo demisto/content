@@ -52,24 +52,12 @@ MAX_FILE_NAME = 85
 LONG_FILE_NAMES = []
 
 
-def get_parent_directory(path):
-    pass
-
-
 def get_child_directories(directory):
     '''Return a list of paths of immediate child directories of the 'directory' argument'''
     child_directories = [
         os.path.join(directory, path) for
         path in os.listdir(directory) if os.path.isdir(os.path.join(directory, path))
     ]
-    # # make sure that directory paths end in '/'
-    # directories = []
-    # for directory in child_directories:
-    #     if not directory.endswith('/'):
-    #         directories.append(directory + '/')
-    #     else:
-    #         directories.append(directory)
-    # return directories
     return child_directories
 
 
@@ -280,7 +268,8 @@ def main(circle_artifacts):
                     package_dir_name = os.path.basename(package_dir)
                     dest_package_dir = os.path.join(dest_dir, package_dir_name)
                     os.mkdir(dest_package_dir)
-                    merge_script_package_to_yml(package_dir, dir_name, dest_path=dest_package_dir)
+                    package_dir_with_slash = package_dir + '/'
+                    merge_script_package_to_yml(package_dir_with_slash, dir_name, dest_path=dest_package_dir)
 
                     # also copy CHANGELOG markdown files over
                     package_files = get_child_files(package_dir)
