@@ -100,8 +100,9 @@ script:
             hash = hashList[i];
             var res = doReq('GET', 'malware/' + hash);
             if (res.statusCode === 404) {
-                return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-                    HumanReadable: 'XFE does not have details about ' + hash};
+                entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + hash});
+                continue;
             }
             var o = res.obj.malware;
             var ec = {};
@@ -170,8 +171,9 @@ script:
             var res = {};
             var ipRes = doReq('GET', 'ipr/' + ip);
             if (ipRes.statusCode === 404) {
-                return {Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
-                    HumanReadable: 'XFE does not have details about ' + ip};
+                entryList.push({Type: entryTypes.note, Contents: ipRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + ip});
+                continue;
             }
             var malwareRes = doReq('GET', 'ipr/malware/' + ip);
             res.reputation = ipRes.obj;
@@ -231,13 +233,15 @@ script:
             var res = {};
             var resolutionRes = doReq('GET', 'resolve/' + url);
             if (resolutionRes.statusCode === 404) {
-                return {Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
-                    HumanReadable: 'XFE does not have details about ' + url};
+                entryList.push({Type: entryTypes.note, Contents: resolutionRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + url});
+                continue;
             }
             var urlRes = doReq('GET', 'url/' + url);
             if (urlRes.statusCode === 404) {
-                return {Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
-                    HumanReadable: 'XFE does not have details about ' + url};
+                 entryList.push({Type: entryTypes.note, Contents: urlRes.body, ContentsFormat: formats.json,
+                    HumanReadable: 'XFE does not have details about ' + url});
+                 continue;
             }
             var malwareRes = doReq('GET', 'url/malware/' + url);
             res.resolution = resolutionRes.obj;
@@ -359,8 +363,9 @@ script:
         cve = cveList[i];
         var res = doReq('GET', 'vulnerabilities/search/' + cve);
         if (res.statusCode === 404) {
-          return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
-              HumanReadable: 'XFE does not have details about ' + cve};
+          entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json,
+              HumanReadable: 'XFE does not have details about ' + cve});
+          continue;
         }
         var o = res.obj;
         var md = '## X-Force CVE Search for: ' + cve + '\n';
