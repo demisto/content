@@ -38,8 +38,8 @@ if not PARAMS.get('proxy'):
     os.environ.pop('http_proxy', '')
     os.environ.pop('https_proxy', '')
 
-CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID == obj.ID)'
-CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID == obj.ID)'
+CONTEXT_FOLDER_PATH = 'MSGraphMail.Folders(val.ID && val.ID === obj.ID)'
+CONTEXT_COPIED_EMAIL = 'MSGraphMail.MovedEmails(val.ID && val.ID === obj.ID)'
 
 FOLDER_MAPPING = {
     'id': 'ID',
@@ -225,7 +225,7 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         params=params,
         data=data,
         headers=headers,
-        json=json_data
+        json=json_data,
     )
     # Handle error responses gracefully
     if not (199 < res.status_code < 299):
@@ -342,7 +342,7 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'IsDraft': 'isDraft',
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
-            'Importance': 'importance'
+            'Importance': 'importance',
         }
 
         contact_properties = {
@@ -635,7 +635,16 @@ def list_attachments_command(args):
         return_outputs(human_readable, dict(), raw_response)
 
 
-def list_folders(user_id, limit='20'):
+def list_folders(user_id: str, limit: str = '20') -> dict:
+    """List folder under root folder (Top of information store)
+
+    Args:
+        user_id (str): User id or mailbox address
+        limit (str): Limit number of returned folder collection
+
+    Returns:
+        dict: Collection of folders under root folder
+    """
     suffix = f'/users/{user_id}/mailFolders?$top={limit}'
     return http_request('GET', suffix)
 
@@ -653,7 +662,18 @@ def list_folders_command(args):
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def list_child_folders(user_id, parent_folder_id, limit='20'):
+def list_child_folders(user_id: str, parent_folder_id: str, limit: str = '20') -> list:
+    """List child folder under specified folder.
+
+    Args:
+        user_id (str): User id or mailbox address
+        parent_folder_id (str): Parent folder id
+        limit (str): Limit number of returned folder collection
+
+    Returns:
+        list: Collection of folders under specified folder
+    """
+    # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
     suffix = f'/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}'
     return http_request('GET', suffix)
 
@@ -664,7 +684,7 @@ def list_child_folders_command(args):
     limit = args.get('limit', '20')
 
     raw_response = list_child_folders(user_id, parent_folder_id, limit)
-    parsed_child_folders_result = parse_folders_list(raw_response.get('value', []))
+    parsed_child_folders_result = parse_folders_list(raw_response.get('value', []))  # type: ignore
     human_readable = tableToMarkdown(f'Mail Folder collection under {parent_folder_id} folder for user {user_id}',
                                      parsed_child_folders_result)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_child_folders_result}
@@ -672,7 +692,18 @@ def list_child_folders_command(args):
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def create_folder(user_id, new_folder_name, parent_folder_id=None):
+def create_folder(user_id: str, new_folder_name: str, parent_folder_id: str = None) -> dict:
+    """Create folder under specified folder with given display name
+
+    Args:
+        user_id (str): User id or mailbox address
+        new_folder_name (str): Created folder display name
+        parent_folder_id (str): Parent folder id under where created new folder
+
+    Returns:
+        dict: Created folder data
+    """
+
     suffix = f'/users/{user_id}/mailFolders'
     if parent_folder_id:
         suffix += f'/{parent_folder_id}/childFolders'
@@ -696,7 +727,18 @@ def create_folder_command(args):
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def update_folder(user_id, folder_id, new_display_name):
+def update_folder(user_id: str, folder_id: str, new_display_name: str) -> dict:
+    """Update folder under specified folder with new display name
+
+    Args:
+        user_id (str): User id or mailbox address
+        folder_id (str): Folder id to update
+        new_display_name (str): New display name of updated folder
+
+    Returns:
+        dict: Updated folder data
+    """
+
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
     json_data = {'displayName': new_display_name}
     return http_request('PATCH', suffix, json_data=json_data)
@@ -709,14 +751,21 @@ def update_folder_command(args):
 
     raw_response = update_folder(user_id, folder_id, new_display_name)
     parsed_updated_folder = parse_folders_list(raw_response)
-    human_readable = tableToMarkdown(f'Mail folder {folder_id} was with display name: {new_display_name}',
+    human_readable = tableToMarkdown(f'Mail folder {folder_id} was updated with display name: {new_display_name}',
                                      parsed_updated_folder)
     entry_context = {CONTEXT_FOLDER_PATH: parsed_updated_folder}
 
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def delete_folder(user_id, folder_id):
+def delete_folder(user_id: str, folder_id: str):
+    """Deletes folder under specified folder
+
+    Args:
+        user_id (str): User id or mailbox address
+        folder_id (str): Folder id to delete
+    """
+
     suffix = f'/users/{user_id}/mailFolders/{folder_id}'
     return http_request('DELETE', suffix)
 
@@ -729,32 +778,52 @@ def delete_folder_command(args):
     return_outputs(f'The folder {folder_id} was deleted successfully')
 
 
-def copy_email(user_id, message_id, destination_folder_id):
+def move_email(user_id: str, message_id: str, destination_folder_id: str) -> dict:
+    """Moves email to destination folder
+
+    Args:
+        user_id (str): User id or mailbox address
+        message_id (str): The message id to move
+        destination_folder_id (str): Destination folder id
+
+    Returns:
+        dict: Moved email data
+    """
+
     suffix = f'/users/{user_id}/messages/{message_id}/move'
     json_data = {'destinationId': destination_folder_id}
     return http_request('POST', suffix, json_data=json_data)
 
 
-def copy_email_command(args):
+def move_email_command(args):
     user_id = args.get('user_id')
     message_id = args.get('message_id')
     destination_folder_id = args.get('destination_folder_id')
 
-    raw_response = copy_email(user_id, message_id, destination_folder_id)
+    raw_response = move_email(user_id, message_id, destination_folder_id)
     new_message_id = raw_response.get('id')
-    human_readable = f'### The email was moved successfully. The new ID of the email is: {new_message_id}'
-    entry_context = {
-        CONTEXT_COPIED_EMAIL: {
-            'ID': new_message_id,
-            'DestinationFolderID': destination_folder_id,
-            'UserID': user_id
-        }
+    moved_email_info = {
+        'ID': new_message_id,
+        'DestinationFolderID': destination_folder_id,
+        'UserID': user_id
     }
+    human_readable = tableToMarkdown('The email was moved successfully. Updated email data:', moved_email_info)
+    entry_context = {CONTEXT_COPIED_EMAIL: moved_email_info}
 
     return_outputs(human_readable, entry_context, raw_response)
 
 
-def get_email_as_eml(user_id, message_id):
+def get_email_as_eml(user_id: str, message_id: str) -> str:
+    """Returns MIME content of specified message
+
+    Args:
+        user_id (str): User id or mailbox address
+        message_id (str): The message id of the email
+
+    Returns:
+        str: MIME content of the email
+    """
+
     suffix = f'/users/{user_id}/messages/{message_id}/$value'
     return http_request('GET', suffix, resp_type='text')
 
@@ -767,7 +836,6 @@ def get_email_as_eml_command(args):
     file_result = fileResult(f'{message_id}.eml', eml_content)
 
     if is_error(file_result):
-        demisto.error(file_result['Contents'])
         raise Exception(file_result['Contents'])
 
     demisto.results(file_result)
@@ -804,7 +872,7 @@ def main():
         elif command == 'msgraph-mail-delete-folder':
             delete_folder_command(args)
         elif command == 'msgraph-mail-move-email':
-            copy_email_command(args)
+            move_email_command(args)
         elif command == 'msgraph-mail-get-email-as-eml':
             get_email_as_eml_command(args)
     # Log exceptions
