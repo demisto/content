@@ -194,6 +194,7 @@ def generate_md_context_get_issue(data):
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
             md_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
+            context_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
 
         get_issue_obj['md'].append(md_obj)
         get_issue_obj['context'].append(context_obj)
@@ -483,29 +484,29 @@ def add_comment_command(issue_id, comment, visibility=''):
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def issue_upload_command(issue_id, upload):
-    j_res = upload_file(upload, issue_id)
+def issue_upload_command(issue_id, upload, attachment_name=None):
+    j_res = upload_file(upload, issue_id, attachment_name)
     md = generate_md_upload_issue(j_res, issue_id)
     human_readable = tableToMarkdown(demisto.command(), md, "")
     contents = j_res
     return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
 
 
-def upload_file(entry_id, issue_id):
+def upload_file(entry_id, issue_id, attachment_name=None):
     headers = {
         'X-Atlassian-Token': 'no-check',
     }
+    file_name, file_bytes = get_file(entry_id)
     res = requests.post(
         url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
         headers=headers,
-        files={'file': get_file(entry_id)},
+        files={'file': (attachment_name or file_name, file_bytes)},
         auth=(USERNAME, API_TOKEN or PASSWORD),
         verify=USE_SSL
     )
 
     if not res.ok:
-        return_error(
-            f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}')
+        return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}')
 
     return res.json()
 
