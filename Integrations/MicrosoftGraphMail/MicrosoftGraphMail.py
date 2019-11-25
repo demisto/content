@@ -207,7 +207,7 @@ def http_request(method: str, url_suffix: str = '', params: dict = None, data: d
         url (str): url to replace if need a new api call
 
     Returns:
-        dict: requests.json()
+        dict or str: requests.json() or string
     """
     token = get_access_token()
     headers = {
