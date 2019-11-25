@@ -104,8 +104,17 @@ script:
     - contextPath: RedCanary.Detection.RemediationStatus
       description: The state the detection is currently in.
       type: string
+    - contextPath: RedCanary.Detection.Reason
+      description: The reason for the detection.
+      type: String
+    - contextPath: RedCanary.Detection.EndpointUserID
+      description: The ID of the user in the infected endpoint.
+      type: Number
+    - contextPath: RedCanary.Detection.EndpointID
+      description: The ID of the endpoint infected in the detection.
+      type: Number
     - contextPath: Endpoint.Hostname
-      description: Fully-qualified endpoint hostname
+      description: Fully-qualified endpoint hostname.
       type: string
     - contextPath: Endpoint.ID
       description: Endpoint ID
@@ -113,7 +122,7 @@ script:
     - contextPath: Endpoint.IPAddress
       description: IP Address of the endpoint
     - contextPath: Endpoint.MACAddress
-      description: MAC Address of the endpoint
+      description: MAC address of the endpoint
     - contextPath: Endpoint.OS
       description: The operating system platform used by the endpoint
       type: string
@@ -316,6 +325,15 @@ script:
     - contextPath: RedCanary.Detection.RemediationStatus
       description: The state the detection is currently in.
       type: string
+    - contextPath: RedCanary.Detection.Reason
+      description: The reason for the detection
+      type: String
+    - contextPath: RedCanary.Detection.EndpointUserID
+      description: The ID of the user in the infected endpoint
+      type: Number
+    - contextPath: RedCanary.Detection.EndpointID
+      description: The ID of the endpoint infected in the detection
+      type: Number
     - contextPath: Endpoint.Hostname
       description: Fully-qualified endpoint hostname
       type: string
