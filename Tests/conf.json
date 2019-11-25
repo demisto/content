@@ -1815,10 +1815,6 @@
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
-            "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AWS - S3",
             "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         },
@@ -1971,6 +1967,7 @@
         }
     ],
     "skipped_tests": {
+        "FormattingPerformance - Test": "Issue 20348",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
         "LogRhythm-Test-Playbook": "Issue 20331",
