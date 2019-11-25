@@ -3169,6 +3169,7 @@ tasks:
       id: bf1bf9b6-3cf3-4303-81e2-15b91b16cee3
       version: -1
       name: Manual Notification
+      description: ""
       type: regular
       iscommand: false
       brand: ""
