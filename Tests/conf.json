@@ -463,6 +463,16 @@
             "fromversion": "4.0.0"
         },
         {
+            "playbookID": "Endpoint Malware Investigation - Generic - Test",
+            "integrations": [
+                "Traps",
+                "Cylance Protect v2",
+                "Demisto REST API"
+            ],
+            "fromversion": "5.0.0",
+            "timeout": 900
+        },
+        {
             "playbookID": "ParseExcel-test"
         },
         {
