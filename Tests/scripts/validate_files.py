@@ -196,6 +196,8 @@ class FilesValidator(object):
         packs = set()
         changed_files = modified_files.union(added_files)
         for changed_file in changed_files:
+            if isinstance(changed_file, tuple):
+                changed_file = changed_file[1]
             pack = get_pack_name(changed_file)
             if pack and is_file_path_in_pack(changed_file):
                 packs.add(pack)
