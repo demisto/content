@@ -1,6 +1,7 @@
 id: Extract Indicators From File - Generic v2 - Test
 version: -1
 fromversion: 4.1.0
+toversion: 4.4.9
 name: Extract Indicators From File - Generic v2 - Test
 description: |-
   A test playbook for extracting indicators from a file.
