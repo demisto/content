@@ -386,7 +386,7 @@ inputs:
 - key: ip
   value: {}
   required: false
-  description: Source or destination address.
+  description: Source or destination IP address.
 - key: zone-src
   value: {}
   required: false

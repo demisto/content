@@ -2560,7 +2560,7 @@ script:
       secret: false
     - default: false
       name: ip
-      description: Destination or Source address.
+      description: Source or destination IP address.
       isArray: true
       required: false
       secret: false
