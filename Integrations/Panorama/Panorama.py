@@ -394,9 +394,9 @@ def panorama_command():
     Executes a command
     """
     params = {}
-    params['key'] = API_KEY
     for arg in demisto.args().keys():
         params[arg] = demisto.args()[arg]
+    params['key'] = API_KEY
 
     result = http_request(
         URL,
