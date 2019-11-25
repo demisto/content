@@ -50,6 +50,7 @@ runas: DBotWeakRole
 runonce: false
 tags:
   - ml
+dockerimage: demisto/python3:3.7.3.286
 comment: Get emails from multiple folders of an account at once.
 tests:
   - Get EWS Folder Test
