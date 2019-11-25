@@ -55,7 +55,7 @@ class TestGetMatchingRegex:
     INPUTS = [
         ('Packs/XDR/Playbooks/XDR.yml', [PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX],
          PACKS_PLAYBOOK_YML_REGEX),
-        ('Packs/XDR/NoMatch/XDR.yml', [PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX], None)
+        ('Packs/XDR/NoMatch/XDR.yml', [PACKS_PLAYBOOK_YML_REGEX, PACKS_TEST_PLAYBOOKS_REGEX], False)
     ]
 
     @pytest.mark.parametrize("string_to_match, regexes, answer", INPUTS)
