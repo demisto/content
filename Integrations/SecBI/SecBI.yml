@@ -26,7 +26,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The Query for which to filter the incident IDs.
+      description: "The Query for which to filter the incident IDs using Elasticsearch's Query String Syntax. E.g.: \"firstAppearance:[2018-06-01 TO 2018-06-21]\"."
       isArray: false
       name: query
       required: false

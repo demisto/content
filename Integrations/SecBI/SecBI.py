@@ -25,7 +25,7 @@ def capitalize(s: str):
 
 
 def as_secbi_incident(incident_json: dict):
-    secbi_incident = {capitalize(field): incident_json[field] for field in SECBI_INCIDENT_FIELDS}
+    secbi_incident = {capitalize(field): incident_json.get(field, []) for field in SECBI_INCIDENT_FIELDS}
     secbi_incident['ID'] = secbi_incident.pop('Id')
     return secbi_incident
 
@@ -118,13 +118,14 @@ def secbi_get_incident_command(client: SecBIClient, args: Dict) -> Tuple[str, Di
     :return: Content for return_outputs()
     """
     incident_id = args.get('incident_id', None)
-    incident_data = as_secbi_incident(client.secbi_get_incident(incident_id))
+    raw_incident = client.secbi_get_incident(incident_id)
+    incident_data = as_secbi_incident(raw_incident)
 
     human_readable = tableToMarkdown('SecBI incident ID "{}"'.format(incident_id), incident_data)
     entry_context = {
         'SecBI.Incident(val.ID === obj.ID)': incident_data
     }
-    return human_readable, entry_context, incident_data
+    return human_readable, entry_context, raw_incident
 
 
 def secbi_get_incident_by_host_command(client: SecBIClient, args: Dict) -> Tuple[str, Dict, Dict]:
@@ -143,7 +144,7 @@ def secbi_get_incident_by_host_command(client: SecBIClient, args: Dict) -> Tuple
         # ID comparison might be problematic if the host changes Incidents and the ID changes
         'SecBI.Incident(val.ID === obj.ID)': incident_data
     }
-    return human_readable, entry_context, incident_data
+    return human_readable, entry_context, raw_incident
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
