@@ -1,41 +1,42 @@
 args:
-  - default: false
-    defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
-    description: The ews folders paths, comma seperated
-    isArray: false
-    name: foldersPaths
-    required: true
-    secret: false
-  - default: false
-    description: The target mailbox.
-    isArray: false
-    name: targetMailbox
-    required: false
-    secret: false
-  - auto: PREDEFINED
-    default: false
-    defaultValue: 'true'
-    description: Is the folder public?
-    isArray: false
-    name: isPublic
-    predefined:
-      - 'true'
-      - 'false'
-    required: false
-    secret: false
-  - default: false
-    defaultValue: '1000'
-    description: Maximum number of items per folder.
-    isArray: false
-    name: limit
-    required: false
-    secret: false
-  - default: false
-    description: Use this hash seed.
-    isArray: false
-    name: hashSeed
-    required: false
-    secret: false
+- default: false
+  defaultValue: Inbox,Inbox\\FOLDER1,Inbox\\FOLDER2
+  description: The ews folders paths, comma seperated
+  isArray: false
+  name: foldersPaths
+  required: true
+  secret: false
+- default: false
+  description: The target mailbox.
+  isArray: false
+  name: targetMailbox
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Is the folder public?
+  isArray: false
+  name: isPublic
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '1000'
+  description: Maximum number of items per folder.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- default: false
+  description: Use this hash seed.
+  isArray: false
+  name: hashSeed
+  required: false
+  secret: false
+comment: Get emails from multiple folders of an account at once.
 commonfields:
   id: GetEWSFolder
   version: -1
@@ -44,13 +45,12 @@ name: GetEWSFolder
 script: '-'
 subtype: python2
 system: false
+tags:
+- ml
 timeout: 6µs
 type: python
 runas: DBotWeakRole
-runonce: false
-tags:
-  - ml
 dockerimage: demisto/python3:3.7.5.4002
-comment: Get emails from multiple folders of an account at once.
+runonce: false
 tests:
-  - Get EWS Folder Test
+- Get EWS Folder Test
