@@ -53,7 +53,7 @@ def get_attachments(build_url, env_results_file_name):
         'color': color,
         'title': title,
         'title_link': build_url,
-        "author_name": "Demisto AWS Machine",
+        "author_name": "Demisto Machine (Click here to open the nightly server)",
         "author_link": "https://{0}".format(instance_dns),
         "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
@@ -148,7 +148,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="dmst-test-slack",
+            channel="WHB66N4VA",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
