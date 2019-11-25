@@ -139,7 +139,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'unittest-slack-notification':
+    if branch_name == 'master':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
         content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
@@ -148,7 +148,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
-            channel="WHB66N4VA",
+            channel="dmst-content-team",
             username="Content CircleCI",
             as_user="False",
             attachments=content_team_attachments
@@ -157,10 +157,10 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
 
 if __name__ == "__main__":
     options = options_handler()
-    # if options.nightly:
-    slack_notifier(options.url, options.slack, options.env_results_file_name)
-    # else:
-    #     print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
+    if options.nightly:
+        slack_notifier(options.url, options.slack, options.env_results_file_name)
+    else:
+        print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
     os.remove('./Tests/failed_unittests.txt')
