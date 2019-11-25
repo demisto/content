@@ -32,7 +32,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -840
+          "y": -1060
         }
       }
     note: false
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 415
+          "y": 235
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -395
+          "y": -605
         }
       }
     note: false
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 1100,
-          "y": -250
+          "y": -450
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -250
+          "y": -450
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": -250
+          "y": -450
         }
       }
     note: false
@@ -187,7 +187,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 4690
+          "y": 4490
         }
       }
     note: false
@@ -226,7 +226,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 50
+          "y": -140
         }
       }
     note: false
@@ -273,7 +273,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 240
+          "y": 60
         }
       }
     note: false
@@ -476,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 5150
+          "y": 4310
         }
       }
     note: false
@@ -886,7 +886,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -700
+          "y": -920
         }
       }
     note: false
@@ -1188,7 +1188,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
+          "x": 880,
           "y": 860
         }
       }
@@ -1248,7 +1248,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 550
+          "y": 380
         }
       }
     note: false
@@ -1284,10 +1284,10 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: c8ce60d1-aaed-438a-8294-edba84095b4e
+    taskid: 157b08cf-633d-4ca0-8a8f-9996e482ae00
     type: condition
     task:
-      id: c8ce60d1-aaed-438a-8294-edba84095b4e
+      id: 157b08cf-633d-4ca0-8a8f-9996e482ae00
       version: -1
       name: Request user to confirm account activity
       description: ""
@@ -1312,7 +1312,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: mgoldberg@paloaltonetworks.com
+        complex:
+          root: ActiveDirectory
+          accessor: Users.mail
       subject:
         simple: Unexpected account activity - Action required
       body:
@@ -1347,13 +1349,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "43"
+      - "77"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 660,
-          "y": 720
+          "y": 550
         }
       }
     note: false
@@ -1379,7 +1381,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3505
+          "y": 3335
         }
       }
     note: false
@@ -1400,7 +1402,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "69"
+      - "50"
     scriptarguments:
       Crowdstrikefamily: {}
       Crowdstrikescore: {}
@@ -1794,7 +1796,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 4350
+          "y": 4140
         }
       }
     note: false
@@ -1829,7 +1831,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": -120
+          "y": -310
         }
       }
     note: false
@@ -2187,7 +2189,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -560
+          "y": -780
         }
       }
     note: false
@@ -2551,41 +2553,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "69":
-    id: "69"
-    taskid: 8f2fffb2-7336-47a4-80c9-7a10ef646d09
-    type: regular
-    task:
-      id: 8f2fffb2-7336-47a4-80c9-7a10ef646d09
-      version: -1
-      name: Return incident to the first role
-      description: |
-        Assign the incident to an analyst based on the analyst’s organizational role.
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "50"
-    scriptarguments:
-      assignBy: {}
-      email: {}
-      roles:
-        complex:
-          root: inputs.FirstRole
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 3330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "70":
     id: "70"
     taskid: 50cd8017-135a-4f6f-8ebb-bea385934879
@@ -2617,7 +2584,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3850
+          "y": 3650
         }
       }
     note: false
@@ -2643,7 +2610,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 4180
+          "y": 3970
         }
       }
     note: false
@@ -2669,7 +2636,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 4030
+          "y": 3830
         }
       }
     note: false
@@ -3027,7 +2994,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 3660
+          "y": 3480
         }
       }
     note: false
@@ -3108,7 +3075,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": -120
+          "y": -310
         }
       }
     note: false
@@ -3151,7 +3118,69 @@ tasks:
       {
         "position": {
           "x": 1100,
-          "y": -120
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "77":
+    id: "77"
+    taskid: 877cc981-f225-4d80-8d34-29a8b06cd57e
+    type: condition
+    task:
+      id: 877cc981-f225-4d80-8d34-29a8b06cd57e
+      version: -1
+      name: Notify by Email?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.NotifyEmail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "78":
+    id: "78"
+    taskid: bf1bf9b6-3cf3-4303-81e2-15b91b16cee3
+    type: regular
+    task:
+      id: bf1bf9b6-3cf3-4303-81e2-15b91b16cee3
+      version: -1
+      name: Manual Notification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 860
         }
       }
     note: false
@@ -3161,14 +3190,14 @@ view: |-
   {
     "linkLabelsPosition": {
       "17_19_yes": 0.61,
-      "17_4_#default#": 0.19
+      "17_4_#default#": 0.6
     },
     "paper": {
       "dimensions": {
-        "height": 5595,
+        "height": 5615,
         "width": 1420,
         "x": 60,
-        "y": -840
+        "y": -1060
       }
     }
   }
@@ -3186,8 +3215,7 @@ inputs:
   required: false
   description: The email address of the account that was used to access the DstIP.
 - key: NotifyEmail
-  value:
-    simple: mgoldberg@paloaltonetworks.com
+  value: {}
   required: false
   description: Email addresses to notify about the incident.
 - key: RemediationSLA
