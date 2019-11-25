@@ -655,7 +655,7 @@ def check_for_answers(now: datetime):
 
 def add_info_headers(headers, expiry):
     try:
-        calling_context = demisto.callingContext.get('context', {})
+        calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
