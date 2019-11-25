@@ -1980,7 +1980,6 @@
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "CheckpointFW-test": "Issue 18643",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
         "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
@@ -2036,6 +2035,7 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
         "McAfee NSM": "Issue 20336",
         "Elasticsearch v2": "Issue 20334",
