@@ -121,7 +121,8 @@ class PackUniqueFilesValidator():
     def _is_pack_meta_file_structure_valid(self):
         """Check if pack-metadata.json structure is json parse-able"""
         try:
-            if json.loads(self._open_and_read_file_content(self.pack_meta_file)):
+            pack_meta_file_content = self._open_and_read_file_content(self.pack_meta_file)
+            if pack_meta_file_content and json.loads(pack_meta_file_content):
                 return True
         except (ValueError, TypeError):
             self._add_error('Could not parse {} file contents to json format'.format(self.pack_meta_file))
