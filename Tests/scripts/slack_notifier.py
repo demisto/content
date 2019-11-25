@@ -108,7 +108,7 @@ def get_fields():
 
     if failed_unittests:
         field_failed_unittests = {
-            "title": "Failed tests - ({})".format(len(failed_unittests)),
+            "title": "Failed unittests - ({})".format(len(failed_unittests)),
             "value": '\n'.join(failed_unittests),
             "short": False
         }
@@ -139,7 +139,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
     branch_name_reg = re.search("\* (.*)", branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    if branch_name == 'unittest-slack-notification':
         print_color("Starting Slack notifications about nightly build", LOG_COLORS.GREEN)
         print("Extracting build status")
         content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
