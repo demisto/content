@@ -1615,7 +1615,8 @@
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "4.1.0"
             "toversion": "4.4.9"
         },
         {
