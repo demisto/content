@@ -1591,7 +1591,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1700
         },
         {
             "integrations": "McAfee Active Response",
@@ -1640,7 +1640,15 @@
         {
             "playbookID": "Extract Indicators From File - Generic v2 - Test",
             "integrations": "Image OCR",
-            "timeout": 300
+            "timeout": 300,
+            "fromversion": "4.1.0",
+            "toversion": "4.4.9"
+        },
+        {
+            "playbookID": "Extract Indicators From File - Generic v2 - Test",
+            "integrations": "Image OCR",
+            "timeout": 350,
+            "fromversion": "4.5.0"
         },
         {
             "playbookID": "Endpoint Enrichment - Generic v2.1 - Test",
