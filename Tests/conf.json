@@ -65,9 +65,14 @@
             "playbookID": "AttackIQ - Test"
         },
         {
+            "integrations": "PhishLabs IOC EIR",
+            "playbookID": "PhishlabsIOC_EIR-Test"
+        },
+        {
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout" : 60000,
             "fromversion": "4.5.0"
+
         },
         {
             "integrations": "ZeroFox",
