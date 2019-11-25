@@ -138,7 +138,7 @@ class Client:
                           'registration_id': AUTH_ID,
                            'encrypted_token': self.get_encrypted(REFRESH_TOKEN, ENC_KEY)})
 
-        h = httplib2.Http(disable_ssl_certificate_validation=DISABLE_SSL)
+        h = self.get_http_client_with_proxy()
         dbot_response, content = h.request(TOKEN_RETRIEVAL_URL, "POST", body, {'Accept': 'application/json'})
 
         if dbot_response.status not in {200, 201}:
