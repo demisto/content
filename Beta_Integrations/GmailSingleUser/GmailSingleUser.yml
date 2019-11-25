@@ -8,6 +8,19 @@ configuration:
   name: email
   required: true
   type: 0
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: registration_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
+  name: token
+  required: true
+  type: 4
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
+  required: true
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -29,19 +42,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- display: ID (received from the admin consent - see Detailed Instructions (?)
-  name: registration_id
-  required: true
-  type: 4
-- display: Token (received from the admin consent - see Detailed Instructions (?)
-    section)
-  name: token
-  required: true
-  type: 4
-- display: Key (received from the admin consent - see Detailed Instructions (?)
-  name: enc_key
-  required: true
-  type: 4
+
 description: Gmail API based of OAuth 2.0
 display: Gmail Single User (Beta)
 name: Gmail Single User
