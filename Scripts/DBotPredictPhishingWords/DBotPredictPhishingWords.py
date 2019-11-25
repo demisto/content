@@ -52,7 +52,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
                                                     word_threshold,
                                                     top_word_limit)
     if explain_result["Probability"] < label_threshold:
-        handle_error("Label probability is %.2f and its below input threshold", is_return_error)
+        handle_error("Label probability is %.2f and it's below the input threshold", is_return_error)
 
     if tokenized_text_result.get('hashedTokenizedText'):
         hash_word_to_plain = dict(
