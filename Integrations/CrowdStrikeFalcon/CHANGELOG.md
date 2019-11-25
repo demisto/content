@@ -1,2 +1,2 @@
 ## [Unreleased]
-Fixed and issue with duplicated incidents.
+Fixed an issue with fetch incidents which caused incident duplication.
