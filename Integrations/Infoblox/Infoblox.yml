@@ -451,7 +451,7 @@ script:
       type: string
     - contextPath: Infoblox.ObjectFields.SupportedFields
       description: List of supported fields for this object.
-    description: Use this command the retreive object field names to be used later
+    description: Use this command the retrieve object field names to be used later
       in the search rules command.
   - name: infoblox-search-rule
     arguments:
@@ -481,7 +481,7 @@ script:
     arguments:
     - name: reference_id
       required: true
-      description: Rule reference ID (this can be retreived by running the 'infoblox-search-rule'
+      description: Rule reference ID (this can be retrieved by running the 'infoblox-search-rule'
         command)
     description: Delete a rule
   dockerimage: demisto/python3:3.7.3.221
