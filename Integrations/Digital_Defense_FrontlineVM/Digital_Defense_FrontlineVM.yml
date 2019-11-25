@@ -87,7 +87,7 @@ script:
       description: IP address
     - contextPath: FrontlineVM.Hosts.DNSHostname
       description: DNS Hostname
-    - contextPath: FrontlineVM.MAC
+    - contextPath: FrontlineVM.Hosts.MAC
       description: MAC Address
     - contextPath: FrontlineVM.Hosts.OS
       description: Operating System
@@ -151,14 +151,14 @@ script:
       description: Policy of scan (case sensitive)
       defaultValue: Default
     outputs:
-    - contextPath: FrontlineVM.Scan
-      description: The response output of requested scan to perform.
     - contextPath: FrontlineVM.Scan.ID
       description: Scan ID number
     - contextPath: FrontlineVM.Scan.Name
       description: Scan name
     - contextPath: FrontlineVM.Scan.Policy
       description: Scan policy name
+    - contextPath: FrontlineVM.Scan.IP
+      description: Scan IP (can be single IP or an IP range)
     description: Performs a scan on a given asset.
   dockerimage: demisto/python3:3.7.4.1150
   isfetch: true
