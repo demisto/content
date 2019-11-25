@@ -266,19 +266,18 @@ def main(circle_artifacts):
                 packages_dirs = get_child_directories(content_dir)
                 for package_dir in packages_dirs:
                     package_dir_name = os.path.basename(package_dir)
-                    dest_package_dir = os.path.join(dest_dir, package_dir_name)
-                    os.mkdir(dest_package_dir)
                     package_dir_with_slash = package_dir + '/'
-                    merge_script_package_to_yml(package_dir_with_slash, dir_name, dest_path=dest_package_dir)
+                    merge_script_package_to_yml(package_dir_with_slash, dir_name, dest_path=dest_dir)
 
-                    # also copy CHANGELOG markdown files over
+                    # also copy CHANGELOG markdown files over (should only be one per package)
                     package_files = get_child_files(package_dir)
                     changelog_files = [
                         file_path
                         for file_path in package_files if ('CHANGELOG' in file_path and file_path.endswith('.md'))
                     ]
                     for md_file_path in changelog_files:
-                        shutil.copyfile(md_file_path, os.path.join(dest_package_dir, os.path.basename(md_file_path)))
+                        md_out_name = DIR_TO_PREFIX.get(dir_name) + '-' + package_dir_name + '_CHANGELOG.md'
+                        shutil.copyfile(md_file_path, os.path.join(dest_dir, md_out_name))
             else:
                 if dir_name == INCIDENT_FIELDS_DIR:
                     convert_incident_fields_to_array(content_dir)
