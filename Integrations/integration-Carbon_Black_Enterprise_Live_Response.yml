@@ -35,7 +35,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
   type: 8
@@ -1325,13 +1325,14 @@ script:
         return commandEntries['create process'](command);
     }
 
-    function memdumpRequest(sessionId, path, commpress) {
+    function memdumpRequest(sessionId, path, compress) {
         let queryParams = {
             name: 'memdump',
-            object: path
+            object: path,
+            compress: false //in the API there is a typo that says this field is spelled 'commpress'
         };
-        if (commpress) {
-            queryParams.commpress = commpress;
+        if (compress === 'true') {
+            queryParams.compress = true;
         }
         let response = sendRequest(`/session/${sessionId}/command`, 'POST', queryParams).Body;
         try {
@@ -1341,17 +1342,15 @@ script:
         }
     }
 
-    function memedump() {
-        if (commpress) {
-            args.commpress = args.commpress === 'yes';
-        }
-        let result = memdumpRequest(args['session'], args.path, args.commpress);
+    function memdump() {
+        let result = memdumpRequest(args['session'], args.path, args.compress);
         //wait for 1 second before trying to get command information
         sleep(1000);
         let timeout = (args['wait-timeout']) ? parseInt(args['wait-timeout']) * 1000 : DEFAULT_WAIT_TIMEOUT;
 
-        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES, args['cancel-on-timeout']);
-        return commandEntries['memedump'](command);
+        let command = getCommandInfo(args['session'], result.id, timeout, SLEEP_BETWEEN_RETRIES,
+        args['cancel-on-timeout']);
+        return commandEntries['memdump'](command);
     }
 
     function deleteFileFromEndpointRequest(sessionId, path){
@@ -1634,6 +1633,8 @@ script:
                 return processExec();
             case 'cb-memdeump':
                 return memdump();
+            case 'cb-memdump':
+                return memdump();
             case 'cb-file-delete-from-endpoint':
                 return deleteFileFromEndpoint();
             case 'cb-registry-get-values':
@@ -1764,7 +1765,9 @@ script:
     - name: file-id
       required: true
       description: File ID
-    description: Download a file from Cb server in a given session. Use cb-command-create with name=get-file to push the file from a path on the endpint to Cb server before executing cb-file-get.
+    description: Download a file from Cb server in a given session. Use cb-command-create
+      with name=get-file to push the file from a path on the endpint to Cb server
+      before executing cb-file-get.
   - name: cb-file-info
     arguments:
     - name: session
@@ -1805,7 +1808,8 @@ script:
       description: File status (0 if no error, another number otherwise)
     - contextPath: CbLiveResponse.Files.Delete
       description: Whether the file was deleted or not
-    description: Uploads the file to the Cb server. Use cb-command-create with name=put-file to push the file from Cb server to a path on the endpoint.
+    description: Uploads the file to the Cb server. Use cb-command-create with name=put-file
+      to push the file from Cb server to a path on the endpoint.
   - name: cb-keepalive
     arguments:
     - name: session
@@ -2133,6 +2137,7 @@ script:
     - contextPath: CbLiveResponse.Commands.DumpingInProgress
       description: Boolean flag indicating if memory dump is in progress.
     description: Endpoint memory dump.
+    deprecated: true
   - name: cb-command-create
     deprecated: true
     arguments:
@@ -2664,6 +2669,58 @@ script:
     - contextPath: CbLiveResponse.Commands.OperandObject
       description: The destination path of the file.
     description: Save a file to a specific path on the endpoint.
+  - name: cb-memdump
+    arguments:
+    - name: session
+      description: The session ID.
+    - name: sensor
+      description: The sensor ID.  Provided the sensor ID to run the command with
+        a new session. The session will be created and closed automatically.
+    - name: path
+      required: true
+      description: the path to save the resulting memory dump (on the endpoint).
+    - name: compress
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: An optional parameter to specify whether to compress resulting
+        memory dump.
+    - name: wait-timeout
+      description: Time to wait (in seconds) for Cb command to be executed (change
+        status from 'pending' to 'in-progress'/'complete').
+    - name: cancel-on-timeout
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Cancel the command if still 'pending' after timeout.
+    outputs:
+    - contextPath: CbLiveResponse.Commands.CbCommandID
+      description: Unique command identifier.
+    - contextPath: CbLiveResponse.Commands.CommandName
+      description: The command name.
+    - contextPath: CbLiveResponse.Commands.Status
+      description: The command Status ('pending', 'in progress', 'complete', 'error',
+        'canceled').
+    - contextPath: CbLiveResponse.Commands.CommandCompletionTime
+      description: The command completion time (0 if not complete).
+    - contextPath: CbLiveResponse.Commands.OperandObject
+      description: The path to save the resulting memory dump (on the endpoint).
+    - contextPath: CbLiveResponse.Commands.ReturnCode
+      description: Return code of the memory dump process.
+    - contextPath: CbLiveResponse.Commands.CompressingEnabled
+      description: Boolean flag indicating if compression is enabled.
+      type: boolean
+    - contextPath: CbLiveResponse.Commands.Complete
+      description: Boolean flag indicating if memory dump is completed.
+      type: boolean
+    - contextPath: CbLiveResponse.Commands.PercentDone
+      description: Percent of the process completed
+    - contextPath: CbLiveResponse.Commands.DumpingInProgress
+      description: Boolean flag indicating if memory dump is in progress.
+      type: boolean
+    description: Endpoint memory dump.
   runonce: false
 tests:
   - CarbonBlackLiveResponseTest
