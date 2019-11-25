@@ -479,7 +479,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     raw_response = client.search_related_objects_by_ip(ip, max_results)
     obj_list = raw_response.get('result')
     if not obj_list:
-        return f'{INTEGRATION_NAME} - No objects associated to ip: {ip} were found', {}, {}
+        return f'{INTEGRATION_NAME} - No objects associated with ip: {ip} were found', {}, {}
     fixed_keys_obj_list = []
     for obj in obj_list:
         fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
