@@ -660,9 +660,9 @@ def add_info_headers(headers, expiry):
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
-        headers['InstanceName'] = instance_name
-        headers['TeamName'] = team
-        headers['Expiry'] = expiry if expiry else 'No expiry'
+        headers['X-Content-InstanceName'] = instance_name
+        headers['X-Content-TeamName'] = team
+        headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
     except Exception as e:
         demisto.error('Failed getting integration info: {}'.format(str(e)))
 
