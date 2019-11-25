@@ -17,11 +17,11 @@ configuration:
   name: token
   required: true
   type: 4
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
-- display: Use system proxy
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -65,6 +65,7 @@ script:
       name: expand
       required: false
       secret: false
+    deprecated: true
     description: Lists alerts for the subscription according to the specified filters.
     execution: false
     name: azure-sc-list-alert
@@ -113,6 +114,7 @@ script:
       name: is_enabled
       required: true
       secret: false
+    deprecated: true
     description: Updates Advanced Threat Detection settings.
     execution: false
     name: azure-sc-update-atp
@@ -147,6 +149,7 @@ script:
       name: storage_account
       required: true
       secret: false
+    deprecated: true
     description: Returns the Advanced Threat Protection setting.
     execution: false
     name: azure-sc-get-atp
@@ -176,6 +179,7 @@ script:
       name: auto_provision
       required: true
       secret: false
+    deprecated: true
     description: Updates a specific auto provisioning setting.
     execution: false
     name: azure-sc-update-aps
@@ -198,6 +202,7 @@ script:
       name: setting_name
       required: true
       secret: false
+    deprecated: true
     description: Returns details of a specific auto provisioning setting.
     execution: false
     name: azure-sc-get-aps
@@ -212,7 +217,8 @@ script:
     - contextPath: AzureSecurityCenter.AutoProvisioningSetting.ID
       description: Set resource ID
       type: string
-  - description: Lists auto provisioning settings in the subscription.
+  - deprecated: true
+    description: Lists auto provisioning settings in the subscription.
     execution: false
     name: azure-sc-list-aps
     outputs:
@@ -241,6 +247,7 @@ script:
       name: resource_group_name
       required: false
       secret: false
+    deprecated: true
     description: Lists all policies for protecting resources using Just-in-Time access
       control.
     execution: false
@@ -259,7 +266,8 @@ script:
     - contextPath: AzureSecurityCenter.JITPolicy.Kind
       description: Policy resource type
       type: string
-  - description: Lists all the storage accounts available under the subscription.
+  - deprecated: true
+    description: Lists all the storage accounts available under the subscription.
     execution: false
     name: azure-sc-list-storage
     outputs:
@@ -273,8 +281,12 @@ script:
       description: The geo-location where the resource resides
       type: string
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
+  subtype: python2
 tests:
 - No tests
+deprecated: true

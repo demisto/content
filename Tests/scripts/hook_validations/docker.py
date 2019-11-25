@@ -22,12 +22,13 @@ DEFAULT_REGISTRY = 'registry-1.docker.io'
 
 class DockerImageValidator(object):
 
-    def __init__(self, yml_file_path, is_modified_file):
+    def __init__(self, yml_file_path, is_modified_file, is_integration):
         self.is_modified_file = is_modified_file
+        self.is_integration = is_integration
         self.yml_file = get_yaml(yml_file_path)
         self.from_version = self.yml_file.get('fromversion', '0')
-        self.docker_image_name, self.docker_image_tag = DockerImageValidator.parse_docker_image(self.yml_file.get
-                                                                                                ('dockerimage', ''))
+        self.docker_image_name, self.docker_image_tag = DockerImageValidator.parse_docker_image(
+            self.get_docker_image_from_yml())
         self.is_latest_tag = True
         self.docker_image_latest_tag = DockerImageValidator.get_docker_image_latest_tag(self.docker_image_name)
         self.is_valid = True
@@ -55,8 +56,18 @@ class DockerImageValidator(object):
                     self.is_latest_tag = False
 
         if not self.is_latest_tag:
-            print_error('The docker image tag is not the latest, please update it.')
+            print_error('The docker image tag is not the latest, please update it.\n'
+                        'The docker image tag in the yml file is: {}\n'
+                        'The latest docker image tag in docker hub is: {}'
+                        .format(self.docker_image_tag, self.docker_image_latest_tag))
         return self.is_latest_tag
+
+    def get_docker_image_from_yml(self):
+        if self.is_integration:
+            docker_image = self.yml_file.get('script').get('dockerimage', '')
+        else:
+            docker_image = self.yml_file.get('dockerimage', '')
+        return docker_image
 
     @staticmethod
     def parse_www_auth(www_auth):
@@ -225,9 +236,8 @@ class DockerImageValidator(object):
         """
         if docker_image:
             try:
-                name = re.findall(r'(demisto\/.+):.+', docker_image, re.IGNORECASE)[0]
-                tag = re.findall(r'demisto\/.+:(.+)', docker_image, re.IGNORECASE)[0]
-                return name, tag
+                regex = re.findall(r'(demisto\/.+):(.+)', docker_image, re.IGNORECASE)[0]
+                return regex[0], regex[1]
             except IndexError:
                 print_error('The docker image is not of format - demisto/image_name:X.X.X.X')
                 return '', ''

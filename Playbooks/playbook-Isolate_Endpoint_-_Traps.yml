@@ -308,6 +308,10 @@ inputs:
   required: false
   description: Endpoint ID of the endpoint to isolate, provided by the Palo Alto Networks
     Traps integration.
-outputs: []
+outputs:
+- contextPath: Traps.Isolate.EndpointID
+  description: The ID of the endpoint.
+- contextPath: Traps.IsolateResult.Status
+  description: The status of the isolation operation.
 tests:
   - No Test
