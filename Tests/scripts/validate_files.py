@@ -200,8 +200,9 @@ class FilesValidator(object):
         changed_files = modified_files.union(added_files)
         for changed_file in changed_files:
             pack = get_pack_name(changed_file)
-            if is_file_path_in_pack(changed_file) and pack:
+            if pack and is_file_path_in_pack(changed_file):
                 packs.add(pack)
+
         return packs
 
     def validate_modified_files(self, modified_files, is_backward_check=True, old_branch='master'):
