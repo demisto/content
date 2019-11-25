@@ -26,7 +26,7 @@ class TestValidators:
     PLAYBOOK_TARGET = "Playbooks/playbook-test.yml"
     INTEGRATION_TARGET = "TestPlaybooks/integration-test.yml"
     INCIDENT_FIELD_TARGET = "IncidentFields/incidentfield-test.json"
-    PLAYBOOK_TARGET = ".Packs/Int/Playbooks/playbook-test.yml"
+    PLAYBOOK_PACK_TARGET = "Packs/Int/Playbooks/playbook-test.yml"
     SCRIPT_TARGET = "./Scripts/script-test.yml"
     INPUTS_IS_VALID_VERSION = [
         (VALID_LAYOUT_PATH, LAYOUT_TARGET, True, LayoutValidator),
