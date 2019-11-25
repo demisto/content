@@ -3,8 +3,43 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Test",
+            "instance_names": "ms_azure_compute_dev"
+        },
+        {
+            "integrations": "Azure Compute v2",
+            "playbookID": "Azure Compute - Test",
+            "instance_names": "ms_azure_compute_prod"
+        },
+        {
+            "integrations": "Symantec Data Loss Prevention",
+            "playbookID": "Symantec Data Loss Prevention - Test",
+            "fromversion": "4.5.0"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
+            "integrations": "Azure Security Center v2",
+            "playbookID": "Azure SecurityCenter - Test",
+            "instance_names": "ms_azure_sc_prod"
+        },
+        {
             "integrations": "JsonWhoIs",
             "playbookID": "JsonWhoIs-Test"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_dev"
+        },
+        {
+            "integrations": "MicrosoftGraphMail",
+            "playbookID": "MicrosoftGraphMail-Test",
+            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "nmap",
@@ -16,6 +51,10 @@
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
             "timeout": 500
+        },
+        {
+            "integrations": "HelloWorld",
+            "playbookID": "TestHelloWorld"
         },
         {
             "integrations": "ThreatQ v2",
@@ -46,22 +85,13 @@
         {
             "integrations": "SlackV2",
             "playbookID": "Slack Test Playbook",
+            "timeout" : 2400,
             "fromversion": "5.0.0"
         },
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook",
             "fromversion": "4.1.0"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_dev"
-        },
-        {
-            "integrations": "MicrosoftGraphMail",
-            "playbookID": "MicrosoftGraphMail-Test",
-            "instance_names": "ms_graph_mail_prod"
         },
         {
             "integrations": "Cloaken",
@@ -831,18 +861,7 @@
             "fromversion": "4.1.0"
         },
         {
-            "integrations": [
-                "VirusTotal"
-            ],
-            "instance_names": "virus_total_general",
-            "playbookID": "ip_enrichment_generic_test"
-        },
-        {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "OpenPhish",
-            "playbookID": "email_test"
         },
         {
             "integrations": "PostgreSQL",
@@ -1910,6 +1929,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "playbookID": "Test Convert file hash to corresponding hashes",
+            "fromversion": "4.5.0",
+            "integrations": "VirusTotal - Private API"
+        },
+        {
             "integrations": "Hybrid Analysis",
             "playbookID": "HybridAnalysis-Test",
             "timeout": 500,
@@ -1947,7 +1971,12 @@
         }
     ],
     "skipped_tests": {
-        "Create Phishing Classifier V2 ML Test": "Issue 20174",
+        "Symantec Data Loss Prevention - Test": "Issue 20134",
+        "Request Debugging - Test": "Issue 20337",
+        "LogRhythm-Test-Playbook": "Issue 20331",
+        "minemeld_test": "Issue 20265",
+        "rsa_packets_and_logs_test": "Issue 20262",
+        "Cloaken-Test": "Issue 20036",
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
@@ -1967,8 +1996,6 @@
         "TruSTAR Test": "Issue 19777",
         "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "TestSafeBreach": "Issue 15909",
-        "ip_enrichment_generic_test": "Issue 19815",
-        "email_test": "Issue 19816",
         "2cddaacb-4e4c-407e-8ef5-d924867b810c": "Issue 19836",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
@@ -1982,15 +2009,12 @@
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
-        "CarbonBlackLiveResponseTest": "Issue 18691",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
-        "CarbonBlackResponseTest": "Issue #19180",
         "CheckPhish-Test": "Issue 19188",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
         "PAN-OS DAG Configuration Test": "Issue #19205",
-        "AlphaSOC-Wisdom-Test": "Issue #19235",
         "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Manual test"
     },
@@ -2015,8 +2039,15 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "McAfee Active Response": "Issue 20320",
+        "McAfee NSM": "Issue 20336",
+        "Elasticsearch v2": "Issue 20334",
+        "RSA Archer": "Issue 20335",
+        "Cisco ISE": "Issue 20333",
+        "LogRhythmRest": "Issue 19870",
+        "Fidelis Elevate Network": "Issue 20263",
+        "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
-        "carbonblack-v2": "Issue 19929",
         "Joe Security": "Issue 17996",
         "CrowdstrikeFalcon": "Issue 19833",
         "ZeroFox": "Issue 19161",
@@ -2043,7 +2074,6 @@
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
         "XFE": "License expired",
-        "RedLock": "Issue 15493",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2054,19 +2084,20 @@
         "QRadar": "Issue 17794",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
+        "McAfee ESM-v10": "Issue 20225",
 
         "_comment": "~~~ UNSTABLE ~~~",
         "ServiceNow": "Instance goes to hibernate every few hours",
         "Tanium": "issue 15497",
         "Tenable.sc": "unstable instance",
         "Tenable.io": "Issue 16115",
-        "SlackV2": "Issue 19558",
 
         "_comment": "~~~ OTHER ~~~",
         "EclecticIQ Platform": "Issue 8821",
         "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
+        "HelloWorldSimple": "This is just an example integration - no need for test",
 
         "_comment": "~~~ QUOTA ISSUES ~~~",
         "AWS - Athena - Beta": "Issue 19834",
@@ -2112,7 +2143,6 @@
         "Signal Sciences WAF": "error with certificate",
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
-        "carbonblackliveresponse": "Issue 16072",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
         "Palo Alto Networks Cortex": "SDK",
@@ -2121,6 +2151,7 @@
         "Microsoft Graph": "Test direct access to oproxy",
         "MicrosoftGraphMail": "Test direct access to oproxy",
         "Microsoft Graph User": "Test direct access to oproxy",
-        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy"
+        "Windows Defender Advanced Threat Protection": "Test direct access to oproxy",
+        "RedLock": "SSL Issues"
     }
 }
