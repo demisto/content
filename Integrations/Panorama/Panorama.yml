@@ -2629,9 +2629,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Destination or Source address.
-      isArray: true
       name: ip
+      description: Source or destination IP address.
+      isArray: true
       required: false
       secret: false
     - default: false
