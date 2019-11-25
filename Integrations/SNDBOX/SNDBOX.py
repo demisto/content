@@ -20,7 +20,7 @@ USE_SSL = not demisto.params().get('insecure', False)
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(url_suffix, data=None, files=None, parse_json=True):
+def http_cmd(url_suffix, data=None, files=None, parse_json=True):
     data = {} if data is None else data
 
     url_params = {}  # type:dict
@@ -176,7 +176,7 @@ def poll_analysis_id(analysis_id):
 
 def is_online():
     cmd_url = ''
-    res = http_request(cmd_url)
+    res = http_cmd(cmd_url)
     return res['status'] == 'online'
 
 
@@ -191,7 +191,7 @@ def analysis_info():
 
 def info_request(analysis_id):
     cmd_url = '/developers/files/' + analysis_id
-    return http_request(cmd_url)
+    return http_cmd(cmd_url)
 
 
 def analyse_sample():
@@ -217,7 +217,7 @@ def analyse_sample_file_request(file_entry, should_wait):
                 demisto.getFilePath(file_entry)['name'])
 
     with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
-        res = http_request('/developers/files',
+        res = http_cmd('/developers/files',
                        data=data,
                        files={'file': f})
 
@@ -252,7 +252,7 @@ def download_sample():
 
 def download_request(analysis_id, rsc_type):
     cmd_url = '/developers/files/' + analysis_id + '/' + rsc_type.lower()
-    res = http_request(cmd_url, parse_json=False)
+    res = http_cmd(cmd_url, parse_json=False)
 
     info = info_request(analysis_id)
     if rsc_type == 'sample':
