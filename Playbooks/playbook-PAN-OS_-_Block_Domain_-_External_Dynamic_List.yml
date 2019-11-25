@@ -213,8 +213,8 @@ tasks:
       id: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
       version: -1
       name: PAN-OS EDL Setup
-      description: Sets up external dynamic list in PAN-OS.\nin case file exists in
-        web server it will sync it to demisto. then it will create an EDL object and
+      description: Sets up an external dynamic list in PAN-OS.\n If the file exists on
+        the web server, it will sync it to Demisto. Lastly, it will create an EDL object and
         a matching rule.
       playbookName: PAN-OS EDL Setup
       type: playbook
