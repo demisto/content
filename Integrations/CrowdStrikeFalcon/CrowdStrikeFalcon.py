@@ -371,14 +371,15 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
 
 def get_fetch_detections(last_created_timestamp=None, behavior_id=None, filter_arg=None):
-    """
-        Sends detections request. The function will ignore the arguments passed according to priority:
-        filter_arg > behavior_id > last_behavior_time
+    """ Sends detection request, based om created_timestamp field. Used for fetch-incidents
 
-        :param last_created_timestamp: 3rd priority. The created timestamp of results will be greater than this value
-        :param behavior_id: 2nd priority. The result will only contain the detections with matching behavior id
-        :param filter_arg: 1st priority. The result will be filtered using this argument.
-        :return: Response json of the get detection endpoint (IDs of the detections)
+    Args:
+        last_created_timestamp: last created timestamp of the results will be greater than this value.
+        behavior_id: The result will only contain the detections with matching behavior id.
+        filter_arg: The result will be filtered using this argument.
+
+    Returns:
+        Response json of the get detection endpoint (IDs of the detections)
     """
     endpoint_url = '/detects/queries/detects/v1'
     params = {
