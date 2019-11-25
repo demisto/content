@@ -565,9 +565,9 @@ def long_running_loop():
             error = 'Could not connect to the Slack endpoint: {}'.format(str(e))
         except Exception as e:
             error = 'An error occurred: {}'.format(str(e))
-            demisto.error(error)
         finally:
             if error:
+                demisto.error(error)
                 demisto.updateModuleHealth(error)
             time.sleep(5)
 
@@ -604,7 +604,10 @@ def check_for_answers(now: datetime):
                 continue
         demisto.info('Slack - polling for an answer for entitlement {}'.format(question.get('entitlement')))
         question['last_poll_time'] = now_string
+
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        add_info_headers(headers)
+
         body = {
             'token': BOT_TOKEN,
             'entitlement': question.get('entitlement')
@@ -648,6 +651,18 @@ def check_for_answers(now: datetime):
 
     questions = list(filter(lambda q: q.get('remove', False) is False, questions))
     set_to_latest_integration_context('questions', questions)
+
+
+def add_info_headers(headers):
+    try:
+        calling_context = demisto.callingContext.get('context', {})
+        instance_name = calling_context.get('IntegrationInstance', '')
+        auth = send_slack_request_sync(CLIENT, 'auth.test')
+        team = auth.get('team', '')
+        headers['InstanceName'] = instance_name
+        headers['TeamName'] = team
+    except Exception as e:
+        demisto.error('Failed getting integration info: {}'.format(str(e)))
 
 
 def answer_question(text: str, question: dict, questions: list, email: str = ''):
