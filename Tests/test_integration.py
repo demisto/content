@@ -29,8 +29,12 @@ def __get_integration_config(client, integration_name):
     body = {
         'page': 0, 'size': 100, 'query': 'name:' + integration_name
     }
-    res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
-                                                  method='POST', body=body)
+    try:
+        res_raw = demisto_client.generic_request_func(self=client, path='/settings/integration/search',
+                                                      method='POST', body=body)
+    except ApiException as conn_error:
+        print(conn_error)
+        return None
 
     res = ast.literal_eval(res_raw[0])
     TIMEOUT = 180
@@ -221,12 +225,18 @@ def __create_incident_with_playbook(client, name, playbook_id, integrations):
     # inc_filter.query
     search_filter.filter = inc_filter
 
-    incidents = client.search_incidents(filter=search_filter)
+    try:
+        incidents = client.search_incidents(filter=search_filter)
+    except ApiException as err:
+        print(err)
 
     # poll the incidents queue for a max time of 25 seconds
     timeout = time.time() + 25
     while incidents['total'] != 1:
-        incidents = client.search_incidents(filter=search_filter)
+        try:
+            incidents = client.search_incidents(filter=search_filter)
+        except ApiException as err:
+            print(err)
         if time.time() > timeout:
             print_error('Got timeout for searching incident with id {}, '
                         'got {} incidents in the search'.format(inc_id, incidents['total']))
@@ -333,8 +343,8 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
 
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
-    """Copies the intgeration parameters dictionary.
-        Set proxy and unscure integration parameters to true.
+    """Copies the integration parameters dictionary.
+        Set proxy and insecure integration parameters to true.
 
     Args:
         integration_params: dict of the integration parameters.
@@ -433,13 +443,14 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     return playbook_state, inc_id
 
 
-def disable_all_integrations(client):
+def disable_all_integrations(demisto_api_key, server):
     """
     Disable all enabled integrations. Should be called at start of test loop to start out clean
 
     Arguments:
         client -- demisto py client
     """
+    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     try:
         body = {'size': 1000}
         int_resp = demisto_client.generic_request_func(self=client, method='POST',
