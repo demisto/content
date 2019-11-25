@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 ''' IMPORTS '''
 import requests
@@ -191,7 +191,7 @@ def error_parser(resp_err: requests.Response) -> str:
 
 
 def http_request(method: str, url_suffix: str = '', params: dict = None, data: dict = None, odata: str = None,
-                 url: str = None, resp_type: str = 'json', json_data: dict = None):
+                 url: str = None, resp_type: str = 'json', json_data: dict = None) -> Any:
     """
     A wrapper for requests lib to send our requests and handle requests and responses better
     Headers to be sent in requests
