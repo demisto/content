@@ -1,5 +1,5 @@
 ## [Unreleased]
-  - Support get, creating and editing custom URL categories objects in PAN-OS 9.x versions, including using categories.
+  - Added support for get, create and edit a custom URL categories objects in PAN-OS 9.x versions, including using categories.
   - Added support for a list of *job_id* in the ***panorama-query-logs*** and ***panorama-check-logs-status*** commands.
   - Added the *ip* argument in the ***panorama-query-logs*** command.
 
