@@ -1982,6 +1982,7 @@
             ],
             "playbookID": "Gmail Single User - Test"
         },
+        {
             "integrations": "Tanium v2",
             "playbookID": "Tanium v2 - Test"
         }
