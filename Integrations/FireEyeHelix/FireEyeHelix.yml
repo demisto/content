@@ -61,7 +61,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Output values to display in the command result (comma seperated values, with no spaces
+      description: Output values to display in the command result (comma separated values (no spaces)
         as they appear in the context. e.g. ID,Name,Hostname).
       isArray: true
       name: headers
@@ -73,7 +73,7 @@ script:
     name: fireeye-helix-list-alerts
     outputs:
     - contextPath: FireEyeHelix.Alert.ID
-      description: Primary ID of alert.
+      description: Primary ID of the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.AlertTypeID
       description: ID of the alert type.
@@ -94,22 +94,22 @@ script:
       description: Name of the user who created the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.UpdaterID
-      description: Name of the user who updated the alert.
+      description: ID of the user who updated the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.UpdaterName
       description: Name of the user who updated the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.CreatedTime
-      description: Time the alert was created at.
+      description: Time the alert was created.
       type: Date
     - contextPath: FireEyeHelix.Alert.ModifiedTime
-      description: Time the alert was modified at.
+      description: Time the alert was modified.
       type: Date
     - contextPath: FireEyeHelix.Alert.ProcessPath
-      description: Path of the process
+      description: Path of the process.
       type: String
     - contextPath: FireEyeHelix.Alert.Confidence
-      description: FireEye helix confidence with the result.
+      description: FireEye Helix confidence with the result.
       type: String
     - contextPath: FireEyeHelix.Alert.SHA1
       description: SHA1 hash of the file.
@@ -136,7 +136,7 @@ script:
       description: Malware type.
       type: String
     - contextPath: FireEyeHelix.Alert.Filename
-      description: Name of the file the contains the virus.
+      description: Name of the file that contains the virus.
       type: String
     - contextPath: FireEyeHelix.Alert.RegPath
       description: Registry key path.
@@ -151,19 +151,19 @@ script:
       description: Name of the process that created the event.
       type: String
     - contextPath: FireEyeHelix.Alert.ParentProcess
-      description: Name of the parent process to the process that created the event.
+      description: Name of the parent process of the process that created the event.
       type: String
     - contextPath: FireEyeHelix.Alert.SourceIPv4
-      description: Source IP of the event (IP v4).
+      description: Source IP address of the event (IPv4).
       type: String
     - contextPath: FireEyeHelix.Alert.SourceIPv6
-      description: Source IP of the event (IP v6).
+      description: Source IP address of the event (IPv6).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationIPv4
-      description: Destination IP of the event (IP v4).
+      description: Destination IP address of the event (IPv4).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationIPv6
-      description: Destination IP of the event (IP v6).
+      description: Destination IP address of the event (IPv6).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationPort
       description: Destination port of the event.
@@ -172,7 +172,7 @@ script:
       description: URI address that created the event.
       type: String
     - contextPath: FireEyeHelix.Alert.HttpMethod
-      description: Http method of the that was called.
+      description: HTTP method of the request that was called.
       type: String
     - contextPath: FireEyeHelix.Alert.Domain
       description: Domain of the URI that created the event.
@@ -181,34 +181,34 @@ script:
       description: User agent related to the event.
       type: String
     - contextPath: FireEyeHelix.Alert.EventsCount
-      description: Number of events in alert.
+      description: Number of events in the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.NotesCount
-      description: Number of notes in alert.
+      description: Number of notes in the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.ClosedState
-      description: State the alert in regards to it being closed.
+      description: Status of the alert in regards to it being closed.
       type: String
     - contextPath: FireEyeHelix.Alert.ClosedReason
       description: Reason the alert was closed.
       type: String
     - contextPath: FireEyeHelix.Alert.Confidence
-      description: Amount of confidence helix has with the alert.
+      description: Helix confidence level of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Description
       description: Description of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.FirstEventTime
-      description: Time of the first event.
+      description: Time that the first event occurred.
       type: Date
     - contextPath: FireEyeHelix.Alert.LastEventTime
-      description: Time of the last event.
+      description: Time that the last event occurred.
       type: Date
     - contextPath: FireEyeHelix.Alert.ExternalIP
-      description: External IPs for the alert.
+      description: External IP addresses for the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.InternalIP
-      description: Internal IPs for the alert.
+      description: Internal IP addresses for the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Message
       description: Message of the alert.
@@ -223,38 +223,37 @@ script:
       description: Severity of the events in the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.State
-      description: State of the alert. Can be either Open, Suppressed, Closed, Reopened.
+      description: State of the alert. Can be "Open", "Suppressed", "Closed", or "Reopened".
       type: String
     - contextPath: FireEyeHelix.Alert.Tag
       description: Tag of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Type
-      description: Type of the alert.
+      description: Alert type.
       type: String
     - contextPath: FireEyeHelix.Alert.Count
       description: Number of alerts.
       type: String
   - arguments:
     - default: true
-      description: Alert ID.
+      description: The ID of the alert.
       isArray: false
       name: id
       required: true
       secret: false
     - default: false
-      description: Output values to display in the command result (comma seperated values, with no spaces
-        as they appear in the context. e.g. ID,Name,Hostname).
+      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Name,Hostname.
       isArray: true
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Get alert by id.
+    description: Returns alert details, by alert ID.
     execution: false
     name: fireeye-helix-get-alert-by-id
     outputs:
     - contextPath: FireEyeHelix.Alert.ID
-      description: Primary ID of alert.
+      description: Primary ID of the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.AlertTypeID
       description: ID of the alert type.
@@ -263,7 +262,7 @@ script:
       description: Name of the alert type.
       type: String
     - contextPath: FireEyeHelix.Alert.AssigneeID
-      description: ID of the assignee.
+      description: ID of the alert assignee.
       type: String
     - contextPath: FireEyeHelix.Alert.AssigneeName
       description: Assignee display name.
@@ -281,16 +280,16 @@ script:
       description: Name of the user who updated the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.CreatedTime
-      description: Time the alert was created at.
+      description: Time the alert was created.
       type: Date
     - contextPath: FireEyeHelix.Alert.ModifiedTime
-      description: Time the alert was modified at.
+      description: Time the alert was last modified.
       type: Date
     - contextPath: FireEyeHelix.Alert.ProcessPath
-      description: Path of the process
+      description: Path of the process.
       type: String
     - contextPath: FireEyeHelix.Alert.Confidence
-      description: FireEye helix confidence with the result.
+      description: Helix confidence level of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.SHA1
       description: SHA1 hash of the file.
@@ -307,7 +306,7 @@ script:
     - contextPath: FireEyeHelix.Alert.Size
       description: Size of the process in bytes.
       type: Number
-    - contextPath: FireEyeHelix.Alert.Virues
+    - contextPath: FireEyeHelix.Alert.Virus
       description: Virus name.
       type: String
     - contextPath: FireEyeHelix.Alert.Result
@@ -317,13 +316,13 @@ script:
       description: Malware type.
       type: String
     - contextPath: FireEyeHelix.Alert.Filename
-      description: Name of the file the contains the virus.
+      description: Name of the file that contains the virus.
       type: String
     - contextPath: FireEyeHelix.Alert.RegPath
       description: Registry key path.
       type: String
     - contextPath: FireEyeHelix.Alert.EventTime
-      description: Time of the event.
+      description: Time that the event occurred.
       type: Date
     - contextPath: FireEyeHelix.Alert.IOCNames
       description: Indicator of Compromise names.
@@ -335,16 +334,16 @@ script:
       description: Name of the parent process to the process that created the event.
       type: String
     - contextPath: FireEyeHelix.Alert.SourceIPv4
-      description: Source IP of the event (IP v4).
+      description: Source IP address of the event (IPv4).
       type: String
     - contextPath: FireEyeHelix.Alert.SourceIPv6
-      description: Source IP of the event (IP v6).
+      description: Source IP address of the event (IPv6).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationIPv4
-      description: Destination IP of the event (IP v4).
+      description: Destination IP address of the event (IPv4).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationIPv6
-      description: Destination IP of the event (IP v6).
+      description: Destination IP address of the event (IPv6).
       type: String
     - contextPath: FireEyeHelix.Alert.DestinationPort
       description: Destination port of the event.
@@ -353,7 +352,7 @@ script:
       description: URI address that created the event.
       type: String
     - contextPath: FireEyeHelix.Alert.HttpMethod
-      description: Http method of the that was called.
+      description: HTTP method of the request that was called.
       type: String
     - contextPath: FireEyeHelix.Alert.Domain
       description: Domain of the URI that created the event.
@@ -362,10 +361,10 @@ script:
       description: User agent related to the event.
       type: String
     - contextPath: FireEyeHelix.Alert.EventsCount
-      description: Number of events in alert.
+      description: Number of events in the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.NotesCount
-      description: Number of notes in alert.
+      description: Number of notes in the alert.
       type: Number
     - contextPath: FireEyeHelix.Alert.ClosedState
       description: State the alert in regards to it being closed.
@@ -374,22 +373,22 @@ script:
       description: Reason the alert was closed.
       type: String
     - contextPath: FireEyeHelix.Alert.Confidence
-      description: Amount of confidence helix has with the alert.
+      description: Helix confidence level of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Description
       description: Description of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.FirstEventTime
-      description: Time of the first event.
+      description: Time that the first event occurred.
       type: Date
     - contextPath: FireEyeHelix.Alert.LastEventTime
-      description: Time of the last event.
+      description: Time that the last event occurred.
       type: Date
     - contextPath: FireEyeHelix.Alert.ExternalIP
-      description: External IPs for the alert.
+      description: External IP addresses for the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.InternalIP
-      description: Internal IPs for the alert.
+      description: Internal IP addresses for the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Message
       description: Message of the alert.
@@ -404,32 +403,32 @@ script:
       description: Severity of the events in the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.State
-      description: State of the alert. Can be either Open, Suppressed, Closed, Reopened.
+      description: State of the alert. Can be "Open", "Suppressed", "Closed", or "Reopened".
       type: String
     - contextPath: FireEyeHelix.Alert.Tag
       description: Tag of the alert.
       type: String
     - contextPath: FireEyeHelix.Alert.Type
-      description: Type of the alert.
+      description: Alert type.
       type: String
     - contextPath: FireEyeHelix.Alert.Count
       description: Number of alerts.
       type: String
   - arguments:
     - default: true
-      description: ID of the alert the note is created for.
+      description: ID of the alert for which the note is being created.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - default: false
-      description: Note to add to the alert.
+      description: The note to add to the alert.
       isArray: false
       name: note
       required: true
       secret: false
     deprecated: false
-    description: Create an alert note.
+    description: Creates an alert note.
     execution: false
     name: fireeye-helix-alert-create-note
     outputs:
@@ -437,10 +436,10 @@ script:
       description: Note ID.
       type: Number
     - contextPath: FireEyeHelix.Note.CreatedTime
-      description: Time the note was created at.
+      description: Time the note was created.
       type: Date
     - contextPath: FireEyeHelix.Note.UpdatedTime
-      description: Time the note was updated at.
+      description: Time the note was updated.
       type: Date
     - contextPath: FireEyeHelix.Note.Message
       description: Message of the note.
@@ -456,14 +455,13 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Alert ID to get event by.
+      description: Alert ID for which to get events.
       isArray: false
       name: alert_id
       required: true
       secret: false
     - default: false
-      description: Output values to display in the command result (comma seperated values, with no spaces
-        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Type,SourceIPv4).
       isArray: true
       name: headers
       required: false
@@ -483,16 +481,16 @@ script:
       description: Event result.
       type: String
     - contextPath: FireEyeHelix.Event.MatchedAt
-      description: Time the event was matched at.
+      description: Time that the event was matched.
       type: Date
     - contextPath: FireEyeHelix.Event.Confidence
-      description: Confidence of the event. Can be either low, medium or high.
+      description: Confidence of the event. Can be "low", "medium", or "high".
       type: String
     - contextPath: FireEyeHelix.Event.Status
       description: Status of the event.
       type: String
     - contextPath: FireEyeHelix.Event.EventTime
-      description: Time the event took place.
+      description: Time that the event occurred.
       type: Date
     - contextPath: FireEyeHelix.Event.DetectedRuleID
       description: ID of the detected rule.
@@ -516,7 +514,7 @@ script:
       description: Device name.
       type: String
     - contextPath: FireEyeHelix.Event.Size
-      description: Size of the file that created the event in bytes.
+      description: Size of the file (in bytes) that created the event.
       type: String
     - contextPath: FireEyeHelix.Event.Virus
       description: Virus that was detected in the event.
@@ -525,7 +523,7 @@ script:
       description: Malware type of the virus that was detected.
       type: String
     - contextPath: FireEyeHelix.Event.CreatedTime
-      description: Time the event was created at.
+      description: Time that the event was created.
       type: Date
     - contextPath: FireEyeHelix.Event.Class
       description: Event class.
@@ -534,7 +532,7 @@ script:
       description: MD5 hash of the affected file.
       type: String
     - contextPath: FireEyeHelix.Event.SHA1
-      description: SHA1 has of the affected file.
+      description: SHA1 hash of the affected file.
       type: String
     - contextPath: FireEyeHelix.Event.Protocol
       description: Protocol used in the event.
@@ -564,13 +562,13 @@ script:
       description: Port of the event destination address.
       type: String
     - contextPath: FireEyeHelix.Event.ReportTime
-      description: Time the event was reported at.
+      description: Time that the event was reported.
       type: Date
     - contextPath: FireEyeHelix.Event.FalsePositive
-      description: Boolean flag - is the event false positive.
+      description: Whether the event is a false positive.
       type: String
     - contextPath: FireEyeHelix.Event.Domain
-      description: Domain of the recepient.
+      description: Domain of the recipient.
       type: String
     - contextPath: FireEyeHelix.Event.From
       description: Source email address.
@@ -633,7 +631,7 @@ script:
       description: Operating system of the endpoint.
       type: String
     - contextPath: FireEyeHelix.Endpoint.IP
-      description: IP of the endpoint.
+      description: IP address of the endpoint.
       type: String
     - contextPath: FireEyeHelix.Endpoint.UpdatedTime
       description: Time the endpoint was last updated.
@@ -642,7 +640,7 @@ script:
       description: Containment state of the endpoint.
       type: String
     - contextPath: FireEyeHelix.Endpoint.Count
-      description: Number of endpoints in total.
+      description: Total number of endpoints.
       type: Number
   - arguments:
     - default: true
@@ -664,18 +662,18 @@ script:
       required: false
       secret: false
     - default: false
-      description: Which field to use when ordering the results.
+      description: The field by which to order the results.
       isArray: false
       name: order_by
       required: false
       secret: false
     deprecated: false
-    description: Get cases of an alert.
+    description: Returns cases of an alert.
     execution: false
     name: fireeye-helix-get-cases-by-alert
     outputs:
     - contextPath: FireEyeHelix.Case.AlertsCount
-      description: Number of alerts related to case.
+      description: Number of alerts related to the case.
       type: Number
     - contextPath: FireEyeHelix.Case.AssigneeID
       description: ID of the assignee.
@@ -696,22 +694,22 @@ script:
       description: Name of the user who last updated the case.
       type: String
     - contextPath: FireEyeHelix.Case.CreatedTime
-      description: Time the case was created at.
+      description: Time that the case was created.
       type: Date
     - contextPath: FireEyeHelix.Case.ModifiedTime
-      description: Time the case was last modified at.
+      description: Time that the case was last modified.
       type: Date
     - contextPath: FireEyeHelix.Case.Description
       description: Case description.
       type: String
     - contextPath: FireEyeHelix.Case.EventsCount
-      description: Number of events in case.
+      description: Number of events in the case.
       type: Number
     - contextPath: FireEyeHelix.Case.ID
       description: ID of the case.
       type: Number
     - contextPath: FireEyeHelix.Case.InfoLinks
-      description: Links for information or reference purposes
+      description: Informational or reference links.
       type: Unknown
     - contextPath: FireEyeHelix.Case.Name
       description: Name of the case.
@@ -721,13 +719,11 @@ script:
       type: Number
     - contextPath: FireEyeHelix.Case.Priority
       description: Provides an indication of the order in which the case should be
-        examined as compared to other cases. Priority can be either Critical, High,
-        Medium, or Low.
+        examined as compared to other cases. Priority can be "Critical", "High", "Medium", or "Low".
       type: String
     - contextPath: FireEyeHelix.Case.PriorityOrder
       description: Provides an indication of the order in which the case should be
-        examined as compared to other cases. Priority order can be either 4, 3, 2
-        or 1.
+        examined as compared to other cases. Priority order can be "4", "3", "2", or "1".
       type: Number
     - contextPath: FireEyeHelix.Case.Severity
       description: The potential impact that the case could have on the organization
@@ -745,10 +741,10 @@ script:
       description: Tags of the case.
       type: Unknown
     - contextPath: FireEyeHelix.Case.TotalDaysUnresolved
-      description: Amount of days the case has been unresolved.
+      description: The number of days the case has been unresolved.
       type: Number
     - contextPath: FireEyeHelix.Case.Count
-      description: Total amount of cases.
+      description: Total number of cases.
       type: Number
   - arguments:
     - default: false
@@ -770,7 +766,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Creation date of the list.
+      description: The date that the list was created.
       isArray: false
       name: created_at
       required: false
@@ -783,7 +779,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true if the list is active.
+      description: Whether the list is active. Can be "true" or "false".
       isArray: false
       name: is_active
       predefined:
@@ -793,7 +789,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true if the list is internal.
+      description: Whether the list is internal. Can be "true" or "false".
       isArray: false
       name: is_internal
       predefined:
@@ -803,7 +799,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to true if list is protected.
+      description: Whether the list is protected. Can be "true" or "false".
       isArray: false
       name: is_protected
       predefined:
@@ -824,25 +820,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: Type of the list.
+      description: List type.
       isArray: false
       name: type
       required: false
       secret: false
     - default: false
-      description: The time the list was last updated at.
+      description: The time the list was last updated.
       isArray: false
       name: updated_at
       required: false
       secret: false
     - default: false
-      description: Which field to use when ordering the results.
+      description: The field by which to order the results.
       isArray: false
       name: order_by
       required: false
       secret: false
     deprecated: false
-    description: Get lists.
+    description: Returns lists.
     execution: false
     name: fireeye-helix-get-lists
     outputs:
@@ -859,7 +855,7 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1, MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -871,28 +867,28 @@ script:
       description: ID of the user who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.CreatedTime
-      description: Time the rule was created at.
+      description: Time that the rule was created.
       type: Date
     - contextPath: FireEyeHelix.List.UpdatedTime
-      description: Time the rule was last updated at.
+      description: Time that the rule was last updated.
       type: Date
     - contextPath: FireEyeHelix.List.Type
-      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      description: List type. Can be Default, Analytics Whitelist, or Intel Matching.
       type: String
     - contextPath: FireEyeHelix.List.UpdatedByName
       description: User who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.Internal
-      description: Internal flag, set to true if internal.
+      description: Whether the list is internal. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Protected
-      description: Protected flag, set to true if protected.
+      description: Whether the list is protected. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Active
-      description: Active flag, set to true if active.
+      description: Whether the list is active. Can be true or false.
       type: Unknown
     - contextPath: FireEyeHelix.List.Count
-      description: Total amount of lists.
+      description: Total number of lists.
       type: Number
   - arguments:
     - default: true
@@ -902,7 +898,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get a specific list by an id.
+    description: Returns a specific list by list ID.
     execution: false
     name: fireeye-helix-get-list-by-id
     outputs:
@@ -919,7 +915,7 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      description: Content types of the list. Can be Email, FQDN, IPv4, Ipv6, SHA1, MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -931,25 +927,25 @@ script:
       description: ID of the user who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.CreatedTime
-      description: Time the rule was created at.
+      description: Time that the rule was created.
       type: Date
     - contextPath: FireEyeHelix.List.UpdatedTime
-      description: Time the rule was last updated at.
+      description: Time that the rule was last updated.
       type: Date
     - contextPath: FireEyeHelix.List.Type
-      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      description: List type. Can be Default, Analytics Whitelist, or Intel Matching.
       type: String
     - contextPath: FireEyeHelix.List.UpdatedByName
       description: Name of the user who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.Internal
-      description: Internal flag, set to true if internal.
+      description: Whether the list is internal. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Protected
-      description: Protected flag, set to true if protected.
+      description: Whether the list is protected. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Active
-      description: Active flag, set to true if active.
+      description: Whether the list is active. Can be true or false.
       type: Unknown
   - arguments:
     - default: true
@@ -966,7 +962,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is internal.
+      description: Whether the list is internal. Can be true or false.
       isArray: false
       name: is_internal
       predefined:
@@ -976,7 +972,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is active.
+      description: Whether the list is active. Can be true or false.
       isArray: false
       name: is_active
       predefined:
@@ -986,7 +982,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is protected.
+      description: Whether the list is protected. Can be true or false.
       isArray: false
       name: is_protected
       predefined:
@@ -995,14 +991,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Usage of the list. Can be multiple values comma seperated.
+      description: A comma-separated list of list uses.
       isArray: true
       name: usage
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is hiddden.
+      description: Whether the list is hiddne. Can be true or false.
       isArray: false
       name: is_hidden
       predefined:
@@ -1011,7 +1007,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Type of the list.
+      description: List type.
       isArray: false
       name: type
       required: false
@@ -1023,7 +1019,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create a list.
+    description: Creates a list.
     execution: false
     name: fireeye-helix-create-list
     outputs:
@@ -1040,41 +1036,41 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1, MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
-      description: ID of the creator.
+      description: ID of the list creator.
       type: String
     - contextPath: FireEyeHelix.List.CreatorName
-      description: Name of the creator.
+      description: Name of the list creator.
       type: String
     - contextPath: FireEyeHelix.List.UpdatedByID
       description: ID of the user who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.CreatedTime
-      description: Time the rule was created at.
+      description: Time that the rule was created.
       type: Date
     - contextPath: FireEyeHelix.List.UpdatedTime
-      description: Time the rule was last updated at.
+      description: Time that the rule was last updated.
       type: Date
     - contextPath: FireEyeHelix.List.Type
-      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      description: List type. Can be Default, Analytics Whitelist, or Intel Matching.
       type: String
     - contextPath: FireEyeHelix.List.UpdatedByName
       description: Name of the user who last updated the list.
       type: Unknown
     - contextPath: FireEyeHelix.List.Internal
-      description: Internal flag, set to true if internal.
+      description: Whether the list is internal. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Protected
-      description: Protected flag, set to true if protected.
+      description: Whether the list is protected. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Active
-      description: Active flag, set to true if active.
+      description: Whether the list is active. Can be true or false.
       type: Unknown
   - arguments:
     - default: false
-      description: Name of the list.
+      description: Name of the list to update.
       isArray: false
       name: name
       required: false
@@ -1087,7 +1083,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is internal.
+      description: Whether the list is internal. Can be true or false.
       isArray: false
       name: is_internal
       predefined:
@@ -1097,7 +1093,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is active.
+      description: Whether the list is active. Can be true or false.
       isArray: false
       name: is_active
       predefined:
@@ -1107,7 +1103,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is protected.
+      description: Whether the list is protected. Can be true or false.
       isArray: false
       name: is_protected
       predefined:
@@ -1116,14 +1112,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: Usage of the list. Can be multiple values comma seperated.
+      description: A comma-separated list of list uses.
       isArray: false
       name: usage
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Boolean flag for is hiddden.
+      description: Whether the list is hiddne. Can be true or false.
       isArray: false
       name: is_hidden
       predefined:
@@ -1132,7 +1128,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Type of the list.
+      description: List type.
       isArray: false
       name: type
       required: false
@@ -1150,7 +1146,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Update a list.
+    description: Updates an existing list.
     execution: false
     name: fireeye-helix-update-list
     outputs:
@@ -1167,7 +1163,7 @@ script:
       description: Name of the list.
       type: String
     - contextPath: FireEyeHelix.List.ContentTypes
-      description: Content types of the list. Can be Email\FQDN\IPv4\Ipv6\SHA1\MD5\Misc
+      description: Content types of the list. Can be Email, FQDN, IPv4, IPv6, SHA1, MD5, or Misc.
       type: String
     - contextPath: FireEyeHelix.List.CreatorID
       description: ID of the creator.
@@ -1179,25 +1175,25 @@ script:
       description: ID of the user who last updated the list.
       type: String
     - contextPath: FireEyeHelix.List.CreatedTime
-      description: Time the rule was created at.
+      description: Time that the rule was created.
       type: Date
     - contextPath: FireEyeHelix.List.UpdatedTime
-      description: Time the rule was last updated at.
+      description: Time that the rule was last updated.
       type: Date
     - contextPath: FireEyeHelix.List.Type
-      description: Type of the list. Can be Default\Analytics Whitelist\Intel Matching
+      description: List type. Can be Default, Analytics Whitelist, Intel Matching.
       type: String
     - contextPath: FireEyeHelix.List.UpdatedByName
       description: Name of the user who last updated the list.
       type: Unknown
     - contextPath: FireEyeHelix.List.Internal
-      description: Internal flag, set to true if internal.
+      description: Whether the list is internal. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.List.Protected
-      description: Protected flag, set to true if protected.
+      description: Whether the list is protected. Can be true or flase.
       type: Boolean
     - contextPath: FireEyeHelix.List.Active
-      description: Active flag, set to true if active.
+      description: Whether the list is active. Can be true or false.
       type: Unknown
   - arguments:
     - default: true
@@ -1207,12 +1203,12 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes a single list by id.
+    description: Deletes a single list by list ID.
     execution: false
     name: fireeye-helix-delete-list
   - arguments:
     - default: false
-      description: Max number of results to return per page.
+      description: Maximum number of results to return per page.
       isArray: false
       name: page_size
       required: false
@@ -1241,7 +1237,7 @@ script:
     name: fireeye-helix-list-sensors
   - arguments:
     - default: false
-      description: Max number of results to return per page.
+      description: Maximum number of results to return per page.
       isArray: false
       name: page_size
       required: false
@@ -1253,14 +1249,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of field names to sort the results by. For
+      description: 'A comma-separated list of field names by which to sort the results. For
         example: “createDate” or "-updateDate,riskOrder"'
       isArray: false
       name: sort
       required: false
       secret: false
     deprecated: false
-    description: Get all rules.
+    description: Returns all rules.
     execution: false
     name: fireeye-helix-list-rules
     outputs:
@@ -1274,16 +1270,16 @@ script:
       description: Rule description.
       type: String
     - contextPath: FireEyeHelix.Rule.Internal
-      description: Internal flag, set to true if internal.
+      description: Whether the rule is internal. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.Rule.Deleted
-      description: Delete flag, set to true if deleted.
+      description: Whether the rule was deleted. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.Rule.Enabled
-      description: Enabled flag, set to true if enabled.
+      description: Whether the rule is enabled. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.Rule.Supported
-      description: Supported flag, set to true if supported.
+      description: Whether the rule is supported. Can be true or false.
       type: Boolean
     - contextPath: FireEyeHelix.Rule.CreatorID
       description: ID of the rule creator.
@@ -1298,31 +1294,30 @@ script:
       description: Name of the user who updated the rule.
       type: String
     - contextPath: FireEyeHelix.Rule.Risk
-      description: 'The risk to your environment when an event matches this rule.
-        the possible values are: low, medium, high and critical'
+      description: 'The risk to your environment when an event matches this rule. Can be low, medium, high, or critical.'
       type: String
     - contextPath: FireEyeHelix.Rule.Confidence
-      description: Confidence can be set to low, medium, or high, and indicates how
+      description: Confidence that indicates how
         likely it is that the rule will detect events that correspond to the type
         of activity anticipated (that is, the likelihood that the rule will produce
         true positives). Confidence and Severity combine to form the risk attribute
-        of the alert.
+        of the alert. Can be low, medium, or high.
       type: String
     - contextPath: FireEyeHelix.Rule.Severity
       description: |-
-        Severity can be low, medium, or high, and indicates how much of an impact a hit with this rule could have on an organization if
-        verified to be a true positive. Confidence and Severity combine to form the risk attribute of the alert.risk
+        Severity that indicates how much of an impact a hit with this rule could have on an organization if
+        verified to be a true positive. Confidence and Severity combine to form the risk attribute of the alert. Can be low, medium, or high.
       type: String
     - contextPath: FireEyeHelix.Rule.Tags
       description: Rule tags.
       type: String
     - contextPath: FireEyeHelix.Rule.Type
-      description: Type of the rule.
+      description: Rule type.
       type: String
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Is the rule enabled.
+      description: Whether the rule is enabled. Can be true or false.
       isArray: false
       name: enabled
       predefined:
@@ -1337,7 +1332,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Edit an existing rule.
+    description: Modifies an existing rule.
     execution: false
     name: fireeye-helix-edit-rule
   - arguments:
@@ -1348,7 +1343,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Get all notes related to alert.
+    description: Returns all notes related to an alert.
     execution: false
     name: fireeye-helix-alert-get-notes
     outputs:
@@ -1356,10 +1351,10 @@ script:
       description: Note ID.
       type: Number
     - contextPath: FireEyeHelix.Note.CreatedTime
-      description: Time the note was created at.
+      description: Time that the note was created.
       type: Date
     - contextPath: FireEyeHelix.Note.UpdatedTime
-      description: Time the note was updated at.
+      description: Time that the note was updated.
       type: Date
     - contextPath: FireEyeHelix.Note.Message
       description: Message of the note.
@@ -1378,7 +1373,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: Alert ID.
+      description: ID of the alert to delete.
       isArray: false
       name: alert_id
       required: true
@@ -1391,24 +1386,24 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Delete alert note.
+    description: Deletes an alert note.
     execution: false
     name: fireeye-helix-alert-delete-note
   - arguments:
     - default: false
-      description: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+      description: Start time of the event in the format yyyy-mm-dd or yyyy-mm.
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+      description: End time of the event in the format yyyy-mm-dd or yyyy-mm.
       isArray: false
       name: end
       required: false
       secret: false
     - default: false
-      description: Max amount of results to return.
+      description: Maximum number of results to return.
       isArray: false
       name: page_size
       required: false
@@ -1421,16 +1416,14 @@ script:
       secret: false
     - default: false
       description: Returns the unique values for the specified field and groups them
-        together based on the specified frequency. e.g. groupby="srcipv4 5 100" will
-        group the top 5 srcipv4 that have at least 100 occurences. Multiple values
-        can be provided using "," to seperate them.
+        based on the specified frequency. For example, groupby="srcipv4 5 100" will
+        group the top five srcipv4 addresses that have at least 100 occurrences. Supports comma-separated values.
       isArray: false
       name: groupby
       required: false
       secret: false
     - default: false
-      description: 'Sorts results by this field. Default is descending order, to change
-        this add to the command the following: argument sort_order="asc"'
+      description: 'The field by which to sort results.'
       isArray: false
       name: sort_by
       required: false
@@ -1438,8 +1431,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: Controls the order of the results sorted by the sort_by argument,
-        ascending or descending.
+      description: Controls the order of the results sorted by the sort_by argument. Can be "asc" for ascending or "desc" for descending. Default is "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -1448,26 +1440,25 @@ script:
       required: false
       secret: false
     - default: true
-      description: Query to execute. This is the search clause in an MQL.
+      description: The query to execute. This is the search clause in an MQL.
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: Number of events to search.
+      description: The number of events to search.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Output values to display in the command result (comma seperated values, with no spaces
-        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      description: A comma-separated list (no spaces) of output values to display in the command result, e.g., ID,Type,SourceIPv4.
       isArray: true
       name: headers
       required: false
       secret: false
     deprecated: false
-    description: Search FireEye helix using MQL.
+    description: Executes a search in FireEye Helix using MQL.
     execution: false
     name: fireeye-helix-search
     outputs:
@@ -1481,16 +1472,16 @@ script:
       description: Event result.
       type: String
     - contextPath: FireEyeHelixSearch.Result.MatchedAt
-      description: Time the event was matched at.
+      description: Time that the event was matched.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.Confidence
-      description: Confidence of the event. Can be either low, medium or high.
+      description: Confidence of the event. Can be low, medium, or high.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Status
       description: Status of the event.
       type: String
     - contextPath: FireEyeHelixSearch.Result.EventTime
-      description: Time the event took place.
+      description: Time that the event took occurred.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.DetectedRuleID
       description: ID of the detected rule.
@@ -1514,7 +1505,7 @@ script:
       description: Device name.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Size
-      description: Size of the file that created the event in bytes.
+      description: Size of the file (in bytes) that created the event.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Virus
       description: Virus that was detected in the event.
@@ -1523,7 +1514,7 @@ script:
       description: Malware type of the virus that was detected.
       type: String
     - contextPath: FireEyeHelixSearch.Result.CreatedTime
-      description: Time the event was created at.
+      description: Time that the event was created.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.Class
       description: Event class.
@@ -1532,7 +1523,7 @@ script:
       description: MD5 hash of the affected file.
       type: String
     - contextPath: FireEyeHelixSearch.Result.SHA1
-      description: SHA1 has of the affected file.
+      description: SHA1 hash of the affected file.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Protocol
       description: Protocol used in the event.
@@ -1562,10 +1553,10 @@ script:
       description: Port of the event destination address.
       type: String
     - contextPath: FireEyeHelixSearch.Result.ReportTime
-      description: Time the event was reported at.
+      description: Time that the event was reported.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.FalsePositive
-      description: Boolean flag - is the event false positive.
+      description: Whether the event is a false positive.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Domain
       description: Domain of the recepient.
@@ -1598,7 +1589,7 @@ script:
       description: Number of matches for the group.
       type: Number
     - contextPath: FireEyeHelixSearch.Result.RcpTo
-      description: Recepeient to email address.
+      description: Recipient email address.
       type: String
     - contextPath: FireEyeHelixSearch.Result.InReplyTo
       description: Reply email address.
@@ -1606,7 +1597,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Item type.
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc, or sha-1.
       isArray: false
       name: type
       predefined:
@@ -1650,7 +1641,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Add an item to a list.
+    description: Adds an item to a list.
     execution: false
     name: fireeye-helix-add-list-item
     outputs:
@@ -1661,7 +1652,7 @@ script:
       description: Item value.
       type: String
     - contextPath: FireEyeHelixList.Item.Type
-      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc, or sha-1.
       type: String
     - contextPath: FireEyeHelixList.Item.Risk
       description: Risk of the item. Can be Low, Medium, High, or Critical.
@@ -1670,11 +1661,11 @@ script:
       description: Item notes.
       type: String
     - contextPath: FireEyeHelixList.Item.ListID
-      description: List ID the item is assosciated with.
+      description: List ID with which the item is associated.
       type: String
   - arguments:
     - default: true
-      description: List ID.
+      description: ID of the list for which to fetch items.
       isArray: false
       name: list_id
       required: true
@@ -1697,7 +1688,7 @@ script:
       description: Item value.
       type: String
     - contextPath: FireEyeHelixList.Item.Type
-      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc, or sha-1.
       type: String
     - contextPath: FireEyeHelixList.Item.Risk
       description: Risk of the item. Can be Low, Medium, High, or Critical.
@@ -1706,21 +1697,21 @@ script:
       description: Item notes.
       type: String
     - contextPath: FireEyeHelixList.Item.ListID
-      description: List ID the item is assosciated with.
+      description: List ID with which the item is associated.
       type: String
     - contextPath: FireEyeHelixList.Item.Count
       description: Number of items in the list.
       type: Number
   - arguments:
     - default: true
-      description: ID of item to update.
+      description: ID of the item to update.
       isArray: false
       name: item_id
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Item type.
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc, or sha-1.
       isArray: false
       name: type
       predefined:
@@ -1764,7 +1755,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Update a single list item.
+    description: Updates a single list item.
     execution: false
     name: fireeye-helix-update-list-item
     outputs:
@@ -1775,7 +1766,7 @@ script:
       description: Item value.
       type: String
     - contextPath: FireEyeHelixList.Item.Type
-      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc or sha-1
+      description: Item type. Can be email, fqdn, ipv4, ipv6, md5, misc, or sha-1.
       type: String
     - contextPath: FireEyeHelixList.Item.Risk
       description: Risk of the item. Can be Low, Medium, High, or Critical.
@@ -1784,11 +1775,11 @@ script:
       description: Item notes.
       type: String
     - contextPath: FireEyeHelixList.Item.ListID
-      description: List ID the item is assosciated with.
+      description: List ID with which the item is associated.
       type: String
   - arguments:
     - default: false
-      description: List ID.
+      description: ID of the list from which to remove an item.
       isArray: false
       name: list_id
       required: true
@@ -1805,14 +1796,13 @@ script:
     name: fireeye-helix-remove-list-item
   - arguments:
     - default: true
-      description: Search ID.
+      description: ID of the search for which to return archive results.
       isArray: false
       name: search_id
       required: true
       secret: false
     - default: false
-      description: Output values to display in the command result (comma seperated values, with no spaces
-        as they appear in the context. e.g. ID,Type,SourceIPv4).
+      description: A comma-separated list of output values to display in the command result, e.g., ID,Type,SourceIPv4.
       isArray: true
       name: headers
       required: false
@@ -1832,16 +1822,16 @@ script:
       description: Event result.
       type: String
     - contextPath: FireEyeHelixSearch.Result.MatchedAt
-      description: Time the event was matched at.
+      description: Time that the event was matched.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.Confidence
-      description: Confidence of the event. Can be either low, medium or high.
+      description: Confidence of the event. Can be low, medium, or high.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Status
       description: Status of the event.
       type: String
     - contextPath: FireEyeHelixSearch.Result.EventTime
-      description: Time the event took place.
+      description: Time that the event occurred.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.DetectedRuleID
       description: ID of the detected rule.
@@ -1865,7 +1855,7 @@ script:
       description: Device name.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Size
-      description: Size of the file that created the event in bytes.
+      description: Size of the file (in bytes) that created the event.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Virus
       description: Virus that was detected in the event.
@@ -1874,7 +1864,7 @@ script:
       description: Malware type of the virus that was detected.
       type: String
     - contextPath: FireEyeHelixSearch.Result.CreatedTime
-      description: Time the event was created at.
+      description: Time that the event was created.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.Class
       description: Event class.
@@ -1883,7 +1873,7 @@ script:
       description: MD5 hash of the affected file.
       type: String
     - contextPath: FireEyeHelixSearch.Result.SHA1
-      description: SHA1 has of the affected file.
+      description: SHA1 hash of the affected file.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Protocol
       description: Protocol used in the event.
@@ -1913,10 +1903,10 @@ script:
       description: Port of the event destination address.
       type: String
     - contextPath: FireEyeHelixSearch.Result.ReportTime
-      description: Time the event was reported at.
+      description: Time that the event was reported.
       type: Date
     - contextPath: FireEyeHelixSearch.Result.FalsePositive
-      description: Boolean flag - is the event false positive.
+      description: Whether the event is a false positive.
       type: String
     - contextPath: FireEyeHelixSearch.Result.Domain
       description: Domain of the recepient.
@@ -1949,20 +1939,20 @@ script:
       description: Number of matches for the group.
       type: Number
     - contextPath: FireEyeHelixSearch.Result.RcpTo
-      description: Recepeient to email address.
+      description: Recipient email address.
       type: String
     - contextPath: FireEyeHelixSearch.Result.InReplyTo
       description: Reply email address.
       type: String
   - arguments:
     - default: false
-      description: Start time of the event in date format yyyy-mm-dd or yyyy-mm.
+      description: Start time of the event in the format yyyy-mm-dd or yyyy-mm.
       isArray: false
       name: start
       required: false
       secret: false
     - default: false
-      description: End time of the event in date format yyyy-mm-dd or yyyy-mm.
+      description: End time of the event in the format yyyy-mm-dd or yyyy-mm.
       isArray: false
       name: end
       required: false
@@ -1975,16 +1965,14 @@ script:
       secret: false
     - default: false
       description: Returns the unique values for the specified field and groups them
-        together based on the specified frequency. e.g. groupby="srcipv4 5 100" will
-        group the top 5 srcipv4 that have at least 100 occurences. Multiple values
-        can be provided using "," to seperate them.
+        based on the specified frequency. For example groupby="srcipv4 5 100" will
+        group the top five srcipv4 addresses that have at least 100 occurences. Supports comma-separated values.
       isArray: false
       name: groupby
       required: false
       secret: false
     - default: false
-      description: 'Sorts results by this field. Default is descending order, to change
-        this add to the command the following: argument sort_order="asc"'
+      description: 'Sorts results by this field.'
       isArray: false
       name: sort_by
       required: false
@@ -1992,8 +1980,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: desc
-      description: Controls the order of the results sorted by the sort_by argument,
-        ascending or descending.
+      description: Controls the order of the results sorted by the sort_by argument. Can be "asc" for ascending or "desc" for descending. Default is "desc".
       isArray: false
       name: sort_order
       predefined:
@@ -2002,7 +1989,7 @@ script:
       required: false
       secret: false
     - default: true
-      description: Query to execute. This is the search clause in an MQL.
+      description: The query to execute. This is the search clause in an MQL.
       isArray: false
       name: query
       required: true
@@ -2014,7 +2001,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates an archive search using query.
+    description: Creates an archive search from a query.
     execution: false
     name: fireeye-helix-archive-search
     outputs:
@@ -2025,7 +2012,7 @@ script:
       description: Percentage of the search that was completed.
       type: String
     - contextPath: FireEyeHelixSearch.Query
-      description: Query of the search.
+      description: The search query.
       type: String
     - contextPath: FireEyeHelixSearch.State
       description: State of the search.
@@ -2038,7 +2025,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates an archive search using query.
+    description: Gets the status of an archive search.
     execution: false
     name: fireeye-helix-archive-search-get-status
     outputs:
@@ -2049,7 +2036,7 @@ script:
       description: Percentage of the search that was completed.
       type: String
     - contextPath: FireEyeHelixSearch.Query
-      description: Query of the search.
+      description: The search query.
       type: String
     - contextPath: FireEyeHelixSearch.State
       description: State of the search.
