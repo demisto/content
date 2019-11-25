@@ -92,7 +92,7 @@ def main():
             res = future.result()
             handle_run_res(res, fail_pkgs, good_pkgs)
     if fail_pkgs:
-        create_result_files(fail_pkgs.append(res[1]))
+        create_result_files(fail_pkgs)
         print_color("\n******* FAIL PKGS: *******", LOG_COLORS.RED)
         print_color("\n\t{}\n".format("\n\t".join(fail_pkgs)), LOG_COLORS.RED)
     if good_pkgs:
