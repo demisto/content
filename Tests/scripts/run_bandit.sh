@@ -14,6 +14,6 @@ fi
 
 PY_FILE=$1
 
-bandit -r $PY_FILE 2>&1
+bandit -lll -iii $PY_FILE 2>&1
 
 exit 0
