@@ -1,6 +1,17 @@
-# Overview
-We use standardized code conventions to ensure uniformity across all Demisto integrations. This section outlines some of these code conventions.
+# Python Code Conventions
+We use standardized code conventions to ensure uniformity across all Demisto Integrations. This section outlines our code conventions.
 
+New integrations and scripts should follow these conventions. When working on small fixes and modifications to existing code, follow the conventions used in the existing code.
+
+**Note:** Demisto supports also JavaScript integrations and scripts. Our preferred development language is Python, and all new integrations and scripts should be developed in Python, which also provides a wider set of capabilities compared to the available JavaScript support. Simple scripts may still be developed in JavaScript using the conventions provided by the default script template used in the Demisto IDE.
+
+## Example Code and Templates
+For an example of a **Hello World** integration see [HelloWorld](../../Integrations/HelloWorld/).
+
+For quick starts templates see [Templates directory](../../Templates).
+
+## Python 2 vs 3
+All new integrations and scripts should be written in Python 3. Python 2 is supported only for existing integrations and scripts.
 
 ## Imports 
 You define imports and disable insecure warning at the top of the file.

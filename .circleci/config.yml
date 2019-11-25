@@ -69,6 +69,7 @@ jobs:
 
             python -m pytest ./Tests/scripts/test_configure_tests.py -v
             python3 -m pytest ./Tests/scripts/infrastructure_tests/update_id_set_test.py -v
+            python3 -m pytest ./Tests/scripts/infrastructure_tests/secrets_test.py -v
       - run:
           name: Validate Files and Yaml
           when: always
@@ -120,7 +121,14 @@ jobs:
       - run:
           name: Run Unit Testing and Lint
           when: always
-          command: SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+          command: |
+            if [ -n "${NIGHTLY}" ] ;
+             then
+              echo "Skipped Unit Testing step"
+
+             else
+              SKIP_GIT_COMPARE_FILTER=${NIGHTLY} ./Tests/scripts/run_all_pkg_dev_tasks.sh
+            fi
       - run:
           name: Verify Base Branch for Contirbution
           when: always
