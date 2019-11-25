@@ -1972,8 +1972,8 @@
     ],
     "skipped_tests": {
         "Symantec Data Loss Prevention - Test": "Issue 20134",
-        "urlscan_malicious_Test": "Issue 19727",
-        "VxStream Test": "Issue 19439",
+        "Request Debugging - Test": "Issue 20337",
+        "LogRhythm-Test-Playbook": "Issue 20331",
         "minemeld_test": "Issue 20265",
         "rsa_packets_and_logs_test": "Issue 20262",
         "Cloaken-Test": "Issue 20036",
@@ -2039,6 +2039,12 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "McAfee Active Response": "Issue 20320",
+        "McAfee NSM": "Issue 20336",
+        "Elasticsearch v2": "Issue 20334",
+        "RSA Archer": "Issue 20335",
+        "Cisco ISE": "Issue 20333",
+        "LogRhythmRest": "Issue 19870",
         "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
         "iDefense": "Issue 20095",
