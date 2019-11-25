@@ -70,9 +70,6 @@ def main():
     if isError(lst[0]):
         return_error('List not found')
 
-    if not isinstance(items, list):
-        items = items.split(',')
-
     human_readable, ec = filter_list(lst, items, ignore_case, match_exact, list_name)
     return_outputs(human_readable, ec, None)
 
