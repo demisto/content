@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: Azure Compute
+  id: Azure Compute v2
   version: -1
 configuration:
 - defaultvalue: https://management.azure.com
@@ -8,27 +8,34 @@ configuration:
   name: host
   required: true
   type: 0
-- display: Tenant ID (received from the admin consent - see Detailed Instructions
-    (?) section)
+- display: ID (received from the admin consent - see Detailed Instructions (?)
+  name: auth_id
+  required: true
+  type: 4
+- display: Token (received from the admin consent - see Detailed Instructions (?)
+    section)
   name: tenant_id
   required: true
   type: 4
-- display: Token (received from the admin consent - see detailed instructions (?))
-  name: token
+- display: Key (received from the admin consent - see Detailed Instructions (?)
+  name: enc_key
   required: true
+  type: 4
+- display: Default Subscription ID
+  name: subscription_id
+  required: false
   type: 4
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
 description: Create and Manage Azure Virtual Machines
-display: Azure Compute
-name: Azure Compute
+display: Azure Compute v2
+name: Azure Compute v2
 script:
   commands:
   - arguments:
@@ -41,7 +48,7 @@ script:
       name: resource_group
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Lists the virtual machine instances in the given resource group.
     execution: false
     name: azure-vm-list-instances
@@ -85,7 +92,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Powers on a given virtual machine.
     execution: true
     name: azure-vm-start-instance
@@ -117,7 +124,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Powers off a given virtual machine.
     execution: true
     name: azure-vm-poweroff-instance
@@ -149,7 +156,7 @@ script:
       name: virtual_machine_name
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Gets the properties of a given virtual machine.
     execution: false
     name: azure-vm-get-instance-details
@@ -348,7 +355,7 @@ script:
       name: admin_password
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Creates a virtual machine instance with the specified OS image.
     execution: true
     name: azure-vm-create-instance
@@ -374,7 +381,15 @@ script:
     - contextPath: Azure.Compute.Location
       description: The region in which the virtual machine is hosted.
       type: string
-  - deprecated: true
+  - arguments:
+    - default: false
+      description: Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
+        command. If not specified, the default subscripton ID will be used.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    deprecated: false
     description: Lists all resource groups that belong to your Azure subscription.
     execution: false
     name: azure-list-resource-groups
@@ -409,17 +424,31 @@ script:
       name: virtual_machine_name
       required: false
       secret: false
-    deprecated: true
+    deprecated: false
     description: Deletes a specified virtual machine.
     execution: false
     name: azure-vm-delete-instance
+  - deprecated: false
+    description: Lists the subscriptions for this application.
+    execution: false
+    name: azure-list-subscriptions
+    outputs:
+    - contextPath: Azure.Subscription.ID
+      description: The ID of the subscription.
+      type: String
+    - contextPath: Azure.Subscription.Name
+      description: The name of the subscription.
+      type: String
+    - contextPath: Azure.Subscription.State
+      description: The state of the subscription.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.4187
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
-  subtype: python2
+  subtype: python3
 tests:
-- No test
-deprecated: true
+- Azure Compute - Test
