@@ -1,6 +1,6 @@
-id: NIST - Access Investigation - Generic
+id: Access Investigation - Generic - NIST
 version: -1
-name: NIST - Access Investigation - Generic
+name: Access Investigation - Generic - NIST
 fromversion: 5.0.0
 description: |-
   This playbook investigates an access incident by gathering user and IP information, and handling the incident based on the stages in "Handling an incident - Computer Security Incident Handling Guide" by NIST.
@@ -187,7 +187,7 @@ tasks:
       {
         "position": {
           "x": 960,
-          "y": 5320
+          "y": 4690
         }
       }
     note: false
@@ -866,41 +866,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 565e040e-a5b0-4958-84a4-7166b4fd8e04
-    type: regular
-    task:
-      id: 565e040e-a5b0-4958-84a4-7166b4fd8e04
-      version: -1
-      name: Assign the incident to the first role
-      description: |
-        Assign the incident to an analyst based on the analyst’s organizational role.
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "35"
-    scriptarguments:
-      assignBy: {}
-      email: {}
-      roles:
-        complex:
-          root: inputs.FirstRole
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": 2350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "29":
     id: "29"
     taskid: 477acbb2-350c-4c0c-8b33-de228ea03249
@@ -1020,7 +985,7 @@ tasks:
       brand: Active Directory Query v2
     nexttasks:
       '#none#':
-      - "67"
+      - "37"
     scriptarguments:
       base-dn: {}
       username:
@@ -1030,70 +995,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 2690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "34":
-    id: "34"
-    taskid: 503739b5-41f1-4d31-844b-2c2a8f342c4d
-    type: regular
-    task:
-      id: 503739b5-41f1-4d31-844b-2c2a8f342c4d
-      version: -1
-      name: Escalate to Tier2
-      description: |
-        Assign the incident to an analyst based on the analyst’s organizational role.
-      scriptName: AssignAnalystToIncident
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "36"
-    scriptarguments:
-      assignBy: {}
-      email: {}
-      roles:
-        simple: Tier2
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": 3030
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "35":
-    id: "35"
-    taskid: 332b5c8d-bee5-4f71-8eec-26355b26fd2a
-    type: condition
-    task:
-      id: 332b5c8d-bee5-4f71-8eec-26355b26fd2a
-      version: -1
-      name: Would you like to expire the password for the suspected user?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "No":
-      - "67"
-      "Yes":
-      - "33"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": 2520
+          "x": 60,
+          "y": 2510
         }
       }
     note: false
@@ -1115,13 +1018,13 @@ tasks:
       "No":
       - "39"
       "Yes":
-      - "37"
+      - "33"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 360,
-          "y": 3190
+          "y": 2340
         }
       }
     note: false
@@ -1152,8 +1055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 3360
+          "x": 60,
+          "y": 2680
         }
       }
     note: false
@@ -1178,8 +1081,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 3360
+          "x": 660,
+          "y": 2510
         }
       }
     note: false
@@ -1204,8 +1107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 3530
+          "x": 60,
+          "y": 2850
         }
       }
     note: false
@@ -1225,7 +1128,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "36"
     separatecontext: false
     view: |-
       {
@@ -1475,8 +1378,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4185
+          "x": 660,
+          "y": 3505
         }
       }
     note: false
@@ -1855,8 +1758,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 3850
+          "x": 660,
+          "y": 3160
         }
       }
     note: false
@@ -1890,8 +1793,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4980
+          "x": 660,
+          "y": 4350
         }
       }
     note: false
@@ -2648,34 +2551,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "67":
-    id: "67"
-    taskid: 6424019e-1169-4474-8631-8b1cb07e88a6
-    type: condition
-    task:
-      id: 6424019e-1169-4474-8631-8b1cb07e88a6
-      version: -1
-      name: Would you like to escalate the investigation for further remediation?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "No":
-      - "51"
-      "Yes":
-      - "34"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 360,
-          "y": 2860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "69":
     id: "69"
     taskid: 8f2fffb2-7336-47a4-80c9-7a10ef646d09
@@ -2704,8 +2579,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4010
+          "x": 660,
+          "y": 3330
         }
       }
     note: false
@@ -2741,8 +2616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4500
+          "x": 660,
+          "y": 3850
         }
       }
     note: false
@@ -2767,8 +2642,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4810
+          "x": 660,
+          "y": 4180
         }
       }
     note: false
@@ -2793,8 +2668,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4670
+          "x": 660,
+          "y": 4030
         }
       }
     note: false
@@ -3151,8 +3026,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
-          "y": 4330
+          "x": 660,
+          "y": 3660
         }
       }
     note: false
@@ -3189,8 +3064,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 3680
+          "x": 60,
+          "y": 2990
         }
       }
     note: false
@@ -3285,14 +3160,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "17_4_#default#": 0.19,
-      "67_51_No": 0.32
+      "17_19_yes": 0.61,
+      "17_4_#default#": 0.19
     },
     "paper": {
       "dimensions": {
-        "height": 6225,
-        "width": 1400,
-        "x": 80,
+        "height": 5595,
+        "width": 1420,
+        "x": 60,
         "y": -840
       }
     }
@@ -3310,10 +3185,6 @@ inputs:
   value: {}
   required: false
   description: The email address of the account that was used to access the DstIP.
-- key: FirstRole
-  value: {}
-  required: true
-  description: The default role to which to assign the incident in the first stage.
 - key: NotifyEmail
   value:
     simple: mgoldberg@paloaltonetworks.com
@@ -3324,10 +3195,6 @@ inputs:
   required: false
   description: The Remediation SLA for the 'Containment, Eradication, and Recovery'
     stage (in minutes).
-- key: SecondRole
-  value: {}
-  required: false
-  description: The second role to which to assign the incident in the escalation stage.
 - key: IPBlacklistMiner
   value: {}
   required: false
