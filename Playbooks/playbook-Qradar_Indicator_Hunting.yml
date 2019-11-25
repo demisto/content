@@ -1,6 +1,6 @@
 id: Qradar Indicator Hunting
 version: -1
-fromversion:4.5.0
+fromversion: 4.5.0
 name: Qradar Indicator Hunting
 starttaskid: "0"
 tasks:
