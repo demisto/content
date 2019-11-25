@@ -1968,6 +1968,10 @@
         },
         {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
+        },
+        {
+            "integrations": "Tanium v2",
+            "playbookID": "Tanium v2 - Test"
         }
     ],
     "skipped_tests": {
