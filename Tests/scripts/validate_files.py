@@ -40,7 +40,6 @@ from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: 
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
     get_yaml, filter_packagify_changes, collect_ids, str2bool, get_matching_regex  # noqa: E402
 
-
 CODE_TYPES_VALIDATORS = Union[Type[ScriptValidator], Type[IntegrationValidator]]
 CODE_VALIDATORS = Union[ScriptValidator, IntegrationValidator]
 
@@ -170,27 +169,27 @@ class FilesValidator(object):
 
         if not is_circle:
             files_string = run_command('git diff --name-status --no-merges HEAD')
-            non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-            non_committed_old_format_files = self.get_modified_files(files_string,
-                                                                     print_ignored_files=self.print_ignored_files)
+            # nc = Non Committed
+            nc_modified_files, nc_added_files, nc_deleted_files, nc_old_format_files = self.get_modified_files(
+                files_string, print_ignored_files=self.print_ignored_files)
 
             all_changed_files_string = run_command('git diff --name-status {}'.format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
                 self.get_modified_files(all_changed_files_string, print_ignored_files=self.print_ignored_files)
 
-            old_format_files = old_format_files.union(non_committed_old_format_files)
+            old_format_files = old_format_files.union(nc_old_format_files)
             modified_files = modified_files.union(
-                modified_files_from_tag.intersection(non_committed_modified_files))
+                modified_files_from_tag.intersection(nc_modified_files))
 
             added_files = added_files.union(
-                added_files_from_tag.intersection(non_committed_added_files))
+                added_files_from_tag.intersection(nc_added_files))
 
-            modified_files = modified_files - set(non_committed_deleted_files)
-            added_files = added_files - set(non_committed_modified_files) - set(non_committed_deleted_files)
+            modified_files = modified_files - set(nc_deleted_files)
+            added_files = added_files - set(nc_modified_files) - set(nc_deleted_files)
 
             # new_added_files = set([])
             # for added_file in added_files:
-            #     if added_file in non_committed_added_files:
+            #     if added_file in nc_added_files:
             #         new_added_files.add(added_file)
 
             # added_files = new_added_files
@@ -212,7 +211,7 @@ class FilesValidator(object):
             else:
                 old_file_path = file_path
 
-            is_python_file = FilesValidator.is_yml_contains_python_code(file_path)
+            is_yml_contains_py_script = FilesValidator.is_yml_contains_python_code(file_path)
 
             print('Validating {}'.format(file_path))
             if not checked_type(file_path):
@@ -229,11 +228,11 @@ class FilesValidator(object):
             # Integration validator
             elif structure_validator.scheme_name == 'integration':
                 self.validate_integration(structure_validator, is_backward_check=is_backward_check,
-                                          is_contain_python_script=is_python_file)
+                                          is_yml_contains_py_script=is_yml_contains_py_script)
 
             # Script validator
             elif structure_validator.scheme_name == 'script':
-                self.validate_script(structure_validator, is_python_file, is_python_file)
+                self.validate_script(structure_validator, is_yml_contains_py_script, is_yml_contains_py_script)
 
             elif checked_type(file_path, [IMAGE_REGEX]):
                 image_validator = ImageValidator(file_path)
@@ -447,6 +446,7 @@ class FilesValidator(object):
             self._is_valid = prev_self_valid
 
     def _is_valid_integration_or_script(self, structure, validator_object, is_contain_python_script=False):
+        # type: (StructureValidator, CODE_TYPES_VALIDATORS, bool) -> CODE_VALIDATORS
         """Tests common functions for Scripts and Integrations.
 
         Args:
@@ -457,7 +457,6 @@ class FilesValidator(object):
         Returns:
 
         """
-        # type: (StructureValidator, CODE_TYPES_VALIDATORS, bool) -> CODE_VALIDATORS
         file_path = structure.file_path
         description_validator = DescriptionValidator(file_path)
         if not description_validator.is_valid():
@@ -468,17 +467,17 @@ class FilesValidator(object):
             if not docker_image_validator.is_docker_image_valid():
                 self._is_valid = False
 
-        validator = validator_object(structure)  # type: CODE_VALIDATORS
+        validator = validator_object(structure)
         if not validator.is_valid_file():
             self._is_valid = False
         return validator
 
-    def validate_integration(self, structure, is_backward_check=True, is_contain_python_script=False):
+    def validate_integration(self, structure, is_backward_check=True, is_yml_contains_py_script=False):
         # type: (StructureValidator, bool, bool) -> bool
         file_path = structure.file_path
         valid_flag = True
         integration_validator = self._is_valid_integration_or_script(structure, IntegrationValidator,
-                                                                     is_contain_python_script)
+                                                                     is_yml_contains_py_script)
         if checked_type(file_path, YML_INTEGRATION_REGEXES):
             image_validator = ImageValidator(structure.file_path)
             if not image_validator.is_valid():
@@ -505,12 +504,12 @@ class FilesValidator(object):
         if not script_validator.is_valid_file():
             self._is_valid = False
         elif checked_type(file_path, PACKAGE_SCRIPTS_REGEXES):
-        yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-        script_validator = ScriptValidator(structure_validator)
+            yml_path, _ = get_script_package_data(os.path.dirname(file_path))
+        script_validator = ScriptValidator(structure)
         if is_backward_check and not script_validator.is_backward_compatible():
             self._is_valid = False
 
-        if is_python_file:
+        if is_contain_python_script:
             docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
                                                           is_integration=False)
             if not docker_image_validator.is_docker_image_valid():

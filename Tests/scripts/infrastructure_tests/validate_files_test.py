@@ -18,7 +18,10 @@ def test_get_modified_files_packagify(mocker):
 
     mocker.patch('Tests.test_utils.get_remote_file', return_value={'name': 'Recorded Future'})
     # in python 3, this should be 'builtins.open'
-    mocker.patch('__builtin__.open', mocker.mock_open(read_data="{'name': 'Recorded Future'}"))
+    try:
+        mocker.patch('__builtin__.open', mocker.mock_open(read_data="{'name': 'Recorded Future'}"))
+    except ModuleNotFoundError:
+        mocker.patch('builtins.open', mocker.mock_open(read_data="{'name': 'Recorded Future'}"))
     modified, added, deleted, old_format = file_validator.get_modified_files(changed_files)
     assert len(modified) == 1
     assert ('Integrations/integration-Recorded_Future.yml',

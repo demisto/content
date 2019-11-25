@@ -24,7 +24,7 @@ class TestValidators:
     WIDGET_TARGET = "./Widgets/widget-mocks.json"
     DASHBOARD_TARGET = "./Dashboards/dashboard-mocks.json"
     PLAYBOOK_TARGET = "Playbooks/playbook-test.yml"
-    INTEGRATION_TARGET = "TestPlaybooks/integration-test.yml"
+    INTEGRATION_TARGET = "Integrations/integration-test.yml"
     INCIDENT_FIELD_TARGET = "IncidentFields/incidentfield-test.json"
     PLAYBOOK_PACK_TARGET = "Packs/Int/Playbooks/playbook-test.yml"
     SCRIPT_TARGET = "./Scripts/script-test.yml"

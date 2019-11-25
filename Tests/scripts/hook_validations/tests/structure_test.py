@@ -87,7 +87,7 @@ class TestStructureValidator:
         (VALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, True),
         (INVALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, False),
         (VALID_TEST_PLAYBOOK_PATH, TestValidators.PLAYBOOK_TARGET, True),
-        (VALID_INTEGRATION_TEST_PATH, TestValidators.PLAYBOOK_TARGET, True),
+        (VALID_INTEGRATION_TEST_PATH, TestValidators.INTEGRATION_TARGET, True),
         (INVALID_PLAYBOOK_PATH, TestValidators.INTEGRATION_TARGET, False),
     ]  # type: List[Tuple[str, str, bool]]
 
