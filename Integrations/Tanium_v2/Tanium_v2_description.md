@@ -1,13 +1,13 @@
-Integration with Tanium with REST api, Available from Tanium version 7.3.0. You can ask questions and get the question results, create actions, saved question and groups, gets packages, groups and sensors information.
+Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved questions, packages and 
 
 ## Configuration Parameters
 
 **Hostname**  
-This is the network address of the Tanium server host.
+The network address of the Tanium server host.
 
 **Domain**  
-The Tanium user domain, Relevant when there is more than one domain inside Tanium.
+The Tanium user domain. Relevant when there is more than one domain inside Tanium.
 
 **Credentials**  
-The credentials entered here should be the same one to enter Tanium client.
+The credentials should be the same as the Tanium client.
 
