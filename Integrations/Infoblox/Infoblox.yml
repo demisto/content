@@ -1,119 +1,1179 @@
-category: Network Security
 commonfields:
   id: Infoblox
   version: -1
+name: Infoblox
+display: Infoblox
+category: Network Security
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQCAMAAAC5zwKfAAACYVBMVEVHcEwAT4UAT4UAT4YAf/8A//8AT4UAf78AT4UAT4UAT4UAUYcAT4YAT4YAT48AXIsAT4UAT4UAUIUAUIUAT4UAT4UAVaoAW5EAUIYAWYwAT4UAT4UAT4UAUIgAT4YAUoUAUIYAUIUAT4YAVY0AUIUAT4UAUIUAUocAUYUAT4UAT4UAT4UAUIYAT4UAUIUAT4cAUYUAUIUAUIYAUocAT4UAUIUAT4YAUY4AUIUAUIYAT4UAVYgAT4UAT4UAT4YAVYUAT4UAT4UAT4YAT4cAT4UAT4UAUYYAZpkAWIUAT4UAT4gAbZEAT4UAUIYAT4UAUIUAT4cAUYgAT4UAZpkAT4UAT4UAT4UAVaoAUIUAT4UAWIkAT4UAU4kAUIUAUIUAU4gAT4UAT4UAT4UAVYgAUIUAT4YAVYkAUYUAT4UAU4cAUIYAUIUAT4gAUIYAVYsAT4YAUocAUYUAUIYAUYgAT4UAT4UAT4UAT4UAUYUAU4UAUYgAT4UAVY0AUIUAUIUAT4UAT4cAT4oAVY0AUYcAUIcAUIUAUIYAUIcAUYcAUIUAT4UAT4UAUIUAT4UAX58AT4UAUIUAUIYAT4UAUIYAUIgAT4UAT4UAUIUAT4UAUIUAT4YAT4UAUIYAT4YAUYkAT4UAUYYAUIUAT4UAT4YAT4YAT4YAT4cAUokAT4UAT4YAUIUAT4UAT4YAUIUAT4UAUIoAT4YAT4UAT4UAT4UAT4UAUIUAT4UAT4YAT4UAUYYAT4YAUYUAT4UAT4YAT4UAUoUAT4UAT4UAUIYAT4YAUIcAYokAT4UAT4UA65kA0ZYAu5PCXoiOAAAAx3RSTlMA+nO6AgG5BP799i9wShAL9/uVzNrxAw6JFLv08EmWKLyPmhI/x88+ccjz4WjtmU1F76VEoFbXGdKMrh71+K0qoZODIMuzSAoXni0H4HnjfnccQwXDjT0Gi/wa5zSCaSvBsWMPb9EnLMoxe3hHOSG+Ilh/S1BnzvJULjimCayy6UAwG1VPta91UVLNgJvZCNBcRuVsPIbb37BllNjCfTLsbrjukKejYCVtqb/5aqiXI9W0tnad4utdt2HEa1ro5EHWpBOBYg3JeEoS2QAAA5lJREFUGBmtwQN7Y0sABuAvbZKT1Ha3tt2ubdu2vXu517Zt27a+TH/VbXgmaTIz53nyvtDaV1+JdDrxHVvzkD43D5BsyUe6bKxmUP0qJNM2Y/Pxud9bMHd5DsNmlmGa/E8ZsvgumHqikFHzPUhgVTGipBxmun20LUCCw4zZAiPtjPMs4r3MmGvbYGA9E6yD7CwlN0FvPac5CckDlLRBK4dJPAxbDiXvQ+c9H5OZQMwW2lZDJ7eQyQ1vQsR+2j6ARnYnU6nKQ8gdtA1Co6mLqXX1AXBf72GUa6EbGmuotCvTu4tRBcOfQ+sATQ2cqoSBF2go6xiMtNNQA8zkH6GZ0zBU/mLFYEcBtbbCiVtrM6lxEA6NVFOpHk6d9lPpbjjVSKWCvXBoHzUyFyG1vuFzM3Yi3rfUqL5/E5Jzv8spz+chjpdao7VIag9D3kAcLw14szHd7h0MGfVAVkITvj/PI4H1OCNyITlPQ67eDYjTzqirFmy9NDZnwRhsy0sZsw4xzX46kDVRiahHaPNleBD2+wDJSSGZpNK1v8sRstJP2StDFoDsXh+niIBEUOM/hNzLBDWtD/UwTAQkghr/IGgrFURAIqg2WoagzVQQAYmg2nUELaWKCEgEla56EFRMFRGQCCpdQtBlKomARFClA0GecSqJgERQZSOCLlBNBCSCCucQZJVQTQQkggpnEHSFGiIgEQx76nhrDRPch5BiaoiARHCKv6gOgNW/n7LCOoT8e7GUSpNCMkmy5xmEeTJ8tBUh6q+K2XTA34yYPYx5qxK25Q0FNFYEmzXOqJ8RZ2eRi2Z8syDpY8RiNxIsmu+niSOQuR9liCsb0638iga+RJwMhpxCUv1fUGsJ4jSt5ZRGpGBldFKjBPHOznjzmyGkNusHahyFQ1eyqPQZnHqQSv4n4VQVlTovwKGD1Mi89BicaKZWVsstFd35MLSUZoqXwcxLNJQBI699TENzYWDs4mya+hBadYOFjFp9YMlaKuVAw5rYwagb93gA1HYxtefKoeaeyRjfGYTkeZlK6TxofE2bFxHWCibn6oeG+zfatiOmgsn4foHOPEqehu1VJrEXWkOU5EKyhtPkQO9OSjZAdpIJDsOAVcOYccRbSJnvExjZzphuJGigzf8jzBz6gxG3u5HAs4JRrhGYGmthkK9xFaYpu41hWbkwVzbyTsdHb59AMtsyGVTahnRZ9hPJ13cjfQ4V89djSKcm71Ho/A9KDXs8/9v7cAAAAABJRU5ErkJggg==
+description: Integration Template
 configuration:
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: https://example.net
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://example.net)
   name: url
-  required: true
+  defaultvalue: https://example.net
   type: 0
+  required: true
 - display: User Name
   name: credentials
-  required: false
+  defaultvalue: ""
   type: 9
-- defaultvalue: 'true'
-  display: Trust any certificate (insecure)
-  name: insecure
   required: false
+- display: Trust any certificate (insecure)
+  name: insecure
+  defaultvalue: "true"
   type: 8
+  required: false
 - display: Use system proxy
   name: proxy
-  required: false
+  defaultvalue: ""
   type: 8
-description: Integration Template
-display: Infoblox
-name: Infoblox
+  required: false
 script:
+  script: |-
+    ''' IMPORTS '''
+    from typing import Dict, Tuple, List, AnyStr, Union
+    import urllib3
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    """GLOBALS/PARAMS
+    Attributes:
+        INTEGRATION_NAME:
+            Name of the integration as shown in the integration UI, for example: Microsoft Graph User.
+
+        INTEGRATION_COMMAND_NAME:
+            Command names should be written in all lower-case letters,
+            and each word separated with a hyphen, for example: msgraph-user.
+
+        INTEGRATION_CONTEXT_NAME:
+            Context output names should be written in camel case, for example: MSGraphUser.
+    """
+    INTEGRATION_NAME = 'Infoblox Integration'
+    INTEGRATION_COMMAND_NAME = 'infoblox'
+    INTEGRATION_CONTEXT_NAME = 'Infoblox'
+    REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+    REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
+    REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
+    REQUEST_PARAM_LIST_RULES = {'_return_fields+': 'name,zone,comment,disable,type'}
+    REQUEST_PARAM_SEARCH_RULES = {'_return_fields+': 'name,zone,comment,disable'}
+    REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+
+    RESPONSE_TRANSLATION_DICTIONARY = {
+        '_ref': 'ReferenceID',
+        'fqdn': 'FQDN',
+        'rp_zone': 'Zone'
+    }
+
+    RPZ_RULES_DICT = {
+        'Passthru': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:a:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Block (No such domain)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:cname:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Block (No data)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:cname:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Substitute (domain name)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:a:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddressdn'
+            }
+        }
+    }
+
+
+    class Client(BaseClient):
+        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
+            super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
+            self.params = params
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
+                          data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
+            if params:
+                self.params.update(params)
+            try:
+                return super()._http_request(method, url_suffix, full_url, headers, auth, json_data, self.params, data,
+                                             files, timeout, resp_type, ok_codes, **kwargs)
+            except DemistoException as error:
+                raise parse_demisto_exception(error, 'text')
+
+        def test_module(self) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+
+            Returns:
+                Response JSON
+            """
+            return self.list_response_policy_zones()
+
+        def list_response_policy_zones(self, max_results: str = None) -> Dict:
+            """List all response policy zones.
+            Args:
+                    max_results:  maximum number of results
+            Returns:
+                Response JSON
+            """
+            suffix = 'zone_rp'
+            request_params = assign_params(_max_results=max_results)
+            request_params.update(REQUEST_PARAM_ZONE)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def get_ip(self, ip: str) -> Dict:
+            """Get ip information.
+            Args:
+                ip: ip to retrieve.
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'ipv4address'
+
+            # Dictionary of params for the request
+            request_params = assign_params(ip_address=ip)
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def search_related_objects_by_ip(self, ip: str, max_results: str) -> Dict:
+            """Get ip information.
+            Args:
+                ip: ip to retrieve.
+                max_results: maximum number of results
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'search'
+
+            # Dictionary of params for the request
+            request_params = assign_params(address=ip, _max_results=max_results)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def list_response_policy_zone_rules(self, zone: str, max_results: str, next_page_id: str) -> Dict:
+            """List response policy zones rules by a given zone name.
+            Args:
+                zone: response policy zone name.
+                max_results: maximum number of results.
+                next_page_id: ID of the next page to retrieve, if given all other arguments are ignored.
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'allrpzrecords'
+            # Dictionary of params for the request
+            request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
+            request_params.update(REQUEST_PARAM_PAGING_FLAG)
+            request_params.update(REQUEST_PARAM_LIST_RULES)
+
+            return self._http_request('GET', suffix, params=request_params)
+
+        def create_response_policy_zone(self, fqdn: str, rpz_policy: str, rpz_severity: str, substitute_name: str,
+                                        rpz_type: str) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                fqdn: The name of this DNS zone.
+                rpz_policy: The response policy zone override policy.
+                rpz_severity: The severity of this response policy zone.
+                substitute_name: The canonical name of redirect target in substitute policy.
+                rpz_type: The type of rpz zone.
+            Returns:
+                Response JSON
+            """
+
+            data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
+                                 substitute_name=substitute_name, rpz_type=rpz_type)
+            suffix = 'zone_rp'
+            return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_RULE)
+
+        def create_rpz_rule(self, rule_type: str, object_type: str, name: str, rp_zone: str, substitute_name: str,
+                            comment=None) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                rule_type: Type of rule to create.
+                object_type: Type of object to assign the rule on.
+                name: Rule name.
+                rp_zone: The zone to assign the rule.
+                substitute_name: The substitute name to assign (In case of substitute domain only)
+                comment: A comment for this rule.
+            Returns:
+                Response JSON
+            """
+            canonical = ''
+            if rule_type == 'Passthru':
+                canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
+            elif rule_type == 'Block (No data)':
+                canonical = '*'
+            elif rule_type == 'Substitute (domain name)':
+                canonical = substitute_name
+
+            data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
+            request_params = REQUEST_PARAM_CREATE_RULE
+            suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
+
+            rule = self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
+            rule['result']['type'] = suffix
+            return rule
+
+        def create_substitute_record_rule(self, suffix: str, **kwargs: dict) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                suffix: The infoblox object to be used as a url path.
+                kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                    - name
+                    - rp_zone
+                    - comment
+                    - ipv4addr
+                    - ipv6addr
+                    - mail_exchanger
+                    - preference
+                    - order
+                    - preference
+                    - replacement
+                    - ptrdname
+                    - priority
+                    - target
+                    - weight
+                    - port
+                    - text
+            Returns:
+                Response JSON
+            """
+            request_data = {key: val for key, val in kwargs.items() if val}
+            request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
+            rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+            rule['result']['type'] = suffix
+            return rule
+
+        def change_rule_status(self, reference_id: str, disable: bool) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                reference_id: Rule reference ID
+                disable: true or false string
+            Returns:
+                Response JSON
+            """
+            request_data = assign_params(disable=disable)
+            suffix = reference_id
+            return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
+
+        def get_object_fields(self, object_type: str) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                object_type: Infoblox object type
+            Returns:
+                Response JSON
+            """
+            request_params = {'_schema': object_type}
+            suffix = object_type
+            return self._http_request('GET', suffix, params=request_params)
+
+        def search_rule(self, object_type, rule_name, output_fields) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                object_type: Infoblox object type
+                rule_name: Full rule name
+                output_fields: Fields to include in the return object
+            Returns:
+                Response JSON
+            """
+            request_params = assign_params(name=rule_name)
+            if output_fields:
+                request_params['_return_fields+'] = output_fields
+            suffix = object_type
+            return self._http_request('GET', suffix, params=request_params)
+
+        def delete_rpz_rule(self, reference_id) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
+            Args:
+                reference_id: Rule reference ID
+            Returns:
+                Response JSON
+            """
+
+            suffix = reference_id
+            return self._http_request('DELETE', suffix)
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def parse_demisto_exception(error: DemistoException, field_in_error: str):
+        err_string = error.args[0]
+        if 'Error in API call' in err_string:
+            infoblox_err = err_string.split('\n')[1].replace('\\', '')
+            infoblox_json = json.loads(infoblox_err)
+            return DemistoException(infoblox_json.get(field_in_error, 'text'))
+        elif 'Failed to parse json object' in err_string:
+            return DemistoException('Cannot connect to Infoblox server, check your proxy and connection')
+        return error
+
+
+    ''' COMMANDS '''
+
+
+    def test_module_command(client: Client, *_) -> [str]:
+        """Performs a basic GET request to check if the API is reachable and authentication is successful.
+        """
+        try:
+            _ = client.test_module()
+            return ['ok']
+        except Exception as e:
+            raise DemistoException('Test module failed, {}'.format(e))
+
+
+    #
+    # def fetch_credentials(client: Client) -> list:
+    #     """Uses to fetch credentials into Demisto
+    #     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_credentials
+    #
+    #     Args:
+    #         client: Client object
+    #
+    #     Returns:
+    #         Outputs
+    #     """
+    #     # Get credentials from api
+    #     raw_response = client.list_credentials()
+    #     raw_credentials = raw_response.get('credential', [])
+    #     if raw_credentials:
+    #         # Creates credentials entry
+    #         credentials = build_credentials_fetch(raw_credentials)
+    #         return credentials
+    #     else:
+    #         raise DemistoException(f'`fetch-incidents` failed in `{INTEGRATION_NAME}`, no keyword `credentials` in'
+    #                                f' response. Check API')
+    #
+    #
+    # def lock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    #     """Locks an account by account ID.
+    #     Args:
+    #         client: Client object
+    #         args: Usually demisto.args()
+    #
+    #     Returns:
+    #         Outputs
+    #     """
+    #     # Get arguments from user
+    #     username = args.get('username', '')
+    #     # Make request and get raw response
+    #     raw_response = client.lock_account(username)
+    #     # Get account from raw_response
+    #     accounts = raw_response.get('account')
+    #     # Parse response into context & content entries
+    #     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is True:
+    #         user_object = accounts[0]
+    #         title: str = f'{INTEGRATION_NAME} - Account `{username}` has been locked.'
+    #         context_entry = account_response_to_context(user_object)
+    #         context = {
+    #             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry
+    #         }
+    #         # Creating human readable for War room
+    #         human_readable: str = tableToMarkdown(title, context_entry)
+    #         # Return data to Demisto
+    #         return human_readable, context, raw_response
+    #     else:
+    #         raise DemistoException(f'{INTEGRATION_NAME} - Could not lock account `{username}`')
+    #
+    #
+    # def unlock_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    #     """Unlocks an account by account ID.
+    #     Args:
+    #         client: Client object
+    #         args: Usually demisto.args()
+    #
+    #     Returns:
+    #         Outputs
+    #     """
+    #     # Get arguments from user
+    #     username = args.get('username', '')
+    #     # Make request and get raw response
+    #     raw_response = client.unlock_account(username)
+    #     # Get account from raw_response
+    #     accounts = raw_response.get('account')
+    #     # Parse response into context & content entries
+    #     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
+    #         user_object = accounts[0]
+    #         title = f'{INTEGRATION_NAME} - Account `{username}` has been unlocked.'
+    #         context_entry = account_response_to_context(user_object)
+    #         context = {
+    #             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
+    #         # Creating human readable for War room
+    #         human_readable = tableToMarkdown(title, context_entry)
+    #         # Return data
+    #         return human_readable, context, raw_response
+    #     else:
+    #         raise DemistoException(f'{INTEGRATION_NAME} - Could not unlock account `{username}`')
+    #
+    #
+    # def reset_account_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    #     """Resets an account by account ID.
+    #     Args:
+    #         client: Client object
+    #         args: Usually demisto.args()
+    #
+    #     Returns:
+    #         Outputs
+    #     """
+    #     # Get arguments from user
+    #     username = args.get('username', '')
+    #     # Make request and get raw response
+    #     raw_response = client.reset_account(username)
+    #     # Get account from raw_response
+    #     accounts = raw_response.get('account')
+    #     # Parse response into context & content entries
+    #     if accounts and accounts[0].get('username') == username and accounts[0].get('isLocked') is False:
+    #         user_object = accounts[0]
+    #         title = f'{INTEGRATION_NAME} - Account `{username}` has been returned to default.'
+    #         context_entry = account_response_to_context(user_object)
+    #         context = {
+    #             f'{INTEGRATION_CONTEXT_NAME}.Account(val.Username && val.Username === obj.Username)': context_entry}
+    #         # Creating human readable for War room
+    #         human_readable = tableToMarkdown(title, context_entry)
+    #         # Return data to Demisto
+    #         return human_readable, context, raw_response
+    #     else:
+    #         raise DemistoException(f'{INTEGRATION_NAME} - Could not reset account `{username}`')
+
+
+    def get_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Returns credentials to user without passwords.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        ip = args.get('ip')
+        raw_response = client.get_ip(ip)
+        ip_list = raw_response.get('result')
+
+        # If no IP object was returned
+        if not ip_list:
+            return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
+        fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                          ip_list[0].items()}
+        title = f'{INTEGRATION_NAME} - IP: {ip} info.'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
+        human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Locks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        ip = args.get('ip')
+        max_results = args.get('max_results')
+        raw_response = client.search_related_objects_by_ip(ip, max_results)
+        obj_list = raw_response.get('result')
+        if not obj_list:
+            return f'{INTEGRATION_NAME} - No objects associated to ip: {ip} were found', {}, {}
+        fixed_keys_obj_list = []
+        for obj in obj_list:
+            fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                              obj.items()}
+            fixed_keys_obj_list.append(fixed_keys_obj)
+
+        title = f'{INTEGRATION_NAME} - IP: {ip} search results.'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.IPRelatedObjects(val.ReferenceID && val.ReferenceID === obj.ReferenceID)':
+                fixed_keys_obj_list}
+        human_readable = tableToMarkdown(title, fixed_keys_obj_list, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        zone = args.get('response_policy_zone_name')
+        max_results = args.get('page_size', 50)
+        next_page_id = args.get('next_page_id')
+        if not zone and not next_page_id:
+            raise DemistoException('To run this command either a zone or a next page ID must be given')
+        raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
+        next_page_id = raw_response.get('next_page_id')
+
+        if next_page_id:
+            return_outputs('New next page ID was added to context', {
+                f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === obj.NextPageID)': {
+                    'NextPageID': next_page_id}}, next_page_id)
+
+        rules_list = raw_response.get('result')
+        if not rules_list:
+            return f'{INTEGRATION_NAME} - No rules associated to zone: {zone} were found', {}, {}
+
+        fixed_keys_rule_list = []
+        for rule in rules_list:
+            fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items() if key != '_ref'}
+            fixed_keys_rule_list.append(fixed_keys_rule)
+        zone_name = zone.capitalize() if zone else fixed_keys_rule_list[0].get('Name')
+        title = f'{INTEGRATION_NAME} - Zone: {zone_name} rule list.'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.List(val.Name && val.Name === obj.Name)': fixed_keys_rule_list}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_list,
+                                         headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        max_results = args.get('max_results', 50)
+        raw_response = client.list_response_policy_zones(max_results)
+        zones_list = raw_response.get('result')
+        if not zones_list:
+            return f'{INTEGRATION_NAME} - No Response Policy Zones were found', {}, {}
+        fixed_keys_zone_list = []
+        for zone in zones_list:
+            fixed_keys_zone = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               zone.items()}
+            fixed_keys_zone_list.append(fixed_keys_zone)
+        display_first_x_results = f'(first {max_results} results)' if max_results else ''
+        title = f'{INTEGRATION_NAME} - Response Policy Zones list{display_first_x_results}:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_zone_list}
+        human_readable = tableToMarkdown(title, fixed_keys_zone_list, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        fqdn = args.get('FQDN')
+        rpz_policy = args.get('rpz_policy')
+        rpz_severity = args.get('rpz_severity')
+        substitute_name = args.get('substitute_name')
+        rpz_type = args.get('rpz_type')
+        if rpz_policy == 'SUBSTITUTE' and not substitute_name:
+            raise parse_demisto_exception(f'Response policy zone with policy SUBSTITUTE requires a substitute name')
+        raw_response = client.create_response_policy_zone(fqdn, rpz_policy, rpz_severity, substitute_name, rpz_type)
+        zone = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               zone.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone: {fqdn} has been created'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZones(val.FQDN && val.FQDN === obj.FQDN)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        rule_type = args.get('rule_type')
+        object_type = args.get('object_type')
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        substitute_name = args.get('substitute_name')
+        if rule_type == 'Substitute (domain name)' and not substitute_name:
+            raise parse_demisto_exception(f'Substitute (domain name) rules requires a substitute name argument')
+        raw_response = client.create_rpz_rule(rule_type, object_type, name, rp_zone, comment, substitute_name)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        ipv4addr = args.get('ipv4addr')
+        infoblox_object_type = 'record:rpz:a'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, ipv4addr=ipv4addr)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        ipv6addr = args.get('ipv6addr')
+        infoblox_object_type = 'record:rpz:aaaa'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, ipv6addr=ipv6addr)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        mail_exchanger = args.get('mail_exchanger')
+        preference = args.get('preference')
+        infoblox_object_type = 'record:rpz:mx'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, mail_exchanger=mail_exchanger,
+                                                            preference=preference)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        order = args.get('order')
+        preference = args.get('preference')
+        replacement = args.get('replacement')
+        infoblox_object_type = 'record:rpz:naptr'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, order=order, preference=preference,
+                                                            replacement=replacement)
+
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        ptrdname = args.get('ptrdname')
+        ipv4addr = args.get('ipv4addr')
+        ipv6addr = args.get('ipv6addr')
+        infoblox_object_type = 'record:rpz:ptr'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, ptrdname=ptrdname, ipv4addr=ipv4addr,
+                                                            ipv6addr=ipv6addr)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        port = args.get('port')
+        priority = args.get('priority')
+        target = args.get('target')
+        weight = args.get('weight')
+        infoblox_object_type = 'record:rpz:srv'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, port=port, priority=priority, target=target,
+                                                            weight=weight)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        text = args.get('text')
+        infoblox_object_type = 'record:rpz:txt'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, text=text)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        ipv4addr = args.get('ipv4addr')
+        infoblox_object_type = 'record:rpz:a:ipaddress'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, ipv4addr=ipv4addr)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        name = args.get('name')
+        rp_zone = args.get('rp_zone')
+        comment = args.get('comment')
+        ipv6addr = args.get('ipv6addr')
+        infoblox_object_type = 'record:rpz:aaaa:ipaddress'
+
+        raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
+                                                            comment=comment, ipv6addr=ipv6addr)
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {name} has been created:'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        reference_id = args.get('reference_id')
+        raw_response = client.change_rule_status(reference_id, disable=False)
+
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been enabled'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        reference_id = args.get('reference_id')
+        raw_response = client.change_rule_status(reference_id, disable=True)
+
+        rule = raw_response.get('result')
+        fixed_keys_rule_res = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+        title = f'{INTEGRATION_NAME} - Response Policy Zone rule: {fixed_keys_rule_res.get("Name")} has been disabled'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ModifiedResponsePolicyZoneRules(val.Name && val.Name === obj.Name)': fixed_keys_rule_res}
+        human_readable = tableToMarkdown(title, fixed_keys_rule_res, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        object_type = args.get('object_type')
+        raw_response = client.get_object_fields(object_type)
+
+        fields = raw_response.get('result').get('fields')
+        name_list = [field_obj.get('name') for field_obj in fields]
+        title = f'{INTEGRATION_NAME} - Object {object_type} supported fields: '
+        context_entry = {
+            'ObjectType': object_type,
+            'SupportedFields': name_list
+        }
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.ObjectFields(val.ObjectType && val.ObjectType === obj.ObjectType)': context_entry
+        }
+        human_readable = tableToMarkdown(title, name_list, headers=['Field Names'], headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        object_type = args.get('object_type')
+        rule_name = args.get('rule_name')
+        output_fields = args.get('output_fields')
+        raw_response = client.search_rule(object_type, rule_name, output_fields)
+        rule_list = raw_response.get('result')
+        if not rule_list:
+            return f'No rules with name: {rule_name} of type: {object_type} were found', {}, raw_response
+        fixed_keys_rule_list = []
+        for rule in rule_list:
+            fixed_keys_rule = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                               rule.items()}
+            fixed_keys_rule_list.append(fixed_keys_rule)
+        title = f'{INTEGRATION_NAME} - Search result for: {rule_name}: '
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.RulesSearchResults(val.Name && val.Name === obj.Name)': fixed_keys_rule_list
+        }
+        human_readable = tableToMarkdown(title, fixed_keys_rule_list, headerTransform=pascalToSpace)
+        return human_readable, context, raw_response
+
+
+    def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """Unlocks a vault by vault ID.
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        reference_id = args.get('reference_id')
+        raw_response = client.delete_rpz_rule(reference_id)
+        rule_reference_id = raw_response.get('result')
+        title = f'{INTEGRATION_NAME} - A rule with the following id was deleted: \n {rule_reference_id}'
+        return title, {}, raw_response
+
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():  # pragma: no cover
+        params = demisto.params()
+        base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.3/"
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy') == 'true'
+        user = demisto.get(params, 'credentials.identifier')
+        password = demisto.get(params, 'credentials.password')
+        default_request_params = {
+            '_return_as_object': '1'
+        }
+        client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+
+        # Switch case
+        commands = {
+            'test-module': test_module_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
+            f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zones': list_response_policy_zones_command,
+            f'{INTEGRATION_COMMAND_NAME}-list-response-policy-zone-rules': list_response_policy_zone_rules_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-response-policy-zone': create_response_policy_zone_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-rpz-rule': create_rpz_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-a-substitute-record-rule': create_a_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-aaaa-substitute-record-rule': create_aaaa_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-mx-substitute-record-rule': create_mx_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-naptr-substitute-record-rule': create_naptr_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-ptr-substitute-record-rule': create_ptr_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-srv-substitute-record-rule': create_srv_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-txt-substitute-record-rule': create_txt_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-ipv4-substitute-record-rule': create_ipv4_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-create-ipv6-substitute-record-rule': create_ipv6_substitute_record_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-enable-rule': enable_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-disable-rule': disable_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
+            f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
+            f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        }
+        try:
+            if command in commands:
+                return_outputs(*commands[command](client, demisto.args()))
+        # Log exceptions
+        except Exception as e:
+            err_msg = f'Error in {INTEGRATION_NAME} - [{e}]'
+            return_error(err_msg, error=e)
+
+
+    if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+        main()
+  type: python
   commands:
-  - arguments:
-    - default: false
+  - name: infoblox-get-ip
+    arguments:
+    - name: ip
+      required: true
       description: Ip to retrieve the info on.
       isArray: true
-      name: ip
-      required: true
-      secret: false
-    deprecated: false
-    description: Get IP info
-    execution: false
-    name: infoblox-get-ip
     outputs:
-    - contextPath: Example.Item.ID
-      description: Item ID
+    - contextPath: Infoblox.IP.ReferenceID
+      description: Object Reference ID
       type: number
-    - contextPath: Example.Item.Name
-      description: Item name
+    - contextPath: Infoblox.IP.MacAddress
+      description: '-'
       type: string
-  - arguments:
-    - default: false
-      description: The IP to search by.
-      isArray: false
-      name: ip
+    - contextPath: Infoblox.IP.Network
+      description: '-'
+    - contextPath: Infoblox.IP.NetworkView
+    - contextPath: Infoblox.IP.Status
+    - contextPath: Infoblox.IP.IsConflict
+    - contextPath: Infoblox.IP. Objects
+    - contextPath: Infoblox.IP.Types
+    - contextPath: Infoblox.IP. Names
+    - contextPath: Infoblox.IP. Extattrs
+      description: Extra attributes relevant for this object
+    - contextPath: Infoblox.IP.IpAddress
+      description: IP address
+    - contextPath: Infoblox.IP. Usage
+    description: Get IP info
+  - name: infoblox-search-related-objects-by-ip
+    arguments:
+    - name: ip
       required: true
-      secret: false
-    - default: false
+      description: The IP to search by.
+    - name: max_results
       description: Maximum results to return.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    deprecated: false
+    outputs:
+    - contextPath: Infoblox.IPRelatedObjects.ReferenceID
+      description: Related object reference ID
     description: Serach IP related objects by a given IP.
-    execution: false
-    name: infoblox-search-related-objects-by-ip
-  - arguments:
-    - default: false
+  - name: infoblox-list-response-policy-zone-rules
+    arguments:
+    - name: response_policy_zone_name
       description: Respone policy zone name to list the rules (FQDN).
-      isArray: false
-      name: response_policy_zone_name
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - name: page_size
       description: Number of results in each page.
-      isArray: false
-      name: page_size
-      required: false
-      secret: false
-    - default: false
+      defaultValue: "50"
+    - name: next_page_id
       description: For browse through result pages, use the next page ID that was
         returned from last from this command.
-      isArray: false
-      name: next_page_id
-      required: false
-      secret: false
-    deprecated: false
+    outputs:
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.List.Zone
+      description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ListResponsePolicyZoneRules.Pages.NextPageID
+      description: Use this to retreive the next page in your search. The last NextpageID
+        ech time corresponds to the last search performed.
+      type: string
     description: List all response policy rules that belongs to the given response
       policy zone.
-    execution: false
-    name: infoblox-list-response-policy-zone-rules
-  - arguments:
-    - default: false
+  - name: infoblox-list-response-policy-zones
+    arguments:
+    - name: max_results
       description: Maximum results to return.
-      isArray: false
-      name: max_results
-      required: false
-      secret: false
-    deprecated: false
-    description: List all response policy zones
-    execution: false
-    name: infoblox-list-response-policy-zones
-  - arguments:
-    - default: false
-      description: The name of this DNS zone in FQDN format.
-      isArray: false
-      name: FQDN
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
+    outputs:
+    - contextPath: Infoblox.ResponsePolicyZones.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ResponsePolicyZones.FQDN
+      description: Fully Qualified Domain Name.
+      type: string
+    - contextPath: Infoblox.ResponsePolicyZones.ReferenceID
+      description: Object reference ID.
+      type: string
+    - contextPath: Infoblox.ResponsePolicyZones.RpzPolicy
       description: The response policy zone override policy.
-      isArray: false
-      name: rpz_policy
+      type: string
+    - contextPath: Infoblox.ResponsePolicyZones.RpzSeverity
+      description: The severity of this response policy zone.
+      type: string
+    - contextPath: Infoblox.ResponsePolicyZones.RpzType
+      description: The type of rpz zone.
+      type: string
+    - contextPath: Infoblox.ResponsePolicyZones.View
+      description: View definition.
+    description: List all response policy zones
+  - name: infoblox-create-response-policy-zone
+    arguments:
+    - name: FQDN
+      required: true
+      description: The name of this DNS zone in FQDN format.
+    - name: rpz_policy
+      required: true
+      auto: PREDEFINED
       predefined:
       - DISABLED
       - GIVEN
@@ -121,503 +1181,319 @@ script:
       - NXDOMAIN
       - PASSTHRU
       - SUBSTITUTE
+      description: The response policy zone override policy.
+    - name: rpz_severity
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: MAJOR
-      description: The severity of this response policy zone.
-      isArray: false
-      name: rpz_severity
+      auto: PREDEFINED
       predefined:
       - CRITICAL
       - MAJOR
       - WARNING
       - INFORMATIONAL
-      required: true
-      secret: false
-    - default: false
+      description: The severity of this response policy zone.
+      defaultValue: MAJOR
+    - name: substitute_name
       description: The canonical name of redirect target in substitute policy of response
         policy zone.
-      isArray: false
-      name: substitute_name
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: LOCAL
-      description: The type of rpz zone.
-      isArray: false
-      name: rpz_type
+    - name: rpz_type
+      auto: PREDEFINED
       predefined:
       - FEED
       - FIREEYE
       - LOCAL
-      required: false
-      secret: false
-    deprecated: false
+      description: The type of rpz zone.
+      defaultValue: LOCAL
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Canonical
+      description: '-'
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Object Reference ID.
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.RpZone
+      description: The zone to which this rule belongs to.
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
     description: Create response policy zone.
-    execution: false
-    name: infoblox-create-response-policy-zone
-  - arguments:
-    - auto: PREDEFINED
-      default: false
-      description: Type of rule to create.
-      isArray: false
-      name: rule_type
+  - name: infoblox-create-rpz-rule
+    arguments:
+    - name: rule_type
+      required: true
+      auto: PREDEFINED
       predefined:
       - Passthru
       - Block (No such domain)
       - Block (No data)
       - Substitute (domain name)
+      description: Type of rule to create.
+    - name: object_type
       required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Type of object to assign the rule on.
-      isArray: false
-      name: object_type
+      auto: PREDEFINED
       predefined:
       - Domain Name
       - IP address
       - Client IP address
+      description: Type of object to assign the rule on.
+    - name: name
       required: true
-      secret: false
-    - default: false
       description: Rule name in a FQDN format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: substitute_name
       description: The substitute name to assign (In case of substitute domain only)
-      isArray: false
-      name: substitute_name
-      required: false
-      secret: false
-    deprecated: false
     description: Create response policy rule
-    execution: false
-    name: infoblox-create-rpz-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-a-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: ipv4addr
       description: The IPv4 address of the substitute rule.
-      isArray: false
-      name: ipv4addr
-      required: false
-      secret: false
-    deprecated: false
     description: Create 'Substitute (A Record) Rule'.
-    execution: false
-    name: infoblox-create-a-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-aaaa-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: ipv6addr
       description: The IPv6 address of the substitute rule.
-      isArray: false
-      name: ipv6addr
-      required: false
-      secret: false
-    deprecated: false
     description: Create 'Substitute (AAAA Record) Rule'.
-    execution: false
-    name: infoblox-create-aaaa-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-mx-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: mail_exchanger
+      required: true
       description: Mail exchanger name in FQDN format. This value can be in unicode
         format.
-      isArray: false
-      name: mail_exchanger
+    - name: preference
       required: true
-      secret: false
-    - default: false
       description: Preference value, 0 to 65535 (inclusive).
-      isArray: false
-      name: preference
-      required: true
-      secret: false
-    deprecated: false
     description: Create 'Substitute (MX Record) Rule'.
-    execution: false
-    name: infoblox-create-mx-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-naptr-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: order
+      required: true
       description: The order parameter of the Substitute (NAPTR Record) Rule records.
         This parameter specifies the order in which the NAPTR rules are applied when
         multiple rules are present. Valid values are from 0 to 65535 (inclusive).
-      isArray: false
-      name: order
+    - name: preference
       required: true
-      secret: false
-    - default: false
       description: Preference value, 0 to 65535 (inclusive).
-      isArray: false
-      name: preference
+    - name: replacement
       required: true
-      secret: false
-    - default: false
       description: The replacement field of the Substitute (NAPTR Record) Rule object.
         For nonterminal NAPTR records, this field specifies the next domain name to
         look up.
-      isArray: false
-      name: replacement
-      required: true
-      secret: false
-    deprecated: false
     description: Create 'Substitute (NAPTR Record) Rule'.
-    execution: false
-    name: infoblox-create-naptr-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-ptr-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: ptrdname
+      required: true
       description: The domain name of the RPZ Substitute (PTR Record) Rule object
         in FQDN format.
-      isArray: false
-      name: ptrdname
-      required: true
-      secret: false
-    - default: false
+    - name: ipv4addr
       description: The IPv4 Address of the substitute rule.
-      isArray: false
-      name: ipv4addr
-      required: false
-      secret: false
-    - default: false
+    - name: ipv6addr
       description: The IPv6 Address of the substitute rule.
-      isArray: false
-      name: ipv6addr
-      required: false
-      secret: false
-    deprecated: false
     description: Create 'Substitute (PTR Record) Rule'.
-    execution: false
-    name: infoblox-create-ptr-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-srv-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: port
+      required: true
       description: The port of the Substitute (SRV Record) Rule. Valid values are
         from 0 to 65535 (inclusive).
-      isArray: false
-      name: port
+    - name: priority
       required: true
-      secret: false
-    - default: false
       description: The priority of the Substitute (SRV Record) Rule. Valid values
         are from 0 to 65535 (inclusive).
-      isArray: false
-      name: priority
+    - name: target
       required: true
-      secret: false
-    - default: false
       description: The target of the Substitute (SRV Record) Rule in FQDN format.
         This value can be in unicode format.
-      isArray: false
-      name: target
+    - name: weight
       required: true
-      secret: false
-    - default: false
       description: The weight of the Substitute (SRV Record) Rule. Valid values are
         from 0 to 65535 (inclusive).
-      isArray: false
-      name: weight
-      required: true
-      secret: false
-    deprecated: false
     description: Create 'Substitute (SRV Record) Rule'.
-    execution: false
-    name: infoblox-create-srv-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-txt-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: text
+      required: true
       description: Text associated with the record. To enter leading, trailing, or
         embedded spaces in the text, add quotes around the text to preserve the spaces.
-      isArray: false
-      name: text
-      required: true
-      secret: false
-    deprecated: false
     description: Create 'Substitute (txt Record) Rule'.
-    execution: false
-    name: infoblox-create-txt-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-ipv4-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
+    - name: ipv4addr
+      required: true
       description: The IPv4 Address of the substitute rule.
-      isArray: false
-      name: ipv4addr
-      required: true
-      secret: false
-    deprecated: false
     description: Create 'Substitute (ipv4 Record) Rule'.
-    execution: false
-    name: infoblox-create-ipv4-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-create-ipv6-substitute-record-rule
+    arguments:
+    - name: name
+      required: true
       description: The name of the RPZ Substitute (PTR Record) Rule object in FQDN
         format.
-      isArray: false
-      name: name
+    - name: rp_zone
       required: true
-      secret: false
-    - default: false
       description: The zone to assign the rule.
-      isArray: false
-      name: rp_zone
-      required: true
-      secret: false
-    - default: false
+    - name: comment
       description: Add a comment for this rule.
-      isArray: false
-      name: comment
-      required: false
-      secret: false
-    - default: false
-      description: The IPv6 Address of the substitute rule.
-      isArray: false
-      name: ipv6addr
+    - name: ipv6addr
       required: true
-      secret: false
-    deprecated: false
+      description: The IPv6 Address of the substitute rule.
     description: Create 'Substitute (ipv6 Record) Rule'.
-    execution: false
-    name: infoblox-create-ipv6-substitute-record-rule
-  - arguments:
-    - default: false
+  - name: infoblox-enable-rule
+    arguments:
+    - name: reference_id
+      required: true
       description: The rule reference_id ID. (could be exctracted by running the serach
         rules command)
-      isArray: false
-      name: reference_id
-      required: true
-      secret: false
-    deprecated: false
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Rule comment.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: Response policy zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
     description: Disable a rule by its reference ID (reference ID could be exctracted
       by running the serach rules command)
-    execution: false
-    name: infoblox-enable-rule
-  - arguments:
-    - default: false
+  - name: infoblox-disable-rule
+    arguments:
+    - name: reference_id
+      required: true
       description: The rule reference_id ID. (this could be exctracted by running
         the 'infoblox-search-rule' command)
-      isArray: false
-      name: reference_id
-      required: true
-      secret: false
-    deprecated: false
     description: Disable a rule by its reference ID (this could be exctracted by running
       the 'infoblox-search-rule' command)
-    execution: false
-    name: infoblox-disable-rule
-  - arguments:
-    - default: false
-      description: Infoblox object type
-      isArray: false
-      name: object_type
+  - name: infoblox-get-object-fields
+    arguments:
+    - name: object_type
       required: true
-      secret: false
-    deprecated: false
+      description: Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
+        command).
+    outputs:
+    - contextPath: Infoblox.ObjectFields.ObjectType
+      description: Infoblox object type.
+      type: string
+    - contextPath: Infoblox.ObjectFields.SupportedFields
+      description: List of supported fields for this object.
     description: Use this command the retreive object field names to be used later
       in the search rules command.
-    execution: false
-    name: infoblox-get-object-fields
-  - arguments:
-    - default: false
-      description: Infoblox object type (can be retreived by runing the 'infoblox-list-response-policy-zone-rules'
-        command)
-      isArray: false
-      name: object_type
+  - name: infoblox-search-rule
+    arguments:
+    - name: object_type
       required: true
-      secret: false
-    - default: false
+      description: Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules'
+        command)
+    - name: rule_name
+      required: true
       description: 'Full rule name (usually the rule name followed by its zone. Example:
         name.domain.com)'
-      isArray: false
-      name: rule_name
-      required: true
-      secret: false
-    - default: false
+    - name: output_fields
       description: Fields to include in the return object (supported object fields
         can be retrieved by running the *infoblox-get-object-fields* command)
-      isArray: false
-      name: output_fields
-      required: false
-      secret: false
-    deprecated: false
+    outputs:
+    - contextPath: Infoblox.RulesSearchResults.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.RulesSearchResults.ReferenceID
+      description: Rule reference ID.
+      type: string
+    - contextPath: Infoblox.RulesSearchResults.View
+      description: View definition.
+      type: string
     description: Search a specific rule by its name.
-    execution: false
-    name: infoblox-search-rule
-  - arguments:
-    - default: false
+  - name: infoblox-delete-rpz-rule
+    arguments:
+    - name: reference_id
+      required: true
       description: Rule reference ID (this can be retreived by running the 'infoblox-search-rule'
         command)
-      isArray: false
-      name: reference_id
-      required: true
-      secret: false
-    deprecated: false
     description: Delete a rule
-    execution: false
-    name: infoblox-delete-rpz-rule
   dockerimage: demisto/python3:3.7.3.221
-  isfetch: false
   runonce: false
-  script: '-'
-  type: python
+  subtype: python3
