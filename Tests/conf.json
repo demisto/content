@@ -1963,6 +1963,11 @@
             "fromversion": "4.5.0"
         },
         {
+            "integrations": "QRadar",
+            "playbookID": "QRadar Indicator Hunting Test",
+            "fromversion": "4.5.0"
+        },
+        {
             "integrations": "Google Key Management Service",
             "playbookID": "Google-KMS-test"
         },
