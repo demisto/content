@@ -660,7 +660,7 @@ def add_info_headers(headers, expiry):
         instance_name = calling_context.get('IntegrationInstance', '')
         auth = send_slack_request_sync(CLIENT, 'auth.test')
         team = auth.get('team', '')
-        headers['X-Content-InstanceName'] = instance_name
+        headers['X-Content-Name'] = instance_name
         headers['X-Content-TeamName'] = team
         headers['X-Content-Expiry'] = expiry if expiry else 'No expiry'
     except Exception as e:
