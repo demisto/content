@@ -1,0 +1,144 @@
+id: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found Test
+version: -1
+fromversion: 5.0.0
+name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found Test
+description: Test playbook for "Frontline.Cloud - 90 Day Old Critical Vulnerabilities
+  Found"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 2b9adb81-d7cd-41e2-8bf9-50127bb2f5bb
+    type: start
+    task:
+      id: 2b9adb81-d7cd-41e2-8bf9-50127bb2f5bb
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 250e9612-8cca-40f6-8872-acea275416d5
+    type: playbook
+    task:
+      id: 250e9612-8cca-40f6-8872-acea275416d5
+      version: -1
+      name: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
+      description: ''
+      playbookName: Frontline.Cloud - 90 Day Old Critical Vulnerabilities Found
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: ed3ed95a-49e0-45b2-87bd-54ee4a89c765
+    type: regular
+    task:
+      id: ed3ed95a-49e0-45b2-87bd-54ee4a89c765
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 5b12ccd0-6ad3-4a2d-8bd8-114f6c4bdc45
+    type: regular
+    task:
+      id: 5b12ccd0-6ad3-4a2d-8bd8-114f6c4bdc45
+      version: -1
+      name: Close Investigation
+      description: Closes the current Incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 575,
+        "width": 380,
+        "x": 460,
+        "y": 100
+      }
+    }
+  }
+inputs: []
+outputs: []
