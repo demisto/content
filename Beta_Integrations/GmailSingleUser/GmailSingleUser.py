@@ -104,16 +104,18 @@ class Client:
 
     def get_http_client_with_proxy(self):
         proxies = handle_proxy()
-        https_proxy = proxies['https']
-        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-            https_proxy = 'https://' + https_proxy
-        parsed_proxy = urllib.parse.urlparse(https_proxy)
-        proxy_info = httplib2.ProxyInfo(  # disable-secrets-detection
-            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
-            proxy_host=parsed_proxy.hostname,
-            proxy_port=parsed_proxy.port,
-            proxy_user=parsed_proxy.username,
-            proxy_pass=parsed_proxy.password)
+        https_proxy = proxies.get('https')
+        proxy_info = None
+        if https_proxy:
+            if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+                https_proxy = 'https://' + https_proxy
+            parsed_proxy = urllib.parse.urlparse(https_proxy)
+            proxy_info = httplib2.ProxyInfo(  # disable-secrets-detection
+                proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+                proxy_host=parsed_proxy.hostname,
+                proxy_port=parsed_proxy.port,
+                proxy_user=parsed_proxy.username,
+                proxy_pass=parsed_proxy.password)
         return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
     def get_service(self, serviceName, version):
@@ -136,7 +138,7 @@ class Client:
                           'registration_id': AUTH_ID,
                            'encrypted_token': self.get_encrypted(REFRESH_TOKEN, ENC_KEY)})
 
-        h = httplib2.Http(disable_ssl_certificate_validation=not DISABLE_SSL)
+        h = httplib2.Http(disable_ssl_certificate_validation=DISABLE_SSL)
         dbot_response, content = h.request(TOKEN_RETRIEVAL_URL, "POST", body, {'Accept': 'application/json'})
 
         if dbot_response.status not in {200, 201}:
