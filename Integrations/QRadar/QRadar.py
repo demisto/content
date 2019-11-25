@@ -719,7 +719,7 @@ def get_search_results_command():
     context_key = demisto.args().get('output_path') if demisto.args().get(
         'output_path') else 'QRadar.Search(val.ID === "{0}").Result.{1}'.format(search_id, result_key)
     context_obj = unicode_to_str_recur(raw_search_results[result_key])
-    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', '\n')
+    human_readable = tableToMarkdown(title, context_obj, None).replace('\t', ' ')
     return get_entry_for_object(title, context_obj, raw_search_results, demisto.args().get('headers'), context_key,
                                 human_readable=human_readable)
 
