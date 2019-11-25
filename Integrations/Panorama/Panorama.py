@@ -3578,7 +3578,7 @@ def build_array_query(query, arg_string, string, operator):
     return query
 
 
-def build_logs_query(address_src=None, address_dst=None,
+def build_logs_query(address_src=None, address_dst=None, ip_=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
@@ -3588,6 +3588,12 @@ def build_logs_query(address_src=None, address_dst=None,
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, address_dst, 'addr.dst', 'in')
+    if ip_:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query = build_array_query(query, ip_, 'addr.src', 'in')
+        query += ' or '
+        query = build_array_query(query, ip_, 'addr.dst', 'in')
     if zone_src:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3625,7 +3631,7 @@ def build_logs_query(address_src=None, address_dst=None,
 
 
 @logger
-def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                         zone_src, zone_dst, time_generated, action,
                         port_dst, rule, url, filedigest):
     params = {
@@ -3642,7 +3648,9 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     if query:
         params['query'] = query
     else:
-        params['query'] = build_logs_query(address_src, address_dst,
+        if ip_ and (address_src or address_dst):
+            return_error('The ip argument cannot be used with the address-source or the address-destination arguments.')
+        params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
                                            port_dst, rule, url, filedigest)
     if number_of_logs:
@@ -3666,6 +3674,7 @@ def panorama_query_logs_command():
     query = demisto.args().get('query')
     address_src = demisto.args().get('addr-src')
     address_dst = demisto.args().get('addr-dst')
+    ip_ = demisto.args().get('ip')
     zone_src = demisto.args().get('zone-src')
     zone_dst = demisto.args().get('zone-dst')
     time_generated = demisto.args().get('time-generated')
@@ -3681,7 +3690,7 @@ def panorama_query_logs_command():
                   or time_generated or action or port_dst or rule or url or filedigest):
         return_error('Use the free query argument or the fixed search parameters arguments to build your query')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
                                  port_dst, rule, url, filedigest)
 
@@ -3716,36 +3725,37 @@ def panorama_check_logs_status_command():
     """
     Check query logs status
     """
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
-        else:
-            return_error('Query logs failed')
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed')
 
-    query_logs_status_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        query_logs_status_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
-    if result['response']['result']['job']['status'] == 'FIN':
-        query_logs_status_output['Status'] = 'Completed'
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response')
+        if result['response']['result']['job']['status'] == 'FIN':
+            query_logs_status_output['Status'] = 'Completed'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
-                                         removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
-    })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
+        })
 
 
 def prettify_log(log):
@@ -3840,64 +3850,65 @@ def prettify_logs(logs):
 
 
 def panorama_get_logs_command():
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
     ignore_auto_extract = demisto.args().get('ignore_auto_extract') == 'true'
-    log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
-    if isinstance(log_type_dt, list):
-        log_type = log_type_dt[0]
-    else:
-        log_type = log_type_dt
-
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
+        log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
+        if isinstance(log_type_dt, list):
+            log_type = log_type_dt[0]
         else:
-            return_error('Query logs failed')
+            log_type = log_type_dt
 
-    query_logs_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
+        query_logs_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if result['response']['result']['job']['status'] != 'FIN':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
-                                             ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-        })
-    else:  # FIN
-        query_logs_output['Status'] = 'Completed'
-        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
-                or 'logs' not in result['response']['result']['log']:
-            return_error('Missing logs in response')
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response')
 
-        logs = result['response']['result']['log']['logs']
-        if logs['@count'] == '0':
-            demisto.results('No ' + log_type + ' logs matched the query')
-        else:
-            pretty_logs = prettify_logs(logs['entry'])
-            query_logs_output['Logs'] = pretty_logs
+        if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True),
-                'IgnoreAutoExtract': ignore_auto_extract,
+                'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
+                                                 ['JobID', 'Status'], removeNull=True),
                 'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
             })
+        else:  # FIN
+            query_logs_output['Status'] = 'Completed'
+            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
+                    or 'logs' not in result['response']['result']['log']:
+                return_error('Missing logs in response')
+
+            logs = result['response']['result']['log']['logs']
+            if logs['@count'] == '0':
+                demisto.results('No ' + log_type + ' logs matched the query')
+            else:
+                pretty_logs = prettify_logs(logs['entry'])
+                query_logs_output['Logs'] = pretty_logs
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': result,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True),
+                    'IgnoreAutoExtract': ignore_auto_extract,
+                    'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+                })
 
 
 ''' Security Policy Match'''
