@@ -1,0 +1,95 @@
+id: QRadar Indicator Hunting Test
+version: -1
+name: QRadar Indicator Hunting Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
+    type: start
+    task:
+      id: e85881b9-a5a8-439b-8b1e-fc232c41d6fa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 5fff04ab-b065-4fdd-8bb4-3d70cc30fab6
+    type: playbook
+    task:
+      id: 5fff04ab-b065-4fdd-8bb4-3d70cc30fab6
+      version: -1
+      name: QRadar Indicator Hunting
+      playbookName: QRadar Indicator Hunting
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      IPAddress:
+        simple: 8.8.8.8,9.9.9.9
+      MD5:
+        simple: ababababababa,cdcdcdcdcdcdcdcd
+      QradarIPfield:
+        simple: ipsrc,ipdst
+      QradarMD5Field:
+        simple: md5,md5test
+      QradarSHA1Field:
+        simple: sha1,sha1test
+      QradarSHA256Field:
+        simple: sha256,sha256test
+      SHA1:
+        simple: qaqaqaqaqaqaqaqaqaqa,wswswswswswswswswswsws
+      SHA256:
+        simple: lklklklklklklklklklklklklklklklklklklk,jhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjhjh
+      SelectFields:
+        simple: '*'
+      TimeFrame:
+        simple: LAST 7 DAYS
+      URLDomain:
+        simple: google.com,walla.com
+      URLDomainField:
+        simple: url,domain
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 295,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
