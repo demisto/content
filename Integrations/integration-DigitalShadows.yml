@@ -793,7 +793,9 @@ script:
         // remove duplicated incidents from second API call that resulted in the first call
         if (incidents) {
             incidents = incidents.concat(temp.filter(function(inc) {
-               return ids.indexOf(JSON.parse(inc.rawJSON).id) == -1;
+               incidentId = JSON.parse(inc.rawJSON).id;
+               notDuplicatedIncident = (ids.indexOf(incidentId) == -1);
+               return notDuplicatedIncident;
             }));
         }
         else {
