@@ -293,8 +293,8 @@ tasks:
     task:
       id: a3537fbe-f160-4ae6-8334-e6fedd9e7962
       version: -1
-      name: Filter JobID
-      description: Filter JobID
+      name: Is there a JobID for a query?
+      description: Is there a JobID for a query?
       type: condition
       iscommand: false
       brand: ""
