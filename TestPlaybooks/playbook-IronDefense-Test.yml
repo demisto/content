@@ -1,0 +1,761 @@
+id: IronDefense - Test
+version: -1
+name: IronDefense Test
+description: Playbook to test the IronDefense Integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6d74573f-a262-4138-8408-c27b296a346e
+    type: start
+    task:
+      description: ""
+      id: 6d74573f-a262-4138-8408-c27b296a346e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 13d204a3-4db5-40d9-845f-7b9529893c37
+    type: regular
+    description: ""
+    task:
+      id: 13d204a3-4db5-40d9-845f-7b9529893c37
+      version: -1
+      name: Choose analyst
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 2e02327f-facb-45cc-8df1-8f490a185722
+    description: ""
+    type: regular
+    task:
+      id: 2e02327f-facb-45cc-8df1-8f490a185722
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Default Enrichment Playbook
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    description: ""
+    taskid: feda1c00-d9dd-46ba-8700-3da29e450cc3
+    type: collection
+    task:
+      id: feda1c00-d9dd-46ba-8700-3da29e450cc3
+      version: -1
+      name: Rate the Incident
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Rate Severity for ${incident.name}
+      body:
+        simple: Use the web form to rate the severity for this incident.
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: How would you categorize the severity uncovered by this alert?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Undecided
+        - Benign
+        - Suspicious
+        - Malicious
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the severity of this incident.
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Was this behavior expected for the entities and/or communication?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - Unexpected
+        - Expected
+        - Unknown
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the behavior expectation for this incident. Choose "Unknown"
+          if the severity is undecided.
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Why do you categorize the incident behavior as marked above?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: 'Example: Bitcoin mining, Advertisements leading to unintentional/unacceptable
+          amount of data leakage.'
+        tooltip: Describe this incident.
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Share comment with IronDome Community? (Comments marked “Yes” are
+            shared across the IronDome Community. Please do not include enterprise
+            or personal information in the comments.)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Comments marked “Share Comment with IronDome Community” are shared
+          across the IronDome Community. Please do not include enterprise or personal
+          information in the comments.
+      title: Rate IronDefense Alert Severity
+      description: Rate the severity of ${incident.name}
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+  "15":
+    id: "15"
+    taskid: fa4f2594-9cc6-42af-8746-65f6395e8815
+    type: regular
+    task:
+      id: fa4f2594-9cc6-42af-8746-65f6395e8815
+      version: -1
+      name: Submit Incident Rating to IronDefense
+      script: IronDefense|||irondefense-rate-alert
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      alert_id:
+        simple: ${incident.labels.id}
+      comments:
+        simple: ${Rate IronDefense Alert Severity.Answers.2}
+      expectation:
+        simple: ${Rate IronDefense Alert Severity.Answers.1}
+      severity:
+        simple: ${Rate IronDefense Alert Severity.Answers.0}
+      share_comment_with_irondome:
+        simple: ${Rate IronDefense Alert Severity.Answers.3}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    description: ""
+  "21":
+    id: "21"
+    taskid: 8ed7117c-797e-4fe4-823d-5a7d76991b46
+    type: collection
+    task:
+      id: 8ed7117c-797e-4fe4-823d-5a7d76991b46
+      version: -1
+      name: Write Comment
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Comment Added to ${incident.name}
+      body: null
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Comments:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: Your Comment Here
+        tooltip: ""
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Share comment with IronDome?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Share comment with IronDome Community? (Comments marked “Yes” are
+          shared across the IronDome Community. Please do not include enterprise or
+          personal information in the comments.)
+      title: Add Comment to Alert
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "22":
+    id: "22"
+    taskid: f9ad5ff5-6585-4bf3-8ea2-4b943e78df51
+    type: regular
+    task:
+      id: f9ad5ff5-6585-4bf3-8ea2-4b943e78df51
+      version: -1
+      name: Submit Alert Comment to IronDefense
+      script: IronDefense|||irondefense-comment-alert
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      alert_id:
+        simple: ${incident.labels.id}
+      comment:
+        simple: ${Add Comment to Alert.Answers.0}
+      share_comment_with_irondome:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    description: ""
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 2041b26a-01a4-4ca7-8654-952213dafb79
+    type: collection
+    task:
+      id: 2041b26a-01a4-4ca7-8654-952213dafb79
+      version: -1
+      name: Set the Status
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Status set for ${incident.name}
+      body:
+        simple: Use the web form to rate the severity for this incident.
+      methods:
+      - email
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the status of this alert?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Awaiting Review
+        - Under Review
+        - Closed
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the severity of this incident.
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Comments on status change?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        fieldassociated: ""
+        placeholder: 'Example: Bitcoin mining, Advertisements leading to unintentional/unacceptable
+          amount of data leakage.'
+        tooltip: Describe the status change.
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Share comment with IronDome Community? (Comments marked “Yes” are
+            shared across the IronDome Community. Please do not include enterprise
+            or personal information in the comments.)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Comments marked “Share Comment with IronDome Community” are shared
+          across the IronDome Community. Please do not include enterprise or personal
+          information in the comments.
+      title: Set IronDefense Alert Status
+      description: Set the status of ${incident.name}
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+  "26":
+    id: "26"
+    taskid: f243d52d-56e9-4822-8cf3-0e5fed86f3bb
+    type: regular
+    task:
+      id: f243d52d-56e9-4822-8cf3-0e5fed86f3bb
+      version: -1
+      name: Submit Alert Status to IronDefense
+      script: IronDefense|||irondefense-set-alert-status
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alert_id:
+        simple: ${incident.labels.id}
+      comments:
+        simple: ${Set IronDefense Alert Status.Answers.1}
+      share_comment_with_irondome:
+        simple: ${Set IronDefense Alert Status.Answers.2}
+      status:
+        simple: ${Set IronDefense Alert Status.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 688ea72c-7d69-4020-89f9-d10717ebcfd1
+    type: regular
+    task:
+      id: 688ea72c-7d69-4020-89f9-d10717ebcfd1
+      version: -1
+      name: Close Alert in IronDefense
+      script: IronDefense|||irondefense-set-alert-status
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      alert_id:
+        simple: ${incident.labels.id}
+      comments:
+        simple: Alert closed from Demisto.
+      share_comment_with_irondome:
+        simple: "False"
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 837fa96f-7216-4e1e-8dac-98e72c37aa25
+    type: regular
+    task:
+      id: 837fa96f-7216-4e1e-8dac-98e72c37aa25
+      version: -1
+      name: Submit Observed Bad Activity
+      description: Submits an observed bad endpoint to IronDefense to create threat
+        intel rules (TIR).
+      script: IronDefense|||irondefense-report-observed-bad-activity
+      type: regular
+      iscommand: true
+      brand: IronDefense
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      activity_end_time:
+        simple: ${incident.labels.end_time}
+      activity_start_time:
+        simple: ${incident.labels.start_time}
+      description:
+        simple: ${Report Observed Bad Activity.Answers.1}
+      domain:
+        simple: ${Report Observed Bad Activity.Answers.3}
+      ip:
+        simple: ${Report Observed Bad Activity.Answers.2}
+      name:
+        simple: ${Report Observed Bad Activity.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 6cac37ef-c499-4acf-84be-9d1ca1ab95ff
+    type: collection
+    task:
+      id: 6cac37ef-c499-4acf-84be-9d1ca1ab95ff
+      version: -1
+      name: Report Observed Bad Activity
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Name of the TIR to be created
+        tooltip: Enter the name of the TIR to be created
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Description
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Describe the observed bad endpoint
+        tooltip: Enter a description of the observed bad endpoint.
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: 'IP (Found IPs: ${IP.Address})'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Enter the IP address of the observed bad endpoint.
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: 'Domain (Found domains: ${incident.labels.domains})'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        description: ""
+        placeholder: ""
+        tooltip: Enter the domain name of the observed bad endpoint.
+      title: Report Observed Bad Activity
+      description: Collects information to report observed bad activity in IronDefense.
+      sender: ""
+      expired: false
+      totalanswers: 0
+  "31":
+    id: "31"
+    taskid: b99ae222-e77f-47bb-8a65-f3d8c7daab66
+    type: condition
+    task:
+      id: b99ae222-e77f-47bb-8a65-f3d8c7daab66
+      version: -1
+      name: Is Incident Malicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Rate IronDefense Alert Severity.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    description: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: d406e1e1-229d-4f5e-8643-d45678f37cc0
+    type: condition
+    task:
+      id: d406e1e1-229d-4f5e-8643-d45678f37cc0
+      version: -1
+      name: Add Comment?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "Yes":
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2340,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Enrich
+  value:
+    simple: "True"
+  required: false
+  description: Should preform enrichment on all indicators in the incident
+outputs: []
