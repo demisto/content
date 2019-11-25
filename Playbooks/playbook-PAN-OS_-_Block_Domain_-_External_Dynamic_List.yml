@@ -1,0 +1,382 @@
+id: PAN-OS - Block Domain - External Dynamic List
+version: -1
+name: PAN-OS - Block Domain - External Dynamic List
+fromversion: 4.5.0
+description: |-
+  This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
+  It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook
+  (otherwise the list will be configured), and adds the input Domains to the relevant lists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7144823f-b498-4a71-8d20-8836daf980e2
+    type: start
+    task:
+      id: 7144823f-b498-4a71-8d20-8836daf980e2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 14e0cc74-3e4f-451a-819a-9f2a08b0b4d3
+    type: title
+    task:
+      id: 14e0cc74-3e4f-451a-819a-9f2a08b0b4d3
+      version: -1
+      name: Malicious Domains
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 707.5,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 1095a8a8-bb7c-4011-8d15-eaa165df3db1
+    type: regular
+    task:
+      id: 1095a8a8-bb7c-4011-8d15-eaa165df3db1
+      version: -1
+      name: PAN OS - Update Domain EDL
+      description: Updates the instance context with the specified list name and list
+        items, and overrides the path of the remote file with the internal list.
+      script: '|||pan-os-edl-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      add_or_remove:
+        simple: add
+      file_path:
+        complex:
+          root: inputs.DomainListName
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .txt
+      list_items:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      list_name:
+        complex:
+          root: inputs.DomainListName
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: af6ba305-dd7d-4ce1-8fe5-1dd39187ab96
+    type: regular
+    task:
+      id: af6ba305-dd7d-4ce1-8fe5-1dd39187ab96
+      version: -1
+      name: PAN-OS - Refresh Domain EDL
+      description: Refreshes the specified external dynamic list
+      script: '|||panorama-refresh-edl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      device-group: {}
+      name:
+        complex:
+          root: inputs.DomainListName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
+    type: title
+    task:
+      id: 126ef010-3b9e-403b-8f7a-0a3e27fdf3d7
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: c0322d13-3a48-41c5-8e7c-3e77b8e4a79c
+    type: condition
+    task:
+      id: c0322d13-3a48-41c5-8e7c-3e77b8e4a79c
+      version: -1
+      name: Are there Domains to update?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 707.5,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+    type: playbook
+    task:
+      id: eccab26b-ebbf-42ba-84b1-b5bce9805d8e
+      version: -1
+      name: PAN-OS EDL Setup
+      description: Sets up an external dynamic list in PAN-OS.\n If the file exists on
+        the web server, it will sync it to Demisto. Lastly, it will create an EDL object and
+        a matching rule.
+      playbookName: PAN-OS EDL Setup
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        complex:
+          root: inputs.AutoCommit
+      device-group: {}
+      inbound-or-outbound-rule: {}
+      ioc-type:
+        simple: Domain
+      list-name:
+        complex:
+          root: inputs.DomainListName
+      log-forwarding-object-name:
+        complex:
+          root: inputs.LogForwarding
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.LogForwarding
+                iscontext: true
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-name: {}
+      rule-position:
+        simple: Top
+      web-server-ip:
+        complex:
+          root: inputs.EDLServerIP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+    type: condition
+    task:
+      id: 0390aedf-db29-4159-8ee7-e2f83dbddefa
+      version: -1
+      name: Is Palo Alto Networks PAN-OS EDL Management Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_9_#default#": 0.44,
+      "14_9_#default#": 0.84
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 952.5,
+        "x": 387.5,
+        "y": -210
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Malicious
+            iscontext: true
+      accessor: Name
+      transformers:
+      - operator: uniq
+  required: false
+  description: Domain to block
+- key: DomainListName
+  value:
+    simple: Demisto Remediation - Domain EDL
+  required: false
+  description: Domain list from the instance context with which to override the remote
+    file.
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Log Forwarding object name.
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: EDL server IP address.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+outputs: []
+tests:
+  - No test
