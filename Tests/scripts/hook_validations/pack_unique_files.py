@@ -45,15 +45,15 @@ class PackUniqueFilesValidator():
         """Returns the full file path to pack's file"""
         return os.path.join(self.pack_path, file_name)
 
-    def _is_pack_file_exists(self, file):
+    def _is_pack_file_exists(self, file_name):
         """Check if .secrets-ignore exists"""
-        if not os.path.isfile(self._get_pack_file_path(file)):
-            self._add_error('"{}" file does not exist, create one in the root of the pack'.format(file))
+        if not os.path.isfile(self._get_pack_file_path(file_name)):
+            self._add_error('"{}" file does not exist, create one in the root of the pack'.format(file_name))
             return False
 
         return True
 
-    def _open_and_read_file_content(self, file_name):
+    def _read_file_content(self, file_name):
         """Open & Read a file object's content throw exception if can't"""
         try:
             with io.open(self._get_pack_file_path(file_name), mode="r", encoding="utf-8") as file:
@@ -67,7 +67,7 @@ class PackUniqueFilesValidator():
 
     def _parse_file_into_list(self, file_name, delimiter='\n'):
         """Parse file's content to list, throw exception if can't"""
-        file_content = self._open_and_read_file_content(file_name)
+        file_content = self._read_file_content(file_name)
         try:
             if file_content:
                 return file_content.split(delimiter)
@@ -121,7 +121,7 @@ class PackUniqueFilesValidator():
     def _is_pack_meta_file_structure_valid(self):
         """Check if pack-metadata.json structure is json parse-able"""
         try:
-            pack_meta_file_content = self._open_and_read_file_content(self.pack_meta_file)
+            pack_meta_file_content = self._read_file_content(self.pack_meta_file)
             if pack_meta_file_content and json.loads(pack_meta_file_content):
                 return True
         except (ValueError, TypeError):
