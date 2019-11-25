@@ -66,10 +66,10 @@ tasks:
     ignoreworker: false
   '2':
     id: '2'
-    taskid: d91374ad-a405-4375-89da-51f8fe06e14d
+    taskid: cbe23583-d37e-410f-849b-aa7935b3ea15
     type: regular
     task:
-      id: d91374ad-a405-4375-89da-51f8fe06e14d
+      id: cbe23583-d37e-410f-849b-aa7935b3ea15
       version: -1
       name: frontline-get-assets (get asset that does not exists)
       description: Pull asset that does not exists within Frontline.Cloud
@@ -99,10 +99,10 @@ tasks:
     ignoreworker: false
   '3':
     id: '3'
-    taskid: 10cd7540-7b74-400c-8b00-54f34cd98499
+    taskid: 700f76bb-4e89-45c7-8c2e-c647457de847
     type: condition
     task:
-      id: 10cd7540-7b74-400c-8b00-54f34cd98499
+      id: 700f76bb-4e89-45c7-8c2e-c647457de847
       version: -1
       name: Verify Command Results
       description: Verify command results from task 'frontline-get-assets (get asset
@@ -134,10 +134,10 @@ tasks:
     ignoreworker: false
   '4':
     id: '4'
-    taskid: 5f7db6d0-385a-4a55-80eb-71e0f58b29a5
+    taskid: 8d64bb4d-a506-4eed-8730-7547144a6599
     type: regular
     task:
-      id: 5f7db6d0-385a-4a55-80eb-71e0f58b29a5
+      id: 8d64bb4d-a506-4eed-8730-7547144a6599
       version: -1
       name: Close the Investigation
       description: Closing investigation.
@@ -158,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1530
+          "y": 1420
         }
       }
     note: false
@@ -166,12 +166,12 @@ tasks:
     ignoreworker: false
   '5':
     id: '5'
-    taskid: e54799b3-b1f9-4f13-8ef5-2705a8127c41
+    taskid: d54829e6-2845-483e-84e9-72bb8a8ec98e
     type: regular
     task:
-      id: e54799b3-b1f9-4f13-8ef5-2705a8127c41
+      id: d54829e6-2845-483e-84e9-72bb8a8ec98e
       version: -1
-      name: frontline-get-vulns
+      name: frontline-get-vulns (get all vulnerabilities)
       description: Pull all vulnerability data from Frontline.Cloud
       script: '|||frontline-get-vulns'
       type: regular
@@ -192,7 +192,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1090
         }
       }
     note: false
@@ -200,10 +200,10 @@ tasks:
     ignoreworker: false
   '6':
     id: '6'
-    taskid: 57a0484c-830f-431f-8deb-5722865b31f4
+    taskid: 25732b98-143a-47a7-870a-415c1e936987
     type: condition
     task:
-      id: 57a0484c-830f-431f-8deb-5722865b31f4
+      id: 25732b98-143a-47a7-870a-415c1e936987
       version: -1
       name: Verify Command Results
       description: Verify command results from task 'frontline-get-vulns'.
@@ -226,7 +226,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1255
         }
       }
     note: false
@@ -234,10 +234,10 @@ tasks:
     ignoreworker: false
   '8':
     id: '8'
-    taskid: ba3a668c-d982-414f-865d-5d51469e196f
+    taskid: 14336845-da8b-4536-8f76-e0276650b9a5
     type: regular
     task:
-      id: ba3a668c-d982-414f-865d-5d51469e196f
+      id: 14336845-da8b-4536-8f76-e0276650b9a5
       version: -1
       name: frontline-get-assets (get all assets)
       description: Pull all asset data from Frontline.Cloud
@@ -266,10 +266,10 @@ tasks:
     ignoreworker: false
   '9':
     id: '9'
-    taskid: bfce8f7a-eb07-4457-891e-57e299bf3526
+    taskid: 2bcee246-a649-4dec-823b-e04f9e4cc884
     type: condition
     task:
-      id: bfce8f7a-eb07-4457-891e-57e299bf3526
+      id: 2bcee246-a649-4dec-823b-e04f9e4cc884
       version: -1
       name: Verify Command Results
       description: Verify command results from task 'frontline-get-assets (get all
@@ -293,7 +293,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 905
         }
       }
     note: false
@@ -304,7 +304,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1575,
+        "height": 1465,
         "width": 380,
         "x": 50,
         "y": 50

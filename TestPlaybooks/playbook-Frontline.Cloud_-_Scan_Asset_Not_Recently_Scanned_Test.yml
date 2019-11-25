@@ -1,0 +1,139 @@
+id: Frontline.Cloud - Scan Asset Not Recently Scanned Test
+version: -1
+fromversion: 5.0.0
+name: Frontline.Cloud - Scan Asset Not Recently Scanned Test
+description: Test playbook for "Frontline.Cloud - Scan Asset Not Recently Scanned"
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 949f2774-525b-41ee-8c99-27343f08d4ca
+    type: start
+    task:
+      id: 949f2774-525b-41ee-8c99-27343f08d4ca
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 825c303c-f2d7-4ea3-8be7-b2a38b91275d
+    type: regular
+    task:
+      id: 825c303c-f2d7-4ea3-8be7-b2a38b91275d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 1899b669-799d-4bd8-8b93-4650bb668864
+    type: playbook
+    task:
+      id: 1899b669-799d-4bd8-8b93-4650bb668864
+      version: -1
+      name: Frontline.Cloud - Scan Asset Not Recently Scanned
+      playbookName: Frontline.Cloud - Scan Asset Not Recently Scanned
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 5609be36-d2bd-4fff-85f6-93583eaa3c27
+    type: regular
+    task:
+      id: 5609be36-d2bd-4fff-85f6-93583eaa3c27
+      version: -1
+      name: Close Investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 615,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
