@@ -5,14 +5,9 @@ from CommonServerUserPython import *
 
 def empty_list_context(items, list_name):
     ec = {'List.In': [], 'List.NotIn': items}
+    human_readable = 'The list ' + list_name + ' is empty'
 
-    return {
-        'ContentsFormat': formats['text'],
-        'Type': entryTypes['note'],
-        'HumanReadable': 'The list ' + list_name + ' is empty',
-        'Contents': None,
-        'EntryContext': ec
-    }
+    return human_readable, ec
 
 
 def build_filtered_data(lst, items, ignore_case, match_exact, regex_ignore_case_flag):
@@ -25,7 +20,7 @@ def build_filtered_data(lst, items, ignore_case, match_exact, regex_ignore_case_
     for item in items:
         if match_exact:
             if ignore_case:
-                if not item.lower() in list_to_lowercase:
+                if item.lower() not in list_to_lowercase:
                     continue
             else:
                 if item not in lst:
@@ -60,16 +55,8 @@ def filter_list(lst, items, ignore_case, match_exact, list_name):
                                                                          regex_ignore_case_flag)
 
     ec = {'List.In': white_listed, 'List.NotIn': not_white_listed}
-    contents = {'inList': white_listed, 'notInList': not_white_listed}
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': contents,
-        'HumanReadable': human_readable,
-        'HumanReadableFormat': formats['markdown'],
-        'EntryContext': ec
-    }
+    return human_readable, ec
 
 
 def main():
@@ -86,7 +73,8 @@ def main():
     if not isinstance(items, list):
         items = items.split(',')
 
-    return_outputs(filter_list(lst, items, ignore_case, match_exact, list_name))
+    human_readable, ec = filter_list(lst, items, ignore_case, match_exact, list_name)
+    return_outputs(human_readable, ec, None)
 
 
 # python2 uses __builtin__ python3 uses builtins
