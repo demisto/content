@@ -606,7 +606,7 @@ def check_for_answers(now: datetime):
         question['last_poll_time'] = now_string
 
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-        add_info_headers(headers)
+        add_info_headers(headers, question.get('expiry'))
 
         body = {
             'token': BOT_TOKEN,
@@ -653,7 +653,7 @@ def check_for_answers(now: datetime):
     set_to_latest_integration_context('questions', questions)
 
 
-def add_info_headers(headers):
+def add_info_headers(headers, expiry):
     try:
         calling_context = demisto.callingContext.get('context', {})
         instance_name = calling_context.get('IntegrationInstance', '')
@@ -661,6 +661,7 @@ def add_info_headers(headers):
         team = auth.get('team', '')
         headers['InstanceName'] = instance_name
         headers['TeamName'] = team
+        headers['Expiry'] = expiry if expiry else 'No expiry'
     except Exception as e:
         demisto.error('Failed getting integration info: {}'.format(str(e)))
 
