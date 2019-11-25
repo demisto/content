@@ -401,12 +401,9 @@ script:
       type: Number
   - arguments:
     - default: false
-      defaultValue: limit
       description: User ID or principal ID (mostly email address).
       isArray: false
       name: user_id
-      predefined:
-      - ''
       required: true
       secret: false
     - default: false
@@ -566,7 +563,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Movies a message to a different folder.
+    description: Moves a message to a different folder.
     execution: false
     name: msgraph-mail-move-email
     outputs:
