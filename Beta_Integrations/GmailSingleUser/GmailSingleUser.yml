@@ -43,7 +43,7 @@ configuration:
   required: true
   type: 4
 description: Gmail API based of OAuth 2.0
-display: Gmail Single User Beta
+display: Gmail Single User (Beta)
 name: Gmail Single User
 script:
   commands:
