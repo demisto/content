@@ -1,4 +1,4 @@
-Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved questions, packages and 
+Integration with Tanium REST API. Available from Tanium version 7.3.0. You can manage questions, actions, saved questions, packages and sensor information.
 
 ## Configuration Parameters
 
