@@ -1,7 +1,7 @@
-id: Extract Indicators From File - Generic v3 - Test
+id: Extract Indicators From File - Generic v2 - Test
 version: -1
 fromversion: 4.5.0
-name: Extract Indicators From File - Generic v3 - Test
+name: Extract Indicators From File - Generic v2 - Test
 description: |-
   A test playbook for extracting indicators from a file.
   Supported file types:
@@ -664,8 +664,8 @@ tasks:
     task:
       id: 950f9080-f2b8-427e-8ede-0cec74bf04b8
       version: -1
-      name: Extract Indicators From File - Generic v3
-      playbookName: Extract Indicators From File - Generic v3
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
