@@ -1,25 +1,24 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Traps",
 		"Malware"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "agentid",
+	"cliName": "threatactor",
 	"closeForm": false,
 	"columns": null,
 	"content": true,
 	"defaultRows": null,
-	"description": "Agent ID",
+	"description": "Threat Actor",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_agentid",
+	"id": "incident_threatactor",
 	"isReadOnly": false,
 	"locked": false,
-	"name": "Agent ID",
+	"name": "Threat Actor",
 	"neverSetAsRequired": false,
 	"ownerOnly": false,
 	"placeholder": "",
@@ -35,6 +34,5 @@
 	"unsearchable": false,
 	"useAsKpi": false,
 	"validationRegex": "",
-	"version": -1,
-	"fromVersion": "5.0.0"
+	"version": -1
 }
