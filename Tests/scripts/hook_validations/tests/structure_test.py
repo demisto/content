@@ -69,7 +69,7 @@ class TestStructureValidator:
     INPUTS_IS_PATH_VALID = [
         ("Reports/report-sade.json", True),
         ("Notinregex/report-sade.json", False),
-        ("Packs/Integrations/Cymon/Cymon.yml", True),
+        ("Packs/Test/Integrations/Cymon/Cymon.yml", True),
     ]
 
     @pytest.mark.parametrize('path, answer', INPUTS_IS_PATH_VALID)
@@ -87,7 +87,7 @@ class TestStructureValidator:
         (VALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, True),
         (INVALID_DASHBOARD_PATH, TestValidators.DASHBOARD_TARGET, False),
         (VALID_TEST_PLAYBOOK_PATH, TestValidators.PLAYBOOK_TARGET, True),
-        (VALID_INTEGRATION_TEST_PATH, "Integrations/integration-test.yml", True),
+        (VALID_INTEGRATION_TEST_PATH, TestValidators.PLAYBOOK_TARGET, True),
         (INVALID_PLAYBOOK_PATH, TestValidators.INTEGRATION_TARGET, False),
     ]  # type: List[Tuple[str, str, bool]]
 
@@ -121,7 +121,8 @@ class TestGeneral:
         TestValidators.WIDGET_TARGET,
         TestValidators.PLAYBOOK_TARGET,
         TestValidators.INTEGRATION_TARGET,
-        TestValidators.INCIDENT_FIELD_TARGET
+        TestValidators.INCIDENT_FIELD_TARGET,
+        TestValidators.PLAYBOOK_PACK_TARGET,
     ]
 
     @pytest.mark.parametrize('target', INPUTS)

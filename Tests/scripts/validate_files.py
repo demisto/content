@@ -233,29 +233,7 @@ class FilesValidator(object):
 
             # Script validator
             elif structure_validator.scheme_name == 'script':
-                script_validator = ScriptValidator(structure_validator)
-                if is_backward_check and not script_validator.is_backward_compatible():
-                    self._is_valid = False
-                if not script_validator.is_valid_file():
-                    self._is_valid = False
-
-                if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
-                                                                  is_integration=False)
-                    if not docker_image_validator.is_docker_image_valid():
-                        self._is_valid = False
-
-            elif checked_type(file_path, PACKAGE_SCRIPTS_REGEXES):
-                yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-                script_validator = ScriptValidator(structure_validator)
-                if is_backward_check and not script_validator.is_backward_compatible():
-                    self._is_valid = False
-
-                if is_python_file:
-                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
-                                                                  is_integration=False)
-                    if not docker_image_validator.is_docker_image_valid():
-                        self._is_valid = False
+                self.validate_script(structure_validator, is_python_file, is_python_file)
 
             elif checked_type(file_path, [IMAGE_REGEX]):
                 image_validator = ImageValidator(file_path)
@@ -520,8 +498,24 @@ class FilesValidator(object):
 
     def validate_script(self, structure, is_backward_check=True, is_contain_python_script=False):
         # type: (StructureValidator, bool, bool) -> bool
+        script_validator = self._is_valid_integration_or_script(structure, ScriptValidator, is_contain_python_script)
         file_path = structure.file_path
-        return True
+        if is_backward_check and not script_validator.is_backward_compatible():
+            self._is_valid = False
+        if not script_validator.is_valid_file():
+            self._is_valid = False
+        elif checked_type(file_path, PACKAGE_SCRIPTS_REGEXES):
+        yml_path, _ = get_script_package_data(os.path.dirname(file_path))
+        script_validator = ScriptValidator(structure_validator)
+        if is_backward_check and not script_validator.is_backward_compatible():
+            self._is_valid = False
+
+        if is_python_file:
+            docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                          is_integration=False)
+            if not docker_image_validator.is_docker_image_valid():
+                self._is_valid = False
+            return True
 
 
 def main():
