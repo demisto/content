@@ -192,7 +192,7 @@ script:
     - contextPath: Gmail.SentMail.MailBox
       description: The mailbox from which the mail was sent.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.3905
+  dockerimage: demisto/google-api-py3:1.0.0.4238
   isfetch: true
   longRunning: false
   longRunningPort: false
