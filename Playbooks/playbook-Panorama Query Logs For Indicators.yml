@@ -1,7 +1,7 @@
 id: Panorama Query Logs For Indicators
 version: -1
-name: Panorama Query Logs For Indicators
 fromversion: 4.5.0
+name: Panorama Query Logs For Indicators
 description: 'Query Panorama Logs of types in one playbook: traffic, threat, url,
   data-filtering and wildfire. The playbook accepts inputs such as IP. hash, url.'
 starttaskid: "0"
@@ -33,10 +33,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 60a905cf-6b1b-4bd0-841a-8977b056bb9b
+    taskid: eebbd7e1-3e02-4f71-8ddb-c01eec4636f6
     type: condition
     task:
-      id: 60a905cf-6b1b-4bd0-841a-8977b056bb9b
+      id: eebbd7e1-3e02-4f71-8ddb-c01eec4636f6
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
       description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
@@ -69,14 +69,6 @@ tasks:
                     right:
                       value:
                         simple: Panorama
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Panorama V2
                 - - operator: isEqualString
                     left:
                       value:
