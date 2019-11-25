@@ -48,7 +48,7 @@ class PackUniqueFilesValidator():
     def _is_pack_file_exists(self, file):
         """Check if .secrets-ignore exists"""
         if not os.path.isfile(self._get_pack_file_path(file)):
-            self._add_error('"{}" file does not exist, create one in the root of the pack.'.format(file))
+            self._add_error('"{}" file does not exist, create one in the root of the pack'.format(file))
             return False
 
         return True
@@ -121,10 +121,9 @@ class PackUniqueFilesValidator():
     def _is_pack_meta_file_structure_valid(self):
         """Check if pack-metadata.json structure is json parse-able"""
         try:
-            pack_meta_file_content = self._open_and_read_file_content(self.pack_meta_file)
-            if pack_meta_file_content and json.loads(pack_meta_file_content):
+            if json.loads(self._open_and_read_file_content(self.pack_meta_file)):
                 return True
-        except ValueError:
+        except (ValueError, TypeError):
             self._add_error('Could not parse {} file contents to json format'.format(self.pack_meta_file))
 
         return False
