@@ -3,13 +3,8 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-def empty_list_context(lst, items, list_name):
-    not_white_listed = []  # type: list
-
-    for item in items:
-        not_white_listed.append(item)
-
-    ec = {'List.In': [], 'List.NotIn': not_white_listed}
+def empty_list_context(items, list_name):
+    ec = {'List.In': [], 'List.NotIn': items}
 
     return {
         'ContentsFormat': formats['text'],
@@ -26,10 +21,11 @@ def build_filtered_data(lst, items, ignore_case, match_exact, regex_ignore_case_
     human_readable = ''
 
     # fill whitelisted array with all the the values that match the regex items in listname argument
+    list_to_lowercase = [list_item.lower().strip() for list_item in lst]
     for item in items:
         if match_exact:
             if ignore_case:
-                if not item.lower() in [list_item.lower().strip() for list_item in lst]:
+                if not item.lower() in list_to_lowercase:
                     continue
             else:
                 if item not in lst:
@@ -55,7 +51,7 @@ def build_filtered_data(lst, items, ignore_case, match_exact, regex_ignore_case_
 def filter_list(lst, items, ignore_case, match_exact, list_name):
     # If the list is empty
     if not lst[0]['Contents']:
-        return empty_list_context(lst, items, list_name)
+        return empty_list_context(items, list_name)
 
     lst = lst[0]['Contents'].split(',')
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
@@ -80,7 +76,7 @@ def main():
     list_name = demisto.args()['listname']
     ignore_case = demisto.args().get('ignorecase', '').lower() == 'yes'
     match_exact = demisto.args().get('matchexact', '').lower() == 'yes'
-    items = demisto.args().get('values', '')
+    items = argToList(demisto.args().get('values'))
 
     lst = demisto.executeCommand('getList', {'listName': list_name})
 
@@ -90,9 +86,9 @@ def main():
     if not isinstance(items, list):
         items = items.split(',')
 
-    demisto.results(filter_list(lst, items, ignore_case, match_exact, list_name))
+    return_outputs(filter_list(lst, items, ignore_case, match_exact, list_name))
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in ('__builtin__', 'builtins'):
     main()
