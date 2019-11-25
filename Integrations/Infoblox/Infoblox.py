@@ -188,7 +188,7 @@ class Client(BaseClient):
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
         suffix = 'zone_rp'
-        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_CREATE_RULE)
+        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
 
     def create_rpz_rule(self, rule_type: str, object_type: str, name: str, rp_zone: str, substitute_name: str,
                         comment=None) -> Dict:
