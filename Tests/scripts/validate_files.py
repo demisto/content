@@ -22,7 +22,9 @@ from typing import Type, Union
 
 import yaml
 
-from Tests.scripts.hook_validations.base_validator import BaseValidator
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
@@ -38,9 +40,7 @@ from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: 
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
     get_yaml, filter_packagify_changes, collect_ids, str2bool, get_matching_regex  # noqa: E402
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
-sys.path.append(CONTENT_DIR)
+
 CODE_TYPES_VALIDATORS = Union[Type[ScriptValidator], Type[IntegrationValidator]]
 CODE_VALIDATORS = Union[ScriptValidator, IntegrationValidator]
 
