@@ -654,6 +654,7 @@ def check_for_answers(now: datetime):
 
 
 def add_info_headers(headers, expiry):
+    # pylint: disable=no-member
     try:
         calling_context = demisto.callingContext.get('context', {})  # type: ignore[attr-defined]
         instance_name = calling_context.get('IntegrationInstance', '')
