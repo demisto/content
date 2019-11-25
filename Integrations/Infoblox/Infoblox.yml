@@ -237,6 +237,25 @@ script:
       description: Add a comment for this rule.
     - name: substitute_name
       description: The substitute name to assign (In case of substitute domain only)
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create response policy rule
   - name: infoblox-create-a-substitute-record-rule
     arguments:
@@ -251,6 +270,25 @@ script:
       description: Add a comment for this rule.
     - name: ipv4addr
       description: The IPv4 address of the substitute rule.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (A Record) Rule'.
   - name: infoblox-create-aaaa-substitute-record-rule
     arguments:
@@ -265,6 +303,25 @@ script:
       description: Add a comment for this rule.
     - name: ipv6addr
       description: The IPv6 address of the substitute rule.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (AAAA Record) Rule'.
   - name: infoblox-create-mx-substitute-record-rule
     arguments:
@@ -284,6 +341,25 @@ script:
     - name: preference
       required: true
       description: Preference value, 0 to 65535 (inclusive).
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (MX Record) Rule'.
   - name: infoblox-create-naptr-substitute-record-rule
     arguments:
@@ -309,6 +385,25 @@ script:
       description: The replacement field of the Substitute (NAPTR Record) Rule object.
         For nonterminal NAPTR records, this field specifies the next domain name to
         look up.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (NAPTR Record) Rule'.
   - name: infoblox-create-ptr-substitute-record-rule
     arguments:
@@ -329,6 +424,25 @@ script:
       description: The IPv4 Address of the substitute rule.
     - name: ipv6addr
       description: The IPv6 Address of the substitute rule.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (PTR Record) Rule'.
   - name: infoblox-create-srv-substitute-record-rule
     arguments:
@@ -357,6 +471,25 @@ script:
       required: true
       description: The weight of the Substitute (SRV Record) Rule. Valid values are
         from 0 to 65535 (inclusive).
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (SRV Record) Rule'.
   - name: infoblox-create-txt-substitute-record-rule
     arguments:
@@ -373,6 +506,25 @@ script:
       required: true
       description: Text associated with the record. To enter leading, trailing, or
         embedded spaces in the text, add quotes around the text to preserve the spaces.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (txt Record) Rule'.
   - name: infoblox-create-ipv4-substitute-record-rule
     arguments:
@@ -388,6 +540,25 @@ script:
     - name: ipv4addr
       required: true
       description: The IPv4 Address of the substitute rule.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (ipv4 Record) Rule'.
   - name: infoblox-create-ipv6-substitute-record-rule
     arguments:
@@ -403,6 +574,25 @@ script:
     - name: ipv6addr
       required: true
       description: The IPv6 Address of the substitute rule.
+    outputs:
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+      description: Rule name.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+      description: Is this rule disabled or not.
+      type: boolean
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+      description: Comment for this rule.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Type
+      description: Object type as used in Infoblox.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+      description: View definition.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+      description: The zone to which this rule belongs to.
+      type: string
     description: Create 'Substitute (ipv6 Record) Rule'.
   - name: infoblox-enable-rule
     arguments:
