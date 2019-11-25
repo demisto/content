@@ -26,7 +26,7 @@ class TestValidators:
     PLAYBOOK_TARGET = "Playbooks/playbook-test.yml"
     INTEGRATION_TARGET = "TestPlaybooks/integration-test.yml"
     INCIDENT_FIELD_TARGET = "IncidentFields/incidentfield-test.json"
-    PLAYBOOK_TARGET = "./Playbooks/playbook-test.yml"
+    PLAYBOOK_TARGET = ".Packs/Int/Playbooks/playbook-test.yml"
     SCRIPT_TARGET = "./Scripts/script-test.yml"
     INPUTS_IS_VALID_VERSION = [
         (VALID_LAYOUT_PATH, LAYOUT_TARGET, True, LayoutValidator),
@@ -64,3 +64,14 @@ class TestValidators:
         structure = StructureValidator(source)
         validator = validator(structure)
         assert validator.is_valid_version() is answer
+
+    @pytest.mark.parametrize('source, target, answer, validator', INPUTS_IS_VALID_VERSION)
+    def test_is_file_valid(self, source, target, answer, validator):
+        # type: (str, str, Any, Type[BaseValidator]) -> None
+        try:
+            copyfile(source, target)
+            structure = StructureValidator(source)
+            validator = validator(structure)
+            assert validator.is_valid_file(validate_rn=False) is answer
+        finally:
+            os.remove(target)

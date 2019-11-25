@@ -25,7 +25,7 @@ configuration:
   required: true
   type: 4
 - defaultvalue: 'true'
-  display: Trust any certificate (insecure)
+  display: Trust any certificate (insecure)aa
   name: insecure
   required: false
   type: 8

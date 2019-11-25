@@ -265,10 +265,12 @@ def get_latest_release_notes_text(rn_path):
     return new_rn if new_rn else None
 
 
-def checked_type(file_path, compared_regexes=None):
+def checked_type(file_path, compared_regexes=None, return_regex=False):
     compared_regexes = compared_regexes or CHECKED_TYPES_REGEXES
     for regex in compared_regexes:
         if re.match(regex, file_path, re.IGNORECASE):
+            if return_regex:
+                return regex
             return True
     return False
 
@@ -333,8 +335,4 @@ def get_matching_regex(string_to_match, regexes):
     Returns:
         matching regex if exists, else None
     """
-    regexes_to_match = regexes if isinstance(regexes, list) else [regexes]
-    for regex in regexes_to_match:
-        if re.search(regex, string_to_match):
-            return regex
-    return None
+    return checked_type(string_to_match, regexes, return_regex=True)

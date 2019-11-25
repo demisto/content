@@ -8,7 +8,7 @@
 	"cliName": "accountid",
 	"closeForm": false,
 	"columns": null,
-	"content": true,
+	"content": false,
 	"defaultRows": null,
 	"description": "",
 	"editForm": true,

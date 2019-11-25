@@ -11,18 +11,18 @@ Note - if it is run for all the files in the repo it won't check releaseNotes, u
 for that task.
 """
 from __future__ import print_function
-import os
-import re
-import sys
+
+import argparse
 import glob
 import logging
-import argparse
+import os
 import subprocess
+import sys
+from typing import Type, Union
+
 import yaml
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
-sys.path.append(CONTENT_DIR)
+from Tests.scripts.hook_validations.base_validator import BaseValidator
 
 from Tests.scripts.constants import *  # noqa: E402
 from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
@@ -34,8 +34,15 @@ from Tests.scripts.hook_validations.structure import StructureValidator  # noqa:
 from Tests.scripts.hook_validations.integration import IntegrationValidator  # noqa: E402
 from Tests.scripts.hook_validations.description import DescriptionValidator  # noqa: E402
 from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator  # noqa: E402
+from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: E402
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    get_yaml, filter_packagify_changes, collect_ids, str2bool  # noqa: E402
+    get_yaml, filter_packagify_changes, collect_ids, str2bool, get_matching_regex  # noqa: E402
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
+sys.path.append(CONTENT_DIR)
+CODE_TYPES_VALIDATORS = Union[Type[ScriptValidator], Type[IntegrationValidator]]
+CODE_VALIDATORS = Union[ScriptValidator, IntegrationValidator]
 
 
 class FilesValidator(object):
@@ -60,20 +67,12 @@ class FilesValidator(object):
         self.id_set_validator = IDSetValidator(is_circle)
 
     @staticmethod
-    def is_py_script_or_integration(file_path):
+    def is_yml_contains_python_code(file_path):
         file_yml = get_yaml(file_path)
-        if re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('script', {}).get('type', 'javascript') != 'python':
-                return False
-
-            return True
-
-        if re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-            if file_yml.get('type', 'javascript') != 'python':
-                return False
-
-            return True
-
+        if checked_type(file_path, YML_INTEGRATION_REGEXES):
+            return file_yml.get('script', {}).get('type', '') == 'python'
+        if checked_type(file_path, YML_SCRIPT_REGEXES):
+            return file_yml.get('type', '') == 'python'
         return False
 
     @staticmethod
@@ -113,7 +112,7 @@ class FilesValidator(object):
                 continue
 
             if file_status.lower() in ['m', 'a', 'r'] and checked_type(file_path, OLD_YML_FORMAT_FILE) and \
-                    FilesValidator.is_py_script_or_integration(file_path):
+                    FilesValidator.is_yml_contains_python_code(file_path):
                 old_format_files.add(file_path)
             elif file_status.lower() == 'm' and checked_type(file_path) and not file_path.startswith('.'):
                 modified_files_list.add(file_path)
@@ -172,8 +171,8 @@ class FilesValidator(object):
         if not is_circle:
             files_string = run_command('git diff --name-status --no-merges HEAD')
             non_committed_modified_files, non_committed_added_files, non_committed_deleted_files, \
-                non_committed_old_format_files = self.get_modified_files(files_string,
-                                                                         print_ignored_files=self.print_ignored_files)
+            non_committed_old_format_files = self.get_modified_files(files_string,
+                                                                     print_ignored_files=self.print_ignored_files)
 
             all_changed_files_string = run_command('git diff --name-status {}'.format(tag))
             modified_files_from_tag, added_files_from_tag, _, _ = \
@@ -198,85 +197,73 @@ class FilesValidator(object):
 
         return modified_files, added_files, old_format_files
 
-    def validate_modified_files(self, modified_files, is_backward_check=True, old_branch='master'):
+    def validate_modified_files(self, modified_files, is_backward_check=True):
         """Validate the modified files from your branch.
 
         In case we encounter an invalid file we set the self._is_valid param to False.
 
         Args:
             modified_files (set): A set of the modified files in the current branch.
-            is_backward_check (bool): When set to True will run backward compatibility checks
-            old_branch (str): Old git branch to compare backward compatibility check to
+            is_backward_check (bool): When set to True will run backward compatibility checks.
         """
         for file_path in modified_files:
-            old_file_path = None
             if isinstance(file_path, tuple):
                 old_file_path, file_path = file_path
+            else:
+                old_file_path = file_path
+
+            is_python_file = FilesValidator.is_yml_contains_python_code(file_path)
 
             print('Validating {}'.format(file_path))
             if not checked_type(file_path):
                 print_warning('- Skipping validation of non-content entity file.')
                 continue
 
-            structure_validator = StructureValidator(file_path, is_added_file=not (False or is_backward_check),
-                                                     is_renamed=old_file_path is not None)
+            structure_validator = StructureValidator(file_path, old_file_path)
             if not structure_validator.is_valid_file():
                 self._is_valid = False
 
             if not self.id_set_validator.is_file_valid_in_set(file_path):
                 self._is_valid = False
 
-            elif re.match(INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
+            # Integration validator
+            elif structure_validator.scheme_name == 'integration':
+                self.validate_integration(structure_validator, is_backward_check=is_backward_check,
+                                          is_contain_python_script=is_python_file)
 
-                image_validator = ImageValidator(file_path)
-                if not image_validator.is_valid():
-                    self._is_valid = False
-
-                description_validator = DescriptionValidator(file_path)
-                if not description_validator.is_valid():
-                    self._is_valid = False
-
-                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path,
-                                                             old_git_branch=old_branch)
-                if is_backward_check and not integration_validator.is_backward_compatible():
-                    self._is_valid = False
-                if not integration_validator.is_valid_integration():
-                    self._is_valid = False
-
-            elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
-                description_validator = DescriptionValidator(file_path)
-                if not description_validator.is_valid_beta_description():
-                    self._is_valid = False
-                integration_validator = IntegrationValidator(file_path, old_file_path=old_file_path)
-                if not integration_validator.is_valid_beta_integration():
-                    self._is_valid = False
-
-            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE):
-                script_validator = ScriptValidator(file_path, old_file_path=old_file_path, old_git_branch=old_branch)
+            # Script validator
+            elif structure_validator.scheme_name == 'script':
+                script_validator = ScriptValidator(structure_validator)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
-                if not script_validator.is_valid_script():
+                if not script_validator.is_valid_file():
                     self._is_valid = False
 
-            elif re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE) or \
-                    re.match(SCRIPT_JS_REGEX, file_path, re.IGNORECASE):
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
+            elif checked_type(file_path, PACKAGE_SCRIPTS_REGEXES):
                 yml_path, _ = get_script_package_data(os.path.dirname(file_path))
-                script_validator = ScriptValidator(yml_path, old_file_path=old_file_path, old_git_branch=old_branch)
+                script_validator = ScriptValidator(structure_validator)
                 if is_backward_check and not script_validator.is_backward_compatible():
                     self._is_valid = False
 
-            elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=True,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
+            elif checked_type(file_path, [IMAGE_REGEX]):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
                     self._is_valid = False
 
-            elif re.match(INCIDENT_FIELD_REGEX, file_path, re.IGNORECASE):
-                incident_field_validator = IncidentFieldValidator(file_path, old_file_path=old_file_path,
-                                                                  old_git_branch=old_branch)
+            elif checked_type(file_path, JSON_ALL_INCIDENT_FIELD_REGEXES):
+                incident_field_validator = IncidentFieldValidator(structure_validator)
                 if not incident_field_validator.is_valid():
                     self._is_valid = False
                 if is_backward_check and not incident_field_validator.is_backward_compatible():
@@ -291,9 +278,10 @@ class FilesValidator(object):
             added_files (set): A set of the modified files in the current branch.
         """
         for file_path in added_files:
+            is_python_file = FilesValidator.is_yml_contains_python_code(file_path)
             print('Validating {}'.format(file_path))
 
-            structure_validator = StructureValidator(file_path, is_added_file=True)
+            structure_validator = StructureValidator(file_path)
             if not structure_validator.is_valid_file():
                 self._is_valid = False
 
@@ -320,8 +308,24 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
-                if not integration_validator.is_valid_integration():
+                if not integration_validator.is_valid_file():
                     self._is_valid = False
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
+            elif re.match(SCRIPT_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_YML_REGEX, file_path, re.IGNORECASE) or \
+                    re.match(SCRIPT_PY_REGEX, file_path, re.IGNORECASE):
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=False)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
 
             elif re.match(BETA_INTEGRATION_REGEX, file_path, re.IGNORECASE) or \
                     re.match(BETA_INTEGRATION_YML_REGEX, file_path, re.IGNORECASE):
@@ -330,8 +334,15 @@ class FilesValidator(object):
                     self._is_valid = False
 
                 integration_validator = IntegrationValidator(file_path)
-                if not integration_validator.is_valid_beta_integration(is_new=True):
+                if not integration_validator.is_valid_beta_integration():
                     self._is_valid = False
+
+                if is_python_file:
+                    docker_image_validator = DockerImageValidator(file_path, is_modified_file=False,
+                                                                  is_integration=True)
+                    if not docker_image_validator.is_docker_image_valid():
+                        self._is_valid = False
+
             elif re.match(IMAGE_REGEX, file_path, re.IGNORECASE):
                 image_validator = ImageValidator(file_path)
                 if not image_validator.is_valid():
@@ -364,6 +375,7 @@ class FilesValidator(object):
 
         Args:
             branch_name (string): The name of the branch you are working on.
+            is_backward_check (bool): Should check backwards comparability
         """
         modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
         schema_changed = False
@@ -414,6 +426,7 @@ class FilesValidator(object):
         Args:
             branch_name (string): The name of the branch we are working on.
             prev_ver (string): The name or SHA1 of the previous content version, which will be validated against.
+            is_backward_check (bool): Should check backwards comparability
 
         Returns:
             (bool). Whether the structure is valid or not.
@@ -451,9 +464,64 @@ class FilesValidator(object):
         print_color('Starting validation against {}'.format(prev_branch_sha), LOG_COLORS.GREEN)
         modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
         prev_self_valid = self._is_valid
-        self.validate_modified_files(modified_files, is_backward_check=True, old_branch=prev_branch_sha)
+        self.validate_modified_files(modified_files, is_backward_check=True)
         if no_error:
             self._is_valid = prev_self_valid
+
+    def _is_valid_integration_or_script(self, structure, validator_object, is_contain_python_script=False):
+        """Tests common functions for Scripts and Integrations.
+
+        Args:
+            structure: Structure object
+            validator_object: Integration/Script validators
+            is_contain_python_script: If the yml contains a python's script (for image
+
+        Returns:
+
+        """
+        # type: (StructureValidator, CODE_TYPES_VALIDATORS, bool) -> CODE_VALIDATORS
+        file_path = structure.file_path
+        description_validator = DescriptionValidator(file_path)
+        if not description_validator.is_valid():
+            self._is_valid = False
+
+        if is_contain_python_script:
+            docker_image_validator = DockerImageValidator(file_path, is_modified_file=True, is_integration=True)
+            if not docker_image_validator.is_docker_image_valid():
+                self._is_valid = False
+
+        validator = validator_object(structure)  # type: CODE_VALIDATORS
+        if not validator.is_valid_file():
+            self._is_valid = False
+        return validator
+
+    def validate_integration(self, structure, is_backward_check=True, is_contain_python_script=False):
+        # type: (StructureValidator, bool, bool) -> bool
+        file_path = structure.file_path
+        valid_flag = True
+        integration_validator = self._is_valid_integration_or_script(structure, IntegrationValidator,
+                                                                     is_contain_python_script)
+        if checked_type(file_path, YML_INTEGRATION_REGEXES):
+            image_validator = ImageValidator(structure.file_path)
+            if not image_validator.is_valid():
+                self._is_valid = False
+                valid_flag = False
+
+            if is_backward_check and not integration_validator.is_backward_compatible():
+                self._is_valid = False
+                valid_flag = False
+
+        # Beta integration
+        elif checked_type(file_path, YML_BETA_INTEGRATIONS_REGEXES):
+            if not integration_validator.is_valid_beta_integration():
+                self._is_valid = False
+                valid_flag = False
+        return valid_flag
+
+    def validate_script(self, structure, is_backward_check=True, is_contain_python_script=False):
+        # type: (StructureValidator, bool, bool) -> bool
+        file_path = structure.file_path
+        return True
 
 
 def main():
@@ -462,7 +530,7 @@ def main():
     This script runs both in a local and a remote environment. In a local environment we don't have any
     logger assigned, and then pykwalify raises an error, since it is logging the validation results.
     Therefore, if we are in a local env, we set up a logger. Also, we set the logger's level to critical
-    so the user won't be disturbed by non critical loggings
+    so the user won't be disturbed by non critical logging
     """
     branches = run_command('git branch')
     branch_name_reg = re.search(r'\* (.*)', branches)

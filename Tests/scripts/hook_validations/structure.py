@@ -82,7 +82,7 @@ class StructureValidator(object):
             self.is_file_id_without_slashes(),
         ]
 
-        if not self.old_file:  # In case the file is modified
+        if self.old_file:  # In case the file is modified
             answers.append(not self.is_id_modified())
             answers.append(self.is_valid_fromversion_on_modified())
         return all(answers)

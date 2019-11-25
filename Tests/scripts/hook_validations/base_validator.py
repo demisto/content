@@ -48,15 +48,14 @@ class BaseValidator(object):
 
     def is_there_release_notes(self):
         """Validate that the file has proper release notes when modified.
-        This function updates the class attribute self._is_valid instead of passing it back and forth.
+        This function updates the class attribute self._is_valid.
 
         Returns:
             (bool): is there release notes
         """
-        if self.structure_validator.is_renamed:
+        if self.old_file:
             print_warning(Errors.might_need_release_notes(self.file_path))
             return True
-
         if os.path.isfile(self.file_path):
             rn_path = get_release_notes_file_path(self.file_path)
             release_notes = get_latest_release_notes_text(rn_path)

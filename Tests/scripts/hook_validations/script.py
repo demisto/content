@@ -47,11 +47,12 @@ class ScriptValidator(BaseValidator):
             return not any(is_breaking_backwards[1:])
         return not any(is_breaking_backwards)
 
-    def is_valid_script(self):
-        # type: () -> bool
+    def is_valid_file(self, validate_rn=True):
+        # type: (bool) -> bool
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
         is_script_valid = any([
-            self.is_valid_subtype()
+            self.is_valid_subtype(),
+            super(ScriptValidator, self).is_valid_file(validate_rn)
         ])
 
         return is_script_valid

@@ -1,4 +1,4 @@
-from Tests.scripts.constants import PYTHON_SUBTYPES, INTEGRATION_CATEGORIES, Errors
+from Tests.scripts.constants import Errors, INTEGRATION_CATEGORIES, PYTHON_SUBTYPES
 from Tests.scripts.hook_validations.base_validator import BaseValidator
 from Tests.scripts.hook_validations.tests_constants import BANG_COMMAND_NAMES, DBOT_SCORES_DICT, IOC_OUTPUTS_DICT
 from Tests.test_utils import print_error, print_warning, server_version_compare, \
@@ -11,8 +11,11 @@ class IntegrationValidator(BaseValidator):
     """
 
     def is_valid_version(self):
-        # TODO: this
-        pass
+        # type: () -> bool
+        if self.current_file.get("commonfields", {}).get('version') == self.DEFAULT_VERSION:
+            return True
+        self.is_valid = False
+        return False
 
     def is_backward_compatible(self):
         # type: () -> bool
@@ -32,9 +35,10 @@ class IntegrationValidator(BaseValidator):
         ]
         return not any(answers)
 
-    def is_valid_integration(self):
-        # type: () -> bool
+    def is_valid_file(self, validate_rn=True):
+        # type: (bool) -> bool
         """Check whether the Integration is valid or not, update the _is_valid field to determine that"""
+        super(IntegrationValidator, self).is_valid_file(validate_rn)
         answers = [
             self.is_valid_subtype(),
             self.is_valid_default_arguments(),

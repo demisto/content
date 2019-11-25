@@ -23,7 +23,7 @@ class IncidentFieldValidator(BaseValidator):
 
         return not is_bc_broke
 
-    def is_valid_file(self):
+    def is_valid_file(self, validate_rn=True):
         """Check whether the Incident Field is valid or not
         """
         is_incident_field_valid = all([
@@ -47,14 +47,11 @@ class IncidentFieldValidator(BaseValidator):
             'XDR Incident ID'
         }
         for word in bad_words:
-            if name in whitelisted_field_names:
-                continue
-
-            if word in name.lower() or word in cli_name.lower():
-                print_error("The word {} cannot be used as a name/cliName, "
-                            "please update the file {}.".format(word, self.file_path))
-                return False
-
+            if name not in whitelisted_field_names:
+                if word in name.lower() or word in cli_name.lower():
+                    print_error("The word {} cannot be used as a name/cliName, "
+                                "please update the file {}.".format(word, self.file_path))
+                    return False
         return True
 
     def is_valid_content_flag(self):
