@@ -1825,10 +1825,6 @@
             "playbookID": "GoogleCloudCompute-Test"
         },
         {
-            "playbookID": "FormattingPerformance - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "AWS - S3",
             "playbookID": "97393cfc-2fc4-4dfe-8b6e-af64067fc436"
         },
@@ -1985,6 +1981,7 @@
         }
     ],
     "skipped_tests": {
+        "FormattingPerformance - Test": "Issue 20348",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "Request Debugging - Test": "Issue 20337",
         "LogRhythm-Test-Playbook": "Issue 20331",
@@ -1996,7 +1993,6 @@
         "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
-        "CheckpointFW-test": "Issue 18643",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
         "McAfee-TIE Test": "Issue #18350",
         "TestUptycs": "Issue 19750",
@@ -2052,11 +2048,11 @@
 
 
         "_comment": "~~~ INSTANCE ISSUES ~~~",
+        "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
         "McAfee NSM": "Issue 20336",
         "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
-        "Cisco ISE": "Issue 20333",
         "LogRhythmRest": "Issue 19870",
         "Fidelis Elevate Network": "Issue 20263",
         "Preempt": "Issue 20268",
