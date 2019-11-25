@@ -45,7 +45,7 @@ class TestStructureValidator:
     ]
 
     @pytest.mark.parametrize("current_file, old_file, answer, error", INPUTS_IS_ID_MODIFIED)
-    def test_is_id_modified(self, current_file, old_file, answer, error, mocker):
+    def test_is_id_modified(self, current_file, old_file, answer, error):
         validator = StructureValidator(file_path=current_file)
         with open(old_file) as f:
             validator.old_file = yaml.safe_load(f)

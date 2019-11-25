@@ -31,17 +31,18 @@ from Tests.scripts.hook_validations.id import IDSetValidator  # noqa: E402
 from Tests.scripts.hook_validations.image import ImageValidator  # noqa: E402
 from Tests.scripts.update_id_set import get_script_package_data  # noqa: E402
 from Tests.scripts.hook_validations.script import ScriptValidator  # noqa: E402
-from Tests.scripts.hook_validations.conf_json import ConfJsonValidator  # noqa: E402
+from Tests.scripts.hook_validations.conf_json import ConfJsonValidator, get_pack_name  # noqa: E402
 from Tests.scripts.hook_validations.structure import StructureValidator  # noqa: E402
 from Tests.scripts.hook_validations.integration import IntegrationValidator  # noqa: E402
 from Tests.scripts.hook_validations.description import DescriptionValidator  # noqa: E402
 from Tests.scripts.hook_validations.incident_field import IncidentFieldValidator  # noqa: E402
+from Tests.scripts.hook_validations.pack_unique_files import PackUniqueFilesValidator  # noqa: E402
 from Tests.scripts.hook_validations.docker import DockerImageValidator  # noqa: E402
 from Tests.test_utils import checked_type, run_command, print_error, print_warning, print_color, LOG_COLORS, \
-    get_yaml, filter_packagify_changes, collect_ids, str2bool, get_matching_regex  # noqa: E402
+    get_yaml, filter_packagify_changes, collect_ids, str2bool, is_file_path_in_pack  # noqa: E402
 
-CODE_TYPES_VALIDATORS = Union[Type[ScriptValidator], Type[IntegrationValidator]]
-CODE_VALIDATORS = Union[ScriptValidator, IntegrationValidator]
+CODE_TYPES_VALIDATORS = Union[Type[IntegrationValidator], Type[ScriptValidator]]
+CODE_VALIDATORS = Union[IntegrationValidator, ScriptValidator]
 
 
 class FilesValidator(object):
@@ -187,14 +188,22 @@ class FilesValidator(object):
             modified_files = modified_files - set(nc_deleted_files)
             added_files = added_files - set(nc_modified_files) - set(nc_deleted_files)
 
-            # new_added_files = set([])
-            # for added_file in added_files:
-            #     if added_file in nc_added_files:
-            #         new_added_files.add(added_file)
+        packs = self.get_packs(modified_files, added_files)
 
-            # added_files = new_added_files
+        return modified_files, added_files, old_format_files, packs
 
-        return modified_files, added_files, old_format_files
+    @staticmethod
+    def get_packs(modified_files, added_files):
+        packs = set()
+        changed_files = modified_files.union(added_files)
+        for changed_file in changed_files:
+            if isinstance(changed_file, tuple):
+                changed_file = changed_file[1]
+            pack = get_pack_name(changed_file)
+            if pack and is_file_path_in_pack(changed_file):
+                packs.add(pack)
+
+        return packs
 
     def validate_modified_files(self, modified_files, is_backward_check=True):
         """Validate the modified files from your branch.
@@ -354,7 +363,8 @@ class FilesValidator(object):
             branch_name (string): The name of the branch you are working on.
             is_backward_check (bool): Should check backwards comparability
         """
-        modified_files, added_files, old_format_files = self.get_modified_and_added_files(branch_name, self.is_circle)
+        modified_files, added_files, old_format_files, packs = self.get_modified_and_added_files(branch_name,
+                                                                                                 self.is_circle)
         schema_changed = False
         for f in modified_files:
             if isinstance(f, tuple):
@@ -368,6 +378,14 @@ class FilesValidator(object):
             self.validate_modified_files(modified_files, is_backward_check)
             self.validate_added_files(added_files)
             self.validate_no_old_format(old_format_files)
+            self.validate_pack_unique_files(packs)
+
+    def validate_pack_unique_files(self, packs):
+        for pack in packs:
+            pack_unique_files_validator = PackUniqueFilesValidator(pack)
+            if not pack_unique_files_validator.validate_pack_unique_files():
+                print_error(pack_unique_files_validator.get_errors())
+                self._is_valid = False
 
     def validate_all_files(self):
         """Validate all files in the repo are in the right format."""
@@ -439,7 +457,7 @@ class FilesValidator(object):
                 prev_branch_sha = config['jobs']['build']['environment']['GIT_SHA1']
 
         print_color('Starting validation against {}'.format(prev_branch_sha), LOG_COLORS.GREEN)
-        modified_files, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
+        modified_files, _, _, _ = self.get_modified_and_added_files(branch_sha, self.is_circle, prev_branch_sha)
         prev_self_valid = self._is_valid
         self.validate_modified_files(modified_files, is_backward_check=True)
         if no_error:
