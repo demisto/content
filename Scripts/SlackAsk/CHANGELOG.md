@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+-
 
 ## [19.10.0] - 2019-10-03
 Added support for users to reply to messages received from the Demisto integration using buttons. For more information see the integration documentation.
