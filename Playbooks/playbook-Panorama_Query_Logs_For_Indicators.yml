@@ -33,10 +33,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: 23c3f601-e186-4bb1-81e0-8a1d6c86d8c2
+    taskid: 60a905cf-6b1b-4bd0-841a-8977b056bb9b
     type: condition
     task:
-      id: 23c3f601-e186-4bb1-81e0-8a1d6c86d8c2
+      id: 60a905cf-6b1b-4bd0-841a-8977b056bb9b
       version: -1
       name: Is Palo Alto Networks PAN-OS enabled?
       description: Checks if there is a valid instance of the Palo Alto Networks PAN-OS
@@ -69,6 +69,14 @@ tasks:
                     right:
                       value:
                         simple: Panorama
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama V2
                 - - operator: isEqualString
                     left:
                       value:
@@ -333,45 +341,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
-    taskid: 4ea3262a-d39c-4e70-8b55-88bead080187
-    type: condition
-    task:
-      id: 4ea3262a-d39c-4e70-8b55-88bead080187
-      version: -1
-      name: Search ip in traffic logs?
-      description: Search ip in traffic logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "2"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: traffic
-    view: |-
-      {
-        "position": {
-          "x": 2480,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "9":
     id: "9"
     taskid: a4d30a44-1b28-464a-8c5f-19b0ffb8a8fa
@@ -412,45 +381,6 @@ tasks:
         "position": {
           "x": 830,
           "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "10":
-    id: "10"
-    taskid: cf49d876-a751-4a49-8adc-c523cb039b66
-    type: condition
-    task:
-      id: cf49d876-a751-4a49-8adc-c523cb039b66
-      version: -1
-      name: Search ip in threat logs?
-      description: Search ip in threat logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "9"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: threat
-    view: |-
-      {
-        "position": {
-          "x": 2890,
-          "y": 420
         }
       }
     note: false
@@ -498,11 +428,11 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "8"
-      - "10"
-      - "13"
-      - "15"
-      - "19"
+      - "2"
+      - "9"
+      - "14"
+      - "17"
+      - "18"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -517,45 +447,6 @@ tasks:
         "position": {
           "x": 350,
           "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "13":
-    id: "13"
-    taskid: 138e0939-babc-466a-85ba-6bda054e9031
-    type: condition
-    task:
-      id: 138e0939-babc-466a-85ba-6bda054e9031
-      version: -1
-      name: Search ip in wildfire logs?
-      description: Search ip in wildfire logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: wildfire
-    view: |-
-      {
-        "position": {
-          "x": 3300,
-          "y": 420
         }
       }
     note: false
@@ -601,68 +492,6 @@ tasks:
         "position": {
           "x": 1240,
           "y": 610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "15":
-    id: "15"
-    taskid: 738add33-11c7-43a4-8ed9-9bae9cf5301f
-    type: condition
-    task:
-      id: 738add33-11c7-43a4-8ed9-9bae9cf5301f
-      version: -1
-      name: Search ip in data logs?
-      description: Search ip in data logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "17"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: data
-    view: |-
-      {
-        "position": {
-          "x": 3700,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 15106bed-5662-4920-8bd7-fb01beee5d08
-    type: title
-    task:
-      id: 15106bed-5662-4920-8bd7-fb01beee5d08
-      version: -1
-      name: Done
-      description: Header
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3300,
-          "y": 1710
         }
       }
     note: false
@@ -758,45 +587,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "19":
-    id: "19"
-    taskid: 12dc7601-f1b2-49d7-8c8b-591502fc8156
-    type: condition
-    task:
-      id: 12dc7601-f1b2-49d7-8c8b-591502fc8156
-      version: -1
-      name: Search ip in url logs?
-      description: Search ip in url logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "16"
-      "yes":
-      - "18"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: url
-    view: |-
-      {
-        "position": {
-          "x": 4100,
-          "y": 420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "20":
     id: "20"
     taskid: 6dedc0dd-4348-455a-8a16-01de4d9b23bc
@@ -839,7 +629,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "22"
+      - "23"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -854,45 +644,6 @@ tasks:
         "position": {
           "x": -290,
           "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "22":
-    id: "22"
-    taskid: 6f541b5c-598a-4910-8868-d7630f2cebce
-    type: condition
-    task:
-      id: 6f541b5c-598a-4910-8868-d7630f2cebce
-      version: -1
-      name: Search hash in wildfire logs?
-      description: Search hash in wildfire logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "23"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: wildfire
-    view: |-
-      {
-        "position": {
-          "x": -530,
-          "y": 685
         }
       }
     note: false
@@ -962,7 +713,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1980,
+          "x": -1270,
           "y": 110
         }
       }
@@ -983,11 +734,11 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "26"
+      - "5"
       "yes":
-      - "27"
-      - "28"
-      - "29"
+      - "30"
+      - "32"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1000,148 +751,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3990,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "26":
-    id: "26"
-    taskid: 7415888c-5eef-4233-8c11-68d125fcc2f0
-    type: title
-    task:
-      id: 7415888c-5eef-4233-8c11-68d125fcc2f0
-      version: -1
-      name: Done
-      description: Header
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -2480,
-          "y": 1700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "27":
-    id: "27"
-    taskid: 98dbe110-90e3-4db5-84d5-b102908c8e20
-    type: condition
-    task:
-      id: 98dbe110-90e3-4db5-84d5-b102908c8e20
-      version: -1
-      name: Search hash in threat logs?
-      description: Search hash in threat logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "26"
-      "yes":
-      - "30"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: threat
-    view: |-
-      {
-        "position": {
-          "x": -3450,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "28":
-    id: "28"
-    taskid: cbdf569c-ef50-4a79-88b7-e6c4f42f8225
-    type: condition
-    task:
-      id: cbdf569c-ef50-4a79-88b7-e6c4f42f8225
-      version: -1
-      name: Search hash in url logs?
-      description: Search hash in url logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "26"
-      "yes":
-      - "32"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: url
-    view: |-
-      {
-        "position": {
-          "x": -2990,
-          "y": 590
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "29":
-    id: "29"
-    taskid: a00d4bf2-4754-4d1e-8b38-c2e1baf6042f
-    type: condition
-    task:
-      id: a00d4bf2-4754-4d1e-8b38-c2e1baf6042f
-      version: -1
-      name: Search hash in data logs?
-      description: Search hash in data logs?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "26"
-      "yes":
-      - "31"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: inputs.log_type
-            iscontext: true
-          right:
-            value:
-              simple: data
-    view: |-
-      {
-        "position": {
-          "x": -2480,
-          "y": 590
+          "x": -1270,
+          "y": 240
         }
       }
     note: false
@@ -1185,8 +796,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2160,
-          "y": 835
+          "x": -2100,
+          "y": 610
         }
       }
     note: false
@@ -1230,8 +841,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1320,
-          "y": 835
+          "x": -1270,
+          "y": 610
         }
       }
     note: false
@@ -1275,8 +886,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1750,
-          "y": 835
+          "x": -1680,
+          "y": 610
         }
       }
     note: false
@@ -1290,17 +901,13 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2115,
-        "width": 8470,
-        "x": -3990,
+        "width": 4530,
+        "x": -2100,
         "y": -260
       }
     }
   }
 inputs:
-- key: log_type
-  value: {}
-  required: true
-  description: 'Log type to query. can be: traffic, threat, wildfire, url or data-filtering.'
 - key: url
   value: {}
   required: false

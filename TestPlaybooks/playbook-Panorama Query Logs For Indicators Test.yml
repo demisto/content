@@ -2,15 +2,14 @@ id: Panorama Query Logs For Indicators Test
 version: -1
 name: Panorama Query Logs For Indicators Test
 description: This is a test playbook for Panorama Query Logs For Indicators
-fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bc808813-c98b-48e8-8aa6-aca287120872
+    taskid: 841bb934-7a06-4551-8b87-1a6d8240f3de
     type: start
     task:
-      id: bc808813-c98b-48e8-8aa6-aca287120872
+      id: 841bb934-7a06-4551-8b87-1a6d8240f3de
       version: -1
       name: ""
       iscommand: false
@@ -31,10 +30,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 1fd30e08-2913-4a2e-882d-87c2513a64e1
+    taskid: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
     type: title
     task:
-      id: 1fd30e08-2913-4a2e-882d-87c2513a64e1
+      id: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
       version: -1
       name: Done
       description: Header
@@ -54,10 +53,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: ea17a0ce-9bbd-4c52-8a8e-9407cd3ff013
+    taskid: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
     type: regular
     task:
-      id: ea17a0ce-9bbd-4c52-8a8e-9407cd3ff013
+      id: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
       version: -1
       name: Delete context
       description: Delete field from context
@@ -67,7 +66,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       all:
         simple: "yes"
@@ -86,17 +85,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
-    taskid: 8261ea22-c615-4c52-8eee-07de32e02ca6
+  "5":
+    id: "5"
+    taskid: 8baf8886-fd41-4ffc-8e05-9a6a5c57145c
     type: playbook
     task:
-      id: 8261ea22-c615-4c52-8eee-07de32e02ca6
+      id: 8baf8886-fd41-4ffc-8e05-9a6a5c57145c
       version: -1
-      name: Panorama Query Logs For Indicators1
-      description: 'Query Panorama Logs of types in one playbook: traffic, threat,
-        url, data-filtering and wildfire. The playbook accepts inputs such as IP.
-        hash, url.'
+      name: Panorama Query Logs For Indicators V2
       playbookName: Panorama Query Logs For Indicators
       type: playbook
       iscommand: false
@@ -109,8 +105,6 @@ tasks:
         simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
       ip:
         simple: 8.8.8.8,192.168.1.12
-      log_type:
-        simple: traffic,threat,wildfire,data,url
       url:
         simple: microsoft.com,windowsupdate.com
     separatecontext: true
