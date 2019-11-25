@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from CommonServerPython import *
 
 
@@ -13,7 +15,7 @@ def convert_mail_to_json(item, folder):
 def main():
     folders_paths_str = demisto.args()['foldersPaths']
     folders_paths_list = [folder.strip() for folder in folders_paths_str.split(',')]
-    path_to_mails = {folder: [] for folder in folders_paths_list}
+    path_to_mails = {folder: [] for folder in folders_paths_list}   # type: Dict[str, List[str]]
     for folder in folders_paths_list:
 
         res = demisto.executeCommand('ews-get-items-from-folder', {
