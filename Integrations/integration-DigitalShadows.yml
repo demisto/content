@@ -790,13 +790,14 @@ script:
         bodyArgs = {filter_dateRange: lastRun.value + '/' + now};
         temp = fetchCommandIncidents('ds-find-incidents-filtered', bodyArgs, 'Client Incident');
 
-        // remove duplicated incidents from second API call that resulted in the first call
         if (incidents) {
-            incidents = incidents.concat(temp.filter(function(inc) {
+            // concatenate only new incident to list (filter the duplicates)
+            filteredIncidents = temp.filter(function(inc) {
                incidentId = JSON.parse(inc.rawJSON).id;
                notDuplicatedIncident = (ids.indexOf(incidentId) == -1);
                return notDuplicatedIncident;
-            }));
+            });
+            incidents = incidents.concat(filteredIncidents);
         }
         else {
             incidents = temp;
