@@ -15,12 +15,9 @@ if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     source ./venv/bin/activate
     DO_DEACTIVATE=1
 fi
-if [[ -z "${WINDIR}" ]]
-    then
-        PYTHONPATH="`pwd`:${PYTHONPATH}" python Tests/scripts/validate_files.py -t true
-    else
-        python Tests/scripts/validate_files.py
-fi
+
+pip3 install demisto-sdk
+demisto-sdk validate -t true
 
 RES=$?
 
