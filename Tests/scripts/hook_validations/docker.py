@@ -58,8 +58,10 @@ class DockerImageValidator(object):
         if not self.is_latest_tag:
             print_error('The docker image tag is not the latest, please update it.\n'
                         'The docker image tag in the yml file is: {}\n'
-                        'The latest docker image tag in docker hub is: {}'
-                        .format(self.docker_image_tag, self.docker_image_latest_tag))
+                        'The latest docker image tag in docker hub is: {}\n'
+                        'You can check for the latest tag of {} here: https://hub.docker.com/r/{}/tags'
+                        .format(self.docker_image_tag, self.docker_image_latest_tag, self.docker_image_name,
+                                self.docker_image_name))
         return self.is_latest_tag
 
     def get_docker_image_from_yml(self):
