@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+
 ''' IMPORTS '''
 from typing import Dict, Tuple, List, AnyStr, Union
 import urllib3
@@ -33,7 +34,8 @@ REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
 
 RESPONSE_TRANSLATION_DICTIONARY = {
     '_ref': 'ReferenceID',
-    'fqdn': 'FQDN'
+    'fqdn': 'FQDN',
+    'rp_zone': 'Zone'
 }
 
 RPZ_RULES_DICT = {
@@ -213,7 +215,9 @@ class Client(BaseClient):
         request_params = REQUEST_PARAM_CREATE_RULE
         suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
-        return self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
+        rule = self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
+        rule['result']['type'] = suffix
+        return rule
 
     def create_substitute_record_rule(self, suffix: str, **kwargs: dict) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
@@ -241,7 +245,9 @@ class Client(BaseClient):
         """
         request_data = {key: val for key, val in kwargs.items() if val}
         request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
-        return self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+        rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+        rule['result']['type'] = suffix
+        return rule
 
     def change_rule_status(self, reference_id: str, disable: bool) -> Dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication is successful.
@@ -507,8 +513,8 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
 
     if next_page_id:
         return_outputs('New next page ID was added to context', {
-            f'{INTEGRATION_CONTEXT_NAME}.ResponsePolicyZoneRules.Pages(val.PageID && val.PageID === obj.PageID)': {
-                'PageID': next_page_id}}, next_page_id)
+            f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === obj.NextPageID)': {
+                'NextPageID': next_page_id}}, next_page_id)
 
     rules_list = raw_response.get('result')
     if not rules_list:
