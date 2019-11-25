@@ -1,5 +1,6 @@
 id: Qradar Indicator Hunting
 version: -1
+fromversion:4.5.0
 name: Qradar Indicator Hunting
 starttaskid: "0"
 tasks:
@@ -9,6 +10,7 @@ tasks:
     type: start
     task:
       id: 9000bfde-a8d9-4551-898c-84d7879b4063
+      description: Header
       version: -1
       name: ""
       iscommand: false
