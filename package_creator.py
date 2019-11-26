@@ -102,16 +102,7 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
     else:
         output_path = os.path.join(dir_name, output_filename)
 
-    yml_paths = glob.glob(os.path.join(package_path, '*.yml'))
-    yml_path = yml_paths[0]
-    for path in yml_paths:
-        # The plugin creates a unified YML file for the package.
-        # In case this script runs locally and there is a unified YML file in the package we need to ignore it.
-        # Also,
-        # we don't take the unified file by default because there might be packages that were not created by the plugin.
-        if 'unified' not in path:
-            yml_path = path
-            break
+    yml_path = '{}/{}.yml'.format(package_path, package_dir_name)
 
     with open(yml_path, 'r') as yml_file:
         yml_data = yaml.safe_load(yml_file)
