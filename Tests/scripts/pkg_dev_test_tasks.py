@@ -261,11 +261,13 @@ def run_mypy(project_dir, py_num):
     print("mypy completed")
 
 
-def run_bandit(project_dir):
+def run_bandit(project_dir, py_num):
     lint_files = get_lint_files(project_dir)
     print("========= Running bandit on: {} ===============".format(lint_files))
+    python_exe = 'python2' if py_num < 3 else 'python3'
+    print_v('Using: {} to run flake8'.format(python_exe))
     sys.stdout.flush()
-    subprocess.check_call(['bash', RUN_BANDIT_SCRIPT, lint_files], cwd=project_dir)
+    subprocess.check_call([python_exe, '-m', 'bandit', '-lll', '-iii', lint_files], cwd=CONTENT_DIR)
     print("bandit completed")
 
 
@@ -336,7 +338,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
                 if not args.no_mypy:
                     run_mypy(project_dir, py_num)
                 if not args.no_bandit:
-                    run_bandit(project_dir)
+                    run_bandit(project_dir, py_num)
                 if not args.no_test or not args.no_pylint:
                     requirements = get_dev_requirements(py_num)
                     docker_image_created = docker_image_create(docker, requirements)
