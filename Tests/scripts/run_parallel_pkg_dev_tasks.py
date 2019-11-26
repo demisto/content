@@ -4,10 +4,7 @@ import sys
 import subprocess
 import concurrent.futures
 from typing import List, Optional, Tuple
-
 from pkg_dev_test_tasks import get_dev_requirements
-
-DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/uploads/2018/07/Demisto-Icon-Dark.png'
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
