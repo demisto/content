@@ -22,7 +22,7 @@ def http_request(url, params_dict=None):
 
         return res.json()
 
-    except Exception, e:
+    except Exception as e:
         raise e
 
 
@@ -40,9 +40,9 @@ def options_handler():
 
 
 def get_attachments(build_url, env_results_file_name):
-    content_team_fields, content_fields, failed_tests = get_fields()
-    color = 'good' if not failed_tests else 'danger'
-    title = 'Content Build - Success' if not failed_tests else 'Content Build - Failure'
+    content_team_fields, content_fields, failed_tests, failed_unittests = get_fields()
+    color = 'good' if not (failed_tests or failed_unittests) else 'danger'
+    title = 'Content Build - Success' if not (failed_tests or failed_unittests) else 'Content Build - Failure'
 
     with open(env_results_file_name, 'r') as env_results_file_content:
         env_results = json.load(env_results_file_content)
@@ -53,7 +53,7 @@ def get_attachments(build_url, env_results_file_name):
         'color': color,
         'title': title,
         'title_link': build_url,
-        "author_name": "Demisto AWS Machine",
+        "author_name": "Demisto Machine (Click here to open the nightly server)",
         "author_link": "https://{0}".format(instance_dns),
         "author_icon": DEMISTO_GREY_ICON,
         'fields': content_team_fields
@@ -79,6 +79,11 @@ def get_fields():
         failed_tests = failed_tests_file.readlines()
         failed_tests = [line.strip('\n') for line in failed_tests]
 
+    print('Extracting failed_unittests')
+    with open('./Tests/failed_unittests.txt', 'r') as failed_unittests_file:
+        failed_unittests = failed_unittests_file.readlines()
+        failed_unittests = [line.strip('\n') for line in failed_unittests]
+
     print('Extracting skipped_tests')
     with open('./Tests/skipped_tests.txt', 'r') as skipped_tests_file:
         skipped_tests = skipped_tests_file.readlines()
@@ -101,6 +106,15 @@ def get_fields():
         content_team_fields.append(field_failed_tests)
         content_fields.append(field_failed_tests)
 
+    if failed_unittests:
+        field_failed_unittests = {
+            "title": "Failed unittests - ({})".format(len(failed_unittests)),
+            "value": '\n'.join(failed_unittests),
+            "short": False
+        }
+        content_team_fields.append(field_failed_unittests)
+        content_fields.append(field_failed_unittests)
+
     if skipped_tests:
         field_skipped_tests = {
             "title": "Skipped tests - ({})".format(len(skipped_tests)),
@@ -117,7 +131,7 @@ def get_fields():
         }
         content_team_fields.append(field_skipped_integrations)
 
-    return content_team_fields, content_fields, failed_tests
+    return content_team_fields, content_fields, failed_tests, failed_unittests
 
 
 def slack_notifier(build_url, slack_token, env_results_file_name):
@@ -130,7 +144,7 @@ def slack_notifier(build_url, slack_token, env_results_file_name):
         print("Extracting build status")
         content_team_attachments, content_attachments = get_attachments(build_url, env_results_file_name)
 
-        print("Sending Slack messages to #content and #content-team")
+        print("Sending Slack messages to #content-team")
         sc = SlackClient(slack_token)
         sc.api_call(
             "chat.postMessage",
@@ -149,5 +163,6 @@ if __name__ == "__main__":
         print_color("Not nightly build, stopping Slack Notifications about Content build", LOG_COLORS.RED)
 
     os.remove('./Tests/failed_tests.txt')
+    os.remove('./Tests/failed_unittests.txt')
     os.remove('./Tests/skipped_tests.txt')
     os.remove('./Tests/skipped_integrations.txt')
