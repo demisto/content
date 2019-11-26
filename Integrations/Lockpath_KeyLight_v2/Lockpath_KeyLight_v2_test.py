@@ -2,6 +2,7 @@ import pytest
 import demistomock as demisto
 import time
 
+
 def test_filter_creator():
     from Lockpath_KeyLight_v2 import create_filter
     filt = create_filter('Starts With', 'Blue', '3881')
@@ -35,8 +36,8 @@ def test_update_field_integration_context(mocker, requests_mock):
             "FieldType": 5,
             "OneToMany": True,
             "MatrixRows": []
-          },
-          {
+        },
+        {
             "Id": 1501,
             "Name": "Auto-Apply Status",
             "SystemName": "AutoApplyStatus",
@@ -46,8 +47,8 @@ def test_update_field_integration_context(mocker, requests_mock):
             "FieldType": 5,
             "OneToMany": False,
             "MatrixRows": []
-          },
-          {
+        },
+        {
             "Id": 1511,
             "Name": "Configuration Findings",
             "SystemName": "ConfigFindings",
@@ -57,7 +58,7 @@ def test_update_field_integration_context(mocker, requests_mock):
             "FieldType": 5,
             "OneToMany": True,
             "MatrixRows": []
-          }])
+        }])
     for i in range(7):
         client.update_field_integration_context(str(i))
 
@@ -94,8 +95,8 @@ def test_field_output_to_hr_fields(mocker, requests_mock):
             "OneToMany": True,
             "MatrixRows": []
         }])
-    assert client.field_output_to_hr_fields([{'Key': '2260', 'Value': 'check authentication'}], '1') ==\
-    {'AuthenticationTypes': 'check authentication'}
+    assert client.field_output_to_hr_fields([{'Key': '2260', 'Value': 'check authentication'}],
+                                            '1') == {'AuthenticationTypes': 'check authentication'}
 
     # Check if a new field gets update
     requests_mock.get('http://example.com/ComponentService/GetFieldList', json=[
@@ -122,13 +123,14 @@ def test_field_output_to_hr_fields(mocker, requests_mock):
             "MatrixRows": []
         }])
     assert client.field_output_to_hr_fields([{'Key': '2260', 'Value': 'check authentication'},
-                                             {'Key': '2261', 'Value': 'check new field'}], '1') == \
-           {'AuthenticationTypes': 'check authentication', 'New Field': 'check new field'}
+                                             {'Key': '2261', 'Value': 'check new field'}],
+                                            '1') == {'AuthenticationTypes': 'check authentication',
+                                                     'New Field': 'check new field'}
 
 
 def test_string_to_key_value(mocker, requests_mock):
     from Lockpath_KeyLight_v2 import Client
     client = Client("https://cvent.keylight.app:443/'", False, False, headers={'Accept': 'application/json'})
-    client.string_to_key_value('Assignee;6;1#Task ID;This is a task#Updated At;2019-11-20T11:40:49.4109934;0', '10359')
+    client.string_to_FieldValues('Assignee;6;1#Task ID;This is a task#Updated At;2019-11-20T11:40:49.4109934;0', '10359')
     ########################
     assert 1 == 1
