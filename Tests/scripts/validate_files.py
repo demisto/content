@@ -439,8 +439,9 @@ class FilesValidator(object):
     def validate_pack_unique_files(self, packs):
         for pack in packs:
             pack_unique_files_validator = PackUniqueFilesValidator(pack)
-            if not pack_unique_files_validator.validate_pack_unique_files():
-                print_error(pack_unique_files_validator.get_errors())
+            pack_errors = pack_unique_files_validator.validate_pack_unique_files()
+            if pack_errors:
+                print_error(pack_errors)
                 self._is_valid = False
 
     def validate_all_files(self):
