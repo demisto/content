@@ -38,33 +38,20 @@ class Client(BaseClient):
         else:
             json_print_data = json_data
 
-        # TODO Change to LOG
         log = f'KeyLight is attempting {method} request sent to {self._base_url + url_suffix}'
         if params:
             log += f' with params:\n{json.dumps(params, indent=4)}'
         if json_data:
             log += f'\njson_data:\n{json.dumps(json_print_data, indent=4)}'
-        print(log)
         LOG(log)
 
+        res = super()._http_request(method, url_suffix, full_url, headers,
+                                    auth, json_data, params, data, files,
+                                    timeout, resp_type, ok_codes, **kwargs)
+        return res
         # The instance isn't always stable so trying to send http request twice.
         # Not ideal, I know..
-        try:
-            # TODO: Remove print
-            print("first try")
-            res = super()._http_request(method, url_suffix, full_url, headers,
-                                        auth, json_data, params, data, files,
-                                        timeout, resp_type, ok_codes, **kwargs)
-            return res
-        # TODO Remove second try
-        except Exception as e:
-            # TODO: Remove print
-            print(str(e))
-            print('second try')
 
-            return super()._http_request(method, url_suffix, full_url, headers,
-                                         auth, json_data, params, data, files,
-                                         timeout, resp_type, ok_codes, **kwargs)
 
     def login(self, username: str, password: str) -> bool:
         '''
@@ -262,6 +249,7 @@ class Client(BaseClient):
             final_fields[field_name] = field_val
         return final_fields
 
+
     def string_to_FieldValues(self, string: str, component_id: str) -> list:
         '''
 
@@ -424,7 +412,6 @@ def get_record_attachments_command(client: Client, args: dict) -> None:
               'fieldId': field_id
               }
     res = client._http_request('GET', '/ComponentService/GetRecordAttachments', params=params)
-    print(res)
     for doc in res:
         doc['FieldID'] = doc.pop("FieldId")
         doc['DocumentID'] = doc.pop('DocumentId')
@@ -528,8 +515,9 @@ def fetch_incidents(client: Client, args: dict) -> None:
     last_fetch_time = demisto.getLastRun().get('last_fetch_time')
     if not last_fetch_time:
         now = datetime.now()
-        last_fetch = now - timedelta(days=20)
+        last_fetch = now - timedelta(days=365)
         last_fetch_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
+
     # Find component ID
     component_id = demisto.getLastRun().get('component', {}).get(filter_field)
     if not component_id:
@@ -547,12 +535,12 @@ def fetch_incidents(client: Client, args: dict) -> None:
     for record in res:
         occurred_at = ''
         for field in record.get('FieldValues', []):
-            if field.get('Key') == field_id:
+            if str(field.get('Key')) == field_id:
                 occurred_at = field.get('Value')
                 break
         incident = {'name': f'Keylight record {record.get("DisplayName")}',
-                    'occurred': occurred_at,
-                    'rawJSON': record
+                    'occurred': occurred_at.split('.')[0]+'Z',
+                    'rawJSON': str(record)
                     }
         if datetime.strptime(occurred_at.split('.')[0], "%Y-%m-%dT%H:%M:%S") > \
                 datetime.strptime(max_fetch_time.split('.')[0], "%Y-%m-%dT%H:%M:%S"):
