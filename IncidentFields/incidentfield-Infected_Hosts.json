@@ -1,7 +1,8 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": [
-		"Traps"
+		"Traps",
+		"Malware"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

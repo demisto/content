@@ -1,4 +1,5 @@
 ## [Unreleased]
+Added the *ip* argument to the playbook.
 
 
 ## [19.10.0] - 2019-10-03
