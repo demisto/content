@@ -125,3 +125,10 @@ def test_field_output_to_hr_fields(mocker, requests_mock):
                                              {'Key': '2261', 'Value': 'check new field'}], '1') == \
            {'AuthenticationTypes': 'check authentication', 'New Field': 'check new field'}
 
+
+def test_string_to_key_value(mocker, requests_mock):
+    from Lockpath_KeyLight_v2 import Client
+    client = Client("https://cvent.keylight.app:443/'", False, False, headers={'Accept': 'application/json'})
+    client.string_to_key_value('Assignee;6;1#Task ID;This is a task#Updated At;2019-11-20T11:40:49.4109934;0', '10359')
+    ########################
+    assert 1 == 1
