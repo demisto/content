@@ -55,5 +55,3 @@ scripttarget: 0
 dependson:
   must:
   - qradar-searches
-tests:
-- No test
