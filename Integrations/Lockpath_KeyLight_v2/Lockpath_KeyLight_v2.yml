@@ -306,7 +306,7 @@ script:
       type: String
     - contextPath: Keylight.Record.Fields
       description: The fields in the record.
-      type: String
+      type: Unknown
     - contextPath: Keylight.Record.ID
       description: The record ID.
       type: Unknown
@@ -504,6 +504,90 @@ script:
       type: String
     - contextPath: Keylight.LookupField.SystemName
       description: The system name of the lookup field
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the component the record should be created in.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The redord details in the following format:
+        FieldName;FieldValue;isLookupField#....#....
+        Field Name - The name of the field as written in Keylight.
+        Field Value - The value you want for that field. If this is a lookup field - The ID of the lookup value
+        isLookupField - (optional) 1 if it is a lookup field, 0 or blank if not;
+        (For example:
+        Assignee;6;1#Task ID;Demisto task#Updated At;2019-11-20T11:40:49.4109934;0 )
+      isArray: false
+      name: record_string
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      The Required option for a field is only enforced through the user interface.
+      * The Required option for a field is only enforced through the user interface, not through Demisto.
+    execution: false
+    name: kl-create-record
+    outputs:
+    - contextPath: Keylight.Record.ComponentID
+      description: The ID of the component the record is in.
+      type: String
+    - contextPath: Keylight.Record.DisplayName
+      description: The display name of the record.
+      type: String
+    - contextPath: Keylight.Record.Fields
+      description: The fields in the record.
+      type: Unknown
+    - contextPath: Keylight.Record.ID
+      description: The record ID.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the component.
+      isArray: false
+      name: component_id
+      required: true
+      secret: false
+    - default: false
+      description: The Id of the record to be updated.
+      isArray: false
+      name: record_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        The redord details in the following format:
+        FieldName;FieldValue;isLookupField#....#....
+        Field Name - The name of the field as written in Keylight.
+        Field Value - The value you want for that field. If this is a lookup field - The ID of the lookup value
+        isLookupField - (optional) 1 if it is a lookup field, 0 or blank if not;
+        (For example:
+        Assignee;6;1#Task ID;Demisto task#Updated At;2019-11-20T11:40:49.4109934;0 )
+      isArray: false
+      name: record_string
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Update fields in a specified record.
+      * The Required option for a field is only enforced through the user interface, not through Demisto.
+    execution: false
+    name: kl-update-record
+    outputs:
+    - contextPath: Keylight.Record.ComponentID
+      description: The ID of the component the record is in.
+      type: String
+    - contextPath: Keylight.Record.DisplayName
+      description: The display name of the record.
+      type: String
+    - contextPath: Keylight.Record.Fields
+      description: The fields in the record.
+      type: Unknown
+    - contextPath: Keylight.Record.ID
+      description: The record ID
       type: String
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
