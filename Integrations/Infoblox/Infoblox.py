@@ -509,12 +509,12 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
     raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
-    next_page_id = raw_response.get('next_page_id')
+    new_next_page_id = raw_response.get('next_page_id')
 
     if next_page_id:
         return_outputs('New next page ID was added to context', {
             f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === obj.NextPageID)': {
-                'NextPageID': next_page_id}}, next_page_id)
+                'NextPageID': new_next_page_id}}, {'NextPageID': new_next_page_id})
 
     rules_list = raw_response.get('result')
     if not rules_list:

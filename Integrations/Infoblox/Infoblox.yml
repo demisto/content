@@ -256,6 +256,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create response policy rule
   - name: infoblox-create-a-substitute-record-rule
     arguments:
@@ -289,6 +292,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create 'Substitute (A Record) Rule'.
   - name: infoblox-create-aaaa-substitute-record-rule
     arguments:
@@ -321,6 +327,9 @@ script:
       type: string
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
       type: string
     description: Create 'Substitute (AAAA Record) Rule'.
   - name: infoblox-create-mx-substitute-record-rule
@@ -359,6 +368,9 @@ script:
       type: string
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
       type: string
     description: Create 'Substitute (MX Record) Rule'.
   - name: infoblox-create-naptr-substitute-record-rule
@@ -404,6 +416,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create 'Substitute (NAPTR Record) Rule'.
   - name: infoblox-create-ptr-substitute-record-rule
     arguments:
@@ -442,6 +457,9 @@ script:
       type: string
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
       type: string
     description: Create 'Substitute (PTR Record) Rule'.
   - name: infoblox-create-srv-substitute-record-rule
@@ -490,6 +508,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create 'Substitute (SRV Record) Rule'.
   - name: infoblox-create-txt-substitute-record-rule
     arguments:
@@ -525,6 +546,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create 'Substitute (txt Record) Rule'.
   - name: infoblox-create-ipv4-substitute-record-rule
     arguments:
@@ -558,6 +582,9 @@ script:
       type: string
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
+      type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
       type: string
     description: Create 'Substitute (ipv4 Record) Rule'.
   - name: infoblox-create-ipv6-substitute-record-rule
@@ -593,6 +620,9 @@ script:
     - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
       description: The zone to which this rule belongs to.
       type: string
+    - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+      description: Rule reference ID.
+      type: string
     description: Create 'Substitute (ipv6 Record) Rule'.
   - name: infoblox-enable-rule
     arguments:
@@ -627,6 +657,25 @@ script:
       required: true
       description: The rule reference_id ID. (this could be exctracted by running
         the 'infoblox-search-rule' command)
+    outputs:
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Disable
+        description: Is this rule disabled.
+        type: boolean
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Comment
+        description: Rule comment.
+        type: string
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Name
+        description: Rule name.
+        type: string
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID
+        description: Rule reference ID.
+        type: string
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.Zone
+        description: Response policy zone to which this rule belongs to.
+        type: string
+      - contextPath: Infoblox.ModifiedResponsePolicyZoneRules.View
+        description: View definition.
+        type: string
     description: Disable a rule by its reference ID (this could be exctracted by running
       the 'infoblox-search-rule' command)
   - name: infoblox-get-object-fields
