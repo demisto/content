@@ -12,7 +12,8 @@ configuration:
   name: port
   required: true
   type: 0
-- name: credentials
+- display: Credentials
+  name: credentials
   required: true
   type: 9
 - display: Trust any certificate (unsecure)
