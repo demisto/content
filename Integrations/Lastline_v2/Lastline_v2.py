@@ -79,7 +79,7 @@ class Client(BaseClient):
         self.command_params['push_to_portal'] = True
         file_params = demisto.getFilePath(entry_id)
         file_params['mime_type'] = mimetypes.guess_type(file_params.get('name'))
-        with open(file_params.get('path') + file_params.get('name'), 'rb') as file:
+        with open(file_params.get('path'), 'rb') as file:
             result = self.request_in_path('/analysis/submit/file', files={file_params['mime_type']: file.read()})
         context_entry: Dict = {
             'Lastline': {
