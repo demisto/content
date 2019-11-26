@@ -592,4 +592,4 @@ script:
   runonce: false
   script: '-'
   type: python
-  subtype: ptyhon3
+  subtype: python3
