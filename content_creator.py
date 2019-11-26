@@ -255,10 +255,10 @@ def main(circle_artifacts):
                     package_files = get_child_files(package_dir)
                     changelog_files = [
                         file_path
-                        for file_path in package_files if ('CHANGELOG' in file_path and file_path.endswith('.md'))
+                        for file_path in package_files if 'CHANGELOG.md' in file_path
                     ]
                     for md_file_path in changelog_files:
-                        md_out_name = DIR_TO_PREFIX.get(dir_name) + '-' + package_dir_name + '_CHANGELOG.md'
+                        md_out_name = '{}-{}_CHANGELOG.md'.format(DIR_TO_PREFIX.get(dir_name), package_dir_name)
                         shutil.copyfile(md_file_path, os.path.join(dest_dir, md_out_name))
             else:
                 copy_dir_files(content_dir, dest_dir)
