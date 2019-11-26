@@ -1,5 +1,6 @@
 id: Panorama Query Logs For Indicators Test
 version: -1
+fromversion: 4.5.0
 name: Panorama Query Logs For Indicators Test
 description: This is a test playbook for Panorama Query Logs For Indicators
 starttaskid: "0"
