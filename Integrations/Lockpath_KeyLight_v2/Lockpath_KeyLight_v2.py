@@ -142,7 +142,7 @@ class Client(BaseClient):
             result['ComponentID'] = component_id
         return res
 
-    def change_record(self, component_id: str, field_string: str, record_id: Union[str,None] = None) -> None:
+    def change_record(self, component_id: str, field_string: str, record_id: Union[str, None] = None) -> None:
         json_data = {
             'componentId': component_id,
             'dynamicRecord': {
@@ -230,8 +230,8 @@ class Client(BaseClient):
                     min_component = component
             field_map.pop(min_component)
         field_map[str(component_id)] = {'fields': field_names,
-                                   'updated': update
-                                   }
+                                        'updated': update
+                                        }
         demisto.setIntegrationContext(field_map)
 
     def field_output_to_hr_fields(self, field_output: dict, component_id: str) -> dict:
@@ -313,9 +313,6 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
         'Value': filter_value
     }
     return filter
-
-
-
 
 
 '''COMMAND FUNCTIONS'''
@@ -462,21 +459,21 @@ def delete_record_attachment_command(client: Client, args: dict) -> None:
     doc_id = args.get('document_id', '')
     component_id = args.get('component_id', '')
     json_data = {
-                    "componentId": component_id,
-                    "dynamicRecord": {
-                        "Id": record_id,
-                        "FieldValues": [
-                            {
-                                "Key": field_id,
-                                "value": [
-                                    {
-                                        "Id": doc_id
-                                    }
-                                    ]
-                            }
-                        ]
-                    }
+        "componentId": component_id,
+        "dynamicRecord": {
+            "Id": record_id,
+            "FieldValues": [
+                {
+                    "Key": field_id,
+                    "value": [
+                        {
+                            "Id": doc_id
+                        }
+                    ]
                 }
+            ]
+        }
+    }
     client._http_request('POST', '/ComponentService/DeleteRecordAttachments', json_data=json_data)
     return_outputs("### Attachment was successfully deleted from the Documents field.")
 
@@ -485,7 +482,7 @@ def delete_record_command(client: Client, args: dict) -> None:
     component_id = args.get('component_id', '')
     record_id = args.get('record_id', '')
     json_data = {
-        'componentId': component_id ,
+        'componentId': component_id,
         'recordId': record_id
     }
     client._http_request('DELETE', '/ComponentService/DeleteRecord', json_data=json_data)
@@ -566,9 +563,11 @@ def fetch_incidents(client: Client, args: dict) -> None:
                         'field': {filter_field: field_id}})
     demisto.incidents(incidents)
 
-#TODO delete this function
+
 def get_integration_context():
+    # TODO delete this function
     print(demisto.getIntegrationContext())
+
 
 def main():
     proxy = demisto.params().get('proxy')
@@ -588,7 +587,7 @@ def main():
         'kl-get-record-count': get_record_count_command,
         'kl-get-record': get_record_command,
         'kl-get-filtered-records': get_filtered_records_command,
-         'kl-delete-record': delete_record_command,
+        'kl-delete-record': delete_record_command,
         'kl-create-record': create_record_command,
         'kl-update-record': update_record_command,
         'kl-get-lookup-report-column-fields': get_lookup_report_column_fields_command,
@@ -619,12 +618,12 @@ def main():
             client.logout()
         if demisto.command() == 'test-module':
             # TODO change to return_error
-            #print(f'Could not connect to instance. Error: {str(e)}')
-             return_error(f'Could not connect to instance. Error: {str(e)}')
+            # print(f'Could not connect to instance. Error: {str(e)}')
+            return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
             # TODO change to return_error
-            #print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            # print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
