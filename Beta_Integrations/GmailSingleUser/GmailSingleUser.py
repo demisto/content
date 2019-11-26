@@ -831,7 +831,7 @@ def send_mail_command(client):
 
 def fetch_incidents(client):
     user_key = 'me'
-    query = ''
+    query = '' if params['query'] is None else params['query']
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('gmt_time')
     # handle first time fetch - gets current GMT time -1 day
