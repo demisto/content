@@ -518,8 +518,6 @@ def create_file_release_notes(change_type, full_file_name):
         file_type = full_file_name.split("/")[0]
     base_name = os.path.basename(full_file_name)
     file_suffix = os.path.splitext(base_name)[-1]
-    print('@@@')
-    print(full_file_name)
     file_type_mapping = RELEASE_NOTE_GENERATOR.get(file_type)
 
     if file_type_mapping is None or file_suffix not in CONTENT_FILE_SUFFIXES:
