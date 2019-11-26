@@ -1,5 +1,6 @@
 ## [Unreleased]
-Fixed an issue with the presentation of users display names.
+- Fixed an issue with the presentation of users display names.
+- Fixed an issue with the retrieval of app IDs for applications with reverse field mapping. 
 
 ## [19.11.0] - 2019-11-12
 - Fixed an issue in the Archer fetch incidents offset.
