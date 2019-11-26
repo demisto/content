@@ -1,0 +1,196 @@
+category: Analytics & SIEM
+commonfields:
+  id: Securonix
+  version: -1
+configuration:
+- display: tenanat
+  name: tenant
+  required: true
+  type: 0
+- display: username
+  name: username
+  required: true
+  type: 0
+- display: password
+  name: password
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: All
+  display: Incidents to fetch
+  name: incident_status
+  options:
+  - All
+  - open
+  - completed
+  required: false
+  type: 15
+- defaultvalue: 1 hour
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Fetch incidents
+  name: is_fetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: Use the Securonix integration to manage the platform's incidents
+display: Securonix
+name: Securonix
+script:
+  commands:
+  - deprecated: false
+    description: List all available workflows.
+    execution: false
+    name: securonix-list-workflows
+  - arguments:
+    - default: false
+      description: ' from time range (<number> <time unit>, e.g., 1 hour, 30 minutes)'
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: 'To time of incident to pull. e.g: 2019-11-25 09:01:46. Default
+        is current time.'
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    - default: false
+      description: 'Incident range. can be 1 or more from: updated,opened,closed'
+      isArray: false
+      name: range_type
+      required: false
+      secret: false
+    deprecated: false
+    description: List incidents.
+    execution: false
+    name: securonix-list-incidents
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get incident details.
+    execution: false
+    name: securonix-get-incident
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get incident status.
+    execution: false
+    name: securonix-get-incident-status
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get incident workflow.
+    execution: false
+    name: securonix-get-incident-workflow
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: List available actions for an incident.
+    execution: false
+    name: securonix-get-incident-available-actions
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      isArray: false
+      name: action
+      predefined:
+      - CLAIM
+      - RELEASE
+      - COMMENT
+      required: true
+      secret: false
+    deprecated: false
+    description: Performs an action on an incident.
+    execution: false
+    name: securonix-perform-action-on-incident
+  - arguments:
+    - default: false
+      description: Worflow name.
+      isArray: false
+      name: workflow
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the default assignee for the specified workflow.
+    execution: false
+    name: securonix-get-default-assignee-for-workflow
+  - deprecated: false
+    description: List possible threat actions.
+    execution: false
+    name: securonix-list-possible-threat-actions
+    outputs:
+    - contextPath: Securonix.ThreatActions
+      description: Threat actions
+      type: String
+  - deprecated: false
+    description: List policies.
+    execution: false
+    name: securonix-list-policies
+  - deprecated: false
+    description: List resource groups.
+    execution: false
+    name: securonix-list-resource-groups
+  - deprecated: false
+    description: List users.
+    execution: false
+    name: securonix-list-users
+  - arguments:
+    - default: false
+      description: Resource group.
+      isArray: false
+      name: resource_group
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: securonix-list-activity-data
+  dockerimage: demisto/python3:3.7.4.977
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No test - no instance
