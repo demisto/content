@@ -61,7 +61,7 @@ class DockerImageValidator(object):
                         'The latest docker image tag in docker hub is: {}\n'
                         'You can check for the tags of {} here: https://hub.docker.com/r/{}/tags\n'
                         .format(self.docker_image_tag, self.docker_image_latest_tag, self.docker_image_name,
-                                self.docker_image_name, self.docker_image_name))
+                                self.docker_image_name))
         return self.is_latest_tag
 
     def get_docker_image_from_yml(self):
