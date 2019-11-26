@@ -587,8 +587,9 @@ script:
     - contextPath: Keylight.Record.ID
       description: The record ID
       type: String
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.7.5.4002
   isfetch: true
   runonce: false
   script: '-'
   type: python
+  subtype: ptyhon3
