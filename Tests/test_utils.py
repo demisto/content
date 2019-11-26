@@ -9,7 +9,7 @@ import yaml
 import requests
 
 from Tests.scripts.constants import CHECKED_TYPES_REGEXES, PACKAGE_SUPPORTING_DIRECTORIES, CONTENT_GITHUB_LINK, \
-    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX
+    PACKAGE_YML_FILE_REGEX, UNRELEASE_HEADER, RELEASE_NOTES_REGEX, PACKS_DIR_REGEX, PACKS_DIR
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -329,3 +329,16 @@ def get_dockerimage45(script_object):
     if 'dockerimage45' in script_object:
         return script_object['dockerimage45']
     return script_object.get('dockerimage', '')
+
+
+def is_file_path_in_pack(file_path):
+    return bool(re.findall(PACKS_DIR_REGEX, file_path))
+
+
+def get_pack_name(file_path):
+    match = re.search(r'^(?:./)?{}/([^/]+)/'.format(PACKS_DIR), file_path)
+    return match.group(1) if match else None
+
+
+def pack_name_to_path(pack_name):
+    return os.path.join(PACKS_DIR, pack_name)
