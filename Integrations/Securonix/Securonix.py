@@ -791,7 +791,7 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     incident = client.create_incident_request(policy_name, resource_group, entity_type, entity_name, action_name,
                                               resource_name, workflow, comment, employee_id, criticality)
     if not incident:
-        raise Exception('Failed to create the incident. something is missing....')
+        raise Exception('Failed to create the incident. something is missing...')
     return f'Incident was created successfully.', {}, incident
 
 
