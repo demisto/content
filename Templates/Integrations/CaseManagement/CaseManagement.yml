@@ -34,13 +34,13 @@ script:
     name: case-management-get-ticket
     outputs:
     - contextPath: CaseManagement.Ticket.ID
-      description: The Ticket ID.
+      description: The ID of the ticket.
       type: String
     - contextPath: CaseManagement.Ticket.Title
       description: The title of the ticket.
       type: String
     - contextPath: CaseManagement.Ticket.CreatedAt
-      description: The time of the created ticket.
+      description: The time that the ticket was created.
       type: Date
     - contextPath: CaseManagement.Ticket.Description
       description: The description of the ticket.
@@ -58,7 +58,7 @@ script:
     execution: false
     name: case-management-close-ticket
   - deprecated: false
-    description: Assigns a ticket to the user.
+    description: Assigns a ticket to the specified user.
     execution: false
     name: case-management-assign-ticket
   dockerimage: demisto/python3:3.7.5.3066
