@@ -43,8 +43,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The IP address to check.
-      isArray: false
+      description: The IP address to check (CSV supported).
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -274,9 +274,11 @@ script:
       description: The list of AbuseIPDB categories.
       type: string
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python2
+  type: python
 tests:
 - AbuseIPDB Test
