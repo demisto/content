@@ -299,6 +299,23 @@ script:
     description: Create an incident.
     execution: false
     name: securonix-create-incident
+  - arguments:
+    - default: false
+      description: Incident ID.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a comment to an incident.
+    execution: true
+    name: securonix-add-comment-to-incident
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
