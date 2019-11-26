@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 Added the _attachmentName_ parameter to the ___jira-issue-upload-file___ command, which sets the attachment name in Jira.
 
 ## [19.10.2] - 2019-10-29
