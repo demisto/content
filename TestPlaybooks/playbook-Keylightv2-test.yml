@@ -1,0 +1,752 @@
+id: Keylight v2 - Test
+version: -1
+name: Keylight v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 92e83289-ad75-47f0-8b61-feacdb99ff14
+    type: start
+    task:
+      id: 92e83289-ad75-47f0-8b61-feacdb99ff14
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f9ef20ef-131d-40ff-82a8-49e1815e5532
+    type: regular
+    task:
+      id: f9ef20ef-131d-40ff-82a8-49e1815e5532
+      version: -1
+      name: Get component by alias
+      description: Retrieves a component specified by its Alias.
+      script: Lockpath KeyLight v2|||kl-get-component-by-alias
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alias:
+        simple: _auditdemisto
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: aaf17e6a-d61a-4151-8bee-bbd635e9db39
+    type: regular
+    task:
+      id: aaf17e6a-d61a-4151-8bee-bbd635e9db39
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: eeec76f5-d457-4470-8776-21589f0de1b7
+    type: condition
+    task:
+      id: eeec76f5-d457-4470-8776-21589f0de1b7
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.Component.ID
+            iscontext: true
+          right:
+            value:
+              simple: "10359"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 34d1f52a-def8-459a-83ef-433f30880592
+    type: regular
+    task:
+      id: 34d1f52a-def8-459a-83ef-433f30880592
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 7a4e61ca-c23b-40d4-8b26-7ffb072d0e83
+    type: regular
+    task:
+      id: 7a4e61ca-c23b-40d4-8b26-7ffb072d0e83
+      version: -1
+      name: Get component list
+      description: Returns a complete list of all Keylight components available to
+        the user based on account permissions.
+      script: Lockpath KeyLight v2|||kl-get-component-list
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7556e42a-51e8-46cb-85cf-50dc426496dc
+    type: condition
+    task:
+      id: 7556e42a-51e8-46cb-85cf-50dc426496dc
+      version: -1
+      name: Check Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.Component.ID
+            iscontext: true
+          right:
+            value:
+              simple: "10077"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 18e41623-3448-4233-84e6-5296072a7020
+    type: regular
+    task:
+      id: 18e41623-3448-4233-84e6-5296072a7020
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b4a5668c-d478-49c7-88a0-6148f63722e5
+    type: regular
+    task:
+      id: b4a5668c-d478-49c7-88a0-6148f63722e5
+      version: -1
+      name: Get specific component
+      description: Retrieves a component specified by its ID.
+      script: Lockpath KeyLight v2|||kl-get-component
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 0f29be1d-ca2c-49bd-8d31-5aa60ab26611
+    type: condition
+    task:
+      id: 0f29be1d-ca2c-49bd-8d31-5aa60ab26611
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.Component.Name
+            iscontext: true
+          right:
+            value:
+              simple: Audit Tasks (Demisto Test)
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 7fa74b0a-f3ee-4e7a-86c6-037b15d16de8
+    type: regular
+    task:
+      id: 7fa74b0a-f3ee-4e7a-86c6-037b15d16de8
+      version: -1
+      name: Get field list
+      description: Retrieves detail field listing for a component specified by its
+        ID.
+      script: Lockpath KeyLight v2|||kl-get-field-list
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+      componentId: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 7566131a-17e7-4b59-8a8e-cf8590ddc7a7
+    type: condition
+    task:
+      id: 7566131a-17e7-4b59-8a8e-cf8590ddc7a7
+      version: -1
+      name: Verify number of fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Keylight
+                accessor: Field.ID
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "22"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 02ef5839-27aa-49fb-89bb-cc87389bf60b
+    type: regular
+    task:
+      id: 02ef5839-27aa-49fb-89bb-cc87389bf60b
+      version: -1
+      name: Get specific field
+      description: Retrieves details for a field specified by its ID.
+      script: Lockpath KeyLight v2|||kl-get-field
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      field_id:
+        simple: "9083"
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: c2b4a3c2-f5da-41b0-8c4a-3865c0ec7dbe
+    type: condition
+    task:
+      id: c2b4a3c2-f5da-41b0-8c4a-3865c0ec7dbe
+      version: -1
+      name: Verify task name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.Field.Name
+            iscontext: true
+          right:
+            value:
+              simple: Task ID
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 629ee85c-a54f-4a1c-86dc-5ce50137c750
+    type: regular
+    task:
+      id: 629ee85c-a54f-4a1c-86dc-5ce50137c750
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 8ebce027-1a85-4621-8721-8b6cd7608b2f
+    type: regular
+    task:
+      id: 8ebce027-1a85-4621-8721-8b6cd7608b2f
+      version: -1
+      name: Create record
+      description: |-
+        The Required option for a field is only enforced through the user interface.
+        * The Required option for a field is only enforced through the user interface, not through Demisto.
+      script: Lockpath KeyLight v2|||kl-create-record
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+      componentId: {}
+      record_string:
+        simple: Task ID;Demisto task#Updated At;2019-11-20T11:40:49.4109934;0
+      values: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: b92f7f3a-6969-4e90-8089-60f98fec69a2
+    type: condition
+    task:
+      id: b92f7f3a-6969-4e90-8089-60f98fec69a2
+      version: -1
+      name: Check name of created task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Keylight.Record.DisplayName
+            iscontext: true
+          right:
+            value:
+              simple: Demisto task
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: fad0faf5-e2b0-4a0e-8ddb-b0bf57223c25
+    type: regular
+    task:
+      id: fad0faf5-e2b0-4a0e-8ddb-b0bf57223c25
+      version: -1
+      name: Update task
+      description: |-
+        Update fields in a specified record.
+        * The Required option for a field is only enforced through the user interface, not through Demisto.
+      script: Lockpath KeyLight v2|||kl-update-record
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+      record_id:
+        simple: ${Keylight.Record.ID}
+      record_string:
+        simple: 'Task ID;Updated: Demisto task;0'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 891d2f9b-e3b1-4750-8cc6-b194efb21c31
+    type: regular
+    task:
+      id: 891d2f9b-e3b1-4750-8cc6-b194efb21c31
+      version: -1
+      name: Delete task
+      description: Delete a selected record from within a chosen component.
+      script: Lockpath KeyLight v2|||kl-delete-record
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+      record_id:
+        simple: ${Keylight.Record.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 890f8f80-8d6c-49c9-8eac-978f4a738d44
+    type: regular
+    task:
+      id: 890f8f80-8d6c-49c9-8eac-978f4a738d44
+      version: -1
+      name: Get updated tasks
+      description: |-
+        Returns the title/default field for a set of records within a chosen component.
+        Filters may be applied to return only the records meeting selected criteria.
+      script: Lockpath KeyLight v2|||kl-get-filtered-records
+      type: regular
+      iscommand: true
+      brand: Lockpath KeyLight v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      component_id:
+        simple: "10359"
+      detailed:
+        simple: "True"
+      filter_field_name:
+        simple: Task ID
+      filter_type:
+        simple: Starts With
+      filter_value:
+        simple: Updated
+      page_index: {}
+      page_size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: df4f92d2-0f26-4978-8a65-03be8d87a807
+    type: regular
+    task:
+      id: df4f92d2-0f26-4978-8a65-03be8d87a807
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 21eb5cd5-6a69-4c51-8898-7df28f6da25c
+    type: regular
+    task:
+      id: 21eb5cd5-6a69-4c51-8898-7df28f6da25c
+      version: -1
+      name: Untitled Task
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3735,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
