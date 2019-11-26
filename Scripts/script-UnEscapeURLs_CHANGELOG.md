@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Added support to identify URLs and domains prefixed with 'http:' or 'http:\\'.
-- Fixed the parsing of special characters.
+- Fixed the parsing of special characters in URLs.
 
 ## [19.11.0] - 2019-11-12
 Improved handling of Proofpoint v3 URLs.
