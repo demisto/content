@@ -23,42 +23,42 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ID of ticket to get
+      description: The ID of the ticket to return.
       isArray: false
       name: ticket_id
       required: true
       secret: false
     deprecated: false
-    description: Get ticket from integration
+    description: Returns a ticket from the integration.
     execution: false
     name: case-management-get-ticket
     outputs:
     - contextPath: CaseManagement.Ticket.ID
-      description: Ticket ID
+      description: The Ticket ID.
       type: String
     - contextPath: CaseManagement.Ticket.Title
-      description: Ticket title
+      description: The title of the ticket.
       type: String
     - contextPath: CaseManagement.Ticket.CreatedAt
-      description: Time of created ticket.
+      description: The time of the created ticket.
       type: Date
     - contextPath: CaseManagement.Ticket.Description
-      description: Description of ticket
+      description: The description of the ticket.
       type: String
   - deprecated: false
-    description: Lists all tickets
+    description: Lists all tickets.
     execution: false
     name: case-management-list-tickets
   - deprecated: false
-    description: Creates a new ticket
+    description: Creates a new ticket.
     execution: false
     name: case-management-create-ticket
   - deprecated: false
-    description: Closes a ticket
+    description: Closes a ticket.
     execution: false
     name: case-management-close-ticket
   - deprecated: false
-    description: Assign ticket to user
+    description: Assigns a ticket to the user.
     execution: false
     name: case-management-assign-ticket
   dockerimage: demisto/python3:3.7.5.3066
