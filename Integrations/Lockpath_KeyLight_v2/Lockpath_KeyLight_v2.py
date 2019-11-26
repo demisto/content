@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from datetime import datetime, timedelta
+from typing import Union
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -141,6 +142,30 @@ class Client(BaseClient):
             result['ComponentID'] = component_id
         return res
 
+    def change_record(self, component_id: str, field_string: str, record_id: Union[str,None] = None) -> None:
+        json_data = {
+            'componentId': component_id,
+            'dynamicRecord': {
+                'FieldValues': self.string_to_FieldValues(field_string, component_id)
+            }
+        }
+        suffix = '/ComponentService/CreateRecord'
+        if record_id:
+            json_data['dynamicRecord']['Id'] = record_id
+            suffix = '/ComponentService/UpdateRecord'
+        res = self._http_request('POST', suffix, json_data=json_data)
+        fields = self.field_output_to_hr_fields(res.get('FieldValues', []), component_id)
+        record = {'ID': res.get('Id'),
+                  'ComponentID': component_id,
+                  'DisplayName': res.get('DisplayName', '')
+                  }
+        hr = tableToMarkdown(f'Task "{record.get("DisplayName")}":', record)
+        hr += tableToMarkdown('With the following fields:', fields)
+        record['Fields'] = fields
+        ec = {'Keylight.Record(val.ID && val.ID==obj.ID))': record}
+
+        return_outputs(hr, ec, res)
+
     '''HELPER CLIENT FUNCTIONS'''
 
     def component_id_from_name(self, name: str) -> str:
@@ -159,14 +184,16 @@ class Client(BaseClient):
                 component = comp
         return str(component.get('Id'))
 
-    def field_id_from_name(self, name: str, component_id: str) -> str:
-        params = {'componentId': component_id}
-        field_list = self._http_request('GET', '/ComponentService/GetFieldList', params=params)
-        field_id = ''
-        for field in field_list:
-            if field.get('Name') == name:
-                field_id = field.get('Id')
-        return field_id
+    def field_id_from_name(self, name: str, component_id: str) -> Union[str, None]:
+        field_map = demisto.getIntegrationContext().get(str(component_id))
+        if not field_map:
+            self.update_field_integration_context(component_id)
+            field_map = demisto.getIntegrationContext().get(str(component_id))
+        fields = field_map.get('fields')
+        for field_key, field_name in fields.items():
+            if field_name == name:
+                return field_key
+        return None
 
     def update_field_integration_context(self, component_id: str) -> None:
         '''
@@ -235,7 +262,42 @@ class Client(BaseClient):
             final_fields[field_name] = field_val
         return final_fields
 
+    def string_to_FieldValues(self, string: str, component_id: str) -> list:
+        '''
 
+        Args:
+            string: A string in the format Field_Name;FieldValue;Is_reference(optional)#....#...
+            component_id: The component ID
+
+        Returns:
+            returns the for right format (dynamicRecord) for creating and updating a record.
+        '''
+        key_value_list = string.split('#')
+        key_val_return = []
+        for key_value in key_value_list:
+            if key_value.count(';') == 1:
+                field_name, value = key_value.split(';')
+                reference = False
+            elif key_value.count(';') == 2:
+                field_name, value, ref = key_value.split(';')
+                reference = True if ref == '1' else False
+            else:
+                raise ValueError("Input not in the correct format.")
+            field_id = self.field_id_from_name(field_name, component_id)
+            if not field_id:
+                raise ValueError(f'Could not find the field "{field_name}" in component {component_id}.')
+            if reference:
+                key_val_return.append(
+                    {
+                        'Key': field_id,
+                        'Value': {
+                            'Id': value
+                        }
+                    }
+                )
+            else:
+                key_val_return.append({'Key': field_id, 'Value': value})
+        return key_val_return
 
 
 '''HELPER FUNCTIONS'''
@@ -253,30 +315,7 @@ def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> 
     return filter
 
 
-def string_to_key_value(string: str) -> lst:
-    key_value_list = string.split('#')
-    key_val_return = []
-    for key_value in key_value_list:
-        if key_value.count(';') == 1:
-            key, value = key_value.split(';')
-            reference = False
-        elif key_value.count(';') == 2:
-            key, value, ref = key_value.split(';')
-            reference = True if ref == '1' else False
-        else:
-            raise ValueError("Input not in the correct format.")
-        if reference:
-            key_val_return.append(
-                {
-                    'Key': key,
-                    'Value': {
-                        'Id': value
-                    }
-                }
-            )
-        else:
-            key_val_return.append({'Key': key, 'Value': value})
-    return key_val_return
+
 
 
 '''COMMAND FUNCTIONS'''
@@ -453,21 +492,6 @@ def delete_record_command(client: Client, args: dict) -> None:
     return_outputs(f'### Record {record_id} of component {component_id} was deleted successfully.')
 
 
-def update_record_command(client: Client, args: dict) -> None:
-    component_id = args.get('component_id', '')
-    record_id = args.get('records_id', '')
-    string_of_fields = args.get('items_to_update', '')
-    json_data = {
-        'componentId': component_id,
-        'dynamicRecord': {
-            'Id': record_id,
-            'FieldValues': [client.string_to_key_value_fields(string_of_fields)]
-        }
-    }
-    client._http_request('POST', '/ComponentService/UpdateRecord', json_data=json_data)
-    return_outputs(f'### Record {record_id} in component {component_id} was updated successfully.')
-
-
 def get_lookup_report_column_fields_command(client: Client, args: dict) -> None:
     field_path_id = args.get('field_path_id', '')
     lookup_field_id = args.get('lookup_field_id', '')
@@ -483,6 +507,19 @@ def get_lookup_report_column_fields_command(client: Client, args: dict) -> None:
     hr = tableToMarkdown(f'Here is more information about field path {field_path_id}, lookup field {lookup_field_id}:',
                          res)
     return_outputs(hr, ec, res)
+
+
+def create_record_command(client: Client, args: dict) -> None:
+    field_string = args.get('record_string', '')
+    component_id = args.get('component_id', '')
+    client.change_record(component_id, field_string)
+
+
+def update_record_command(client: Client, args: dict) -> None:
+    field_string = args.get('record_string', '')
+    component_id = args.get('component_id', '')
+    record_id = args.get('record_id', '')
+    client.change_record(component_id, field_string, record_id)
 
 
 def fetch_incidents(client: Client, args: dict) -> None:
@@ -552,10 +589,8 @@ def main():
         'kl-get-record': get_record_command,
         'kl-get-filtered-records': get_filtered_records_command,
          'kl-delete-record': delete_record_command,
-        # 'kl-create-record': 'ComponentService/CreateRecord',
-        #TODO add comment:  The Required option for a field is only enforced through the user interface
-
-        # 'kl-update-record': 'ComponentService/UpdateRecord',
+        'kl-create-record': create_record_command,
+        'kl-update-record': update_record_command,
         'kl-get-lookup-report-column-fields': get_lookup_report_column_fields_command,
         'kl-get-record-attachment': get_record_attachment_command,
         'kl-get-record-attachments': get_record_attachments_command,
