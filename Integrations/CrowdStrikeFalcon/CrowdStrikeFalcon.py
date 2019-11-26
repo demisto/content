@@ -371,7 +371,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
 
 def get_fetch_detections(last_created_timestamp=None, behavior_id=None, filter_arg=None):
-    """ Sends detection request, based om created_timestamp field. Used for fetch-incidents
+    """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
 
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
@@ -617,8 +617,8 @@ def timestamp_length_equalization(timestamp1, timestamp2):
     """
         Makes sure the timestamps are of the same length.
     Args:
-        timestamp1: a timestamp
-        timestamp2: a timestamp
+        timestamp1: First timestamp to compare.
+        timestamp2: Second timestamp to compare.
 
     Returns:
         the two timestamps in the same length (the shorter one)
