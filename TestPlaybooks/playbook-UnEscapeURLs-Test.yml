@@ -793,7 +793,7 @@ tasks:
       - "29"
     scriptarguments:
       input:
-        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__click.icptrack.com_icp_relay.php-3Fr-3D030803-26msgid-3D0308038-26act-3DF00B-26c-3D1778479-26destination-3D4077.azurewebsites.net_lauren.brueckman08-23lauren.brueckman-40carefirst.com&d=DwMFaQ&c=8egZ_0rKLv-Rygj6-Z5JMhnB3JgBuvuCt9kJ5Nm7iqgaLAsUhwIjfRmsgG5FPIlE&r=J_P89lw1dB_f38Kyo0ZbBBkVbAInKb3paU4mYPRPzKA&m=UWugj3vBuXbdl88L39F06wwrG764e0a-Ofh8R6XEtoU&s=Es_DEqtkedAOr5xA8Y7CPrA-zuZpiN0Eq9CaZ3JfMwM&e=
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__example.example.com_test_test.php-3Fr-3D030803-26msgid-3D0308038-26act-3DF00B-26c-3D1778479-26destination-3D4077.azurewebsites.net_test.test08-23test.test-40test.com&d=DwMFaQ&c=8egZ_0rKLv-Rygj6-Z5JMhnB3JgBuvuCt9kJ5Nm7iqgaLAsUhwIjfRmsgG5FPIlE&r=J_P89lw1dB_f38Kyo0ZbBBkVbAInKb3paU4mYPRPzKA&m=UWugj3vBuXbdl88L39F06wwrG764e0a-Ofh8R6XEtoU&s=Es_DEqtkedAOr5xA8Y7CPrA-zuZpiN0Eq9CaZ3JfMwM&e=
     separatecontext: false
     view: |-
       {
@@ -824,7 +824,7 @@ tasks:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
-        simple: http://click.icptrack.com/icp/relay.php?r=030803&msgid=0308038&act=F00B&c=1778479&destination=4077.azurewebsites.net/lauren.brueckman08#lauren.brueckman@carefirst.com
+        simple: http://example.example.com/test/test.php?r=030803&msgid%3D0308038&act%3DF00B&c%3D1778479&destination%3D4077.azurewebsites.net/test.test08#test.test@test.com
     separatecontext: false
     view: |-
       {
