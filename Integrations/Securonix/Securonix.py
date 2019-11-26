@@ -253,45 +253,48 @@ class Client(BaseClient):
                                   response_type='xml')
         return users
 
-    def list_activity_data_request(self, resource_group: str, from_: str, to_: str) -> Dict:
+    def list_activity_data_request(self, from_: str, to_: str, query: str = None) -> Dict:
         """List activity data.
 
         Args:
-            resource_group: resource group name
             from_: eventtime start range in format MM/dd/yyyy HH:mm:ss.
             to_: eventtime end range in format MM/dd/yyyy HH:mm:ss.
+            query: open query.
 
         Returns:
             Response from API.
         """
         params = {
-            'query': f'index=activity AND resourcegroupname = {resource_group}',
+            'query': 'index=activity',
             'eventtime_from': from_,
             'eventtime_to': to_,
             'prettyJson': True
         }
+        if query:
+            params['query'] += f' AND {query}'
         activity_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                           params=params)
         return activity_data
 
-    def list_violation_data_request(self, account_name: str, from_: str, to_: str) -> Dict:
+    def list_violation_data_request(self, from_: str, to_: str, query: str = None) -> Dict:
         """List violation data.
 
         Args:
-            account_name: account name
             from_: eventtime start range in format MM/dd/yyyy HH:mm:ss.
             to_: eventtime end range in format MM/dd/yyyy HH:mm:ss.
+            query: open query.
 
         Returns:
             Response from API.
         """
         params = {
-            # 'query': f'index=violation AND accountname = {account_name}',
             'query': 'index=violation',
             'generationtime_from': from_,
             'generationtime_to': to_,
             'prettyJson': True
         }
+        if query:
+            params['query'] += f' AND {query}'
         violation_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                            params=params)
         return violation_data
@@ -405,6 +408,47 @@ class Client(BaseClient):
         incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
         return incident.get('result')
 
+    def create_incident_request(self, policy_name: str, resource_group: str, entity_type: str, entity_name: str,
+                                action_name, resource_name: str = None, workflow: str = None, comment: str = None,
+                                employee_id: str = None, criticality: str = None):
+        """create an incident by sending a POST request.
+
+        Args:
+            policy_name: policy name.
+            resource_group: resource group name.
+            entity_type: entity type.
+            entity_name: entity id.
+            action_name: action name.
+            resource_name: resource name.
+            workflow: workflow name.
+            comment: comment on the incident.
+            employee_id: employee id.
+            criticality: criticality for the incident.
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            'violationName': policy_name,
+            'datasourceName': resource_group,
+            'entityType': entity_type,
+            'entityName': entity_name,
+            'actionName': action_name,
+        }
+        if comment:
+            params['comment'] = comment
+        if resource_name:
+            params['resource name'] = resource_name
+        if employee_id:
+            params['employeeid'] = employee_id
+        if workflow:
+            params['workflow'] = workflow
+        if criticality:
+            params['criticality'] = criticality
+
+        incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
+        return incident.get('result')
+
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
@@ -508,7 +552,8 @@ def list_resource_groups(client: Client, *_) -> Tuple[str, Dict, Dict]:
 
     resource_groups_readable, resource_groups_outputs = parse_data_arr(resource_groups_arr)
     headers = ['Name', 'Type']
-    human_readable = tableToMarkdown(name="Resource groups:", t=resource_groups_readable, headers=headers, removeNull=True)
+    human_readable = tableToMarkdown(name="Resource groups:", t=resource_groups_readable, headers=headers,
+                                     removeNull=True)
     entry_context = {f'Securonix.ResourceGroups(val.Name === obj.Name)': resource_groups_outputs}
 
     return human_readable, entry_context, resource_groups
@@ -548,15 +593,14 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    resource_group = args.get('resource_group')
     from_ = args.get('from')
     to_ = args.get('to')
+    query = args.get('query')
 
-    activity_data = client.list_activity_data_request(resource_group, from_, to_)
+    activity_data = client.list_activity_data_request(from_, to_, query)
 
     if activity_data.get('error'):
-        raise Exception(f'Failed to get activity data for the resource group: {resource_group}'
-                        f' in the given time frame.\n'
+        raise Exception(f'Failed to get activity data in the given time frame.\n'
                         f'Error from Securonix is: {activity_data.get("errorMessage")}')
 
     activity_events = activity_data.get('events')
@@ -578,15 +622,14 @@ def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    account_name = args.get('account_name')
     from_ = args.get('from')
     to_ = args.get('to')
+    query = args.get('query')
 
-    violation_data = client.list_violation_data_request(account_name, from_, to_)
+    violation_data = client.list_violation_data_request(from_, to_, query)
 
     if violation_data.get('error'):
-        raise Exception(f'Failed to get violation data for the account name: {account_name}'
-                        f' in the given time frame.\n'
+        raise Exception(f'Failed to get violation data in the given time frame.\n'
                         f'Error from Securonix is: {violation_data.get("errorMessage")}')
 
     violation_events = violation_data.get('events')
@@ -724,6 +767,34 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     return f'Action {action} was performed on incident {incident_id}.', {}, incident
 
 
+def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Create an incident.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    policy_name = args.get('policy_name')
+    resource_group = args.get('resource_group')
+    entity_type = args.get('entity_type')
+    entity_name = args.get('entity_name')
+    action_name = args.get('action_name')
+    resource_name = args.get('resource_name')
+    workflow = args.get('workflow')
+    comment = args.get('comment')
+    employee_id = args.get('employee_id')
+    criticality = args.get('criticality')
+
+    incident = client.create_incident_request(policy_name, resource_group, entity_type, entity_name, action_name,
+                                              resource_name, workflow, comment, employee_id, criticality)
+    if not incident:
+        raise Exception('Failed to create the incident. something is missing....')
+    return f'Incident was created successfully.', {}, incident
+
+
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
                     limit='50', integration_context=None):
     incidents: list = []
@@ -837,6 +908,7 @@ def main():
             'securonix-get-incident-workflow': get_incident_workflow,
             'securonix-get-incident-available-actions': get_incident_available_actions,
             'securonix-perform-action-on-incident': perform_action_on_incident,
+            'securonix-create-incident': create_incident,
         }
         if command == 'fetch-incidents':
             integration_context = demisto.getIntegrationContext()

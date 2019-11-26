@@ -56,6 +56,84 @@ script:
     name: securonix-list-workflows
   - arguments:
     - default: false
+      description: Worflow name.
+      isArray: false
+      name: workflow
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the default assignee for the specified workflow.
+    execution: false
+    name: securonix-get-default-assignee-for-workflow
+  - deprecated: false
+    description: List possible threat actions.
+    execution: false
+    name: securonix-list-possible-threat-actions
+    outputs:
+    - contextPath: Securonix.ThreatActions
+      description: Threat actions
+      type: String
+  - deprecated: false
+    description: List policies.
+    execution: false
+    name: securonix-list-policies
+  - deprecated: false
+    description: List resource groups.
+    execution: false
+    name: securonix-list-resource-groups
+  - deprecated: false
+    description: List users.
+    execution: false
+    name: securonix-list-users
+  - arguments:
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: 'Open query. e.g: "resourcegroupname =WindowsSnare"'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: List activity data ofr a resource group.
+    execution: false
+    name: securonix-list-activity-data
+  - arguments:
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: End range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    - default: false
+      description: 'Open query. e.g: "policyname = Possible Privilege Escalation -
+        Self Escalation"'
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: List activity data ofr an account name.
+    execution: false
+    name: securonix-list-violation-data
+  - arguments:
+    - default: false
       description: ' from time range (<number> <time unit>, e.g., 1 hour, 30 minutes)'
       isArray: false
       name: from
@@ -145,81 +223,82 @@ script:
     name: securonix-perform-action-on-incident
   - arguments:
     - default: false
-      description: Worflow name.
+      description: Policy name.
       isArray: false
-      name: workflow
+      name: policy_name
       required: true
       secret: false
-    deprecated: false
-    description: Get the default assignee for the specified workflow.
-    execution: false
-    name: securonix-get-default-assignee-for-workflow
-  - deprecated: false
-    description: List possible threat actions.
-    execution: false
-    name: securonix-list-possible-threat-actions
-    outputs:
-    - contextPath: Securonix.ThreatActions
-      description: Threat actions
-      type: String
-  - deprecated: false
-    description: List policies.
-    execution: false
-    name: securonix-list-policies
-  - deprecated: false
-    description: List resource groups.
-    execution: false
-    name: securonix-list-resource-groups
-  - deprecated: false
-    description: List users.
-    execution: false
-    name: securonix-list-users
-  - arguments:
     - default: false
-      description: Resource group.
+      description: Resource group name.
       isArray: false
       name: resource_group
       required: true
       secret: false
-    - default: false
-      description: Start range in format MM/dd/yyyy HH:mm:ss.
+    - auto: PREDEFINED
+      default: false
+      description: Entity type.
       isArray: false
-      name: from
+      name: entity_type
+      predefined:
+      - Users
+      - Activityaccount
+      - RGActivityaccount
+      - Resources
+      - Activityip
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Action name.
+      isArray: false
+      name: action_name
+      predefined:
+      - Mark as concern and create incident
+      - Non-Concern
+      - Mark in progress (still investigating)
       required: true
       secret: false
     - default: false
-      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      description: Entity ID.
       isArray: false
-      name: to
+      name: entity_name
       required: true
+      secret: false
+    - default: false
+      description: Resourcve name. Required for entity_type:Activityaccount.
+      isArray: false
+      name: resource_name
+      required: false
+      secret: false
+    - default: false
+      description: 'Workflow name. Required for action_name: Mark as concern and create
+        incident.'
+      isArray: false
+      name: workflow
+      required: false
+      secret: false
+    - default: false
+      description: Comment to post.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - default: false
+      description: Employee ID.
+      isArray: false
+      name: employee_id
+      required: false
+      secret: false
+    - default: false
+      description: Criticality of the incident which is being created.
+      isArray: false
+      name: criticality
+      required: false
       secret: false
     deprecated: false
-    description: List activity data ofr a resource group.
+    description: Create an incident.
     execution: false
-    name: securonix-list-activity-data
-  - arguments:
-    - default: false
-      description: Account name.
-      isArray: false
-      name: account_name
-      required: true
-      secret: false
-    - default: false
-      description: Start range in format MM/dd/yyyy HH:mm:ss.
-      isArray: false
-      name: from
-      required: true
-      secret: false
-    - default: false
-      description: End range in format MM/dd/yyyy HH:mm:ss.
-      isArray: false
-      name: to
-      required: true
-      secret: false
-    deprecated: false
-    description: List activity data ofr an account name.
-    execution: false
-    name: securonix-list-violation-data
+    name: securonix-create-incident
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
