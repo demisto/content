@@ -52,6 +52,7 @@ XDR_INCIDENT_FIELDS = [
 ]
 a = 2
 
+
 def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id, fields_mapping):
     modified_in_demisto = parser.parse(incident_in_demisto.get("modified")).timestamp() * 1000
     modified_in_xdr_in_context = int(xdr_incident_in_context.get("modification_time"))
