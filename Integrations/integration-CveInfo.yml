@@ -126,33 +126,33 @@ script:
     - name: cveId
       required: true
       default: true
-      description: A CSV list of CVE IDs to search
+      description: A comma separated list of CVE IDs to search.
       isArray: true
     outputs:
     - contextPath: CVE.ID
-      description: The ID of the CVE
+      description: The ID of the CVE.
     - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
+      description: The CVSS score of the CVE.
     - contextPath: CVE.Published
-      description: The date this was published
+      description: The date the CVE was published.
     - contextPath: CVE.Modified
-      description: When CVE was last modified
+      description: The date the CVE was last modified.
     - contextPath: CVE.Description
-      description: The CVE description
+      description: The description of the CVE.
     description: Search CVE by ID
   - name: cve-latest
     arguments: []
     outputs:
     - contextPath: CVE.ID
-      description: The ID of the CVE
+      description: The ID of the CVE.
     - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
+      description: The CVSS score of the CVE.
     - contextPath: CVE.Published
-      description: The date this was published
+      description: The date the CVE was published.
     - contextPath: CVE.Modified
       description: When CVE was last modified
     - contextPath: CVE.Description
-      description: The CVE description
-    description: Get latest updated CVEs
+      description: The description of the CVE.
+    description: Retruns the latest updated CVEs.
 tests:
   - No test
