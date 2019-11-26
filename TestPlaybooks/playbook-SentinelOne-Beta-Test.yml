@@ -681,10 +681,10 @@ tasks:
     ignoreworker: false
   "22":
     id: "22"
-    taskid: c00d738c-090a-402d-8c98-1168433c55a8
+    taskid: 8f913f4a-2f31-4c94-8044-2e08dc1174cf
     type: regular
     task:
-      id: c00d738c-090a-402d-8c98-1168433c55a8
+      id: 8f913f4a-2f31-4c94-8044-2e08dc1174cf
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -829,7 +829,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "31"
     scriptarguments:
       agent_id:
         simple: ${SentinelOne.Agent.ID}
@@ -874,7 +874,7 @@ tasks:
       {
         "position": {
           "x": -10,
-          "y": 2030
+          "y": 2220
         }
       }
     note: false
@@ -896,7 +896,7 @@ tasks:
       {
         "position": {
           "x": -10,
-          "y": 2270
+          "y": 2480
         }
       }
     note: false
@@ -966,12 +966,42 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+  "31":
+    id: "31"
+    taskid: d88da688-b3ed-40ce-8e59-7a88805701c5
+    type: regular
+    task:
+      id: d88da688-b3ed-40ce-8e59-7a88805701c5
+      version: -1
+      name: Wait
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2285,
+        "height": 2495,
         "width": 3370,
         "x": -930,
         "y": 50
