@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Shadows",
+            "playbookID": "Digital Shadows - Test"
+        },
+        {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_dev"
