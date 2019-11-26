@@ -1,2 +1,2 @@
 ## [Unreleased]
-Added batch support to the cve-search command.
+Added batch support to the **cve-search** command.
