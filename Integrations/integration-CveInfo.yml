@@ -71,11 +71,16 @@ script:
         return null;
     };
 
-    var doCVE = function(cve) {
-        var res = sendRequest('http://cve.circl.lu/api/cve/' + args.cveId.toUpperCase());
-        var ec = {}
-        ec[outputPaths.cve] = cveToContext(res.obj);
-        return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec[outputPaths.cve] ? ec : {}};
+    var doCVE = function() {
+        var cves = argToList(args.cveId.toUpperCase());
+        var entries = [];
+        for (var cve of cves) {
+            var res = sendRequest('http://cve.circl.lu/api/cve/' + cve);
+            var ec = {};
+            ec[outputPaths.cve] = cveToContext(res.obj);
+            entries.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: cveToMd(res.obj), EntryContext: ec[outputPaths.cve] ? ec : {}});
+        }
+        return entries;
     };
 
     var doLatest = function() {
@@ -108,7 +113,7 @@ script:
             res = sendRequest('http://cve.circl.lu/api/last');
             return 'ok';
         case 'cve-search':
-            return doCVE(args.cveId.toUpperCase());
+            return doCVE();
         case 'cve-latest':
             return doLatest();
         default:
@@ -121,32 +126,33 @@ script:
     - name: cveId
       required: true
       default: true
-      description: CVE ID to search
+      description: A comma separated list of CVE IDs to search.
+      isArray: true
     outputs:
     - contextPath: CVE.ID
-      description: The ID of the CVE
+      description: The ID of the CVE.
     - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
+      description: The CVSS score of the CVE.
     - contextPath: CVE.Published
-      description: The date this was published
+      description: The date the CVE was published.
     - contextPath: CVE.Modified
-      description: When CVE was last modified
+      description: The date the CVE was last modified.
     - contextPath: CVE.Description
-      description: The CVE description
+      description: The description of the CVE.
     description: Search CVE by ID
   - name: cve-latest
     arguments: []
     outputs:
     - contextPath: CVE.ID
-      description: The ID of the CVE
+      description: The ID of the CVE.
     - contextPath: CVE.CVSS
-      description: The CVSS score of the CVE
+      description: The CVSS score of the CVE.
     - contextPath: CVE.Published
-      description: The date this was published
+      description: The date the CVE was published.
     - contextPath: CVE.Modified
       description: When CVE was last modified
     - contextPath: CVE.Description
-      description: The CVE description
-    description: Get latest updated CVEs
+      description: The description of the CVE.
+    description: Retruns the latest updated CVEs.
 tests:
   - No test
