@@ -9,7 +9,7 @@ import yaml
 
 from Tests.scripts.constants import INTEGRATIONS_DIR, MISC_DIR, PLAYBOOKS_DIR, REPORTS_DIR, DASHBOARDS_DIR, \
     WIDGETS_DIR, SCRIPTS_DIR, INCIDENT_FIELDS_DIR, CLASSIFIERS_DIR, LAYOUTS_DIR, CONNECTIONS_DIR, \
-    BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR
+    BETA_INTEGRATIONS_DIR, INDICATOR_FIELDS_DIR, INCIDENT_TYPES_DIR, TEST_PLAYBOOKS_DIR, PACKS_DIR
 from Tests.test_utils import print_error
 from package_creator import DIR_TO_PREFIX, merge_script_package_to_yml, write_yaml_with_docker
 
@@ -35,8 +35,6 @@ PACKAGES_TO_SKIP = [
     'HelloWorldSimple',
     'HelloWorldScript'
 ]
-
-PACKS_DIR = 'Packs'
 
 # temp folder names
 BUNDLE_POST = 'bundle_post'
@@ -121,7 +119,7 @@ def copy_playbook_yml(path, out_path, *args):
 
 def copy_yaml_post(path, out_path, yml_info):
     parent_dir_name = os.path.basename(os.path.dirname(path))
-    if parent_dir_name in DIR_TO_PREFIX.keys() and not os.path.basename(path).startswith('playbook-'):
+    if parent_dir_name in DIR_TO_PREFIX and not os.path.basename(path).startswith('playbook-'):
         script_obj = yml_info
         if parent_dir_name != 'Scripts':
             script_obj = yml_info['script']
@@ -226,7 +224,7 @@ def main(circle_artifacts):
             else:
                 # handle one-level deep content
                 copy_dir_files(sub_dir_path, BUNDLE_POST)
-                if dir_name in DIR_TO_PREFIX.keys():
+                if dir_name in DIR_TO_PREFIX:
                     # then it's a directory with nested packages that need to be handled
                     # handle nested packages
                     create_unifieds_and_copy(sub_dir_path)
@@ -246,7 +244,7 @@ def main(circle_artifacts):
             dir_name = os.path.basename(content_dir)
             dest_dir = os.path.join(pack_dst, dir_name)
             os.mkdir(dest_dir)
-            if dir_name in DIR_TO_PREFIX.keys():
+            if dir_name in DIR_TO_PREFIX:
                 packages_dirs = get_child_directories(content_dir)
                 for package_dir in packages_dirs:
                     package_dir_name = os.path.basename(package_dir)
