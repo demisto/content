@@ -449,6 +449,25 @@ class Client(BaseClient):
         incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
         return incident.get('result')
 
+    def add_comment_to_incident_request(self, incident_id, comment: str):
+        """add comment to an incident by sending a POST request.
+
+        Args:
+            incident_id: incident ID.
+            comment: action to perform on the incident
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            'incidentId': incident_id,
+            'comment': comment,
+            'actionName': 'comment'
+        }
+        incident = self.http_request('POST', '/incident/actions', headers={'token': self._token}, params=params)
+        demisto.log(str(incident))
+        return incident.get('result')
+
 
 def test_module(client: Client, *_) -> Tuple[str, Dict, Dict]:
     """
@@ -795,6 +814,25 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return f'Incident was created successfully.', {}, incident
 
 
+def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+    """Add comment to an incident.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    incident_id = args.get('incident_id')
+    comment = args.get('comment')
+    incident = client.add_comment_to_incident_request(incident_id, comment)
+    if not incident:
+        raise Exception(f'Failed to add comment to the incident {incident_id}.')
+    demisto.log('really check it worksssssss')  # TODO - see comment in UI
+    return f'Comment was added to the incident {incident_id} successfully.', {}, incident
+
+
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
                     limit='50', integration_context=None):
     incidents: list = []
@@ -909,6 +947,7 @@ def main():
             'securonix-get-incident-available-actions': get_incident_available_actions,
             'securonix-perform-action-on-incident': perform_action_on_incident,
             'securonix-create-incident': create_incident,
+            'securonix-add-comment-to-incident': add_comment_to_incident,
         }
         if command == 'fetch-incidents':
             integration_context = demisto.getIntegrationContext()
