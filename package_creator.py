@@ -93,7 +93,10 @@ def merge_script_package_to_yml(package_path, dir_name, dest_path=""):
         output path, script path, image path
     """
     print("Merging package: {}".format(package_path))
-    output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir_name], os.path.basename(os.path.dirname(package_path)))
+    if package_path.endswith('/'):
+        package_path = package_path.rstrip('/')
+    package_dir_name = os.path.basename(package_path)
+    output_filename = '{}-{}.yml'.format(DIR_TO_PREFIX[dir_name], package_dir_name)
     if dest_path:
         output_path = os.path.join(dest_path, output_filename)
     else:
