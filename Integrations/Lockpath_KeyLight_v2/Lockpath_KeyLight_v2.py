@@ -30,9 +30,10 @@ class Client(BaseClient):
     def _http_request(self, method, url_suffix, full_url=None, headers=None,
                       auth=None, json_data=None, params=None, data=None, files=None,
                       timeout=10, resp_type='json', ok_codes=None, **kwargs):
-        '''
+        """
         Overides _http_request in order to log the http method.
-        '''
+
+        """
         if json_data and json_data.get('password'):
             json_print_data = '***Credentials***'
         else:
@@ -49,15 +50,18 @@ class Client(BaseClient):
                                     auth, json_data, params, data, files,
                                     timeout, resp_type, ok_codes, **kwargs)
         return res
-        # The instance isn't always stable so trying to send http request twice.
-        # Not ideal, I know..
 
     def login(self, username: str, password: str) -> bool:
-        '''
+        """
+        Logs in to the server and keeps the cookie as header.
+
+        Args:
+            username:
+            password:
+
         Returns:
-            Logs in to the server and keeps the cookie as header.
             Returns if connection was successful.
-        '''
+        """
         body = {
             'username': username,
             'password': password
@@ -68,6 +72,10 @@ class Client(BaseClient):
         return successful
 
     def logout(self):
+        """
+        Logs out of the connection.
+
+        """
         self._http_request('GET', '/SecurityService/Logout')
 
     def return_components(self, link: str, params: dict = None) -> None:
@@ -82,6 +90,16 @@ class Client(BaseClient):
         return_outputs(hr, ec, res)
 
     def return_fields(self, suffix: str, params: dict = None, title: str = None) -> None:
+        """
+        Runs and returns field commands according to the suffix .
+        Args:
+            suffix: which api call to make
+            params: if the command neads a params this are them
+            title: The title for the table to markdown
+
+        Returns:
+
+        """
         res = self._http_request('GET', suffix, params=params)
         if type(res) == dict:
             res['ID'] = res.pop('Id')
@@ -95,6 +113,17 @@ class Client(BaseClient):
 
     def return_records(self, component_id: str, record_id: str, field_names: str,
                        suffix: str) -> None:
+        """
+        Returns to demisto record calls according to suffix
+        Args:
+            component_id: The component IF
+            record_id: which record to return
+            field_names: what fields to return
+            suffix: The suffix for the API request
+
+        Returns:
+            None
+        """
         params = {'componentID': component_id,
                   'recordId': record_id}
         res = self._http_request('GET', suffix, params=params)
@@ -117,6 +146,20 @@ class Client(BaseClient):
 
     def return_filtered_records(self, component_id: str, page_size: str, page_index: str, suffix: str,
                                 filter_type: str = None, filter_field_id: str = None, filter_value: str = None) -> dict:
+        """
+
+        Args:
+            component_id: component id
+            page_size: how many results to return per page
+            page_index: what page number
+            suffix: API suffix
+            filter_type: What filter to apply (out of FILTER_DICT
+            filter_field_id: which field to apply the filter on
+            filter_value: the filter value
+
+        Returns:
+            number of records according to a certain query made up of filter_type, filter_value and filter_field_id
+        """
         data = {'componentId': component_id,
                 'pageIndex': page_index,
                 'pageSize': page_size}
@@ -155,14 +198,14 @@ class Client(BaseClient):
     '''HELPER CLIENT FUNCTIONS'''
 
     def component_id_from_name(self, name: str) -> str:
-        '''
+        """
 
         Args:
             name: Name of component
 
         Returns:
             The component ID
-        '''
+        """
         component_list = self._http_request('GET', '/ComponentService/GetComponentList')
         component = {}  # type: dict
         for comp in component_list:
@@ -171,6 +214,15 @@ class Client(BaseClient):
         return str(component.get('Id'))
 
     def field_id_from_name(self, name: str, component_id: str) -> Union[str, None]:
+        """
+
+        Args:
+            name: The field's name
+            component_id:
+
+        Returns:
+            The field_id if it exists
+        """
         field_map = demisto.getIntegrationContext().get(str(component_id))
         if not field_map:
             self.update_field_integration_context(component_id)
@@ -182,10 +234,10 @@ class Client(BaseClient):
         return None
 
     def update_field_integration_context(self, component_id: str) -> None:
-        '''
+        """
+        update integration context to include the component_id and have at most 7 tables stored
+        Update policy : FIFO
 
-        :param component_id: The id of the component we want to add to the integratino context
-        :return: update integration context to include the component_id and have at most 7 tables stored
         Integration context will look: {
                                         component_id: {
                                             last_update: $date
@@ -196,7 +248,12 @@ class Client(BaseClient):
                                             }
                                         }
 
-        '''
+        Args:
+            component_id: The id of the component we want to add to the integration context
+
+        Returns: None
+
+        """
         field_map = demisto.getIntegrationContext()
         if field_map.get(str(component_id)):
             field_map.pop(str(component_id))
@@ -226,7 +283,6 @@ class Client(BaseClient):
         Args:
             field_output: a dictionary of key,values that is the output of FieldValue field
             component_id: What component the fields are from
-            client:  the client
 
         Returns:
         '''
@@ -290,6 +346,16 @@ class Client(BaseClient):
 
 
 def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> dict:
+    """
+
+    Args:
+        filter_type: What type of filter to apply on the field. out of FILTER_DICT
+        filter_value:
+        filter_field_id:
+
+    Returns:
+        A filter made from the arguments in the format keylight needs.
+    """
     # adding filter if exists
     if not FILTER_DICT.get(filter_type):
         raise ValueError('Filter Type is invalid.')
