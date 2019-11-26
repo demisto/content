@@ -2834,7 +2834,6 @@ script:
             if (fieldIdToSearchOn === '') {
                 fieldIdToSearchOn = getFieldIdInReverseMapping(nameToFieldMapping, fieldToSearchOn)
             }
-            throw fieldIdToSearchOn;
             fieldNameToSearchOn = fieldToSearchOn;
         }else{ // performing a general search
             fieldNameToSearchOn = "Date Created";
