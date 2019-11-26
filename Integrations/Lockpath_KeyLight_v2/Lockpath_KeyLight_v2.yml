@@ -375,6 +375,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Get the attachments of a specific field and record.
     execution: false
     name: kl-get-record-attachments
     outputs:
@@ -423,9 +424,6 @@ script:
       record ID, documents field ID, and document ID.
     execution: false
     name: kl-get-record-attachment
-  - deprecated: false
-    execution: false
-    name: get-integration-context
   - arguments:
     - default: false
       description: The component ID.
