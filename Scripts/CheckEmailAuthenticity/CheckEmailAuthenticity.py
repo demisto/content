@@ -80,7 +80,7 @@ def get_dmarc(auth):
                 values = tag.split('=')
                 tags_data[values[0]] = values[1]
             dmarc_context['Tags'] = tags_data
-        domain = re.findall(r'dmarc=[\w\W]+header.from=([\w-]+\.[^; ]+)', auth)
+        domain = re.findall(r'dmarc=.+header.from=([\w-]+\.[^; ]+)', auth)
         if domain:
             dmarc_context['Signing-Domain'] = domain[0]
     return dmarc_context
