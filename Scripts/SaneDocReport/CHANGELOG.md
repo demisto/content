@@ -1,6 +1,6 @@
 ## [Unreleased]
   - Fixed an issue where the line chart x-axis was not readable.
-  - Fixed an issue with graphs width.
+  - Fixed an issue with graph width.
 
 ## [19.11.0] - 2019-11-12
   - Fixed table and list functions.
