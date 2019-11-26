@@ -41,7 +41,7 @@ def options_handler():
 
 def get_attachments(build_url, env_results_file_name):
     content_team_fields, content_fields, failed_tests, failed_unittests = get_fields()
-    color = 'good' if not failed_tests else 'danger'
+    color = 'good' if not (failed_tests or failed_unittests) else 'danger'
     title = 'Content Build - Success' if not (failed_tests or failed_unittests) else 'Content Build - Failure'
 
     with open(env_results_file_name, 'r') as env_results_file_content:
