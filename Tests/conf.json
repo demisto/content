@@ -2007,7 +2007,6 @@
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
@@ -2136,7 +2135,7 @@
         "SlackV2"
     ],
     "unmockable_integrations": {
-        "Google Key Management Service": "The API requires an SSL secure connection to work",
+        "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
