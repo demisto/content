@@ -2754,6 +2754,18 @@ script:
         };
     }
 
+
+    function getFieldIdInReverseMapping(idToNameMapping, fieldNameToSearch) {
+        for (var fieldID in idToNameMapping) {
+            var currentFieldData = idToNameMapping[fieldID];
+            if ("Name" in currentFieldData && currentFieldData["Name"] === fieldNameToSearch) {
+                return fieldID;
+            }
+        }
+        return '';
+    }
+
+
     function searchRecords(command, dataArgs) {
         /* corresponds to 'archer-search-records' command. Returns records from Archer who matches the user's
            search criteria. Looks for incident ids from Archer and then gets each one of them in getSearchRecords
@@ -2817,12 +2829,19 @@ script:
         var fieldIdToSearchOn;
         var fieldNameToSearchOn;
         if (fieldToSearchOn && searchValue) { // the user entered search parameters
-            fieldIdToSearchOn = nameToFieldMapping[fieldToSearchOn] ? nameToFieldMapping[fieldToSearchOn].Id : '';
+            isFieldNameInMapping = nameToFieldMapping[fieldToSearchOn] && typeof nameToFieldMapping[fieldToSearchOn] !== 'undefined';
+            fieldIdToSearchOn = isFieldNameInMapping ? nameToFieldMapping[fieldToSearchOn].Id : '';
+            if (fieldIdToSearchOn === '') {
+                fieldIdToSearchOn = getFieldIdInReverseMapping(nameToFieldMapping, fieldToSearchOn)
+            }
             fieldNameToSearchOn = fieldToSearchOn;
         }else{ // performing a general search
             fieldNameToSearchOn = "Date Created";
             isFieldNameInMapping = nameToFieldMapping[fieldNameToSearchOn] && typeof nameToFieldMapping[fieldNameToSearchOn] !== 'undefined';
             fieldIdToSearchOn = isFieldNameInMapping? JSON.stringify(nameToFieldMapping[fieldNameToSearchOn].Id) : '';
+            if (fieldIdToSearchOn === '') {
+                fieldIdToSearchOn = getFieldIdInReverseMapping(nameToFieldMapping, fieldNameToSearchOn)
+            }
             dateOperator = "GreaterThan";
             var day = 60 * 1000 * 60 * 24;
             searchValue = toDateArcherString(new Date(new Date().getTime() - (day * 31)));
