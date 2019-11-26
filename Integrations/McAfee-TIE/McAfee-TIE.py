@@ -61,8 +61,8 @@ def get_client_config():
         brokers=[Broker.parse(url) for url in broker_urls]
     )
 
-    config.connect_retries = 3
-    config.reconnect_delay = 1
+    config.connect_retries = 4
+    config.reconnect_delay = 2
     config.reconnect_delay_max = 10
 
     return config
