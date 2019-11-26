@@ -52,7 +52,6 @@ class Client(BaseClient):
         # The instance isn't always stable so trying to send http request twice.
         # Not ideal, I know..
 
-
     def login(self, username: str, password: str) -> bool:
         '''
         Returns:
@@ -138,7 +137,7 @@ class Client(BaseClient):
         }
         suffix = '/ComponentService/CreateRecord'
         if record_id:
-            json_data['dynamicRecord']['Id'] = record_id
+            json_data['dynamicRecord']['Id'] = record_id  # type: ignore
             suffix = '/ComponentService/UpdateRecord'
         res = self._http_request('POST', suffix, json_data=json_data)
         fields = self.field_output_to_hr_fields(res.get('FieldValues', []), component_id)
@@ -248,7 +247,6 @@ class Client(BaseClient):
                 field_val = field_val.get('DisplayName')
             final_fields[field_name] = field_val
         return final_fields
-
 
     def string_to_FieldValues(self, string: str, component_id: str) -> list:
         '''
@@ -396,6 +394,8 @@ def get_record_count_command(client: Client, args: dict) -> None:
     filter_value = args.get('filter_value', '')
     filter_field_name = args.get('filter_field_name', '')
     filter_field_id = client.field_id_from_name(filter_field_name, component_id)
+    if not filter_field_id:
+        raise ValueError('Could not find the field name.')
     data = {'componentId': component_id}
     data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
     res = client._http_request('POST', '/ComponentService/GetRecordCount', json_data=data)
@@ -540,7 +540,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
                 occurred_at = field.get('Value')
                 break
         incident = {'name': f'Keylight record {record.get("DisplayName")}',
-                    'occurred': occurred_at.split('.')[0]+'Z',
+                    'occurred': occurred_at.split('.')[0] + 'Z',
                     'rawJSON': str(record)
                     }
         if datetime.strptime(occurred_at.split('.')[0], "%Y-%m-%dT%H:%M:%S") > \

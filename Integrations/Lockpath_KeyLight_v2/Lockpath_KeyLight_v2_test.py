@@ -130,7 +130,23 @@ def test_field_output_to_hr_fields(mocker, requests_mock):
 
 def test_string_to_key_value(mocker, requests_mock):
     from Lockpath_KeyLight_v2 import Client
-    client = Client("https://cvent.keylight.app:443/'", False, False, headers={'Accept': 'application/json'})
-    client.string_to_FieldValues('Assignee;6;1#Task ID;This is a task#Updated At;2019-11-20T11:40:49.4109934;0', '10359')
-    ########################
-    assert 1 == 1
+    client = Client("https://example.com/'", False, False, headers={'Accept': 'application/json'})
+    requests_mock.get('http://example.com/ComponentService/GetFieldList', json=[
+        {
+            "Id": 2260,
+            "Name": "AuthenticationTypes",
+            "SystemName": "AuthenticationTypes",
+            "ShortName": "AuthenticationTypes",
+            "ReadOnly": True,
+            "Required": False,
+            "FieldType": 5,
+            "OneToMany": True,
+            "MatrixRows": []
+        }])
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'10359': {
+        'fields': {'1': 'Assignee', '2': 'Task ID', '3': 'Updated At'}}})
+    field_value = client.string_to_FieldValues('Assignee;6;1#Task ID;This is a task#'
+                                               'Updated At;2019-11-20T11:40:49.4109934;0', '10359')
+    assert field_value == [{'Key': '1', 'Value': {'Id': '6'}},
+                           {'Key': '2', 'Value': 'This is a task'},
+                           {'Key': '3', 'Value': '2019-11-20T11:40:49.4109934'}]
