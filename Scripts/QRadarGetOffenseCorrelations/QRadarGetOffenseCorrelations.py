@@ -25,14 +25,16 @@ else:
     else:
         data = data if isinstance(data, list) else [data]
 
-        QRadar = {}
-        QRadar['Correlation'] = []
+        QRadar = {
+            'Correlation': []
+        }
 
         for corr in data:
             keys = corr.keys()
-            correlation = {}
+            correlation = {
+                "SourceIP": demisto.get(corr, "sourceip")
+            }
             # Standardized known keys
-            correlation["SourceIP"] = demisto.get(corr, "sourceip")
             keys.remove("sourceip") if "sourceip" in keys else None
 
             correlation["CREDescription"] = demisto.get(corr, "CRE Description")
