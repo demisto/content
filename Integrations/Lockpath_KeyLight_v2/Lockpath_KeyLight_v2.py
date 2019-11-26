@@ -394,7 +394,8 @@ def get_record_count_command(client: Client, args: dict) -> None:
     component_id = args.get('component_id', '')
     filter_type = args.get('filter_type', '')
     filter_value = args.get('filter_value', '')
-    filter_field_id = args.get('filter_field_id', '')
+    filter_field_name = args.get('filter_field_name', '')
+    filter_field_id = client.field_id_from_name(filter_field_name, component_id)
     data = {'componentId': component_id}
     data['filters'] = [create_filter(filter_type, filter_value, filter_field_id)]
     res = client._http_request('POST', '/ComponentService/GetRecordCount', json_data=data)
