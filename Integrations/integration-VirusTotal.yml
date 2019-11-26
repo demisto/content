@@ -491,7 +491,13 @@ script:
                     }
                 }
             }
-            entryList.push({Type: entryTypes.note,Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec});
+            entryList.push({
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: ec
+            });
         }
         return entryList;
     }
@@ -607,7 +613,13 @@ script:
                     }
                 }
             }
-            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
+            entryList.push({
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: ec
+            });
         }
         return entryList;
     }
@@ -788,7 +800,13 @@ script:
                 ec[outputPaths.domain] = domain_ec;
             }
 
-            entryList.push({Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec });
+            entryList.push({
+                Type: entryTypes.note,
+                Contents: res.body,
+                ContentsFormat: formats.json,
+                HumanReadable: md,
+                EntryContext: ec
+            });
         }
         return entryList;
     }
