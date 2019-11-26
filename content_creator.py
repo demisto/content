@@ -193,27 +193,7 @@ def copy_test_files(bundle_test, test_playbooks_dir=TEST_PLAYBOOKS_DIR):
             shutil.copyfile(path, os.path.join(bundle_test, os.path.basename(path)))
 
 
-def main(circle_artifacts):
-    print('Starting to create content artifact...')
-
-    print('creating dir for bundles...')
-    for bundle_dir in [BUNDLE_POST, BUNDLE_TEST, PACKS_BUNDLE]:
-        os.mkdir(bundle_dir)
-
-    add_tools_to_bundle(BUNDLE_POST)
-
-    for package_dir in DIR_TO_PREFIX:
-        # handles nested package directories
-        create_unifieds_and_copy(package_dir)
-
-    for content_dir in CONTENT_DIRS:
-        print(f'Copying dir {content_dir} to bundles...')
-        copy_dir_files(content_dir, BUNDLE_POST)
-
-    copy_test_files(BUNDLE_TEST)
-
-    # handle copying packs content to content_new.zip and content_test.zip
-    packs = get_child_directories(PACKS_DIR)
+def copy_packs_content_to_old_bundles(packs):
     for pack in packs:
         # each pack directory has it's own content subdirs, 'Integrations', 'Scripts', 'TestPlaybooks', 'Layouts' etc.
         sub_dirs_paths = get_child_directories(pack)
@@ -229,7 +209,8 @@ def main(circle_artifacts):
                     # handle nested packages
                     create_unifieds_and_copy(sub_dir_path)
 
-    # handle copying packs content to packs_bundle for zipping to `content_packs.zip`
+
+def copy_packs_content_to_packs_bundle(packs):
     for pack in packs:
         pack_name = os.path.basename(pack)
         pack_dst = os.path.join(PACKS_BUNDLE, pack_name)
@@ -261,6 +242,33 @@ def main(circle_artifacts):
                         shutil.copyfile(md_file_path, os.path.join(dest_dir, md_out_name))
             else:
                 copy_dir_files(content_dir, dest_dir)
+
+
+def main(circle_artifacts):
+    print('Starting to create content artifact...')
+
+    print('creating dir for bundles...')
+    for bundle_dir in [BUNDLE_POST, BUNDLE_TEST, PACKS_BUNDLE]:
+        os.mkdir(bundle_dir)
+
+    add_tools_to_bundle(BUNDLE_POST)
+
+    for package_dir in DIR_TO_PREFIX:
+        # handles nested package directories
+        create_unifieds_and_copy(package_dir)
+
+    for content_dir in CONTENT_DIRS:
+        print(f'Copying dir {content_dir} to bundles...')
+        copy_dir_files(content_dir, BUNDLE_POST)
+
+    copy_test_files(BUNDLE_TEST)
+
+    # handle copying packs content to bundles for zipping to content_new.zip and content_test.zip
+    packs = get_child_directories(PACKS_DIR)
+    copy_packs_content_to_old_bundles(packs)
+
+    # handle copying packs content to packs_bundle for zipping to `content_packs.zip`
+    copy_packs_content_to_packs_bundle(packs)
 
     print('Copying content descriptor to bundles')
     for bundle_dir in [BUNDLE_POST, BUNDLE_TEST]:
