@@ -49,13 +49,13 @@ script:
   commands:
   - arguments:
     - default: false
-      description: SQL query to perform.
+      description: The SQL query to perform.
       isArray: true
       name: query
       required: true
       secret: false
     - default: false
-      description: Title of each column. if provided, will add a dict to context
+      description: The title of each column. If provided, a dict is addded to the context.
       isArray: false
       name: columns
       predefined:
@@ -63,13 +63,13 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: limit number of returned results, to avoid flooding context.
+      description: Limits the number of returned results.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Send query to DB
+    description: Send a query to the database.
     execution: false
     name: database-query
     outputs:
