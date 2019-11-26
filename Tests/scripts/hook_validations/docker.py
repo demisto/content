@@ -59,8 +59,7 @@ class DockerImageValidator(object):
             print_error('The docker image tag is not the latest, please update it.\n'
                         'The docker image tag in the yml file is: {}\n'
                         'The latest docker image tag in docker hub is: {}\n'
-                        'You can check for the latest tag of {} here: https://hub.docker.com/r/{}/tags\n'
-                        'Or use the demisto following script in demisto CLI: !GetDockerImageLatestTag docker_image={}'
+                        'You can check for the tags of {} here: https://hub.docker.com/r/{}/tags\n'
                         .format(self.docker_image_tag, self.docker_image_latest_tag, self.docker_image_name,
                                 self.docker_image_name, self.docker_image_name))
         return self.is_latest_tag
