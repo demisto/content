@@ -1,5 +1,6 @@
 ## [Unreleased]
-
+  - Fixed an issue where the script did not determine authenticity of many emails.
+  - Fixed an issue in which sometimes DKIM Signing-Domain was not identified.
 
 ## [19.10.2] - 2019-10-29
 Updated the descriptions for arguments.
