@@ -181,9 +181,45 @@ script:
       name: resource_group
       required: true
       secret: false
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: to
+      required: true
+      secret: false
     deprecated: false
+    description: List activity data ofr a resource group.
     execution: false
     name: securonix-list-activity-data
+  - arguments:
+    - default: false
+      description: Account name.
+      isArray: false
+      name: account_name
+      required: true
+      secret: false
+    - default: false
+      description: Start range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: End range in format MM/dd/yyyy HH:mm:ss.
+      isArray: false
+      name: to
+      required: true
+      secret: false
+    deprecated: false
+    description: List activity data ofr an account name.
+    execution: false
+    name: securonix-list-violation-data
   dockerimage: demisto/python3:3.7.4.977
   isfetch: true
   longRunning: false
