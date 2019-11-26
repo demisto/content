@@ -253,7 +253,7 @@ class Client(BaseClient):
                                   response_type='xml')
         return users
 
-    def list_activity_data(self, resource_group: str, from_: str, to_: str) -> Dict:
+    def list_activity_data_request(self, resource_group: str, from_: str, to_: str) -> Dict:
         """List activity data.
 
         Args:
@@ -272,8 +272,29 @@ class Client(BaseClient):
         }
         activity_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                           params=params)
-        demisto.log(str(activity_data))
         return activity_data
+
+    def list_violation_data_request(self, account_name: str, from_: str, to_: str) -> Dict:
+        """List violation data.
+
+        Args:
+            account_name: account name
+            from_: eventtime start range in format MM/dd/yyyy HH:mm:ss.
+            to_: eventtime end range in format MM/dd/yyyy HH:mm:ss.
+
+        Returns:
+            Response from API.
+        """
+        params = {
+            # 'query': f'index=violation AND accountname = {account_name}',
+            'query': 'index=violation',
+            'generationtime_from': from_,
+            'generationtime_to': to_,
+            'prettyJson': True
+        }
+        violation_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
+                                           params=params)
+        return violation_data
 
     def list_incidents_request(self, from_epoch, to_epoch, range_type) -> Dict:
         """List all incidents by sending a GET request.
@@ -517,29 +538,65 @@ def list_users(client: Client, *_) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, users
 
 
-def list_activity_data(client: Client, *_) -> Tuple[str, Dict, Dict]:
-    """List all users.
+def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
+    """List activity data.
 
     Args:
         client: Client object with request.
-        *_:
+        args: Usually demisto.args()
 
     Returns:
         Outputs.
     """
     resource_group = args.get('resource_group')
-    activity_data = client.list_activity_data(resource_group)
+    from_ = args.get('from')
+    to_ = args.get('to')
 
-    # users_json = xml2json(users_xml)
-    # users = json.loads(users_json)
-    # users_arr = users.get('users').get('user')
+    activity_data = client.list_activity_data_request(resource_group, from_, to_)
 
-    activity_data_readable, activity_data_outputs = parse_data_arr(activity_data)
-    # headers = ['Employee Id', 'First Name', 'Last Name', 'Criticality', 'Title', 'Email']
-    human_readable = tableToMarkdown(name="Activity data:", t=activity_data_readable, removeNull=True)
-    entry_context = {f'Securonix.ActivityData(val.EmployeeId === obj.EmployeeId)': activity_data_outputs}
+    if activity_data.get('error'):
+        raise Exception(f'Failed to get activity data for the resource group: {resource_group}'
+                        f' in the given time frame.\n'
+                        f'Error from Securonix is: {activity_data.get("errorMessage")}')
+
+    activity_events = activity_data.get('events')
+    activity_readable, activity_outputs = parse_data_arr(activity_events)
+    headers = ['Eventid', 'Eventtime', 'Message', 'Accountname']
+    human_readable = tableToMarkdown(name="Activity data:", t=activity_readable, headers=headers, removeNull=True)
+    entry_context = {f'Securonix.ActivityData(val.Eventid === obj.Eventid)': activity_outputs}
 
     return human_readable, entry_context, activity_data
+
+
+def list_violation_data(client: Client, args) -> Tuple[str, Dict, Dict]:
+    """List violation data.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    account_name = args.get('account_name')
+    from_ = args.get('from')
+    to_ = args.get('to')
+
+    violation_data = client.list_violation_data_request(account_name, from_, to_)
+
+    if violation_data.get('error'):
+        raise Exception(f'Failed to get violation data for the account name: {account_name}'
+                        f' in the given time frame.\n'
+                        f'Error from Securonix is: {violation_data.get("errorMessage")}')
+
+    violation_events = violation_data.get('events')
+    violation_readable, violation_outputs = parse_data_arr(violation_events)
+    headers = ['Eventid', 'Eventtime', 'Message', 'Policyname', 'Accountname']
+    human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
+    entry_context = {f'Securonix.ViolationData(val.Eventid === obj.Eventid)': violation_outputs}
+
+    return human_readable, entry_context, violation_data
+
 
 def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     """List incidents.
@@ -773,6 +830,7 @@ def main():
             'securonix-list-resource-groups': list_resource_groups,
             'securonix-list-users': list_users,
             'securonix-list-activity-data': list_activity_data,
+            'securonix-list-violation-data': list_violation_data,
             'securonix-list-incidents': list_incidents,
             'securonix-get-incident': get_incident,
             'securonix-get-incident-status': get_incident_status,
