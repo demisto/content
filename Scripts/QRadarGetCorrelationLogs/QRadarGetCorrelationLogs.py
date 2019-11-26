@@ -30,16 +30,18 @@ else:
     else:
         data = data if isinstance(data, list) else [data]
 
-        QRadar = {}
-        QRadar['Log'] = []
+        QRadar = {
+            'Log': []
+        }
 
         for corr in data:
 
             keys = corr.keys()
-            log = {}
-            log["QID"] = correlation_id
+            log = {
+                "QID": correlation_id,
+                "SourceIP": demisto.get(corr, "sourceip")
+            }
             # Standardized known keys
-            log["SourceIP"] = demisto.get(corr, "sourceip")
             keys.remove("sourceip") if "sourceip" in keys else None
 
             log["DestinationPort"] = demisto.get(corr, "destinationport")
