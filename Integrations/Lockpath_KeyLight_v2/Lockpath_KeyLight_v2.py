@@ -619,11 +619,6 @@ def fetch_incidents(client: Client, args: dict) -> None:
     demisto.incidents(incidents)
 
 
-def get_integration_context():
-    # TODO delete this function
-    print(demisto.getIntegrationContext())
-
-
 def main():
     proxy = demisto.params().get('proxy')
     verify = not demisto.params().get('insecure')
@@ -651,9 +646,6 @@ def main():
         'kl-delete-record-attachment': delete_record_attachment_command,
         'fetch-incidents': fetch_incidents
     }
-    # TODO delete this (also from yaml):
-    if demisto.command() == 'get-integration-context':
-        get_integration_context()
 
     LOG(f'Command being called is {demisto.command()}')
     logged_in = False
@@ -664,7 +656,6 @@ def main():
 
         logged_in = client.login(username, password)
         if logged_in:
-            # TODO: add detailed exceptions: No records returned, no such component and so on.
             commands[demisto.command()](client, demisto.args())
             client.logout()
     except Exception as e:
@@ -672,12 +663,8 @@ def main():
         if logged_in:
             client.logout()
         if demisto.command() == 'test-module':
-            # TODO change to return_error
-            # print(f'Could not connect to instance. Error: {str(e)}')
             return_error(f'Could not connect to instance. Error: {str(e)}')
         else:
-            # TODO change to return_error
-            # print(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
