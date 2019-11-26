@@ -37,8 +37,7 @@ configuration:
   name: date_name
   required: false
   type: 0
-- display: 'A CSV list of columns for the SELECT expression. order must be in order:
-    ID, Date, Name, Urgency.'
+- display: 'A comma-separated list of columns for the SELECT expression. The list must follow this order: ID, Date, Name, Urgency.'
   name: columns
   required: false
   type: 0
@@ -63,18 +62,18 @@ script:
       secret: false
     - default: false
       defaultValue: '10'
-      description: Limits the number of returned results.
+      description: The maximum number of results to return. Default is 10.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Send a query to the database.
+    description: Executes a query on the database.
     execution: false
     name: database-query
     outputs:
     - contextPath: Database.Result
-      description: Results from query, in a list
+      description: Query results (in a list).
       type: String
   dockerimage: demisto/python3:3.7.5.3066
   isfetch: true
