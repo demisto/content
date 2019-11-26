@@ -24,7 +24,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '50'
+  defaultValue: '20'
   description: 'Maximum number of positive/negative words to return for the model
     decision. '
   isArray: false
@@ -32,7 +32,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '0.1'
+  defaultValue: '0.05'
   description: Threshold to determine word importance (range 0-1).
   isArray: false
   name: wordThreshold
@@ -50,7 +50,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '20'
+  defaultValue: '5'
   description: Minimum number of characters for the prediction.
   isArray: false
   name: minTextLength
@@ -61,6 +61,17 @@ args:
   description: The label probability threshold.
   isArray: false
   name: labelProbabilityThreshold
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether to return an error when there is no prediction.
+  isArray: false
+  name: returnError
+  predefined:
+  - 'true'
+  - 'false'
   required: false
   secret: false
 comment: Predict text label using a pre-trained machine learning phishing model, and
@@ -89,6 +100,7 @@ outputs:
     support the model decision.
   type: String
 script: '-'
+subtype: python3
 system: false
 tags:
 - ml
