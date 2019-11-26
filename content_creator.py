@@ -109,20 +109,6 @@ def add_tools_to_bundle(bundle):
         zipf.close()
 
 
-# modify incident fields file to contain only `incidentFields` field (array)
-# from { "incidentFields": [...]} to [...]
-def convert_incident_fields_to_array(incident_fields_dir=INCIDENT_FIELDS_DIR):
-    scan_files = glob.glob(os.path.join(incident_fields_dir, '*.json'))
-    for path in scan_files:
-        with open(path, 'r+') as file_:
-            data = json.load(file_)
-            incident_fields = data.get('incidentFields')
-            if incident_fields is not None:
-                file_.seek(0)
-                json.dump(incident_fields, file_, indent=2)
-                file_.truncate()
-
-
 def copy_playbook_yml(path, out_path, *args):
     '''Add "playbook-" prefix to playbook file's copy destination filename if it wasn't already present'''
     dest_dir_path = os.path.dirname(out_path)
@@ -218,8 +204,6 @@ def main(circle_artifacts):
 
     add_tools_to_bundle(BUNDLE_POST)
 
-    convert_incident_fields_to_array()
-
     for package_dir in DIR_TO_PREFIX:
         # handles nested package directories
         create_unifieds_and_copy(package_dir)
@@ -279,8 +263,6 @@ def main(circle_artifacts):
                         md_out_name = DIR_TO_PREFIX.get(dir_name) + '-' + package_dir_name + '_CHANGELOG.md'
                         shutil.copyfile(md_file_path, os.path.join(dest_dir, md_out_name))
             else:
-                if dir_name == INCIDENT_FIELDS_DIR:
-                    convert_incident_fields_to_array(content_dir)
                 copy_dir_files(content_dir, dest_dir)
 
     print('Copying content descriptor to bundles')
