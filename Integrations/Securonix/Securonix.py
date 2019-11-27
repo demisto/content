@@ -44,7 +44,7 @@ def get_fetch_times(last_fetch):
 
 def convert_unix_to_date(timestamp):
     """Convert unix timestamp to datetime in iso format.
-    
+
     Args:
         timestamp: the date in unix to convert.
 
@@ -63,7 +63,7 @@ def convert_date_to_unix(date):
     Returns:
         unix timestamp.
     """
-    return datetime.datetime(date).strftime('%s')
+    return datetime.datetime(date).strftime('%s')  # type: ignore
 
 
 def camel_case_to_readable(text: str) -> str:
@@ -78,7 +78,7 @@ def camel_case_to_readable(text: str) -> str:
     return ''.join(' ' + char if char.isupper() else char.strip() for char in text).strip().title()
 
 
-def parse_data_arr(data_arr: Dict[str, str]) -> Tuple[dict, dict]:
+def parse_data_arr(data_arr):
     """Parse data as received from Microsoft Graph API into Demisto's conventions
     Args:
         data_arr: a dictionary containing the group data
@@ -166,7 +166,7 @@ class Client(BaseClient):
             raise Exception(str(exception))
 
     def _generate_token(self) -> str:
-        """
+        """Generate a token
 
         Returns:
             token valid for 1 day
@@ -181,6 +181,9 @@ class Client(BaseClient):
         return token
 
     def test_module_request(self):
+        """
+        Testing the instance configuration by sending a GET request
+        """
         self.list_workflows_request()
 
     def list_workflows_request(self) -> Dict:
@@ -271,7 +274,7 @@ class Client(BaseClient):
             'prettyJson': True
         }
         if query:
-            params['query'] += f' AND {query}'
+            params['query'] = f'{params["query"]} AND {query}'
         activity_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                           params=params)
         return activity_data
@@ -294,7 +297,7 @@ class Client(BaseClient):
             'prettyJson': True
         }
         if query:
-            params['query'] += f' AND {query}'
+            params['query'] = f'{params["query"]} AND {query}'
         violation_data = self.http_request('GET', '/spotter/index/search', headers={'token': self._token},
                                            params=params)
         return violation_data
@@ -588,7 +591,7 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
     Returns:
         Outputs.
     """
-    workflow = args.get('workflow')
+    workflow = str(args.get('workflow'))
     default_assignee = client.get_default_assignee_for_workflow_request(workflow)
 
     return f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.', {}, default_assignee
@@ -759,7 +762,8 @@ def list_incidents(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
 
     incidents = client.list_incidents_request(from_epoch, to_epoch, range_type)
 
-    if incidents.get('totalIncidents') <= 0.0:
+    total_incidents = incidents.get('totalIncidents')
+    if not total_incidents or float(total_incidents) <= 0.0:
         return 'No incidents where found in this time frame.', {}, incidents
     incidents_items = incidents.get('incidentItems')
     incidents_readable, incidents_outputs = parse_data_arr(incidents_items)
@@ -780,7 +784,7 @@ def get_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
+    incident_id = str(args.get('incident_id'))
 
     incident = client.get_incident_request(incident_id)
 
@@ -803,7 +807,7 @@ def get_incident_status(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
+    incident_id = str(args.get('incident_id'))
     incident = client.get_incident_status_request(incident_id)
     incident_status = incident.get('status')
 
@@ -820,7 +824,7 @@ def get_incident_workflow(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
+    incident_id = str(args.get('incident_id'))
 
     incident = client.get_incident_workflow_request(incident_id)
     incident_workflow = incident.get('workflow')
@@ -838,7 +842,7 @@ def get_incident_available_actions(client: Client, args: Dict) -> Tuple[str, Dic
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
+    incident_id = str(args.get('incident_id'))
 
     incident = client.get_incident_available_actions_request(incident_id)
     if not incident:
@@ -858,8 +862,8 @@ def perform_action_on_incident(client: Client, args: Dict) -> Tuple[str, Dict, D
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
-    action = args.get('action')
+    incident_id = str(args.get('incident_id'))
+    action = str(args.get('action'))
     incident = client.perform_action_on_incident_request(incident_id, action)
     incident_result = incident.get('result')  # TODO - real api action on a non closed incident
     if incident_result != 'submitted':
@@ -877,11 +881,11 @@ def create_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     Returns:
         Outputs.
     """
-    policy_name = args.get('policy_name')
-    resource_group = args.get('resource_group')
-    entity_type = args.get('entity_type')
-    entity_name = args.get('entity_id')
-    action_name = args.get('action_name')
+    policy_name = str(args.get('policy_name'))
+    resource_group = str(args.get('resource_group'))
+    entity_type = str(args.get('entity_type'))
+    entity_name = str(args.get('entity_id'))
+    action_name = str(args.get('action_name'))
     resource_name = args.get('resource_name')
     workflow = args.get('workflow')
     comment = args.get('comment')
@@ -907,8 +911,8 @@ def add_comment_to_incident(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     Returns:
         Outputs.
     """
-    incident_id = args.get('incident_id')
-    comment = args.get('comment')
+    incident_id = str(args.get('incident_id'))
+    comment = str(args.get('comment'))
     incident = client.add_comment_to_incident_request(incident_id, comment)
     if not incident:
         raise Exception(f'Failed to add comment to the incident {incident_id}.')
@@ -1037,6 +1041,21 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
 
 def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
                     limit='50', integration_context=None):
+    """Fetch incidents from Securonix to Demisto.
+
+    Args:
+        client:
+        last_run:
+        first_fetch_time:
+        event_type_filter:
+        threat_type:
+        threat_status:
+        limit:
+        integration_context:
+
+    Returns:
+        Incidents.
+    """
     incidents: list = []
     end_query_time = ''
     # check if there're incidents saved in context
@@ -1158,7 +1177,7 @@ def main():
         }
         if command == 'fetch-incidents':
             integration_context = demisto.getIntegrationContext()
-            next_run, incidents, remained_incidents = fetch_incidents(
+            next_run, incidents, remained_incidents = fetch_incidents(  # type: ignore
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=fetch_time,
@@ -1173,7 +1192,7 @@ def main():
             demisto.setIntegrationContext(integration_context)
 
         elif command in commands:
-            return_outputs(*commands[command](client, demisto.args()))
+            return_outputs(*commands[command](client, demisto.args()))  # type: ignore
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
