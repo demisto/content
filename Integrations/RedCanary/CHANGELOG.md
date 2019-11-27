@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 Added Reason, EndpointID, and EndpointUserID to detections context.
 
 ## [19.11.0] - 2019-11-12
