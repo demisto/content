@@ -10,9 +10,11 @@ from elasticsearch_dsl.query import QueryString
 from datetime import datetime
 import json
 import requests
+import warnings
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
+warnings.filterwarnings(action="ignore", message='.*using SSL with verify_certs=False is insecure.')
 
 SERVER = demisto.params().get('url', '').rstrip('/')
 USERNAME = demisto.params().get('credentials', {}).get('identifier')
@@ -548,13 +550,17 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-try:
-    LOG('command is %s' % (demisto.command(),))
-    if demisto.command() == 'test-module':
-        test_func()
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
-    elif demisto.command() in ['search', 'es-search']:
-        search_command()
-except Exception as e:
-    return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
+def main():
+    try:
+        LOG('command is %s' % (demisto.command(),))
+        if demisto.command() == 'test-module':
+            test_func()
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents()
+        elif demisto.command() in ['search', 'es-search']:
+            search_command()
+    except Exception as e:
+        return_error("Failed executing {}.\nError message: {}".format(demisto.command(), str(e)), error=e)
+
+
+main()
