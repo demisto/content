@@ -8,6 +8,11 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
+- display: 'Time to wait before taking screen shot (in seconds)'
+  name: wait_time
+  defaultvalue: "0"
+  type: 0
+  required: false
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -20,6 +25,12 @@ fromversion: '5.0.0'
 script:
   commands:
   - arguments:
+    - default: false
+      description: Time in seconds to wait before taking a screenshot
+      isArray: false
+      name: wait_time
+      required: false
+      secret: false
     - default: true
       description: The URL to rasterize. Must be the full URL, including the http prefix.
       isArray: false
@@ -141,7 +152,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.2354
+  dockerimage: demisto/chromium:1.0.0.2889
   isfetch: false
   runonce: false
   script: '-'

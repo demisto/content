@@ -930,6 +930,11 @@ tasks:
             value:
               simple: AutoFocus.Tag.TagDefinitionStatus
             iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AutoFocus.Tag.Description
+            iscontext: true
     view: |-
       {
         "position": {

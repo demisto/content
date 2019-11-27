@@ -1,0 +1,99 @@
+commonfields:
+  id: Symantec MSS
+  version: -1
+name: Symantec MSS
+display: Symantec Managed Security Services
+category: Case Management
+description: Leverage the power of Symantec Managed Security Services for continual
+  threat monitoring and customized guidance 24x7
+configuration:
+- display: Server URL
+  name: server
+  defaultvalue: https://api.monitoredsecurity.com
+  type: 0
+  required: true
+- display: Certificate (Base64 encoded)
+  name: certificate
+  defaultvalue: ""
+  type: 12
+  required: true
+- display: Certificate Passphrase
+  name: passphrase
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Fetch incidents for severities
+  name: severities
+  defaultvalue: Emergency,Critical
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: symantec-mss-update-incident
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    - name: status
+      description: To change the incident status
+    - name: resolution
+      description: To change the incident status resolution
+    - name: reference
+      description: Update reference comments
+    - name: severity
+      description: To change the incident severity
+    - name: assignOrganization
+      description: 'To change incident assignment to organization (Note: assign to
+        an organization OR a person is required)'
+    - name: assignPerson
+      description: 'To change incident assignment to person. (Note: assign to an organization
+        OR a person is required)'
+    - name: comments
+      description: Incident update comment
+    description: Updates an incident's workflow by incident number
+  - name: symantec-mss-get-incident
+    arguments:
+    - name: number
+      required: true
+      default: true
+      description: The incident number in the SOC
+    description: Query an incident by number
+  - name: symantec-mss-incidents-list
+    arguments:
+    - name: time
+      default: true
+      description: Incidents created since the specified date (i.e. 2014-09-11T18:57:36.707Z).
+        If not supplied, defaults to the last 24 hours
+    - name: severities
+      description: Comma-delimited list of valid Security Incident severities set
+        by MSS. If not supplied, all severities are returned
+    - name: sourceIp
+      description: Comma-delimited list of valid Source IP Addresses. If not supplied,
+        all addresses are returned
+    - name: max
+      description: The maximum number of incidents to return. If not supplied,  all
+        incidents are returned
+    description: Get a list of incidents
+  dockerimage: demisto/symantec_mss
+  isfetch: true
+tests:
+- SymantecMSSTest

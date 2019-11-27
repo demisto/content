@@ -1,6 +1,17 @@
-# Overview
-We use standardized code conventions to ensure uniformity across all Demisto integrations. This section outlines some of these code conventions.
+# Python Code Conventions
+We use standardized code conventions to ensure uniformity across all Demisto Integrations. This section outlines our code conventions.
 
+New integrations and scripts should follow these conventions. When working on small fixes and modifications to existing code, follow the conventions used in the existing code.
+
+**Note:** Demisto supports also JavaScript integrations and scripts. Our preferred development language is Python, and all new integrations and scripts should be developed in Python, which also provides a wider set of capabilities compared to the available JavaScript support. Simple scripts may still be developed in JavaScript using the conventions provided by the default script template used in the Demisto IDE.
+
+## Example Code and Templates
+For an example of a **Hello World** integration see [HelloWorld](../../Integrations/HelloWorld/).
+
+For quick starts templates see [Templates directory](../../Templates).
+
+## Python 2 vs 3
+All new integrations and scripts should be written in Python 3. Python 2 is supported only for existing integrations and scripts.
 
 ## Imports 
 You define imports and disable insecure warning at the top of the file.
@@ -141,7 +152,7 @@ class Client(BaseClient):
 ## Command Functions
 These are the best practices for defining the command functions.
 - Each integration command should have a corresponding `_command` function.
-- Eeach **_command** function should use `Client` class functions.
+- Each **_command** function should use `Client` class functions.
 - Each **_command** function should be unit testable. This means you should avoid using global functions, such as `demisto.results()`, `return_error()`, or `return_outputs()`.
 - The **_command** function will receive `client` instance and `args` (`demisto.args()` dictionary).
 - The **_command** function will return 3 variables: readable_output, outputs, raw_response
@@ -203,6 +214,15 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 ```
 
+
+## IOC Reputation Commands
+There are two implementation requirements for reputation commands (aka `!file`, `!email`, `!domain`, `!url`, and `!ip`) that are enforced by checks in the [hook_validations](../../Tests/scripts/hook_validations/integration.py).
+- The reputation command's argument of the same name must have `default` set to `True`.
+- The reputation command's argument of the same name must have `isArray` set to `True`.
+
+For more details on these two command argument properties look at the [yaml-file-integration/README.md](../../docs/yaml-file-integration/README.MD#commands) in our `docs` folder.
+
+
 ## test-module
 - When users click the **Test** button, the `test-module` will execute when the **Test** button pressed in the integration instance setting page.
 - If the test module returns the string `"ok"` then the test will be green (success). All other string will be red.
@@ -233,7 +253,7 @@ def test_module(client):
 
 ## fetch-incidents
 These are the best practices for defining fetch-incidents.
-- The [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) function will be executed when the `Fetch incidents` checkbox is selected in the integration settings. This function will be executed periodically.
+- The [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents) function will be executed when the `Fetch incidents` checkbox is selected in the integration settings. This function will be executed periodically.
 - The fetch-incidents function must be unit testable.
 - Should receive the `last_run` param instead of executing the `demisto.getLastRun()` function.
 - Should return `next_run` back to main, instead of executing `demisto.setLastRun()` inside the `fetch_incidents` function.

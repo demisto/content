@@ -1,6 +1,6 @@
 commonfields:
-  id: da8594b8-0b57-4cb2-8578-94754bb577c6
-  version: 10
+  id: NetwitnessSAListIncidents
+  version: -1
 name: NetwitnessSAListIncidents
 script: |
   resp = demisto.executeCommand("nw-list-incidents", demisto.args())

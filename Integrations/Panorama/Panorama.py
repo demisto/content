@@ -9,7 +9,6 @@ import uuid
 import json
 import requests
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -886,7 +885,8 @@ def panorama_list_address_groups_command():
         'Contents': address_groups_arr,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Address groups:', address_groups_output,
-                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'], removeNull=True),
+                                         ['Name', 'Type', 'Addresses', 'Match', 'Description', 'Tags'],
+                                         removeNull=True),
         'EntryContext': {
             "Panorama.AddressGroups(val.Name == obj.Name)": address_groups_output
         }
@@ -2682,7 +2682,7 @@ def panorama_custom_block_rule_command():
             result = http_request(URL, 'POST', params=params)
         custom_block_output['IP'] = object_value
 
-    elif object_type == 'address-group' or 'edl':
+    elif object_type in ['address-group', 'edl']:
         if block_source:
             params = prepare_security_rule_params(api_action='set', action='drop', source=object_value,
                                                   destination='any', rulename=rulename + '-from', target=target,
@@ -3071,13 +3071,9 @@ def panorama_edit_edl(edl_name, element_to_change, element_value):
     edl_output = {'Name': edl_name}
     if DEVICE_GROUP:
         edl_output['DeviceGroup'] = DEVICE_GROUP
-    params = {
-        'action': 'edit',
-        'type': 'config',
-        'key': API_KEY
-    }
-
-    params['xpath'] = XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/" + edl_type + "/" + element_to_change
+    params = {'action': 'edit', 'type': 'config', 'key': API_KEY,
+              'xpath': XPATH_OBJECTS + "external-list/entry[@name='" + edl_name + "']/type/"
+                        + edl_type + "/" + element_to_change}
 
     if element_to_change == 'url':
         params['element'] = add_argument_open(element_value, 'url', False)
@@ -3582,7 +3578,7 @@ def build_array_query(query, arg_string, string, operator):
     return query
 
 
-def build_logs_query(address_src=None, address_dst=None,
+def build_logs_query(address_src=None, address_dst=None, ip_=None,
                      zone_src=None, zone_dst=None, time_generated=None, action=None,
                      port_dst=None, rule=None, url=None, filedigest=None):
     query = ''
@@ -3592,6 +3588,12 @@ def build_logs_query(address_src=None, address_dst=None,
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
         query += build_array_query(query, address_dst, 'addr.dst', 'in')
+    if ip_:
+        if len(query) > 0 and query[-1] == ')':
+            query += ' and '
+        query = build_array_query(query, ip_, 'addr.src', 'in')
+        query += ' or '
+        query = build_array_query(query, ip_, 'addr.dst', 'in')
     if zone_src:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3619,7 +3621,7 @@ def build_logs_query(address_src=None, address_dst=None,
     if url:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
-        query += build_array_query(query, url, 'url', 'eq')
+        query += build_array_query(query, url, 'url', 'contains')
     if filedigest:
         if len(query) > 0 and query[-1] == ')':
             query += ' and '
@@ -3629,7 +3631,7 @@ def build_logs_query(address_src=None, address_dst=None,
 
 
 @logger
-def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+def panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                         zone_src, zone_dst, time_generated, action,
                         port_dst, rule, url, filedigest):
     params = {
@@ -3646,7 +3648,9 @@ def panorama_query_logs(log_type, number_of_logs, query, address_src, address_ds
     if query:
         params['query'] = query
     else:
-        params['query'] = build_logs_query(address_src, address_dst,
+        if ip_ and (address_src or address_dst):
+            return_error('The ip argument cannot be used with the address-source or the address-destination arguments.')
+        params['query'] = build_logs_query(address_src, address_dst, ip_,
                                            zone_src, zone_dst, time_generated, action,
                                            port_dst, rule, url, filedigest)
     if number_of_logs:
@@ -3670,6 +3674,7 @@ def panorama_query_logs_command():
     query = demisto.args().get('query')
     address_src = demisto.args().get('addr-src')
     address_dst = demisto.args().get('addr-dst')
+    ip_ = demisto.args().get('ip')
     zone_src = demisto.args().get('zone-src')
     zone_dst = demisto.args().get('zone-dst')
     time_generated = demisto.args().get('time-generated')
@@ -3685,7 +3690,7 @@ def panorama_query_logs_command():
                   or time_generated or action or port_dst or rule or url or filedigest):
         return_error('Use the free query argument or the fixed search parameters arguments to build your query')
 
-    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst,
+    result = panorama_query_logs(log_type, number_of_logs, query, address_src, address_dst, ip_,
                                  zone_src, zone_dst, time_generated, action,
                                  port_dst, rule, url, filedigest)
 
@@ -3720,36 +3725,37 @@ def panorama_check_logs_status_command():
     """
     Check query logs status
     """
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
 
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
-        else:
-            return_error('Query logs failed')
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed')
 
-    query_logs_status_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        query_logs_status_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
-    if result['response']['result']['job']['status'] == 'FIN':
-        query_logs_status_output['Status'] = 'Completed'
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response')
+        if result['response']['result']['job']['status'] == 'FIN':
+            query_logs_status_output['Status'] = 'Completed'
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
-                                         removeNull=True),
-        'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
-    })
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_status_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_status_output}
+        })
 
 
 def prettify_log(log):
@@ -3844,64 +3850,199 @@ def prettify_logs(logs):
 
 
 def panorama_get_logs_command():
-    job_id = demisto.args().get('job_id')
-    result = panorama_get_traffic_logs(job_id)
     ignore_auto_extract = demisto.args().get('ignore_auto_extract') == 'true'
-    log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
-    if isinstance(log_type_dt, list):
-        log_type = log_type_dt[0]
-    else:
-        log_type = log_type_dt
-
-    if result['response']['@status'] == 'error':
-        if 'msg' in result['response'] and 'line' in result['response']['msg']:
-            message = '. Reason is: ' + result['response']['msg']['line']
-            return_error('Query logs failed' + message)
+    job_ids = argToList(demisto.args().get('job_id'))
+    for job_id in job_ids:
+        result = panorama_get_traffic_logs(job_id)
+        log_type_dt = demisto.dt(demisto.context(), f'Panorama.Monitor(val.JobID === "{job_id}").LogType')
+        if isinstance(log_type_dt, list):
+            log_type = log_type_dt[0]
         else:
-            return_error('Query logs failed')
+            log_type = log_type_dt
 
-    query_logs_output = {
-        'JobID': job_id,
-        'Status': 'Pending'
-    }
+        if result['response']['@status'] == 'error':
+            if 'msg' in result['response'] and 'line' in result['response']['msg']:
+                message = '. Reason is: ' + result['response']['msg']['line']
+                return_error('Query logs failed' + message)
+            else:
+                return_error('Query logs failed')
 
-    if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
-            or 'status' not in result['response']['result']['job']:
-        return_error('Missing JobID status in response')
+        query_logs_output = {
+            'JobID': job_id,
+            'Status': 'Pending'
+        }
 
-    if result['response']['result']['job']['status'] != 'FIN':
-        demisto.results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
-                                             ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
-        })
-    else:  # FIN
-        query_logs_output['Status'] = 'Completed'
-        if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
-                or 'logs' not in result['response']['result']['log']:
-            return_error('Missing logs in response')
+        if 'response' not in result or 'result' not in result['response'] or 'job' not in result['response']['result'] \
+                or 'status' not in result['response']['result']['job']:
+            return_error('Missing JobID status in response')
 
-        logs = result['response']['result']['log']['logs']
-        if logs['@count'] == '0':
-            demisto.results('No ' + log_type + ' logs matched the query')
-        else:
-            pretty_logs = prettify_logs(logs['entry'])
-            query_logs_output['Logs'] = pretty_logs
+        if result['response']['result']['job']['status'] != 'FIN':
             demisto.results({
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['json'],
                 'Contents': result,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
-                                                 ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
-                                                  'Action', 'Rule', 'URLOrFilename'], removeNull=True),
-                'IgnoreAutoExtract': ignore_auto_extract,
+                'HumanReadable': tableToMarkdown('Query Logs status:', query_logs_output,
+                                                 ['JobID', 'Status'], removeNull=True),
                 'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
             })
+        else:  # FIN
+            query_logs_output['Status'] = 'Completed'
+            if 'response' not in result or 'result' not in result['response'] or 'log' not in result['response']['result'] \
+                    or 'logs' not in result['response']['result']['log']:
+                return_error('Missing logs in response')
+
+            logs = result['response']['result']['log']['logs']
+            if logs['@count'] == '0':
+                demisto.results('No ' + log_type + ' logs matched the query')
+            else:
+                pretty_logs = prettify_logs(logs['entry'])
+                query_logs_output['Logs'] = pretty_logs
+                demisto.results({
+                    'Type': entryTypes['note'],
+                    'ContentsFormat': formats['json'],
+                    'Contents': result,
+                    'ReadableContentsFormat': formats['markdown'],
+                    'HumanReadable': tableToMarkdown('Query ' + log_type + ' Logs:', query_logs_output['Logs'],
+                                                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application',
+                                                      'Action', 'Rule', 'URLOrFilename'], removeNull=True),
+                    'IgnoreAutoExtract': ignore_auto_extract,
+                    'EntryContext': {"Panorama.Monitor(val.JobID == obj.JobID)": query_logs_output}
+                })
+
+
+''' Security Policy Match'''
+
+
+def build_policy_match_query(application=None, category=None,
+                             destination=None, destination_port=None, from_=None, to_=None,
+                             protocol=None, source=None, source_user=None):
+    query = '<test><security-policy-match>'
+    if from_:
+        query += f'<from>{from_}</from>'
+    if to_:
+        query += f'<to>{to_}</to>'
+    if source:
+        query += f'<source>{source}</source>'
+    if destination:
+        query += f'<destination>{destination}</destination>'
+    if destination_port:
+        query += f'<destination-port>{destination_port}</destination-port>'
+    if protocol:
+        query += f'<protocol>{protocol}</protocol>'
+    if source_user:
+        query += f'<source-user>{source_user}</source-user>'
+    if application:
+        query += f'<application>{application}</application>'
+    if category:
+        query += f'<category>{category}</category>'
+    query += '</security-policy-match></test>'
+
+    return query
+
+
+def panorama_security_policy_match(application=None, category=None, destination=None,
+                                   destination_port=None, from_=None, to_=None,
+                                   protocol=None, source=None, source_user=None):
+    params = {'type': 'op', 'key': API_KEY,
+              'cmd': build_policy_match_query(application, category, destination, destination_port, from_, to_,
+                                              protocol, source, source_user)}
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result['response']['result']
+
+
+def prettify_matching_rule(matching_rule):
+    pretty_matching_rule = {}
+
+    if '@name' in matching_rule:
+        pretty_matching_rule['Name'] = matching_rule['@name']
+    if 'from' in matching_rule:
+        pretty_matching_rule['From'] = matching_rule['from']
+    if 'source' in matching_rule:
+        pretty_matching_rule['Source'] = matching_rule['source']
+    if 'to' in matching_rule:
+        pretty_matching_rule['To'] = matching_rule['to']
+    if 'destination' in matching_rule:
+        pretty_matching_rule['Destination'] = matching_rule['destination']
+    if 'category' in matching_rule:
+        pretty_matching_rule['Category'] = matching_rule['category']
+    if 'action' in matching_rule:
+        pretty_matching_rule['Action'] = matching_rule['action']
+
+    return pretty_matching_rule
+
+
+def prettify_matching_rules(matching_rules):
+    if not isinstance(matching_rules, list):  # handle case of only one log that matched the query
+        return prettify_matching_rule(matching_rules)
+
+    pretty_matching_rules_arr = []
+    for matching_rule in matching_rules:
+        pretty_matching_rule = prettify_matching_rule(matching_rule)
+        pretty_matching_rules_arr.append(pretty_matching_rule)
+
+    return pretty_matching_rules_arr
+
+
+def prettify_query_fields(application=None, category=None,
+                          destination=None, destination_port=None, from_=None, to_=None,
+                          protocol=None, source=None, source_user=None):
+    pretty_query_fields = {'Source': source, 'Destination': destination, 'Protocol': protocol}
+    if application:
+        pretty_query_fields['Application'] = application
+    if category:
+        pretty_query_fields['Category'] = category
+    if destination_port:
+        pretty_query_fields['DestinationPort'] = destination_port
+    if from_:
+        pretty_query_fields['From'] = from_
+    if to_:
+        pretty_query_fields['To'] = to_
+    if source_user:
+        pretty_query_fields['SourceUser'] = source_user
+    return pretty_query_fields
+
+
+def panorama_security_policy_match_command():
+    if not VSYS:
+        return_error("The 'panorama-security-policy-match' command is only relevant for a Firewall instance.")
+
+    application = demisto.args().get('application')
+    category = demisto.args().get('category')
+    destination = demisto.args().get('destination')
+    destination_port = demisto.args().get('destination-port')
+    from_ = demisto.args().get('from')
+    to_ = demisto.args().get('to')
+    protocol = demisto.args().get('protocol')
+    source = demisto.args().get('source')
+    source_user = demisto.args().get('source-user')
+
+    matching_rules = panorama_security_policy_match(application, category, destination, destination_port, from_, to_,
+                                                    protocol, source, source_user)
+    if not matching_rules:
+        demisto.results('The query did not match a Security policy.')
+    else:
+        ec_ = {'Rules': prettify_matching_rules(matching_rules['rules']['entry']),
+               'QueryFields': prettify_query_fields(application, category, destination, destination_port,
+                                                    from_, to_, protocol, source, source_user),
+               'Query': build_policy_match_query(application, category, destination, destination_port,
+                                                 from_, to_, protocol, source, source_user)}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': matching_rules,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Matching Security Policies:', ec_['Rules'],
+                                             ['Name', 'Action', 'From', 'To', 'Source', 'Destination', 'Application'],
+                                             removeNull=True),
+            'EntryContext': {"Panorama.SecurityPolicyMatch(val.Query == obj.Query)": ec_}
+        })
 
 
 ''' EXECUTION '''
@@ -4098,6 +4239,10 @@ def main():
         # Application
         elif demisto.command() == 'panorama-list-applications':
             panorama_list_applications_command()
+
+        # Test security policy match
+        elif demisto.command() == 'panorama-security-policy-match':
+            panorama_security_policy_match_command()
 
     except Exception as ex:
         return_error(str(ex))

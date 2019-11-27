@@ -1,6 +1,6 @@
 commonfields:
-  id: ad7de731-cadc-4f49-81cd-522cd4b7bfa5
-  version: 10
+  id: CheckpointFWCreateBackup
+  version: -1
 name: CheckpointFWCreateBackup
 script: |-
   CLI_ADD = "add backup local"
