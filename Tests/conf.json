@@ -1974,7 +1974,7 @@
         },
         {
             "integrations": "IronDefense",
-            "playbookID": "IronDefense - Test"
+            "playbookID": "IronDefenseTest"
         },
         {
             "integrations": "PolySwarm",
