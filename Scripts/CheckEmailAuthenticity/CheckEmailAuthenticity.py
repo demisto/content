@@ -14,7 +14,11 @@ def get_spf(auth, spf):
     :param spf: spf header value (if exist), contains the validation result and sender ip.
     :return: SPF validation information
     """
-    spf_context = {}
+    spf_context = {
+        'Validation-Result': 'Unspecified',
+        'Sender-IP': 'Unspecified',
+        'Reason': 'Unspecified'
+    }
     if auth is None:
         spf_context['Validation-Result'] = spf.split(' ')[0].lower()
         sender_ip = re.findall(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', spf)
@@ -36,7 +40,10 @@ def get_dkim(auth):
     :param auth: authentication header value (if exist), contains the validation result.
     :return: DKIM validation information
     """
-    dkim_context = {}
+    dkim_context = {
+        'Validation-Result': 'Unspecified',
+        'Signing-Domain': 'Unspecified'
+    }
     if auth is not None:
         result = re.search(r'dkim=(\w+)', auth)
         if result is not None:
@@ -56,7 +63,11 @@ def get_dmarc(auth):
     :param auth: authentication header value (if exist), contains the validation result and sender ip.
     :return: DMARC validation information
     """
-    dmarc_context = {}
+    dmarc_context = {
+        'Validation-Result': 'Unspecified',
+        'Tags': {'Unspecified': 'Unspecified'},
+        'Signing-Domain': 'Unspecified'
+    }
     if auth is not None:
         result = re.search(r'dmarc=(\w+)', auth)
         if result is not None:

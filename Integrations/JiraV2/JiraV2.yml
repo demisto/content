@@ -47,9 +47,9 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: Trust any certificate (unsecure)
+- display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
+  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -75,7 +75,7 @@ configuration:
 - display: API token
   name: APItoken
   defaultvalue: ""
-  type: 0
+  type: 4
   required: false
 script:
   script: ''
@@ -199,6 +199,8 @@ script:
       description: The ID of the issue.
     - name: upload
       description: The entry ID to upload.
+    - name: attachmentName
+      description: The attachment name to be displayed in Jira (overrides original file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:

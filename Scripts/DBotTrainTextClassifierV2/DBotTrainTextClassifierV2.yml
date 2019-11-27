@@ -1,0 +1,142 @@
+args:
+- default: false
+  description: The input file entry ID or JSON string.
+  isArray: false
+  name: input
+  required: true
+  secret: false
+- default: false
+  defaultValue: phishing_model
+  description: The model name to store in the system.
+  isArray: false
+  name: modelName
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'true'
+  description: Whether to store the model in the system.
+  isArray: false
+  name: storeModel
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Whether to override the existing model if a model with the same name exists. Default is "false".
+  isArray: false
+  name: overrideExistingModel
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.82'
+  description: The target accuracy, between 0 and 1.
+  isArray: false
+  name: targetAccuracy
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.33'
+  description: Maximum nubmer of samples below the threshold (for the target accuracy).
+  isArray: false
+  name: maxBelowThreshold
+  required: false
+  secret: false
+- default: false
+  description: The field name with the label. Supports a comma-separated list, the first
+    non-empty value will be taken.
+  isArray: false
+  name: tagField
+  required: true
+  secret: false
+- default: false
+  defaultValue: dbot_processed_text
+  description: The field name with the text to train.
+  isArray: false
+  name: textField
+  required: false
+  secret: false
+- default: false
+  defaultValue: '*'
+  description: 'A comma-separated list of email tags values and mapping. The script
+    considers only the tags specified in this field. You can map label to another
+    value by using this format: LABEL:MAPPED_LABEL. For example, for 
+    4 values in email tag: malicious, credentials harvesting, inner communitcation,
+    external legit email, unclassified. While training, we want to ignore "unclassified"
+    tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to     merge
+    "inner communitcation" and "external legit email" to one tag called "non-malicious".
+    The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,
+    external legit email:non-malicious'
+  isArray: false
+  name: phishingLabels
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: pickle_filename
+  description: The input type.
+  isArray: false
+  name: inputType
+  predefined:
+  - json
+  - json_string
+  - json_b64_string
+  - pickle
+  - pickle_string
+  - pickle_b64_string
+  - pickle_filename
+  - json_filename
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.05'
+  description: Minimum score for a word to be considered as a keyword between 0 and 1.
+  isArray: false
+  name: keywordMinScore
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: macro avg
+  description: The metric to use for evaluating the model.
+  isArray: false
+  name: metric
+  predefined:
+  - micro avg
+  - macro avg
+  - weighted avgm
+  required: false
+  secret: false
+comment: Train a machine learning text classifier.
+commonfields:
+  id: DBotTrainTextClassifierV2
+  version: -1
+enabled: false
+name: DBotTrainTextClassifierV2
+outputs:
+- contextPath: DBotPhishingClassifier.ModelName
+  description: The model name.
+  type: String
+- contextPath: DBotPhishingClassifier.EvaluationScores
+  description: The model evaluation scores (f1-score, precision, andrecall).
+  type: Unknown
+- contextPath: DBotPhishingClassifier.ConfusionMatrix
+  description: The model evaluation confusion matrix.
+  type: Unknown
+script: '-'
+system: false
+tags:
+- ml
+timeout: 12µs
+type: python
+dockerimage: demisto/dl:1.4
+runonce: true
+tests:
+- Create Phishing Classifier V2 ML Test
+fromversion: 4.5.0

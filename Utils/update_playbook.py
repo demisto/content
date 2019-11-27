@@ -13,8 +13,22 @@ def add_description(playbook):
     :return: updated playbook dict
     """
     for task_id, task in playbook.get("tasks", {}).items():
-        if task.get("type") in ["start", "end", "title"]:
+        if task.get("type") in ["start", "end", "title", "playbook"]:
             playbook["tasks"][task_id]["task"]["description"] = ""
+
+    return playbook
+
+
+def update_playbook_task_name(playbook):
+    """
+    update the name of the task to be the same as playbookName it is running
+
+    :param playbook: playbook dict loaded from yaml
+    :return: updated playbook dict
+    """
+    for task_id, task in playbook.get("tasks", {}).items():
+        if task.get("type") == "playbook":
+            task["task"]["name"] = task["task"]["playbookName"]
 
     return playbook
 
@@ -87,6 +101,9 @@ def update_playbook(source_path, destination_path):
 
     # add description to tasks that shouldn't have description like start, end, title
     playbook = add_description(playbook)
+
+    # update the name of playbooks tasks to be equal to the name of the playbook
+    playbook = update_playbook_task_name(playbook)
 
     # replace version to be -1
     playbook = replace_version(playbook)
