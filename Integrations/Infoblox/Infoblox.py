@@ -243,7 +243,7 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        request_data = {key: val for key, val in kwargs.items() if val}
+        request_data = {key: val for key, val in kwargs.items() if val is not None}
         request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable'}
         rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
         rule['result']['type'] = suffix
@@ -305,7 +305,7 @@ class Client(BaseClient):
 def parse_demisto_exception(error: DemistoException, field_in_error: str):
     err_string = error.args[0]
     if 'Error in API call' in err_string:
-        infoblox_err = err_string.split('\n')[1].replace('\\', '')
+        infoblox_err = err_string.split('\n')[1]
         infoblox_json = json.loads(infoblox_err)
         return DemistoException(infoblox_json.get(field_in_error, 'text'))
     elif 'Failed to parse json object' in err_string:
@@ -511,7 +511,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     raw_response = client.list_response_policy_zone_rules(zone, max_results, next_page_id)
     new_next_page_id = raw_response.get('next_page_id')
 
-    if next_page_id:
+    if new_next_page_id:
         return_outputs('New next page ID was added to context', {
             f'{INTEGRATION_CONTEXT_NAME}.ListResponsePolicyZoneRules.Pages(val.NextPageID && val.NextPageID === obj.NextPageID)': {
                 'NextPageID': new_next_page_id}}, {'NextPageID': new_next_page_id})
@@ -683,7 +683,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
     mail_exchanger = args.get('mail_exchanger')
-    preference = args.get('preference')
+    preference = int(args.get('preference'))
     infoblox_object_type = 'record:rpz:mx'
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
@@ -711,8 +711,8 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
     name = args.get('name')
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
-    order = args.get('order')
-    preference = args.get('preference')
+    order = int(args.get('order'))
+    preference = int(args.get('preference'))
     replacement = args.get('replacement')
     infoblox_object_type = 'record:rpz:naptr'
 
@@ -772,10 +772,10 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     name = args.get('name')
     rp_zone = args.get('rp_zone')
     comment = args.get('comment')
-    port = args.get('port')
-    priority = args.get('priority')
+    port = int(args.get('port'))
+    priority = int(args.get('priority'))
     target = args.get('target')
-    weight = args.get('weight')
+    weight = int(args.get('weight'))
     infoblox_object_type = 'record:rpz:srv'
 
     raw_response = client.create_substitute_record_rule(infoblox_object_type, name=name, rp_zone=rp_zone,
