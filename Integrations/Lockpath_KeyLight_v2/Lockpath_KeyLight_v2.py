@@ -233,6 +233,7 @@ class Client(BaseClient):
                 return field_key
         return None
 
+    @logger
     def update_field_integration_context(self, component_id: str) -> None:
         """
         update integration context to include the component_id and have at most 7 tables stored
@@ -277,6 +278,7 @@ class Client(BaseClient):
                                         }
         demisto.setIntegrationContext(field_map)
 
+    @logger
     def field_output_to_hr_fields(self, field_output: dict, component_id: str) -> dict:
         '''
 
@@ -304,6 +306,7 @@ class Client(BaseClient):
             final_fields[field_name] = field_val
         return final_fields
 
+    @logger
     def string_to_FieldValues(self, string: str, component_id: str) -> list:
         '''
 
@@ -344,7 +347,7 @@ class Client(BaseClient):
 
 '''HELPER FUNCTIONS'''
 
-
+@logger
 def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> dict:
     """
 
