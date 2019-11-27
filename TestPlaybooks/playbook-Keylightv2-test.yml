@@ -619,9 +619,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Lockpath KeyLight v2
-    nexttasks:
-      '#none#':
-      - "21"
     scriptarguments:
       component_id:
         simple: "10359"
@@ -714,34 +711,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "21":
-    id: "21"
-    taskid: 21eb5cd5-6a69-4c51-8898-7df28f6da25c
-    type: regular
-    task:
-      id: 21eb5cd5-6a69-4c51-8898-7df28f6da25c
-      version: -1
-      name: Untitled Task
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 3690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3735,
+        "height": 3565,
         "width": 390,
         "x": 440,
         "y": 50
