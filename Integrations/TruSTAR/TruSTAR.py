@@ -654,7 +654,7 @@ config = {
     'user_api_key': API_KEY,
     'user_api_secret': API_SECRET,
     'api_endpoint': BASE_URL,
-    'verify': INSECURE
+    'verify': not INSECURE
 }
 ts = trustar.TruStar(config=config)
 
