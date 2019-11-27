@@ -1,4 +1,7 @@
 ## [Unreleased]
+Fixed an issue with the retrieval of app IDs for applications with reverse field mapping. 
+
+## [19.11.1] - 2019-11-26
 Fixed an issue with the presentation of users display names.
 
 ## [19.11.0] - 2019-11-12
