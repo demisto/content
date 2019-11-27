@@ -110,6 +110,7 @@ USE_SSL = not demisto.params()['insecure']
 VERSION = demisto.params()['version']
 IS_FETCH = demisto.params()['isFetch']
 FETCH_TIME = demisto.params().get('fetch_time', '1 days')
+FETCH_LIMIT = int(demisto.params().get('fetch_limit', '100'))
 TOKEN = None
 DEFAULT_HEADERS = {
     'Content-Type': 'application/json;charset=UTF-8',
@@ -163,7 +164,7 @@ def http_request(method, url, body=None, headers=None, url_params=None):
     )
     # handle timeout (token expired): renew token and try again
     if response.status_code == 408:
-        LOG('Timeout detected -  renwing token')
+        LOG('Timeout detected -  renewing token')
         TOKEN = get_token()
         headers['NetWitness-Token'] = TOKEN
         response = requests.request(
@@ -372,7 +373,7 @@ def update_incident_request(incident_id, assignee=None, status=None):
         - response body does not contain valid json (ValueError)
 
     """
-    LOG('Requestig to update incident ' + incident_id)
+    LOG('Requesting to update incident ' + incident_id)
 
     body = {
         'assignee': assignee,
@@ -596,7 +597,7 @@ def get_timestamp(timestamp):
 
 def fetch_incidents():
     """
-    fetch is limited to 100 results
+    By default, fetch is limited to 100 results, however it is user configurable.
     """
     last_run = demisto.getLastRun()
 
@@ -611,7 +612,7 @@ def fetch_incidents():
     LOG('Fetching incidents since {}'.format(timestamp))
     netwitness_incidents = get_all_incidents(
         since=timestamp,
-        limit=100
+        limit=FETCH_LIMIT
     )
 
     demisto_incidents = []
@@ -629,7 +630,10 @@ def fetch_incidents():
             continue
 
         # parse timestamp to datetime format to be able to compare with last_incident_datetime
-        incident_datetime = datetime.strptime(incident_timestamp, iso_format)
+        try:
+            incident_datetime = datetime.strptime(incident_timestamp, iso_format)
+        except ValueError:
+            incident_datetime = datetime.strptime(incident_timestamp, "%Y-%m-%dT%H:%M:%SZ")
         if incident_datetime > last_incident_datetime:
             # update last_incident_datetime
             last_incident_datetime = incident_datetime
@@ -967,7 +971,7 @@ def main():
     TOKEN = get_token()
     command = demisto.command()
     try:
-        handle_proxy()
+        handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
         if command == 'test-module':
             demisto.results(test_module())
         elif command == 'fetch-incidents':

@@ -28,7 +28,7 @@ URL_ERROR_MSG = "Can't access the URL. It might be malicious, or unreachable for
                 "You can choose to receive this message as error/warning in the instance settings\n"
 EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when there is a refused connection." \
                            " Please check your URL."
-DEFAULT_W, DEFAULT_H = 600, 800
+DEFAULT_W, DEFAULT_H = '600', '800'
 
 
 def check_response(driver):
@@ -195,8 +195,8 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
 def rasterize_command():
     url = demisto.getArg('url')
-    w = demisto.args().get('width', DEFAULT_W)
-    h = demisto.args().get('height', DEFAULT_H)
+    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
+    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     r_type = demisto.args().get('type', 'png')
     wait_time = int(demisto.args().get('wait_time', 0))
 
@@ -218,8 +218,8 @@ def rasterize_command():
 
 def rasterize_image_command():
     entry_id = demisto.args().get('EntryID')
-    w = demisto.args().get('width', DEFAULT_W)
-    h = demisto.args().get('height', DEFAULT_H)
+    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
+    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
 
     file_path = demisto.getFilePath(entry_id).get('path')
     filename = 'image.png'  # type: ignore
@@ -236,8 +236,8 @@ def rasterize_image_command():
 
 def rasterize_email_command():
     html_body = demisto.args().get('htmlBody')
-    w = demisto.args().get('width', DEFAULT_W)
-    h = demisto.args().get('height', DEFAULT_H)
+    w = demisto.args().get('width', DEFAULT_W).rstrip('px')
+    h = demisto.args().get('height', DEFAULT_H).rstrip('px')
     offline = demisto.args().get('offline', 'false') == 'true'
     r_type = demisto.args().get('type', 'png')
 

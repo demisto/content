@@ -19,7 +19,7 @@ mapping:
   type:
     type: str
     required: True
-    enum: ['javascript', 'python']
+    enum: ['javascript', 'python', 'powershell']
   tags:
     type: seq
     required: True

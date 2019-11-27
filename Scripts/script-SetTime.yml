@@ -1,6 +1,6 @@
 commonfields:
-  id: 8bb47409-fffb-40c4-8601-d5fd20384e26
-  version: 8
+  id: SetTime
+  version: -1
 name: SetTime
 script: |-
   import datetime

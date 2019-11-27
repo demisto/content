@@ -549,6 +549,24 @@ def test_logger_write(mocker):
     assert '<XX_REPLACED>' in args[0]
 
 
+def test_logger_init_key_name(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'key': {'password': 'my_password'},
+        'secret': 'my_secret'
+    })
+    mocker.patch.object(demisto, 'info')
+    ilog = IntegrationLogger()
+    ilog.write("This is a test with my_password and my_secret")
+    ilog.print_log()
+    # assert that the print doesn't contain my_password
+    # call_args is tuple (args list, kwargs). we only need the args
+    args = demisto.info.call_args[0]
+    assert 'This is a test' in args[0]
+    assert 'my_password' not in args[0]
+    assert 'my_secret' not in args[0]
+    assert '<XX_REPLACED>' in args[0]
+
+
 def test_logger_replace_strs(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'my_apikey',

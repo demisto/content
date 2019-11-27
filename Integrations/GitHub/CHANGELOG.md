@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
   - Improved implementation of the default value for the fetch time parameter.
   - Added 4 commands:
     - ***GitHub-list-pr-review-comments***

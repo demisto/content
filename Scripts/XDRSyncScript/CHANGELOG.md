@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.10.2] - 2019-10-29
 The **XDRSyncScript** now works as expected.
 
 ## [19.9.0] - 2019-09-04

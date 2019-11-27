@@ -233,7 +233,7 @@ def test_module(client):
 
 ## fetch-incidents
 These are the best practices for defining fetch-incidents.
-- The [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents/README.md) function will be executed when the `Fetch incidents` checkbox is selected in the integration settings. This function will be executed periodically.
+- The [fetch-incidents](https://github.com/demisto/content/blob/master/docs/fetching_incidents) function will be executed when the `Fetch incidents` checkbox is selected in the integration settings. This function will be executed periodically.
 - The fetch-incidents function must be unit testable.
 - Should receive the `last_run` param instead of executing the `demisto.getLastRun()` function.
 - Should return `next_run` back to main, instead of executing `demisto.setLastRun()` inside the `fetch_incidents` function.

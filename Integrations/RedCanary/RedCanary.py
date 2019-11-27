@@ -134,10 +134,22 @@ def get_endpoint_user_context(res=None, endpoint_user_id=None):
     if res is None:
         res = http_get('/endpoint_users/{}'.format(endpoint_user_id))['data']
 
-    return [{
-        'Username': endpoint_user['attributes']['username'].split('\\')[1],
-        'Hostname': endpoint_user['attributes']['username'].split('\\')[0],
-    } for endpoint_user in res]
+    endpoint_users = []
+    for endpoint_user in res:
+        username = endpoint_user.get('attributes', {}).get('username', '')
+        if '\\' in username:
+            hostname, parsed_username = username.split('\\')
+            user = {
+                'Username': parsed_username,
+                'Hostname': hostname
+            }
+        else:
+            user = {
+                'Username': username
+            }
+        endpoint_users.append(user)
+
+    return endpoint_users
 
 
 def get_full_timeline(detection_id, per_page=100):

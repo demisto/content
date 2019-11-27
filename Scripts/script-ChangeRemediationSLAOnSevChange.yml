@@ -1,6 +1,6 @@
 fromversion: 4.1.0
 commonfields:
-  id: changeremediationslaonsevchange
+  id: ChangeRemediationSLAOnSevChange
   version: -1
 name: ChangeRemediationSLAOnSevChange
 script: |

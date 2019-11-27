@@ -1885,7 +1885,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: Where to move the rule. Can be "before", "after", "top", or "bottom".
-        If you specify "up" or "down", you need to supply the "dst" argument.
+        If you specify "top" or "bottom", you need to supply the "dst" argument.
       isArray: false
       name: where
       predefined:
@@ -1896,8 +1896,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Destination rule relative to the rule you are moving. Relevant
-        if you specify "up" or "down" for the "where" argument.
+      description: Destination rule relative to the rule that you are moving.
+        This field is only relevant if you specify "top" or "bottom" in the "where" argument.
       isArray: false
       name: dst
       required: false

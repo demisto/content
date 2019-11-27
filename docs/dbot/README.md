@@ -1,23 +1,14 @@
 # Overview
 DBot is the Demisto machine learning bot which ingests information about indicators to determine if they are malicious or not. Since DBot requires a very specific dataset, we must format our data as per this article.
 
-
-**Please Note**: We are unable to use the Demisto Transformers (DT) within the DBot score context. 
-
-For example, using the following in your DBot cpntext, will not work:
-
-```python
-DBotScore(val.Indicator == obj.Indicator)
-```
-
 ## Context Format
 ```python
-      "DBotScore": {
-          "Indicator" : "foo@demi.com",
-          "Type": "email",
-          "Vendor": "JoeSecurity",
-          "Score": 3
-      } 
+"DBotScore": {
+  "Indicator" : "foo@demi.com",
+  "Type": "email",
+  "Vendor": "JoeSecurity",
+  "Score": 3
+} 
 ```
 
 The DBot score must be at the root level of the context and contain **all** of the keys listed below.
@@ -66,7 +57,7 @@ demisto.results({
             "Malicious":{
                 "Vendor": "STRING, Vendor reporting malicious",
                 "Description": "STRING, Description about why IP was determined malicious"
-    },
+        },
         },
          "Domain": {
             "Data": "STRING, The Domain",
@@ -92,3 +83,10 @@ Malicious has two key values, "Vendor" and "Description". Vendor is the entity r
 }
 ```
 
+**Please Note**: We are unable to use the Demisto Transformers (DT) within the DBot score context. 
+
+For example, using the following in your DBot context, will not work:
+
+```python
+DBotScore(val.Indicator == obj.Indicator)
+```

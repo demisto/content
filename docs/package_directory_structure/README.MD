@@ -1,11 +1,11 @@
 # Package directory structure
 Content code entities in Demisto are presented by YAML files.
 
-Automation scripts and integrations [YAML files](https://github.com/demisto/content/blob/master/docs/yaml-file-integration/README.MD) include Javascript/Python code.
+Automation scripts and integrations [YAML files](https://github.com/demisto/content/blob/master/docs/yaml-file-integration) include Javascript/Python code.
 
 Python scripts and integrations are stored in directories as packages.
 
-This is required for running [linting](https://github.com/demisto/content/blob/master/docs/linting/README.md) and [unit testing](https://github.com/demisto/content/blob/master/docs/tests/unit-testing/README.md) on the Python code.
+This is required for running [linting](https://github.com/demisto/content/blob/master/docs/linting) and [unit testing](https://github.com/demisto/content/blob/master/docs/tests/unit-testing) on the Python code.
 
 The package is converted into a YAML file, which include all the package components, in Demisto's CI build, using the `package_creator.py` script, and then populated in the Content release.
 

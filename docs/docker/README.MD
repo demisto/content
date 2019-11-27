@@ -8,7 +8,11 @@ Primarily we use docker to run python scripts in a controlled environment. They 
 
 # Docker Images 
 
-There are often times during development where the standard Python libraries will be insufficient to meet our needs. When presented with these challenges, we must begin looking into creating a Docker image which would allow us to utilise other third party libraries.
+Demisto maintains a large repository of docker images. All docker images are available via docker hub under the Demisto organization: https://hub.docker.com/u/demisto/. Docker image creation process is managed via the open source project [demisto/dockerfiles](https://github.com/demisto/dockerfiles). Before trying to create a new docker image, check if there is one available already. You can search the [repository-info branch](https://github.com/demisto/dockerfiles/blob/repository-info/README.md) which is updated nightly with image metadata and os/python packages used in the images.
+
+**Important:** For security reasons, we cannot accept images which are not part of the docker hub Demisto organization. 
+
+If you can not find an existing image, follow through to read below on how to create a docker image for testing and production use.
 
 # Package Requirements
 We cannot just choose any package to be used in our integrations and there are many things to consider before we select a package. 
@@ -74,7 +78,7 @@ If you would like to see all available Docker Images, you may execute the follow
 This command does not accept any arguments and will list all available Docker Images.
 
 ### Via Docker Files (required for production)
-In most cases, if your integration is for public release, we will need to push Docker Files into the dockerfiles repository [located here](https://github.com/demisto/dockerfiles). See [README,md](https://github.com/demisto/dockerfiles/blob/master/README.md) for instructions on building docker images. 
+In most cases, if your integration is for public release, we will need to push Docker Files into the dockerfiles repository [located here](https://github.com/demisto/dockerfiles). Pushing into this repository will add the image (after an approval process) to the docker hub Demisto organization. See [README.md](https://github.com/demisto/dockerfiles/blob/master/README.md) for instructions. 
 
 ## Important Notes
 When modifying an existing Docker Image, we need to ensure the change will not disrupt other integrations that may use that same package. Thus, all docker images are created with a unique version tag, which we don't allow overriding. 

@@ -17,7 +17,7 @@ from requests.exceptions import ConnectionError
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
+    ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
     AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
@@ -1321,12 +1321,10 @@ def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder
     is_public = is_default_folder(destination_folder_path, is_public)
     destination_folder = get_folder_by_path(destination_account, destination_folder_path, is_public)
     item = get_item_from_mailbox(source_account, item_id)
-    try:
-        source_account.bulk_move(ids=[item], to_folder=destination_folder)
-    except ErrorToFolderNotFound:
-        exported_items = source_account.export([item])
-        destination_account.upload([(destination_folder, exported_items[0])])
-        source_account.bulk_delete([item])
+
+    exported_items = source_account.export([item])
+    destination_account.upload([(destination_folder, exported_items[0])])
+    source_account.bulk_delete([item])
 
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
