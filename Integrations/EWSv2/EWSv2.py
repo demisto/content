@@ -13,11 +13,12 @@ import warnings
 import subprocess
 import email
 from requests.exceptions import ConnectionError
+from collections import deque
 
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
     ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorToFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
+    ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
     AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest
 from exchangelib.items import Item, Message, Contact
 from exchangelib.services import EWSService, EWSAccountService
@@ -85,7 +86,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', ]
+                         'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
 USE_PROXY = demisto.params().get('proxy', False)
@@ -103,6 +104,8 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
+MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
 [CmdletBinding()]
@@ -506,6 +509,7 @@ log_handler = None
 def start_logging():
     global log_stream
     global log_handler
+    logging.raiseExceptions = False
     if log_stream is None:
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
@@ -873,10 +877,14 @@ def get_last_run():
         last_run = {
             LAST_RUN_TIME: None,
             LAST_RUN_FOLDER: FOLDER_NAME,
-            LAST_RUN_IDS: None
+            LAST_RUN_IDS: []
         }
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
+
+    # In case we have existing last_run data
+    if last_run.get(LAST_RUN_IDS) is None:
+        last_run[LAST_RUN_IDS] = []
 
     return last_run
 
@@ -890,6 +898,8 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
             qs = qs.filter(datetime_received__gte=last_10_min)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+    qs = qs.filter().order_by('datetime_received')
+
     result = qs.all()
     result = [x for x in result if isinstance(x, Message)]
     if exclude_ids and len(exclude_ids) > 0:
@@ -905,7 +915,7 @@ def keys_to_camel_case(value):
 
     if value is None:
         return None
-    if isinstance(value, list):
+    if isinstance(value, (list, set)):
         return map(keys_to_camel_case, value)
     if isinstance(value, dict):
         return dict((keys_to_camel_case(k),
@@ -1150,25 +1160,32 @@ def parse_incident_from_item(item, is_fetch):
 
 
 def fetch_emails_as_incidents(account_email, folder_name):
-    start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
     last_run = get_last_run()
 
     try:
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
+        ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
+        incident = {}  # type: Dict[Any, Any]
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
+                if len(incidents) >= MAX_FETCH:
+                    break
+
+        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
+        if isinstance(last_run_time, EWSDateTime):
+            last_run_time = last_run_time.ewsformat()
+
         new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_TIME: last_run_time,
             LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids,
+            LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
         }
 
@@ -1321,12 +1338,10 @@ def move_item_between_mailboxes(item_id, destination_mailbox, destination_folder
     is_public = is_default_folder(destination_folder_path, is_public)
     destination_folder = get_folder_by_path(destination_account, destination_folder_path, is_public)
     item = get_item_from_mailbox(source_account, item_id)
-    try:
-        source_account.bulk_move(ids=[item], to_folder=destination_folder)
-    except ErrorToFolderNotFound:
-        exported_items = source_account.export([item])
-        destination_account.upload([(destination_folder, exported_items[0])])
-        source_account.bulk_delete([item])
+
+    exported_items = source_account.export([item])
+    destination_account.upload([(destination_folder, exported_items[0])])
+    source_account.bulk_delete([item])
 
     move_result = {
         MOVED_TO_MAILBOX: destination_mailbox,
@@ -1415,7 +1430,7 @@ def get_limited_number_of_messages_from_qs(qs, limit):
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None):
+                            is_public=None, selected_fields='all'):
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
 
@@ -1424,32 +1439,51 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
 
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
-    if folder_path:
+    if folder_path.lower() == 'inbox':
+        folders = [account.inbox]
+    elif folder_path:
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
         folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
+    selected_all_fields = (selected_fields == 'all')
+
+    if selected_all_fields:
+        restricted_fields = list(map(lambda x: x.name, Message.FIELDS))  # type: ignore
+    else:
+        restricted_fields = set(argToList(selected_fields))  # type: ignore
+        restricted_fields.update(['id', 'message_id'])  # type: ignore
+
     for folder in folders:
         if Message not in folder.supported_item_models:
             continue
         if query:
-            items_qs = folder.filter(query).only(*map(lambda x: x.name, Message.FIELDS))
+            items_qs = folder.filter(query).only(*restricted_fields)
         else:
-            items_qs = folder.filter(message_id=message_id).only(*map(lambda x: x.name, Message.FIELDS))
+            items_qs = folder.filter(message_id=message_id).only(*restricted_fields)
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
+
     items = items[:limit]
     searched_items_result = map(
-        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True),
-        items)
+        lambda item: parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                        compact_fields=selected_all_fields), items)
+
+    if not selected_all_fields:
+        searched_items_result = [
+            {k: v for (k, v) in i.iteritems()
+             if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
+
+        for item in searched_items_result:
+            item['itemId'] = item.pop('id', '')
 
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
-                                headers=ITEMS_RESULTS_HEADERS)
+                                headers=ITEMS_RESULTS_HEADERS if selected_all_fields else None)
 
 
 def get_out_of_office_state(target_mailbox=None):
@@ -1546,23 +1580,6 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):
     return "Folder %s created successfully" % full_path
 
 
-def mark_item_as_junk(item_id, move_items, target_mailbox=None):
-    account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    move_items = (move_items.lower() == "yes")
-    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
-    mark_as_junk_result = {
-        ITEM_ID: item_id,
-    }
-    if ews_result == "Success":
-        mark_as_junk_result[ACTION] = 'marked-as-junk'
-    else:
-        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
-
-    return get_entry_for_object('Mark item as junk',
-                                CONTEXT_UPDATE_EWS_ITEM,
-                                mark_as_junk_result)
-
-
 def find_folders(target_mailbox=None, is_public=None):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     root = account.root
@@ -1587,6 +1604,23 @@ def find_folders(target_mailbox=None, is_public=None):
     }
 
 
+def mark_item_as_junk(item_id, move_items, target_mailbox=None):
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    move_items = (move_items.lower() == "yes")
+    ews_result = MarkAsJunk(account=account).call(item_id=item_id, move_item=move_items)
+    mark_as_junk_result = {
+        ITEM_ID: item_id,
+    }
+    if ews_result == "Success":
+        mark_as_junk_result[ACTION] = 'marked-as-junk'
+    else:
+        raise Exception("Failed mark-item-as-junk with error: " + ews_result)
+
+    return get_entry_for_object('Mark item as junk',
+                                CONTEXT_UPDATE_EWS_ITEM,
+                                mark_as_junk_result)
+
+
 def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public=None, get_internal_item='no'):
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
@@ -1598,9 +1632,11 @@ def get_items_from_folder(folder_path, limit=100, target_mailbox=None, is_public
     items_result = []
 
     for item in items:
-        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True, compact_fields=True)
+        item_attachment = parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
+                                             compact_fields=True)
         for attachment in item.attachments:
-            if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item, Message):
+            if get_internal_item and isinstance(attachment, ItemAttachment) and isinstance(attachment.item,
+                                                                                           Message):
                 # if found item attachment - switch item to the attchment
                 item_attachment = parse_item_as_dict(attachment.item, account.primary_smtp_address, camel_case=True,
                                                      compact_fields=True)
@@ -1737,7 +1773,7 @@ def get_compliance_search(search_name):
 
     # Get search status
     stdout = stdout[len(PASSWORD):]
-    stdout = stdout.split('\n', 1)
+    stdout = stdout.split('\n', 1)  # type: ignore
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
@@ -1851,6 +1887,27 @@ def mark_item_as_read(item_ids, operation='read', target_mailbox=None):
                                 marked_items)
 
 
+def get_item_as_eml(item_id, target_mailbox=None):
+    account = get_account(target_mailbox or ACCOUNT_EMAIL)
+    item = get_item_from_mailbox(account, item_id)
+
+    if item.mime_content:
+        email_content = email.message_from_string(item.mime_content)
+        if item.headers:
+            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                      email_content.items()]
+            for header in item.headers:
+                if (header.name, header.value) not in attached_email_headers \
+                        and header.name != 'Content-Type':
+                    email_content.add_header(header.name, header.value)
+
+        eml_name = item.subject if item.subject else 'demisto_untitled_eml'
+        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = file_result if file_result else "Failed uploading eml file to war room"
+
+        return file_result
+
+
 def test_module():
     try:
         global IS_TEST_MODULE
@@ -1950,6 +2007,8 @@ def main():
             encode_and_submit_results(get_expanded_group(protocol, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
             encode_and_submit_results(mark_item_as_read(**args))
+        elif demisto.command() == 'ews-get-items-as-eml':
+            encode_and_submit_results(get_item_as_eml(**args))
 
     except Exception, e:
         import time
@@ -2017,6 +2076,8 @@ def main():
 
         if demisto.command() == 'fetch-incidents':
             raise
+        if demisto.command() == 'ews-search-mailbox' and isinstance(e, ValueError):
+            return_error(message="Selected invalid field, please specify valid field name.", error=e)
         if IS_TEST_MODULE:
             demisto.results(error_message_simple)
         else:

@@ -1,5 +1,5 @@
 commonfields:
-  id: ip_to_host
+  id: IPToHost
   version: -1
 name: IPToHost
 script: |

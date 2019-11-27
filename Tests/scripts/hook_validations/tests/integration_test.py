@@ -676,6 +676,62 @@ def test_is_default_arguments_ok():
         "The integration validator found an invalid command arg while it is valid"
 
 
+def test_is_isarray_arguments_valid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "email",
+                    "arguments": [
+                        {
+                            "name": "email",
+                            "required": True,
+                            "default": True,
+                            "isArray": True
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is True, \
+        "The integration validator found an invalid command arg configuration while it is valid"
+
+
+def test_is_isarray_arguments_invalid():
+    validator = IntegrationValidator("temp_file", check_git=False)
+    validator.current_integration = {
+        "script": {
+            "commands": [
+                {
+                    "name": "file",
+                    "arguments": [
+                        {
+                            "name": "file",
+                            "required": True,
+                            "default": True,
+                            "isArray": False
+                        },
+                        {
+                            "name": "verbose"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+    validator.old_integration = None
+
+    assert validator.is_isarray_arguments() is False, \
+        "The integration validator did not find invalid arg configuration (needed to be isArray)"
+
+
 def test_is_outputs_for_reputations_commands_valid():
     validator = IntegrationValidator("temp_file", check_git=False)
     validator.current_integration = {

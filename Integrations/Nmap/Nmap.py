@@ -20,6 +20,13 @@ if demisto.command() == 'nmap-scan':
     r = NmapParser.parse(nm.stdout)
     md = '## ' + r.summary + '\n'
     hosts = []
+
+    try:
+        scan_type = r.scan_type
+
+    except KeyError:
+        scan_type = None
+
     for host in r.hosts:
         h = {}
         if len(host.hostnames):
@@ -51,7 +58,7 @@ if demisto.command() == 'nmap-scan':
         'Started': r.started,
         'Ended': r.endtime,
         'CommandLine': r.commandline,
-        'ScanType': r.scan_type,
+        'ScanType': scan_type,
         'Hosts': hosts}
     demisto.results({
         'ContentsFormat': formats['json'],
