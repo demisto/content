@@ -256,7 +256,7 @@ tasks:
         simple: bad activity from Demisto test playbook
       domain: {}
       ip:
-        simple: 84.123.84.123
+        simple: 23.62.60.187
       name:
         simple: Demisto Test
     separatecontext: false
