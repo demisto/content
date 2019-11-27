@@ -2037,7 +2037,6 @@
         "ssdeepreputationtest": "Issue 19845",
         "search_endpoints_by_hash_-_carbon_black_response_-_test": "Issue 19852",
         "Cofense Triage Test": "Creds only works on demo4",
-        "IronDefense - Test": "Test depends on making requests to a non-public API",
         "Test - Windows Defender Advanced Threat Protection": "Issue - #18552",
         "nexpose_test": "Issue 18694",
         "Recorded Future Test": "Issue 18922",
@@ -2051,6 +2050,7 @@
     "skipped_integrations": {
         "_comment": "~~~ NO INSTANCE - will not be resolved ~~~",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
+        "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
