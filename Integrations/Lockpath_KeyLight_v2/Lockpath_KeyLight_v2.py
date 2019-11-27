@@ -596,7 +596,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
     if not field_id:
         raise ValueError("Could not find field name.")
     res = client.return_filtered_records(component_id, page_size, '0', '/ComponentService/GetDetailRecords',
-                                         'Greater Equals Than', field_id, last_fetch_time)
+                                         'Greater Than', field_id, last_fetch_time)
     incidents = []
     max_fetch_time = last_fetch_time
     for record in res:
