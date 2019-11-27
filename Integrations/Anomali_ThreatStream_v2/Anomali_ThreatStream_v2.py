@@ -522,17 +522,29 @@ def get_passive_dns(value, type="ip", limit=50):
 
 
 def import_ioc_with_approval(import_type, import_value, confidence="50", classification="Private",
-                             threat_type="exploit", severity="low"):
+                             threat_type="exploit", severity="low", ip_mapping=False, domain_mapping=False,
+                             url_mapping=False, email_mapping=False, md5_mapping=False):
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
+    ip_mapping = demisto.args().get('ip_mapping', 'False') == 'True'
+    domain_mapping = demisto.args().get('domain_mapping', 'False') == 'True'
+    url_mapping = demisto.args().get('url_mapping', 'False') == 'True'
+    email_mapping = demisto.args().get('email_mapping', 'False') == 'True'
+    md5_mapping = demisto.args().get('md5_mapping', 'False') == 'True'
+
     files = None
     uploaded_file = None
     data = {
         'confidence': confidence,
         'classification': classification,
+        'ip_mapping': ip_mapping,
+        'domain_mapping': domain_mapping,
+        'url_mapping': url_mapping,
+        'email_mapping': email_mapping,
+        'md5_mapping': md5_mapping,
         'threat_type': threat_type,
         'severity': severity
     }
@@ -546,10 +558,15 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
 
         uploaded_file = open(file_info['path'], 'rb')
         files = {'file': (file_info['name'], uploaded_file)}
+        params = build_params()
     else:
-        data[import_type] = import_value
+        if import_value == 'url':
+            params = build_params(url=import_value)
+        else:
+            params = build_params(datatext=import_value)
+
     # in case import_type is not file-id, http_requests will receive None as files
-    res = http_request("POST", "v1/intelligence/import/", params=CREDENTIALS, data=data, files=files)
+    res = http_request("GET", "v1/intelligence/import/", params=params, data=data, files=files)
     # closing the opened file if exist
     if uploaded_file:
         uploaded_file.close()
