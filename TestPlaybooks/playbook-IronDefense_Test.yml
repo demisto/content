@@ -1,6 +1,6 @@
-id: IronDefense - Test
+id: IronDefenseTest
 version: -1
-name: IronDefense Test
+name: IronDefenseTest
 description: Playbook to test the IronDefense Integration.
 starttaskid: "0"
 tasks:
