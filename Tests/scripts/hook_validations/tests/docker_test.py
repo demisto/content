@@ -1,5 +1,6 @@
 from mock import patch
 import pytest
+from Tests.test_utils import get_yaml
 
 RETURN_ERROR_TARGET = 'GetDockerImageLatestTag.return_error'
 
@@ -56,6 +57,24 @@ def test_get_docker_image_latest_tag(image):
     assert int(tag.split('.')[3]) >= 2728
 
 
+# disable-secrets-detection-start
+def test_get_docker_image_from_yml():
+    from Tests.scripts.hook_validations.docker import DockerImageValidator
+    with patch.object(DockerImageValidator, '__init__', lambda x, y, z, w: None):
+        # Test integration case
+        docker_validator = DockerImageValidator(None, None, None)
+        docker_validator.yml_file = get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake_integration.yml")
+        docker_validator.is_integration = True
+        docker_image = docker_validator.get_docker_image_from_yml()
+        assert docker_image == "demisto/pyjwt:1.0"
+        # Test script case
+        docker_validator.yml_file = get_yaml("Tests/scripts/hook_validations/tests/tests_data/fake-script.yml")
+        docker_validator.is_integration = False
+        docker_image = docker_validator.get_docker_image_from_yml()
+        assert docker_image == "demisto/stix2:1.0.0.204"
+# disable-secrets-detection-end
+
+
 def test_lexical_find_latest_tag():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
     tag_list = ["2.0.2000", "2.1.2700", "2.1.373", "latest"]
@@ -95,8 +114,8 @@ def test_parse_docker_image():
 
 def test_is_docker_image_latest_tag():
     from Tests.scripts.hook_validations.docker import DockerImageValidator
-    with patch.object(DockerImageValidator, '__init__', lambda x, y, z: None):
-        docker_image_validator = DockerImageValidator(None, None)
+    with patch.object(DockerImageValidator, '__init__', lambda x, y, z, w: None):
+        docker_image_validator = DockerImageValidator(None, None, None)
         docker_image_validator.yml_file = {}
         docker_image_validator.docker_image_latest_tag = 'latest_tag'
         docker_image_validator.docker_image_name = 'demisto/python'
