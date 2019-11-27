@@ -48,3 +48,86 @@ RESPONSE_LIST_RESOURCE_GROUPS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standa
                                 "<type>Windchill</type>" \
                                 "</resourceGroup>" \
                                 "</resourceGroups>"
+RESPONSE_LIST_USERS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" \
+                      "<users>" \
+                      "<user>" \
+                      "<approverEmployeeId>1082</approverEmployeeId> " \
+                      "<costCenterCode>ILEGCCC13</costCenterCode>" \
+                      "<criticality>Low</criticality>" \
+                      "<department>SAP Administrator</department>" \
+                      "<division>Global Technology</division>" \
+                      "<email>tan.gul@scnx.com</email>" \
+                      "<employeeId>1644</employeeId>" \
+                      "<employeeType>FT</employeeType>" \
+                      "<enableDate>2018-08-15T12:50:11Z</enableDate>" \
+                      "<firstName>Tan</firstName>" \
+                      "<hireDate>2009-08-08T00:00:00Z</hireDate>" \
+                      "<jobCode>R1</jobCode>" \
+                      "<lastName>Gul</lastName>" \
+                      "<location>ALABAMA</location>" \
+                      "<managerEmployeeId>1084</managerEmployeeId>" \
+                      "<managerFirstname>Axel</managerFirstname>" \
+                      "<managerLastname>Figueroa</managerLastname>" \
+                      "<masked>false</masked> <riskscore>0.0</riskscore>" \
+                      "<skipEncryption>false</skipEncryption>" \
+                      "<status>1</status>" \
+                      "<title>Sr. Legal Advisor</title>" \
+                      "<user>" \
+                      "</user>" \
+                      "<approverEmployeeId>1082</approverEmployeeId>" \
+                      "<costCenterCode>ILEGCCC13</costCenterCode>" \
+                      "<criticality>Low</criticality>" \
+                      "<department>Legal Department</department>" \
+                      "<division>Legal</division>" \
+                      "<email>Lauren.Clarke@scnx.com</email>" \
+                      "<employeeId>1631</employeeId>" \
+                      "<employeeType>FT</employeeType>" \
+                      "<enableDate>2018-08-15T12:50:11Z</enableDate>" \
+                      "<firstName>Lauren</firstName>" \
+                      "<hireDate>2009-08-08T00:00:00Z</hireDate>" \
+                      "<jobCode>R1</jobCode>" \
+                      "<lastName>Clarke</lastName>" \
+                      "<location>ALABAMA</location>" \
+                      "<managerEmployeeId>1066</managerEmployeeId>" \
+                      "<managerFirstname>Kyla</managerFirstname>" \
+                      "<managerLastname>Clay</managerLastname>" \
+                      "<masked>false</masked>" \
+                      "<riskscore>0.0</riskscore>" \
+                      "<skipEncryption>false</skipEncryption>" \
+                      "<status>1</status>" \
+                      "<title>Sr. Legal Advisor</title>" \
+                      "<workPhone>216-564-5141</workPhone>" \
+                      "</user>" \
+                      "</users>"
+RESPONSE_LIST_INCIDENT = {
+    "result": {
+        "data": {
+            "totalIncidents": 1.0,
+            "incidentItems": [
+                {
+                    "violatorText": "Cyndi Converse",
+                    "lastUpdateDate": 1566293234026,
+                    "violatorId": "96",
+                    "incidentType": "RISK MODEL",
+                    "incidentId": "100181",
+                    "incidentStatus": "COMPLETED",
+                    "riskscore": 0.0,
+                    "assignedUser": "Account Access 02",
+                    "assignedGroup": "Administrators",
+                    "priority": "None",
+                    "reason": [
+                        "Resource: Symantec Email DLP"
+                    ],
+                    "violatorSubText": "1096",
+                    "entity": "Users",
+                    "workflowName": "SOCTeamReview",
+                    "url":
+                        "https://saaspocapp2t14wptp.securonix.net/Snypr/"
+                        "configurableDashboards/view?&type=incident&id=100181",
+                    "isWhitelisted": False,
+                    "watchlisted": False
+                }
+            ]
+        }
+    }
+}
