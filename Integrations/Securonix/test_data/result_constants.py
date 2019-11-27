@@ -26,3 +26,12 @@ EXPECTED_POSSIBLE_THREAT_ACTIONS = {
         "Mark in progress (still investigating)"
     ]
 }
+EXPECTED_LIST_RESOURCE_GROUPS = {
+    'Securonix.ResourceGroups(val.Name === obj.Name)':
+        [
+            {'Name': 'Bluecoat Proxy', 'Type': 'Bluecoat Proxy'},
+            {'Name': 'Ironport Data', 'Type': 'Cisco Ironport Email'},
+            {'Name': 'Windchill Data', 'Type': 'Windchill'}
+        ]
+}
+

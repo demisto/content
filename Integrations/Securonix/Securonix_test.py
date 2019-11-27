@@ -1,10 +1,10 @@
 import pytest
 from Securonix import camel_case_to_readable, parse_data_arr, Client, list_workflows, get_default_assignee_for_workflow,\
-    list_possible_threat_actions
+    list_possible_threat_actions, list_resource_groups
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
-    RESPONSE_POSSIBLE_THREAT_ACTIONS
+    RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE,\
-    EXPECTED_POSSIBLE_THREAT_ACTIONS
+    EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS
 
 
 def test_camel_case_to_readable():
@@ -36,9 +36,19 @@ def test_parse_data_arr():
     (list_workflows, {}, RESPONSE_LIST_WORKFLOWS, EXPECTED_LIST_WORKFLOWS),
     (get_default_assignee_for_workflow, {'workflow': 'SOCTeamReview'}, RESPONSE_DEFAULT_ASSIGNEE,
      EXPECTED_DEFAULT_ASSIGNEE),
-    (list_possible_threat_actions, {}, RESPONSE_POSSIBLE_THREAT_ACTIONS, EXPECTED_POSSIBLE_THREAT_ACTIONS)
+    (list_possible_threat_actions, {}, RESPONSE_POSSIBLE_THREAT_ACTIONS, EXPECTED_POSSIBLE_THREAT_ACTIONS),
+    (list_resource_groups, {}, RESPONSE_LIST_RESOURCE_GROUPS, EXPECTED_LIST_RESOURCE_GROUPS)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
+    """Unit test for integration commands
+
+    Args:
+        command: func name in .py
+        args: func args
+        response: response as mocked from 'SNYPR 6.2 CU4 Administration Guide'
+        expected_result: expected result in demisto
+        mocker: mocker object
+    """
     mocker.patch.object(Client, '_generate_token')
     client = Client('tenant', 'server_url', 'username', 'password', 'verify', 'proxies')
     mocker.patch.object(client, 'http_request', return_value=response)
