@@ -1,0 +1,21 @@
+commonfields:
+  id: ProofpointDecodeURL
+  version: -1
+name: ProofpointDecodeURL
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Decode ProofPoint URLs to get the actual URLs
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to decode
+outputs:
+- contextPath: URL.Data
+  description: Decoded URLs
+scripttarget: 0
+dockerimage: demisto/python3:3.7.5.4002
+dockerimage45: demisto/python3
