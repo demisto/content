@@ -27,13 +27,13 @@ else:
 
         QRadar = {
             'Correlation': []
-        }
+        }  # type: Dict
 
         for corr in data:
             keys = corr.keys()
             correlation = {
                 "SourceIP": demisto.get(corr, "sourceip")
-            }
+            }  # type: Dict
             # Standardized known keys
             keys.remove("sourceip") if "sourceip" in keys else None
 
