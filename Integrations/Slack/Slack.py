@@ -105,6 +105,7 @@ def get_user_by_name(user_to_search: str) -> dict:
     :return: A slack user object
     """
 
+    email = 'ysade@paloaltonetworks.com'
     user: dict = {}
     users: list = []
     integration_context = demisto.getIntegrationContext()
