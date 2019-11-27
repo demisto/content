@@ -6,6 +6,11 @@ from urlparse import urlparse, parse_qs
 from urllib import unquote
 import re
 
+# ============================================================================================================== #
+# This script is highly similar to 'ExtractFQDNFromUrlAndEmail', they are not unified due to run time performance.
+# Please change both scripts respectively.
+# ============================================================================================================== #
+
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/v1/url?u=', 'https://urldefense.proofpoint.com/v2/url?u=']
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com\/\?url='
 
@@ -37,7 +42,12 @@ def proofpoint_get_original_url(safe_url):
 
 
 def unescape_url(escaped_url):
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')
+    # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
+    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&')\
+        .replace('http:\\\\', 'http://')
+    # Normalize the URL with http prefix
+    if url.find('http:') == 0 and url.find('http://') == -1:
+        url = url.replace('http:', 'http://')
     if url.find('http') != 0 and url.find('ftp') != 0:
         return 'http://' + url
     return url

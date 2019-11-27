@@ -744,6 +744,54 @@ def check_url():
         demisto.results(f'No events found in MISP for URL: {url}')
 
 
+def build_misp_complex_filter(demisto_query: str) -> str:
+    """
+    Args:
+        demisto_query: complex query contains saved words: 'AND:', 'OR:' and 'NOT:'
+            using ',' as delimiter for parameters and ';' as delimiter for operators.
+            using the operators is optional.
+            if 'demisto_query' does not contains any of the complex operators the original
+            input will be returned
+
+    Returns:
+        str: dictionary created for misp to perform complex query
+        or if no complex query found returns the original input
+
+    Example:
+        demisto_query should look like:
+            example 1: "AND:param1,param2;OR:param3;NOT:param4,param5"
+            example 2: "NOT:param3,param5"
+            example 3 (simple syntax): "param1,param2"
+    """
+
+    regex_and = r'(AND:)([^\;]+)(;)?'
+    regex_or = r'(OR:)([^\;]+)(;)?'
+    regex_not = r'(NOT:)([^\;]+)(;)?'
+    misp_query_params = dict()
+    is_complex_search = False
+    match_and = re.search(regex_and, demisto_query, re.MULTILINE)
+    match_or = re.search(regex_or, demisto_query, re.MULTILINE)
+    match_not = re.search(regex_not, demisto_query, re.MULTILINE)
+
+    if match_and is not None:
+        misp_query_params['and_parameters'] = match_and.group(2).split(',')
+        is_complex_search = True
+
+    if match_or is not None:
+        misp_query_params['or_parameters'] = match_or.group(2).split(',')
+        is_complex_search = True
+
+    if match_not is not None:
+        misp_query_params['not_parameters'] = match_not.group(2).split(',')
+        is_complex_search = True
+
+    if is_complex_search:
+        misp_complex_query = MISP.build_complex_query(**misp_query_params)
+        return misp_complex_query
+
+    return demisto_query
+
+
 def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     """
     will search in MISP
@@ -778,6 +826,9 @@ def search(post_to_warroom: bool = True) -> Tuple[dict, Any]:
     # search function 'to_ids' parameter gets 0 or 1 instead of bool.
     if 'to_ids' in args:
         args['to_ids'] = 1 if d_args.get('to_ids') in ('true', '1', 1) else 0
+    # build MISP complex filter
+    if 'tags' in args:
+        args['tags'] = build_misp_complex_filter(args['tags'])
 
     response = MISP.search(**args)
     if response:

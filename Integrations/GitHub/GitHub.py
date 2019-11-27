@@ -935,7 +935,7 @@ def delete_branch_command():
 def get_stale_prs(stale_time: str, label: str) -> list:
     time_range_start, _ = parse_date_range(stale_time)
     # regex for removing the digits from the end of the isoformat timestamp that don't conform to API expectations
-    timestamp_regex = re.compile('\.\d{6}$')
+    timestamp_regex = re.compile(r'\.\d{6}$')
     timestamp, _ = timestamp_regex.subn('', time_range_start.isoformat())
     query = f'repo:{USER}/{REPOSITORY} is:open updated:<{timestamp} is:pr'
     if label:
