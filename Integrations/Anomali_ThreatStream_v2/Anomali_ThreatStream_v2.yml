@@ -551,6 +551,61 @@ script:
       name: import_value
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: not sure
+      isArray: false
+      name: ip_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: not sure
+      isArray: false
+      name: domain_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: not sure
+      isArray: false
+      name: url_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: not sure
+      isArray: false
+      name: email_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'no'
+      description: not sure
+      isArray: false
+      name: md5_mapping
+      predefined:
+      - 'yes'
+      - 'no'
+      required: false
+      secret: false
     deprecated: false
     description: 'Imports indicators (observables) into ThreatStream. Approval of
       the imported data is required, usingh the ThreatStream UI. The data can be imported
