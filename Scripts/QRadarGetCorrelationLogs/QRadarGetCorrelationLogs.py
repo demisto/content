@@ -1,9 +1,17 @@
 import demistomock as demisto
 from CommonServerPython import *
-QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, username, " \
-        "starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), " \
-        "PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from " \
-        "events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
+if demisto.args().get("is_cre_name_null", "True") == "True":
+    QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, " \
+            "username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), " \
+            "PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from " \
+            "events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
+else:
+    QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, " \
+            "sourceport, username, starttime, destinationport, magnitude, " \
+            "identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), " \
+            "LOGSOURCENAME(logsourceid){1} from events " \
+            "where \"CRE Name\" <> NULL AND INOFFENSE({2}) START '{3}'"
+
 
 d_args = demisto.args()
 
