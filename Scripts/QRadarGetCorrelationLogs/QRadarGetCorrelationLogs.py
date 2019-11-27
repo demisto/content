@@ -32,7 +32,7 @@ else:
 
         QRadar = {
             'Log': []
-        }
+        }  # type: Dict
 
         for corr in data:
 
@@ -40,7 +40,7 @@ else:
             log = {
                 "QID": correlation_id,
                 "SourceIP": demisto.get(corr, "sourceip")
-            }
+            }  # type: Dict
             # Standardized known keys
             keys.remove("sourceip") if "sourceip" in keys else None
 
