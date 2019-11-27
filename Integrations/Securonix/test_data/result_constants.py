@@ -1,5 +1,5 @@
 EXPECTED_LIST_WORKFLOWS = {
-    'Securonix.Workflows':
+    'Securonix.Workflows(val.Workflow == obj.Workflow)':
         [
             {
                 'Workflow': 'SOCTeamReview', 'Type': 'USER', 'Value': 'admin'
@@ -11,4 +11,11 @@ EXPECTED_LIST_WORKFLOWS = {
                 'Workflow': 'AccessCertificationWorkflow', 'Type': 'USER', 'Value': 'admin'
             }
         ]
+}
+EXPECTED_DEFAULT_ASSIGNEE = {
+    'Securonix.Workflows(val.Workflow == obj.Workflow)': {
+        'Workflow': 'SOCTeamReview',
+        'Type': 'USER',
+        'Value': 'admin'
+    }
 }

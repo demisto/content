@@ -20,3 +20,9 @@ RESPONSE_LIST_WORKFLOWS = {
         ]
     }
 }
+RESPONSE_DEFAULT_ASSIGNEE = {
+    'result': {
+        "type": "USER",
+        "value": "admin"
+    }
+}

@@ -577,7 +577,7 @@ def list_workflows(client: Client, *_) -> Tuple[str, Dict, Dict]:
     human_readable = tableToMarkdown(name="Available workflows:", t=workflows_readable,
                                      headers=['Workflow', 'Type Name', 'Value'],
                                      removeNull=True)
-    entry_context = {f'Securonix.Workflows': workflows_outputs}
+    entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflows_outputs}
     return human_readable, entry_context, workflows
 
 
@@ -593,8 +593,14 @@ def get_default_assignee_for_workflow(client: Client, args: Dict) -> Tuple[str, 
     """
     workflow = str(args.get('workflow'))
     default_assignee = client.get_default_assignee_for_workflow_request(workflow)
-
-    return f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.', {}, default_assignee
+    workflow_output = {
+        'Workflow': workflow,
+        'Type': default_assignee.get("type"),
+        'Value': default_assignee.get("value"),
+    }
+    entry_context = {f'Securonix.Workflows(val.Workflow == obj.Workflow)': workflow_output}
+    human_readable = f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.'
+    return human_readable, entry_context, default_assignee
 
 
 def list_possible_threat_actions(client: Client, *_) -> Tuple[str, Dict, Dict]:
