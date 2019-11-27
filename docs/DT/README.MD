@@ -145,11 +145,12 @@ Selectors are great for avoiding duplicate entries and can be used to add contex
 An example of how this may be used in your code is the following:
 ```python
 ec = {
-        "Vendor": "Recorded Future",
-        "Indicator": "8.8.8.8",
-        "Score": 0,
-        "Type": "ip"
+    "Data": "www.demisto.com",
+    "Malicious": {
+        "Vendor": "Demisto",
+        "Description": "This indicator found to be malicious by Demisto"
     }
+}
 
 
 demisto.results({
@@ -157,11 +158,11 @@ demisto.results({
  Contents: 'related',
  ContentsFormat: formats.json,
  HumanReadable: 'md',
- EntryContext: {'DBotScore(val.Indicator && val.Indicator == obj.Indicator)': ec 
+ EntryContext: {'URL(val.Data && val.Data == obj.Data)': ec 
 })
 ```
 
-The code snippet ```'DBotScore(val.Indicator && val.Indicator == obj.Indicator)``` will look for entries in the context whose name found under "Indicator" are the same. If it finds a match, it will update the existing context, If it does not, it will create a new entry in the context because it views the entry as "unique" to the existing values.
+The code snippet ```'URL(val.Data && val.Data == obj.Data)'``` will look for entries in the context whose name found under "Data" are the same. If it finds a match, it will update the existing context, If it does not, it will create a new entry in the context because it views the entry as "unique" to the existing values.
 
 ### Mutators
 Since DT is Javascript based, it is also capable of mutating a result in the event that your integration may need a different format of the result. A classic use case for this would be using joining a server address obtained from another integration to an endpoint found by your integration to create a url which may be used by your integration at a later time.

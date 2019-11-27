@@ -24,10 +24,12 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Vulnerability"
+        "Vulnerability",
+        "Malware"
     ],
     "systemAssociatedTypes": [
-        "Vulnerability"
+        "Vulnerability",
+        "Malware"
     ],
     "associatedToAll": false,
     "unmapped": false,

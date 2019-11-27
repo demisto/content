@@ -408,11 +408,11 @@ class EmailFormatter(object):
             if maintype == 'text' or "message" in maintype:
                 attach = MIMEText(data, _subtype=subtype)
             elif maintype == 'image':
-                attach = MIMEImage(data, _subtype=subtype)  # type: ignore
+                attach = MIMEImage(data, _subtype=subtype)  # type: ignore[assignment]
             elif maintype == 'audio':
-                attach = MIMEAudio(data, _subtype=subtype)  # type: ignore
+                attach = MIMEAudio(data, _subtype=subtype)  # type: ignore[assignment]
             else:
-                attach = MIMEBase(maintype, subtype)  # type: ignore
+                attach = MIMEBase(maintype, subtype)  # type: ignore[assignment]
                 attach.set_payload(data)
 
                 # Encode the payload using Base64
@@ -2933,7 +2933,7 @@ class Message(object):
         if property_value:
             property_detail = {property_name: property_value}
         else:
-            property_detail = None  # type: ignore
+            property_detail = None  # type: ignore[assignment]
 
         return property_detail
 
@@ -3159,7 +3159,7 @@ def parse_email_headers(header, raw=False):
     if raw:
         return headers
 
-    email_address_headers = {  # type: ignore
+    email_address_headers = {  # type: ignore[var-annotated]
         "To": [],
         "From": [],
         "CC": [],

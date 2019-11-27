@@ -30,6 +30,33 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Timeframe for initial fetch
+  name: firstFetch
+  defaultvalue: Last60Minutes
+  type: 15
+  required: false
+  options:
+  - Last60Minutes
+  - Last24Hours
+  - Last7Days
+  - Last30Days
+  - Last60Days
+  - Last90Days
+- display: Maximum number of events to fetch per fetch
+  name: maxFetch
+  defaultvalue: "50"
+  type: 0
+  required: false
 script:
   script: |-
     var SERVER_URL = params.url.replace(/[\/]+$/, '');
@@ -108,17 +135,18 @@ script:
     function toTimestamp(strDate){
         // accept: 31-12-1999T14:35:20Z
         var dateTuple = strDate.match('^(\\d{2})-(\\d{2})-(\\d{4})T(\\d{2}):(\\d{2}):(\\d{2})Z$');
+        var timestamp;
         if (dateTuple !== null) {
             // first element is the entire match, then the individual matches.
             // months in Date JS are an integer between 0 and 11.
-            var timestamp = new Date(dateTuple[3], dateTuple[2] - 1, dateTuple[1], dateTuple[4], dateTuple[5], dateTuple[6]);
+            timestamp = new Date(dateTuple[3], dateTuple[2] - 1, dateTuple[1], dateTuple[4], dateTuple[5], dateTuple[6]);
             return timestamp.getTime()/1000;
         }
 
         // accept: December 31, 1999 14:35:20
-        var dateTuple = strDate.toLowerCase().match('^(january|february|march|april|may|june|july|august|september|october|november|december) (\\d{1,2}), (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})$');
+        dateTuple = strDate.toLowerCase().match('^(january|february|march|april|may|june|july|august|september|october|november|december) (\\d{1,2}), (\\d{4}) (\\d{2}):(\\d{2}):(\\d{2})$');
         if (dateTuple !== null) {
-            var timestamp = new Date(dateTuple[3], translateMonthName(dateTuple[1]) - 1, dateTuple[2], dateTuple[4], dateTuple[5], dateTuple[6]);
+            timestamp = new Date(dateTuple[3], translateMonthName(dateTuple[1]) - 1, dateTuple[2], dateTuple[4], dateTuple[5], dateTuple[6]);
             return timestamp.getTime()/1000;
         }
         return strDate;
@@ -158,18 +186,18 @@ script:
             var dlp_file =  arrayItem.dlp_file;
             var hostname =  arrayItem.hostname;
             var policy =  arrayItem.policy;
-            retArray.push({'ID': id, 'App' : app, 'Timestamp' : timestamp, 'DLPProfile' : dlp_profile, 'DLPFile' : dlp_file, 'Hostname' : hostname, 'Policy' : policy})
+            retArray.push({'ID': id, 'App' : app, 'Timestamp' : timestamp, 'DLPProfile' : dlp_profile, 'DLPFile' : dlp_file, 'Hostname' : hostname, 'Policy' : policy});
         });
         var ec = {
             "Netskope.Alerts(val.ID && val.ID === obj.ID)" : retArray
         };
-        headers = ['ID', 'Timestamp', 'DLPProfile', 'DLPFile', 'Hostname', 'Policy']
+        headers = ['ID', 'Timestamp', 'DLPProfile', 'DLPFile', 'Hostname', 'Policy'];
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
             Contents: result.data,
             ReadableContensFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Netskope alerts', retArray, headers),
+            HumanReadable: tableToMarkdown('Netskope Alerts', retArray, headers),
             EntryContext: ec
         };
     }
@@ -221,15 +249,51 @@ script:
             "Netskope.Events(val.ID && val.ID === obj.ID)" : retArray
         };
         headers = ['ID', 'App', 'Timestamp', 'Activity', 'Object', 'Hostname', 'AppCategory', 'DeviceClassification', 'User',
-        'FromUser', 'ToUser', 'SourceIP', 'AccessMethod', 'URL']
+                   'FromUser', 'ToUser', 'SourceIP', 'AccessMethod', 'URL'];
         return {
             Type: entryTypes.note,
             ContentsFormat: formats.json,
-            Contents: retArray,
+            Contents: result.data,
             ReadableContensFormat: formats.markdown,
             HumanReadable: tableToMarkdown('Netskope Events', retArray, headers),
             EntryContext: ec
         };
+    }
+
+    function now() {
+        return parseInt(new Date().getTime()/1000);
+    }
+
+    function fetchAlerts() {
+        last_run = parseInt(getLastRun());
+        if (!isNaN(last_run)) {
+            last_run = now() - parseInt(translateTimeperiod(params.firstFetch));
+        }
+
+        args = {};
+        args.type = "";
+        args.starttime = last_run.toString();
+        args.endtime = now().toString();
+
+        alerts = getAlerts().Contents;
+        alerts.reverse();  // alerts are fetched in descending order, reversing to process older first
+        incidents = [];
+        for (var i = 0; i < alerts.length; i++) {
+            item = alerts[i];
+            incident = {};
+            d = new Date(item.timestamp);
+            incident.occurred = d.toISOString();
+            incident.name = item.alert_type + " - " + item.alert_name;
+            incident.rawJSON = JSON.stringify(item);
+            incidents.push(incident);
+            last_run = item.timestamp;
+            if (incidents >= Math.min(50, params.maxFetch)) {
+                break;
+            }
+        }
+
+        setLastRun(last_run);
+        return JSON.stringify(incidents);
     }
 
     switch (command) {
@@ -246,6 +310,8 @@ script:
                 return 'ok';
             }
             return result;
+        case 'fetch-incidents':
+            return fetchAlerts();
         case 'netskope-events':
             return getEvents();
         case 'netskope-alerts':
@@ -382,6 +448,7 @@ script:
       description: Alert ID
       type: string
     description: Gets a list of alerts
+  isfetch: true
   runonce: false
 tests:
   - Netskope Test

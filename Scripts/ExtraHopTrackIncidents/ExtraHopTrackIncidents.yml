@@ -1,0 +1,23 @@
+commonfields:
+  id: ExtraHopTrackIncidents
+  version: -1
+name: ExtraHopTrackIncidents
+type: python
+tags:
+- incidents
+- ExtraHop
+- field-change-triggered
+comment: Links an incident investigation back to the ExtraHop Detection that created
+  it.
+script: '-'
+system: false
+enabled: true
+scripttarget: 0
+dependson:
+  must:
+  - 'ExtraHop v2|||extrahop-track-ticket'
+runonce: false
+dockerimage: demisto/python3:3.7.2.200
+runas: DBotWeakRole
+tests:
+- ExtraHop_v2-Test

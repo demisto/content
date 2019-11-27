@@ -31,7 +31,7 @@ type: javascript
 tags:
 - cve
 - reputation
-comment: Provides  severity of CVE based on CVSS score where available
+comment: Provides severity of CVE based on CVSS score where available
 enabled: true
 args:
 - name: input
