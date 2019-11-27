@@ -370,12 +370,11 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     return response
 
 
-def get_fetch_detections(last_created_timestamp=None, behavior_id=None, filter_arg=None):
+def get_fetch_detections(last_created_timestamp=None, filter_arg=None):
     """ Sends detection request, based om created_timestamp field. Used for fetch-incidents
 
     Args:
         last_created_timestamp: last created timestamp of the results will be greater than this value.
-        behavior_id: The result will only contain the detections with matching behavior id.
         filter_arg: The result will be filtered using this argument.
 
     Returns:
@@ -387,12 +386,12 @@ def get_fetch_detections(last_created_timestamp=None, behavior_id=None, filter_a
     }
     if filter_arg:
         params['filter'] = filter_arg
-    elif behavior_id:
-        params['filter'] = "behaviors.behavior_id:'{0}'".format(behavior_id)
+
     elif last_created_timestamp:
         params['filter'] = "created_timestamp:>'{0}'".format(last_created_timestamp)
 
     response = http_request('GET', endpoint_url, params)
+
     return response
 
 
