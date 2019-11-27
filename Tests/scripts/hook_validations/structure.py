@@ -119,9 +119,9 @@ class StructureValidator(object):
 
         if matching_regex not in self.SKIPPED_SCHEMAS or os.path.isfile(self.file_path):
             if matching_regex is not None and self.REGEXES_TO_SCHEMA_DICT.get(matching_regex):
+                c = Core(source_file=self.file_path,
+                         schema_files=[self.SCHEMAS_PATH + self.REGEXES_TO_SCHEMA_DICT.get(matching_regex) + '.yml'])
                 try:
-                    c = Core(source_file=self.file_path,
-                             schema_files=[self.SCHEMAS_PATH + self.REGEXES_TO_SCHEMA_DICT.get(matching_regex) + '.yml'])
                     c.validate(raise_exception=True)
                 except Exception as err:
                     print_error('Failed: %s failed' % (self.file_path,))
