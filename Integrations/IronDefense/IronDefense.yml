@@ -186,7 +186,7 @@ script:
       Intelligence Rules (TIR).
     execution: false
     name: irondefense-report-observed-bad-activity
-  dockerimage: demisto/python3:3.7.4.1900
+  dockerimage: demisto/python3:3.7.5.4002
   isfetch: false
   runonce: false
   script: '-'
