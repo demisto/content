@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0338012e-88e0-43ed-807e-e1878a6771e2
+    taskid: f2f396f3-91f1-42a2-8ada-79d5a5266ddc
     type: start
     task:
-      id: 0338012e-88e0-43ed-807e-e1878a6771e2
+      id: f2f396f3-91f1-42a2-8ada-79d5a5266ddc
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +29,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: fe35179c-2124-40cc-896b-29ae471105f5
+    taskid: 59e6b25c-ca45-4095-8ae0-e228314648cb
     type: regular
     task:
-      id: fe35179c-2124-40cc-896b-29ae471105f5
+      id: 59e6b25c-ca45-4095-8ae0-e228314648cb
       version: -1
       name: Get Environments
       script: VxStream|||crowdstrike-get-environments
@@ -55,10 +55,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: ec1f476a-0c04-41d8-8c21-48261072b00f
+    taskid: 80718a72-02f7-4f02-850e-4438fbdd3c19
     type: regular
     task:
-      id: ec1f476a-0c04-41d8-8c21-48261072b00f
+      id: 80718a72-02f7-4f02-850e-4438fbdd3c19
       version: -1
       name: Search
       script: VxStream|||crowdstrike-search
@@ -82,9 +82,9 @@ tasks:
       host: {}
       imp_hash: {}
       port: {}
-      query:
+      query: {}
+      similar_to:
         simple: b2ac43820cdf8634e1a437b9723ec110513d3dd7a2f8d4fa3192babe3eaa4b8e
-      similar_to: {}
       ssdeep: {}
       tag: {}
       url: {}
@@ -103,10 +103,10 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 4e00e25a-ebc8-4c80-8e9a-0d0756a28fb5
+    taskid: e1b7f853-f5d6-4249-8549-d945bcd7a6a5
     type: regular
     task:
-      id: 4e00e25a-ebc8-4c80-8e9a-0d0756a28fb5
+      id: e1b7f853-f5d6-4249-8549-d945bcd7a6a5
       version: -1
       name: Scan
       script: VxStream|||crowdstrike-scan
@@ -132,10 +132,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 182e8d76-7f1e-4e23-82e6-b464fdfa6a1c
+    taskid: 72916d6a-e094-4f10-891e-e5c15ab3f08b
     type: condition
     task:
-      id: 182e8d76-7f1e-4e23-82e6-b464fdfa6a1c
+      id: 72916d6a-e094-4f10-891e-e5c15ab3f08b
       version: -1
       name: Exists scan
       description: |-
@@ -150,7 +150,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+      - "16"
     scriptarguments:
       value:
         complex:
@@ -167,119 +167,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
-    taskid: 5c535fe8-737d-4e18-897d-28c309c22d4c
-    type: regular
-    task:
-      id: 5c535fe8-737d-4e18-897d-28c309c22d4c
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "8":
-    id: "8"
-    taskid: fc7fe17d-0a42-4ee7-8820-163c3bf63d6d
-    type: regular
-    task:
-      id: fc7fe17d-0a42-4ee7-8820-163c3bf63d6d
-      version: -1
-      name: Download PDF file
-      description: Sends http request. Returns the response as json.
-      scriptName: http
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      body: {}
-      filename:
-        simple: test.pdf
-      headers: {}
-      insecure: {}
-      method:
-        simple: GET
-      password: {}
-      proxy: {}
-      saveAsFile:
-        simple: "yes"
-      url:
-        simple: http://www.pdf995.com/samples/pdf.pdf
-      username: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "9":
-    id: "9"
-    taskid: e039b182-1ade-4b42-8108-0b01e1350c37
-    type: regular
-    task:
-      id: e039b182-1ade-4b42-8108-0b01e1350c37
-      version: -1
-      name: crowdstrike-detonate-file
-      script: VxStream|||crowdstrike-detonate-file
-      type: regular
-      iscommand: true
-      brand: VxStream
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      delay: {}
-      entryId:
-        simple: ${File.EntryID}
-      environmentID:
-        simple: "100"
-      timeout:
-        simple: "300"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "11":
     id: "11"
-    taskid: 57e59c63-1662-44e4-8307-4f771667774e
+    taskid: b3e44f1c-d92f-4eaf-8e70-8110682566a0
     type: regular
     task:
-      id: 57e59c63-1662-44e4-8307-4f771667774e
+      id: b3e44f1c-d92f-4eaf-8e70-8110682566a0
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -310,10 +203,10 @@ tasks:
     ignoreworker: false
   "12":
     id: "12"
-    taskid: 15394496-5b36-47d4-89d6-b6bad9b1c044
+    taskid: 037c9813-364e-4a71-818a-40dd3c14c419
     type: regular
     task:
-      id: 15394496-5b36-47d4-89d6-b6bad9b1c044
+      id: 037c9813-364e-4a71-818a-40dd3c14c419
       version: -1
       name: crowdstrike-submit-url
       script: VxStream|||crowdstrike-submit-url
@@ -329,7 +222,7 @@ tasks:
       extend-context:
         simple: URL1_HASH=sha256
       url:
-        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darPd # disable-secrets-detection
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darPd
     separatecontext: false
     view: |-
       {
@@ -343,10 +236,10 @@ tasks:
     ignoreworker: false
   "13":
     id: "13"
-    taskid: 845aa67c-fc43-4c3e-87c4-b51b1b8e6dae
+    taskid: 4f58b597-019b-41e8-8fe7-edc92f26a0c9
     type: condition
     task:
-      id: 845aa67c-fc43-4c3e-87c4-b51b1b8e6dae
+      id: 4f58b597-019b-41e8-8fe7-edc92f26a0c9
       version: -1
       name: Verify Context get-environments
       description: Check if a given value exists in the context. Will return 'no'
@@ -412,10 +305,10 @@ tasks:
     ignoreworker: false
   "14":
     id: "14"
-    taskid: dd74feb4-6668-4554-85a3-3ad78766cc6d
+    taskid: b99c80bd-0d34-43e4-8e32-699d11ff9ee4
     type: regular
     task:
-      id: dd74feb4-6668-4554-85a3-3ad78766cc6d
+      id: b99c80bd-0d34-43e4-8e32-699d11ff9ee4
       version: -1
       name: crowdstrike-submit-url
       script: VxStream|||crowdstrike-submit-url
@@ -431,7 +324,7 @@ tasks:
       extend-context:
         simple: URL2_HASH=sha256
       url:
-        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darP5 # disable-secrets-detection
+        simple: https://onedrive.live.com/?blahkey=%21AG6pRt%5FDkLiDBm5&blegh=8c90d345gGvf8asLdkfj&whocares=0CDfasdfajiog3%21105&darP5
     separatecontext: false
     view: |-
       {
@@ -445,18 +338,18 @@ tasks:
     ignoreworker: false
   "15":
     id: "15"
-    taskid: 374ad005-7417-4e9b-844d-878310ec8866
+    taskid: 6026f1a1-b2e3-49e4-8532-c9cbdd87b76e
     type: condition
     task:
-      id: 374ad005-7417-4e9b-844d-878310ec8866
+      id: 6026f1a1-b2e3-49e4-8532-c9cbdd87b76e
       version: -1
       name: Verify different hashes for different submitted URLs
       description: Ensure that the URL is being submitted correctly to crowdstrike
-        and not only the contents up until the first ampersand are being processed by crowdstrike. If the two URLs (whose
-        contents only differ after the ampersand) get the same hash returned by crowdstrike
-        it means that we are incorrectly submitting the URLs and that their contents
-        are getting cut off at the first ampersand (this is bad, the desired behavior
-        is that the hashes should differ).
+        and not only the contents up until the first ampersand are being processed
+        by crowdstrike. If the two URLs (whose contents only differ after the ampersand)
+        get the same hash returned by crowdstrike it means that we are incorrectly
+        submitting the URLs and that their contents are getting cut off at the first
+        ampersand (this is bad, the desired behavior is that the hashes should differ).
       type: condition
       iscommand: false
       brand: ""
@@ -490,10 +383,10 @@ tasks:
     ignoreworker: false
   "16":
     id: "16"
-    taskid: a77aee88-fe01-4a91-8bf5-ad0d3daa73d3
+    taskid: 62455bb5-9b56-4040-880d-87df428cc45f
     type: title
     task:
-      id: a77aee88-fe01-4a91-8bf5-ad0d3daa73d3
+      id: 62455bb5-9b56-4040-880d-87df428cc45f
       version: -1
       name: Done
       type: title
@@ -504,7 +397,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2120
+          "y": 1610
         }
       }
     note: false
@@ -515,7 +408,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2135,
+        "height": 1625,
         "width": 810,
         "x": 50,
         "y": 50

@@ -684,7 +684,7 @@ def get_entries_command():
         return_error("Failed to get entries:\nResource ID: {}\nStatus Code: {}\nRequest Body: {}\nResponse: {}".format(
             resource_id, res.status_code, body, res.text))
 
-    res_json = json.loads(xml2json(res.text))
+    res_json = json.loads(xml2json((res.text).encode('utf-8')))
     raw_entries = demisto.get(res_json, 'Envelope.Body.getEntriesResponse.return')
 
     # retrieve columns

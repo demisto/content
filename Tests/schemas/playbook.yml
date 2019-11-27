@@ -6,6 +6,9 @@ mapping:
   version:
     type: int
     required: yes
+  sourceplaybookid:
+    type: str
+    required: no
   name:
     type: str
     required: yes

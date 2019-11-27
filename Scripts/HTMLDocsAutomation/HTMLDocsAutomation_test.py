@@ -90,10 +90,13 @@ def test_generate_commands_section():
         'script': {
             'commands': [
                 {'deprecated': True,
-                 'name': 'deprecated-cmd'},
+                 'name': 'deprecated-cmd',
+                 'description': 'desc'},
                 {'deprecated': False,
-                 'name': 'non-deprecated-cmd'},
-                {'name': 'non-deprecated-cmd2'}
+                 'name': 'non-deprecated-cmd',
+                 'description': 'desc1'},
+                {'name': 'non-deprecated-cmd2',
+                 'description': 'desc2.'}
             ]
         }
     }
@@ -106,12 +109,12 @@ def test_generate_commands_section():
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 </p>
 <ol>
-  <li>non-deprecated-cmd: non-deprecated-cmd</li>
-  <li>non-deprecated-cmd2: non-deprecated-cmd2</li>
+  <li><a href="#non-deprecated-cmd" target="_self">desc1: non-deprecated-cmd</a></li>
+  <li><a href="#non-deprecated-cmd2" target="_self">desc2: non-deprecated-cmd2</a></li>
 </ol>
-<h3>1. non-deprecated-cmd</h3>
+<h3 id="non-deprecated-cmd">1. non-deprecated-cmd</h3>
 <hr>
-<p> </p>
+<p>desc1</p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd</code>
@@ -144,9 +147,9 @@ There are no context output for this command.
  -->
 </p>
 
-<h3>2. non-deprecated-cmd2</h3>
+<h3 id="non-deprecated-cmd2">2. non-deprecated-cmd2</h3>
 <hr>
-<p> </p>
+<p>desc2.</p>
 <h5>Base Command</h5>
 <p>
   <code>non-deprecated-cmd2</code>
