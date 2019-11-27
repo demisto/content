@@ -2066,7 +2066,6 @@
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
-        "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
         "LogRhythmRest": "Issue 19870",
         "Fidelis Elevate Network": "Issue 20263",
