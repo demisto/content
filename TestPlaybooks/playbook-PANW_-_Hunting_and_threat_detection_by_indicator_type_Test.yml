@@ -171,7 +171,7 @@ tasks:
       key:
         simple: IP.Address
       value:
-        simple: '["192.168.1.12","10.208.210.163"]'
+        simple: '["192.168.1.12","10.208.210.163"]'         # guardrails-disable-line
     separatecontext: false
     view: |-
       {
