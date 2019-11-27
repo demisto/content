@@ -586,7 +586,7 @@ def fetch_incidents(client: Client, args: dict) -> None:
     last_fetch_time = demisto.getLastRun().get('last_fetch_time')
     if not last_fetch_time:
         now = datetime.now()
-        last_fetch = now - timedelta(days=365)
+        last_fetch = now - timedelta(days=90)
         last_fetch_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S")
 
     # Find component ID
