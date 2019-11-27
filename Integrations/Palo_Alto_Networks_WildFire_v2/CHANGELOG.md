@@ -1,4 +1,7 @@
 ## [Unreleased]
+
+
+## [19.11.1] - 2019-11-26
 - Added a validation to the **server** parameter.
 - Fixed an issue with DBotScore context data.
 
