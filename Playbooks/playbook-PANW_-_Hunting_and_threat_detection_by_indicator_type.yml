@@ -2894,6 +2894,7 @@ tasks:
     type: title
     task:
       id: c35b5e37-813f-472e-8ec8-ee41b091b463
+      description: Header
       version: -1
       name: Cortex hash search
       type: title
