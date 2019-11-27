@@ -1,5 +1,5 @@
 ## [Unreleased]
-
+Fixed an issue with threatstream-import-indicator-with-approval command to work as expected.
 
 ## [19.11.1] - 2019-11-26
 Fixed an issue with DBotScore context data.
