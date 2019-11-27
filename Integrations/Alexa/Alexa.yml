@@ -39,19 +39,19 @@ script:
       description: The Domain being checked
       type: string
     - contextPath: DBotScore.Score
-      description: DBot score returned
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Vendor
-      description: Vendor reporting the score
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Domain
       description: Domain being reported
       type: string
     - contextPath: DBotScore.Type
-      description: Type of indicator being reported
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Indicator
-      description: Domain being reported
+      description: The indicator that was tested.
       type: string
     - contextPath: Alexa.Domain.Data
       description: The Domain being checked
