@@ -244,7 +244,8 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {
+                Indicator: hash, Type: 'hash', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + hash + '\n' + res.obj.verbose_msg};
         }
@@ -255,7 +256,7 @@ script:
             r = [res.obj];
         }
         var md = '';
-        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = [];
+        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = [];
         ec[outputPaths.file] = [];
         for (var i=0; i<r.length; i++) {
             md += '## VirusTotal Hash Reputation for: ' + r[i].resource + '\n';
@@ -280,7 +281,7 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"].push({Indicator: hash,
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"].push({Indicator: hash,
             Type: 'hash', Vendor: 'VirusTotal', Score: dbotScore});
             md += 'MD5 / SHA1 / SHA256: **' + r[i].md5 + ' / ' + r[i].sha1 + ' / ' + r[i].sha256 + '**\n';
             longFormat = FULL_RESPONSE? 'true': longFormat;
@@ -395,7 +396,7 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"]  = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + ip + ' ,it sent the following response:\n' + res.obj.verbose_msg};
         }
@@ -421,7 +422,7 @@ script:
         } else {
             dbotScore = 1;
         }
-        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
+        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {Indicator: ip, Type: 'ip', Vendor: 'VirusTotal', Score: dbotScore};
         var md = '## VirusTotal IP Reputation for: ' + ip + '\n';
         md += (o.asn) ? 'ASN: **' + o.asn + ' (' + o.as_owner + ')**\n' : 'ASN: N/A\n';
         md += 'Country: **' + o.country + '**\n';
@@ -516,8 +517,8 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: url,
-            Type: 'url', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {
+                Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg};
         }
@@ -556,8 +557,8 @@ script:
             } else {
                 dbotScore = 1;
             }
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: url,
-            Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {
+                Indicator: url, Type: 'url', Vendor: 'VirusTotal', Score: dbotScore};
             longFormat = FULL_RESPONSE? 'true': longFormat;
             if (longFormat === 'true') { // add scans table
                 scansTable = createScansTable(o.scans);
@@ -621,7 +622,8 @@ script:
         var o = res.obj;
         var ec = {};
         if (o.response_code === 0) {
-            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
+            ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {
+                Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: 0};
             return {Type: entryTypes.note, Contents: res.body, ContentsFormat: formats.json, EntryContext: ec,
                 HumanReadable: 'VirusTotal does not have details about ' + domain + '\n' + res.obj.verbose_msg};
         }
@@ -643,7 +645,8 @@ script:
         } else {
             dbotScore = 1;
         }
-        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator)"] = {Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
+        ec["DBotScore(val.Indicator && val.Indicator === obj.Indicator && val.Vendor === obj.Vendor && val.Type === obj.Type)"] = {
+            Indicator: domain, Type: 'domain', Vendor: 'VirusTotal', Score: dbotScore};
         var md = '## VirusTotal Domain Reputation for: ' + domain + '\n';
         md += '#### Domain categories: *' + o.categories + "*\n";
         md += 'VT Link: [' + domain + '](https://www.virustotal.com/en/search?query=' + encodeURIComponent(domain) + ')\n';
