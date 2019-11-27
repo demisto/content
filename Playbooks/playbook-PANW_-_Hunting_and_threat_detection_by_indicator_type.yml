@@ -9,10 +9,11 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c1d001e4-91c0-4155-8b83-cd519d7c0517
+    taskid: efd174b1-c3ae-48ce-8d14-52e397954612
     type: start
     task:
-      id: c1d001e4-91c0-4155-8b83-cd519d7c0517
+      id: efd174b1-c3ae-48ce-8d14-52e397954612
+      description: Header
       version: -1
       name: ""
       iscommand: false
@@ -26,7 +27,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
+          "x": 920,
           "y": 0
         }
       }
@@ -35,10 +36,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 40f66efb-91cb-4a11-85f1-ccec47416e3d
+    taskid: e7cb950d-ab2c-4ecb-8e40-286bda3bc188
     type: playbook
     task:
-      id: 40f66efb-91cb-4a11-85f1-ccec47416e3d
+      id: e7cb950d-ab2c-4ecb-8e40-286bda3bc188
       version: -1
       name: Convert file hash to corresponding hashes
       description: |
@@ -50,7 +51,9 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "96"
+      - "108"
+      - "109"
     scriptarguments:
       MD5:
         complex:
@@ -70,7 +73,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 560
+          "y": 780
         }
       }
     note: false
@@ -78,12 +81,12 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 0de2606b-79c3-433e-8171-88eb7d5f31a8
+    taskid: 8ef868fc-c15c-4eef-809a-3406267cb966
     type: condition
-    task:     
-      id: 0de2606b-79c3-433e-8171-88eb7d5f31a8
+    task:
+      id: 8ef868fc-c15c-4eef-809a-3406267cb966
+      description: Header
       version: -1
-      description: Is there a hash?
       name: Is there a hash?
       type: condition
       iscommand: false
@@ -122,8 +125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 365
+          "x": 920,
+          "y": 370
         }
       }
     note: false
@@ -131,10 +134,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: e4bbf30c-58ea-4585-82f3-5ad81a4c06c4
+    taskid: d28d4d4d-39fc-4eb9-88e9-58350c97441f
     type: title
     task:
-      id: e4bbf30c-58ea-4585-82f3-5ad81a4c06c4
+      id: d28d4d4d-39fc-4eb9-88e9-58350c97441f
       description: Header
       version: -1
       name: Done
@@ -145,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 2640
+          "x": 890,
+          "y": 2660
         }
       }
     note: false
@@ -154,12 +157,12 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: db57c496-70ea-407e-857d-2028a9c8e851
+    taskid: 6afdd613-3c03-4f59-8b4a-75377c439ce3
     type: condition
     task:
-      id: db57c496-70ea-407e-857d-2028a9c8e851
+      id: 6afdd613-3c03-4f59-8b4a-75377c439ce3
+      description: Hedaer
       version: -1
-      description: Is there an ip?
       name: Is there an ip?
       type: condition
       iscommand: false
@@ -168,7 +171,9 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "16"
+      - "112"
+      - "90"
+      - "113"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -181,8 +186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 365
+          "x": -940,
+          "y": 380
         }
       }
     note: false
@@ -190,13 +195,13 @@ tasks:
     ignoreworker: false
   "10":
     id: "10"
-    taskid: 0f4b035a-9c15-4c43-81b4-422e5a7b2cb8
+    taskid: 04619f6e-84db-4562-8c31-a1fd1518323c
     type: condition
     task:
-      id: 0f4b035a-9c15-4c43-81b4-422e5a7b2cb8
+      id: 04619f6e-84db-4562-8c31-a1fd1518323c
+      description: Is there an domain/url?
       version: -1
-      description: Is there an domain?
-      name: Is there an domain?
+      name: Is there an domain/url?
       type: condition
       iscommand: false
       brand: ""
@@ -204,7 +209,9 @@ tasks:
       '#default#':
       - "55"
       "yes":
-      - "17"
+      - "111"
+      - "93"
+      - "110"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -224,129 +231,14 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "14":
-    id: "14"
-    taskid: 8169bd9f-4890-418d-82d0-2bfbeb4750f6
-    type: regular
-    task:
-      id: 8169bd9f-4890-418d-82d0-2bfbeb4750f6
-      version: -1
-      name: Create queries for hash
-      description: The script accepts indicators and creates relevant queries in relevant
-        products.
-      scriptName: IndicatorCreateQueries
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "96"
-      - "108"
-      - "109"
-    scriptarguments:
-      domain: {}
-      hash:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: uniq
-      ip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 670,
-          "y": 730
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "16":
-    id: "16"
-    taskid: 90811a0f-1929-4108-87a8-921e5659a679
-    type: regular
-    task:
-      id: 90811a0f-1929-4108-87a8-921e5659a679
-      version: -1
-      name: Create queries for IP
-      description: The script accepts indicators and creates relevant queries in relevant
-        products.
-      scriptName: IndicatorCreateQueries
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "112"
-      - "90"
-      - "113"
-    scriptarguments:
-      domain: {}
-      hash: {}
-      ip:
-        complex:
-          root: inputs.IP addresses
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -1730,
-          "y": 700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "17":
-    id: "17"
-    taskid: aacc000f-0574-4acd-8bc1-aeebb1c88276
-    type: regular
-    task:
-      id: aacc000f-0574-4acd-8bc1-aeebb1c88276
-      version: -1
-      name: Create queries for Domain
-      description: The script accepts indicators and creates relevant queries in relevant
-        products.
-      scriptName: IndicatorCreateQueries
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "93"
-      - "110"
-      - "111"
-    scriptarguments:
-      domain:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-      hash: {}
-      ip: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3320,
-          "y": 605
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "18":
     id: "18"
-    taskid: 5b3d3a12-039a-448e-854d-9c415cd3855a
+    taskid: 40a05796-6e85-4c73-8fd2-f893c6326afd
     type: condition
-    task:      
-      id: 5b3d3a12-039a-448e-854d-9c415cd3855a
-      version: -1
+    task:
+      id: 40a05796-6e85-4c73-8fd2-f893c6326afd
       description: Is Autofocus enabled?
+      version: -1
       name: Is Autofocus enabled?
       type: condition
       iscommand: false
@@ -393,12 +285,12 @@ tasks:
     ignoreworker: false
   "21":
     id: "21"
-    taskid: 8c224a70-8dad-4ade-82ba-fd76c7b6c172
+    taskid: c3b1dd7a-8d1d-4254-8ee3-041b13664c95
     type: condition
-    task:      
-      id: 8c224a70-8dad-4ade-82ba-fd76c7b6c172
-      version: -1
+    task:
+      id: c3b1dd7a-8d1d-4254-8ee3-041b13664c95
       description: Are there related sessions in Autofocus?
+      version: -1
       name: Are there related sessions in Autofocus?
       type: condition
       iscommand: false
@@ -434,11 +326,11 @@ tasks:
     ignoreworker: false
   "23":
     id: "23"
-    taskid: 5478cea8-9d44-4c7d-8601-8603be2ed099
+    taskid: 30dbaf3e-12b0-4cf2-8dd7-adef5027c5b4
     type: title
     task:
+      id: 30dbaf3e-12b0-4cf2-8dd7-adef5027c5b4
       description: Header
-      id: 5478cea8-9d44-4c7d-8601-8603be2ed099
       version: -1
       name: Done
       type: title
@@ -457,11 +349,11 @@ tasks:
     ignoreworker: false
   "25":
     id: "25"
-    taskid: 5338a09d-e399-4e01-8458-089a4ba6092d
+    taskid: 33683a38-281e-4df3-8d0c-cdc0da120dc9
     type: regular
     task:
-      description: Header
-      id: 5338a09d-e399-4e01-8458-089a4ba6092d
+      id: 33683a38-281e-4df3-8d0c-cdc0da120dc9
+      description: Search in Cortex threat logs
       version: -1
       name: Search in Cortex threat logs
       script: '|||cortex-query-threat-logs'
@@ -509,12 +401,12 @@ tasks:
     ignoreworker: false
   "26":
     id: "26"
-    taskid: e5db926c-e661-4049-806d-8c227befaec7
+    taskid: e15b4fef-75b8-4c07-8a9f-6eebb8456a57
     type: condition
-    task:      
-      id: e5db926c-e661-4049-806d-8c227befaec7
-      version: -1
+    task:
+      id: e15b4fef-75b8-4c07-8a9f-6eebb8456a57
       description: Is ip detected in Cortex threat logs?
+      version: -1
       name: Is ip detected in Cortex threat logs?
       type: condition
       iscommand: false
@@ -545,17 +437,18 @@ tasks:
     ignoreworker: false
   "27":
     id: "27"
-    taskid: 5b07dad6-d4a1-424f-895d-091c29455e37
+    taskid: d1762265-fecc-426c-8247-ad1286c4a568
     type: regular
     task:
-      id: 5b07dad6-d4a1-424f-895d-091c29455e37
+      id: d1762265-fecc-426c-8247-ad1286c4a568
+      description: Set detected source and destination IPs
       version: -1
       name: Set detected source and destination IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "28"
@@ -567,13 +460,13 @@ tasks:
       value:
         complex:
           root: Cortex
-          accessor: Logging.Threat.Dst
+          accessor: Logging.Threat.Src
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Cortex.Logging.Threat.Src
+                  simple: Cortex.Logging.Threat.Dst
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -589,12 +482,12 @@ tasks:
     ignoreworker: false
   "28":
     id: "28"
-    taskid: 4a6e6397-3f66-476b-8140-e89ed94d4360
+    taskid: c627e2db-0423-4095-809e-5c5c181021d7
     type: condition
-    task:      
-      id: 4a6e6397-3f66-476b-8140-e89ed94d4360
-      version: -1
+    task:
+      id: c627e2db-0423-4095-809e-5c5c181021d7
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -624,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3660,
-          "y": 2220
+          "x": -3620,
+          "y": 2250
         }
       }
     note: false
@@ -633,24 +526,23 @@ tasks:
     ignoreworker: false
   "29":
     id: "29"
-    taskid: 3f412b1b-eb29-4dc4-8e33-57ecd86f749f
+    taskid: ef697cd5-2d3d-4e45-80c8-f1ccd6076332
     type: regular
     task:
-      description: Header
-      id: 3f412b1b-eb29-4dc4-8e33-57ecd86f749f
+      id: ef697cd5-2d3d-4e45-80c8-f1ccd6076332
+      description: Set detected users
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
     scriptarguments:
-      append:
-        simple: "true"
+      append: {}
       key:
         simple: detectedusers
       value:
@@ -663,8 +555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3210,
-          "y": 2410
+          "x": -3200,
+          "y": 2440
         }
       }
     note: false
@@ -672,11 +564,11 @@ tasks:
     ignoreworker: false
   "30":
     id: "30"
-    taskid: 4cf2f722-eb9c-4222-8049-85fbd2c5dd97
+    taskid: a48eeba0-8c0e-4e05-841f-ca99383878b3
     type: regular
     task:
-      description: Header
-      id: 4cf2f722-eb9c-4222-8049-85fbd2c5dd97
+      id: a48eeba0-8c0e-4e05-841f-ca99383878b3
+      description: Search in Cortex Traffic logs
       version: -1
       name: Search in Cortex Traffic logs
       script: '|||cortex-query-traffic-logs'
@@ -722,12 +614,12 @@ tasks:
     ignoreworker: false
   "31":
     id: "31"
-    taskid: cc278579-3d51-45d2-8357-8638b68c8f21
+    taskid: 089cf7cd-0115-4595-8ad1-7fa5376fe8e7
     type: condition
-    task:     
-      id: cc278579-3d51-45d2-8357-8638b68c8f21
-      version: -1
+    task:
+      id: 089cf7cd-0115-4595-8ad1-7fa5376fe8e7
       description: Is ip detected in Cortex traffic logs?
+      version: -1
       name: Is ip detected in Cortex traffic logs?
       type: condition
       iscommand: false
@@ -758,17 +650,17 @@ tasks:
     ignoreworker: false
   "32":
     id: "32"
-    taskid: a4844269-5dd4-42a0-89e1-a60be419cbec
+    taskid: ff3caca5-d5eb-4625-8b0f-b2930af3893d
     type: regular
     task:
-      id: a4844269-5dd4-42a0-89e1-a60be419cbec
+      id: ff3caca5-d5eb-4625-8b0f-b2930af3893d
       version: -1
       name: Set  detected source and destination IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
@@ -780,13 +672,13 @@ tasks:
       value:
         complex:
           root: Cortex
-          accessor: Logging.Traffic.Dst
+          accessor: Logging.Traffic.Src
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Cortex.Logging.Traffic.Src
+                  simple: Cortex.Logging.Traffic.Dst
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -802,12 +694,12 @@ tasks:
     ignoreworker: false
   "35":
     id: "35"
-    taskid: b32e8ae0-2b93-4fd1-89b9-d49434217170
+    taskid: de6bfa6c-d6a1-40e5-8bbf-134270c9d44e
     type: condition
-    task:      
-      id: b32e8ae0-2b93-4fd1-89b9-d49434217170
-      version: -1
+    task:
+      id: de6bfa6c-d6a1-40e5-8bbf-134270c9d44e
       description: Is Panorama enabled?
+      version: -1
       name: Is Panorama enabled?
       type: condition
       iscommand: false
@@ -816,7 +708,7 @@ tasks:
       '#default#':
       - "4"
       "yes":
-      - "78"
+      - "141"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -854,12 +746,12 @@ tasks:
     ignoreworker: false
   "39":
     id: "39"
-    taskid: 8efe89f7-2ca0-429e-8434-bd43a785608a
+    taskid: 00873beb-a0e2-458f-8c6f-e0c8d3a82813
     type: regular
     task:
-      id: 8efe89f7-2ca0-429e-8434-bd43a785608a
+      id: 00873beb-a0e2-458f-8c6f-e0c8d3a82813
+      description: Search hash in Cortex (Traps Endpoint)
       version: -1
-      description: Header
       name: Search hash in Cortex (Traps Endpoint)
       script: '|||cortex-query-traps-logs'
       type: regular
@@ -896,7 +788,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
+          "x": 1190,
           "y": 1440
         }
       }
@@ -905,12 +797,12 @@ tasks:
     ignoreworker: false
   "40":
     id: "40"
-    taskid: 9c22f4dc-cb8e-4462-80ae-cecafd01f89b
+    taskid: cda12bb9-7842-4bf1-8c00-178c14087336
     type: regular
     task:
-      id: 9c22f4dc-cb8e-4462-80ae-cecafd01f89b
+      id: cda12bb9-7842-4bf1-8c00-178c14087336
+      description: Search hash in Cortex (XDR Analytics)
       version: -1
-      description: Header
       name: Search hash in Cortex (XDR Analytics)
       script: '|||cortex-query-analytics-logs'
       type: regular
@@ -928,7 +820,7 @@ tasks:
           root: File
           accessor: SHA256
           transformers:
-          - operator: toUpperCase
+          - operator: toLowerCase
           - operator: uniq
           - operator: join
             args:
@@ -956,12 +848,12 @@ tasks:
     ignoreworker: false
   "43":
     id: "43"
-    taskid: 1a2e8610-45cd-40e4-80c6-5a4f9d9913e1
+    taskid: 19e4e525-4811-453c-8b0e-abd9d7a133bf
     type: condition
     task:
-      id: 1a2e8610-45cd-40e4-80c6-5a4f9d9913e1
-      version: -1
+      id: 19e4e525-4811-453c-8b0e-abd9d7a133bf
       description: Are there related sessions in Autofocus?
+      version: -1
       name: Are there related sessions in Autofocus?
       type: condition
       iscommand: false
@@ -997,12 +889,12 @@ tasks:
     ignoreworker: false
   "45":
     id: "45"
-    taskid: 6d1c3b13-f3fb-4b40-8ff9-6fef878605f2
+    taskid: a9361574-bc64-4e41-8d9b-988cb470833a
     type: condition
     task:
-      id: 6d1c3b13-f3fb-4b40-8ff9-6fef878605f2
-      version: -1
+      id: a9361574-bc64-4e41-8d9b-988cb470833a
       description: Is hash detected by Cortex Traps?
+      version: -1
       name: Is hash detected by Cortex Traps?
       type: condition
       iscommand: false
@@ -1024,8 +916,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 1650
+          "x": 1190,
+          "y": 1590
         }
       }
     note: false
@@ -1033,12 +925,12 @@ tasks:
     ignoreworker: false
   "46":
     id: "46"
-    taskid: c2a21d65-1925-4191-8101-4d08fbdc8fea
+    taskid: f1211202-657d-4ffa-8f65-ae9fd672ffa7
     type: condition
     task:
-      id: c2a21d65-1925-4191-8101-4d08fbdc8fea
-      version: -1
+      id: f1211202-657d-4ffa-8f65-ae9fd672ffa7
       description: Is hash detected by Cortex Analytics?
+      version: -1
       name: Is hash detected by Cortex Analytics?
       type: condition
       iscommand: false
@@ -1069,12 +961,11 @@ tasks:
     ignoreworker: false
   "47":
     id: "47"
-    taskid: c0079924-2ff9-44fd-8e43-78e516fe2b77
+    taskid: 1ddc064b-ee10-4dc8-8c9e-dbae661b9464
     type: regular
     task:
-      id: c0079924-2ff9-44fd-8e43-78e516fe2b77
+      id: 1ddc064b-ee10-4dc8-8c9e-dbae661b9464
       version: -1
-      description: Header
       name: Search hash in Cortex Threat logs
       description: The command searches the Cortex panw.threat table which is the
         threat logs table for PAN-OS/Panorama.
@@ -1095,7 +986,7 @@ tasks:
           root: File
           accessor: SHA256
           transformers:
-          - operator: toUpperCase
+          - operator: toLowerCase
           - operator: uniq
           - operator: join
             args:
@@ -1125,12 +1016,12 @@ tasks:
     ignoreworker: false
   "48":
     id: "48"
-    taskid: 420019c0-695b-4a30-8e2d-8feb01e796e2
+    taskid: 6eb8c99e-3d4a-474d-84bd-521aa1cfe92f
     type: condition
     task:
-      id: 420019c0-695b-4a30-8e2d-8feb01e796e2
-      version: -1
+      id: 6eb8c99e-3d4a-474d-84bd-521aa1cfe92f
       description: Is hash detected by Cortex Threat logs?
+      version: -1
       name: Is hash detected by Cortex Threat logs?
       type: condition
       iscommand: false
@@ -1161,17 +1052,17 @@ tasks:
     ignoreworker: false
   "50":
     id: "50"
-    taskid: 8d58f19d-77a9-4b00-87cf-87afd40dfb9b
+    taskid: cd354ae7-81de-495d-85f5-18732f151b03
     type: regular
     task:
-      id: 8d58f19d-77a9-4b00-87cf-87afd40dfb9b
+      id: cd354ae7-81de-495d-85f5-18732f151b03
       version: -1
       name: Set detected Hosts
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "51"
@@ -1191,7 +1082,7 @@ tasks:
       {
         "position": {
           "x": 2180,
-          "y": 1970
+          "y": 1920
         }
       }
     note: false
@@ -1199,17 +1090,17 @@ tasks:
     ignoreworker: false
   "51":
     id: "51"
-    taskid: d024659a-2ce2-44a5-8b52-9dfce40ee6b8
+    taskid: b6fe6807-3f46-438c-8db5-8ee1b9290465
     type: regular
     task:
-      id: d024659a-2ce2-44a5-8b52-9dfce40ee6b8
+      id: b6fe6807-3f46-438c-8db5-8ee1b9290465
       version: -1
       name: Set detected IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "79"
@@ -1228,8 +1119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1970,
-          "y": 2145
+          "x": 2070,
+          "y": 2090
         }
       }
     note: false
@@ -1237,12 +1128,12 @@ tasks:
     ignoreworker: false
   "55":
     id: "55"
-    taskid: a7bae6e7-79a4-41f2-87a4-0fc38c10ad91
+    taskid: c51bc3a2-a3d2-42f3-8e4f-ab64e364e495
     type: title
     task:
-      id: a7bae6e7-79a4-41f2-87a4-0fc38c10ad91
-      version: -1
+      id: c51bc3a2-a3d2-42f3-8e4f-ab64e364e495
       description: Header
+      version: -1
       name: Done
       type: title
       iscommand: false
@@ -1260,10 +1151,11 @@ tasks:
     ignoreworker: false
   "61":
     id: "61"
-    taskid: 31633bd9-8ed2-45a7-8f02-bb4edfe18157
+    taskid: b963aae5-4f9b-4859-8415-1abe79b6df6f
     type: regular
     task:
-      id: 31633bd9-8ed2-45a7-8f02-bb4edfe18157
+      id: b963aae5-4f9b-4859-8415-1abe79b6df6f
+      description: Search domain in Cortex Threat logs
       version: -1
       name: Search domain in Cortex Threat logs
       script: '|||cortex-query-threat-logs'
@@ -1311,12 +1203,12 @@ tasks:
     ignoreworker: false
   "63":
     id: "63"
-    taskid: 4bfe323d-df41-4b23-8441-529265a56b27
+    taskid: ebb2d00a-589c-4865-8791-5608c1308d6c
     type: condition
     task:
-      id: 4bfe323d-df41-4b23-8441-529265a56b27
-      version: -1
+      id: ebb2d00a-589c-4865-8791-5608c1308d6c
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -1355,17 +1247,17 @@ tasks:
     ignoreworker: false
   "64":
     id: "64"
-    taskid: fa3211bf-6f25-4a9f-828c-43395c2d99bb
+    taskid: eded135c-fff0-4139-8ebf-09f703a44359
     type: regular
     task:
-      id: fa3211bf-6f25-4a9f-828c-43395c2d99bb
+      id: eded135c-fff0-4139-8ebf-09f703a44359
       version: -1
       name: Set detected source and destionation IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "63"
@@ -1377,13 +1269,13 @@ tasks:
       value:
         complex:
           root: Cortex
-          accessor: Logging.Threat.Dst
+          accessor: Logging.Threat.Src
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Cortex.Logging.Threat.Src
+                  simple: Cortex.Logging.Threat.Dst
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -1399,17 +1291,17 @@ tasks:
     ignoreworker: false
   "65":
     id: "65"
-    taskid: 125b4da1-de2a-413e-8ccc-0580021c3b91
+    taskid: ce169488-a826-4099-84b4-d3929b5fd4e1
     type: regular
     task:
-      id: 125b4da1-de2a-413e-8ccc-0580021c3b91
+      id: ce169488-a826-4099-84b4-d3929b5fd4e1
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "55"
@@ -1437,23 +1329,21 @@ tasks:
     ignoreworker: false
   "66":
     id: "66"
-    taskid: efbb66ba-cd75-40cc-8289-09cfa5dacba4
+    taskid: 8f36d29e-53a8-40a4-819d-20d9c9dfff34
     type: condition
     task:
-      id: efbb66ba-cd75-40cc-8289-09cfa5dacba4
-      version: -1
+      id: 8f36d29e-53a8-40a4-819d-20d9c9dfff34
       description: Is Panorama enabled?
+      version: -1
       name: Is Panorama enabled?
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "23"
       "yes":
-      - "119"
-      - "120"
-      - "121"
-      - "122"
-      - "123"
+      - "140"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1482,8 +1372,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4220,
-          "y": 1060
+          "x": -5110,
+          "y": 1080
         }
       }
     note: false
@@ -1491,12 +1381,12 @@ tasks:
     ignoreworker: false
   "67":
     id: "67"
-    taskid: 5d415b8f-86a4-48b5-8f62-9895f916fabb
+    taskid: 5ca2f308-313c-4513-8290-bb4d50a3fa00
     type: condition
     task:
-      id: 5d415b8f-86a4-48b5-8f62-9895f916fabb
-      version: -1
+      id: 5ca2f308-313c-4513-8290-bb4d50a3fa00
       description: Is Panorama enabled?
+      version: -1
       name: Is Panorama enabled?
       type: condition
       iscommand: false
@@ -1505,9 +1395,7 @@ tasks:
       '#default#':
       - "55"
       "yes":
-      - "116"
-      - "117"
-      - "118"
+      - "142"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1537,7 +1425,7 @@ tasks:
       {
         "position": {
           "x": 3320,
-          "y": 1050
+          "y": 1100
         }
       }
     note: false
@@ -1545,12 +1433,12 @@ tasks:
     ignoreworker: false
   "68":
     id: "68"
-    taskid: d7b19fbe-ea82-402e-8f2a-4fcdffb4d67a
+    taskid: 5c3e164b-98bf-4b51-808b-7595db30a868
     type: condition
     task:
-      id: d7b19fbe-ea82-402e-8f2a-4fcdffb4d67a
-      version: -1
+      id: 5c3e164b-98bf-4b51-808b-7595db30a868
       description: Is Autofocus enabled?
+      version: -1
       name: Is Autofocus enabled?
       type: condition
       iscommand: false
@@ -1597,12 +1485,12 @@ tasks:
     ignoreworker: false
   "69":
     id: "69"
-    taskid: fbfbb87e-49f4-4aa0-8870-fe8e3d5fb611
+    taskid: e6b9ad4d-5029-4465-8ac2-912f0d0cfe9c
     type: condition
     task:
-      id: fbfbb87e-49f4-4aa0-8870-fe8e3d5fb611
-      version: -1
+      id: e6b9ad4d-5029-4465-8ac2-912f0d0cfe9c
       description: Is Autofocus enabled?
+      version: -1
       name: Is Autofocus enabled?
       type: condition
       iscommand: false
@@ -1647,12 +1535,12 @@ tasks:
     ignoreworker: false
   "70":
     id: "70"
-    taskid: 125c2124-37d6-4884-83f4-39c54cc7e342
+    taskid: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
     type: condition
     task:
-      id: 125c2124-37d6-4884-83f4-39c54cc7e342
+      id: 7c07c4aa-f0d0-4b3f-8066-06638dc7dd4d
+      description: Is Cortex Data Lake enabled? 
       version: -1
-      description: Is Cortex Data Lake enabled?
       name: Is Cortex Data Lake enabled?
       type: condition
       iscommand: false
@@ -1708,12 +1596,12 @@ tasks:
     ignoreworker: false
   "71":
     id: "71"
-    taskid: 6b9e53f3-b994-4c25-816b-77923ec37d5d
+    taskid: 9e4934f2-8975-4438-8c67-b0a6defae2b3
     type: condition
     task:
-      id: 6b9e53f3-b994-4c25-816b-77923ec37d5d
-      version: -1
+      id: 9e4934f2-8975-4438-8c67-b0a6defae2b3
       description: Is Cortex Data Lake enabled?
+      version: -1
       name: Is Cortex Data Lake enabled?
       type: condition
       iscommand: false
@@ -1759,7 +1647,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
+          "x": 1130,
           "y": 1080
         }
       }
@@ -1768,17 +1656,17 @@ tasks:
     ignoreworker: false
   "72":
     id: "72"
-    taskid: c142e82f-5a0c-4be5-829c-be2fdaa9f450
+    taskid: 61df7fd2-5df9-42cc-8301-b4689e484ddb
     type: regular
     task:
-      id: c142e82f-5a0c-4be5-829c-be2fdaa9f450
+      id: 61df7fd2-5df9-42cc-8301-b4689e484ddb
       version: -1
       name: Set unique detected source and destination IP's
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
@@ -1812,17 +1700,17 @@ tasks:
     ignoreworker: false
   "73":
     id: "73"
-    taskid: ba6df8e1-5b3d-4a14-8804-8ca054716700
+    taskid: a6263d1e-695e-48d7-86b4-b7c67238b9da
     type: regular
     task:
-      id: ba6df8e1-5b3d-4a14-8804-8ca054716700
+      id: a6263d1e-695e-48d7-86b4-b7c67238b9da
       version: -1
       name: Set detected Hosts
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "74"
@@ -1834,12 +1722,6 @@ tasks:
       value:
         complex:
           root: Cortex
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Cortex.Logging.Traps.EndPointHeader.DeviceName
-                iscontext: true
           accessor: Logging.Traps.EndPointHeader.DeviceName
           transformers:
           - operator: uniq
@@ -1847,8 +1729,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 2040
+          "x": 1190,
+          "y": 1930
         }
       }
     note: false
@@ -1856,17 +1738,17 @@ tasks:
     ignoreworker: false
   "74":
     id: "74"
-    taskid: 14353bf9-977f-47df-80e5-532b35cce389
+    taskid: 79b9e374-120a-4d4c-8417-57a36004ba65
     type: regular
     task:
-      id: 14353bf9-977f-47df-80e5-532b35cce389
+      id: 79b9e374-120a-4d4c-8417-57a36004ba65
       version: -1
       name: Set detected IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "77"
@@ -1878,12 +1760,6 @@ tasks:
       value:
         complex:
           root: Cortex
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Cortex.Logging.Traps.EndPointHeader.AgentIP
-                iscontext: true
           accessor: Logging.Traps.EndPointHeader.AgentIP
           transformers:
           - operator: uniq
@@ -1891,8 +1767,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 2210
+          "x": 1190,
+          "y": 2090
         }
       }
     note: false
@@ -1900,20 +1776,20 @@ tasks:
     ignoreworker: false
   "77":
     id: "77"
-    taskid: ab3fe46c-e040-4965-8b2c-54641b653bac
+    taskid: d1a1f34a-171f-4bdd-8786-e58f46083fb6
     type: regular
     task:
-      id: ab3fe46c-e040-4965-8b2c-54641b653bac
+      id: d1a1f34a-171f-4bdd-8786-e58f46083fb6
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - "138"
     scriptarguments:
       append:
         simple: "true"
@@ -1922,12 +1798,6 @@ tasks:
       value:
         complex:
           root: Cortex
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: Cortex.Logging.Traps.EndPointHeader.Username
-                iscontext: true
           accessor: Logging.Traps.EndPointHeader.Username
           transformers:
           - operator: uniq
@@ -1935,65 +1805,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 2375
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "78":
-    id: "78"
-    taskid: bcd50e15-d602-49d4-8d76-dac0641fd34c
-    type: playbook
-    task:
-      id: bcd50e15-d602-49d4-8d76-dac0641fd34c
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "82"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest:
-        complex:
-          root: File
-          accessor: SHA256
-          transformers:
-          - operator: toUpperCase
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      log_type:
-        simple: wildfire
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -390,
-          "y": 1790
+          "x": 1190,
+          "y": 2250
         }
       }
     note: false
@@ -2001,20 +1814,20 @@ tasks:
     ignoreworker: false
   "79":
     id: "79"
-    taskid: 0735ea9e-d94e-4d4c-8ce6-b15a0663b363
+    taskid: 4f8119a5-987a-4146-8f21-af6cb20eb64c
     type: regular
     task:
-      id: 0735ea9e-d94e-4d4c-8ce6-b15a0663b363
+      id: 4f8119a5-987a-4146-8f21-af6cb20eb64c
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "4"
+      - "139"
     scriptarguments:
       append:
         simple: "true"
@@ -2030,8 +1843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1700,
-          "y": 2375
+          "x": 1840,
+          "y": 2260
         }
       }
     note: false
@@ -2039,17 +1852,17 @@ tasks:
     ignoreworker: false
   "80":
     id: "80"
-    taskid: 53a3b432-c2c8-4242-849d-e59abf044cc0
+    taskid: c3c61dec-436e-49a3-89a0-1667c1b2b55b
     type: regular
     task:
-      id: 53a3b432-c2c8-4242-849d-e59abf044cc0
+      id: c3c61dec-436e-49a3-89a0-1667c1b2b55b
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
@@ -2077,17 +1890,17 @@ tasks:
     ignoreworker: false
   "81":
     id: "81"
-    taskid: 1154a919-38e6-4369-8cb0-a2969f102e9d
+    taskid: 1ca375e6-e10f-4d7b-8ecd-1c10a50940c4
     type: regular
     task:
-      id: 1154a919-38e6-4369-8cb0-a2969f102e9d
+      id: 1ca375e6-e10f-4d7b-8ecd-1c10a50940c4
       version: -1
       name: Set unique detected source and destination IP's
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
@@ -2099,13 +1912,13 @@ tasks:
       value:
         complex:
           root: Panorama
-          accessor: Monitor.Logs.DestinationAddress
+          accessor: Monitor.Logs.SourceAddress
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Panorama.Monitor.Logs.SourceAddress
+                  simple: Panorama.Monitor.Logs.DestinationAddress
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -2121,12 +1934,12 @@ tasks:
     ignoreworker: false
   "82":
     id: "82"
-    taskid: b43ce0a3-4717-4a90-8c7b-7bbcae79816b
+    taskid: 451306d0-c373-4707-80a9-c3be35f72671
     type: condition
     task:
-      id: b43ce0a3-4717-4a90-8c7b-7bbcae79816b
-      version: -1
+      id: 451306d0-c373-4707-80a9-c3be35f72671
       description: Is hash detected by Panorama Wildfire?
+      version: -1
       name: Is hash detected by Panorama Wildfire?
       type: condition
       iscommand: false
@@ -2179,17 +1992,17 @@ tasks:
     ignoreworker: false
   "83":
     id: "83"
-    taskid: 756685df-ab6a-42ab-87d7-4253e6b10ef4
+    taskid: 302fb615-03f7-4b7c-8346-42912cbf8690
     type: regular
     task:
-      id: 756685df-ab6a-42ab-87d7-4253e6b10ef4
+      id: 302fb615-03f7-4b7c-8346-42912cbf8690
       version: -1
       name: Set detected source and destination IP's
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "55"
@@ -2208,7 +2021,6 @@ tasks:
               item:
                 value:
                   simple: ${AutoFocus.SessionsResults.src_ip}
-                iscontext: true
           - operator: uniq
     separatecontext: false
     view: |-
@@ -2223,12 +2035,12 @@ tasks:
     ignoreworker: false
   "84":
     id: "84"
-    taskid: 4089d1dd-7694-4b0a-8658-47aba835a68f
+    taskid: 3c25c2f6-a438-4a4c-8f98-d582cd7a1f21
     type: condition
     task:
-      id: 4089d1dd-7694-4b0a-8658-47aba835a68f
-      version: -1
+      id: 3c25c2f6-a438-4a4c-8f98-d582cd7a1f21
       description: Are there related sessions in Autofocus?
+      version: -1
       name: Are there related sessions in Autofocus?
       type: condition
       iscommand: false
@@ -2264,12 +2076,12 @@ tasks:
     ignoreworker: false
   "85":
     id: "85"
-    taskid: 15afcd0f-56d3-46db-8c59-74d035d2ff07
+    taskid: 3e151189-482a-4af0-8e9c-86393e545b72
     type: condition
     task:
-      id: 15afcd0f-56d3-46db-8c59-74d035d2ff07
-      version: -1
+      id: 3e151189-482a-4af0-8e9c-86393e545b72
       description: Is domain detected by Cortex Threat logs?
+      version: -1
       name: Is domain detected by Cortex Threat logs?
       type: condition
       iscommand: false
@@ -2300,17 +2112,17 @@ tasks:
     ignoreworker: false
   "86":
     id: "86"
-    taskid: a5ff8a77-207b-4fe1-84c0-bdf9587483f5
+    taskid: bf85e6bb-e6b6-41a7-8916-f360c884e728
     type: regular
     task:
-      id: a5ff8a77-207b-4fe1-84c0-bdf9587483f5
+      id: bf85e6bb-e6b6-41a7-8916-f360c884e728
       version: -1
       name: Set  detected source and destination IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
@@ -2335,7 +2147,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1170,
+          "x": -1200,
           "y": 2090
         }
       }
@@ -2344,12 +2156,12 @@ tasks:
     ignoreworker: false
   "89":
     id: "89"
-    taskid: 20d3ac1b-c1d0-4f84-86e6-4804a742bc4a
+    taskid: 702217f7-18d1-43f9-8b9e-1126880fc96c
     type: title
     task:
-      id: 20d3ac1b-c1d0-4f84-86e6-4804a742bc4a
+      id: 702217f7-18d1-43f9-8b9e-1126880fc96c
+      description: Cortex Hash Searches
       version: -1
-      description: Header
       name: Cortex Hash Searches
       type: title
       iscommand: false
@@ -2372,10 +2184,11 @@ tasks:
     ignoreworker: false
   "90":
     id: "90"
-    taskid: 988f6c9f-eb7c-4c07-8109-45293f41b4c7
+    taskid: ecf9effb-d4fe-41e9-87df-21e1d1b41143
     type: title
     task:
-      id: 988f6c9f-eb7c-4c07-8109-45293f41b4c7
+      id: ecf9effb-d4fe-41e9-87df-21e1d1b41143
+      description: Cortex IP searches
       version: -1
       name: Cortex IP searches
       type: title
@@ -2397,12 +2210,12 @@ tasks:
     ignoreworker: false
   "92":
     id: "92"
-    taskid: 189d12a4-8138-4c64-8ef6-08cca82a19a1
+    taskid: 280680d9-fdbe-438a-8a76-59ddcbc7f22c
     type: condition
     task:
-      id: 189d12a4-8138-4c64-8ef6-08cca82a19a1
-      version: -1
+      id: 280680d9-fdbe-438a-8a76-59ddcbc7f22c
       description: Is Cortex Data Lake enabled?
+      version: -1
       name: Is Cortex Data Lake enabled?
       type: condition
       iscommand: false
@@ -2457,12 +2270,12 @@ tasks:
     ignoreworker: false
   "93":
     id: "93"
-    taskid: 09cd2444-be66-41bf-8800-c2c819280034
+    taskid: 99bd8837-39bf-484e-867d-d55a6dce53e0
     type: title
     task:
-      id: 09cd2444-be66-41bf-8800-c2c819280034
-      version: -1
+      id: 99bd8837-39bf-484e-867d-d55a6dce53e0
       description: Header
+      version: -1
       name: Cortex domain search
       type: title
       iscommand: false
@@ -2483,17 +2296,17 @@ tasks:
     ignoreworker: false
   "94":
     id: "94"
-    taskid: 296692a3-42c0-4e79-8833-034acd693a3d
+    taskid: 18c2b8b4-3430-4231-8cf9-554f40479f77
     type: regular
     task:
-      id: 296692a3-42c0-4e79-8833-034acd693a3d
+      id: 18c2b8b4-3430-4231-8cf9-554f40479f77
       version: -1
       name: Set detected source and destination IPs
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "98"
@@ -2505,13 +2318,13 @@ tasks:
       value:
         complex:
           root: Cortex
-          accessor: Logging.Threat.Dst
+          accessor: Logging.Threat.Src
           transformers:
           - operator: append
             args:
               item:
                 value:
-                  simple: Cortex.Logging.Threat.Src
+                  simple: Cortex.Logging.Threat.Dst
                 iscontext: true
           - operator: uniq
     separatecontext: false
@@ -2527,12 +2340,12 @@ tasks:
     ignoreworker: false
   "95":
     id: "95"
-    taskid: 64ca929c-6dc0-4b7c-8853-c8439de05f2a
+    taskid: 1fa957ae-5f41-4e95-8092-a7f00619f101
     type: condition
     task:
-      id: 64ca929c-6dc0-4b7c-8853-c8439de05f2a
-      version: -1
+      id: 1fa957ae-5f41-4e95-8092-a7f00619f101
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -2568,12 +2381,12 @@ tasks:
     ignoreworker: false
   "96":
     id: "96"
-    taskid: 57892938-05ea-4fff-8696-e3948e699007
+    taskid: 8f850785-2523-4821-8a1c-0e8a9e66a266
     type: title
     task:
-      id: 57892938-05ea-4fff-8696-e3948e699007
+      id: 8f850785-2523-4821-8a1c-0e8a9e66a266
+      description: Panorama hash search
       version: -1
-      description: Header
       name: Panorama hash search
       type: title
       iscommand: false
@@ -2594,17 +2407,17 @@ tasks:
     ignoreworker: false
   "97":
     id: "97"
-    taskid: 4403e7ee-1b6d-4a8b-8f7a-b9317bee9f98
+    taskid: 0590dd67-b16f-4a9a-897b-446160b4ecae
     type: regular
     task:
-      id: 4403e7ee-1b6d-4a8b-8f7a-b9317bee9f98
+      id: 0590dd67-b16f-4a9a-897b-446160b4ecae
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
@@ -2638,12 +2451,12 @@ tasks:
     ignoreworker: false
   "98":
     id: "98"
-    taskid: cac9dd5b-0866-47b9-8a7c-b0b47c24de8f
+    taskid: 2e0d13ee-5734-4f79-8ca1-08f546dd5a40
     type: condition
     task:
-      id: cac9dd5b-0866-47b9-8a7c-b0b47c24de8f
-      version: -1
+      id: 2e0d13ee-5734-4f79-8ca1-08f546dd5a40
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -2682,10 +2495,10 @@ tasks:
     ignoreworker: false
   "99":
     id: "99"
-    taskid: 4086f03c-1e64-4ef2-84d2-b33bbb8be62e
+    taskid: c537fc45-5e32-4933-8e7a-bd8f11b78b77
     type: playbook
     task:
-      id: 4086f03c-1e64-4ef2-84d2-b33bbb8be62e
+      id: c537fc45-5e32-4933-8e7a-bd8f11b78b77
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
@@ -2748,10 +2561,10 @@ tasks:
     ignoreworker: false
   "100":
     id: "100"
-    taskid: ad158b1b-7197-4eee-8c26-f01ad62518ce
+    taskid: ba675c58-ac65-4301-8335-c618d772b2d6
     type: playbook
     task:
-      id: ad158b1b-7197-4eee-8c26-f01ad62518ce
+      id: ba675c58-ac65-4301-8335-c618d772b2d6
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
@@ -2812,10 +2625,10 @@ tasks:
     ignoreworker: false
   "101":
     id: "101"
-    taskid: 831d6c09-5099-4e5c-8a14-3b1b37bcd12a
+    taskid: 29703915-0ba4-4ae1-8dc3-f4a73d16b68f
     type: playbook
     task:
-      id: 831d6c09-5099-4e5c-8a14-3b1b37bcd12a
+      id: 29703915-0ba4-4ae1-8dc3-f4a73d16b68f
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
       description: |-
@@ -2874,74 +2687,21 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "103":
-    id: "103"
-    taskid: 79915925-9628-4702-8493-0bce61fc9e3f
-    type: playbook
-    task:
-      id: 79915925-9628-4702-8493-0bce61fc9e3f
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "104"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: url
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 3390,
-          "y": 1365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
   "104":
     id: "104"
-    taskid: cdc83a04-974d-4a56-87ac-cb73ce773c8b
+    taskid: 19ae133c-58b4-48bf-8c61-04c79365b6d6
     type: condition
     task:
-      id: cdc83a04-974d-4a56-87ac-cb73ce773c8b
-      version: -1
+      id: 19ae133c-58b4-48bf-8c61-04c79365b6d6
       description: Are there relevant IP's
+      version: -1
       name: Are there relevant IP's
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "55"
       "yes":
       - "105"
     separatecontext: false
@@ -2974,17 +2734,17 @@ tasks:
     ignoreworker: false
   "105":
     id: "105"
-    taskid: e0e04a23-b457-4179-8338-1a81df31143d
+    taskid: 2a7acc60-cdb0-4dce-8dbc-5b247f093f9b
     type: regular
     task:
-      id: e0e04a23-b457-4179-8338-1a81df31143d
+      id: 2a7acc60-cdb0-4dce-8dbc-5b247f093f9b
       version: -1
       name: Set unique detected source and destination IP's
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "55"
@@ -3019,12 +2779,12 @@ tasks:
     ignoreworker: false
   "106":
     id: "106"
-    taskid: d020b154-6169-4de7-867a-7a50223245e3
+    taskid: 6c96f688-05c4-4f6e-8499-e90f38734294
     type: condition
     task:
-      id: d020b154-6169-4de7-867a-7a50223245e3
-      version: -1
+      id: 6c96f688-05c4-4f6e-8499-e90f38734294
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -3051,7 +2811,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3370,
+          "x": 3380,
           "y": 2240
         }
       }
@@ -3060,17 +2820,17 @@ tasks:
     ignoreworker: false
   "107":
     id: "107"
-    taskid: 61d305dd-90a6-410c-82a2-8b95438bdd3e
+    taskid: 07785f59-947f-4c31-8086-5b199507a953
     type: regular
     task:
-      id: 61d305dd-90a6-410c-82a2-8b95438bdd3e
+      id: 07785f59-947f-4c31-8086-5b199507a953
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "55"
@@ -3104,12 +2864,12 @@ tasks:
     ignoreworker: false
   "108":
     id: "108"
-    taskid: 387d3d0b-b056-42ee-86f7-f74178e4164a
+    taskid: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
     type: title
     task:
-      id: 387d3d0b-b056-42ee-86f7-f74178e4164a
-      version: -1
+      id: bf03de85-aaf8-41d4-81f7-7f5ca5814ee0
       description: Header
+      version: -1
       name: Autofocus hash search
       type: title
       iscommand: false
@@ -3130,10 +2890,10 @@ tasks:
     ignoreworker: false
   "109":
     id: "109"
-    taskid: e82be77e-5621-41f4-8e83-d5f607a1ff66
+    taskid: c35b5e37-813f-472e-8ec8-ee41b091b463
     type: title
     task:
-      id: e82be77e-5621-41f4-8e83-d5f607a1ff66
+      id: c35b5e37-813f-472e-8ec8-ee41b091b463
       version: -1
       name: Cortex hash search
       type: title
@@ -3146,8 +2906,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1170,
-          "y": 955
+          "x": 1130,
+          "y": 965
         }
       }
     note: false
@@ -3155,12 +2915,12 @@ tasks:
     ignoreworker: false
   "110":
     id: "110"
-    taskid: 3ec8a3dc-fe1f-4a47-89a8-3cf58c57ac43
+    taskid: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
     type: title
     task:
-      id: 3ec8a3dc-fe1f-4a47-89a8-3cf58c57ac43
-      version: -1
+      id: 6d241144-3dc7-40c1-8b2d-f01d3bb9c9aa
       description: Header
+      version: -1
       name: Autofocus domain search
       type: title
       iscommand: false
@@ -3181,13 +2941,13 @@ tasks:
     ignoreworker: false
   "111":
     id: "111"
-    taskid: e08a005b-189c-4942-86bf-4aa069832512
+    taskid: 3d88479c-bc21-4821-812a-d9d3027ea6d6
     type: title
     task:
-      id: e08a005b-189c-4942-86bf-4aa069832512
-      version: -1
+      id: 3d88479c-bc21-4821-812a-d9d3027ea6d6
       description: Header
-      name: Panorama domain search
+      version: -1
+      name: Panorama domain/url search
       type: title
       iscommand: false
       brand: ""
@@ -3199,7 +2959,7 @@ tasks:
       {
         "position": {
           "x": 3320,
-          "y": 945
+          "y": 965
         }
       }
     note: false
@@ -3207,12 +2967,12 @@ tasks:
     ignoreworker: false
   "112":
     id: "112"
-    taskid: 65ddf0c1-ae06-4d50-8fa6-625d065313e4
+    taskid: 346194fe-e8bb-4833-8388-75cc8d787238
     type: title
     task:
-      id: 65ddf0c1-ae06-4d50-8fa6-625d065313e4
-      version: -1
+      id: 346194fe-e8bb-4833-8388-75cc8d787238
       description: Header
+      version: -1
       name: Autofocus IP seach
       type: title
       iscommand: false
@@ -3233,12 +2993,12 @@ tasks:
     ignoreworker: false
   "113":
     id: "113"
-    taskid: 9359af3e-a342-4845-8202-5c2609d78318
+    taskid: 80c54910-0a39-49c2-882a-0ffa04b79371
     type: title
     task:
-      id: 9359af3e-a342-4845-8202-5c2609d78318
-      version: -1
+      id: 80c54910-0a39-49c2-882a-0ffa04b79371
       description: Header
+      version: -1
       name: Panorama IP search
       type: title
       iscommand: false
@@ -3250,571 +3010,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4220,
+          "x": -4750,
           "y": 910
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "114":
-    id: "114"
-    taskid: ccc7f3dc-8c74-4d8a-86b4-c2bb9935595f
-    type: playbook
-    task:
-      id: ccc7f3dc-8c74-4d8a-86b4-c2bb9935595f
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "104"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: data
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 3790,
-          "y": 1365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "115":
-    id: "115"
-    taskid: a8873d8b-c6d1-4a4e-8b5f-073d6d4f9f57
-    type: playbook
-    task:
-      id: a8873d8b-c6d1-4a4e-8b5f-073d6d4f9f57
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "104"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: threat
-      port-dst: {}
-      query: {}
-      rule: {}
-      time-generated: {}
-      url:
-        complex:
-          root: inputs.Domain
-          transformers:
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": 4190,
-          "y": 1365
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "116":
-    id: "116"
-    taskid: 73008a8e-4fcf-4534-871b-2a641d884efc
-    type: title
-    task:
-      id: 73008a8e-4fcf-4534-871b-2a641d884efc
-      version: -1
-      description: Header
-      name: Query Panorama Url
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "103"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3390,
-          "y": 1220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "117":
-    id: "117"
-    taskid: e4c5e8ab-9a05-477e-8cda-85eadddb2a39
-    type: title
-    task:
-      id: e4c5e8ab-9a05-477e-8cda-85eadddb2a39
-      version: -1
-      name: Query Panorama data
-      description: Header
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "114"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 3790,
-          "y": 1220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "118":
-    id: "118"
-    taskid: 4bf78199-dfdf-4241-8ff8-67f8612d1887
-    type: title
-    task:
-      id: 4bf78199-dfdf-4241-8ff8-67f8612d1887
-      version: -1
-      description: Header
-      name: Query Panorama threat
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "115"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 4190,
-          "y": 1220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "119":
-    id: "119"
-    taskid: 3dedda3e-3c57-4e77-846b-33fe3cb90dfe
-    type: title
-    task:
-      id: 3dedda3e-3c57-4e77-846b-33fe3cb90dfe
-      version: -1
-      description: Header
-      name: Query Panorama Traffic
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "124"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -5190,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "120":
-    id: "120"
-    taskid: 1a9f9575-6693-4d4f-859e-f112f7b226ad
-    type: title
-    task:
-      id: 1a9f9575-6693-4d4f-859e-f112f7b226ad
-      version: -1
-      description: Header
-      name: Query Panorama Threat
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "125"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4800,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "121":
-    id: "121"
-    taskid: 95c65ef8-f088-4550-8d52-b8e7ad2be4ab
-    type: title
-    task:
-      id: 95c65ef8-f088-4550-8d52-b8e7ad2be4ab
-      version: -1
-      description: Header
-      name: Query Panorama Wildfire
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "126"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4410,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "122":
-    id: "122"
-    taskid: 56358288-bfd4-4ac6-8f84-de1cc5cfe1ba
-    type: title
-    task:
-      id: 56358288-bfd4-4ac6-8f84-de1cc5cfe1ba
-      version: -1
-      description: Header
-      name: Query Panorama Data
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "127"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4020,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "123":
-    id: "123"
-    taskid: 4697f8e1-8e4e-4671-8869-cbc088b1150e
-    type: title
-    task:
-      id: 4697f8e1-8e4e-4671-8869-cbc088b1150e
-      version: -1
-      description: Header
-      name: Query Panorama Url
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "128"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -3630,
-          "y": 1250
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "124":
-    id: "124"
-    taskid: f143f393-5fab-4f58-828d-0b590fb28bb5
-    type: playbook
-    task:
-      id: f143f393-5fab-4f58-828d-0b590fb28bb5
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "129"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: traffic
-      port-dst: {}
-      query:
-        complex:
-          root: Query
-          accessor: IP.PanoramaIP
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -5190,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "125":
-    id: "125"
-    taskid: 0fd49641-0c4a-4774-8ad0-829781fa707d
-    type: playbook
-    task:
-      id: 0fd49641-0c4a-4774-8ad0-829781fa707d
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "129"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: threat
-      port-dst: {}
-      query:
-        complex:
-          root: Query
-          accessor: IP.PanoramaIP
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -4800,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "126":
-    id: "126"
-    taskid: 7110aaa8-a5ed-4256-8c73-aa86c058bc98
-    type: playbook
-    task:
-      id: 7110aaa8-a5ed-4256-8c73-aa86c058bc98
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "129"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: wildfire
-      port-dst: {}
-      query:
-        complex:
-          root: Query
-          accessor: IP.PanoramaIP
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -4410,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "127":
-    id: "127"
-    taskid: d565b25c-ced3-43e0-8a4d-4aacde37e33d
-    type: playbook
-    task:
-      id: d565b25c-ced3-43e0-8a4d-4aacde37e33d
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "129"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: data
-      port-dst: {}
-      query:
-        complex:
-          root: Query
-          accessor: IP.PanoramaIP
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -4020,
-          "y": 1380
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "128":
-    id: "128"
-    taskid: 00b05f71-f7f0-4ab9-86f5-783edcec351f
-    type: playbook
-    task:
-      id: 00b05f71-f7f0-4ab9-86f5-783edcec351f
-      version: -1
-      name: Panorama Query Logs
-      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
-        and wildfire.'
-      playbookName: Panorama Query Logs
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "129"
-    scriptarguments:
-      action: {}
-      addr-dst: {}
-      addr-src: {}
-      filedigest: {}
-      log_type:
-        simple: url
-      port-dst: {}
-      query:
-        complex:
-          root: Query
-          accessor: IP.PanoramaIP
-      rule: {}
-      time-generated: {}
-      url: {}
-      zone-dst: {}
-      zone-src: {}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-    view: |-
-      {
-        "position": {
-          "x": -3630,
-          "y": 1380
         }
       }
     note: false
@@ -3822,12 +3019,12 @@ tasks:
     ignoreworker: false
   "129":
     id: "129"
-    taskid: 929661ff-5870-485d-8e08-cdb5e9ef92fd
+    taskid: d3c3d52d-8ab8-4f02-8104-44b7eef26cd9
     type: condition
     task:
-      id: 929661ff-5870-485d-8e08-cdb5e9ef92fd
-      version: -1
+      id: d3c3d52d-8ab8-4f02-8104-44b7eef26cd9
       description: Are there relevant IP's
+      version: -1
       name: Are there relevant IP's
       type: condition
       iscommand: false
@@ -3836,7 +3033,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "130"
+      - "136"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3858,52 +3055,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4420,
-          "y": 1780
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "130":
-    id: "130"
-    taskid: 9d55d2d8-6cb8-481a-8645-4dfe9e7f965f
-    type: regular
-    task:
-      id: 9d55d2d8-6cb8-481a-8645-4dfe9e7f965f
-      version: -1
-      name: Set unique detected source and destination IP's
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "131"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: detectedips
-      value:
-        complex:
-          root: Panorama
-          accessor: Monitor.Logs.DestinationAddress
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: Panorama.Monitor.Logs.SourceAddress
-                iscontext: true
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -4680,
-          "y": 2065
+          "x": -5110,
+          "y": 1650
         }
       }
     note: false
@@ -3911,12 +3064,12 @@ tasks:
     ignoreworker: false
   "131":
     id: "131"
-    taskid: b75f2750-a728-4d2e-80d8-8640579b95d6
+    taskid: 4b31ae24-edd5-49e5-8339-c6db918212e3
     type: condition
     task:
-      id: b75f2750-a728-4d2e-80d8-8640579b95d6
-      version: -1
+      id: 4b31ae24-edd5-49e5-8339-c6db918212e3
       description: Does event contain users?
+      version: -1
       name: Does event contain users?
       type: condition
       iscommand: false
@@ -3943,8 +3096,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4680,
-          "y": 2240
+          "x": -5220,
+          "y": 2145
         }
       }
     note: false
@@ -3952,17 +3105,17 @@ tasks:
     ignoreworker: false
   "132":
     id: "132"
-    taskid: 01d75640-85b6-44d3-85e1-fb99efc586f7
+    taskid: 6773a849-1162-4ab5-8fae-9cf08a717bf2
     type: regular
     task:
-      id: 01d75640-85b6-44d3-85e1-fb99efc586f7
+      id: 6773a849-1162-4ab5-8fae-9cf08a717bf2
       version: -1
       name: Set detected users
       description: Sets a value into the context with the given context key
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
@@ -3987,8 +3140,263 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -4820,
-          "y": 2440
+          "x": -5500,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "136":
+    id: "136"
+    taskid: 82db6939-9aed-4b43-8fe8-989893e78216
+    type: regular
+    task:
+      id: 82db6939-9aed-4b43-8fe8-989893e78216
+      version: -1
+      name: Set unique detected source and destination IP's
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: detectedips
+      value:
+        complex:
+          root: Panorama
+          accessor: Monitor.Logs.SourceAddress
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Panorama.Monitor.Logs.DestinationAddress
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5220,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "138":
+    id: "138"
+    taskid: 768fad10-66da-4887-8c1c-8c3bb2a3e3ce
+    type: regular
+    task:
+      id: 768fad10-66da-4887-8c1c-8c3bb2a3e3ce
+      version: -1
+      name: Set Traps id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: trapsid
+      value:
+        complex:
+          root: Cortex
+          accessor: Logging.Traps.AgentID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "139":
+    id: "139"
+    taskid: 571ea8fc-2f3d-402e-8050-fc59f76013a1
+    type: regular
+    task:
+      id: 571ea8fc-2f3d-402e-8050-fc59f76013a1
+      version: -1
+      name: Set Traps id
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: trapsid
+      value:
+        complex:
+          root: Cortex
+          accessor: Logging.Analytics.AgentID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "140":
+    id: "140"
+    taskid: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
+    type: playbook
+    task:
+      id: 2f402f5e-2e01-4a7f-8013-ec3a416c4ef6
+      description: Panorama Query Logs For Indicators
+      version: -1
+      name: Panorama Query Logs For Indicators
+      playbookName: Panorama Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      filedigest: {}
+      ip:
+        complex:
+          root: inputs.IP addresses
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -5110,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "141":
+    id: "141"
+    taskid: 0032ebec-4df5-4623-8832-02cc511a16b6
+    type: playbook
+    task:
+      id: 0032ebec-4df5-4623-8832-02cc511a16b6
+      version: -1
+      name: Panorama Query Logs For Indicators
+      description: 'Query Panorama Logs of types in one playbook: traffic, threat,
+        url, data-filtering and wildfire. The playbook accepts inputs such as IP.
+        hash, url.'
+      playbookName: Panorama Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      filedigest:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      ip: {}
+      url: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "142":
+    id: "142"
+    taskid: 78f70966-8fe8-4eb4-834b-0f910bc21458
+    type: playbook
+    task:
+      id: 78f70966-8fe8-4eb4-834b-0f910bc21458
+      description: Panorama Query Logs For Indicators
+      version: -1
+      name: Panorama Query Logs For Indicators
+      playbookName: Panorama Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      filedigest: {}
+      ip: {}
+      url:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 3460,
+          "y": 1380
         }
       }
     note: false
@@ -4001,7 +3409,6 @@ view: |-
       "10_55_#default#": 0.82,
       "26_23_#default#": 0.81,
       "28_23_#default#": 0.82,
-      "3_2_yes": 0.5,
       "3_4_#default#": 0.82,
       "43_4_#default#": 0.61,
       "45_4_#default#": 0.6,
@@ -4014,9 +3421,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2705,
-        "width": 10890,
-        "x": -5190,
+        "height": 2725,
+        "width": 11200,
+        "x": -5500,
         "y": 0
       }
     }
@@ -4052,17 +3459,20 @@ inputs:
   value:
     simple: ${Domain.Name}
   required: false
-  description: List of domains.
+  description: List of domains or urls.
 outputs:
-- contextPath: detectedhosts
-  description: Host or array of hosts that were detected by the hunting.
-  type: string
 - contextPath: detectedips
   description: Ip or array of ip's that were detected by the hunting.
+  type: string
+- contextPath: detectedhosts
+  description: Host or array of hosts that were detected by the hunting.
   type: string
 - contextPath: detectedusers
   description: User or array of users that were detected by the hunting.
   type: string
+- contextPath: trapsid
+  description: Id or array of id's for traps hosts detected in the searches.
+  type: string
 
 tests:
-- PANW - Hunting and threat detection by indicator type Test
+  - PANW - Hunting and threat detection by indicator type Test
