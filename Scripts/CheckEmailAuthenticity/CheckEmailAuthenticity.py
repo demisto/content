@@ -131,14 +131,14 @@ def main():
             'SPF_override_neutral': 'spf-neutral',
             'SPF_override_pass': 'spf-pass',
             'SPF_override_fail': 'spf-fail',
-            'SPF_override_softfail': 'spf-softfail',
+            'SPF_override_softfail': 'spf-softfail',  # disable-secrets-detection
             'SPF_override_temperror': 'spf-temperror',
             'SPF_override_perm': 'spf-permerror',
             'DKIM_override_none': 'dkim-none',
             'DKIM_override_pass': 'dkim-pass',
             'DKIM_override_fail': 'dkim-fail',
             'DKIM_override_policy': 'dkim-policy',
-            'DKIM_override_neutral': 'dkim-neutral',
+            'DKIM_override_neutral': 'dkim-neutral',  # disable-secrets-detection
             'DKIM_override_temperror': 'dkim-temperror',
             'DKIM_override_permerror': 'dkim-permerror',
             'DMARC_override_none': 'dmarc-none',
