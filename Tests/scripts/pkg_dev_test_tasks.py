@@ -267,7 +267,7 @@ def run_bandit(project_dir, py_num):
     python_exe = 'python2' if py_num < 3 else 'python3'
     print_v('Using: {} to run flake8'.format(python_exe))
     sys.stdout.flush()
-    subprocess.check_call([python_exe, '-m', 'bandit', '-lll', '-iii', lint_files], cwd=CONTENT_DIR)
+    subprocess.check_call([python_exe, '-m', 'bandit', '-lll', '-iii', '-q', lint_files], cwd=project_dir)
     print("bandit completed")
 
 
