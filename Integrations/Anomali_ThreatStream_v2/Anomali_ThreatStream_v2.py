@@ -529,11 +529,11 @@ def import_ioc_with_approval(import_type, import_value, confidence="50", classif
         The data can be imported using one of three import_types: data-text (plain-text),
         file-id of uploaded file to war room or URL.
     """
-    ip_mapping = demisto.args().get('ip_mapping', 'False') == 'True'
-    domain_mapping = demisto.args().get('domain_mapping', 'False') == 'True'
-    url_mapping = demisto.args().get('url_mapping', 'False') == 'True'
-    email_mapping = demisto.args().get('email_mapping', 'False') == 'True'
-    md5_mapping = demisto.args().get('md5_mapping', 'False') == 'True'
+    ip_mapping = demisto.args().get('ip_mapping', 'no') == 'yes'
+    domain_mapping = demisto.args().get('domain_mapping', 'no') == 'yes'
+    url_mapping = demisto.args().get('url_mapping', 'no') == 'yes'
+    email_mapping = demisto.args().get('email_mapping', 'no') == 'yes'
+    md5_mapping = demisto.args().get('md5_mapping', 'no') == 'yes'
 
     files = None
     uploaded_file = None
