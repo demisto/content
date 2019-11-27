@@ -1,7 +1,12 @@
 import demistomock as demisto
 from CommonServerPython import *
-QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
-        "FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
+if demisto.args().get("is_cre_name_null", "False") == "False":
+    QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
+            "FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
+else:
+    QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
+            "FROM events WHERE \"CRE NAME\" IS NULL AND INOFFENSE({0}) START '{1}'"
+
 
 d_args = demisto.args()
 
