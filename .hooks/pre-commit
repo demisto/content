@@ -8,7 +8,7 @@ if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_
     # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
     echo "Deactivating current virtual env: $VIRTUAL_ENV"
     DO_ACTIVATE="${VIRTUAL_ENV}"
-    source deactivate
+    deactivate
 fi
 if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     echo "Activating Demisto Content virtual env..."
@@ -40,7 +40,7 @@ fi
 
 if [ -n "$DO_DEACTIVATE" ]; then
     echo "Deactivating Demisto Content virtual env..."
-    source deactivate
+    deactivate
 fi
 if [ -n "$DO_ACTIVATE" ]; then
     echo "Activating back previous virtual env: $DO_ACTIVATE"

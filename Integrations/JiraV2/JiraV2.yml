@@ -199,6 +199,8 @@ script:
       description: The ID of the issue.
     - name: upload
       description: The entry ID to upload.
+    - name: attachmentName
+      description: The attachment name to be displayed in Jira (overrides original file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
