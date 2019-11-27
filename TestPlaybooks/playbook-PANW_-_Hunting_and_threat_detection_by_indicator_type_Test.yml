@@ -1,14 +1,16 @@
 id: PANW - Hunting and threat detection by indicator type Test
-version: -1
+version: 1
 name: PANW - Hunting and threat detection by indicator type Test
+fromversion: 4.5.0
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 92f715b0-9601-4b44-8d70-d77500208dcd
+    taskid: 6241aaba-7e71-4259-81db-fc1182d4fa7b
     type: start
     task:
-      id: 92f715b0-9601-4b44-8d70-d77500208dcd
+      id: 6241aaba-7e71-4259-81db-fc1182d4fa7b
+      description: Header
       version: -1
       name: ""
       iscommand: false
@@ -29,10 +31,10 @@ tasks:
     ignoreworker: false
   "1":
     id: "1"
-    taskid: a83b5fa3-0000-4d49-8294-2dba0dbbe50e
+    taskid: 3c7cfe31-0237-4f9d-84da-1c7f7b9ed41b
     type: playbook
     task:
-      id: a83b5fa3-0000-4d49-8294-2dba0dbbe50e
+      id: 3c7cfe31-0237-4f9d-84da-1c7f7b9ed41b
       version: -1
       name: PANW - Hunting and threat detection by indicator type
       description: |-
@@ -79,10 +81,10 @@ tasks:
     ignoreworker: false
   "2":
     id: "2"
-    taskid: 22d09767-3ee0-40fc-8b1d-8e1e32f0aae9
+    taskid: 0e25f4c5-5867-48fd-8893-b3e15cbf54c9
     type: regular
     task:
-      id: 22d09767-3ee0-40fc-8b1d-8e1e32f0aae9
+      id: 0e25f4c5-5867-48fd-8893-b3e15cbf54c9
       version: -1
       name: Set Hashes
       description: Sets a value into the context with the given context key
@@ -99,7 +101,7 @@ tasks:
       key:
         simple: File.SHA256
       value:
-        simple: '["4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0","7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3","FF3ED70F7F4D79E8A24FACCC2CB9BF1FBE3D286EE2A8961CE1D1409E85CA871F"]'
+        simple: '["4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0","7e93723c0c34ef98444e5ce9013fef220975b96291a79053fd4c9b3d3550aeb3","FF3ED70F7F4D79E8A24FACCC2CB9BF1FBE3D286EE2A8961CE1D1409E85CA871F","7bc95dcd791a505fdd9fd0e117eb0bd5ac4f28176e8127ffb39521daef670970"]'
     separatecontext: false
     view: |-
       {
@@ -113,10 +115,10 @@ tasks:
     ignoreworker: false
   "3":
     id: "3"
-    taskid: 3538ca60-f60b-44ee-8881-14904379a0c1
+    taskid: 32a2e07c-a2d2-4f9e-86ae-6eaa98757a6e
     type: regular
     task:
-      id: 3538ca60-f60b-44ee-8881-14904379a0c1
+      id: 32a2e07c-a2d2-4f9e-86ae-6eaa98757a6e
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -149,10 +151,10 @@ tasks:
     ignoreworker: false
   "4":
     id: "4"
-    taskid: 9ead0f0d-6390-43e9-8ed4-f3417b95c4a6
+    taskid: e857c97a-6bc6-4f4d-83d6-15adcf5d9048
     type: regular
     task:
-      id: 9ead0f0d-6390-43e9-8ed4-f3417b95c4a6
+      id: e857c97a-6bc6-4f4d-83d6-15adcf5d9048
       version: -1
       name: Set IP's
       description: Sets a value into the context with the given context key
@@ -183,10 +185,11 @@ tasks:
     ignoreworker: false
   "5":
     id: "5"
-    taskid: 137c96bf-07f4-445c-86d4-9bc3dcdd0c0a
+    taskid: 2be181bd-53bc-4359-8ee4-bae82922c116
     type: title
     task:
-      id: 137c96bf-07f4-445c-86d4-9bc3dcdd0c0a
+      id: 2be181bd-53bc-4359-8ee4-bae82922c116
+      description: Header
       version: -1
       name: Done
       type: title
@@ -205,10 +208,10 @@ tasks:
     ignoreworker: false
   "6":
     id: "6"
-    taskid: 06a15a07-461e-404f-8933-28eec6a3b574
+    taskid: 8a8dcb3e-325e-4006-8f7b-4124d60700a0
     type: regular
     task:
-      id: 06a15a07-461e-404f-8933-28eec6a3b574
+      id: 8a8dcb3e-325e-4006-8f7b-4124d60700a0
       version: -1
       name: Set Domains
       description: Sets a value into the context with the given context key
