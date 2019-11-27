@@ -347,6 +347,7 @@ class Client(BaseClient):
 
 '''HELPER FUNCTIONS'''
 
+
 @logger
 def create_filter(filter_type: str, filter_value: str, filter_field_id: str) -> dict:
     """
