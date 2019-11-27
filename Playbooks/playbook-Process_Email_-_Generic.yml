@@ -730,10 +730,10 @@ tasks:
     ignoreworker: false
   "19":
     id: "19"
-    taskid: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
+    taskid: c021141e-c505-472a-8139-9807ab7ba703
     type: regular
     task:
-      id: be23418a-f7f1-4ed8-8d53-7e8cfcef87b5
+      id: c021141e-c505-472a-8139-9807ab7ba703
       version: -1
       name: Set incident with the Email object data
       description: Updates Demisto incident fields using data from the email object.
@@ -869,6 +869,13 @@ tasks:
           - operator: uniq
           - operator: Stringify
       emailfromdisplayname: {}
+      emailheaders: {}
+      emailhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: uniq
       emailimage:
         complex:
           root: Email

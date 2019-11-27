@@ -33,6 +33,7 @@ LAYOUT_TYPE_TO_NAME = {
     "close": "Close",
     "quickView": "Quick View",
     "indicatorsDetails": "Indicator Details",
+    "mobile": "Mobile",
 }
 
 RELEASE_NOTES_ORDER = [INTEGRATIONS_DIR, SCRIPTS_DIR, PLAYBOOKS_DIR, REPORTS_DIR,
@@ -69,7 +70,7 @@ def release_notes_item(header, body):
     return '- __{}__\n{}\n'.format(header, add_dot(body))
 
 
-class Content:
+class Content(object):  # pylint: disable=useless-object-inheritance
     __metaclass__ = abc.ABCMeta
 
     def __init__(self):
