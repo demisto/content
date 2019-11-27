@@ -554,7 +554,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: not sure
+      description: Whether to include IP mapping.
       isArray: false
       name: ip_mapping
       predefined:
@@ -565,7 +565,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: not sure
+      description: Whether to include domain mapping.
       isArray: false
       name: domain_mapping
       predefined:
@@ -576,7 +576,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: not sure
+      description: Whether to include url mapping.
       isArray: false
       name: url_mapping
       predefined:
@@ -587,7 +587,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: not sure
+      description: Whether to include email mapping.
       isArray: false
       name: email_mapping
       predefined:
@@ -598,7 +598,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: not sure
+      description: Whether to include MD5 mapping.
       isArray: false
       name: md5_mapping
       predefined:
