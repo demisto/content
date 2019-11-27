@@ -19,3 +19,10 @@ EXPECTED_DEFAULT_ASSIGNEE = {
         'Value': 'admin'
     }
 }
+EXPECTED_POSSIBLE_THREAT_ACTIONS = {
+    'Securonix.ThreatActions': [
+        "Mark as concern and create incident",
+        "Non-Concern",
+        "Mark in progress (still investigating)"
+    ]
+}
