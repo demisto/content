@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Digital Shadows",
+            "playbookID": "Digital Shadows - Test"
+        },
+        {
             "integrations": "Azure Compute v2",
             "playbookID": "Azure Compute - Test",
             "instance_names": "ms_azure_compute_dev"
@@ -1591,7 +1595,7 @@
                 "Rasterize"
             ],
             "fromversion": "4.5.0",
-            "timeout": 1500
+            "timeout": 1700
         },
         {
             "integrations": "McAfee Active Response",
@@ -2003,7 +2007,6 @@
         "Extract Indicators From File - Generic v2": "Issue 20143",
         "PAN-OS Create Or Edit Rule Test":"Issue 20037",
         "NetWitness Endpoint Test": "Issue 19878",
-        "SentinelOne V2 - test": "Issue 19361",
         "CuckooTest": "Issue 19425",
         "TestParseEmailHeaders": "Issue 18815",
         "search_endpoints_by_hash_-_tie_-_test": "Issue #18350",
@@ -2063,7 +2066,6 @@
         "_comment": "~~~ INSTANCE ISSUES ~~~",
         "Check Point": "Issue 18643",
         "McAfee Active Response": "Issue 20320",
-        "McAfee NSM": "Issue 20336",
         "Elasticsearch v2": "Issue 20334",
         "RSA Archer": "Issue 20335",
         "LogRhythmRest": "Issue 19870",
@@ -2095,7 +2097,6 @@
         "Kafka V2": "Can not connect to instance from remote",
         "Check Point Sandblast": "Issue 15948",
         "Remedy AR": "getting 'Not Found' in test button",
-        "XFE": "License expired",
         "Salesforce": "Issue 15901",
         "Zscaler": "Issue 17784",
         "RedCanary": "License expired",
@@ -2133,7 +2134,7 @@
         "SlackV2"
     ],
     "unmockable_integrations": {
-        "Google Key Management Service": "The API requires an SSL secure connection to work",
+        "Google Key Management Service": "The API requires an SSL secure connection to work.",
         "McAfee ESM-v10": "we have multiple instances with same test playbook, mock recording are per playbook so it keeps failing the playback step",
         "mysql": "Does not use http",
         "SlackV2": "Integration requires SSL",
