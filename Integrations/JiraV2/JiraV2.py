@@ -22,7 +22,7 @@ HEADERS = {
 }
 
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
-                       " longer supported, please use an API Token or OAuth"
+                       " longer supported, please use an API Token or OAuth 1.0"
 USE_SSL = not demisto.params().get('insecure', False)
 
 
@@ -72,6 +72,9 @@ def generate_oauth1():
 
 
 def generate_oauth2():
+    """
+    Not supported by Jira's REST API. left for legacy reasons
+    """
     oauth2_client = Client(
         demisto.getParam('consumerKey'),
         demisto.getParam('privateKey'),
@@ -102,9 +105,8 @@ def get_auth():
 
     return_error(
         'Please provide the required Authorization information:'
-        '- Basic Authentication requires user name and password or just API'
-        '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-        '- OAuth 2.0 requires ConsumerKey, AccessToken,PrivateKey and TokenSecret'
+        '- Basic Authentication requires user name and password or API token'
+        '- OAuth 1.0 requires ConsumerKey, AccessToken, PrivateKey and TokenSecret'
     )
 
 
