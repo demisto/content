@@ -1045,94 +1045,117 @@ def add_entity_to_watchlist(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, watchlist
 
 
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
-                    limit='50', integration_context=None):
-    """Fetch incidents from Securonix to Demisto.
-
-    Args:
-        client:
-        last_run:
-        first_fetch_time:
-        event_type_filter:
-        threat_type:
-        threat_status:
-        limit:
-        integration_context:
-
-    Returns:
-        Incidents.
-    """
-    incidents: list = []
-    end_query_time = ''
-    # check if there're incidents saved in context
-    if integration_context:
-        remained_incidents = integration_context.get("incidents")
-        # return incidents if exists in context.
-        if remained_incidents:
-            return last_run, remained_incidents[:limit], remained_incidents[limit:]
-    # Get the last fetch time, if exists
-    start_query_time = last_run.get("last_fetch")
-    # Handle first time fetch, fetch incidents retroactively
-    if not start_query_time:
-        start_query_time, _ = parse_date_range(first_fetch_time, date_format='1', utc=True)
-    fetch_times = get_fetch_times(start_query_time)
-    for i in range(len(fetch_times) - 1):
-        start_query_time = fetch_times[i]
-        end_query_time = fetch_times[i + 1]
-        raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
-                                       event_type_filter=event_type_filter,
-                                       threat_status=threat_status, threat_type=threat_type)
-
-        message_delivered = raw_events.get("messagesDelivered", [])
-        for raw_event in message_delivered:
-            raw_event["type"] = "messages delivered"
-            event_guid = raw_event.get("GUID", "")
-            incident = {
-                "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
-                "occurred": raw_event["messageTime"]
-            }
-            incidents.append(incident)
-
-        message_blocked = raw_events.get("messagesBlocked", [])
-        for raw_event in message_blocked:
-            raw_event["type"] = "messages blocked"
-            event_guid = raw_event.get("GUID", "")
-            incident = {
-                "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
-                "occured": raw_event["messageTime"],
-            }
-            incidents.append(incident)
-
-        clicks_permitted = raw_events.get("clicksPermitted", [])
-        for raw_event in clicks_permitted:
-            raw_event["type"] = "clicks permitted"
-            event_guid = raw_event.get("GUID", "")
-            incident = {
-                "name": "Proofpoint - Click Permitted - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
-                "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
-                    "threatTime"]
-            }
-            incidents.append(incident)
-
-        clicks_blocked = raw_events.get("clicksBlocked", [])
-        for raw_event in clicks_blocked:
-            raw_event["type"] = "clicks blocked"
-            event_guid = raw_event.get("GUID", "")
-            incident = {
-                "name": "Proofpoint - Click Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
-                "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
-                    "threatTime"]
-            }
-            incidents.append(incident)
-
-    # Cut the milliseconds from last fetch if exists
-    end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
-    next_run = {"last_fetch": end_query_time}
-    return next_run, incidents[:limit], incidents[limit:]
+# def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
+#                     limit='50', integration_context=None):
+#     """Fetch incidents from Securonix to Demisto.
+#
+#     Args:
+#         client:
+#         last_run:
+#         first_fetch_time:
+#         event_type_filter:
+#         threat_type:
+#         threat_status:
+#         limit:
+#         integration_context:
+#
+#     Returns:
+#         Incidents.
+#     """
+#     incidents: list = []
+#     end_query_time = ''
+#     # check if there're incidents saved in context
+#     if integration_context:
+#         remained_incidents = integration_context.get("incidents")
+#         # return incidents if exists in context.
+#         if remained_incidents:
+#             return last_run, remained_incidents[:limit], remained_incidents[limit:]
+#     # Get the last fetch time, if exists
+#     start_query_time = last_run.get("last_fetch")
+#     # Handle first time fetch, fetch incidents retroactively
+#     if not start_query_time:
+#         start_query_time, _ = parse_date_range(first_fetch_time, date_format='1', utc=True)
+#     fetch_times = get_fetch_times(start_query_time)
+#     for i in range(len(fetch_times) - 1):
+#         start_query_time = fetch_times[i]
+#         end_query_time = fetch_times[i + 1]
+#         raw_events = client.get_events(interval=start_query_time + "/" + end_query_time,
+#                                        event_type_filter=event_type_filter,
+#                                        threat_status=threat_status, threat_type=threat_type)
+#
+#         message_delivered = raw_events.get("messagesDelivered", [])
+#         for raw_event in message_delivered:
+#             raw_event["type"] = "messages delivered"
+#             event_guid = raw_event.get("GUID", "")
+#             incident = {
+#                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
+#                 "rawJSON": json.dumps(raw_event),
+#                 "occurred": raw_event["messageTime"]
+#             }
+#             incidents.append(incident)
+#
+#         message_blocked = raw_events.get("messagesBlocked", [])
+#         for raw_event in message_blocked:
+#             raw_event["type"] = "messages blocked"
+#             event_guid = raw_event.get("GUID", "")
+#             incident = {
+#                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
+#                 "rawJSON": json.dumps(raw_event),
+#                 "occured": raw_event["messageTime"],
+#             }
+#             incidents.append(incident)
+#
+#         clicks_permitted = raw_events.get("clicksPermitted", [])
+#         for raw_event in clicks_permitted:
+#             raw_event["type"] = "clicks permitted"
+#             event_guid = raw_event.get("GUID", "")
+#             incident = {
+#                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
+#                 "rawJSON": json.dumps(raw_event),
+#                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+#                     "threatTime"]
+#             }
+#             incidents.append(incident)
+#
+#         clicks_blocked = raw_events.get("clicksBlocked", [])
+#         for raw_event in clicks_blocked:
+#             raw_event["type"] = "clicks blocked"
+#             event_guid = raw_event.get("GUID", "")
+#             incident = {
+#                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
+#                 "rawJSON": json.dumps(raw_event),
+#                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
+#                     "threatTime"]
+#             }
+#             incidents.append(incident)
+#
+#     # Cut the milliseconds from last fetch if exists
+#     end_query_time = end_query_time[:-5] + 'Z' if end_query_time[-5] == '.' else end_query_time
+#     next_run = {"last_fetch": end_query_time}
+#     return next_run, incidents[:limit], incidents[limit:]
+#
+#
+# def fetch_incident_command():
+#     """
+#     Demisto Incidents
+#     """
+#     # How many time before the first fetch to retrieve incidents
+#     fetch_time = params.get('fetch_time', '60 minutes')
+#     fetch_limit = 50
+#     integration_context = demisto.getIntegrationContext()
+#     next_run, incidents, remained_incidents = fetch_incidents(  # type: ignore
+#         client=client,
+#         last_run=demisto.getLastRun(),
+#         first_fetch_time=fetch_time,
+#         limit=fetch_limit,
+#         integration_context=integration_context
+#     )
+#     # Save last_run, incidents, remained incidents into integration
+#     demisto.setLastRun(next_run)
+#     demisto.incidents(incidents)
+#     # preserve context dict
+#     integration_context['incidents'] = remained_incidents
+#     demisto.setIntegrationContext(integration_context)
 
 
 def main():
@@ -1147,10 +1170,6 @@ def main():
     verify = not params.get('insecure', False)
     proxies = handle_proxy()  # Remove proxy if not set to true in params
 
-    # How many time before the first fetch to retrieve incidents
-    fetch_time = params.get('fetch_time', '60 minutes')
-    fetch_limit = 50
-
     command = demisto.command()
     LOG(f'Command being called is {command}')
 
@@ -1159,6 +1178,7 @@ def main():
                         verify=verify, proxies=proxies)
         commands = {
             'test-module': test_module,
+            # 'fetch-incidents': fetch_incident_command,
             'securonix-list-workflows': list_workflows,
             'securonix-get-default-assignee-for-workflow': get_default_assignee_for_workflow,
             'securonix-list-possible-threat-actions': list_possible_threat_actions,
@@ -1181,23 +1201,7 @@ def main():
             'securonix-check-entity-in-watchlist': check_entity_in_watchlist,
             'securonix-add-entity-to-watchlist': add_entity_to_watchlist
         }
-        if command == 'fetch-incidents':
-            integration_context = demisto.getIntegrationContext()
-            next_run, incidents, remained_incidents = fetch_incidents(  # type: ignore
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=fetch_time,
-                limit=fetch_limit,
-                integration_context=integration_context
-            )
-            # Save last_run, incidents, remained incidents into integration
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-            # preserve context dict
-            integration_context['incidents'] = remained_incidents
-            demisto.setIntegrationContext(integration_context)
-
-        elif command in commands:
+        if command in commands:
             return_outputs(*commands[command](client, demisto.args()))  # type: ignore
 
         else:
