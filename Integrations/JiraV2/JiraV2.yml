@@ -38,11 +38,6 @@ configuration:
   defaultvalue: OauthKey
   type: 0
   required: false
-- display: TokenSecret
-  name: tokenSecret
-  defaultvalue: ""
-  type: 0
-  required: false
 - display: AccessToken
   name: accessToken
   defaultvalue: ""

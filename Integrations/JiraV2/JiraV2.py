@@ -5,8 +5,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import json
 import requests
-from requests_oauthlib import OAuth1, OAuth2
-from oauthlib.oauth2 import Client
+from requests_oauthlib import OAuth1
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -66,21 +65,7 @@ def generate_oauth1():
         rsa_key=demisto.getParam('privateKey'),
         signature_method='RSA-SHA1',
         resource_owner_key=demisto.getParam('accessToken'),
-        resource_owner_secret=demisto.getParam('tokenSecret')
     )
-    return oauth
-
-
-def generate_oauth2():
-    """
-    Not supported by Jira's REST API. left for legacy reasons
-    """
-    oauth2_client = Client(
-        demisto.getParam('consumerKey'),
-        demisto.getParam('privateKey'),
-        accessToken=demisto.getParam('accessToken')
-    )
-    oauth = OAuth2(client=oauth2_client)
     return oauth
 
 
@@ -90,8 +75,7 @@ def generate_basic_oauth():
 
 def get_auth():
     is_basic = USERNAME and (PASSWORD or API_TOKEN)
-    is_oauth2 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
-    is_oauth1 = is_oauth2 and demisto.getParam('tokenSecret')
+    is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
 
     if is_basic:
         return generate_basic_oauth()
@@ -100,13 +84,10 @@ def get_auth():
         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
         return generate_oauth1()
 
-    elif is_oauth2:
-        return generate_oauth2()
-
     return_error(
         'Please provide the required Authorization information:'
         '- Basic Authentication requires user name and password or API token'
-        '- OAuth 1.0 requires ConsumerKey, AccessToken, PrivateKey and TokenSecret'
+        '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
     )
 
 
