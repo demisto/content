@@ -9,7 +9,7 @@ valid_versions = ['v1', 'v2']
 
 
 def find_version(url):
-    match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url) #
+    match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url)
     return match.group('version')  # type: ignore
 
 
