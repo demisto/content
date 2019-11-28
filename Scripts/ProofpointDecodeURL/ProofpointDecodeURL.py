@@ -9,8 +9,8 @@ valid_versions = ['v1', 'v2']
 
 
 def find_version(url):
-    match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url)
-    return match.group('version')
+    match = re.search(r'https://urldefense.proofpoint.com/(?P<version>v[0-9])/', url) #
+    return match.group('version')  # type: ignore
 
 
 def ppdecode(url):
@@ -22,7 +22,7 @@ def ppdecode(url):
         if version not in valid_versions:
             return_error('Ppdecode is unprepared to handle this version of proofpoint urls: {}'.format(url))
     parsed_url = urlparse(url)
-    query_components = parse_qs(parsed_url.query)
+    query_components = parse_qs(parsed_url.query)  # type: ignore
     if 'u' in query_components:
         if sys.version_info[0] < 3:
             translated_url = query_components['u'][0].translate(string.maketrans('-_', '%/'))
