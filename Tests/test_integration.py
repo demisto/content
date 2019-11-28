@@ -343,8 +343,8 @@ def __print_investigation_error(client, playbook_id, investigation_id, color=LOG
 
 # Configure integrations to work with mock
 def configure_proxy_unsecure(integration_params):
-    """Copies the intgeration parameters dictionary.
-        Set proxy and unscure integration parameters to true.
+    """Copies the integration parameters dictionary.
+        Set proxy and insecure integration parameters to true.
 
     Args:
         integration_params: dict of the integration parameters.
@@ -443,13 +443,14 @@ def test_integration(client, integrations, playbook_id, options=None, is_mock_ru
     return playbook_state, inc_id
 
 
-def disable_all_integrations(client):
+def disable_all_integrations(demisto_api_key, server):
     """
     Disable all enabled integrations. Should be called at start of test loop to start out clean
 
     Arguments:
         client -- demisto py client
     """
+    client = demisto_client.configure(base_url=server, api_key=demisto_api_key, verify_ssl=False)
     try:
         body = {'size': 1000}
         int_resp = demisto_client.generic_request_func(self=client, method='POST',
