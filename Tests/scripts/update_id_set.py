@@ -257,12 +257,12 @@ def update_object_in_id_set(obj_id, obj_data, file_path, instances_set):
 def add_new_object_to_id_set(obj_id, obj_data, instances_set):
     obj_in_set = False
 
-    dict_value = obj_data.values()[0]
+    dict_value = list(obj_data.values())[0]
     file_to_version = dict_value.get('toversion', '99.99.99')
     file_from_version = dict_value.get('fromversion', '0.0.0')
 
     for instance in instances_set:
-        instance_id = instance.keys()[0]
+        instance_id = list(instance.keys())[0]
         integration_to_version = instance[instance_id].get('toversion', '99.99.99')
         integration_from_version = instance[instance_id].get('fromversion', '0.0.0')
         if obj_id == instance_id and file_from_version == integration_from_version and \
