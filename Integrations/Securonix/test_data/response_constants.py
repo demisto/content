@@ -163,3 +163,83 @@ RESPONSE_GET_INCIDENT = {
         }
     }
 }
+RESPONSE_LIST_WATCHLISTS = {
+    "result": [
+        "Domain_Admin", "Privileged_Users", "Privileged_Accounts", "Recent_Hires"
+    ]
+}
+RESPONSE_GET_WATCHLIST = {
+    "available": "false",
+    "error": "false",
+    "events": [
+        {
+            "directImport": "false",
+            "hour": "0",
+            "ignored": "false",
+            "invalid": "false",
+            "invalidEventAction": "0",
+            "tenantid": "1",
+            "tenantname": "Securonix",
+            "u_id": "-1",
+            "u_userid": "-1",
+            "result": {
+                "entry": [
+                    {
+                        "key": "reason",
+                        "value": ""
+                    },
+                    {
+                        "key": "expirydate",
+                        "value": "1540674976881"
+                    },
+                    {
+                        "key": "u_employeeid",
+                        "value": "1002"
+                    },
+                    {
+                        "key": "u_department",
+                        "value": "Mainframe and Midrange Administration"
+                    },
+                    {
+                        "key": "u_workphone",
+                        "value": "9728351246"
+                    },
+                    {
+                        "key": "u_division",
+                        "value": "Global Technology"
+                    },
+                    {
+                        "key": "confidencefactor",
+                        "value": "0.0"
+                    },
+                    {
+                        "key": "entityname",
+                        "value": "1002"
+                    },
+                    {
+                        "key": "u_jobcode",
+                        "value": "R1"
+                    },
+                    {
+                        "key": "u_hiredate",
+                        "value": "1249707600000"
+                    },
+                    {
+                        "key": "type", "value": "Users"
+                    },
+                    {
+                        "key": "u_costcentername",
+                        "value": "IINFCCC12"
+                    }
+                ]
+            }
+        }
+    ],
+    "from": "1533842667887",
+    "offset": "1000",
+    "query": "index=watchlist AND watchlistname=\"Flight RiskUsers\"",
+    "searchViolations": "false",
+    "to": "1536521067887",
+    "totalDocuments": "1"
+}
+

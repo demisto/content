@@ -115,3 +115,80 @@ EXPECTED_GET_INCIDENT = {
         }
     ]
 }
+EXPECTED_LIST_WATCHLISTS = {
+    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': [
+            'Domain_Admin', 'Privileged_Users', 'Privileged_Accounts', 'Recent_Hires'
+    ]
+}
+EXPECTED_GET_WATCHLIST = {
+    'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': {
+        'Watchlistname': 'test',
+        'Events': [
+            {
+                'DirectImport': 'false',
+                'Hour': '0',
+                'Ignored': 'false',
+                'Invalid': 'false',
+                'InvalidEventAction': '0',
+                'Tenantid': '1',
+                'Tenantname': 'Securonix',
+                'U_Id': '-1',
+                'U_Userid': '-1',
+                'Result': {
+                    'entry': [
+                        {
+                            'key': 'reason', 'value': ''
+                        },
+                        {
+                            'key': 'expirydate',
+                            'value': '1540674976881'
+                        },
+                        {
+                            'key': 'u_employeeid',
+                            'value': '1002'
+                        },
+                        {
+                            'key': 'u_department',
+                            'value': 'Mainframe and Midrange Administration'
+                        },
+                        {
+                            'key': 'u_workphone',
+                            'value': '9728351246'
+                        },
+                        {
+                            'key': 'u_division',
+                            'value': 'Global Technology'
+                        },
+                        {
+                            'key': 'confidencefactor',
+                            'value': '0.0'
+                        },
+                        {
+                            'key': 'entityname',
+                            'value': '1002'
+                        },
+                        {
+                            'key': 'u_jobcode',
+                            'value': 'R1'
+                        },
+                        {
+                            'key': 'u_hiredate',
+                            'value': '1249707600000'
+                        },
+                        {
+                            'key': 'type',
+                            'value': 'Users'
+                        },
+                        {
+                            'key': 'u_costcentername',
+                            'value': 'IINFCCC12'
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+
+
+
