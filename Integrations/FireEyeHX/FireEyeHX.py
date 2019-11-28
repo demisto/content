@@ -2160,10 +2160,6 @@ def file_acquisition():
     LOG('acquisition request was successful. Waiting for acquisition process to be complete.')
     while True:
         acquisition_info = file_acquisition_information_request(acquisition_id)
-
-        # Logging in case fix does not work
-        LOG("FireEye HX: acquisition info:\n {}".format(str(acquisition_info)))
-
         state = acquisition_info.get('state')
         if state in ['COMPLETE', 'ERROR', 'FAILED']:
             break
