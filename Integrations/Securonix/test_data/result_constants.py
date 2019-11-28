@@ -88,3 +88,30 @@ EXPECTED_LIST_INCIDENT = {
             }
         ]
 }
+EXPECTED_GET_INCIDENT = {
+    'Securonix.Incidents(val.IncidentId === obj.IncidentId)': [
+        {
+            "ViolatorText": "Cyndi Converse",
+            "LastUpdateDate": 1566232568502,
+            "ViolatorId": "96",
+            "IncidentType": "Policy",
+            "IncidentId": "100107",
+            "IncidentStatus": "COMPLETED",
+            "Riskscore": 0.0,
+            "AssignedUser": "Admin Admin",
+            "Priority": "low",
+            "Reason": [
+                "Resource: Symantec Email DLP",
+                "Policy: Emails with large File attachments",
+                "Threat: Data egress attempts"
+            ],
+            "ViolatorSubText": "1096",
+            "Entity": "Users",
+            "WorkflowName": "SOCTeamReview",
+            "Url": "https://saaspocapp2t14wptp.securonix.net/Snypr/"
+                   "configurableDashboards/view?&type=incident&id=100107",
+            "IsWhitelisted": False,
+            "Watchlisted": False
+        }
+    ]
+}
