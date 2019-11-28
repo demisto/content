@@ -236,10 +236,18 @@ def remove_unselected_context_keys(context_data):
     if not DATA_KEYS_TO_SAVE:
         return
 
+    # each event has it's own attributes
     for attribute in context_data[0]['Attribute']:
         for key in list(attribute.keys()):
             if key not in DATA_KEYS_TO_SAVE:
                 del attribute[key]
+
+    # each related event has it's own attributes
+    for obj in context_data[0]['Object']:
+        for attribute in obj['Attribute']:
+            for key in list(attribute.keys()):
+                if key not in DATA_KEYS_TO_SAVE:
+                    del attribute[key]
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
