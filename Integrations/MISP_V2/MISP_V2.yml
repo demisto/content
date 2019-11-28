@@ -19,51 +19,27 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: Select what data fields will be saved to context. Default is all.
+- display: Select which event's attribute data fields will be saved to context. Default
+    is all.
   name: context_select
   options:
+  - Category
   - Comment
-  - Info
-  - EventUUID
-  - Description
-  - OldID
   - Deleted
+  - DisableCorrelation
+  - Distribution
+  - EventID
+  - Galaxy
+  - ID
+  - ObjectID
+  - ObjectRelation
+  - ShadowAttribute
+  - SharingGroupID
   - Timestamp
   - ToIDs
-  - OwnerOrganisation
-  - TemplateVersion
-  - OwnerOrganisation.Name
-  - Object
-  - ShadowAttribute
-  - Analysis
-  - Date
-  - DisableCorrelation
-  - MetaCategory
-  - ID
-  - ThreatLevelID
-  - PublishTimestamp
-  - Category
-  - TemplateUUID
-  - OwnerOrganisation.ID
-  - EventCreatorEmail
-  - Locked
-  - UUID
-  - ObjectID
-  - OwnerOrganisation.UUID
-  - EventID
-  - ProposalEmailLock
-  - ProposalToDelete
-  - AttributeCount
-  - OrganisationID
-  - Value
-  - Name
-  - SharingGroupID
-  - Version
-  - Published
-  - Organisation
-  - Distribution
-  - ObjectRelation
   - Type
+  - UUID
+  - Value
   required: false
   type: 16
 description: Malware information sharing platform and threat sharing.
