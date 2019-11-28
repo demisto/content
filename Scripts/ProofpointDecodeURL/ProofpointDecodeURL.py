@@ -25,7 +25,7 @@ def ppdecode(url):
     query_components = parse_qs(parsed_url.query)  # type: ignore
     if 'u' in query_components:
         if sys.version_info[0] < 3:
-            translated_url = query_components['u'][0].translate(string.maketrans('-_', '%/'))
+            translated_url = query_components['u'][0].translate(str.maketrans('-_', '%/'))
         else:
             translated_url = query_components['u'][0].translate(str.maketrans('-_', '%/'))
     else:
