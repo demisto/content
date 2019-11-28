@@ -1,10 +1,12 @@
 import pytest
 from Securonix import camel_case_to_readable, parse_date_range, parse_data_arr, Client, list_workflows, get_default_assignee_for_workflow,\
-    list_possible_threat_actions, list_resource_groups, list_users, list_incidents
+    list_possible_threat_actions, list_resource_groups, list_users, list_incidents, get_incident
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
-    RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT
+    RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT,\
+    RESPONSE_GET_INCIDENT
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE,\
-    EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT
+    EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT,\
+    EXPECTED_GET_INCIDENT
 
 
 def test_camel_case_to_readable():
@@ -39,8 +41,8 @@ def test_parse_data_arr():
     (list_possible_threat_actions, {}, RESPONSE_POSSIBLE_THREAT_ACTIONS, EXPECTED_POSSIBLE_THREAT_ACTIONS),
     (list_resource_groups, {}, RESPONSE_LIST_RESOURCE_GROUPS, EXPECTED_LIST_RESOURCE_GROUPS),
     (list_users, {}, RESPONSE_LIST_USERS, EXPECTED_LIST_USERS),
-    (list_incidents, {"from": "1 year"}, RESPONSE_LIST_INCIDENT,
-     EXPECTED_LIST_INCIDENT)
+    (list_incidents, {"from": "1 year"}, RESPONSE_LIST_INCIDENT, EXPECTED_LIST_INCIDENT),
+    (get_incident, {'incident_id': '1234'}, RESPONSE_GET_INCIDENT, EXPECTED_GET_INCIDENT)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test for integration commands
