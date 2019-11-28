@@ -42,7 +42,7 @@ EXPECTED_LIST_USERS = {
             'Criticality': ['Low', 'Low'],
             'Department': ['SAP Administrator', 'Legal Department'],
             'Division': ['Global Technology', 'Legal'],
-            'Email': ['tan.gul@scnx.com', 'Lauren.Clarke@scnx.com'],
+            'Email': ["momo@demisto.com", "foo@demisto.com"],
             'EmployeeId': ['1644', '1631'],
             'EmployeeType': ['FT', 'FT'],
             'EnableDate': ['2018-08-15T12:50:11Z', '2018-08-15T12:50:11Z'],
@@ -81,8 +81,7 @@ EXPECTED_LIST_INCIDENT = {
                 'ViolatorSubText': '1096',
                 'Entity': 'Users',
                 'WorkflowName': 'SOCTeamReview',
-                'Url': 'https://saaspocapp2t14wptp.securonix.net/Snypr/'
-                       'configurableDashboards/view?&type=incident&id=100181',
+                'Url': "https://source_url.com",
                 'IsWhitelisted': False,
                 'Watchlisted': False
             }
@@ -108,8 +107,7 @@ EXPECTED_GET_INCIDENT = {
             "ViolatorSubText": "1096",
             "Entity": "Users",
             "WorkflowName": "SOCTeamReview",
-            "Url": "https://saaspocapp2t14wptp.securonix.net/Snypr/"
-                   "configurableDashboards/view?&type=incident&id=100107",
+            "Url": "https://source_url.com",
             "IsWhitelisted": False,
             "Watchlisted": False
         }
@@ -117,7 +115,7 @@ EXPECTED_GET_INCIDENT = {
 }
 EXPECTED_LIST_WATCHLISTS = {
     'Securonix.Watchlists(val.Watchlistname === obj.Watchlistname)': [
-            'Domain_Admin', 'Privileged_Users', 'Privileged_Accounts', 'Recent_Hires'
+        'Domain_Admin', 'Privileged_Users', 'Privileged_Accounts', 'Recent_Hires'
     ]
 }
 EXPECTED_GET_WATCHLIST = {
@@ -195,7 +193,3 @@ EXPECTED_ENTITY_IN_WATCHLIST = {
         'Watchlistnames': ['Domain_Admin']
     }
 }
-
-
-
-

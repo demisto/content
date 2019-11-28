@@ -56,7 +56,7 @@ RESPONSE_LIST_USERS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes
                       "<criticality>Low</criticality>" \
                       "<department>SAP Administrator</department>" \
                       "<division>Global Technology</division>" \
-                      "<email>tan.gul@scnx.com</email>" \
+                      "<email>momo@demisto.com</email>" \
                       "<employeeId>1644</employeeId>" \
                       "<employeeType>FT</employeeType>" \
                       "<enableDate>2018-08-15T12:50:11Z</enableDate>" \
@@ -79,7 +79,7 @@ RESPONSE_LIST_USERS = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes
                       "<criticality>Low</criticality>" \
                       "<department>Legal Department</department>" \
                       "<division>Legal</division>" \
-                      "<email>Lauren.Clarke@scnx.com</email>" \
+                      "<email>foo@demisto.com</email>" \
                       "<employeeId>1631</employeeId>" \
                       "<employeeType>FT</employeeType>" \
                       "<enableDate>2018-08-15T12:50:11Z</enableDate>" \
@@ -121,9 +121,7 @@ RESPONSE_LIST_INCIDENT = {
                     "violatorSubText": "1096",
                     "entity": "Users",
                     "workflowName": "SOCTeamReview",
-                    "url":
-                        "https://saaspocapp2t14wptp.securonix.net/Snypr/"
-                        "configurableDashboards/view?&type=incident&id=100181",
+                    "url": "https://source_url.com",
                     "isWhitelisted": False,
                     "watchlisted": False
                 }
@@ -154,8 +152,7 @@ RESPONSE_GET_INCIDENT = {
                     "violatorSubText": "1096",
                     "entity": "Users",
                     "workflowName": "SOCTeamReview",
-                    "url": "https://saaspocapp2t14wptp.securonix.net/Snypr/"
-                           "configurableDashboards/view?&type=incident&id=100107",
+                    "url": "https://source_url.com",
                     "isWhitelisted": False,
                     "watchlisted": False
                 }
