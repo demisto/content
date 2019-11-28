@@ -189,6 +189,13 @@ EXPECTED_GET_WATCHLIST = {
         ]
     }
 }
+EXPECTED_ENTITY_IN_WATCHLIST = {
+    'Securonix.EntityInWatchlist(val.EntityID === obj.EntityID)': {
+        'EntityID': 1234,
+        'Watchlistnames': ['Domain_Admin']
+    }
+}
+
 
 
 
