@@ -382,6 +382,12 @@ def test_module():
     demisto.results('ok')
 
 
+def ips_reputation_command(ip, threshold=None, status="active,inactive"):
+    ips = argToList(ip, ',')
+    for single_ip in ips:
+        get_ip_reputation(single_ip, threshold, status)
+
+
 def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given ip from ThreatStream and
@@ -404,6 +410,15 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     return_outputs(human_readable, ec, indicator)
 
 
+def domains_reputation_command(domain, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    domains = argToList(domain, ',')
+    for single_domain in domains:
+        get_domain_reputation(single_domain, threshold, status)
+
+
 def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     """
         Checks the reputation of given domain from ThreatStream and
@@ -424,6 +439,15 @@ def get_domain_reputation(domain, threshold=None, status="active,inactive"):
     human_readable = tableToMarkdown(F"Domain reputation for: {domain}", threat_domain_context)
 
     return_outputs(human_readable, ec, indicator)
+
+
+def files_reputation_command(file, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    files = argToList(file, ',')
+    for single_file in files:
+        get_file_reputation(single_file, threshold, status)
 
 
 def get_file_reputation(file, threshold=None, status="active,inactive"):
@@ -450,6 +474,15 @@ def get_file_reputation(file, threshold=None, status="active,inactive"):
     human_readable = tableToMarkdown(F"MD5 reputation for: {file}", threat_file_context)
 
     return_outputs(human_readable, ec, indicator)
+
+
+def urls_reputation_command(url, threshold=None, status="active,inactive"):
+    """
+        Wrapper function for get_url_reputation.
+    """
+    urls = argToList(url, ',')
+    for single_url in urls:
+        get_url_reputation(single_url, threshold, status)
 
 
 def get_url_reputation(url, threshold=None, status="active,inactive"):
@@ -821,13 +854,13 @@ def main():
         if demisto.command() == 'test-module':
             test_module()
         elif demisto.command() == 'ip':
-            get_ip_reputation(**args)
+            ips_reputation_command(**args)
         elif demisto.command() == 'domain':
-            get_domain_reputation(**args)
+            domains_reputation_command(**args)
         elif demisto.command() == 'file':
-            get_file_reputation(**args)
+            files_reputation_command(**args)
         elif demisto.command() == 'url':
-            get_url_reputation(**args)
+            urls_reputation_command(**args)
         elif demisto.command() == 'threatstream-email-reputation':
             get_email_reputation(**args)
         elif demisto.command() == 'threatstream-get-passive-dns':
