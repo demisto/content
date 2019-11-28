@@ -131,3 +131,35 @@ RESPONSE_LIST_INCIDENT = {
         }
     }
 }
+RESPONSE_GET_INCIDENT = {
+    "result": {
+        "data": {
+            "totalIncidents": 1.0,
+            "incidentItems": [
+                {
+                    "violatorText": "Cyndi Converse",
+                    "lastUpdateDate": 1566232568502,
+                    "violatorId": "96",
+                    "incidentType": "Policy",
+                    "incidentId": "100107",
+                    "incidentStatus": "COMPLETED",
+                    "riskscore": 0.0,
+                    "assignedUser": "Admin Admin",
+                    "priority": "low",
+                    "reason": [
+                        "Resource: Symantec Email DLP",
+                        "Policy: Emails with large File attachments",
+                        "Threat: Data egress attempts"
+                    ],
+                    "violatorSubText": "1096",
+                    "entity": "Users",
+                    "workflowName": "SOCTeamReview",
+                    "url": "https://saaspocapp2t14wptp.securonix.net/Snypr/"
+                           "configurableDashboards/view?&type=incident&id=100107",
+                    "isWhitelisted": False,
+                    "watchlisted": False
+                }
+            ]
+        }
+    }
+}
