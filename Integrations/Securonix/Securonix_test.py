@@ -1,13 +1,13 @@
 import pytest
 from Securonix import camel_case_to_readable, parse_date_range, parse_data_arr, Client, list_workflows, get_default_assignee_for_workflow,\
     list_possible_threat_actions, list_resource_groups, list_users, list_incidents, get_incident, list_watchlists,\
-    get_watchlist
+    get_watchlist, check_entity_in_watchlist
 from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAULT_ASSIGNEE,\
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT,\
-    RESPONSE_GET_INCIDENT, RESPONSE_LIST_WATCHLISTS, RESPONSE_GET_WATCHLIST
+    RESPONSE_GET_INCIDENT, RESPONSE_LIST_WATCHLISTS, RESPONSE_GET_WATCHLIST, RESPONSE_ENTITY_IN_WATCHLIST
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE,\
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT,\
-    EXPECTED_GET_INCIDENT, EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST
+    EXPECTED_GET_INCIDENT, EXPECTED_LIST_WATCHLISTS, EXPECTED_GET_WATCHLIST, EXPECTED_ENTITY_IN_WATCHLIST
 
 
 def test_camel_case_to_readable():
@@ -45,7 +45,9 @@ def test_parse_data_arr():
     (list_incidents, {"from": "1 year"}, RESPONSE_LIST_INCIDENT, EXPECTED_LIST_INCIDENT),
     (get_incident, {'incident_id': '1234'}, RESPONSE_GET_INCIDENT, EXPECTED_GET_INCIDENT),
     (list_watchlists, {}, RESPONSE_LIST_WATCHLISTS, EXPECTED_LIST_WATCHLISTS),
-    (get_watchlist, {'watchlist_name': 'test'}, RESPONSE_GET_WATCHLIST, EXPECTED_GET_WATCHLIST)
+    (get_watchlist, {'watchlist_name': 'test'}, RESPONSE_GET_WATCHLIST, EXPECTED_GET_WATCHLIST),
+    (check_entity_in_watchlist, {"entity_id": 1234}, RESPONSE_ENTITY_IN_WATCHLIST,
+     EXPECTED_ENTITY_IN_WATCHLIST)
 ])  # noqa: E124
 def test_commands(command, args, response, expected_result, mocker):
     """Unit test for integration commands
