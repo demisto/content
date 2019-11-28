@@ -13,6 +13,7 @@ import warnings
 import subprocess
 import email
 from requests.exceptions import ConnectionError
+from collections import deque
 
 import exchangelib
 from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
@@ -85,7 +86,7 @@ LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
-                         'toRecipients', ]
+                         'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
 USE_PROXY = demisto.params().get('proxy', False)
@@ -103,6 +104,8 @@ BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
 AUTO_DISCOVERY = False
 SERVER_BUILD = ""
 MARK_AS_READ = demisto.params().get('markAsRead', False)
+MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+LAST_RUN_IDS_QUEUE_SIZE = 500
 
 START_COMPLIANCE = """
 [CmdletBinding()]
@@ -506,6 +509,7 @@ log_handler = None
 def start_logging():
     global log_stream
     global log_handler
+    logging.raiseExceptions = False
     if log_stream is None:
         log_stream = StringIO()
         log_handler = logging.StreamHandler(stream=log_stream)
@@ -873,10 +877,14 @@ def get_last_run():
         last_run = {
             LAST_RUN_TIME: None,
             LAST_RUN_FOLDER: FOLDER_NAME,
-            LAST_RUN_IDS: None
+            LAST_RUN_IDS: []
         }
     if LAST_RUN_TIME in last_run and last_run[LAST_RUN_TIME] is not None:
         last_run[LAST_RUN_TIME] = EWSDateTime.from_string(last_run[LAST_RUN_TIME])
+
+    # In case we have existing last_run data
+    if last_run.get(LAST_RUN_IDS) is None:
+        last_run[LAST_RUN_IDS] = []
 
     return last_run
 
@@ -890,6 +898,8 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
             last_10_min = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC')) - timedelta(minutes=10)
             qs = qs.filter(datetime_received__gte=last_10_min)
     qs = qs.filter().only(*map(lambda x: x.name, Message.FIELDS))
+    qs = qs.filter().order_by('datetime_received')
+
     result = qs.all()
     result = [x for x in result if isinstance(x, Message)]
     if exclude_ids and len(exclude_ids) > 0:
@@ -1150,25 +1160,32 @@ def parse_incident_from_item(item, is_fetch):
 
 
 def fetch_emails_as_incidents(account_email, folder_name):
-    start_time = EWSDateTime.now(tz=EWSTimeZone.timezone('UTC'))
     last_run = get_last_run()
 
     try:
         account = get_account(account_email)
         last_emails = fetch_last_emails(account, folder_name, last_run.get(LAST_RUN_TIME), last_run.get(LAST_RUN_IDS))
 
-        ids = []
+        ids = deque(last_run.get(LAST_RUN_IDS, []), maxlen=LAST_RUN_IDS_QUEUE_SIZE)
         incidents = []
+        incident = {}  # type: Dict[Any, Any]
         for item in last_emails:
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
                 incidents.append(incident)
 
+                if len(incidents) >= MAX_FETCH:
+                    break
+
+        last_run_time = incident.get('occurred', last_run.get(LAST_RUN_TIME))
+        if isinstance(last_run_time, EWSDateTime):
+            last_run_time = last_run_time.ewsformat()
+
         new_last_run = {
-            LAST_RUN_TIME: start_time.ewsformat(),
+            LAST_RUN_TIME: last_run_time,
             LAST_RUN_FOLDER: folder_name,
-            LAST_RUN_IDS: ids,
+            LAST_RUN_IDS: list(ids),
             ERROR_COUNTER: 0
         }
 
