@@ -1,19 +1,25 @@
 import demistomock as demisto
 from CommonServerPython import *
-if demisto.args().get("is_cre_name_null", "True") == "True":
-    QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, " \
-            "username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), " \
-            "PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from " \
-            "events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
-else:
-    QUERY = "select RULENAME({0}), sourceip, destinationip, eventcount, " \
-            "sourceport, username, starttime, destinationport, magnitude, " \
-            "identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), " \
-            "LOGSOURCENAME(logsourceid){1} from events " \
-            "where \"CRE Name\" <> NULL AND INOFFENSE({2}) START '{3}'"
+
+
+def get_query(cre_name_null):
+    if cre_name_null == "True":
+        query = "select RULENAME({0}), sourceip, destinationip, eventcount, sourceport, " \
+                "username, starttime, destinationport, magnitude, identityip, CATEGORYNAME(category), " \
+                "PROTOCOLNAME(protocolid), LOGSOURCENAME(logsourceid){1} from " \
+                "events where \"CRE Name\" IS NULL AND INOFFENSE({2}) START '{3}'"
+    else:
+        query = "select RULENAME({0}), sourceip, destinationip, eventcount, " \
+                "sourceport, username, starttime, destinationport, magnitude, " \
+                "identityip, CATEGORYNAME(category), PROTOCOLNAME(protocolid), " \
+                "LOGSOURCENAME(logsourceid){1} from events " \
+                "where \"CRE Name\" <> NULL AND INOFFENSE({2}) START '{3}'"
+    return query
 
 
 d_args = demisto.args()
+is_cre_name_null = demisto.args().get("is_cre_name_null", "True")
+QUERY = get_query(is_cre_name_null)
 
 offense_id = demisto.get(d_args, 'offenseID')
 start_time = demisto.get(d_args, 'startTime')
