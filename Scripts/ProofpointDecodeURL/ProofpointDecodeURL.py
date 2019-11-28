@@ -31,7 +31,7 @@ def ppdecode(url):
     else:
         return_error('A URL was not detected in the query.')
     decoded_url = unquote(translated_url)
-    query_components['decoded_url'] = decoded_url
+    query_components['decoded_url'] = decoded_url  # type: ignore
     query_components['proofpoint_version'] = version
     return query_components
 
