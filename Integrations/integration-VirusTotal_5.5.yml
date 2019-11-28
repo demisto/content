@@ -1,7 +1,7 @@
 commonfields:
   id: VirusTotal
   version: -1
-name: VirusTotal 5.5
+name: VirusTotal
 display: VirusTotal 5.5
 fromversion: 5.5.0
 category: Data Enrichment & Threat Intelligence
