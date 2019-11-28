@@ -1,11 +1,14 @@
+import pytest
 from QRadarGetCorrelationLogs import get_query
 
 
-def test_get_query_cre_name_null_false():
-    query_from_false = get_query("False")
+@pytest.mark.parametrize('bool_val', ["False"])
+def test_get_query_cre_name_null_false(bool_val):
+    query_from_false = get_query(bool_val)
     assert "\"CRE Name\" <> NULL" in query_from_false
 
 
-def test_get_query_cre_name_null_true():
-    query_from_false = get_query("True")
+@pytest.mark.parametrize('bool_val', ["True"])
+def test_get_query_cre_name_null_true(bool_val):
+    query_from_false = get_query(bool_val)
     assert "\"CRE Name\" <> NULL" not in query_from_false
