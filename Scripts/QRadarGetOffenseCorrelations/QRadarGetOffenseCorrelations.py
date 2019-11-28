@@ -1,14 +1,20 @@
 import demistomock as demisto
 from CommonServerPython import *
-if demisto.args().get("is_cre_name_null", "False") == "False":
-    QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
-            "FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
-else:
-    QUERY = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
-            "FROM events WHERE \"CRE NAME\" IS NULL AND INOFFENSE({0}) START '{1}'"
+
+
+def get_query(cre_name_null):
+    if cre_name_null == "False":
+        query = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
+                "FROM events WHERE \"CRE NAME\" <> NULL AND INOFFENSE({0}) START '{1}'"
+    else:
+        query = "SELECT *,\"CRE Name\",\"CRE Description\",CATEGORYNAME(highlevelcategory) " \
+                "FROM events WHERE \"CRE NAME\" IS NULL AND INOFFENSE({0}) START '{1}'"
+    return query
 
 
 d_args = demisto.args()
+is_cre_name_null = demisto.args().get("is_cre_name_null", "True")
+QUERY = get_query(is_cre_name_null)
 
 offense_id = demisto.get(d_args, 'offenseID')
 start_time = demisto.get(d_args, 'startTime')
