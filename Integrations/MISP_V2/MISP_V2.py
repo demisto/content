@@ -369,7 +369,13 @@ def get_dbot_level(threat_level_id: str) -> int:
     return 0
 
 
-def check_file():
+def get_files_events():
+    files = argToList(demisto.args().get('file'), ',')
+    for file in files:
+        check_file(file)
+
+
+def check_file(file_hash):
     """
     gets a file_hash and entities dict, returns MISP events
 
@@ -378,7 +384,6 @@ def check_file():
     Returns:
         dict: MISP's output formatted to demisto:
     """
-    file_hash = demisto.args().get('file')
     # hashFormat will be used only in output
     hash_format = get_hash_type(file_hash).upper()
     if hash_format == 'Unknown':
@@ -447,12 +452,17 @@ def check_file():
         demisto.results(f"No events found in MISP for hash {file_hash}")
 
 
-def check_ip():
+def get_ips_events():
+    ips = argToList(demisto.args().get('ip'), ',')
+    for ip in ips:
+        check_ip(ip)
+
+
+def check_ip(ip):
     """
     Gets a IP and returning its reputation (if exists)
     ip (str): IP to check
     """
-    ip = demisto.args().get('ip')
     if not is_ip_valid(ip):
         return_error("IP isn't valid")
 
@@ -709,8 +719,14 @@ def download_file():
         demisto.results(fileResult(filename, file_buffer))  # type: ignore
 
 
-def check_url():
-    url = demisto.args().get('url')
+def get_urls_events():
+    urls = argToList(demisto.args().get('url'), ',')
+    demisto.results(urls)
+    for url in urls:
+        check_url(url)
+
+
+def check_url(url):
     response = MISP.search(value=url, type_attribute='url')
 
     if response:
@@ -1191,11 +1207,11 @@ def main():
         elif command == 'misp-add-events-from-feed':
             add_events_from_feed()
         elif command == 'file':
-            check_file()
+            get_files_events()
         elif command == 'url':
-            check_url()
+            get_urls_events()
         elif command == 'ip':
-            check_ip()
+            get_ips_events()
         #  Object commands
         elif command == 'misp-add-email-object':
             add_email_object()

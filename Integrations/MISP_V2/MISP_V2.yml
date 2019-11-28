@@ -320,7 +320,7 @@ script:
     - default: true
       description: Hash of the file to query. Supports MD5, SHA-1, and SHA-256. You
         can pass CSV values to retrieve multiple responses.
-      isArray: false
+      isArray: true
       name: file
       required: false
       secret: false
@@ -359,7 +359,7 @@ script:
   - arguments:
     - default: true
       description: URL to check
-      isArray: false
+      isArray: true
       name: url
       required: false
       secret: false
@@ -392,7 +392,7 @@ script:
   - arguments:
     - default: true
       description: IP address to check
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
