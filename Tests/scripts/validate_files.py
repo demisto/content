@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 This script is used to validate the files in Content repository. Specifically for each file:
 1) Proper prefix
