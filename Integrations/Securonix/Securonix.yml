@@ -209,6 +209,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
+      description: Action to perform on the incident.
       isArray: false
       name: action
       predefined:
@@ -333,6 +334,7 @@ script:
     name: securonix-get-watchlist
   - arguments:
     - default: false
+      description: Watchlist name.
       isArray: false
       name: watchlist
       required: true
@@ -395,7 +397,7 @@ script:
     description: Add an entity to a watchlist.
     execution: false
     name: securonix-add-entity-to-watchlist
-  dockerimage: demisto/python3:3.7.4.977
+  dockerimage: demisto/python3:3.7.5.4002
   isfetch: true
   longRunning: false
   longRunningPort: false
