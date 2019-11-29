@@ -219,12 +219,13 @@ def get_urls_from_binary_file(file_path):
         # the urls usually appear in the form: '/URI (url)'
         urls = re.findall(r'/URI \((.*?)\)', str(file.read()))
 
-    binary_file_urls = list()
+    binary_file_urls = set()
     # make sure the urls match the url regex
     for url in urls:
         mached_url = re.findall(urlRegex, url)
         if len(mached_url) != 0:
-            binary_file_urls.append(mached_url[0])
+            binary_file_urls.add(mached_url[0])
+
     return binary_file_urls
 
 
