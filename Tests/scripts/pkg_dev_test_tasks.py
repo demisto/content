@@ -14,6 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 from package_creator import get_code_file  # noqa: E402
+from Tests.test_utils import print_warning
 
 DEF_DOCKER = 'demisto/python:1.3-alpine'
 ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
@@ -63,8 +64,8 @@ def get_python_version(docker_image):
     print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
     if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
-        raise ValueError("Python version for docker image: {} is not supported: {}. "
-                         "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
+        print_warning("Python version for docker image: {} is not supported: {}. "
+                      "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
     return py_num
 
 
@@ -319,6 +320,8 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         for try_num in (1, 2):
             print_v("Using docker image: {}".format(docker))
             py_num = get_python_version(docker)
+            if not py_num:
+                continue
             setup_dev_files(project_dir)
             try:
                 if not args.no_flake8:
