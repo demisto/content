@@ -2471,7 +2471,7 @@ script:
 
         if (params.useRest){
             // in case that the user wants to use the REST API
-            fieldsToValue = getIDsOfMultiselectFields(fieldsToValue, createRecordMapping);
+            fieldsToValue = replaceMultiselectNameWithID(fieldsToValue, createRecordMapping);
             logDebug("Using REST API");
             var content = {
                 "Content": {
@@ -2602,7 +2602,7 @@ script:
 
         if (params.useRest){
             // in case that the user wants to use the REST API
-            fieldsToValue = getIDsOfMultiselectFields(fieldsToValue, updateRecordMapping);
+            fieldsToValue = replaceMultiselectNameWithID(fieldsToValue, updateRecordMapping);
             var content = {
                 "Content": {
                     "Id": contentId,
