@@ -14,13 +14,12 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 from package_creator import get_code_file  # noqa: E402
-from Tests.test_utils import print_warning  # noqa: E402
 
 DEF_DOCKER = 'demisto/python:1.3-alpine'
 ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
 RUN_SH_FILE_NAME = 'run_dev_tasks.sh'
 RUN_SH_FILE = '{}/{}'.format(SCRIPT_DIR, RUN_SH_FILE_NAME)
-CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'  # disable-secrets-detection
+CONTAINER_SETUP_SCRIPT_NAME = 'pkg_dev_container_setup.sh'
 CONTAINER_SETUP_SCRIPT = '{}/{}'.format(SCRIPT_DIR, CONTAINER_SETUP_SCRIPT_NAME)
 RUN_MYPY_SCRIPT = '{}/run_mypy.sh'.format(SCRIPT_DIR)
 LOG_VERBOSE = False
@@ -51,7 +50,10 @@ def get_python_version(docker_image):
         docker_image {string} -- Docker image being used by the project
 
     Return:
-        python version as a float (2.7, 3.7), None if version is not supported.
+        python version as a float (2.7, 3.7)
+
+    Raises:
+        ValueError -- if version is not supported
     """
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
     py_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
@@ -61,9 +63,8 @@ def get_python_version(docker_image):
     print("Detected python version: [{}] for docker image: {}".format(py_ver, docker_image))
     py_num = float(py_ver)
     if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
-        print_warning("Python version for docker image: {} is not supported: {}. "
+        raise ValueError("Python version for docker image: {} is not supported: {}. "
                       "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
-        return None
 
     return py_num
 
@@ -319,9 +320,6 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
         for try_num in (1, 2):
             print_v("Using docker image: {}".format(docker))
             py_num = get_python_version(docker)
-            if not py_num:
-                continue
-
             setup_dev_files(project_dir)
             try:
                 if not args.no_flake8:
@@ -349,7 +347,6 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
             finally:
                 sys.stdout.flush()
                 sys.stderr.flush()
-
     return 0
 
 
