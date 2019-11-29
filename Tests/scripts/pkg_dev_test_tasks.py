@@ -51,10 +51,7 @@ def get_python_version(docker_image):
         docker_image {string} -- Docker image being used by the project
 
     Return:
-        python version as a float (2.7, 3.7)
-
-    Raises:
-        ValueError -- if version is not supported
+        python version as a float (2.7, 3.7), None if version is not supported.
     """
     stderr_out = None if LOG_VERBOSE else subprocess.DEVNULL
     py_ver = subprocess.check_output(["docker", "run", "--rm", docker_image,
@@ -66,6 +63,8 @@ def get_python_version(docker_image):
     if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
         print_warning("Python version for docker image: {} is not supported: {}. "
                       "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
+        return None
+
     return py_num
 
 
@@ -322,6 +321,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
             py_num = get_python_version(docker)
             if not py_num:
                 continue
+
             setup_dev_files(project_dir)
             try:
                 if not args.no_flake8:
@@ -349,6 +349,7 @@ Will lookup up what docker image to use and will setup the dev dependencies and 
             finally:
                 sys.stdout.flush()
                 sys.stderr.flush()
+
     return 0
 
 
