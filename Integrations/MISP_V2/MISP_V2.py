@@ -233,21 +233,22 @@ def replace_keys(obj_to_build: Union[dict, list, str]) -> Union[dict, list, str]
 
 
 def remove_unselected_context_keys(context_data):
-    if not DATA_KEYS_TO_SAVE:
-        return
-
-    # each event has it's own attributes
-    for attribute in context_data[0]['Attribute']:
+    for attribute in context_data['Attribute']:
         for key in list(attribute.keys()):
             if key not in DATA_KEYS_TO_SAVE:
                 del attribute[key]
 
+
+def arrange_context_according_to_user_selection(context_data):
+    if not DATA_KEYS_TO_SAVE:
+        return
+
+    # each event has it's own attributes
+    remove_unselected_context_keys(context_data[0])
+
     # each related event has it's own attributes
     for obj in context_data[0]['Object']:
-        for attribute in obj['Attribute']:
-            for key in list(attribute.keys()):
-                if key not in DATA_KEYS_TO_SAVE:
-                    del attribute[key]
+        remove_unselected_context_keys(obj)
 
 
 def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ignore
@@ -325,7 +326,7 @@ def build_context(response: Union[dict, requests.Response]) -> dict:  # type: ig
                 {'Name': tag.get('name')} for tag in events[i].get('Tag')
             ]
     events = replace_keys(events)  # type: ignore
-    remove_unselected_context_keys(events)  # type: ignore
+    arrange_context_according_to_user_selection(events)  # type: ignore
     return events  # type: ignore
 
 
@@ -371,8 +372,8 @@ def get_dbot_level(threat_level_id: str) -> int:
 
 def get_files_events():
     files = argToList(demisto.args().get('file'), ',')
-    for file in files:
-        check_file(file)
+    for file_hash in files:
+        check_file(file_hash)
 
 
 def check_file(file_hash):
