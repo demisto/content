@@ -1,6 +1,6 @@
 ## [Unreleased]
 - Fixed an issue with the retrieval of app IDs for applications with reverse field mapping.
-- Added support for multiselect fields on the create-record and update-record commands.
+- Added support for multiselect fields on the ***archer-create-record*** and ***archer-update-record*** commands.
 
 ## [19.11.1] - 2019-11-26
 Fixed an issue with the presentation of users display names.
