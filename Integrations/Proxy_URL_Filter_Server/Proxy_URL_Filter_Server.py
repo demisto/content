@@ -1,5 +1,3 @@
-import demistomock as demisto
-from CommonServerPython import *
 import signal
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
