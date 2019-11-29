@@ -1,3 +1,5 @@
+import demistomock as demisto
+from CommonServerPython import *
 from urllib.parse import quote_plus
 
 value = demisto.args()["value"]
