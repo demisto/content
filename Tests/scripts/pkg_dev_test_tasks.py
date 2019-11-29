@@ -14,7 +14,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/../..')
 sys.path.append(CONTENT_DIR)
 from package_creator import get_code_file  # noqa: E402
-from Tests.test_utils import print_warning
+from Tests.test_utils import print_warning  # noqa: E402
 
 DEF_DOCKER = 'demisto/python:1.3-alpine'
 ENVS_DIRS_BASE = '{}/dev_envs/default_python'.format(SCRIPT_DIR)
