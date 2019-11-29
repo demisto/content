@@ -17,7 +17,6 @@ outputs:
 - contextPath: URL.Data
   description: Decoded URLs
 scripttarget: 0
-dockerimage: demisto/python3:3.7.5.4002
-dockerimage45: demisto/python3
 tests:
   - ProofpointDecodeURL-Test
+deprecated: true
