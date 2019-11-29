@@ -57,3 +57,4 @@ script:
   longRunning: true
   longRunningPort: true
   subtype: python3
+  fromversion: 5.0.0
