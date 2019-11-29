@@ -64,8 +64,7 @@ def get_python_version(docker_image):
     py_num = float(py_ver)
     if py_num < 2.7 or (3 < py_num < 3.4):  # pylint can only work on python 3.4 and up
         raise ValueError("Python version for docker image: {} is not supported: {}. "
-                      "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
-
+                         "We only support python 2.7.* and python3 >= 3.4.".format(docker_image, py_num))
     return py_num
 
 
