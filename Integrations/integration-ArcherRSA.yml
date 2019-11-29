@@ -2387,7 +2387,52 @@ script:
         })
     }
 
+    function getGroupIDFromGroupName(groupsDataFromArcher, desiredGroupName) {
+        var desiredGroupID = -1;
+        for (var i=0; i<groupsDataFromArcher.length; i++){
+            var currentGroupData = groupsDataFromArcher[i].RequestedObject;
+            var currentGroupName = currentGroupData.Name;
+            if (currentGroupName.trim() === desiredGroupName.trim()){
+                desiredGroupID = currentGroupData.Id;
+            }
+        }
+        return desiredGroupID;
+    }
+
+    function getGroupData() {
+        var groupsData = sendRestRequest("/api/core/system/group", 'archer-create-record', '', true)
+        return groupsData;
+    }
+
     // integration commands functions
+    function replaceMultiselectNameWithID(fieldsToValues, createRecordMapping) {
+        var modifiedfieldsToValues = fieldsToValues;
+        var allGroupsArcherData = getGroupData();
+        for (var fieldName in fieldsToValues) {
+            if (mapping[fieldName] !== undefined) {
+                var fieldValue = fieldsToValue[fieldName];
+                var fieldNameMapping = mapping[fieldName];
+                var fieldType = fieldNameMapping.Type;
+                var isFieldTypeMultiselect = fieldType === 8;
+                if (isFieldTypeMultiselect) {
+                    fieldValue = (typeof fieldValue === "string") ? JSON.parse(fieldValue) : fieldValue;
+                    var groupsFromUser = fieldValue.groups;
+                    var groupsWithIDsInsteadOfNames = [];
+                    for (var groupIndex = 0; groupIndex < groupsFromUser.length; groupIndex++) {
+                        var currentGroup = groupsFromUser[groupIndex];
+                        var currentGroupData = currentGroup.RequestedObject;
+                        var currentGroupName = currentGroupData.Name;
+                        var currentGroupID = getGroupIDFromGroupName(allGroupsArcherData, currentGroupName)
+                        groupsWithIDsInsteadOfNames.push(currentGroupID)
+                    }
+                    fieldValue["groups"] = groupsWithIDsInsteadOfNames;
+                    modifiedfieldsToValues[fieldName] = fieldValue;
+                }
+            }
+        }
+        return modifiedfieldsToValues;
+
+    }
 
     function createRecord(command, dataArgs) {
         // corresponds to 'archer-create-record' command. Creates a new record in Archer
@@ -2426,6 +2471,7 @@ script:
 
         if (params.useRest){
             // in case that the user wants to use the REST API
+            fieldsToValue = getIDsOfMultiselectFields(fieldsToValue, createRecordMapping);
             logDebug("Using REST API");
             var content = {
                 "Content": {
@@ -2556,6 +2602,7 @@ script:
 
         if (params.useRest){
             // in case that the user wants to use the REST API
+            fieldsToValue = getIDsOfMultiselectFields(fieldsToValue, updateRecordMapping);
             var content = {
                 "Content": {
                     "Id": contentId,
