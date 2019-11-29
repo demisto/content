@@ -1,0 +1,29 @@
+commonfields:
+  id: e94512cb-d9db-45a9-86db-57620ef5f542
+  version: 5
+name: URLEncode
+script: ''
+type: python
+tags:
+- transformer
+comment: |-
+  Converts
+  https://example.com/
+  into
+  https%3A%2F%2Fexample.com%2F
+enabled: true
+args:
+- name: value
+  required: true
+  description: 'The input url '
+outputs:
+- contextPath: EncodedURL
+  description: Parsed url as key/value
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.7.5.4002
+runas: DBotWeakRole
+tests:
+  - URLEncode-Test
