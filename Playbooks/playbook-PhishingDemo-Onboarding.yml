@@ -1,7 +1,5 @@
 id: PhishingDemo-Onboarding
 version: -1
-contentitemfields:
-  propagationLabels: []
 name: PhishingDemo-Onboarding
 fromversion: 4.1.0
 description: This playbook is part of the on-boarding experience, and focuses on phishing
