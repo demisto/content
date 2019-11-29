@@ -356,7 +356,8 @@
             "playbookID": "ReadPDFFile-Test"
         },
         {
-            "playbookID": "ReadPDFFileV2-Test"
+            "playbookID": "ReadPDFFileV2-Test",
+            "timeout": 1000
         },
         {
             "playbookID": "JSONtoCSV-Test"
