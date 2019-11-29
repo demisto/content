@@ -1,0 +1,59 @@
+commonfields:
+  id: Proxy URL Filter Server
+  version: -1
+name: Proxy URL Filter Server
+display: Proxy URL Filter Server
+category: Network Security
+description: Serves a URL filtering list to be fetched by proxies
+configuration:
+- display: Long running instance
+  name: longRunning
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Filter Format
+  name: format_filter
+  defaultvalue: Symantec ProxySG
+  type: 15
+  required: true
+  options:
+  - Symantec ProxySG
+- display: HTTP Server Port
+  name: longRunningPort
+  defaultvalue: "80"
+  type: 0
+  required: true
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: proxy-filter-add-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to block
+    - name: category
+      description: Category
+      defaultValue: blacklist
+  - name: proxy-filter-del-url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: URL to remove
+    - name: category
+      required: true
+      description: Category
+      defaultValue: blacklist
+    description: Remove a URL from the proxy filter list
+  dockerimage: demisto/python3:3.7.5.4002
+  runonce: false
+  longRunning: true
+  longRunningPort: true
+  subtype: python3
