@@ -491,7 +491,7 @@ class IntegrationValidator(object):
         if server_version_compare(self.old_integration.get('fromversion', '0'), '5.0.0') < 0:
             old_docker = get_dockerimage45(self.old_integration.get('script', {}))
             new_docker = get_dockerimage45(self.current_integration.get('script', {}))
-            if old_docker != new_docker:
+            if old_docker != new_docker and new_docker:
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                             " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 self._is_valid = False
