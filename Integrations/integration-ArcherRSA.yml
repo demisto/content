@@ -2405,13 +2405,13 @@ script:
     }
 
     // integration commands functions
-    function replaceMultiselectNameWithID(fieldsToValues, createRecordMapping) {
+    function replaceMultiselectNameWithID(fieldsToValues, fieldMapping) {
         var modifiedfieldsToValues = fieldsToValues;
         var allGroupsArcherData = getGroupData();
         for (var fieldName in fieldsToValues) {
-            if (mapping[fieldName] !== undefined) {
+            if (fieldMapping[fieldName] !== undefined) {
                 var fieldValue = fieldsToValue[fieldName];
-                var fieldNameMapping = mapping[fieldName];
+                var fieldNameMapping = fieldMapping[fieldName];
                 var fieldType = fieldNameMapping.Type;
                 var isFieldTypeMultiselect = fieldType === 8;
                 if (isFieldTypeMultiselect) {
