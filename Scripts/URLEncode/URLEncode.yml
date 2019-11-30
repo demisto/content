@@ -7,10 +7,7 @@ type: python
 tags:
 - transformer
 comment: |-
-  Converts
-  https://example.com/
-  into
-  https%3A%2F%2Fexample.com%2F
+  Encodes https://example.com/ into https%3A%2F%2Fexample.com%2F
 enabled: true
 args:
 - name: value
@@ -26,4 +23,4 @@ runonce: false
 dockerimage: demisto/python3:3.7.5.4002
 runas: DBotWeakRole
 tests:
-  - URLEncode-Test
+  - No test - tested with unittest

@@ -2,18 +2,13 @@ import demistomock as demisto
 from CommonServerPython import *
 from urllib.parse import quote_plus
 
-value = demisto.args()["value"]
-processed_value = quote_plus(value)
 
-eContext = {
-    'EncodedURL': processed_value
-}
+def urlencode(value):
+    encoded_url = quote_plus(value)
 
-entry = {'Type': entryTypes['note'],
-         'Contents': eContext,
-         'ContentsFormat': formats['json'],
-         'HumanReadable': processed_value,
-         'ReadableContentsFormat': formats['markdown'],
-         'EntryContext': eContext}
+    return_outputs(encoded_url, {'EncodedURL': encoded_url}, encoded_url)
+    return (encoded_url, {'EncodedURL': encoded_url}, encoded_url)
 
-demisto.results(entry)
+
+if __name__ in ('__builtin__', 'builtins'):
+    urlencode(demisto.getArg('value'))
