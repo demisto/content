@@ -1,5 +1,5 @@
 from Tests.scripts.constants import PYTHON_SUBTYPES
-from Tests.test_utils import print_error, get_yaml, get_remote_file, server_version_compare, get_dockerimage45
+from Tests.test_utils import print_error, print_warning, get_yaml, get_remote_file, server_version_compare, get_dockerimage45
 
 
 class ScriptValidator(object):
@@ -167,5 +167,10 @@ class ScriptValidator(object):
                 print_error("Possible backwards compatibility break, You've changed the docker for the file {}"
                             " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 return True
+            elif old_docker != new_docker and not new_docker:
+                print_warning("Possible backwards compatibility break. You've removed "
+                              "the docker image for the file {0}, make sure this isn't a mistake.  "
+                              "Old image: {1}".format(self.file_path, old_docker))
+                return False
 
         return False
