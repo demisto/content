@@ -496,5 +496,10 @@ class IntegrationValidator(object):
                             " this is not allowed. Old: {}. New: {}".format(self.file_path, old_docker, new_docker))
                 self._is_valid = False
                 return True
+            elif old_docker != new_docker and not new_docker:
+                print_warning("Possible backwards compatibility break. You've removed "
+                              "the docker image for the file {0}, make sure this isn't a mistake.  "
+                              "Old image: {1}".format(self.file_path, old_docker))
+                return True
 
         return False
