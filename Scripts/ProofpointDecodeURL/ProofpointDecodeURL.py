@@ -1,9 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-import argparse
-import json
-import re
-import sys
 
 args = {
     "input": demisto.args().get("url")
