@@ -2,7 +2,6 @@ import pytest
 from QRadarGetCorrelationLogs import get_query
 import pytest
 import demistomock as demisto
-from CommonServerPython import entryTypes
 from QRadarGetCorrelationLogs import main
 
 @pytest.mark.parametrize('bool_val', ["True"])
