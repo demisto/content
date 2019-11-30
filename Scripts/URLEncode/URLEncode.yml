@@ -15,7 +15,7 @@ args:
   description: 'The input url '
 outputs:
 - contextPath: EncodedURL
-  description: Parsed url as key/value
+  description: Encoded URL
   type: string
 scripttarget: 0
 subtype: python3
