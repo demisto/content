@@ -19,13 +19,13 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "md5",
                     "uuid": "57174536-95fc-474a-bb9f-46dc950d210f",
-                    "value": "116d442d8ec5c62f32c7ba507a5569be"
+                    "value": "mocked_hash"
                 },
                 {
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Payload installation",
-                    "comment": "- Xchecked via VT: 116d442d8ec5c62f32c7ba507a5569be",
+                    "comment": "- Xchecked via VT: mocked_hash",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -44,7 +44,7 @@ full_response_before_filtering = [
                     "Galaxy": [],
                     "ShadowAttribute": [],
                     "category": "Payload installation",
-                    "comment": "- Xchecked via VT: 116d442d8ec5c62f32c7ba507a5569be",
+                    "comment": "- Xchecked via VT: mocked_hash",
                     "deleted": False,
                     "disable_correlation": False,
                     "distribution": "5",
@@ -133,7 +133,7 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "ip-dst",
                     "uuid": "57176c68-3b48-47d1-a549-4f20950d210f",
-                    "value": "192.185.16.132"
+                    "value": "mocked_ip"
                 },
                 {
                     "Galaxy": [],
@@ -152,7 +152,7 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "url",
                     "uuid": "57176ca8-4fd8-4eac-a432-4fdb950d210f",
-                    "value": "http://192.185.16.132/wordpress/wp-includes/oops.php?id=2886098\u0026cname=mh6SlMrX8b\u0026arch=0\u0026srv=0\u0026ver=6.1"
+                    "value": "http://mocked_ip/wordpress/wp-includes/oops.php?id=2886098\u0026cname=mh6SlMrX8b\u0026arch=0\u0026srv=0\u0026ver=6.1"
                 },
                 {
                     "Galaxy": [],
@@ -171,7 +171,7 @@ full_response_before_filtering = [
                     "to_ids": False,
                     "type": "comment",
                     "uuid": "57176d27-f044-4038-9604-49da950d210f",
-                    "value": "YourID: 2886098\r\n    PC: HOME\r\n    USER: user\r\n    *********\r\n    Hey\r\n\r\n    Your files are now encrypted. I have the key to decrypt them back. I will give you a decrypter if you pay me. Email me at: momsbestfriend@protonmail.com or torrenttracker@india.com\r\n\r\n    If you don’t get a reply or if both emails die, then contact me using a guaranteed, foolproof\r\n    Bitmessage: download it form here https://github.com/mailchuck/PyBitmessage/releases/download/v0.5.8/Bitmessage-\r\n    0.5.8.exe\r\n\r\n    Run it, click New Identity and then send me a message at BM-NBvzKEY8raDBKb9Gp1xZMRQpeU5svwg2\r\n\r\n    Cheers"
+                    "value": "YourID: 2886098\r\n    PC: HOME\r\n    USER: user\r\n    *********\r\n    Hey\r\n\r\n    Your files are now encrypted. I have the key to decrypt them back. I will give you a decrypter if you pay me. Email me at: mocked_mail or mocked_mail2\r\n\r\n    If you don’t get a reply or if both emails die, then contact me using a guaranteed, foolproof\r\n    Bitmessage: download it form here https://github.com/mailchuck/PyBitmessage/releases/download/v0.5.8/Bitmessage-\r\n    0.5.8.exe\r\n\r\n    Run it, click New Identity and then send me a message at mocked_text\r\n\r\n    Cheers"
                 },
                 {
                     "Galaxy": [],
