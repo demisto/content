@@ -1,8 +1,7 @@
 import pytest
-from QRadarGetCorrelationLogs import get_query
-import pytest
 import demistomock as demisto
 from QRadarGetCorrelationLogs import main
+
 
 @pytest.mark.parametrize('bool_val', ["True"])
 def test_get_query_cre_name_null_true(mocker, bool_val):
