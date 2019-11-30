@@ -10,7 +10,7 @@ def test_get_query_cre_name_null_true(mocker, bool_val):
             'Contents.events': None,
             'Type': 'JSON'
         }
-        return [mock_dict, "\"CRE Name\" <> NULL" not in args["query_expression"]]
+        return [mock_dict, "\"CRE NAME\" <> NULL" not in args["query_expression"]]
 
     mocker.patch.object(demisto, 'args', return_value={'is_cre_name_null': bool_val})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
@@ -27,7 +27,7 @@ def test_get_query_cre_name_null_false(mocker, bool_val):
             'Contents.events': None,
             'Type': 'JSON'
         }
-        return [mock_dict, "\"CRE Name\" <> NULL" not in args["query_expression"]]
+        return [mock_dict, "\"CRE NAME\" <> NULL" not in args["query_expression"]]
 
     mocker.patch.object(demisto, 'args', return_value={'is_cre_name_null': bool_val})
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
