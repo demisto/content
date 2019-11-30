@@ -22,7 +22,7 @@ def test_updated_docker_image_on_existing_script():
         'dockerimage': 'test_updated'
     }
 
-    assert validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
+    assert not validator.is_docker_image_changed(), "The script validator couldn't find the docker image as changed"
 
 
 def test_not_changed_docker_image_on_existing_script():
