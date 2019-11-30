@@ -1,14 +1,39 @@
 import pytest
 from QRadarGetCorrelationLogs import get_query
+import pytest
+import demistomock as demisto
+from CommonServerPython import entryTypes
+from QRadarGetCorrelationLogs import main
+
+@pytest.mark.parametrize('bool_val', ["True"])
+def test_get_query_cre_name_null_true(mocker, bool_val):
+    def executeCommand(name, args=None):
+        mock_dict = {
+            'Contents.events': None,
+            'Type': 'JSON'
+        }
+        return [mock_dict, "\"CRE Name\" <> NULL" not in args["query_expression"]]
+
+    mocker.patch.object(demisto, 'args', return_value={'is_cre_name_null': bool_val})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert results[0][1]
 
 
 @pytest.mark.parametrize('bool_val', ["False"])
-def test_get_query_cre_name_null_false(bool_val):
-    query_from_false = get_query(bool_val)
-    assert "\"CRE Name\" <> NULL" in query_from_false
+def test_get_query_cre_name_null_false(mocker, bool_val):
+    def executeCommand(name, args=None):
+        mock_dict = {
+            'Contents.events': None,
+            'Type': 'JSON'
+        }
+        return [mock_dict, "\"CRE Name\" <> NULL" not in args["query_expression"]]
 
-
-@pytest.mark.parametrize('bool_val', ["True"])
-def test_get_query_cre_name_null_true(bool_val):
-    query_from_false = get_query(bool_val)
-    assert "\"CRE Name\" <> NULL" not in query_from_false
+    mocker.patch.object(demisto, 'args', return_value={'is_cre_name_null': bool_val})
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'results')
+    main()
+    results = demisto.results.call_args[0]
+    assert not results[0][1]
