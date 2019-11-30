@@ -1,6 +1,3 @@
-import pytest
-
-
 def mock_misp(mocker):
     from pymisp import ExpandedPyMISP
     mocker.patch.object(ExpandedPyMISP, '__init__', return_value=None)
@@ -169,4 +166,3 @@ def test_data_filtering(mocker):
     full_response = test_constants.full_response_before_filtering
     filtered_response = test_constants.response_after_filtering_category_eventid_uuid
     assert build_context(full_response) == filtered_response
-
