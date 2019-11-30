@@ -500,6 +500,6 @@ class IntegrationValidator(object):
                 print_warning("Possible backwards compatibility break. You've removed "
                               "the docker image for the file {0}, make sure this isn't a mistake.  "
                               "Old image: {1}".format(self.file_path, old_docker))
-                return True
+                return False
 
         return False
